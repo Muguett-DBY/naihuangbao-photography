@@ -14,7 +14,12 @@ const tones = ["rose", "sage", "cream", "ink"] as const;
 export function Gallery() {
   const [filter, setFilter] = useState<StyleFilter>("all");
   const [remotePhotos, setRemotePhotos] = useState<PhotoItem[]>([]);
-  const sourcePhotos = remotePhotos.length > 0 ? remotePhotos : galleryItems;
+  const sourcePhotos = useMemo(() => {
+    if (remotePhotos.length === 0) return galleryItems;
+    const remoteIds = new Set(remotePhotos.map((p) => p.id));
+    const filteredStatic = galleryItems.filter((p) => !remoteIds.has(p.id));
+    return [...remotePhotos, ...filteredStatic];
+  }, [remotePhotos]);
   const photos = useMemo(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
 
   useEffect(() => {

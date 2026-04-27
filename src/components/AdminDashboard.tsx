@@ -1,11 +1,18 @@
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useState } from "react";
 import { Eye, ImagePlus, LockKeyhole, LogOut, Upload } from "lucide-react";
 import { galleryItems } from "../data/gallery";
 import { styleLabels } from "../data/site";
 import { getPublicPhotos } from "../lib/gallery";
+import type { PhotoItem } from "../types/photo";
 
 export function AdminDashboard() {
-  const publicPhotos = getPublicPhotos(galleryItems);
+  const [remotePhotos, setRemotePhotos] = useState<PhotoItem[]>([]);
+  const publicPhotos = useMemo(() => {
+    if (remotePhotos.length === 0) return getPublicPhotos(galleryItems);
+    const remoteIds = new Set(remotePhotos.map((p) => p.id));
+    const filteredStatic = galleryItems.filter((p) => !remoteIds.has(p.id));
+    return getPublicPhotos([...remotePhotos, ...filteredStatic]);
+  }, [remotePhotos]);
   const [authenticated, setAuthenticated] = useState(false);
   const [checking, setChecking] = useState(true);
   const [password, setPassword] = useState("");
@@ -26,6 +33,29 @@ export function AdminDashboard() {
     }
 
     void checkSession();
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadRemotePhotos() {
+      try {
+        const response = await fetch("/api/photos");
+        if (!response.ok) return;
+        const data = (await response.json()) as { photos?: PhotoItem[] };
+        if (!ignore && Array.isArray(data.photos)) {
+          setRemotePhotos(data.photos);
+        }
+      } catch {
+        // Local Vite dev has no Pages Functions; static placeholders remain visible.
+      }
+    }
+
+    void loadRemotePhotos();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
