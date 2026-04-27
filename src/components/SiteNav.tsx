@@ -12,7 +12,7 @@ export function SiteNav() {
         <a href="#gallery">作品</a>
         <a href="#packages">套餐</a>
         <a href="#notice">须知</a>
-        <a href="/admin" className="admin-link">
+        <a href="/admin/" className="admin-link">
           <Images size={15} />
           后台
         </a>
