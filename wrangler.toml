@@ -1,0 +1,12 @@
+name = "naihuangbao-photography"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-04-27"
+
+[[r2_buckets]]
+binding = "PHOTO_BUCKET"
+bucket_name = "naihuangbao-photography"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "naihuangbao-photography"
+database_id = "TODO_SET_IN_CLOUDFLARE"
