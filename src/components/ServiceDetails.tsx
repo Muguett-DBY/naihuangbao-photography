@@ -8,7 +8,7 @@ export function ServiceDetails() {
       id="details"
       eyebrow="Details"
       title="设备、价格和预约规则写清楚"
-      intro="把小红书说明图里的信息整理成官网可读的服务说明，后续价格也可以继续在配置里维护。"
+      intro="以下是拍摄设备、附加服务和预约须知，方便你在预约前了解清楚。"
     >
       <div className="service-detail-grid">
         <article className="service-detail-card service-detail-card-featured">

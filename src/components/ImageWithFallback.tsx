@@ -15,18 +15,22 @@ export function ImageWithFallback({
   className?: string;
 }) {
   const [failed, setFailed] = useState(!src);
+  const [loaded, setLoaded] = useState(false);
 
   if (failed) {
     return <FilmPlaceholder title={title} tone={tone} />;
   }
 
   return (
-    <img
-      className={className}
-      loading="lazy"
-      src={src}
-      alt={alt}
-      onError={() => setFailed(true)}
-    />
+    <div className={`img-blur-wrap ${loaded ? "is-loaded" : ""} ${className || ""}`}>
+      <div className="img-skeleton" aria-hidden="true" />
+      <img
+        loading="lazy"
+        src={src}
+        alt={alt}
+        onError={() => setFailed(true)}
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
   );
 }

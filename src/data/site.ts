@@ -5,8 +5,8 @@ export const siteConfig = {
   tagline: "南京女生写真与情侣约拍",
   description:
     "偏柔雾胶片感的自然约拍，适合日常记录、江南感写真、情侣纪念和轻松陪拍。",
-  contactStatus: "联系方式待确认",
-  contactHint: "后续可接入微信、小红书、Instagram、邮箱或预约表单。",
+  contactStatus: "小红书私信咨询",
+  contactHint: "小红书私信预约，确认风格和档期后锁定拍摄时间。",
   xiaohongshuProfile:
     "https://www.xiaohongshu.com/user/profile/60f5b14b000000002002fa9f",
 };
