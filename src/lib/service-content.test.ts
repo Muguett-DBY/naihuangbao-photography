@@ -39,6 +39,6 @@ describe("published photography service content", () => {
   it("uses local cropped client photos for the curated gallery", () => {
     const localPhotos = galleryItems.filter((photo) => photo.imageUrl.startsWith("/images/gallery/"));
     expect(localPhotos).toHaveLength(6);
-    expect(localPhotos.every((photo) => photo.imageUrl.endsWith(".webp"))).toBe(true);
+    expect(localPhotos.every((photo) => photo.imageUrl.includes(".webp?v="))).toBe(true);
   });
 });

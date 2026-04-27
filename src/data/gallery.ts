@@ -1,12 +1,15 @@
 import type { PhotoItem } from "../types/photo";
 
+const galleryAssetVersion = "20260427-2";
+const galleryImage = (fileName: string) => `/images/gallery/${fileName}?v=${galleryAssetVersion}`;
+
 export const galleryItems: PhotoItem[] = [
   {
     id: "gallery-jiangnan-01",
     title: "伞下春光",
     style: "jiangnan",
     location: "南京",
-    imageUrl: "/images/gallery/gallery-jiangnan-01.webp",
+    imageUrl: galleryImage("gallery-jiangnan-01.webp"),
     alt: "南京园林里手持纸伞的江南感女生写真拼图",
     featured: true,
     clientAuthorized: true,
@@ -17,7 +20,7 @@ export const galleryItems: PhotoItem[] = [
     title: "台阶午后",
     style: "street",
     location: "南京",
-    imageUrl: "/images/gallery/gallery-urban-01.webp",
+    imageUrl: galleryImage("gallery-urban-01.webp"),
     alt: "南京室内台阶场景里的都市感女生写真拼图",
     featured: true,
     clientAuthorized: true,
@@ -28,7 +31,7 @@ export const galleryItems: PhotoItem[] = [
     title: "绿意裙摆",
     style: "park",
     location: "南京公园",
-    imageUrl: "/images/gallery/gallery-garden-01.webp",
+    imageUrl: galleryImage("gallery-garden-01.webp"),
     alt: "南京公园绿裙和纸伞的清新女生写真拼图",
     featured: true,
     clientAuthorized: true,
@@ -39,7 +42,7 @@ export const galleryItems: PhotoItem[] = [
     title: "黄 hoodie 街角",
     style: "street",
     location: "南京街区",
-    imageUrl: "/images/gallery/gallery-sweet-01.webp",
+    imageUrl: galleryImage("gallery-sweet-01.webp"),
     alt: "南京街区黄色连帽衫日常陪拍拼图",
     featured: false,
     clientAuthorized: true,
@@ -50,7 +53,7 @@ export const galleryItems: PhotoItem[] = [
     title: "花墙紫调",
     style: "park",
     location: "南京花墙",
-    imageUrl: "/images/gallery/gallery-flower-01.webp",
+    imageUrl: galleryImage("gallery-flower-01.webp"),
     alt: "白色花墙前紫色上衣女生写真拼图",
     featured: false,
     clientAuthorized: true,
@@ -61,7 +64,7 @@ export const galleryItems: PhotoItem[] = [
     title: "廊下白衬衫",
     style: "park",
     location: "南京公园",
-    imageUrl: "/images/gallery/gallery-daily-01.webp",
+    imageUrl: galleryImage("gallery-daily-01.webp"),
     alt: "南京公园廊下白衬衫日常女生写真拼图",
     featured: false,
     clientAuthorized: true,
