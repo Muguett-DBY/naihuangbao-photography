@@ -1,15 +1,18 @@
+import { isAdminRequest } from "../../_auth";
+
 type Env = {
   PHOTO_BUCKET: R2Bucket;
   DB: D1Database;
+  ADMIN_PASSWORD?: string;
 };
 
 const allowedStyles = new Set(["jiangnan", "street", "park", "sweet", "couple", "indoor"]);
 const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const adminEmail = context.request.headers.get("cf-access-authenticated-user-email");
-  if (!adminEmail) {
-    return json({ error: "后台上传需要先通过 Cloudflare Access 登录" }, 401);
+  const isAdmin = await isAdminRequest(context.request, context.env);
+  if (!isAdmin) {
+    return json({ error: "请先登录后台" }, 401);
   }
 
   const formData = await context.request.formData();

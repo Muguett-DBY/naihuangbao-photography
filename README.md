@@ -90,20 +90,15 @@ npx wrangler d1 execute naihuangbao-photography --file=./schema.sql --remote
 - `PHOTO_BUCKET`: Cloudflare R2 bucket
 - `DB`: Cloudflare D1 database
 
-后台应通过 Cloudflare Access 或等价登录保护，只给摄影师使用。
-建议 Access 同时保护：
+后台默认使用站内密码登录，适合国内访问场景，避免依赖 `*.cloudflareaccess.com` 登录页。
 
-- `/admin*`
-- `/api/admin/*`
+部署后需要配置 Pages secret：
 
-上传接口会检查 `cf-access-authenticated-user-email` 请求头；没有通过 Cloudflare Access 的请求会被拒绝。
+```bash
+npx wrangler pages secret put ADMIN_PASSWORD --project-name naihuangbao-photography
+```
 
-Cloudflare Access suggested policy:
-
-- Application domain: `shoot.custard.top`
-- Path: `/admin*`
-- Add another protected path/application for `/api/admin/*`
-- Policy: allow only the photographer's email address
+上传接口也兼容 Cloudflare Access：如果请求带有 `cf-access-authenticated-user-email`，也会被视为已登录。
 
 ## Local Verification
 

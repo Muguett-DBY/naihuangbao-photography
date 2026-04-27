@@ -590,9 +590,25 @@ select {
 }
 
 .admin-hero a,
+.admin-hero button,
 .admin-card button {
   color: #fff8f3;
   background: #493735;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-actions button {
+  border: 0;
+  cursor: pointer;
+}
+
+.admin-grid-single {
+  grid-template-columns: minmax(280px, 520px);
 }
 
 .admin-grid {
