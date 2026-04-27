@@ -13,7 +13,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return json({ error: "后台密码未配置" }, 500);
   }
 
-  if (!body.password || body.password !== context.env.ADMIN_PASSWORD) {
+  if (!body.password || body.password.trim() !== context.env.ADMIN_PASSWORD.trim()) {
     return json({ error: "密码不正确" }, 401);
   }
 
