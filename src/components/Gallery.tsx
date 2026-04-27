@@ -3,7 +3,7 @@ import { galleryItems } from "../data/gallery";
 import { styleLabels } from "../data/site";
 import { getPhotosByStyle } from "../lib/gallery";
 import type { PhotoItem, PhotoStyle } from "../types/photo";
-import { FilmPlaceholder } from "./FilmPlaceholder";
+import { ImageWithFallback } from "./ImageWithFallback";
 import { Section } from "./Section";
 
 type StyleFilter = PhotoStyle | "all";
@@ -63,9 +63,19 @@ export function Gallery() {
         {photos.map((photo, index) => (
           <article className="gallery-card" key={photo.id}>
             {photo.imageUrl ? (
-              <img loading="lazy" src={photo.imageUrl} alt={photo.alt} />
+              <ImageWithFallback
+                src={photo.imageUrl}
+                alt={photo.alt}
+                title={photo.title}
+                tone={tones[index % tones.length]}
+              />
             ) : (
-              <FilmPlaceholder title={photo.title} tone={tones[index % tones.length]} />
+              <ImageWithFallback
+                src=""
+                alt={photo.alt}
+                title={photo.title}
+                tone={tones[index % tones.length]}
+              />
             )}
             <div>
               <p>{styleLabels[photo.style]}</p>

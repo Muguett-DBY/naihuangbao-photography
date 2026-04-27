@@ -5,6 +5,7 @@ import { Gallery } from "./components/Gallery";
 import { Hero } from "./components/Hero";
 import { Packages } from "./components/Packages";
 import { ProcessAndFaq } from "./components/ProcessAndFaq";
+import { ServiceDetails } from "./components/ServiceDetails";
 import { SiteNav } from "./components/SiteNav";
 
 export function App() {
@@ -19,6 +20,7 @@ export function App() {
         <Hero />
         <Gallery />
         <Packages />
+        <ServiceDetails />
         <ProcessAndFaq />
         <AboutBooking />
       </main>

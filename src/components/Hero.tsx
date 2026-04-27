@@ -1,8 +1,11 @@
 import { ArrowDown, Sparkles } from "lucide-react";
+import { galleryItems } from "../data/gallery";
 import { siteConfig } from "../data/site";
-import { FilmPlaceholder } from "./FilmPlaceholder";
+import { ImageWithFallback } from "./ImageWithFallback";
 
 export function Hero() {
+  const [mainPhoto, topPhoto, bottomPhoto] = [galleryItems[2], galleryItems[0], galleryItems[4]];
+
   return (
     <section id="top" className="hero">
       <div className="hero-copy">
@@ -27,13 +30,28 @@ export function Hero() {
       </div>
       <div className="hero-visual" aria-label="柔雾胶片感作品预览">
         <div className="hero-card hero-card-large">
-          <FilmPlaceholder title="南京柔雾写真" tone="rose" />
+          <ImageWithFallback
+            src={mainPhoto.imageUrl}
+            alt={mainPhoto.alt}
+            title={mainPhoto.title}
+            tone="sage"
+          />
         </div>
         <div className="hero-card hero-card-small hero-card-top">
-          <FilmPlaceholder title="江南感" tone="sage" />
+          <ImageWithFallback
+            src={topPhoto.imageUrl}
+            alt={topPhoto.alt}
+            title={topPhoto.title}
+            tone="rose"
+          />
         </div>
         <div className="hero-card hero-card-small hero-card-bottom">
-          <FilmPlaceholder title="情侣纪念" tone="cream" />
+          <ImageWithFallback
+            src={bottomPhoto.imageUrl}
+            alt={bottomPhoto.alt}
+            title={bottomPhoto.title}
+            tone="cream"
+          />
         </div>
       </div>
     </section>
