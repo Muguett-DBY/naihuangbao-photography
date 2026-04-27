@@ -13,7 +13,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return json({ error: "后台密码未配置" }, 500);
   }
 
-  if (!body.password || body.password.trim() !== context.env.ADMIN_PASSWORD.trim()) {
+  if (!body.password) {
+    return json({ error: "请输入密码" }, 400);
+  }
+
+  const inputPassword = body.password.trim();
+  const storedPassword = context.env.ADMIN_PASSWORD.trim();
+
+  const valid = await timingSafeEqual(inputPassword, storedPassword);
+  if (!valid) {
     return json({ error: "密码不正确" }, 401);
   }
 
@@ -26,6 +34,38 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     },
   );
 };
+
+async function timingSafeEqual(a: string, b: string): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const aBytes = encoder.encode(a);
+  const bBytes = encoder.encode(b);
+
+  if (aBytes.byteLength !== bBytes.byteLength) {
+    return false;
+  }
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    aBytes,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+
+  const aSig = await crypto.subtle.sign("HMAC", key, aBytes);
+  const bSig = await crypto.subtle.sign("HMAC", key, bBytes);
+
+  return timingSafeCompare(new Uint8Array(aSig), new Uint8Array(bSig));
+}
+
+function timingSafeCompare(a: Uint8Array, b: Uint8Array): boolean {
+  if (a.byteLength !== b.byteLength) return false;
+  let result = 0;
+  for (let i = 0; i < a.byteLength; i++) {
+    result |= a[i]! ^ b[i]!;
+  }
+  return result === 0;
+}
 
 function json(body: unknown, status = 200, headers: Record<string, string> = {}) {
   return new Response(JSON.stringify(body), {

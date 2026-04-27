@@ -59,11 +59,12 @@ export function Gallery() {
       title="作品像一本慢慢翻开的相册"
       intro="以下是不同风格的作品参考，点击可以查看大图。"
     >
-      <div className="filter-row" role="tablist" aria-label="作品分类">
+      <div className="filter-row" role="group" aria-label="作品分类筛选">
         {filters.map((item) => (
           <button
             key={item}
             type="button"
+            aria-pressed={item === filter}
             className={item === filter ? "is-active" : ""}
             onClick={() => setFilter(item)}
           >
@@ -80,21 +81,12 @@ export function Gallery() {
               onClick={() => setLightboxIndex(index)}
               aria-label={`查看大图：${photo.title}`}
             >
-              {photo.imageUrl ? (
-                <ImageWithFallback
-                  src={photo.imageUrl}
-                  alt={photo.alt}
-                  title={photo.title}
-                  tone={tones[index % tones.length]}
-                />
-              ) : (
-                <ImageWithFallback
-                  src=""
-                  alt={photo.alt}
-                  title={photo.title}
-                  tone={tones[index % tones.length]}
-                />
-              )}
+              <ImageWithFallback
+                src={photo.imageUrl || ""}
+                alt={photo.alt}
+                title={photo.title}
+                tone={tones[index % tones.length]}
+              />
             </button>
             <div>
               <p>{styleLabels[photo.style]}</p>

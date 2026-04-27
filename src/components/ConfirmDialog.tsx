@@ -37,7 +37,13 @@ export function ConfirmDialog({
   if (!isOpen) return null;
 
   return (
-    <div className="dialog-overlay" onClick={onCancel}>
+    <div
+      className="dialog-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      onClick={onCancel}
+    >
       <div className="dialog-card" onClick={(e) => e.stopPropagation()}>
         <h3>{title}</h3>
         <p>{message}</p>

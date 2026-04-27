@@ -1,24 +1,53 @@
+import { lazy, Suspense } from "react";
 import { AboutBooking } from "./components/AboutBooking";
-import { AdminDashboard } from "./components/AdminDashboard";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
 import { Gallery } from "./components/Gallery";
 import { Hero } from "./components/Hero";
 import { MidCTA } from "./components/MidCTA";
+import { NotFound } from "./components/NotFound";
 import { Packages } from "./components/Packages";
 import { ProcessAndFaq } from "./components/ProcessAndFaq";
 import { ServiceDetails } from "./components/ServiceDetails";
 import { SiteNav } from "./components/SiteNav";
 import { WhyChooseUs } from "./components/WhyChooseUs";
 
+const AdminDashboard = lazy(() => import("./components/AdminDashboard"));
+
+function AdminRoute() {
+  return (
+    <Suspense fallback={<div className="adm-root"><div className="adm-loading">加载中...</div></div>}>
+      <AdminDashboard />
+    </Suspense>
+  );
+}
+
+function isNotFound(): boolean {
+  const path = window.location.pathname;
+  if (path === "/" || path === "/admin" || path.startsWith("/admin/")) return false;
+  return true;
+}
+
 export function App() {
   if (window.location.pathname.startsWith("/admin")) {
-    return <AdminDashboard />;
+    return (
+      <ErrorBoundary>
+        <AdminRoute />
+      </ErrorBoundary>
+    );
+  }
+
+  if (isNotFound()) {
+    return <NotFound />;
   }
 
   return (
-    <>
+    <ErrorBoundary>
+      <a className="skip-link" href="#main-content">
+        跳过导航，直接查看内容
+      </a>
       <SiteNav />
-      <main>
+      <main id="main-content">
         <Hero />
         <Gallery />
         <MidCTA />
@@ -29,6 +58,6 @@ export function App() {
         <AboutBooking />
       </main>
       <Footer />
-    </>
+    </ErrorBoundary>
   );
 }

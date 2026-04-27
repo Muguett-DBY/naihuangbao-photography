@@ -40,6 +40,7 @@ export function Hero() {
             alt={mainPhoto.alt}
             title={mainPhoto.title}
             tone="sage"
+            priority
           />
         </div>
         <div

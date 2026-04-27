@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { ImagePlus, LockKeyhole, LogOut, Pencil, Trash2, Upload } from "lucide-react";
 import { galleryItems } from "../data/gallery";
 import { styleLabels } from "../data/site";
@@ -7,7 +7,7 @@ import { ConfirmDialog } from "./ConfirmDialog";
 
 type ToastType = "success" | "error" | "info";
 
-export function AdminDashboard() {
+export default function AdminDashboard() {
   const [remotePhotos, setRemotePhotos] = useState<PhotoItem[]>([]);
   const [authenticated, setAuthenticated] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -171,7 +171,7 @@ export function AdminDashboard() {
       />
 
       {editingPhoto && (
-        <div className="adm-overlay" onClick={() => setEditingPhoto(null)}>
+        <div className="adm-overlay" role="dialog" aria-modal="true" aria-label="编辑作品" onClick={() => setEditingPhoto(null)}>
           <div className="adm-dialog" onClick={(e) => e.stopPropagation()}>
             <h3>编辑作品</h3>
             <div className="adm-edit-grid">

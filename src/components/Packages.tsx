@@ -8,7 +8,7 @@ export function Packages() {
       id="packages"
       eyebrow="Packages"
       title="先了解适合你的拍摄方式"
-      intro="价格、成片数量和交付周期会在正式确认后替换，不编造真实报价。"
+      intro="每种拍摄方式都包含风格沟通和全程引导，先看看哪种更适合你。"
     >
       <div className="package-grid">
         {packages.map((item) => (

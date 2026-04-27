@@ -12,6 +12,7 @@ type LightboxProps = {
 
 export function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: LightboxProps) {
   const imageRef = useRef<HTMLImageElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const photo = photos[currentIndex];
 
   useEffect(() => {
@@ -31,6 +32,7 @@ export function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: Ligh
 
     document.addEventListener("keydown", handleKeyDown);
     document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
@@ -41,14 +43,21 @@ export function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: Ligh
   if (!photo) return null;
 
   return (
-    <div className="lightbox-overlay" onClick={onClose}>
+    <div
+      className="lightbox-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="图片预览"
+      onClick={onClose}
+    >
       <button
+        ref={closeRef}
         className="lightbox-close"
         onClick={onClose}
         aria-label="关闭"
         type="button"
       >
-        <X size={24} />
+        <X size={24} aria-hidden="true" />
       </button>
 
       <button
@@ -57,7 +66,7 @@ export function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: Ligh
         aria-label="上一张"
         type="button"
       >
-        <ChevronLeft size={28} />
+        <ChevronLeft size={28} aria-hidden="true" />
       </button>
 
       <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
@@ -67,6 +76,7 @@ export function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: Ligh
           className="lightbox-image"
           src={photo.imageUrl}
           alt={photo.alt}
+          decoding="async"
         />
         <div className="lightbox-info">
           <strong>{photo.title}</strong>
@@ -80,10 +90,10 @@ export function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: Ligh
         aria-label="下一张"
         type="button"
       >
-        <ChevronRight size={28} />
+        <ChevronRight size={28} aria-hidden="true" />
       </button>
 
-      <div className="lightbox-counter">
+      <div className="lightbox-counter" aria-live="polite">
         {currentIndex + 1} / {photos.length}
       </div>
     </div>
