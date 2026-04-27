@@ -1,4 +1,4 @@
-Save the original screenshots here before cropping:
+Save the original screenshots here before cropping. This folder is outside `public` so raw phone screenshots are not deployed.
 
 - `slide-2.jpg`
 - `slide-3.jpg`
@@ -6,6 +6,8 @@ Save the original screenshots here before cropping:
 - `slide-5.jpg`
 - `slide-6.jpg`
 - `slide-7.jpg`
+
+The script can also process exactly six image files with arbitrary names; it sorts them by file modified time.
 
 Then run:
 

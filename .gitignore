@@ -7,3 +7,6 @@ dist
 .env
 .env.*
 .admin-password.txt
+.Rhistory
+source-assets/gallery/raw/*
+!source-assets/gallery/raw/README.md
