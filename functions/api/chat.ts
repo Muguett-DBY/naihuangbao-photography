@@ -1,5 +1,6 @@
 import {
   enforcePublicChatRateLimit,
+  getPublicChatDirectReply,
   loadSiteContent,
   normalizeChatMessages,
   requestChatCompletion,
@@ -11,6 +12,14 @@ export const onRequestPost: PagesFunction<ChatEnv> = async (context) => {
     return json({ error: "聊天助手暂时不可用，请稍后再试。" }, 503);
   }
 
+  const body = (await context.request.json().catch(() => ({}))) as {
+    messages?: unknown;
+  };
+  const messages = normalizeChatMessages(body.messages, 6, 400);
+  if (messages.length === 0) {
+    return json({ error: "请输入想咨询的问题。" }, 400);
+  }
+
   const rateLimit = await enforcePublicChatRateLimit(context.request, context.env);
   if (!rateLimit.ok) {
     return json(
@@ -20,12 +29,9 @@ export const onRequestPost: PagesFunction<ChatEnv> = async (context) => {
     );
   }
 
-  const body = (await context.request.json().catch(() => ({}))) as {
-    messages?: unknown;
-  };
-  const messages = normalizeChatMessages(body.messages, 6, 400);
-  if (messages.length === 0) {
-    return json({ error: "请输入想咨询的问题。" }, 400);
+  const directReply = getPublicChatDirectReply(messages);
+  if (directReply) {
+    return json({ reply: directReply });
   }
 
   try {

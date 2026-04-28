@@ -147,6 +147,17 @@ FAQ：
 ${faqs}`;
 }
 
+export function getPublicChatDirectReply(messages: ChatMessage[]) {
+  const latestUserMessage = [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
+  const asksAboutMaleSolo = /(男生|男的|男性|男士|男孩子|我是男)/.test(latestUserMessage)
+    && /(可以|能|接|拍|约|写真|单人)/.test(latestUserMessage)
+    && !/(情侣|对象|女朋友|男朋友|一起|双人)/.test(latestUserMessage);
+
+  if (!asksAboutMaleSolo) return null;
+
+  return "目前只接受女生或情侣约拍，男生单人暂时不接。如果是情侣纪念或情侣约拍，可以继续了解套餐、风格和预约流程。";
+}
+
 export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[], siteContent: SiteContent) {
   if (!env.OPENCODE_GO_API_KEY) {
     throw new Error("missing-api-key");

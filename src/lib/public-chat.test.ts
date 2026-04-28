@@ -32,6 +32,7 @@ describe("public AI chat integration", () => {
     expect(chatHelperSource).toContain("deepseek-v4-flash");
     expect(chatHelperSource).toContain("stream: false");
     expect(chatHelperSource).toContain("maxPublicChatMessagesPerHour = 30");
+    expect(chatHelperSource).toContain("getPublicChatDirectReply");
     expect(chatHelperSource).not.toContain("sk-");
   });
 
@@ -48,6 +49,17 @@ describe("public AI chat integration", () => {
     expect(prompt).toContain("只回答官网相关问题");
     expect(prompt).toContain("只接受女生或情侣约拍");
     expect(prompt).toContain("男生单人目前不接");
+  });
+
+  it("directly answers male solo booking boundary questions before model fallback", async () => {
+    const chatModule = await import("../../functions/_chat");
+    const getPublicChatDirectReply = chatModule.getPublicChatDirectReply as
+      | ((messages: Array<{ role: "user"; content: string }>) => string | null)
+      | undefined;
+
+    expect(getPublicChatDirectReply).toBeTypeOf("function");
+    expect(getPublicChatDirectReply?.([{ role: "user", content: "我是男生可以拍吗？" }])).toContain("男生单人暂时不接");
+    expect(getPublicChatDirectReply?.([{ role: "user", content: "情侣可以拍吗？" }])).toBeNull();
   });
 
   it("adds D1-backed public rate limit storage", () => {
