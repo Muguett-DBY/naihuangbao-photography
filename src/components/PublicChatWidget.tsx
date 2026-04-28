@@ -193,17 +193,7 @@ export function PublicChatWidget() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          messages: nextMessages.map(({ role, content }) => ({ role, content })),
-        }),
-      });
-      if (!response.ok) {
-        const data = (await response.json().catch(() => ({}))) as { error?: string };
-        throw new Error(data.error ?? "聊天助手暂时不可用，请稍后再试。");
-      }
+      const response = await fetchChatResponse(nextMessages);
 
       const assistantId = `assistant-${Date.now()}`;
       setMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: "" }]);
@@ -333,6 +323,38 @@ export function PublicChatWidget() {
 
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+async function fetchChatResponse(messages: ChatMessage[]) {
+  const body = JSON.stringify({
+    messages: messages.map(({ role, content }) => ({ role, content })),
+  });
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body,
+    });
+
+    if (response.ok) return response;
+
+    const data = (await response.json().catch(() => ({}))) as { error?: string };
+    const canRetry = (response.status === 502 || response.status === 503 || response.status === 504) && attempt === 0;
+    if (!canRetry) {
+      throw new Error(data.error ?? "聊天助手暂时不可用，请稍后再试。");
+    }
+
+    await wait(650);
+  }
+
+  throw new Error("聊天助手暂时不可用，请稍后再试。");
+}
+
+function wait(ms: number) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, ms);
+  });
 }
 
 async function readStreamText(reader: ReadableStreamDefaultReader<Uint8Array>, decoder: TextDecoder) {

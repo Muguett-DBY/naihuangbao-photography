@@ -32,11 +32,11 @@ describe("public AI chat integration", () => {
     expect(chatHelperSource).toContain("https://opencode.ai/zen/go/v1/chat/completions");
     expect(chatHelperSource).toContain("deepseek-v4-flash");
     expect(chatHelperSource).toContain("stream: true");
-    expect(chatHelperSource).toContain("max_tokens: 420");
+    expect(chatHelperSource).toContain("max_tokens: 320");
     expect(chatHelperSource).toContain("parseOpenCodeStream");
     expect(chatHelperSource).toContain("normalizeAssistantReply");
-    expect(chatHelperSource).toContain("openCodeMaxAttempts = 2");
-    expect(chatHelperSource).toContain("openCodeConnectTimeoutMs");
+    expect(chatHelperSource).toContain("openCodeMaxAttempts = 1");
+    expect(chatHelperSource).toContain("openCodeConnectTimeoutMs = 6_500");
     expect(chatHelperSource).toContain("shouldRetryUpstream");
     expect(chatHelperSource).toContain("maxPublicChatMessagesPerHour = 30");
     expect(chatHelperSource).not.toContain("getPublicChatDirectReply");
@@ -88,6 +88,8 @@ describe("public AI chat integration", () => {
     expect(appSource).toContain("<PublicChatWidget />");
     expect(widgetSource).toContain('fetch("/api/chat"');
     expect(widgetSource).toContain("revealAssistantStream");
+    expect(widgetSource).toContain("fetchChatResponse");
+    expect(widgetSource).toContain("response.status === 502");
     expect(widgetSource).toContain("body.getReader");
     expect(widgetSource).toContain("TextDecoder");
     expect(widgetSource).toContain("onKeyDown");

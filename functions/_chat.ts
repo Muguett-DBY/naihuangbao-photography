@@ -36,8 +36,8 @@ type RateLimitResult =
 
 const openCodeEndpoint = "https://opencode.ai/zen/go/v1/chat/completions";
 const model = "deepseek-v4-flash";
-const openCodeMaxAttempts = 2;
-const openCodeConnectTimeoutMs = 8_000;
+const openCodeMaxAttempts = 1;
+const openCodeConnectTimeoutMs = 6_500;
 export const maxPublicChatMessagesPerHour = 30;
 const publicChatWindowSeconds = 60 * 60;
 
@@ -95,59 +95,26 @@ function rowsToContent(rows: ContentRow[]): PartialSiteContent {
 
 export function buildPublicSystemPrompt(content: SiteContent) {
   const packages = content.packages
-    .map((item) => `${item.name}: ${item.price}, ${item.duration}, ${item.summary}`)
-    .join("\n");
+    .map((item) => `${item.name}${item.price}/${item.duration}，${item.summary}`)
+    .join("；");
   const policies = content.servicePolicies
     .map((item) => `${item.title}: ${item.detail}`)
-    .join("\n");
-  const faqs = content.faqs
-    .map((item) => `${item.question}: ${item.answer}`)
-    .join("\n");
-  const whyCards = content.whyCards
-    .map((item) => `${item.title}: ${item.detail}`)
-    .join("\n");
+    .join("；");
   const process = content.processSteps
     .map((item, index) => `${index + 1}. ${item}`)
-    .join("\n");
+    .join("；");
   const safety = [
     content.sectionCopy.safety.title,
     ...content.sectionCopy.safety.paragraphs,
-  ].join("\n");
+  ].join("；");
 
   return `你是奶黄包摄影官网的访客咨询助手，只回答官网相关问题。
-你可以帮助访客了解摄影服务、套餐、FAQ、预约流程、拍摄边界、隐私授权、风格建议、地点建议和预约方式。
-如果用户询问无关内容，请礼貌拒答，并引导回摄影预约或官网内容。
-不要编造不存在的档期、优惠、价格、交付承诺或联系方式。
-以“重要拍摄边界”中的受众限制为最高优先级；如果边界写着只接受女生或情侣约拍，男生单人咨询时必须说明男生单人目前不接，可引导了解情侣约拍，不要回答“不限性别”。
-回答要简洁、温和、适合公开访客阅读；如果问题涉及最终预约确认，引导用户通过页面上的小红书入口联系。
-单次回答控制在 80 到 140 个汉字，最多 4 句或 4 个要点；必须以完整句号、问号或感叹号收尾，不要留下“如果您”“建议您”这类未完成的半句。
-
-站点信息：
-品牌：${content.siteConfig.brandName}
-城市：${content.siteConfig.city}
-简介：${content.siteConfig.description}
-联系提示：${content.siteConfig.contactHint}
-
-关于：
-${content.sectionCopy.about.body}
-
-重要拍摄边界：
-${safety}
-
-为什么选择：
-${whyCards}
-
-套餐：
-${packages}
-
-服务规则：
-${policies}
-
-预约流程：
-${process}
-
-FAQ：
-${faqs}`;
+资料：品牌=${content.siteConfig.brandName}；城市=${content.siteConfig.city}；简介=${content.sectionCopy.about.body}
+边界=${safety}
+套餐=${packages}
+规则=${policies}
+流程=${process}
+回答要求：只答官网、套餐、流程、边界、隐私授权、风格建议、地点建议和预约方式；无关问题礼貌拒答；不要编造档期、优惠、价格、交付承诺或联系方式；男生单人目前不接，只接受女生或情侣约拍；引导通过页面小红书入口联系；80 到 140 个汉字，最多 4 句，完整句结尾。`;
 }
 
 export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMessage[], siteContent: SiteContent) {
@@ -168,7 +135,7 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
         body: JSON.stringify({
           model,
           stream: true,
-          max_tokens: 420,
+          max_tokens: 320,
           temperature: 0.4,
           messages: [
             { role: "system", content: buildPublicSystemPrompt(siteContent) },
