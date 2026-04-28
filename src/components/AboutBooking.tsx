@@ -1,22 +1,21 @@
 import { ExternalLink, HeartHandshake, MessageCircle } from "lucide-react";
-import { siteConfig } from "../data/site";
 import { useInView } from "../hooks/useInView";
+import { useSiteContent } from "../hooks/useSiteContent";
 
 export function AboutBooking() {
   const { ref, inView } = useInView<HTMLElement>({ threshold: 0.1 });
+  const { sectionCopy, siteConfig } = useSiteContent();
 
   return (
     <section id="booking" className={`booking-section ${inView ? "is-visible" : ""}`} ref={ref}>
       <div className="about-copy">
-        <p>About</p>
-        <h2>{siteConfig.brandName}</h2>
-        <span>
-          南京个人摄影师，专注女生写真和情侣约拍。拍摄风格偏柔雾胶片感，适合日常记录、江南感写真和轻松陪拍。
-        </span>
+        <p>{sectionCopy.about.eyebrow}</p>
+        <h2>{sectionCopy.about.title || siteConfig.brandName}</h2>
+        <span>{sectionCopy.about.body}</span>
       </div>
       <div className="booking-card">
         <HeartHandshake size={28} />
-        <h2>想约一组温柔自然的照片？</h2>
+        <h2>{sectionCopy.about.bookingTitle}</h2>
         <p>{siteConfig.contactHint}</p>
         <a
           className="booking-cta"
@@ -28,7 +27,7 @@ export function AboutBooking() {
           {siteConfig.contactStatus}
         </a>
         <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
-          查看小红书主页
+          {sectionCopy.about.profileLinkLabel}
           <ExternalLink size={15} />
         </a>
       </div>

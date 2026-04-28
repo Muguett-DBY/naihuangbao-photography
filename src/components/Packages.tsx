@@ -1,14 +1,16 @@
 import { Check } from "lucide-react";
-import { packages } from "../data/packages";
+import { useSiteContent } from "../hooks/useSiteContent";
 import { Section } from "./Section";
 
 export function Packages() {
+  const { packages, sectionCopy } = useSiteContent();
+
   return (
     <Section
       id="packages"
-      eyebrow="Packages"
-      title="先了解适合你的拍摄方式"
-      intro="每种拍摄方式都包含风格沟通和全程引导，先看看哪种更适合你。"
+      eyebrow={sectionCopy.packages.eyebrow}
+      title={sectionCopy.packages.title}
+      intro={sectionCopy.packages.intro}
     >
       <div className="package-grid">
         {packages.map((item, index) => (

@@ -1,12 +1,38 @@
 import { ArrowDown, Sparkles } from "lucide-react";
-import { galleryItems } from "../data/gallery";
-import { siteConfig } from "../data/site";
+import { getFeaturedPhotos, getPublicPhotos } from "../lib/gallery";
 import { useParallax } from "../hooks/useParallax";
+import { usePublicPhotos } from "../hooks/usePublicPhotos";
+import { useSiteContent } from "../hooks/useSiteContent";
+import type { PhotoItem } from "../types/photo";
 import { ImageWithFallback } from "./ImageWithFallback";
 
+const placeholderPhoto: PhotoItem = {
+  id: "hero-placeholder",
+  title: "作品待上传",
+  style: "jiangnan",
+  location: "",
+  imageUrl: "",
+  alt: "作品待上传",
+  featured: false,
+  clientAuthorized: true,
+  visibility: "public",
+};
+
 export function Hero() {
-  const [mainPhoto, topPhoto, bottomPhoto] = [galleryItems[2], galleryItems[0], galleryItems[4]];
+  const { siteConfig } = useSiteContent();
+  const { photos } = usePublicPhotos();
   const { ref: parallaxRef, offset } = useParallax(0.25);
+
+  const featuredPhotos = getFeaturedPhotos(photos, 3);
+  const extraPhotos = getPublicPhotos(photos).filter(
+    (photo) => !featuredPhotos.some((featured) => featured.id === photo.id),
+  );
+  const heroPhotos = [...featuredPhotos, ...extraPhotos];
+  const [mainPhoto, topPhoto, bottomPhoto] = [
+    heroPhotos[0] ?? placeholderPhoto,
+    heroPhotos[1] ?? placeholderPhoto,
+    heroPhotos[2] ?? placeholderPhoto,
+  ];
 
   return (
     <section id="top" className="hero" ref={parallaxRef}>

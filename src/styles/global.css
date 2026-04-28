@@ -1631,6 +1631,161 @@ select {
 
 .adm-body { display: grid; grid-template-columns: 340px 1fr; gap: 24px; max-width: 1120px; margin: 0 auto; padding: 24px; align-items: start; }
 
+.adm-shell {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 20px 24px 32px;
+}
+
+.adm-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.adm-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(117,88,83,0.1);
+  border-radius: 999px;
+  padding: 9px 14px;
+  color: #5d4e49;
+  background: rgba(255,252,248,0.76);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.adm-tabs button.is-active {
+  color: #fff8f3;
+  border-color: #493735;
+  background: #493735;
+}
+
+.adm-content-panel {
+  border: 1px solid rgba(117,88,83,0.1);
+  border-radius: 14px;
+  background: #fffaf6;
+  padding: 22px;
+  box-shadow: 0 2px 16px rgba(94,68,61,0.04);
+}
+
+.adm-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.adm-panel-head h2,
+.adm-cms-item h3 {
+  margin: 0;
+  color: #2d2725;
+}
+
+.adm-panel-head h2 {
+  font-size: 17px;
+}
+
+.adm-cms-list {
+  display: grid;
+  gap: 14px;
+}
+
+.adm-cms-item {
+  border: 1px solid rgba(117,88,83,0.1);
+  border-radius: 12px;
+  padding: 16px;
+  background: rgba(255,255,255,0.48);
+}
+
+.adm-cms-item + .adm-cms-item,
+.adm-cms-list + .adm-add,
+.adm-cms-item + .adm-cms-list {
+  margin-top: 14px;
+}
+
+.adm-cms-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.adm-cms-item-head strong {
+  color: #2d2725;
+  font-size: 13px;
+}
+
+.adm-cms-item-head button,
+.adm-add {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #5d4e49;
+  background: rgba(93,78,73,0.07);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.adm-cms-item-head button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.adm-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.adm-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.adm-content-panel label,
+.adm-cms-item label {
+  display: grid;
+  gap: 5px;
+  color: #5d4e49;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.adm-content-panel input,
+.adm-content-panel select,
+.adm-content-panel textarea,
+.adm-cms-item input,
+.adm-cms-item select,
+.adm-cms-item textarea {
+  width: 100%;
+  border: 1px solid rgba(117,88,83,0.16);
+  border-radius: 8px;
+  padding: 9px 11px;
+  color: #2d2725;
+  background: rgba(255,255,255,0.72);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.adm-content-panel textarea,
+.adm-cms-item textarea {
+  min-height: 82px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.adm-span-2 {
+  grid-column: 1 / -1;
+}
+
 .adm-side { position: sticky; top: 24px; }
 
 .adm-card {
@@ -1701,6 +1856,28 @@ select {
   background: rgba(177,140,131,0.88);
 }
 
+.adm-badge-row {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.adm-badge-row .adm-badge {
+  position: static;
+}
+
+.adm-badge-muted {
+  background: rgba(45,39,37,0.68);
+}
+
+.adm-photo.is-hidden img {
+  opacity: 0.46;
+}
+
 .adm-photo-info {
   position: absolute; inset: 0;
   display: flex; flex-direction: column; justify-content: flex-end;
@@ -1714,7 +1891,7 @@ select {
 
 .adm-photo-actions {
   position: absolute; top: 6px; right: 6px; z-index: 3;
-  display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s;
+  display: flex; gap: 4px; opacity: 1; transition: opacity 0.2s;
 }
 .adm-photo:hover .adm-photo-actions { opacity: 1; }
 
@@ -1765,6 +1942,8 @@ select {
   .adm-body { grid-template-columns: 1fr; }
   .adm-side { position: static; }
   .adm-grid { grid-template-columns: repeat(2, 1fr); }
+  .adm-panel-head { align-items: flex-start; flex-direction: column; }
+  .adm-form-grid { grid-template-columns: 1fr; }
 }
 
 /* ── Accessibility: Reduced Motion ── */

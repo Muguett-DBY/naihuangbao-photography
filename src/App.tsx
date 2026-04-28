@@ -11,6 +11,8 @@ import { ProcessAndFaq } from "./components/ProcessAndFaq";
 import { ServiceDetails } from "./components/ServiceDetails";
 import { SiteNav } from "./components/SiteNav";
 import { WhyChooseUs } from "./components/WhyChooseUs";
+import { PublicPhotosProvider } from "./hooks/usePublicPhotos";
+import { SiteContentProvider } from "./hooks/useSiteContent";
 
 const AdminDashboard = lazy(() => import("./components/AdminDashboard"));
 
@@ -43,21 +45,25 @@ export function App() {
 
   return (
     <ErrorBoundary>
-      <a className="skip-link" href="#main-content">
-        跳过导航，直接查看内容
-      </a>
-      <SiteNav />
-      <main id="main-content">
-        <Hero />
-        <Gallery />
-        <MidCTA />
-        <WhyChooseUs />
-        <Packages />
-        <ServiceDetails />
-        <ProcessAndFaq />
-        <AboutBooking />
-      </main>
-      <Footer />
+      <SiteContentProvider>
+        <PublicPhotosProvider>
+          <a className="skip-link" href="#main-content">
+            跳过导航，直接查看内容
+          </a>
+          <SiteNav />
+          <main id="main-content">
+            <Hero />
+            <Gallery />
+            <MidCTA />
+            <WhyChooseUs />
+            <Packages />
+            <ServiceDetails />
+            <ProcessAndFaq />
+            <AboutBooking />
+          </main>
+          <Footer />
+        </PublicPhotosProvider>
+      </SiteContentProvider>
     </ErrorBoundary>
   );
 }

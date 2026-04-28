@@ -107,3 +107,16 @@ npm run test
 npm run lint
 npm run build
 ```
+
+## CMS Content Setup
+
+The admin page now edits photos and lightweight site content from Cloudflare D1.
+
+After deploying this update, run both commands once:
+
+```bash
+npx wrangler d1 execute naihuangbao-photography --file=./schema.sql --remote
+npx wrangler d1 execute naihuangbao-photography --file=./scripts/seed-static-gallery.sql --remote
+```
+
+`schema.sql` creates the `cms_content` table. The seed script inserts the original six homepage gallery photos into D1 with `insert or ignore`, so it will not overwrite later admin edits.

@@ -1,14 +1,17 @@
 import { Camera, Clock, Coins, ReceiptText } from "lucide-react";
-import { serviceAddOns, servicePolicies } from "../data/packages";
+import { useSiteContent } from "../hooks/useSiteContent";
 import { Section } from "./Section";
 
 export function ServiceDetails() {
+  const { sectionCopy, serviceAddOns, servicePolicies } = useSiteContent();
+  const timingPolicy = servicePolicies[0];
+
   return (
     <Section
       id="details"
-      eyebrow="Details"
-      title="设备、价格和预约规则写清楚"
-      intro="以下是拍摄设备、附加服务和预约须知，方便你在预约前了解清楚。"
+      eyebrow={sectionCopy.details.eyebrow}
+      title={sectionCopy.details.title}
+      intro={sectionCopy.details.intro}
     >
       <div className="service-detail-grid">
         <article className="service-detail-card service-detail-card-featured">
@@ -32,8 +35,8 @@ export function ServiceDetails() {
           <Clock size={24} />
           <p>Timing</p>
           <h3>计时规则</h3>
-          <strong>2小时起拍</strong>
-          <span>迟到15分钟开始计时，当天不可更改拍摄时间。</span>
+          <strong>{timingPolicy?.title ?? "2小时起拍"}</strong>
+          <span>{timingPolicy?.detail ?? "迟到15分钟开始计时，当天不可更改拍摄时间。"}</span>
         </article>
         <article className="service-detail-card service-detail-card-wide">
           <ReceiptText size={24} />

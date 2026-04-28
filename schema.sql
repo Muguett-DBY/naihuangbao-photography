@@ -14,3 +14,9 @@ create table if not exists photos (
 
 create index if not exists idx_photos_public
   on photos (visibility, client_authorized, featured, created_at);
+
+create table if not exists cms_content (
+  key text primary key,
+  value_json text not null,
+  updated_at text not null
+);

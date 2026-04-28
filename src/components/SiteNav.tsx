@@ -1,10 +1,11 @@
 import { Camera, Menu, MessageCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { siteConfig } from "../data/site";
+import { useSiteContent } from "../hooks/useSiteContent";
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { siteConfig } = useSiteContent();
 
   useEffect(() => {
     function onScroll() { setScrolled(window.scrollY > 60); }

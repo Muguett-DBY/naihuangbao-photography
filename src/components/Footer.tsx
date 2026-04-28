@@ -1,11 +1,12 @@
 import { ArrowUp, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
-import { siteConfig } from "../data/site";
 import { useInView } from "../hooks/useInView";
+import { useSiteContent } from "../hooks/useSiteContent";
 
 export function Footer() {
   const [showTop, setShowTop] = useState(false);
   const { ref, inView } = useInView<HTMLElement>({ threshold: 0.1 });
+  const { sectionCopy, siteConfig } = useSiteContent();
 
   useEffect(() => {
     function onScroll() { setShowTop(window.scrollY > 400); }
@@ -26,12 +27,10 @@ export function Footer() {
       </div>
       <div className="footer-social">
         <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
-          小红书 <ExternalLink size={12} />
+          小红书<ExternalLink size={12} />
         </a>
       </div>
-      <p className="footer-tagline">
-        每一次快门，都是一次温柔照亮。
-      </p>
+      <p className="footer-tagline">{sectionCopy.footer.tagline}</p>
       <button
         className={`scroll-top${showTop ? " is-visible" : ""}`}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
