@@ -73,7 +73,7 @@ export function PublicChatWidget() {
 
   function clearRevealTimer() {
     if (revealTimerRef.current !== null) {
-      window.clearInterval(revealTimerRef.current);
+      window.clearTimeout(revealTimerRef.current);
       revealTimerRef.current = null;
     }
     setTyping(false);
@@ -91,10 +91,9 @@ export function PublicChatWidget() {
 
     setTyping(true);
     let index = 0;
-    const step = Math.max(1, Math.ceil(reply.length / 150));
 
     function update() {
-      index = Math.min(reply.length, index + step);
+      index = Math.min(reply.length, index + 1);
       setMessages((prev) => prev.map((message) => (
         message.id === messageId ? { ...message, content: reply.slice(0, index) } : message
       )));
@@ -105,7 +104,71 @@ export function PublicChatWidget() {
     }
 
     update();
-    revealTimerRef.current = window.setInterval(update, 18);
+    revealTimerRef.current = window.setTimeout(update, 28);
+  }
+
+  async function revealAssistantStream(messageId: string, body: ReadableStream<Uint8Array>) {
+    clearRevealTimer();
+
+    const reader = body.getReader();
+    const decoder = new TextDecoder();
+
+    if (prefersReducedMotion()) {
+      const reply = await readStreamText(reader, decoder);
+      setMessages((prev) => prev.map((message) => (
+        message.id === messageId ? { ...message, content: reply } : message
+      )));
+      return;
+    }
+
+    setTyping(true);
+    let displayed = "";
+    let pending = "";
+    let streamDone = false;
+    let streamError: unknown = null;
+
+    const revealDone = new Promise<void>((resolve, reject) => {
+      function tick() {
+        if (pending.length > 0) {
+          displayed += pending[0];
+          pending = pending.slice(1);
+          setMessages((prev) => prev.map((message) => (
+            message.id === messageId ? { ...message, content: displayed } : message
+          )));
+          revealTimerRef.current = window.setTimeout(tick, 28);
+          return;
+        }
+
+        if (streamDone) {
+          clearRevealTimer();
+          if (streamError) {
+            reject(streamError);
+          } else {
+            resolve();
+          }
+          return;
+        }
+
+        revealTimerRef.current = window.setTimeout(tick, 28);
+      }
+
+      tick();
+    });
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        pending += decoder.decode(value, { stream: true });
+      }
+      pending += decoder.decode();
+    } catch (err) {
+      streamError = err;
+    } finally {
+      streamDone = true;
+    }
+
+    await revealDone;
   }
 
   async function sendMessage(rawText = input) {
@@ -137,14 +200,23 @@ export function PublicChatWidget() {
           messages: nextMessages.map(({ role, content }) => ({ role, content })),
         }),
       });
-      const data = (await response.json().catch(() => ({}))) as { reply?: string; error?: string };
-      if (!response.ok || !data.reply) {
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as { error?: string };
         throw new Error(data.error ?? "聊天助手暂时不可用，请稍后再试。");
       }
 
       const assistantId = `assistant-${Date.now()}`;
       setMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: "" }]);
-      revealAssistantReply(assistantId, data.reply);
+      const contentType = response.headers.get("content-type") ?? "";
+      if (response.body && !contentType.includes("application/json")) {
+        await revealAssistantStream(assistantId, response.body);
+      } else {
+        const data = (await response.json().catch(() => ({}))) as { reply?: string };
+        if (!data.reply) {
+          throw new Error("聊天助手暂时不可用，请稍后再试。");
+        }
+        revealAssistantReply(assistantId, data.reply);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "聊天助手暂时不可用，请稍后再试。");
     } finally {
@@ -261,4 +333,16 @@ export function PublicChatWidget() {
 
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+async function readStreamText(reader: ReadableStreamDefaultReader<Uint8Array>, decoder: TextDecoder) {
+  let text = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    text += decoder.decode(value, { stream: true });
+  }
+
+  return text + decoder.decode();
 }

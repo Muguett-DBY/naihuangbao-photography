@@ -25,21 +25,21 @@ describe("public AI chat integration", () => {
     expect(publicApiSource).toContain("OPENCODE_GO_API_KEY");
     expect(publicApiSource).toContain("enforcePublicChatRateLimit");
     expect(publicApiSource).toContain("Retry-After");
+    expect(publicApiSource).toContain("text/plain; charset=utf-8");
     expect(publicApiSource).not.toContain("isAdminRequest");
     expect(publicApiSource).not.toContain("sk-");
 
     expect(chatHelperSource).toContain("https://opencode.ai/zen/go/v1/chat/completions");
     expect(chatHelperSource).toContain("deepseek-v4-flash");
-    expect(chatHelperSource).toContain("stream: false");
-    expect(chatHelperSource).toContain("max_tokens: 520");
-    expect(chatHelperSource).toContain("finish_reason");
+    expect(chatHelperSource).toContain("stream: true");
+    expect(chatHelperSource).toContain("max_tokens: 420");
+    expect(chatHelperSource).toContain("parseOpenCodeStream");
     expect(chatHelperSource).toContain("normalizeAssistantReply");
     expect(chatHelperSource).toContain("openCodeMaxAttempts = 2");
-    expect(chatHelperSource).toContain("openCodeFetchTimeoutMs");
-    expect(chatHelperSource).toContain("AbortSignal.timeout");
+    expect(chatHelperSource).toContain("openCodeConnectTimeoutMs");
     expect(chatHelperSource).toContain("shouldRetryUpstream");
     expect(chatHelperSource).toContain("maxPublicChatMessagesPerHour = 30");
-    expect(chatHelperSource).toContain("getPublicChatDirectReply");
+    expect(chatHelperSource).not.toContain("getPublicChatDirectReply");
     expect(chatHelperSource).not.toContain("sk-");
   });
 
@@ -73,17 +73,6 @@ describe("public AI chat integration", () => {
     expect(normalizeAssistantReply?.("拍摄前会充分沟通风格。", "stop")).toBe("拍摄前会充分沟通风格。");
   });
 
-  it("directly answers male solo booking boundary questions before model fallback", async () => {
-    const chatModule = await import("../../functions/_chat");
-    const getPublicChatDirectReply = chatModule.getPublicChatDirectReply as
-      | ((messages: Array<{ role: "user"; content: string }>) => string | null)
-      | undefined;
-
-    expect(getPublicChatDirectReply).toBeTypeOf("function");
-    expect(getPublicChatDirectReply?.([{ role: "user", content: "我是男生可以拍吗？" }])).toContain("男生单人暂时不接");
-    expect(getPublicChatDirectReply?.([{ role: "user", content: "情侣可以拍吗？" }])).toBeNull();
-  });
-
   it("adds D1-backed public rate limit storage", () => {
     expect(schema).toContain("chat_rate_limits");
     expect(schema).toContain("ip_hash");
@@ -98,6 +87,9 @@ describe("public AI chat integration", () => {
     expect(appSource).toContain("PublicChatWidget");
     expect(appSource).toContain("<PublicChatWidget />");
     expect(widgetSource).toContain('fetch("/api/chat"');
+    expect(widgetSource).toContain("revealAssistantStream");
+    expect(widgetSource).toContain("body.getReader");
+    expect(widgetSource).toContain("TextDecoder");
     expect(widgetSource).toContain("onKeyDown");
     expect(widgetSource).toContain("onCompositionStart");
     expect(widgetSource).toContain("Shift+Enter");

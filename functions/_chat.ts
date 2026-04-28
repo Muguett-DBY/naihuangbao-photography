@@ -37,7 +37,7 @@ type RateLimitResult =
 const openCodeEndpoint = "https://opencode.ai/zen/go/v1/chat/completions";
 const model = "deepseek-v4-flash";
 const openCodeMaxAttempts = 2;
-const openCodeFetchTimeoutMs = 12_000;
+const openCodeConnectTimeoutMs = 8_000;
 export const maxPublicChatMessagesPerHour = 30;
 const publicChatWindowSeconds = 60 * 60;
 
@@ -120,7 +120,7 @@ export function buildPublicSystemPrompt(content: SiteContent) {
 不要编造不存在的档期、优惠、价格、交付承诺或联系方式。
 以“重要拍摄边界”中的受众限制为最高优先级；如果边界写着只接受女生或情侣约拍，男生单人咨询时必须说明男生单人目前不接，可引导了解情侣约拍，不要回答“不限性别”。
 回答要简洁、温和、适合公开访客阅读；如果问题涉及最终预约确认，引导用户通过页面上的小红书入口联系。
-单次回答控制在 90 到 160 个汉字，最多 4 句或 4 个要点；必须以完整句号、问号或感叹号收尾，不要留下“如果您”“建议您”这类未完成的半句。
+单次回答控制在 80 到 140 个汉字，最多 4 句或 4 个要点；必须以完整句号、问号或感叹号收尾，不要留下“如果您”“建议您”这类未完成的半句。
 
 站点信息：
 品牌：${content.siteConfig.brandName}
@@ -150,18 +150,7 @@ FAQ：
 ${faqs}`;
 }
 
-export function getPublicChatDirectReply(messages: ChatMessage[]) {
-  const latestUserMessage = [...messages].reverse().find((message) => message.role === "user")?.content ?? "";
-  const asksAboutMaleSolo = /(男生|男的|男性|男士|男孩子|我是男)/.test(latestUserMessage)
-    && /(可以|能|接|拍|约|写真|单人)/.test(latestUserMessage)
-    && !/(情侣|对象|女朋友|男朋友|一起|双人)/.test(latestUserMessage);
-
-  if (!asksAboutMaleSolo) return null;
-
-  return "目前只接受女生或情侣约拍，男生单人暂时不接。如果是情侣纪念或情侣约拍，可以继续了解套餐、风格和预约流程。";
-}
-
-export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[], siteContent: SiteContent) {
+export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMessage[], siteContent: SiteContent) {
   if (!env.OPENCODE_GO_API_KEY) {
     throw new Error("missing-api-key");
   }
@@ -170,24 +159,23 @@ export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[
 
   for (let attempt = 1; attempt <= openCodeMaxAttempts; attempt += 1) {
     try {
-      const response = await fetch(openCodeEndpoint, {
+      const response = await fetchOpenCodeWithConnectTimeout(openCodeEndpoint, {
         method: "POST",
-        signal: AbortSignal.timeout(openCodeFetchTimeoutMs),
         headers: {
           "content-type": "application/json",
           authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`,
         },
         body: JSON.stringify({
           model,
-          stream: false,
-          max_tokens: 520,
+          stream: true,
+          max_tokens: 420,
           temperature: 0.4,
           messages: [
             { role: "system", content: buildPublicSystemPrompt(siteContent) },
             ...messages,
           ],
         }),
-      });
+      }, openCodeConnectTimeoutMs);
 
       if (!response.ok) {
         lastError = `upstream-${response.status}`;
@@ -196,21 +184,13 @@ export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[
         continue;
       }
 
-      const data = (await response.json().catch(() => ({}))) as {
-        choices?: Array<{
-          finish_reason?: string;
-          message?: {
-            content?: string;
-          };
-        }>;
-      };
-      const choice = data.choices?.[0];
-      const reply = normalizeAssistantReply(choice?.message?.content ?? "", choice?.finish_reason);
-      if (reply) return reply;
+      if (response.body) {
+        return parseOpenCodeStream(response.body);
+      }
 
       lastError = "empty-reply";
     } catch (error) {
-      lastError = error instanceof Error && error.name === "TimeoutError"
+      lastError = error instanceof Error && error.message === "upstream-timeout"
         ? "upstream-timeout"
         : "upstream-network";
     }
@@ -221,6 +201,84 @@ export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[
   }
 
   throw new Error(lastError);
+}
+
+async function fetchOpenCodeWithConnectTimeout(url: string, init: RequestInit, timeoutMs: number) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } catch (error) {
+    if (controller.signal.aborted) {
+      throw new Error("upstream-timeout");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function parseOpenCodeStream(body: ReadableStream<Uint8Array>) {
+  const encoder = new TextEncoder();
+  let buffer = "";
+
+  function flushOpenCodeEvents(flushAll: boolean, controller: ReadableStreamDefaultController<Uint8Array>) {
+    const events = buffer.split(/\r?\n\r?\n/);
+    buffer = flushAll ? "" : events.pop() ?? "";
+    const completeEvents = flushAll ? events : events.slice(0, -1);
+
+    for (const event of completeEvents) {
+      enqueueOpenCodeEvent(event, controller, encoder);
+    }
+  }
+
+  return new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const reader = body.getReader();
+      const decoder = new TextDecoder();
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          flushOpenCodeEvents(false, controller);
+        }
+
+        buffer += decoder.decode();
+        flushOpenCodeEvents(true, controller);
+        controller.close();
+      } catch (error) {
+        controller.error(error);
+      }
+    },
+  });
+}
+
+function enqueueOpenCodeEvent(event: string, controller: ReadableStreamDefaultController<Uint8Array>, encoder: TextEncoder) {
+  for (const line of event.split(/\r?\n/)) {
+    if (!line.startsWith("data:")) continue;
+
+    const data = line.slice(5).trim();
+    if (!data || data === "[DONE]") continue;
+
+    try {
+      const parsed = JSON.parse(data) as {
+        choices?: Array<{
+          delta?: { content?: string };
+          message?: { content?: string };
+        }>;
+      };
+      const content = parsed.choices?.[0]?.delta?.content ?? parsed.choices?.[0]?.message?.content ?? "";
+      if (content) {
+        controller.enqueue(encoder.encode(content));
+      }
+    } catch {
+      // Ignore malformed upstream stream events and keep consuming the stream.
+    }
+  }
 }
 
 export function normalizeAssistantReply(reply: string, finishReason?: string) {

@@ -1,9 +1,8 @@
 import {
   enforcePublicChatRateLimit,
-  getPublicChatDirectReply,
   loadSiteContent,
   normalizeChatMessages,
-  requestChatCompletion,
+  requestChatCompletionStream,
   type ChatEnv,
 } from "../_chat";
 
@@ -29,15 +28,16 @@ export const onRequestPost: PagesFunction<ChatEnv> = async (context) => {
     );
   }
 
-  const directReply = getPublicChatDirectReply(messages);
-  if (directReply) {
-    return json({ reply: directReply });
-  }
-
   try {
     const siteContent = await loadSiteContent(context.env);
-    const reply = await requestChatCompletion(context.env, messages, siteContent);
-    return json({ reply });
+    const stream = await requestChatCompletionStream(context.env, messages, siteContent);
+    return new Response(stream, {
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "no-store",
+        "x-content-type-options": "nosniff",
+      },
+    });
   } catch (error) {
     console.warn("Public chat completion failed", error instanceof Error ? error.message : "unknown");
     return json({ error: "聊天助手暂时不可用，请稍后再试。" }, 502);
