@@ -35,9 +35,11 @@ type RateLimitResult =
   | { ok: false; retryAfter: number };
 
 const openCodeEndpoint = "https://opencode.ai/zen/go/v1/chat/completions";
-const model = "deepseek-v4-flash";
+const primaryModel = "deepseek-v4-flash";
+const fallbackModel = "kimi-k2.5";
+const openCodeModels = [primaryModel, fallbackModel];
 const openCodeMaxAttempts = 1;
-const openCodeConnectTimeoutMs = 6_500;
+const openCodeConnectTimeoutMs = 5_000;
 export const maxPublicChatMessagesPerHour = 30;
 const publicChatWindowSeconds = 60 * 60;
 
@@ -124,46 +126,48 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
 
   let lastError = "upstream-unavailable";
 
-  for (let attempt = 1; attempt <= openCodeMaxAttempts; attempt += 1) {
-    try {
-      const response = await fetchOpenCodeWithConnectTimeout(openCodeEndpoint, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model,
-          stream: true,
-          max_tokens: 320,
-          temperature: 0.4,
-          messages: [
-            { role: "system", content: buildPublicSystemPrompt(siteContent) },
-            ...messages,
-          ],
-        }),
-      }, openCodeConnectTimeoutMs);
+  for (const model of openCodeModels) {
+    for (let attempt = 1; attempt <= openCodeMaxAttempts; attempt += 1) {
+      try {
+        const response = await fetchOpenCodeWithConnectTimeout(openCodeEndpoint, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model,
+            stream: true,
+            max_tokens: 320,
+            temperature: 0.4,
+            messages: [
+              { role: "system", content: buildPublicSystemPrompt(siteContent) },
+              ...messages,
+            ],
+          }),
+        }, openCodeConnectTimeoutMs);
 
-      if (!response.ok) {
-        lastError = `upstream-${response.status}`;
-        if (!shouldRetryUpstream(response.status) || attempt === openCodeMaxAttempts) break;
+        if (!response.ok) {
+          lastError = `${model}-upstream-${response.status}`;
+          if (!shouldRetryUpstream(response.status) || attempt === openCodeMaxAttempts) break;
+          await waitBeforeRetry(attempt);
+          continue;
+        }
+
+        if (response.body) {
+          return await parseOpenCodeStream(response.body);
+        }
+
+        lastError = `${model}-empty-reply`;
+      } catch (error) {
+        lastError = error instanceof Error && error.message === "upstream-timeout"
+          ? `${model}-upstream-timeout`
+          : `${model}-upstream-network`;
+      }
+
+      if (attempt < openCodeMaxAttempts) {
         await waitBeforeRetry(attempt);
-        continue;
       }
-
-      if (response.body) {
-        return await parseOpenCodeStream(response.body);
-      }
-
-      lastError = "empty-reply";
-    } catch (error) {
-      lastError = error instanceof Error && error.message === "upstream-timeout"
-        ? "upstream-timeout"
-        : "upstream-network";
-    }
-
-    if (attempt < openCodeMaxAttempts) {
-      await waitBeforeRetry(attempt);
     }
   }
 

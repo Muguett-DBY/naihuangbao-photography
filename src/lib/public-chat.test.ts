@@ -30,13 +30,15 @@ describe("public AI chat integration", () => {
     expect(publicApiSource).not.toContain("sk-");
 
     expect(chatHelperSource).toContain("https://opencode.ai/zen/go/v1/chat/completions");
-    expect(chatHelperSource).toContain("deepseek-v4-flash");
+    expect(chatHelperSource).toContain('primaryModel = "deepseek-v4-flash"');
+    expect(chatHelperSource).toContain('fallbackModel = "kimi-k2.5"');
+    expect(chatHelperSource).toContain("openCodeModels");
     expect(chatHelperSource).toContain("stream: true");
     expect(chatHelperSource).toContain("max_tokens: 320");
     expect(chatHelperSource).toContain("parseOpenCodeStream");
     expect(chatHelperSource).toContain("normalizeAssistantReply");
     expect(chatHelperSource).toContain("openCodeMaxAttempts = 1");
-    expect(chatHelperSource).toContain("openCodeConnectTimeoutMs = 6_500");
+    expect(chatHelperSource).toContain("openCodeConnectTimeoutMs = 5_000");
     expect(chatHelperSource).toContain("shouldRetryUpstream");
     expect(chatHelperSource).toContain("maxPublicChatMessagesPerHour = 30");
     expect(chatHelperSource).not.toContain("getPublicChatDirectReply");
