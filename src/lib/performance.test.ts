@@ -61,6 +61,14 @@ describe("performance resources", () => {
     expect(photosApiSource).toContain("stale-while-revalidate=300");
   });
 
+  it("keeps admin pages out of browser caches and search indexes", () => {
+    const headers = readFileSync(resolve(root, "public/_headers"), "utf8");
+
+    expect(headers).toContain("/admin*");
+    expect(headers).toContain("Cache-Control: no-store");
+    expect(headers).toContain("X-Robots-Tag: noindex");
+  });
+
   it("lazy-loads the lightbox and admin CSS outside the public shell", () => {
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
     expect(appSource).toContain('import("./components/AdminDashboard")');
