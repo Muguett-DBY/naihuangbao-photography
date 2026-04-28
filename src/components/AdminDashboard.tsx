@@ -1,6 +1,5 @@
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import {
-  Bot,
   FileText,
   HelpCircle,
   ImagePlus,
@@ -10,8 +9,6 @@ import {
   Pencil,
   Plus,
   Save,
-  Send,
-  Sparkles,
   Settings,
   Trash2,
   Upload,
@@ -31,13 +28,7 @@ import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../types/photo";
 import { ConfirmDialog } from "./ConfirmDialog";
 
 type ToastType = "success" | "error" | "info";
-type AdminTab = "photos" | "packages" | "services" | "faq" | "copy" | "ai";
-
-type ChatMessage = {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-};
+type AdminTab = "photos" | "packages" | "services" | "faq" | "copy";
 
 type EditForm = {
   title: string;
@@ -53,7 +44,6 @@ const tabs: Array<{ id: AdminTab; label: string; icon: typeof ImagePlus }> = [
   { id: "services", label: "服务规则", icon: Settings },
   { id: "faq", label: "FAQ/流程", icon: HelpCircle },
   { id: "copy", label: "主页文案", icon: FileText },
-  { id: "ai", label: "AI助手", icon: Bot },
 ];
 
 const whyIconOptions: Array<{ value: WhyCardIcon; label: string }> = [
@@ -110,20 +100,7 @@ export default function AdminDashboard() {
   const [savingContent, setSavingContent] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: "assistant-welcome",
-      role: "assistant",
-      content: "你好，我可以帮你根据当前网站内容整理套餐、FAQ、预约说明和回复话术。",
-    },
-  ]);
-  const [chatInput, setChatInput] = useState("");
-  const [chatLoading, setChatLoading] = useState(false);
-  const [chatTyping, setChatTyping] = useState(false);
-  const [chatError, setChatError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
-  const chatRevealTimerRef = useRef<number | null>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch("/api/admin/session", { credentials: "include" })
@@ -138,18 +115,6 @@ export default function AdminDashboard() {
     void loadPhotos();
     void loadContent();
   }, [authenticated]);
-
-  useEffect(() => {
-    return () => {
-      if (chatRevealTimerRef.current !== null) {
-        window.clearInterval(chatRevealTimerRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ block: "end" });
-  }, [chatMessages, chatLoading, chatTyping]);
 
   async function loadPhotos() {
     try {
@@ -331,90 +296,6 @@ export default function AdminDashboard() {
     updateContent("whyCards", content.whyCards.map((item, i) => i === index ? { ...item, ...patch } : item));
   }
 
-  function clearChatRevealTimer() {
-    if (chatRevealTimerRef.current !== null) {
-      window.clearInterval(chatRevealTimerRef.current);
-      chatRevealTimerRef.current = null;
-    }
-    setChatTyping(false);
-  }
-
-  function revealAssistantReply(messageId: string, reply: string) {
-    clearChatRevealTimer();
-    setChatTyping(true);
-
-    let index = 0;
-    const step = Math.max(1, Math.ceil(reply.length / 140));
-
-    function update() {
-      index = Math.min(reply.length, index + step);
-      setChatMessages((prev) => prev.map((message) => (
-        message.id === messageId ? { ...message, content: reply.slice(0, index) } : message
-      )));
-
-      if (index >= reply.length) {
-        clearChatRevealTimer();
-      }
-    }
-
-    update();
-    chatRevealTimerRef.current = window.setInterval(update, 18);
-  }
-
-  async function handleChatSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const question = chatInput.trim();
-    if (!question || chatLoading || chatTyping) return;
-
-    const userMessage: ChatMessage = {
-      id: `user-${Date.now()}`,
-      role: "user",
-      content: question,
-    };
-    const nextMessages = [...chatMessages, userMessage].slice(-8);
-
-    setChatMessages((prev) => [...prev, userMessage]);
-    setChatInput("");
-    setChatError("");
-    setChatLoading(true);
-
-    try {
-      const response = await fetch("/api/admin/chat", {
-        method: "POST",
-        credentials: "include",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          messages: nextMessages.map(({ role, content }) => ({ role, content })),
-        }),
-      });
-      const data = (await response.json().catch(() => ({}))) as { reply?: string; error?: string };
-      if (!response.ok || !data.reply) {
-        throw new Error(data.error ?? "AI 助手暂时不可用");
-      }
-
-      const assistantId = `assistant-${Date.now()}`;
-      setChatMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: "" }]);
-      revealAssistantReply(assistantId, data.reply);
-    } catch (error) {
-      setChatError(error instanceof Error ? error.message : "AI 助手暂时不可用");
-    } finally {
-      setChatLoading(false);
-    }
-  }
-
-  function clearChat() {
-    clearChatRevealTimer();
-    setChatMessages([
-      {
-        id: "assistant-welcome",
-        role: "assistant",
-        content: "你好，我可以帮你根据当前网站内容整理套餐、FAQ、预约说明和回复话术。",
-      },
-    ]);
-    setChatInput("");
-    setChatError("");
-  }
-
   if (checking) {
     return <div className="adm-root"><div className="adm-loading">检查登录状态...</div></div>;
   }
@@ -517,7 +398,6 @@ export default function AdminDashboard() {
         {activeTab === "services" && renderServicesTab()}
         {activeTab === "faq" && renderFaqTab()}
         {activeTab === "copy" && renderCopyTab()}
-        {activeTab === "ai" && renderAiTab()}
       </div>
     </div>
   );
@@ -747,65 +627,6 @@ export default function AdminDashboard() {
           ))}
         </div>
         <button className="adm-add" type="button" onClick={() => updateContent("whyCards", [...content.whyCards, emptyWhyCard])}><Plus size={14} /> 添加选择理由</button>
-      </div>
-    );
-  }
-
-  function renderAiTab() {
-    return (
-      <div className="adm-chat-panel">
-        <div className="adm-chat-head">
-          <div>
-            <span><Sparkles size={15} /> 后台预约助手</span>
-            <h2>AI助手</h2>
-            <p>根据当前网站内容回答套餐、FAQ、流程和拍摄规则问题。</p>
-          </div>
-          <button className="adm-chat-clear" type="button" onClick={clearChat}>
-            <Trash2 size={14} />
-            清空
-          </button>
-        </div>
-
-        <div className="adm-chat-log" aria-live="polite">
-          {chatMessages.map((message, index) => (
-            <div className={`adm-chat-message adm-chat-message-${message.role}`} key={message.id}>
-              <div className="adm-chat-avatar">{message.role === "assistant" ? <Bot size={16} /> : "我"}</div>
-              <div className="adm-chat-bubble">
-                <p>{message.content}</p>
-                {chatTyping && index === chatMessages.length - 1 && message.role === "assistant" ? (
-                  <span className="adm-chat-cursor" aria-hidden="true" />
-                ) : null}
-              </div>
-            </div>
-          ))}
-          {chatLoading ? (
-            <div className="adm-chat-message adm-chat-message-assistant">
-              <div className="adm-chat-avatar"><Bot size={16} /></div>
-              <div className="adm-chat-bubble adm-chat-thinking">
-                <span />
-                <span />
-                <span />
-              </div>
-            </div>
-          ) : null}
-          <div ref={chatEndRef} />
-        </div>
-
-        {chatError ? <p className="adm-chat-error">{chatError}</p> : null}
-
-        <form className="adm-chat-form" onSubmit={handleChatSubmit}>
-          <textarea
-            value={chatInput}
-            onChange={(e) => setChatInput(e.target.value)}
-            placeholder="问问套餐、FAQ、拍摄流程，或者让它帮你整理回复话术。"
-            maxLength={800}
-            disabled={chatLoading || chatTyping}
-          />
-          <button className="adm-submit" type="submit" disabled={!chatInput.trim() || chatLoading || chatTyping}>
-            <Send size={14} />
-            {chatLoading ? "发送中..." : chatTyping ? "输出中..." : "发送"}
-          </button>
-        </form>
       </div>
     );
   }

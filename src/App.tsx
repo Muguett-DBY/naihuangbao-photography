@@ -8,6 +8,7 @@ import { MidCTA } from "./components/MidCTA";
 import { NotFound } from "./components/NotFound";
 import { Packages } from "./components/Packages";
 import { ProcessAndFaq } from "./components/ProcessAndFaq";
+import { PublicChatWidget } from "./components/PublicChatWidget";
 import { ServiceDetails } from "./components/ServiceDetails";
 import { SiteNav } from "./components/SiteNav";
 import { WhyChooseUs } from "./components/WhyChooseUs";
@@ -65,6 +66,7 @@ export function App() {
             <AboutBooking />
           </main>
           <Footer />
+          <PublicChatWidget />
         </PublicPhotosProvider>
       </SiteContentProvider>
     </ErrorBoundary>

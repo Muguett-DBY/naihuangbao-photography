@@ -20,3 +20,14 @@ create table if not exists cms_content (
   value_json text not null,
   updated_at text not null
 );
+
+create table if not exists chat_rate_limits (
+  ip_hash text not null,
+  window_start integer not null,
+  count integer not null default 0,
+  updated_at text not null,
+  primary key (ip_hash, window_start)
+);
+
+create index if not exists idx_chat_rate_limits_updated
+  on chat_rate_limits (updated_at);
