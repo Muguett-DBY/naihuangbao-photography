@@ -36,6 +36,7 @@ type RateLimitResult =
 
 const openCodeEndpoint = "https://opencode.ai/zen/go/v1/chat/completions";
 const model = "deepseek-v4-flash";
+const openCodeMaxAttempts = 2;
 export const maxPublicChatMessagesPerHour = 30;
 const publicChatWindowSeconds = 60 * 60;
 
@@ -164,43 +165,58 @@ export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[
     throw new Error("missing-api-key");
   }
 
-  const response = await fetch(openCodeEndpoint, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model,
-      stream: false,
-      max_tokens: 720,
-      temperature: 0.4,
-      messages: [
-        { role: "system", content: buildPublicSystemPrompt(siteContent) },
-        ...messages,
-      ],
-    }),
-  });
+  let lastError = "upstream-unavailable";
 
-  if (!response.ok) {
-    throw new Error("upstream-unavailable");
-  }
+  for (let attempt = 1; attempt <= openCodeMaxAttempts; attempt += 1) {
+    try {
+      const response = await fetch(openCodeEndpoint, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model,
+          stream: false,
+          max_tokens: 720,
+          temperature: 0.4,
+          messages: [
+            { role: "system", content: buildPublicSystemPrompt(siteContent) },
+            ...messages,
+          ],
+        }),
+      });
 
-  const data = (await response.json().catch(() => ({}))) as {
-    choices?: Array<{
-      finish_reason?: string;
-      message?: {
-        content?: string;
+      if (!response.ok) {
+        lastError = `upstream-${response.status}`;
+        if (!shouldRetryUpstream(response.status) || attempt === openCodeMaxAttempts) break;
+        await waitBeforeRetry(attempt);
+        continue;
+      }
+
+      const data = (await response.json().catch(() => ({}))) as {
+        choices?: Array<{
+          finish_reason?: string;
+          message?: {
+            content?: string;
+          };
+        }>;
       };
-    }>;
-  };
-  const choice = data.choices?.[0];
-  const reply = normalizeAssistantReply(choice?.message?.content ?? "", choice?.finish_reason);
-  if (!reply) {
-    throw new Error("empty-reply");
+      const choice = data.choices?.[0];
+      const reply = normalizeAssistantReply(choice?.message?.content ?? "", choice?.finish_reason);
+      if (reply) return reply;
+
+      lastError = "empty-reply";
+    } catch {
+      lastError = "upstream-network";
+    }
+
+    if (attempt < openCodeMaxAttempts) {
+      await waitBeforeRetry(attempt);
+    }
   }
 
-  return reply;
+  throw new Error(lastError);
 }
 
 export function normalizeAssistantReply(reply: string, finishReason?: string) {
@@ -220,6 +236,16 @@ export function normalizeAssistantReply(reply: string, finishReason?: string) {
   }
 
   return `${trimmed}。`;
+}
+
+function shouldRetryUpstream(status: number) {
+  return status === 408 || status === 429 || status >= 500;
+}
+
+function waitBeforeRetry(attempt: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 280 * attempt);
+  });
 }
 
 export async function enforcePublicChatRateLimit(request: Request, env: ChatEnv): Promise<RateLimitResult> {

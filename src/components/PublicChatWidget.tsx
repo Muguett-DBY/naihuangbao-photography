@@ -41,6 +41,7 @@ export function PublicChatWidget() {
   const endRef = useRef<HTMLDivElement>(null);
   const revealTimerRef = useRef<number | null>(null);
   const composingRef = useRef(false);
+  const sendingRef = useRef(false);
 
   useEffect(() => {
     if (!open) return;
@@ -109,7 +110,8 @@ export function PublicChatWidget() {
 
   async function sendMessage(rawText = input) {
     const question = rawText.trim();
-    if (!question || loading || typing) return;
+    if (!question || loading || typing || sendingRef.current) return;
+    sendingRef.current = true;
 
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -146,6 +148,7 @@ export function PublicChatWidget() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "聊天助手暂时不可用，请稍后再试。");
     } finally {
+      sendingRef.current = false;
       setLoading(false);
     }
   }

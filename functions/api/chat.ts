@@ -38,7 +38,8 @@ export const onRequestPost: PagesFunction<ChatEnv> = async (context) => {
     const siteContent = await loadSiteContent(context.env);
     const reply = await requestChatCompletion(context.env, messages, siteContent);
     return json({ reply });
-  } catch {
+  } catch (error) {
+    console.warn("Public chat completion failed", error instanceof Error ? error.message : "unknown");
     return json({ error: "聊天助手暂时不可用，请稍后再试。" }, 502);
   }
 };
