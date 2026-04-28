@@ -24,6 +24,8 @@ const starterPrompts = [
   "我是男生可以拍吗？",
 ];
 
+const chatRequestTimeoutMs = 16_000;
+
 const welcomeMessage: ChatMessage = {
   id: "assistant-welcome",
   role: "assistant",
@@ -331,11 +333,27 @@ async function fetchChatResponse(messages: ChatMessage[]) {
   });
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body,
-    });
+    const timeout = createTimeoutController(chatRequestTimeoutMs);
+    let response: Response;
+
+    try {
+      response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body,
+        signal: timeout.controller.signal,
+      });
+    } catch (err) {
+      timeout.clear();
+      const canRetry = err instanceof DOMException && err.name === "AbortError" && attempt === 0;
+      if (canRetry) {
+        await wait(650);
+        continue;
+      }
+      throw new Error("聊天助手暂时不可用，请稍后再试。");
+    }
+
+    timeout.clear();
 
     if (response.ok) return response;
 
@@ -349,6 +367,16 @@ async function fetchChatResponse(messages: ChatMessage[]) {
   }
 
   throw new Error("聊天助手暂时不可用，请稍后再试。");
+}
+
+function createTimeoutController(ms: number) {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), ms);
+
+  return {
+    controller,
+    clear: () => window.clearTimeout(timeout),
+  };
 }
 
 function wait(ms: number) {
