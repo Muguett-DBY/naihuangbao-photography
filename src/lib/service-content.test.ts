@@ -26,13 +26,13 @@ describe("published photography service content", () => {
     );
   });
 
-  it("keeps travel, timing, reschedule and privacy rules visible in FAQ content", () => {
+  it("keeps travel, timing, reschedule, privacy and boundary rules visible in FAQ content", () => {
     const faqText = faqs.map((item) => `${item.question} ${item.answer}`).join("\n");
     expect(faqText).toContain("报销来回路费");
     expect(faqText).toContain("迟到15分钟开始计时");
     expect(faqText).toContain("当天不可更改拍摄时间");
     expect(faqText).toContain("非恶劣天气不退定金，可改日期");
-    expect(faqText).toContain("不接男生，情侣拍可男生出镜");
+    expect(faqText).toContain("仅提供日常人像、纪念记录与生活方式摄影，拍摄以舒适、尊重和公开合规为边界。");
     expect(faqText).toContain("未经明确授权不会公开客片");
   });
 
