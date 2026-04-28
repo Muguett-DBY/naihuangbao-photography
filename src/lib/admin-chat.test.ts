@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { defaultSiteContent } from "../data/content";
 
 const root = process.cwd();
 const chatApiPath = resolve(root, "functions/api/admin/chat.ts");
@@ -37,5 +38,19 @@ describe("admin AI assistant integration", () => {
     expect(adminCss).toContain(".adm-chat-message");
     expect(adminCss).toContain(".adm-chat-cursor");
     expect(adminCss).toContain("@keyframes admChatCursor");
+  });
+
+  it("includes homepage audience and safety boundary copy in the model context", async () => {
+    const chatModule = await import("../../functions/api/admin/chat");
+    const buildSystemPrompt = chatModule.__test_buildSystemPrompt as
+      | ((content: typeof defaultSiteContent) => string)
+      | undefined;
+
+    expect(buildSystemPrompt).toBeTypeOf("function");
+
+    const prompt = buildSystemPrompt?.(defaultSiteContent) ?? "";
+    expect(prompt).toContain("只拍女生和情侣");
+    expect(prompt).toContain("只接受女生或情侣约拍");
+    expect(prompt).toContain("拍摄边界");
   });
 });

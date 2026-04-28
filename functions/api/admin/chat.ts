@@ -2,10 +2,23 @@ import { isAdminRequest } from "../../_auth";
 import { contentKeys, defaultSiteContent, mergeSiteContent } from "../../../src/data/content";
 import type { PartialSiteContent, SiteContent } from "../../../src/types/content";
 
+type D1DatabaseLike = {
+  prepare(query: string): {
+    bind(...values: unknown[]): {
+      all<T>(): Promise<{ results: T[] }>;
+    };
+  };
+};
+
+type PagesFunction<Env> = (context: {
+  request: Request;
+  env: Env;
+}) => Response | Promise<Response>;
+
 type Env = {
   ADMIN_PASSWORD?: string;
   OPENCODE_GO_API_KEY?: string;
-  DB?: D1Database;
+  DB?: D1DatabaseLike;
 };
 
 type ChatRole = "user" | "assistant";
@@ -143,11 +156,22 @@ function buildSystemPrompt(content: SiteContent) {
   const faqs = content.faqs
     .map((item) => `${item.question}: ${item.answer}`)
     .join("\n");
+  const whyCards = content.whyCards
+    .map((item) => `${item.title}: ${item.detail}`)
+    .join("\n");
+  const process = content.processSteps
+    .map((item, index) => `${index + 1}. ${item}`)
+    .join("\n");
+  const safety = [
+    content.sectionCopy.safety.title,
+    ...content.sectionCopy.safety.paragraphs,
+  ].join("\n");
 
   return `你是奶黄包摄影后台预约助手，只回答网站相关问题。
 你可以帮助管理员整理和解释摄影服务、套餐、FAQ、预约流程、拍摄规则、隐私授权、风格、地点建议和后台内容。
 如果用户询问无关内容，请礼貌拒答，并引导回摄影预约或网站内容。
 不要编造不存在的档期、优惠、价格、交付承诺或联系方式。
+以“重要拍摄边界”中的受众限制为最高优先级；如果边界写着只接受女生或情侣，男生单人咨询时必须说明目前不接男生单人，可引导了解情侣约拍，不要回答“不限性别”。
 
 站点信息：
 品牌：${content.siteConfig.brandName}
@@ -155,15 +179,29 @@ function buildSystemPrompt(content: SiteContent) {
 简介：${content.siteConfig.description}
 联系提示：${content.siteConfig.contactHint}
 
+关于：
+${content.sectionCopy.about.body}
+
+重要拍摄边界：
+${safety}
+
+为什么选择：
+${whyCards}
+
 套餐：
 ${packages}
 
 服务规则：
 ${policies}
 
+预约流程：
+${process}
+
 FAQ：
 ${faqs}`;
 }
+
+export const __test_buildSystemPrompt = buildSystemPrompt;
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
