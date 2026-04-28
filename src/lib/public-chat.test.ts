@@ -30,7 +30,7 @@ describe("public AI chat integration", () => {
     expect(publicApiSource).not.toContain("sk-");
 
     expect(chatHelperSource).toContain("https://opencode.ai/zen/go/v1/chat/completions");
-    expect(chatHelperSource).toContain('primaryModel = "kimi-k2.5"');
+    expect(chatHelperSource).toContain('primaryModel = "qwen3.5-plus"');
     expect(chatHelperSource).toContain('fallbackModel = "deepseek-v4-flash"');
     expect(chatHelperSource).toContain("openCodeModels");
     expect(chatHelperSource).toContain("stream: true");

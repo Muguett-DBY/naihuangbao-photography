@@ -35,7 +35,7 @@ type RateLimitResult =
   | { ok: false; retryAfter: number };
 
 const openCodeEndpoint = "https://opencode.ai/zen/go/v1/chat/completions";
-const primaryModel = "kimi-k2.5";
+const primaryModel = "qwen3.5-plus";
 const fallbackModel = "deepseek-v4-flash";
 const openCodeModels = [primaryModel, fallbackModel];
 const openCodeMaxAttempts = 1;
