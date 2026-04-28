@@ -5,6 +5,7 @@ import sharp from "sharp";
 const root = process.cwd();
 const rawDir = path.join(root, "source-assets", "gallery", "raw");
 const outputDir = path.join(root, "public", "images", "gallery");
+const responsiveWidths = [640, 960];
 
 const outputNames = [
   "gallery-jiangnan-01.webp",
@@ -27,6 +28,9 @@ const preferredInputs = [
 const imageExtensions = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 
 mkdirSync(outputDir, { recursive: true });
+for (const width of responsiveWidths) {
+  mkdirSync(path.join(outputDir, String(width)), { recursive: true });
+}
 
 function getInputFiles() {
   const preferred = preferredInputs.filter((input) => existsSync(path.join(rawDir, input)));
@@ -117,12 +121,23 @@ for (const [index, output] of outputNames.entries()) {
   const inputPath = path.join(rawDir, input);
   const outputPath = path.join(outputDir, output);
   const crop = await detectPhotoBounds(inputPath);
+  const croppedImage = sharp(inputPath).extract(crop);
 
-  await sharp(inputPath)
-    .extract(crop)
+  await croppedImage
+    .clone()
     .resize({ width: 1200, withoutEnlargement: true })
     .webp({ quality: 82 })
     .toFile(outputPath);
 
   console.log(`Wrote ${path.relative(root, outputPath)} from ${input}`);
+
+  for (const width of responsiveWidths) {
+    const responsivePath = path.join(outputDir, String(width), output);
+    await croppedImage
+      .clone()
+      .resize({ width, withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toFile(responsivePath);
+    console.log(`Wrote ${path.relative(root, responsivePath)} from ${input}`);
+  }
 }

@@ -67,6 +67,7 @@ export function Hero() {
             title={mainPhoto.title}
             tone="sage"
             priority
+            sizes="(max-width: 900px) 92vw, 48vw"
           />
         </div>
         <div
@@ -78,6 +79,7 @@ export function Hero() {
             alt={topPhoto.alt}
             title={topPhoto.title}
             tone="rose"
+            sizes="(max-width: 900px) 42vw, 18vw"
           />
         </div>
         <div
@@ -89,6 +91,7 @@ export function Hero() {
             alt={bottomPhoto.alt}
             title={bottomPhoto.title}
             tone="cream"
+            sizes="(max-width: 900px) 42vw, 18vw"
           />
         </div>
       </div>

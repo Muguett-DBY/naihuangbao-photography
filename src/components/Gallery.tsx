@@ -1,17 +1,17 @@
-import { useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
 import { styleLabels } from "../data/site";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { getPhotosByStyle } from "../lib/gallery";
 import type { PhotoItem, PhotoStyle } from "../types/photo";
 import { ImageWithFallback } from "./ImageWithFallback";
-import { Lightbox } from "./Lightbox";
 import { Section } from "./Section";
 
 type StyleFilter = PhotoStyle | "all";
 
 const filters = Object.keys(styleLabels) as StyleFilter[];
 const tones = ["rose", "sage", "cream", "ink"] as const;
+const Lightbox = lazy(() => import("./Lightbox"));
 
 export function Gallery() {
   const { sectionCopy } = useSiteContent();
@@ -63,6 +63,7 @@ export function Gallery() {
                 alt={photo.alt}
                 title={photo.title}
                 tone={tones[index % tones.length]}
+                sizes="(max-width: 620px) 50vw, (max-width: 900px) 50vw, 33vw"
               />
               <div className="gallery-hover-overlay">
                 <span className="gallery-hover-style">{styleLabels[photo.style]}</span>
@@ -80,13 +81,15 @@ export function Gallery() {
       </div>
 
       {lightboxIndex !== null && (
-        <Lightbox
-          photos={photos}
-          currentIndex={lightboxIndex}
-          onClose={() => setLightboxIndex(null)}
-          onPrev={handlePrev}
-          onNext={handleNext}
-        />
+        <Suspense fallback={null}>
+          <Lightbox
+            photos={photos}
+            currentIndex={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+            onPrev={handlePrev}
+            onNext={handleNext}
+          />
+        </Suspense>
       )}
     </Section>
   );

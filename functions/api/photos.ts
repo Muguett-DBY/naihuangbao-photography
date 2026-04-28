@@ -33,6 +33,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }));
 
   return new Response(JSON.stringify({ photos }), {
-    headers: { "content-type": "application/json; charset=utf-8" },
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "public, max-age=60, stale-while-revalidate=300",
+    },
   });
 };

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getResponsiveImageAttrs } from "../lib/responsive-image";
 import { FilmPlaceholder } from "./FilmPlaceholder";
 
 export function ImageWithFallback({
@@ -8,6 +9,7 @@ export function ImageWithFallback({
   tone = "rose",
   className,
   priority = false,
+  sizes,
 }: {
   src: string;
   alt: string;
@@ -15,9 +17,11 @@ export function ImageWithFallback({
   tone?: "rose" | "sage" | "cream" | "ink";
   className?: string;
   priority?: boolean;
+  sizes?: string;
 }) {
   const [failed, setFailed] = useState(!src);
   const [loaded, setLoaded] = useState(false);
+  const imageAttrs = getResponsiveImageAttrs(src, sizes);
 
   if (failed) {
     return <FilmPlaceholder title={title} tone={tone} />;
@@ -30,7 +34,7 @@ export function ImageWithFallback({
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
         decoding="async"
-        src={src}
+        {...imageAttrs}
         alt={alt}
         onError={() => setFailed(true)}
         onLoad={() => setLoaded(true)}

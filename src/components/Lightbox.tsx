@@ -10,7 +10,7 @@ type LightboxProps = {
   onNext: () => void;
 };
 
-export function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: LightboxProps) {
+export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: LightboxProps) {
   const imageRef = useRef<HTMLImageElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const photo = photos[currentIndex];

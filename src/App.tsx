@@ -14,7 +14,10 @@ import { WhyChooseUs } from "./components/WhyChooseUs";
 import { PublicPhotosProvider } from "./hooks/usePublicPhotos";
 import { SiteContentProvider } from "./hooks/useSiteContent";
 
-const AdminDashboard = lazy(() => import("./components/AdminDashboard"));
+const AdminDashboard = lazy(async () => {
+  await import("./styles/admin.css");
+  return import("./components/AdminDashboard");
+});
 
 function AdminRoute() {
   return (
