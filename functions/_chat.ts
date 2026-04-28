@@ -185,7 +185,7 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
       }
 
       if (response.body) {
-        return parseOpenCodeStream(response.body);
+        return await parseOpenCodeStream(response.body);
       }
 
       lastError = "empty-reply";
@@ -219,65 +219,103 @@ async function fetchOpenCodeWithConnectTimeout(url: string, init: RequestInit, t
   }
 }
 
-function parseOpenCodeStream(body: ReadableStream<Uint8Array>) {
+async function parseOpenCodeStream(body: ReadableStream<Uint8Array>) {
   const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
+  const reader = body.getReader();
+  const pending: Uint8Array[] = [];
   let buffer = "";
+  let upstreamDone = false;
+  let upstreamError: unknown = null;
 
-  function flushOpenCodeEvents(flushAll: boolean, controller: ReadableStreamDefaultController<Uint8Array>) {
-    const events = buffer.split(/\r?\n\r?\n/);
-    buffer = flushAll ? "" : events.pop() ?? "";
-    const completeEvents = flushAll ? events : events.slice(0, -1);
+  function flushOpenCodeLines(flushAll: boolean) {
+    const lines = buffer.split(/\r?\n/);
+    buffer = flushAll ? "" : lines.pop() ?? "";
+    const completeLines = flushAll ? lines : lines.slice(0, -1);
 
-    for (const event of completeEvents) {
-      enqueueOpenCodeEvent(event, controller, encoder);
+    for (const line of completeLines) {
+      enqueueOpenCodeLine(line, pending, encoder);
     }
   }
 
-  return new ReadableStream<Uint8Array>({
-    async start(controller) {
-      const reader = body.getReader();
-      const decoder = new TextDecoder();
-
+  async function readUntilContentOrDone() {
+    while (pending.length === 0 && !upstreamDone && !upstreamError) {
       try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-
-          buffer += decoder.decode(value, { stream: true });
-          flushOpenCodeEvents(false, controller);
+        const { done, value } = await reader.read();
+        if (done) {
+          buffer += decoder.decode();
+          flushOpenCodeLines(true);
+          upstreamDone = true;
+          break;
         }
 
-        buffer += decoder.decode();
-        flushOpenCodeEvents(true, controller);
-        controller.close();
+        buffer += decoder.decode(value, { stream: true });
+        flushOpenCodeLines(false);
       } catch (error) {
-        controller.error(error);
+        upstreamError = error;
+      }
+    }
+  }
+
+  await readUntilContentOrDone();
+
+  if (upstreamError) {
+    throw upstreamError;
+  }
+
+  if (pending.length === 0 && upstreamDone) {
+    throw new Error("empty-reply");
+  }
+
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      await readUntilContentOrDone();
+
+      const chunk = pending.shift();
+      if (chunk) {
+        controller.enqueue(chunk);
+        return;
+      }
+
+      if (upstreamError) {
+        controller.error(upstreamError);
+        return;
+      }
+
+      if (upstreamDone) {
+        controller.close();
       }
     },
   });
 }
 
-function enqueueOpenCodeEvent(event: string, controller: ReadableStreamDefaultController<Uint8Array>, encoder: TextEncoder) {
-  for (const line of event.split(/\r?\n/)) {
-    if (!line.startsWith("data:")) continue;
+function enqueueOpenCodeLine(line: string, pending: Uint8Array[], encoder: TextEncoder) {
+  const trimmed = line.trim();
+  const data = trimmed.startsWith("data:")
+    ? trimmed.slice(5).trim()
+    : trimmed.startsWith("{")
+      ? trimmed
+      : "";
 
-    const data = line.slice(5).trim();
-    if (!data || data === "[DONE]") continue;
+  if (!data || data === "[DONE]") return;
 
-    try {
-      const parsed = JSON.parse(data) as {
-        choices?: Array<{
-          delta?: { content?: string };
-          message?: { content?: string };
-        }>;
-      };
-      const content = parsed.choices?.[0]?.delta?.content ?? parsed.choices?.[0]?.message?.content ?? "";
-      if (content) {
-        controller.enqueue(encoder.encode(content));
-      }
-    } catch {
-      // Ignore malformed upstream stream events and keep consuming the stream.
+  try {
+    const parsed = JSON.parse(data) as {
+      choices?: Array<{
+        delta?: { content?: string };
+        message?: { content?: string };
+        text?: string;
+      }>;
+    };
+    const content = parsed.choices?.[0]?.delta?.content
+      ?? parsed.choices?.[0]?.message?.content
+      ?? parsed.choices?.[0]?.text
+      ?? "";
+    if (content) {
+      pending.push(encoder.encode(content));
     }
+  } catch {
+    // Ignore malformed upstream stream lines and keep consuming the stream.
   }
 }
 
