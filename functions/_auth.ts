@@ -26,18 +26,28 @@ export async function isAdminRequest(request: Request, env: AuthEnv) {
     return false;
   }
 
-  const cookie = request.headers.get("cookie") ?? "";
-  const session = readCookie(cookie, cookieName);
-  if (!session) {
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const sessions = readCookies(cookieHeader, cookieName);
+  if (sessions.length === 0) {
     return false;
   }
 
+  for (const session of sessions) {
+    if (await isValidSession(session, env.ADMIN_PASSWORD)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+async function isValidSession(session: string, password: string) {
   const [expiresAt, signature] = session.split(".");
   if (!expiresAt || !signature || Number(expiresAt) <= Math.floor(Date.now() / 1000)) {
     return false;
   }
 
-  const expected = await sign(expiresAt, env.ADMIN_PASSWORD);
+  const expected = await sign(expiresAt, password);
   return signature === expected;
 }
 
@@ -62,12 +72,13 @@ async function sign(value: string, secret: string) {
   return base64Url(signature);
 }
 
-function readCookie(cookieHeader: string, name: string) {
+function readCookies(cookieHeader: string, name: string) {
   return cookieHeader
     .split(";")
     .map((part) => part.trim())
-    .find((part) => part.startsWith(`${name}=`))
-    ?.slice(name.length + 1);
+    .filter((part) => part.startsWith(`${name}=`))
+    .map((part) => part.slice(name.length + 1))
+    .filter(Boolean);
 }
 
 function base64Url(buffer: ArrayBuffer) {
