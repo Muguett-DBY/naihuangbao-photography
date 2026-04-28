@@ -27,3 +27,12 @@ describe("mobile site navigation", () => {
     expect(cssSource).toContain("@media (prefers-reduced-motion: reduce)");
   });
 });
+
+describe("gallery filter styles", () => {
+  it("keeps the active filter readable while hovered or focused", () => {
+    expect(cssSource).toContain(".filter-row .is-active:hover");
+    expect(cssSource).toContain(".filter-row .is-active:focus-visible");
+    expect(cssSource).toContain("background: #7f5f5b");
+    expect(cssSource).not.toContain("transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1)");
+  });
+});

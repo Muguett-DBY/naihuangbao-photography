@@ -596,7 +596,11 @@ body.nav-lock .site-nav {
   cursor: pointer;
   font-size: 13px;
   font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              background 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .filter-row button:hover {
@@ -608,7 +612,9 @@ body.nav-lock .site-nav {
   transform: translateY(0) scale(0.98);
 }
 
-.filter-row .is-active {
+.filter-row .is-active,
+.filter-row .is-active:hover,
+.filter-row .is-active:focus-visible {
   color: #fffaf6;
   background: #7f5f5b;
   border-color: #7f5f5b;
