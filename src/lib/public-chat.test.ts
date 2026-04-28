@@ -34,7 +34,7 @@ describe("public AI chat integration", () => {
     expect(chatHelperSource).toContain("max_tokens: 720");
     expect(chatHelperSource).toContain("finish_reason");
     expect(chatHelperSource).toContain("normalizeAssistantReply");
-    expect(chatHelperSource).toContain("openCodeMaxAttempts = 2");
+    expect(chatHelperSource).toContain("openCodeMaxAttempts = 3");
     expect(chatHelperSource).toContain("shouldRetryUpstream");
     expect(chatHelperSource).toContain("maxPublicChatMessagesPerHour = 30");
     expect(chatHelperSource).toContain("getPublicChatDirectReply");

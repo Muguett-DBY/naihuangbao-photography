@@ -36,7 +36,7 @@ type RateLimitResult =
 
 const openCodeEndpoint = "https://opencode.ai/zen/go/v1/chat/completions";
 const model = "deepseek-v4-flash";
-const openCodeMaxAttempts = 2;
+const openCodeMaxAttempts = 3;
 export const maxPublicChatMessagesPerHour = 30;
 const publicChatWindowSeconds = 60 * 60;
 
@@ -244,7 +244,7 @@ function shouldRetryUpstream(status: number) {
 
 function waitBeforeRetry(attempt: number) {
   return new Promise((resolve) => {
-    setTimeout(resolve, 280 * attempt);
+    setTimeout(resolve, 450 * attempt);
   });
 }
 
