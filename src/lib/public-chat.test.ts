@@ -36,6 +36,9 @@ describe("public AI chat integration", () => {
     expect(chatHelperSource).toContain('"x-api-key"');
     expect(chatHelperSource).toContain('"anthropic-version"');
     expect(chatHelperSource).toContain("system: buildPublicSystemPrompt(siteContent)");
+    expect(chatHelperSource).toContain("buildOpenCodeMessages");
+    expect(chatHelperSource).toContain("用户原问题：");
+    expect(chatHelperSource).toContain("本轮用户问题涉及男生单人");
     expect(chatHelperSource).toContain("stream: true");
     expect(chatHelperSource).toContain("max_tokens: 320");
     expect(chatHelperSource).toContain("parseOpenCodeStream");

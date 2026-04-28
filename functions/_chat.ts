@@ -143,9 +143,7 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
             max_tokens: 320,
             temperature: 0.4,
             system: buildPublicSystemPrompt(siteContent),
-            messages: [
-              ...messages,
-            ],
+            messages: buildOpenCodeMessages(messages),
           }),
         }, openCodeConnectTimeoutMs);
 
@@ -174,6 +172,49 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
   }
 
   throw new Error(lastError);
+}
+
+function buildOpenCodeMessages(messages: ChatMessage[]) {
+  const lastUserIndex = findLastUserMessageIndex(messages);
+
+  return messages.map((message, index) => ({
+    role: message.role,
+    content: [
+      {
+        type: "text",
+        text: index === lastUserIndex
+          ? buildLatestUserPrompt(message.content)
+          : message.content,
+      },
+    ],
+  }));
+}
+
+function findLastUserMessageIndex(messages: ChatMessage[]) {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    if (messages[index].role === "user") return index;
+  }
+
+  return -1;
+}
+
+function buildLatestUserPrompt(content: string) {
+  const lines = [
+    `用户原问题：${content}`,
+    "请直接回答用户原问题，不要说没有识别到问题。",
+  ];
+
+  if (isMaleSoloQuestion(content)) {
+    lines.push("本轮用户问题涉及男生单人是否可以拍。请按最高优先级业务边界回答：男生单人目前不接，只接受女生或情侣约拍。");
+  }
+
+  return lines.join("\n");
+}
+
+function isMaleSoloQuestion(content: string) {
+  return /男生|男客|男士|男孩子|男的/.test(content)
+    && /拍|约拍|写真|预约|可以|能不能|能拍|接不接|接受/.test(content)
+    && !/情侣|女朋友|女友|对象|伴侣/.test(content);
 }
 
 async function fetchOpenCodeWithConnectTimeout(url: string, init: RequestInit, timeoutMs: number) {
