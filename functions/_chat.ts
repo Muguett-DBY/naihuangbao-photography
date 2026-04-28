@@ -195,12 +195,12 @@ function findLastUserMessageIndex(messages: ChatMessage[]) {
 
 function buildLatestUserPrompt(content: string) {
   const lines = [
-    `用户原问题：${content}`,
-    "请直接回答用户原问题，不要说没有识别到问题。",
+    `User question: ${content}`,
+    "Answer this exact user question in Chinese. Do not say the question is missing, unclear, or unrecognized.",
   ];
 
   if (isMaleSoloQuestion(content)) {
-    lines.push("本轮用户问题涉及男生单人是否可以拍。请按最高优先级业务边界回答：男生单人目前不接，只接受女生或情侣约拍。");
+    lines.push("This question asks whether a solo male customer can book. First answer in Chinese: 男生单人目前不接，只接受女生或情侣约拍。You may mention couple sessions are welcome.");
   }
 
   return lines.join("\n");

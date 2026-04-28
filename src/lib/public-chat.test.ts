@@ -37,8 +37,8 @@ describe("public AI chat integration", () => {
     expect(chatHelperSource).toContain('"anthropic-version"');
     expect(chatHelperSource).toContain("system: buildPublicSystemPrompt(siteContent)");
     expect(chatHelperSource).toContain("buildOpenCodeMessages");
-    expect(chatHelperSource).toContain("用户原问题：");
-    expect(chatHelperSource).toContain("本轮用户问题涉及男生单人");
+    expect(chatHelperSource).toContain("User question:");
+    expect(chatHelperSource).toContain("This question asks whether a solo male customer can book");
     expect(chatHelperSource).toContain("stream: true");
     expect(chatHelperSource).toContain("max_tokens: 320");
     expect(chatHelperSource).toContain("parseOpenCodeStream");
@@ -83,8 +83,8 @@ describe("public AI chat integration", () => {
     ]) ?? [];
 
     expect(modelMessages[0]?.content).toBeTypeOf("string");
-    expect(modelMessages[0]?.content).toContain("用户原问题：我是男生可以拍吗？");
-    expect(modelMessages[0]?.content).toContain("本轮用户问题涉及男生单人");
+    expect(modelMessages[0]?.content).toContain("User question: 我是男生可以拍吗？");
+    expect(modelMessages[0]?.content).toContain("This question asks whether a solo male customer can book");
   });
 
   it("repairs upstream length cutoffs before showing a reply", async () => {
