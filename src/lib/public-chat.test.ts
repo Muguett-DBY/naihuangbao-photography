@@ -60,6 +60,7 @@ describe("public AI chat integration", () => {
     expect(buildPublicSystemPrompt).toBeTypeOf("function");
 
     const prompt = buildPublicSystemPrompt?.(defaultSiteContent) ?? "";
+    expect(prompt).toContain("不得说当然可以");
     expect(prompt).toContain("访客咨询助手");
     expect(prompt).toContain("只回答官网相关问题");
     expect(prompt).toContain("只接受女生或情侣约拍");
