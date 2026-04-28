@@ -80,6 +80,7 @@ describe("public AI chat integration", () => {
     expect(widgetSource).toContain("onCompositionStart");
     expect(widgetSource).toContain("Shift+Enter");
     expect(widgetSource).toContain("prefers-reduced-motion");
+    expect(widgetSource).toContain("AI问答");
     expect(widgetSource).not.toContain("sk-");
 
     expect(globalCss).toContain(".public-chat-widget");
@@ -92,5 +93,18 @@ describe("public AI chat integration", () => {
     expect(adminSource).not.toContain("/api/admin/chat");
     expect(adminCss).not.toContain(".adm-chat-panel");
     expect(existsSync(adminChatApiPath)).toBe(false);
+  });
+
+  it("distinguishes the public chat launcher from booking CTA and avoids fixed-button overlap", () => {
+    const navSource = readFileSync(resolve(root, "src/components/SiteNav.tsx"), "utf8");
+    const widgetSource = readFileSync(widgetPath, "utf8");
+
+    expect(navSource).toContain("CalendarCheck");
+    expect(navSource).toContain("预约");
+    expect(navSource).not.toContain("MessageCircle");
+    expect(widgetSource).toContain("AI问答");
+    expect(widgetSource).not.toContain("<span>咨询</span>");
+    expect(globalCss).toContain("right: 156px");
+    expect(globalCss).toContain("left: max(12px, env(safe-area-inset-left))");
   });
 });

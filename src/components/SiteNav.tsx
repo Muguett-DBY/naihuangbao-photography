@@ -1,4 +1,4 @@
-import { Camera, Menu, MessageCircle, X } from "lucide-react";
+import { CalendarCheck, Camera, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSiteContent } from "../hooks/useSiteContent";
 
@@ -51,8 +51,8 @@ export function SiteNav() {
         {open ? <X size={20} /> : <Menu size={20} />}
       </button>
       <a className="nav-cta" href="#booking" onClick={() => setOpen(false)}>
-        <MessageCircle size={16} />
-        咨询
+        <CalendarCheck size={16} />
+        预约
       </a>
     </header>
   );

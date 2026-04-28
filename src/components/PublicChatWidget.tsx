@@ -1,6 +1,5 @@
 import {
   Bot,
-  MessageCircle,
   Send,
   Sparkles,
   X,
@@ -166,8 +165,8 @@ export function PublicChatWidget() {
         aria-controls="public-chat-panel"
         onClick={() => setOpen((value) => !value)}
       >
-        {open ? <X size={22} /> : <MessageCircle size={23} />}
-        <span>咨询</span>
+        {open ? <X size={22} /> : <Bot size={22} />}
+        <span>AI问答</span>
       </button>
 
       {open ? (

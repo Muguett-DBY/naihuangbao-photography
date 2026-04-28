@@ -1588,7 +1588,7 @@ body.nav-lock .site-nav {
 .scroll-top {
   position: fixed;
   bottom: 28px;
-  right: 28px;
+  right: 156px;
   z-index: 15;
   width: 48px;
   height: 48px;
@@ -1863,16 +1863,16 @@ a:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 108px;
+  min-width: 116px;
   min-height: 52px;
-  border: 1px solid rgba(255, 248, 243, 0.28);
+  border: 1px solid rgba(177, 140, 131, 0.32);
   border-radius: 999px;
   padding: 0 18px;
-  color: #fff8f3;
+  color: #493735;
   background:
-    linear-gradient(145deg, rgba(91, 64, 59, 0.98), rgba(58, 43, 40, 0.98)),
-    #493735;
-  box-shadow: 0 18px 48px rgba(73, 55, 53, 0.26);
+    linear-gradient(145deg, rgba(255, 252, 247, 0.98), rgba(246, 228, 221, 0.98)),
+    #fffaf6;
+  box-shadow: 0 18px 48px rgba(142, 96, 88, 0.22);
   font-size: 15px;
   font-weight: 800;
   cursor: pointer;
@@ -1884,7 +1884,7 @@ a:focus-visible {
 
 .public-chat-launcher:hover {
   transform: translateY(-3px);
-  box-shadow: 0 24px 60px rgba(73, 55, 53, 0.32);
+  box-shadow: 0 24px 60px rgba(142, 96, 88, 0.28);
 }
 
 .public-chat-panel {
@@ -2177,6 +2177,12 @@ a:focus-visible {
 }
 
 @media (max-width: 640px) {
+  .scroll-top {
+    right: auto;
+    left: max(12px, env(safe-area-inset-left));
+    bottom: max(14px, env(safe-area-inset-bottom));
+  }
+
   .public-chat-widget {
     right: 12px;
     bottom: max(12px, env(safe-area-inset-bottom));
