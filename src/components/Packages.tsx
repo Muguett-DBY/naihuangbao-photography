@@ -11,8 +11,9 @@ export function Packages() {
       intro="每种拍摄方式都包含风格沟通和全程引导，先看看哪种更适合你。"
     >
       <div className="package-grid">
-        {packages.map((item) => (
-          <article className="package-card" key={item.name}>
+        {packages.map((item, index) => (
+          <article className={`package-card${index === 1 ? " is-popular" : ""}`} key={item.name}>
+            {index === 1 && <span className="package-badge">推荐</span>}
             <div>
               <p>{item.duration}</p>
               <h3>{item.name}</h3>

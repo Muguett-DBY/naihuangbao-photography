@@ -29,6 +29,9 @@ export function Footer() {
           小红书 <ExternalLink size={12} />
         </a>
       </div>
+      <p className="footer-tagline">
+        每一次快门，都是一次温柔照亮。
+      </p>
       <button
         className={`scroll-top${showTop ? " is-visible" : ""}`}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}

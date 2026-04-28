@@ -1,12 +1,19 @@
 import { Camera, Menu, MessageCircle, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { siteConfig } from "../data/site";
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() { setScrolled(window.scrollY > 60); }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="site-nav">
+    <header className={`site-nav${scrolled ? " is-scrolled" : ""}`}>
       <a className="brand-mark" href="#top" aria-label="回到首页">
         <Camera size={18} />
         <span>{siteConfig.brandName}</span>

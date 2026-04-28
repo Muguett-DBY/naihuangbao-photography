@@ -87,6 +87,11 @@ export function Gallery() {
                 title={photo.title}
                 tone={tones[index % tones.length]}
               />
+              <div className="gallery-hover-overlay">
+                <span className="gallery-hover-style">{styleLabels[photo.style]}</span>
+                <strong className="gallery-hover-title">{photo.title}</strong>
+                <span className="gallery-hover-location">{photo.location}</span>
+              </div>
             </button>
             <div>
               <p>{styleLabels[photo.style]}</p>
