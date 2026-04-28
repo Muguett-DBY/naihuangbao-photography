@@ -87,6 +87,19 @@ describe("public AI chat integration", () => {
     expect(modelMessages[0]?.content).toContain("This question asks whether a solo male customer can book");
   });
 
+  it("sends OpenCode request JSON as ASCII so MiniMax preserves Chinese text", async () => {
+    const chatModule = await import("../../functions/_chat");
+    const stringifyOpenCodeBody = chatModule.__test_stringifyOpenCodeBody as
+      | ((value: unknown) => string)
+      | undefined;
+
+    expect(stringifyOpenCodeBody).toBeTypeOf("function");
+
+    const body = stringifyOpenCodeBody?.({ messages: [{ role: "user", content: "套餐有哪些？" }] }) ?? "";
+    expect(body).toContain("\\u5957\\u9910");
+    expect(body).not.toContain("套餐有哪些");
+  });
+
   it("repairs upstream length cutoffs before showing a reply", async () => {
     const chatModule = await import("../../functions/_chat");
     const normalizeAssistantReply = chatModule.__test_normalizeAssistantReply as

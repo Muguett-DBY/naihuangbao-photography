@@ -137,7 +137,7 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
             "x-api-key": env.OPENCODE_GO_API_KEY,
             "anthropic-version": "2023-06-01",
           },
-          body: JSON.stringify({
+          body: stringifyOpenCodeBody({
             model,
             stream: true,
             max_tokens: 320,
@@ -172,6 +172,14 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
   }
 
   throw new Error(lastError);
+}
+
+function stringifyOpenCodeBody(value: unknown) {
+  return JSON.stringify(value).replace(/[^\x00-\x7F]/g, (char) => (
+    Array.from(char)
+      .map((unit) => `\\u${unit.charCodeAt(0).toString(16).padStart(4, "0")}`)
+      .join("")
+  ));
 }
 
 function buildOpenCodeMessages(messages: ChatMessage[]) {
@@ -435,4 +443,5 @@ async function hashClientIp(ip: string, secret: string) {
 
 export const __test_buildPublicSystemPrompt = buildPublicSystemPrompt;
 export const __test_buildOpenCodeMessages = buildOpenCodeMessages;
+export const __test_stringifyOpenCodeBody = stringifyOpenCodeBody;
 export const __test_normalizeAssistantReply = normalizeAssistantReply;
