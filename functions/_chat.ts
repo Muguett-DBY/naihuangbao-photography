@@ -118,6 +118,7 @@ export function buildPublicSystemPrompt(content: SiteContent) {
 不要编造不存在的档期、优惠、价格、交付承诺或联系方式。
 以“重要拍摄边界”中的受众限制为最高优先级；如果边界写着只接受女生或情侣约拍，男生单人咨询时必须说明男生单人目前不接，可引导了解情侣约拍，不要回答“不限性别”。
 回答要简洁、温和、适合公开访客阅读；如果问题涉及最终预约确认，引导用户通过页面上的小红书入口联系。
+单次回答控制在 120 到 220 个汉字，最多 4 句或 4 个要点；必须以完整句号、问号或感叹号收尾，不要留下“如果您”“建议您”这类未完成的半句。
 
 站点信息：
 品牌：${content.siteConfig.brandName}
@@ -172,7 +173,7 @@ export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[
     body: JSON.stringify({
       model,
       stream: false,
-      max_tokens: 480,
+      max_tokens: 720,
       temperature: 0.4,
       messages: [
         { role: "system", content: buildPublicSystemPrompt(siteContent) },
@@ -187,17 +188,38 @@ export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[
 
   const data = (await response.json().catch(() => ({}))) as {
     choices?: Array<{
+      finish_reason?: string;
       message?: {
         content?: string;
       };
     }>;
   };
-  const reply = data.choices?.[0]?.message?.content?.trim();
+  const choice = data.choices?.[0];
+  const reply = normalizeAssistantReply(choice?.message?.content ?? "", choice?.finish_reason);
   if (!reply) {
     throw new Error("empty-reply");
   }
 
   return reply;
+}
+
+export function normalizeAssistantReply(reply: string, finishReason?: string) {
+  const trimmed = reply.trim();
+  if (!trimmed) return "";
+
+  const endsWithCompleteSentence = /[。！？.!?]$/.test(trimmed);
+  const hasDanglingTail = /(如果您|如果你|如果|建议您|建议你|您可以|你可以|另外|同时|比如|例如)[，,：:\s]*$/.test(trimmed);
+  if (endsWithCompleteSentence && !hasDanglingTail) return trimmed;
+
+  const shouldRepair = finishReason === "length" || hasDanglingTail;
+  if (!shouldRepair) return trimmed;
+
+  const lastCompleteSentence = trimmed.match(/[\s\S]*[。！？.!?]/)?.[0]?.trim();
+  if (lastCompleteSentence) {
+    return `${lastCompleteSentence}\n\n如果还想继续了解，可以继续问我套餐、风格或预约流程。`;
+  }
+
+  return `${trimmed}。`;
 }
 
 export async function enforcePublicChatRateLimit(request: Request, env: ChatEnv): Promise<RateLimitResult> {
@@ -249,3 +271,4 @@ async function hashClientIp(ip: string, secret: string) {
 }
 
 export const __test_buildPublicSystemPrompt = buildPublicSystemPrompt;
+export const __test_normalizeAssistantReply = normalizeAssistantReply;

@@ -31,6 +31,9 @@ describe("public AI chat integration", () => {
     expect(chatHelperSource).toContain("https://opencode.ai/zen/go/v1/chat/completions");
     expect(chatHelperSource).toContain("deepseek-v4-flash");
     expect(chatHelperSource).toContain("stream: false");
+    expect(chatHelperSource).toContain("max_tokens: 720");
+    expect(chatHelperSource).toContain("finish_reason");
+    expect(chatHelperSource).toContain("normalizeAssistantReply");
     expect(chatHelperSource).toContain("maxPublicChatMessagesPerHour = 30");
     expect(chatHelperSource).toContain("getPublicChatDirectReply");
     expect(chatHelperSource).not.toContain("sk-");
@@ -49,6 +52,21 @@ describe("public AI chat integration", () => {
     expect(prompt).toContain("只回答官网相关问题");
     expect(prompt).toContain("只接受女生或情侣约拍");
     expect(prompt).toContain("男生单人目前不接");
+  });
+
+  it("repairs upstream length cutoffs before showing a reply", async () => {
+    const chatModule = await import("../../functions/_chat");
+    const normalizeAssistantReply = chatModule.__test_normalizeAssistantReply as
+      | ((reply: string, finishReason?: string) => string)
+      | undefined;
+
+    expect(normalizeAssistantReply).toBeTypeOf("function");
+
+    const repaired = normalizeAssistantReply?.("拍摄前会充分沟通风格、服装和地点，确保拍出您想要的效果。如果您", "length") ?? "";
+    expect(repaired).not.toContain("如果您");
+    expect(repaired).toContain("拍摄前会充分沟通风格");
+    expect(repaired).toContain("可以继续问我套餐、风格或预约流程");
+    expect(normalizeAssistantReply?.("拍摄前会充分沟通风格。", "stop")).toBe("拍摄前会充分沟通风格。");
   });
 
   it("directly answers male solo booking boundary questions before model fallback", async () => {
