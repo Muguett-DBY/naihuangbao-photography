@@ -36,7 +36,8 @@ type RateLimitResult =
 
 const openCodeEndpoint = "https://opencode.ai/zen/go/v1/chat/completions";
 const model = "deepseek-v4-flash";
-const openCodeMaxAttempts = 3;
+const openCodeMaxAttempts = 2;
+const openCodeFetchTimeoutMs = 12_000;
 export const maxPublicChatMessagesPerHour = 30;
 const publicChatWindowSeconds = 60 * 60;
 
@@ -119,7 +120,7 @@ export function buildPublicSystemPrompt(content: SiteContent) {
 不要编造不存在的档期、优惠、价格、交付承诺或联系方式。
 以“重要拍摄边界”中的受众限制为最高优先级；如果边界写着只接受女生或情侣约拍，男生单人咨询时必须说明男生单人目前不接，可引导了解情侣约拍，不要回答“不限性别”。
 回答要简洁、温和、适合公开访客阅读；如果问题涉及最终预约确认，引导用户通过页面上的小红书入口联系。
-单次回答控制在 120 到 220 个汉字，最多 4 句或 4 个要点；必须以完整句号、问号或感叹号收尾，不要留下“如果您”“建议您”这类未完成的半句。
+单次回答控制在 90 到 160 个汉字，最多 4 句或 4 个要点；必须以完整句号、问号或感叹号收尾，不要留下“如果您”“建议您”这类未完成的半句。
 
 站点信息：
 品牌：${content.siteConfig.brandName}
@@ -171,6 +172,7 @@ export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[
     try {
       const response = await fetch(openCodeEndpoint, {
         method: "POST",
+        signal: AbortSignal.timeout(openCodeFetchTimeoutMs),
         headers: {
           "content-type": "application/json",
           authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`,
@@ -178,7 +180,7 @@ export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[
         body: JSON.stringify({
           model,
           stream: false,
-          max_tokens: 720,
+          max_tokens: 520,
           temperature: 0.4,
           messages: [
             { role: "system", content: buildPublicSystemPrompt(siteContent) },
@@ -207,8 +209,10 @@ export async function requestChatCompletion(env: ChatEnv, messages: ChatMessage[
       if (reply) return reply;
 
       lastError = "empty-reply";
-    } catch {
-      lastError = "upstream-network";
+    } catch (error) {
+      lastError = error instanceof Error && error.name === "TimeoutError"
+        ? "upstream-timeout"
+        : "upstream-network";
     }
 
     if (attempt < openCodeMaxAttempts) {
