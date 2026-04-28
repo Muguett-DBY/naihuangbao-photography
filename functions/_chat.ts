@@ -34,13 +34,11 @@ type RateLimitResult =
   | { ok: true }
   | { ok: false; retryAfter: number };
 
-const openCodeEndpoint = "https://opencode.ai/zen/go/v1/messages";
-const primaryModel = "minimax-m2.5";
-const fallbackModel = "minimax-m2.7";
-const openCodeModels = [primaryModel, fallbackModel];
+const openCodeEndpoint = "https://opencode.ai/zen/go/v1/chat/completions";
+const primaryModel = "deepseek-v4-flash";
+const openCodeModels = [primaryModel];
 const openCodeMaxAttempts = 1;
-const openCodeConnectTimeoutMs = 5_000;
-const openCodeFirstChunkTimeoutMs = 10_000;
+const openCodeResponseTimeoutMs = 18_000;
 export const maxPublicChatMessagesPerHour = 30;
 const publicChatWindowSeconds = 60 * 60;
 
@@ -130,22 +128,23 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
   for (const model of openCodeModels) {
     for (let attempt = 1; attempt <= openCodeMaxAttempts; attempt += 1) {
       try {
-        const response = await fetchOpenCodeWithConnectTimeout(openCodeEndpoint, {
+        const response = await fetchOpenCodeWithResponseTimeout(openCodeEndpoint, {
           method: "POST",
           headers: {
             "content-type": "application/json",
-            "x-api-key": env.OPENCODE_GO_API_KEY,
-            "anthropic-version": "2023-06-01",
+            authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`,
           },
           body: stringifyOpenCodeBody({
             model,
-            stream: true,
-            max_tokens: 320,
-            temperature: 0.4,
-            system: buildPublicSystemPrompt(siteContent),
-            messages: buildOpenCodeMessages(messages),
+            stream: false,
+            max_tokens: 360,
+            temperature: 0.2,
+            messages: [
+              { role: "system", content: buildPublicSystemPrompt(siteContent) },
+              ...buildOpenCodeMessages(messages),
+            ],
           }),
-        }, openCodeConnectTimeoutMs);
+        }, openCodeResponseTimeoutMs);
 
         if (!response.ok) {
           lastError = `${model}-upstream-${response.status}`;
@@ -154,8 +153,10 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
           continue;
         }
 
-        if (response.body) {
-          return await parseOpenCodeStream(response.body);
+        const result = extractOpenAiChatReply(await response.text());
+        const reply = normalizeAssistantReply(result.reply, result.finishReason);
+        if (reply) {
+          return textToReadableStream(reply);
         }
 
         lastError = `${model}-empty-reply`;
@@ -220,7 +221,7 @@ function isMaleSoloQuestion(content: string) {
     && !/情侣|女朋友|女友|对象|伴侣/.test(content);
 }
 
-async function fetchOpenCodeWithConnectTimeout(url: string, init: RequestInit, timeoutMs: number) {
+async function fetchOpenCodeWithResponseTimeout(url: string, init: RequestInit, timeoutMs: number) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -236,132 +237,37 @@ async function fetchOpenCodeWithConnectTimeout(url: string, init: RequestInit, t
   }
 }
 
-async function parseOpenCodeStream(body: ReadableStream<Uint8Array>) {
+function extractOpenAiChatReply(text: string) {
+  try {
+    const parsed = JSON.parse(text) as {
+      choices?: Array<{
+        finish_reason?: string;
+        message?: {
+          content?: string;
+        };
+      }>;
+    };
+    const choice = parsed.choices?.[0];
+    return {
+      reply: choice?.message?.content ?? "",
+      finishReason: choice?.finish_reason,
+    };
+  } catch {
+    return {
+      reply: "",
+      finishReason: undefined,
+    };
+  }
+}
+
+function textToReadableStream(text: string) {
   const encoder = new TextEncoder();
-  const decoder = new TextDecoder();
-  const reader = body.getReader();
-  const pending: Uint8Array[] = [];
-  let buffer = "";
-  let upstreamDone = false;
-  let upstreamError: unknown = null;
-
-  function flushOpenCodeLines(flushAll: boolean) {
-    const lines = buffer.split(/\r?\n/);
-    buffer = flushAll ? "" : lines.pop() ?? "";
-    const completeLines = flushAll ? lines : lines.slice(0, -1);
-
-    for (const line of completeLines) {
-      enqueueOpenCodeLine(line, pending, encoder);
-    }
-  }
-
-  async function readUntilContentOrDone() {
-    while (pending.length === 0 && !upstreamDone && !upstreamError) {
-      try {
-        const { done, value } = await readStreamChunkWithTimeout(reader, openCodeFirstChunkTimeoutMs);
-        if (done) {
-          buffer += decoder.decode();
-          flushOpenCodeLines(true);
-          upstreamDone = true;
-          break;
-        }
-
-        buffer += decoder.decode(value, { stream: true });
-        flushOpenCodeLines(false);
-      } catch (error) {
-        upstreamError = error;
-      }
-    }
-  }
-
-  await readUntilContentOrDone();
-
-  if (upstreamError) {
-    throw upstreamError;
-  }
-
-  if (pending.length === 0 && upstreamDone) {
-    throw new Error("empty-reply");
-  }
-
   return new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      await readUntilContentOrDone();
-
-      const chunk = pending.shift();
-      if (chunk) {
-        controller.enqueue(chunk);
-        return;
-      }
-
-      if (upstreamError) {
-        controller.error(upstreamError);
-        return;
-      }
-
-      if (upstreamDone) {
-        controller.close();
-      }
+    start(controller) {
+      controller.enqueue(encoder.encode(text));
+      controller.close();
     },
   });
-}
-
-async function readStreamChunkWithTimeout(reader: ReadableStreamDefaultReader<Uint8Array>, timeoutMs: number) {
-  let timeout: ReturnType<typeof setTimeout> | null = null;
-
-  try {
-    return await Promise.race([
-      reader.read(),
-      new Promise<never>((_, reject) => {
-        timeout = setTimeout(() => {
-          reject(new Error("upstream-timeout"));
-        }, timeoutMs);
-      }),
-    ]);
-  } catch (error) {
-    void reader.cancel().catch(() => undefined);
-    throw error;
-  } finally {
-    if (timeout) {
-      clearTimeout(timeout);
-    }
-  }
-}
-
-function enqueueOpenCodeLine(line: string, pending: Uint8Array[], encoder: TextEncoder) {
-  const trimmed = line.trim();
-  const data = trimmed.startsWith("data:")
-    ? trimmed.slice(5).trim()
-    : trimmed.startsWith("{")
-      ? trimmed
-      : "";
-
-  if (!data || data === "[DONE]") return;
-
-  try {
-    const parsed = JSON.parse(data) as {
-      choices?: Array<{
-        delta?: { content?: string };
-        message?: { content?: string };
-        text?: string;
-      }>;
-      delta?: { type?: string; text?: string };
-      content_block?: { type?: string; text?: string };
-      content?: Array<{ type?: string; text?: string }>;
-    };
-    const content = parsed.choices?.[0]?.delta?.content
-      ?? parsed.choices?.[0]?.message?.content
-      ?? parsed.choices?.[0]?.text
-      ?? (parsed.delta?.type === "text_delta" ? parsed.delta.text : undefined)
-      ?? (parsed.content_block?.type === "text" ? parsed.content_block.text : undefined)
-      ?? parsed.content?.find((item) => item.type === "text")?.text
-      ?? "";
-    if (content) {
-      pending.push(encoder.encode(content));
-    }
-  } catch {
-    // Ignore malformed upstream stream lines and keep consuming the stream.
-  }
 }
 
 export function normalizeAssistantReply(reply: string, finishReason?: string) {
