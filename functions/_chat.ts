@@ -179,14 +179,9 @@ function buildOpenCodeMessages(messages: ChatMessage[]) {
 
   return messages.map((message, index) => ({
     role: message.role,
-    content: [
-      {
-        type: "text",
-        text: index === lastUserIndex
-          ? buildLatestUserPrompt(message.content)
-          : message.content,
-      },
-    ],
+    content: index === lastUserIndex
+      ? buildLatestUserPrompt(message.content)
+      : message.content,
   }));
 }
 
@@ -439,4 +434,5 @@ async function hashClientIp(ip: string, secret: string) {
 }
 
 export const __test_buildPublicSystemPrompt = buildPublicSystemPrompt;
+export const __test_buildOpenCodeMessages = buildOpenCodeMessages;
 export const __test_normalizeAssistantReply = normalizeAssistantReply;

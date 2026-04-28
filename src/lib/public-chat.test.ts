@@ -70,6 +70,23 @@ describe("public AI chat integration", () => {
     expect(prompt).toContain("男生单人目前不接");
   });
 
+  it("keeps the latest MiniMax user prompt as visible text", async () => {
+    const chatModule = await import("../../functions/_chat");
+    const buildOpenCodeMessages = chatModule.__test_buildOpenCodeMessages as
+      | ((messages: Array<{ role: "user" | "assistant"; content: string }>) => Array<{ role: string; content: string }>)
+      | undefined;
+
+    expect(buildOpenCodeMessages).toBeTypeOf("function");
+
+    const modelMessages = buildOpenCodeMessages?.([
+      { role: "user", content: "我是男生可以拍吗？" },
+    ]) ?? [];
+
+    expect(modelMessages[0]?.content).toBeTypeOf("string");
+    expect(modelMessages[0]?.content).toContain("用户原问题：我是男生可以拍吗？");
+    expect(modelMessages[0]?.content).toContain("本轮用户问题涉及男生单人");
+  });
+
   it("repairs upstream length cutoffs before showing a reply", async () => {
     const chatModule = await import("../../functions/_chat");
     const normalizeAssistantReply = chatModule.__test_normalizeAssistantReply as
