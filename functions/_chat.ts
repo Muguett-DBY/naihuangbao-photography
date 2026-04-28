@@ -34,13 +34,13 @@ type RateLimitResult =
   | { ok: true }
   | { ok: false; retryAfter: number };
 
-const openCodeEndpoint = "https://opencode.ai/zen/go/v1/chat/completions";
-const primaryModel = "deepseek-v4-flash";
-const fallbackModel = "kimi-k2.5";
+const openCodeEndpoint = "https://opencode.ai/zen/go/v1/messages";
+const primaryModel = "minimax-m2.5";
+const fallbackModel = "minimax-m2.7";
 const openCodeModels = [primaryModel, fallbackModel];
 const openCodeMaxAttempts = 1;
 const openCodeConnectTimeoutMs = 5_000;
-const openCodeFirstChunkTimeoutMs = 4_000;
+const openCodeFirstChunkTimeoutMs = 10_000;
 export const maxPublicChatMessagesPerHour = 30;
 const publicChatWindowSeconds = 60 * 60;
 
@@ -134,15 +134,16 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
           method: "POST",
           headers: {
             "content-type": "application/json",
-            authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`,
+            "x-api-key": env.OPENCODE_GO_API_KEY,
+            "anthropic-version": "2023-06-01",
           },
           body: JSON.stringify({
             model,
             stream: true,
             max_tokens: 320,
             temperature: 0.4,
+            system: buildPublicSystemPrompt(siteContent),
             messages: [
-              { role: "system", content: buildPublicSystemPrompt(siteContent) },
               ...messages,
             ],
           }),
@@ -300,10 +301,16 @@ function enqueueOpenCodeLine(line: string, pending: Uint8Array[], encoder: TextE
         message?: { content?: string };
         text?: string;
       }>;
+      delta?: { type?: string; text?: string };
+      content_block?: { type?: string; text?: string };
+      content?: Array<{ type?: string; text?: string }>;
     };
     const content = parsed.choices?.[0]?.delta?.content
       ?? parsed.choices?.[0]?.message?.content
       ?? parsed.choices?.[0]?.text
+      ?? (parsed.delta?.type === "text_delta" ? parsed.delta.text : undefined)
+      ?? (parsed.content_block?.type === "text" ? parsed.content_block.text : undefined)
+      ?? parsed.content?.find((item) => item.type === "text")?.text
       ?? "";
     if (content) {
       pending.push(encoder.encode(content));
