@@ -40,6 +40,7 @@ const fallbackModel = "kimi-k2.5";
 const openCodeModels = [primaryModel, fallbackModel];
 const openCodeMaxAttempts = 1;
 const openCodeConnectTimeoutMs = 5_000;
+const openCodeFirstChunkTimeoutMs = 4_000;
 export const maxPublicChatMessagesPerHour = 30;
 const publicChatWindowSeconds = 60 * 60;
 
@@ -212,7 +213,7 @@ async function parseOpenCodeStream(body: ReadableStream<Uint8Array>) {
   async function readUntilContentOrDone() {
     while (pending.length === 0 && !upstreamDone && !upstreamError) {
       try {
-        const { done, value } = await reader.read();
+        const { done, value } = await readStreamChunkWithTimeout(reader, openCodeFirstChunkTimeoutMs);
         if (done) {
           buffer += decoder.decode();
           flushOpenCodeLines(true);
@@ -258,6 +259,28 @@ async function parseOpenCodeStream(body: ReadableStream<Uint8Array>) {
       }
     },
   });
+}
+
+async function readStreamChunkWithTimeout(reader: ReadableStreamDefaultReader<Uint8Array>, timeoutMs: number) {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+
+  try {
+    return await Promise.race([
+      reader.read(),
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(() => {
+          reject(new Error("upstream-timeout"));
+        }, timeoutMs);
+      }),
+    ]);
+  } catch (error) {
+    void reader.cancel().catch(() => undefined);
+    throw error;
+  } finally {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  }
 }
 
 function enqueueOpenCodeLine(line: string, pending: Uint8Array[], encoder: TextEncoder) {

@@ -39,6 +39,8 @@ describe("public AI chat integration", () => {
     expect(chatHelperSource).toContain("normalizeAssistantReply");
     expect(chatHelperSource).toContain("openCodeMaxAttempts = 1");
     expect(chatHelperSource).toContain("openCodeConnectTimeoutMs = 5_000");
+    expect(chatHelperSource).toContain("openCodeFirstChunkTimeoutMs = 4_000");
+    expect(chatHelperSource).toContain("readStreamChunkWithTimeout");
     expect(chatHelperSource).toContain("shouldRetryUpstream");
     expect(chatHelperSource).toContain("maxPublicChatMessagesPerHour = 30");
     expect(chatHelperSource).not.toContain("getPublicChatDirectReply");
