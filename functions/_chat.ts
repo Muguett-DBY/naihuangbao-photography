@@ -134,16 +134,7 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
             "content-type": "application/json",
             authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`,
           },
-          body: stringifyOpenCodeBody({
-            model,
-            stream: false,
-            max_tokens: 360,
-            temperature: 0.2,
-            messages: [
-              { role: "system", content: buildPublicSystemPrompt(siteContent) },
-              ...buildOpenCodeMessages(messages),
-            ],
-          }),
+          body: stringifyOpenCodeBody(buildOpenCodeChatBody(model, messages, siteContent)),
         }, openCodeResponseTimeoutMs);
 
         if (!response.ok) {
@@ -183,6 +174,20 @@ function stringifyOpenCodeBody(value: unknown) {
   ));
 }
 
+function buildOpenCodeChatBody(model: string, messages: ChatMessage[], siteContent: SiteContent) {
+  return {
+    model,
+    stream: false,
+    max_tokens: 520,
+    temperature: 0.2,
+    thinking: { type: "disabled" },
+    messages: [
+      { role: "system", content: buildPublicSystemPrompt(siteContent) },
+      ...buildOpenCodeMessages(messages),
+    ],
+  };
+}
+
 function buildOpenCodeMessages(messages: ChatMessage[]) {
   const lastUserIndex = findLastUserMessageIndex(messages);
 
@@ -204,12 +209,12 @@ function findLastUserMessageIndex(messages: ChatMessage[]) {
 
 function buildLatestUserPrompt(content: string) {
   const lines = [
-    `User question: ${content}`,
-    "Answer this exact user question in Chinese. Do not say the question is missing, unclear, or unrecognized.",
+    `直接回答用户问题：${content}`,
+    "不要展示推理；不要说问题缺失、不清楚或无法识别。",
   ];
 
   if (isMaleSoloQuestion(content)) {
-    lines.push("This question asks whether a solo male customer can book. First answer in Chinese: 男生单人目前不接，只接受女生或情侣约拍。You may mention couple sessions are welcome.");
+    lines.push("先回答：男生单人目前不接，只接受女生或情侣约拍。可以补充说明情侣约拍可以了解。");
   }
 
   return lines.join("\n");
@@ -348,6 +353,7 @@ async function hashClientIp(ip: string, secret: string) {
 }
 
 export const __test_buildPublicSystemPrompt = buildPublicSystemPrompt;
+export const __test_buildOpenCodeChatBody = buildOpenCodeChatBody;
 export const __test_buildOpenCodeMessages = buildOpenCodeMessages;
 export const __test_stringifyOpenCodeBody = stringifyOpenCodeBody;
 export const __test_normalizeAssistantReply = normalizeAssistantReply;

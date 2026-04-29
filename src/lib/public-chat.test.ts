@@ -33,12 +33,14 @@ describe("public AI chat integration", () => {
     expect(chatHelperSource).toContain('primaryModel = "deepseek-v4-flash"');
     expect(chatHelperSource).toContain("openCodeModels");
     expect(chatHelperSource).toContain("authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`");
-    expect(chatHelperSource).toContain("{ role: \"system\", content: buildPublicSystemPrompt(siteContent) }");
+    expect(chatHelperSource).toContain("buildOpenCodeChatBody");
     expect(chatHelperSource).toContain("buildOpenCodeMessages");
-    expect(chatHelperSource).toContain("User question:");
-    expect(chatHelperSource).toContain("This question asks whether a solo male customer can book");
+    expect(chatHelperSource).toContain("thinking: { type: \"disabled\" }");
     expect(chatHelperSource).toContain("stream: false");
-    expect(chatHelperSource).toContain("max_tokens: 360");
+    expect(chatHelperSource).toContain("max_tokens: 520");
+    expect(chatHelperSource).not.toContain("max_tokens: 360");
+    expect(chatHelperSource).not.toContain("User question:");
+    expect(chatHelperSource).not.toContain("This question asks whether a solo male customer can book");
     expect(chatHelperSource).toContain("extractOpenAiChatReply");
     expect(chatHelperSource).toContain("textToReadableStream");
     expect(chatHelperSource).toContain("normalizeAssistantReply");
@@ -66,7 +68,40 @@ describe("public AI chat integration", () => {
     expect(prompt).toContain("男生单人目前不接");
   });
 
-  it("keeps the latest MiniMax user prompt as visible text", async () => {
+  it("builds OpenCode request bodies with thinking disabled for visible replies", async () => {
+    const chatModule = await import("../../functions/_chat");
+    const buildOpenCodeChatBody = chatModule.__test_buildOpenCodeChatBody as
+      | ((
+        model: string,
+        messages: Array<{ role: "user" | "assistant"; content: string }>,
+        content: typeof defaultSiteContent,
+      ) => {
+        model: string;
+        stream: boolean;
+        max_tokens: number;
+        thinking?: { type: string };
+        messages: Array<{ role: string; content: string }>;
+      })
+      | undefined;
+
+    expect(buildOpenCodeChatBody).toBeTypeOf("function");
+
+    const body = buildOpenCodeChatBody?.(
+      "deepseek-v4-flash",
+      [{ role: "user", content: "套餐有哪些？" }],
+      defaultSiteContent,
+    );
+
+    expect(body?.model).toBe("deepseek-v4-flash");
+    expect(body?.stream).toBe(false);
+    expect(body?.max_tokens).toBe(520);
+    expect(body?.thinking).toEqual({ type: "disabled" });
+    expect(body?.messages[0]).toEqual({ role: "system", content: expect.stringContaining("访客咨询助手") });
+    expect(body?.messages.at(-1)?.content).toContain("直接回答用户问题：套餐有哪些？");
+    expect(body?.messages.at(-1)?.content).toContain("不要展示推理");
+  });
+
+  it("keeps the latest OpenCode user prompt concise with the male solo boundary", async () => {
     const chatModule = await import("../../functions/_chat");
     const buildOpenCodeMessages = chatModule.__test_buildOpenCodeMessages as
       | ((messages: Array<{ role: "user" | "assistant"; content: string }>) => Array<{ role: string; content: string }>)
@@ -74,13 +109,22 @@ describe("public AI chat integration", () => {
 
     expect(buildOpenCodeMessages).toBeTypeOf("function");
 
+    const styleMessages = buildOpenCodeMessages?.([
+      { role: "user", content: "我适合拍什么风格？" },
+    ]) ?? [];
     const modelMessages = buildOpenCodeMessages?.([
       { role: "user", content: "我是男生可以拍吗？" },
     ]) ?? [];
 
-    expect(modelMessages[0]?.content).toBeTypeOf("string");
-    expect(modelMessages[0]?.content).toContain("User question: 我是男生可以拍吗？");
-    expect(modelMessages[0]?.content).toContain("This question asks whether a solo male customer can book");
+    expect(styleMessages[0]?.content).toContain("直接回答用户问题：我适合拍什么风格？");
+    expect(styleMessages[0]?.content).toContain("不要展示推理");
+    expect(styleMessages[0]?.content).not.toContain("User question:");
+    expect(styleMessages[0]?.content).not.toContain("This question asks whether");
+    expect(styleMessages[0]?.content.length).toBeLessThan(120);
+
+    expect(modelMessages[0]?.content).toContain("直接回答用户问题：我是男生可以拍吗？");
+    expect(modelMessages[0]?.content).toContain("先回答：男生单人目前不接，只接受女生或情侣约拍。");
+    expect(modelMessages[0]?.content).not.toContain("This question asks whether");
   });
 
   it("sends OpenCode request JSON as ASCII so MiniMax preserves Chinese text", async () => {
