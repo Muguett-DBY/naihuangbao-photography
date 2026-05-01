@@ -31,4 +31,15 @@ describe("static SEO shell", () => {
     expect(html).toContain('"areaServed"');
     expect(html).toContain('"南京"');
   });
+
+  it("publishes WeChat-compatible share metadata", () => {
+    expect(html).toContain('property="og:title" content="奶黄包摄影｜南京女生写真与情侣约拍"');
+    expect(html).toContain('property="og:image" content="https://shoot.custard.top/wechat-share.jpg"');
+    expect(html).toContain('name="twitter:image" content="https://shoot.custard.top/wechat-share.jpg"');
+  });
+
+  it("links the web app manifest for PWA installs", () => {
+    expect(html).toContain('rel="manifest" href="/manifest.webmanifest"');
+    expect(html).toContain('name="theme-color" content="#F5E6D3"');
+  });
 });
