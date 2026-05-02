@@ -1974,6 +1974,20 @@ body.nav-lock .site-nav {
   max-height: 80vh;
   border-radius: 8px;
   object-fit: contain;
+  animation: lightboxFade 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes lightboxFade {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0) scale(0.985);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
 }
 
 .lightbox-info {
@@ -2306,6 +2320,9 @@ body.nav-lock .site-nav {
   }
   .img-skeleton {
     display: none !important;
+  }
+  .lightbox-image {
+    animation: none !important;
   }
   .scroll-top {
     opacity: 1 !important;
@@ -2864,176 +2881,7 @@ a:focus-visible {
   }
 }
 
-/* ── Accessibility: Reduced Motion ── */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-  .section-shell,
-  .mid-cta,
-  .booking-section,
-  .site-footer {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .section-body > * {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .gallery-card {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .nav-menu,
-  .nav-menu a {
-    transform: none !important;
-  }
-  .hero-card {
-    transition: none !important;
-  }
-  .img-blur-wrap img {
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-  }
-  .img-skeleton {
-    display: none !important;
-  }
-  .scroll-top {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-}
-
-/* ── Accessibility: Focus Styles ── */
-.skip-link {
-  position: absolute;
-  top: -100%;
-  left: 16px;
-  z-index: 1000;
-  padding: 12px 20px;
-  background: #493735;
-  color: #fff8f3;
-  font-weight: 700;
-  font-size: 14px;
-  border-radius: 0 0 8px 8px;
-  text-decoration: none;
-  transition: top 0.2s ease;
-}
-.skip-link:focus {
-  top: 0;
-}
-
-:focus-visible {
-  outline: 2px solid #b18c83;
-  outline-offset: 2px;
-}
-button:focus-visible,
-a:focus-visible {
-  outline: 2px solid #b18c83;
-  outline-offset: 2px;
-}
-.nav-menu a:focus-visible,
-.filter-row button:focus-visible {
-  outline: 2px solid #b18c83;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.primary-button:focus-visible,
-.nav-cta:focus-visible,
-.booking-cta:focus-visible {
-  outline: 2px solid #fff8f3;
-  outline-offset: 3px;
-}
-
-/* ── Dialog Accessibility ── */
-.lightbox-overlay[role="dialog"],
-.dialog-overlay[role="dialog"],
-.adm-overlay[role="dialog"] {
-  isolation: isolate;
-}
-
-/* ── 404 Page ── */
-.not-found {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  text-align: center;
-  padding: 40px 20px;
-}
-.not-found h1 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(64px, 12vw, 120px);
-  font-weight: 500;
-  color: #b18c83;
-  margin: 0;
-  line-height: 1;
-}
-.not-found p {
-  margin: 16px 0 28px;
-  color: #6e615d;
-  font-size: 16px;
-}
-.not-found a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: 999px;
-  background: #493735;
-  color: #fff8f3;
-  font-weight: 700;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-.not-found a:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(73, 55, 53, 0.25);
-}
-
-/* ── Error Boundary ── */
-.error-boundary {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  text-align: center;
-  padding: 40px 20px;
-}
-.error-boundary h2 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 28px;
-  font-weight: 500;
-  color: #2d2725;
-  margin: 0 0 12px;
-}
-.error-boundary p {
-  margin: 0 0 24px;
-  color: #6e615d;
-  font-size: 15px;
-}
-.error-boundary button {
-  padding: 12px 24px;
-  border-radius: 999px;
-  border: 0;
-  background: #493735;
-  color: #fff8f3;
-  font-weight: 700;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-.error-boundary button:hover {
-  opacity: 0.85;
-}
-
-/* Final warm utility overrides after duplicated accessibility blocks. */
+/* Final warm utility overrides. */
 :focus-visible,
 button:focus-visible,
 a:focus-visible,

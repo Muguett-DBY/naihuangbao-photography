@@ -98,99 +98,166 @@ export default function AdminDashboard() {
   });
   const [saving, setSaving] = useState(false);
   const [savingContent, setSavingContent] = useState<string | null>(null);
-  const [previewFile, setPreviewFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const toastTimerRef = useRef<number | null>(null);
+  const previewObjectUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/admin/session", { credentials: "include" })
+    const controller = new AbortController();
+
+    fetch("/api/admin/session", { credentials: "include", signal: controller.signal })
       .then((r) => r.json())
       .then((d) => setAuthenticated(!!d.authenticated))
-      .catch(() => setAuthenticated(false))
-      .finally(() => setChecking(false));
+      .catch((error) => {
+        if (!isAbortError(error)) {
+          setAuthenticated(false);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setChecking(false);
+        }
+      });
+
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {
     if (!authenticated) return;
-    void loadPhotos();
-    void loadContent();
+    const controller = new AbortController();
+    void loadPhotos(controller.signal);
+    void loadContent(controller.signal);
+    return () => controller.abort();
   }, [authenticated]);
 
-  async function loadPhotos() {
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current !== null) {
+        window.clearTimeout(toastTimerRef.current);
+      }
+      revokePreviewUrl();
+    };
+  }, []);
+
+  async function loadPhotos(signal?: AbortSignal) {
     try {
-      const r = await fetch("/api/admin/photos", { credentials: "include" });
+      const r = await fetch("/api/admin/photos", { credentials: "include", signal });
       if (!r.ok) return;
       const d = (await r.json()) as { photos?: PhotoItem[] };
-      if (d.photos) setRemotePhotos(d.photos);
-    } catch {}
+      if (!signal?.aborted && d.photos) setRemotePhotos(d.photos);
+    } catch (error) {
+      if (!isAbortError(error)) {
+        showToast("作品加载失败，请稍后重试。", "error");
+      }
+    }
   }
 
-  async function loadContent() {
+  async function loadContent(signal?: AbortSignal) {
     try {
-      const r = await fetch("/api/admin/content", { credentials: "include" });
+      const r = await fetch("/api/admin/content", { credentials: "include", signal });
       if (!r.ok) return;
       const d = (await r.json()) as { content?: Partial<SiteContent>; storageReady?: boolean };
+      if (signal?.aborted) return;
       setContent(mergeSiteContent(d.content));
       if (d.storageReady === false) {
         showToast("CMS 数据表还未初始化，保存前请先执行 D1 schema。", "info");
       }
-    } catch {}
+    } catch (error) {
+      if (!isAbortError(error)) {
+        showToast("文案加载失败，请稍后重试。", "error");
+      }
+    }
   }
 
   function showToast(text: string, type: ToastType) {
+    if (toastTimerRef.current !== null) {
+      window.clearTimeout(toastTimerRef.current);
+    }
     setToast({ text, type });
-    setTimeout(() => setToast(null), 3000);
+    toastTimerRef.current = window.setTimeout(() => {
+      setToast(null);
+      toastTimerRef.current = null;
+    }, 3000);
   }
 
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoginMessage("正在登录...");
-    const r = await fetch("/api/admin/login", {
-      method: "POST",
-      credentials: "include",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ password }),
-    });
-    if (!r.ok) {
-      setLoginMessage("密码不正确");
-      return;
+    try {
+      const r = await fetch("/api/admin/login", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (!r.ok) {
+        setLoginMessage("密码不正确");
+        return;
+      }
+      setAuthenticated(true);
+      setPassword("");
+      setLoginMessage("");
+    } catch {
+      setLoginMessage("登录失败，请稍后重试");
     }
-    setAuthenticated(true);
-    setPassword("");
-    setLoginMessage("");
   }
 
   async function handleLogout() {
-    await fetch("/api/admin/session", { method: "DELETE", credentials: "include" });
-    setAuthenticated(false);
+    try {
+      await fetch("/api/admin/session", { method: "DELETE", credentials: "include" });
+    } catch {
+      showToast("退出请求失败，本地登录状态已清除。", "info");
+    } finally {
+      setAuthenticated(false);
+    }
+  }
+
+  function revokePreviewUrl() {
+    if (previewObjectUrlRef.current) {
+      URL.revokeObjectURL(previewObjectUrlRef.current);
+      previewObjectUrlRef.current = null;
+    }
+  }
+
+  function clearPreviewSelection() {
+    revokePreviewUrl();
+    setPreviewUrl(null);
+    if (fileRef.current) fileRef.current.value = "";
   }
 
   function handleFileChange() {
     const file = fileRef.current?.files?.[0];
     if (!file) return;
-    setPreviewFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+    revokePreviewUrl();
+    const objectUrl = URL.createObjectURL(file);
+    previewObjectUrlRef.current = objectUrl;
+    setPreviewUrl(objectUrl);
   }
 
   async function handleUpload(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     showToast("上传中...", "info");
-    const fd = new FormData(e.currentTarget);
-    const r = await fetch("/api/admin/photos", {
-      method: "POST",
-      credentials: "include",
-      body: fd,
-    });
-    const d = (await r.json().catch(() => ({}))) as { error?: string };
-    if (!r.ok) {
-      showToast(d.error ?? "上传失败", "error");
-      return;
+    try {
+      const fd = new FormData(form);
+      const r = await fetch("/api/admin/photos", {
+        method: "POST",
+        credentials: "include",
+        body: fd,
+      });
+      const d = (await r.json().catch(() => ({}))) as { error?: string };
+      if (!r.ok) {
+        showToast(d.error ?? "上传失败", "error");
+        return;
+      }
+      form.reset();
+      clearPreviewSelection();
+      showToast("上传成功", "success");
+      void loadPhotos();
+    } catch {
+      showToast("上传失败，请检查网络后重试。", "error");
     }
-    e.currentTarget.reset();
-    setPreviewFile(null);
-    setPreviewUrl(null);
-    showToast("上传成功", "success");
-    void loadPhotos();
   }
 
   async function handleDelete() {
@@ -415,11 +482,7 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     className="adm-upload-clear"
-                    onClick={() => {
-                      setPreviewFile(null);
-                      setPreviewUrl(null);
-                      if (fileRef.current) fileRef.current.value = "";
-                    }}
+                    onClick={clearPreviewSelection}
                   >
                     ×
                   </button>
@@ -692,4 +755,8 @@ function linesFromText(value: string) {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean);
+}
+
+function isAbortError(error: unknown) {
+  return error instanceof DOMException && error.name === "AbortError";
 }

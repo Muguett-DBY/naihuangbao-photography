@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getResponsiveImageAttrs } from "../lib/responsive-image";
 import { FilmPlaceholder } from "./FilmPlaceholder";
 
@@ -22,6 +22,11 @@ export function ImageWithFallback({
   const [failed, setFailed] = useState(!src);
   const [loaded, setLoaded] = useState(false);
   const imageAttrs = getResponsiveImageAttrs(src, sizes);
+
+  useEffect(() => {
+    setFailed(!src);
+    setLoaded(false);
+  }, [src]);
 
   if (failed) {
     return <FilmPlaceholder title={title} tone={tone} />;

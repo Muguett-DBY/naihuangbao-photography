@@ -68,7 +68,7 @@ export function PublicChatWidget() {
   useEffect(() => {
     return () => {
       if (revealTimerRef.current !== null) {
-        window.clearInterval(revealTimerRef.current);
+        window.clearTimeout(revealTimerRef.current);
       }
     };
   }, []);
@@ -94,19 +94,25 @@ export function PublicChatWidget() {
     setTyping(true);
     let index = 0;
 
+    function scheduleNextReveal() {
+      revealTimerRef.current = window.setTimeout(update, 28);
+    }
+
     function update() {
       index = Math.min(reply.length, index + 1);
       setMessages((prev) => prev.map((message) => (
         message.id === messageId ? { ...message, content: reply.slice(0, index) } : message
       )));
 
-      if (index >= reply.length) {
-        clearRevealTimer();
+      if (index < reply.length) {
+        scheduleNextReveal();
+        return;
       }
+
+      clearRevealTimer();
     }
 
     update();
-    revealTimerRef.current = window.setTimeout(update, 28);
   }
 
   async function revealAssistantStream(messageId: string, body: ReadableStream<Uint8Array>) {

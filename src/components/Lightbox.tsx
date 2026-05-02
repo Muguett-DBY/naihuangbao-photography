@@ -11,24 +11,21 @@ type LightboxProps = {
 };
 
 function usePreload(src: string) {
-  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     if (!src) return;
     const img = new Image();
     img.src = src;
-    img.onload = () => setLoaded(true);
-    img.onerror = () => setLoaded(true);
-    if (img.complete) setLoaded(true);
     return () => {
       img.onload = null;
       img.onerror = null;
     };
   }, [src]);
-  return loaded;
 }
 
 export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: LightboxProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousActiveElementRef = useRef<HTMLElement | null>(null);
   const [isSwitching, setIsSwitching] = useState(false);
   const photo = photos[currentIndex];
 
@@ -39,16 +36,27 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
   usePreload(photos[nextIndex]?.imageUrl || "");
 
   useEffect(() => {
+    previousActiveElementRef.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    const previousBodyOverflow = document.body.style.overflow;
+
     function handleKeyDown(event: KeyboardEvent) {
       switch (event.key) {
         case "Escape":
+          event.preventDefault();
           onClose();
           break;
         case "ArrowLeft":
+          event.preventDefault();
           onPrev();
           break;
         case "ArrowRight":
+          event.preventDefault();
           onNext();
+          break;
+        case "Tab":
+          trapDialogFocus(event, dialogRef.current);
           break;
       }
     }
@@ -59,7 +67,10 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousBodyOverflow;
+      if (previousActiveElementRef.current?.isConnected) {
+        previousActiveElementRef.current.focus({ preventScroll: true });
+      }
     };
   }, [onClose, onPrev, onNext]);
 
@@ -74,10 +85,12 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
 
   return (
     <div
+      ref={dialogRef}
       className="lightbox-overlay"
       role="dialog"
       aria-modal="true"
       aria-label="图片预览"
+      tabIndex={-1}
       onClick={onClose}
     >
       <button
@@ -129,4 +142,38 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
       </div>
     </div>
   );
+}
+
+function trapDialogFocus(event: KeyboardEvent, dialog: HTMLElement | null) {
+  if (!dialog) return;
+  const focusableElements = Array.from(dialog.querySelectorAll<HTMLElement>(
+    [
+      "a[href]",
+      "button:not([disabled])",
+      "textarea:not([disabled])",
+      "input:not([disabled])",
+      "select:not([disabled])",
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(","),
+  ));
+
+  if (focusableElements.length === 0) {
+    event.preventDefault();
+    dialog.focus();
+    return;
+  }
+
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
+
+  if (event.shiftKey && document.activeElement === firstElement) {
+    event.preventDefault();
+    lastElement.focus();
+    return;
+  }
+
+  if (!event.shiftKey && document.activeElement === lastElement) {
+    event.preventDefault();
+    firstElement.focus();
+  }
 }
