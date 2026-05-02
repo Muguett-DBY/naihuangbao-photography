@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { styleLabels } from "../data/site";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
@@ -18,12 +18,75 @@ export function Gallery() {
   const { photos: sourcePhotos } = usePublicPhotos();
   const [filter, setFilter] = useState<StyleFilter>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [visiblePhotoIds, setVisiblePhotoIds] = useState<Set<string>>(() => new Set());
+  const galleryGridRef = useRef<HTMLDivElement>(null);
 
   const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
 
   useEffect(() => {
     void import("./Lightbox");
   }, []);
+
+  useEffect(() => {
+    const galleryGrid = galleryGridRef.current;
+    if (!galleryGrid) return;
+
+    if (!("IntersectionObserver" in window)) {
+      setVisiblePhotoIds((currentIds) => {
+        const nextIds = new Set(currentIds);
+        let changed = false;
+        photos.forEach((photo) => {
+          if (!nextIds.has(photo.id)) {
+            nextIds.add(photo.id);
+            changed = true;
+          }
+        });
+        return changed ? nextIds : currentIds;
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const intersectingPhotoIds = entries
+          .filter((entry) => entry.isIntersecting)
+          .map((entry) => entry.target.getAttribute("data-gallery-photo-id"))
+          .filter((photoId): photoId is string => Boolean(photoId));
+
+        if (intersectingPhotoIds.length === 0) return;
+
+        setVisiblePhotoIds((currentIds) => {
+          const nextIds = new Set(currentIds);
+          let changed = false;
+          intersectingPhotoIds.forEach((photoId) => {
+            if (!nextIds.has(photoId)) {
+              nextIds.add(photoId);
+              changed = true;
+            }
+          });
+          return changed ? nextIds : currentIds;
+        });
+
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: "200px" },
+    );
+
+    galleryGrid.querySelectorAll<HTMLElement>("[data-gallery-photo-id]").forEach((card) => {
+      const photoId = card.getAttribute("data-gallery-photo-id");
+      if (photoId && !visiblePhotoIds.has(photoId)) {
+        observer.observe(card);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [photos, visiblePhotoIds]);
 
   const handlePrev = useCallback(() => {
     setLightboxIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : photos.length - 1));
@@ -53,9 +116,14 @@ export function Gallery() {
           </button>
         ))}
       </div>
-      <div className="gallery-grid">
+      <div className="gallery-grid" ref={galleryGridRef}>
         {photos.map((photo, index) => (
-          <article className="gallery-card" key={photo.id} style={{ transitionDelay: `${index * 0.06}s` }}>
+          <article
+            className="gallery-card"
+            data-gallery-photo-id={photo.id}
+            key={photo.id}
+            style={{ transitionDelay: `${index * 0.06}s` }}
+          >
             <button
               className="gallery-card-btn"
               type="button"
@@ -67,6 +135,7 @@ export function Gallery() {
                 alt={photo.alt}
                 title={photo.title}
                 tone={tones[index % tones.length]}
+                load={!photo.imageUrl || visiblePhotoIds.has(photo.id)}
                 sizes="(max-width: 620px) 50vw, (max-width: 900px) 50vw, 33vw"
               />
               <div className="gallery-hover-overlay">

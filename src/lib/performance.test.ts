@@ -73,7 +73,12 @@ describe("performance resources", () => {
     expect(headers).toContain("X-Robots-Tag: noindex");
   });
 
-  it("lazy-loads the lightbox and admin CSS outside the public shell", () => {
+  it("lazy-loads gallery images, the lightbox, and admin CSS outside the public shell", () => {
+    expect(gallerySource).toContain("new IntersectionObserver");
+    expect(gallerySource).toContain('rootMargin: "200px"');
+    expect(gallerySource).toContain("observer.disconnect()");
+    expect(globalCss).toContain(".gallery-skeleton");
+
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
     expect(appSource).toContain('import("./components/AdminDashboard")');
     expect(appSource).toContain('import("./styles/admin.css")');

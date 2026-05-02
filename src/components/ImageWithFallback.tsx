@@ -9,6 +9,7 @@ export function ImageWithFallback({
   tone = "rose",
   className,
   priority = false,
+  load = true,
   sizes,
 }: {
   src: string;
@@ -17,6 +18,7 @@ export function ImageWithFallback({
   tone?: "rose" | "sage" | "cream" | "ink";
   className?: string;
   priority?: boolean;
+  load?: boolean;
   sizes?: string;
 }) {
   const [failed, setFailed] = useState(!src);
@@ -28,13 +30,21 @@ export function ImageWithFallback({
     setLoaded(false);
   }, [src]);
 
+  if (!load) {
+    return (
+      <div className={`img-blur-wrap gallery-image-placeholder ${className || ""}`} aria-hidden="true">
+        <div className="gallery-skeleton" />
+      </div>
+    );
+  }
+
   if (failed) {
     return <FilmPlaceholder title={title} tone={tone} />;
   }
 
   return (
     <div className={`img-blur-wrap ${loaded ? "is-loaded" : ""} ${className || ""}`}>
-      <div className="img-skeleton" aria-hidden="true" />
+      <div className="img-skeleton gallery-skeleton" aria-hidden="true" />
       <img
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
