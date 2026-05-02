@@ -8,6 +8,10 @@ const html = readFileSync(resolve(root, "index.html"), "utf8");
 const globalCss = readFileSync(resolve(root, "src/styles/global.css"), "utf8");
 const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
+const heroSource = readFileSync(resolve(root, "src/components/Hero.tsx"), "utf8");
+const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
+const navSource = readFileSync(resolve(root, "src/components/SiteNav.tsx"), "utf8");
+const parallaxSource = readFileSync(resolve(root, "src/hooks/useParallax.ts"), "utf8");
 const photosApiSource = readFileSync(resolve(root, "functions/api/photos.ts"), "utf8");
 
 describe("performance resources", () => {
@@ -74,5 +78,33 @@ describe("performance resources", () => {
     expect(appSource).toContain('import("./components/AdminDashboard")');
     expect(appSource).toContain('import("./styles/admin.css")');
     expect(globalCss).not.toContain(".adm-root");
+  });
+
+  it("updates parallax with a CSS variable instead of scroll-time React state", () => {
+    expect(parallaxSource).not.toContain("useState");
+    expect(parallaxSource).not.toContain("setOffset");
+    expect(parallaxSource).toContain('style.setProperty("--parallax-offset"');
+    expect(parallaxSource).toContain("requestAnimationFrame");
+    expect(heroSource).not.toContain("offset *");
+    expect(globalCss).toContain("--parallax-offset");
+  });
+
+  it("adds first-load motion and scroll progress without large animation libraries", () => {
+    expect(mainSource).toContain('document.body.classList.add("is-loaded")');
+    expect(navSource).toContain('style.setProperty("--scroll-progress"');
+    expect(globalCss).toContain("body.is-loaded");
+    expect(globalCss).toContain(".site-nav::after");
+    expect(globalCss).toContain("hero-card-large");
+    expect(globalCss).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(appSource).not.toContain("framer-motion");
+    expect(appSource).not.toContain("gsap");
+  });
+
+  it("keeps texture and elevation effects CSS-only", () => {
+    expect(globalCss).toContain("data:image/svg+xml");
+    expect(globalCss).toContain("--paper-noise");
+    expect(globalCss).toContain("inset 0");
+    expect(globalCss).toContain("vignette");
+    expect(globalCss).toContain("will-change: transform");
   });
 });

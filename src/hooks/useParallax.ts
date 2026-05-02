@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export function useParallax(speed = 0.3) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [offset, setOffset] = useState(0);
-  const rafRef = useRef(0);
+  const ref = useRef<HTMLElement>(null);
+  const rafRef = useRef<number | null>(null);
   const lastOffsetRef = useRef(0);
 
   useEffect(() => {
@@ -14,45 +13,62 @@ export function useParallax(speed = 0.3) {
       return reducedMotionQuery.matches || compactViewportQuery.matches;
     }
 
-    function updateOffset(nextOffset: number) {
-      if (Math.abs(nextOffset - lastOffsetRef.current) < 1) return;
+    function writeOffset(nextOffset: number) {
+      const el = ref.current;
+      if (!el) return;
+      if (Math.abs(nextOffset - lastOffsetRef.current) < 0.25) return;
       lastOffsetRef.current = nextOffset;
-      setOffset(nextOffset);
+      el.style.setProperty("--parallax-offset", `${nextOffset.toFixed(2)}px`);
+      el.querySelectorAll<HTMLElement>("[data-parallax-factor]").forEach((child) => {
+        const factor = Number(child.dataset.parallaxFactor ?? 1) || 0;
+        child.style.setProperty("--parallax-offset", `${(nextOffset * factor).toFixed(2)}px`);
+      });
     }
 
-    function onScroll() {
-      if (shouldDisableMotion()) {
-        updateOffset(0);
-        return;
-      }
+    function scheduleUpdate() {
+      if (rafRef.current !== null) return;
 
-      cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
         const el = ref.current;
         if (!el) return;
+
+        if (shouldDisableMotion()) {
+          writeOffset(0);
+          return;
+        }
+
         const rect = el.getBoundingClientRect();
         const scrolled = window.innerHeight - rect.top;
         const nextOffset = scrolled > 0 && rect.bottom > 0 ? scrolled * speed * 0.1 : 0;
-        updateOffset(nextOffset);
+        writeOffset(nextOffset);
       });
     }
 
     function onMotionPreferenceChange() {
-      cancelAnimationFrame(rafRef.current);
-      onScroll();
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+      lastOffsetRef.current = Number.NaN;
+      scheduleUpdate();
     }
 
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate, { passive: true });
     reducedMotionQuery.addEventListener("change", onMotionPreferenceChange);
     compactViewportQuery.addEventListener("change", onMotionPreferenceChange);
-    onScroll();
+    scheduleUpdate();
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
       reducedMotionQuery.removeEventListener("change", onMotionPreferenceChange);
       compactViewportQuery.removeEventListener("change", onMotionPreferenceChange);
-      cancelAnimationFrame(rafRef.current);
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
     };
   }, [speed]);
 
-  return { ref, offset };
+  return { ref };
 }

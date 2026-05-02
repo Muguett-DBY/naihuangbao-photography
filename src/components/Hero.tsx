@@ -1,4 +1,5 @@
 import { ArrowDown, Sparkles } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { getFeaturedPhotos, getPublicPhotos } from "../lib/gallery";
 import { useParallax } from "../hooks/useParallax";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
@@ -18,10 +19,87 @@ const placeholderPhoto: PhotoItem = {
   visibility: "public",
 };
 
+function useHeroCardTilt() {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const cardNode = cardRef.current;
+    if (!cardNode) return;
+    const cardElement: HTMLDivElement = cardNode;
+
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const desktopPointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
+    let frameId: number | null = null;
+    let pointerX = 0;
+    let pointerY = 0;
+
+    function shouldDisableTilt() {
+      return reducedMotionQuery.matches || !desktopPointerQuery.matches;
+    }
+
+    function resetTilt() {
+      cardElement.style.setProperty("--tilt-x", "0deg");
+      cardElement.style.setProperty("--tilt-y", "0deg");
+    }
+
+    function writeTilt() {
+      frameId = null;
+      if (shouldDisableTilt()) {
+        resetTilt();
+        return;
+      }
+
+      const rect = cardElement.getBoundingClientRect();
+      const x = (pointerX - rect.left) / rect.width - 0.5;
+      const y = (pointerY - rect.top) / rect.height - 0.5;
+      cardElement.style.setProperty("--tilt-x", `${(-y * 10).toFixed(2)}deg`);
+      cardElement.style.setProperty("--tilt-y", `${(x * 10).toFixed(2)}deg`);
+    }
+
+    function onPointerMove(event: PointerEvent) {
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      if (frameId === null) {
+        frameId = requestAnimationFrame(writeTilt);
+      }
+    }
+
+    function onPointerLeave() {
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+        frameId = null;
+      }
+      resetTilt();
+    }
+
+    function onPreferenceChange() {
+      if (shouldDisableTilt()) resetTilt();
+    }
+
+    cardElement.addEventListener("pointermove", onPointerMove, { passive: true });
+    cardElement.addEventListener("pointerleave", onPointerLeave);
+    reducedMotionQuery.addEventListener("change", onPreferenceChange);
+    desktopPointerQuery.addEventListener("change", onPreferenceChange);
+
+    return () => {
+      cardElement.removeEventListener("pointermove", onPointerMove);
+      cardElement.removeEventListener("pointerleave", onPointerLeave);
+      reducedMotionQuery.removeEventListener("change", onPreferenceChange);
+      desktopPointerQuery.removeEventListener("change", onPreferenceChange);
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+      }
+    };
+  }, []);
+
+  return cardRef;
+}
+
 export function Hero() {
   const { siteConfig } = useSiteContent();
   const { photos } = usePublicPhotos();
-  const { ref: parallaxRef, offset } = useParallax(0.25);
+  const { ref: parallaxRef } = useParallax(0.25);
+  const largeCardRef = useHeroCardTilt();
 
   const featuredPhotos = getFeaturedPhotos(photos, 3);
   const extraPhotos = getPublicPhotos(photos).filter(
@@ -58,9 +136,10 @@ export function Hero() {
       </div>
       <div className="hero-visual" aria-label="柔雾胶片感作品预览">
         <div
+          ref={largeCardRef}
           className="hero-card hero-card-large"
           data-caption="奶黄光影"
-          style={{ transform: `rotate(-5deg) translateY(${offset * 0.6}px)` }}
+          data-parallax-factor="0.6"
         >
           <ImageWithFallback
             src={mainPhoto.imageUrl}
@@ -74,7 +153,7 @@ export function Hero() {
         <div
           className="hero-card hero-card-small hero-card-top"
           data-caption="甜桃快照"
-          style={{ transform: `rotate(8deg) translateY(${offset * -0.3}px)` }}
+          data-parallax-factor="-0.3"
         >
           <ImageWithFallback
             src={topPhoto.imageUrl}
@@ -87,7 +166,7 @@ export function Hero() {
         <div
           className="hero-card hero-card-small hero-card-bottom"
           data-caption="柔软贴纸"
-          style={{ transform: `rotate(-5deg) translateY(${offset * 0.4}px)` }}
+          data-parallax-factor="0.4"
         >
           <ImageWithFallback
             src={bottomPhoto.imageUrl}
@@ -98,6 +177,9 @@ export function Hero() {
           />
         </div>
       </div>
+      <a className="hero-scroll-cue" href="#gallery" aria-label="向下滚动到作品">
+        <ArrowDown size={18} />
+      </a>
     </section>
   );
 }

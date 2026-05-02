@@ -14,3 +14,7 @@ createRoot(root).render(
     <App />
   </StrictMode>,
 );
+
+requestAnimationFrame(() => {
+  document.body.classList.add("is-loaded");
+});

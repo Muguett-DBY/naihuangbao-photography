@@ -1,16 +1,49 @@
 import { CalendarCheck, Camera, Menu, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSiteContent } from "../hooks/useSiteContent";
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
   const { siteConfig } = useSiteContent();
 
   useEffect(() => {
-    function onScroll() { setScrolled(window.scrollY > 60); }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    let frameId: number | null = null;
+    let currentScrolled = false;
+
+    function syncNavState() {
+      frameId = null;
+      const maxScroll = Math.max(
+        1,
+        document.documentElement.scrollHeight - window.innerHeight,
+      );
+      const progress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
+      navRef.current?.style.setProperty("--scroll-progress", progress.toFixed(4));
+
+      const nextScrolled = window.scrollY > 60;
+      if (nextScrolled !== currentScrolled) {
+        currentScrolled = nextScrolled;
+        setScrolled(nextScrolled);
+      }
+    }
+
+    function scheduleSync() {
+      if (frameId === null) {
+        frameId = requestAnimationFrame(syncNavState);
+      }
+    }
+
+    window.addEventListener("scroll", scheduleSync, { passive: true });
+    window.addEventListener("resize", scheduleSync, { passive: true });
+    scheduleSync();
+    return () => {
+      window.removeEventListener("scroll", scheduleSync);
+      window.removeEventListener("resize", scheduleSync);
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -30,7 +63,7 @@ export function SiteNav() {
   }, [open]);
 
   return (
-    <header className={`site-nav${scrolled ? " is-scrolled" : ""}`}>
+    <header ref={navRef} className={`site-nav${scrolled ? " is-scrolled" : ""}`}>
       <a className="brand-mark" href="#top" aria-label="回到首页">
         <Camera size={18} />
         <span>{siteConfig.brandName}</span>
