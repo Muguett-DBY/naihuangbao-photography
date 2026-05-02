@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { PhotoItem } from "../types/photo";
 
@@ -10,10 +10,33 @@ type LightboxProps = {
   onNext: () => void;
 };
 
+function usePreload(src: string) {
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    if (!src) return;
+    const img = new Image();
+    img.src = src;
+    img.onload = () => setLoaded(true);
+    img.onerror = () => setLoaded(true);
+    if (img.complete) setLoaded(true);
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [src]);
+  return loaded;
+}
+
 export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: LightboxProps) {
-  const imageRef = useRef<HTMLImageElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const [isSwitching, setIsSwitching] = useState(false);
   const photo = photos[currentIndex];
+
+  // 预加载相邻图片
+  const prevIndex = currentIndex > 0 ? currentIndex - 1 : photos.length - 1;
+  const nextIndex = currentIndex < photos.length - 1 ? currentIndex + 1 : 0;
+  usePreload(photos[prevIndex]?.imageUrl || "");
+  usePreload(photos[nextIndex]?.imageUrl || "");
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -39,6 +62,13 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
       document.body.style.overflow = "";
     };
   }, [onClose, onPrev, onNext]);
+
+  // 切换时添加短暂过渡动画
+  useEffect(() => {
+    setIsSwitching(true);
+    const timer = setTimeout(() => setIsSwitching(false), 150);
+    return () => clearTimeout(timer);
+  }, [currentIndex]);
 
   if (!photo) return null;
 
@@ -70,14 +100,15 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
       </button>
 
       <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-        <img
-          key={currentIndex}
-          ref={imageRef}
-          className="lightbox-image"
-          src={photo.imageUrl}
-          alt={photo.alt}
-          decoding="async"
-        />
+        <div className={`lightbox-image-wrap ${isSwitching ? "is-switching" : ""}`}>
+          <img
+            className="lightbox-image"
+            src={photo.imageUrl}
+            alt={photo.alt}
+            decoding="async"
+            loading="eager"
+          />
+        </div>
         <div className="lightbox-info">
           <strong>{photo.title}</strong>
           <span>{photo.location}</span>
