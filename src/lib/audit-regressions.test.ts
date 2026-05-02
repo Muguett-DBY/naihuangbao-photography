@@ -44,6 +44,18 @@ describe("audit regression coverage", () => {
     expect(cssSource).toContain(".lightbox-spinner");
   });
 
+  it("bounds lightbox images to the viewport stage instead of percentage max-height", () => {
+    const lightboxImageBlock = cssSource.match(/\.lightbox-image\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
+
+    expect(lightboxImageBlock).toContain("width: auto");
+    expect(lightboxImageBlock).toContain("height: auto");
+    expect(lightboxImageBlock).toMatch(/max-width:\s*min\(92vw,\s*1080px\)/);
+    expect(lightboxImageBlock).toMatch(/max-height:\s*min\(78dvh,\s*760px\)/);
+    expect(cssSource).toMatch(
+      /@media\s*\(max-width:\s*620px\)\s*\{[\s\S]*\.lightbox-image\s*\{(?=[^}]*max-width:\s*calc\(100vw - 28px\))(?=[^}]*max-height:\s*min\(66dvh,\s*560px\))/,
+    );
+  });
+
   it("mounts the lightbox outside transformed gallery containers", () => {
     expect(cssSource).toMatch(/main\s*\{[^}]*overflow:\s*hidden/s);
     expect(cssSource).toMatch(/\.section-shell\s*\{[^}]*transform:\s*translateY\(36px\)/s);
