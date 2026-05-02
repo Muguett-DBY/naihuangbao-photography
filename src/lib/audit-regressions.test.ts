@@ -45,14 +45,23 @@ describe("audit regression coverage", () => {
   });
 
   it("bounds lightbox images to the viewport stage instead of percentage max-height", () => {
+    const lightboxContentBlock = cssSource.match(/\.lightbox-content\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
+    const lightboxWrapBlock = cssSource.match(/\.lightbox-image-wrap\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
     const lightboxImageBlock = cssSource.match(/\.lightbox-image\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
 
-    expect(lightboxImageBlock).toContain("width: 100%");
-    expect(lightboxImageBlock).toContain("height: 100%");
+    expect(lightboxContentBlock).toContain("width: min(80vw, 1080px)");
+    expect(lightboxWrapBlock).toContain("display: flex");
+    expect(lightboxWrapBlock).toContain("align-items: center");
+    expect(lightboxWrapBlock).toContain("justify-content: center");
+    expect(lightboxWrapBlock).toContain("height: min(72dvh, 720px)");
+    expect(lightboxWrapBlock).toContain("overflow: hidden");
+    expect(lightboxImageBlock).toContain("width: auto");
+    expect(lightboxImageBlock).toContain("height: auto");
+    expect(lightboxImageBlock).toContain("max-width: 100%");
+    expect(lightboxImageBlock).toContain("max-height: 100%");
+    expect(lightboxImageBlock).not.toMatch(/^\s*width:\s*100%/m);
+    expect(lightboxImageBlock).not.toMatch(/^\s*height:\s*100%/m);
     expect(lightboxImageBlock).toContain("object-fit: contain");
-    expect(cssSource).toMatch(
-      /@media\s*\(max-width:\s*620px\)\s*\{[\s\S]*\.lightbox-image\s*\{(?=[^}]*max-width:\s*calc\(100vw - 28px\))(?=[^}]*max-height:\s*min\(66dvh,\s*560px\))/,
-    );
   });
 
   it("mounts the lightbox outside transformed gallery containers", () => {
