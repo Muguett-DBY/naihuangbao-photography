@@ -25,6 +25,7 @@ const starterPrompts = [
 ];
 
 const chatRequestTimeoutMs = 16_000;
+const chatRevealDelayMs = 55;
 
 const welcomeMessage: ChatMessage = {
   id: "assistant-welcome",
@@ -95,7 +96,7 @@ export function PublicChatWidget() {
     let index = 0;
 
     function scheduleNextReveal() {
-      revealTimerRef.current = window.setTimeout(update, 28);
+      revealTimerRef.current = window.setTimeout(update, chatRevealDelayMs);
     }
 
     function update() {
@@ -143,7 +144,7 @@ export function PublicChatWidget() {
           setMessages((prev) => prev.map((message) => (
             message.id === messageId ? { ...message, content: displayed } : message
           )));
-          revealTimerRef.current = window.setTimeout(tick, 28);
+          revealTimerRef.current = window.setTimeout(tick, chatRevealDelayMs);
           return;
         }
 
@@ -157,7 +158,7 @@ export function PublicChatWidget() {
           return;
         }
 
-        revealTimerRef.current = window.setTimeout(tick, 28);
+        revealTimerRef.current = window.setTimeout(tick, chatRevealDelayMs);
       }
 
       tick();
@@ -204,6 +205,7 @@ export function PublicChatWidget() {
       const response = await fetchChatResponse(nextMessages);
 
       const assistantId = `assistant-${Date.now()}`;
+      setLoading(false);
       setMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: "" }]);
       const contentType = response.headers.get("content-type") ?? "";
       if (response.body && !contentType.includes("application/json")) {
@@ -217,9 +219,9 @@ export function PublicChatWidget() {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "聊天助手暂时不可用，请稍后再试。");
+      setLoading(false);
     } finally {
       sendingRef.current = false;
-      setLoading(false);
     }
   }
 
@@ -268,7 +270,10 @@ export function PublicChatWidget() {
                 <div className="public-chat-bubble">
                   <p>{message.content}</p>
                   {typing && index === messages.length - 1 && message.role === "assistant" ? (
-                    <span className="public-chat-cursor" aria-hidden="true" />
+                    <span className="public-chat-typing-label" aria-live="polite">
+                      typing...
+                      <span className="public-chat-cursor" aria-hidden="true" />
+                    </span>
                   ) : null}
                 </div>
               </div>

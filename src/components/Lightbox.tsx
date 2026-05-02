@@ -10,6 +10,11 @@ type LightboxProps = {
   onNext: () => void;
 };
 
+type ImageLoadState = {
+  src: string;
+  status: "loading" | "loaded" | "error";
+};
+
 function usePreload(src: string) {
   useEffect(() => {
     if (!src) return;
@@ -26,7 +31,10 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
-  const [isSwitching, setIsSwitching] = useState(false);
+  const [imageLoadState, setImageLoadState] = useState<ImageLoadState>({
+    src: "",
+    status: "loading",
+  });
   const photo = photos[currentIndex];
 
   // 预加载相邻图片
@@ -74,14 +82,25 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
     };
   }, [onClose, onPrev, onNext]);
 
-  // 切换时添加短暂过渡动画
-  useEffect(() => {
-    setIsSwitching(true);
-    const timer = setTimeout(() => setIsSwitching(false), 150);
-    return () => clearTimeout(timer);
-  }, [currentIndex]);
-
   if (!photo) return null;
+
+  const activeImageStatus = imageLoadState.src === photo.imageUrl ? imageLoadState.status : "loading";
+  const isImageLoaded = activeImageStatus === "loaded";
+  const isImageError = activeImageStatus === "error";
+
+  function handleImageLoad() {
+    setImageLoadState({
+      src: photo.imageUrl,
+      status: "loaded",
+    });
+  }
+
+  function handleImageError() {
+    setImageLoadState({
+      src: photo.imageUrl,
+      status: "error",
+    });
+  }
 
   return (
     <div
@@ -113,13 +132,30 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
       </button>
 
       <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-        <div className={`lightbox-image-wrap ${isSwitching ? "is-switching" : ""}`}>
+        <div
+          className={`lightbox-image-wrap ${isImageLoaded ? "is-loaded" : ""} ${isImageError ? "is-error" : ""}`}
+          aria-busy={!isImageLoaded && !isImageError}
+        >
+          {!isImageLoaded && !isImageError ? (
+            <div className="lightbox-loading" role="status" aria-live="polite">
+              <span className="lightbox-spinner" aria-hidden="true" />
+              <span>加载中</span>
+            </div>
+          ) : null}
+          {isImageError ? (
+            <div className="lightbox-image-error" role="status">
+              图片加载失败
+            </div>
+          ) : null}
           <img
-            className="lightbox-image"
+            key={photo.imageUrl}
+            className={`lightbox-image ${isImageLoaded ? "is-loaded" : ""}`}
             src={photo.imageUrl}
             alt={photo.alt}
             decoding="async"
             loading="eager"
+            onLoad={handleImageLoad}
+            onError={handleImageError}
           />
         </div>
         <div className="lightbox-info">
