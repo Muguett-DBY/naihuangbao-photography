@@ -1961,17 +1961,19 @@ body.nav-lock .site-nav {
   max-height: 90vh;
 }
 
+.lightbox-image-wrap {
+  transition: opacity 0.15s ease;
+}
+.lightbox-image-wrap.is-switching {
+  opacity: 0;
+}
+
 .lightbox-image {
   display: block;
   max-width: 100%;
   max-height: 80vh;
   border-radius: 8px;
   object-fit: contain;
-  animation: lightboxFade 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-@keyframes lightboxFade {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
 }
 
 .lightbox-info {
