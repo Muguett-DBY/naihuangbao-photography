@@ -59,7 +59,8 @@ export function Hero() {
       <div className="hero-visual" aria-label="柔雾胶片感作品预览">
         <div
           className="hero-card hero-card-large"
-          style={{ transform: `rotate(-2deg) translateY(${offset * 0.6}px)` }}
+          data-caption="奶黄光影"
+          style={{ transform: `rotate(-5deg) translateY(${offset * 0.6}px)` }}
         >
           <ImageWithFallback
             src={mainPhoto.imageUrl}
@@ -72,7 +73,8 @@ export function Hero() {
         </div>
         <div
           className="hero-card hero-card-small hero-card-top"
-          style={{ transform: `rotate(6deg) translateY(${offset * -0.3}px)` }}
+          data-caption="甜桃快照"
+          style={{ transform: `rotate(8deg) translateY(${offset * -0.3}px)` }}
         >
           <ImageWithFallback
             src={topPhoto.imageUrl}
@@ -84,7 +86,8 @@ export function Hero() {
         </div>
         <div
           className="hero-card hero-card-small hero-card-bottom"
-          style={{ transform: `rotate(4deg) translateY(${offset * 0.4}px)` }}
+          data-caption="柔软贴纸"
+          style={{ transform: `rotate(-5deg) translateY(${offset * 0.4}px)` }}
         >
           <ImageWithFallback
             src={bottomPhoto.imageUrl}

@@ -32,7 +32,18 @@ describe("gallery filter styles", () => {
   it("keeps the active filter readable while hovered or focused", () => {
     expect(cssSource).toContain(".filter-row .is-active:hover");
     expect(cssSource).toContain(".filter-row .is-active:focus-visible");
-    expect(cssSource).toContain("background: #7f5f5b");
+    expect(cssSource).toContain("#FFB8A1");
+    expect(cssSource).toContain("#8B5E4A");
     expect(cssSource).not.toContain("transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1)");
+  });
+
+  it("uses the warm custard palette and polaroid card treatments", () => {
+    expect(cssSource).toContain("--custard-bg: #FEF3DD");
+    expect(cssSource).toContain("--peach-accent: #FFB8A1");
+    expect(cssSource).toContain("--caramel-text: #8B5E4A");
+    expect(cssSource).toContain(".hero-card::before");
+    expect(cssSource).toContain(".section-heading h2::before");
+    expect(cssSource).toContain("border-radius: 26px");
+    expect(cssSource).toContain("rgba(255, 184, 161, 0.15)");
   });
 });
