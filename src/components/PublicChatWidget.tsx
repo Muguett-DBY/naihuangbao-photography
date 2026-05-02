@@ -25,7 +25,7 @@ const starterPrompts = [
 ];
 
 const chatRequestTimeoutMs = 16_000;
-const chatRevealDelayMs = 55;
+const chatRevealDelayMs = 70;
 
 const welcomeMessage: ChatMessage = {
   id: "assistant-welcome",

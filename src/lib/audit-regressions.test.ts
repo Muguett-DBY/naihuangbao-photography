@@ -59,7 +59,7 @@ describe("audit regression coverage", () => {
   it("uses a visible chat typing cadence and indicator for streamed and JSON replies", () => {
     const delayUses = widgetSource.match(/setTimeout\([^,]+,\s*chatRevealDelayMs\)/g) ?? [];
 
-    expect(widgetSource).toContain("const chatRevealDelayMs = 55");
+    expect(widgetSource).toContain("const chatRevealDelayMs = 70");
     expect(delayUses.length).toBeGreaterThanOrEqual(3);
     expect(widgetSource).not.toMatch(/setTimeout\([^,]+,\s*28\)/);
     expect(widgetSource).toContain("public-chat-typing-label");

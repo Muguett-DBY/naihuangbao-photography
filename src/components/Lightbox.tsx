@@ -30,6 +30,7 @@ function usePreload(src: string) {
 export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext }: LightboxProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
   const [imageLoadState, setImageLoadState] = useState<ImageLoadState>({
     src: "",
@@ -81,6 +82,16 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
       }
     };
   }, [onClose, onPrev, onNext]);
+
+  // 切换图片时重置加载状态；如果图片已在缓存中，立即标记为 loaded
+  useEffect(() => {
+    if (!photo) return;
+    setImageLoadState({ src: photo.imageUrl, status: "loading" });
+    const img = imgRef.current;
+    if (img?.complete && img.naturalHeight > 0) {
+      setImageLoadState({ src: photo.imageUrl, status: "loaded" });
+    }
+  }, [currentIndex, photo]);
 
   if (!photo) return null;
 
@@ -148,7 +159,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
             </div>
           ) : null}
           <img
-            key={photo.imageUrl}
+            ref={imgRef}
             className={`lightbox-image ${isImageLoaded ? "is-loaded" : ""}`}
             src={photo.imageUrl}
             alt={photo.alt}
