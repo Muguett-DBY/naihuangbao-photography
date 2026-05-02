@@ -47,10 +47,9 @@ describe("audit regression coverage", () => {
   it("bounds lightbox images to the viewport stage instead of percentage max-height", () => {
     const lightboxImageBlock = cssSource.match(/\.lightbox-image\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
 
-    expect(lightboxImageBlock).toContain("width: auto");
-    expect(lightboxImageBlock).toContain("height: auto");
-    expect(lightboxImageBlock).toMatch(/max-width:\s*min\(92vw,\s*1080px\)/);
-    expect(lightboxImageBlock).toMatch(/max-height:\s*min\(78dvh,\s*760px\)/);
+    expect(lightboxImageBlock).toContain("width: 100%");
+    expect(lightboxImageBlock).toContain("height: 100%");
+    expect(lightboxImageBlock).toContain("object-fit: contain");
     expect(cssSource).toMatch(
       /@media\s*\(max-width:\s*620px\)\s*\{[\s\S]*\.lightbox-image\s*\{(?=[^}]*max-width:\s*calc\(100vw - 28px\))(?=[^}]*max-height:\s*min\(66dvh,\s*560px\))/,
     );
