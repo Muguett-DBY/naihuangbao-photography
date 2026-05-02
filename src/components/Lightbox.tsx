@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { PhotoItem } from "../types/photo";
 
@@ -112,7 +113,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
     });
   }
 
-  return (
+  const dialog = (
     <div
       ref={dialogRef}
       className="lightbox-overlay"
@@ -188,6 +189,8 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
       </div>
     </div>
   );
+
+  return createPortal(dialog, document.body);
 }
 
 function trapDialogFocus(event: KeyboardEvent, dialog: HTMLElement | null) {

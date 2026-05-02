@@ -25,7 +25,7 @@ const starterPrompts = [
 ];
 
 const chatRequestTimeoutMs = 16_000;
-const chatRevealDelayMs = 80;
+const chatRevealDelayMs = 40;
 const emptyAssistantReply = "聊天助手暂时没有返回内容，请再试一次。";
 
 const welcomeMessage: ChatMessage = {

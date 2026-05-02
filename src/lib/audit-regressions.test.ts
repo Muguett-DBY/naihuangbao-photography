@@ -44,6 +44,14 @@ describe("audit regression coverage", () => {
     expect(cssSource).toContain(".lightbox-spinner");
   });
 
+  it("mounts the lightbox outside transformed gallery containers", () => {
+    expect(cssSource).toMatch(/main\s*\{[^}]*overflow:\s*hidden/s);
+    expect(cssSource).toMatch(/\.section-shell\s*\{[^}]*transform:\s*translateY\(36px\)/s);
+    expect(lightboxSource).toContain('from "react-dom"');
+    expect(lightboxSource).toContain("createPortal");
+    expect(lightboxSource).toMatch(/createPortal\(\s*dialog,\s*document\.body\s*\)/s);
+  });
+
   it("resets image fallback state when the source changes", () => {
     expect(imageSource).toContain("useEffect");
     expect(imageSource).toContain("setFailed(!src)");
@@ -68,7 +76,7 @@ describe("audit regression coverage", () => {
   it("uses a visible chat typing cadence and indicator for streamed and JSON replies", () => {
     const delayUses = widgetSource.match(/setTimeout\([^,]+,\s*chatRevealDelayMs\)/g) ?? [];
 
-    expect(widgetSource).toContain("const chatRevealDelayMs = 80");
+    expect(widgetSource).toContain("const chatRevealDelayMs = 40");
     expect(delayUses.length).toBeGreaterThanOrEqual(3);
     expect(widgetSource).not.toMatch(/setTimeout\([^,]+,\s*28\)/);
     expect(widgetSource).not.toMatch(/if\s*\(\s*prefersReducedMotion\(\)\s*\)/);
