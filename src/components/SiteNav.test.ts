@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const navSource = readFileSync(resolve(process.cwd(), "src/components/SiteNav.tsx"), "utf8");
+const gallerySource = readFileSync(resolve(process.cwd(), "src/components/Gallery.tsx"), "utf8");
 const cssSource = readFileSync(resolve(process.cwd(), "src/styles/global.css"), "utf8");
 
 describe("mobile site navigation", () => {
@@ -45,5 +46,22 @@ describe("gallery filter styles", () => {
     expect(cssSource).toContain(".section-heading h2::before");
     expect(cssSource).toContain("border-radius: 26px");
     expect(cssSource).toContain("rgba(255, 184, 161, 0.15)");
+  });
+});
+
+describe("gallery lightbox loading", () => {
+  it("preloads the lazy lightbox chunk when the gallery mounts", () => {
+    expect(gallerySource).toContain("useEffect");
+    expect(gallerySource).toContain('void import("./Lightbox")');
+  });
+
+  it("shows a visible loading state while the lightbox chunk resolves", () => {
+    expect(gallerySource).toMatch(/fallback=\{\s*<div className="lightbox-fallback"/);
+    expect(gallerySource).toContain('role="status"');
+    expect(gallerySource).toContain('aria-live="polite"');
+    expect(gallerySource).not.toContain("fallback={null}");
+    expect(cssSource).toContain(".lightbox-fallback");
+    expect(cssSource).toContain("position: fixed");
+    expect(cssSource).toContain("background: rgba(0, 0, 0, 0.5)");
   });
 });

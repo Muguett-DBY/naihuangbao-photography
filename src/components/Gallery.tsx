@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { styleLabels } from "../data/site";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
@@ -20,6 +20,10 @@ export function Gallery() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
+
+  useEffect(() => {
+    void import("./Lightbox");
+  }, []);
 
   const handlePrev = useCallback(() => {
     setLightboxIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : photos.length - 1));
@@ -81,7 +85,13 @@ export function Gallery() {
       </div>
 
       {lightboxIndex !== null && (
-        <Suspense fallback={null}>
+        <Suspense
+          fallback={
+            <div className="lightbox-fallback" role="status" aria-live="polite">
+              加载中...
+            </div>
+          }
+        >
           <Lightbox
             photos={photos}
             currentIndex={lightboxIndex}
