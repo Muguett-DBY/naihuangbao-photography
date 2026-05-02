@@ -179,7 +179,6 @@ describe("public AI chat integration", () => {
     expect(widgetSource).toContain("onKeyDown");
     expect(widgetSource).toContain("onCompositionStart");
     expect(widgetSource).toContain("Shift+Enter");
-    expect(widgetSource).toContain("prefers-reduced-motion");
     expect(widgetSource).toContain("sendingRef");
     expect(widgetSource).toContain("AI问答");
     expect(widgetSource).not.toContain("sk-");
@@ -187,6 +186,7 @@ describe("public AI chat integration", () => {
     expect(globalCss).toContain(".public-chat-widget");
     expect(globalCss).toContain(".public-chat-panel");
     expect(globalCss).toContain("@media (max-width: 640px)");
+    expect(globalCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(globalCss).toContain("100dvh");
 
     expect(adminSource).not.toContain('"ai"');

@@ -17,23 +17,30 @@ describe("audit regression coverage", () => {
   it("keeps the lightbox fade animation paired with its keyframes and reduced-motion override", () => {
     expect(cssSource).toContain("@keyframes lightboxFade");
     expect(cssSource).toMatch(/\.lightbox-image\.is-loaded\s*\{[^}]*animation:\s*lightboxFade/s);
+    expect(cssSource).toMatch(/@keyframes lightboxFade\s*\{[\s\S]*opacity:\s*1/s);
     expect(cssSource).toMatch(/prefers-reduced-motion:[^)]+reduce[\s\S]*\.lightbox-image[\s\S]*animation:\s*none\s*!important/);
   });
 
-  it("keeps the lightbox modal keyboard-safe while tracking image load state", () => {
+  it("keeps the lightbox modal keyboard-safe while tracking cached image load state", () => {
     expect(lightboxSource).toContain("dialogRef");
     expect(lightboxSource).toContain("previousActiveElementRef");
     expect(lightboxSource).toContain('case "Tab"');
     expect(lightboxSource).toContain("querySelectorAll<HTMLElement>");
+    expect(lightboxSource).toContain("useLayoutEffect");
+    expect(lightboxSource).toContain("readImageElementStatus");
     expect(lightboxSource).toContain("imageLoadState");
     expect(lightboxSource).toContain("handleImageLoad");
     expect(lightboxSource).toContain("handleImageError");
     expect(lightboxSource).toContain("isImageLoaded");
     expect(lightboxSource).toContain("lightbox-spinner");
     expect(lightboxSource).toContain("is-loaded");
-    expect(cssSource).toMatch(/\.lightbox-image\s*\{[^}]*opacity:\s*0/s);
+    expect(cssSource).toMatch(/\.lightbox-overlay\s*\{(?=[^}]*position:\s*fixed)(?=[^}]*inset:\s*0)(?=[^}]*z-index:\s*9999)(?=[^}]*display:\s*flex)(?=[^}]*align-items:\s*center)(?=[^}]*justify-content:\s*center)/s);
+    expect(cssSource).not.toMatch(/\.lightbox-image\s*\{[^}]*opacity:\s*0/s);
+    expect(cssSource).toMatch(/\.lightbox-image\s*\{[^}]*opacity:\s*1/s);
     expect(cssSource).toContain(".lightbox-image.is-loaded");
+    expect(cssSource).toMatch(/\.lightbox-image-wrap\s*\{[^}]*max-height:\s*calc\(100dvh - 130px\)/s);
     expect(cssSource).toContain(".lightbox-loading");
+    expect(cssSource).toMatch(/\.lightbox-loading,\s*\.lightbox-image-error\s*\{[^}]*z-index:\s*2/s);
     expect(cssSource).toContain(".lightbox-spinner");
   });
 
@@ -52,16 +59,20 @@ describe("audit regression coverage", () => {
   });
 
   it("continues non-stream chat reveal ticks until the reply is complete", () => {
-    expect(widgetSource).toContain("scheduleNextReveal");
-    expect(widgetSource).toMatch(/index\s*<\s*reply\.length[\s\S]*scheduleNextReveal\(\)/);
+    expect(widgetSource).toContain("normalizeAssistantReplyText");
+    expect(widgetSource).toContain("Array.from(reply)");
+    expect(widgetSource).toMatch(/await\s+revealAssistantReply\(assistantId,\s*data\.reply\)/);
+    expect(widgetSource).toMatch(/revealTimerRef\.current\s*=\s*window\.setTimeout\(revealNextCharacter,\s*chatRevealDelayMs\)/);
   });
 
   it("uses a visible chat typing cadence and indicator for streamed and JSON replies", () => {
     const delayUses = widgetSource.match(/setTimeout\([^,]+,\s*chatRevealDelayMs\)/g) ?? [];
 
-    expect(widgetSource).toContain("const chatRevealDelayMs = 70");
+    expect(widgetSource).toContain("const chatRevealDelayMs = 80");
     expect(delayUses.length).toBeGreaterThanOrEqual(3);
     expect(widgetSource).not.toMatch(/setTimeout\([^,]+,\s*28\)/);
+    expect(widgetSource).not.toMatch(/if\s*\(\s*prefersReducedMotion\(\)\s*\)/);
+    expect(widgetSource).toContain("聊天助手暂时没有返回内容");
     expect(widgetSource).toContain("public-chat-typing-label");
     expect(widgetSource).toContain("public-chat-cursor");
     expect(cssSource).toContain(".public-chat-typing-label");

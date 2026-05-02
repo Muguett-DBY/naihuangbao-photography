@@ -25,7 +25,8 @@ const starterPrompts = [
 ];
 
 const chatRequestTimeoutMs = 16_000;
-const chatRevealDelayMs = 70;
+const chatRevealDelayMs = 80;
+const emptyAssistantReply = "聊天助手暂时没有返回内容，请再试一次。";
 
 const welcomeMessage: ChatMessage = {
   id: "assistant-welcome",
@@ -82,38 +83,40 @@ export function PublicChatWidget() {
     setTyping(false);
   }
 
-  function revealAssistantReply(messageId: string, reply: string) {
+  function revealAssistantReply(messageId: string, rawReply: unknown) {
     clearRevealTimer();
+    const reply = normalizeAssistantReplyText(rawReply);
+    const characters = Array.from(reply);
 
-    if (prefersReducedMotion()) {
-      setMessages((prev) => prev.map((message) => (
-        message.id === messageId ? { ...message, content: reply } : message
-      )));
-      return;
-    }
-
+    setMessages((prev) => prev.map((message) => (
+      message.id === messageId ? { ...message, content: "" } : message
+    )));
     setTyping(true);
     let index = 0;
 
-    function scheduleNextReveal() {
-      revealTimerRef.current = window.setTimeout(update, chatRevealDelayMs);
-    }
-
-    function update() {
-      index = Math.min(reply.length, index + 1);
-      setMessages((prev) => prev.map((message) => (
-        message.id === messageId ? { ...message, content: reply.slice(0, index) } : message
-      )));
-
-      if (index < reply.length) {
-        scheduleNextReveal();
-        return;
+    return new Promise<void>((resolve) => {
+      function finishReveal() {
+        clearRevealTimer();
+        resolve();
       }
 
-      clearRevealTimer();
-    }
+      function revealNextCharacter() {
+        index = Math.min(characters.length, index + 1);
+        const visibleReply = characters.slice(0, index).join("");
+        setMessages((prev) => prev.map((message) => (
+          message.id === messageId ? { ...message, content: visibleReply } : message
+        )));
 
-    update();
+        if (index < characters.length) {
+          revealTimerRef.current = window.setTimeout(revealNextCharacter, chatRevealDelayMs);
+          return;
+        }
+
+        revealTimerRef.current = window.setTimeout(finishReveal, chatRevealDelayMs);
+      }
+
+      revealTimerRef.current = window.setTimeout(revealNextCharacter, chatRevealDelayMs);
+    });
   }
 
   async function revealAssistantStream(messageId: string, body: ReadableStream<Uint8Array>) {
@@ -122,25 +125,28 @@ export function PublicChatWidget() {
     const reader = body.getReader();
     const decoder = new TextDecoder();
 
-    if (prefersReducedMotion()) {
-      const reply = await readStreamText(reader, decoder);
-      setMessages((prev) => prev.map((message) => (
-        message.id === messageId ? { ...message, content: reply } : message
-      )));
-      return;
-    }
-
     setTyping(true);
     let displayed = "";
-    let pending = "";
+    let pendingCharacters: string[] = [];
     let streamDone = false;
     let streamError: unknown = null;
+    let fallbackQueued = false;
 
     const revealDone = new Promise<void>((resolve, reject) => {
+      function finishReveal() {
+        revealTimerRef.current = window.setTimeout(() => {
+          clearRevealTimer();
+          if (streamError) {
+            reject(streamError);
+          } else {
+            resolve();
+          }
+        }, chatRevealDelayMs);
+      }
+
       function tick() {
-        if (pending.length > 0) {
-          displayed += pending[0];
-          pending = pending.slice(1);
+        if (pendingCharacters.length > 0) {
+          displayed += pendingCharacters.shift() ?? "";
           setMessages((prev) => prev.map((message) => (
             message.id === messageId ? { ...message, content: displayed } : message
           )));
@@ -149,28 +155,35 @@ export function PublicChatWidget() {
         }
 
         if (streamDone) {
-          clearRevealTimer();
-          if (streamError) {
-            reject(streamError);
-          } else {
-            resolve();
+          if (!streamError && !displayed.trim() && !fallbackQueued) {
+            pendingCharacters = Array.from(emptyAssistantReply);
+            fallbackQueued = true;
+            revealTimerRef.current = window.setTimeout(tick, chatRevealDelayMs);
+            return;
           }
+          finishReveal();
           return;
         }
 
         revealTimerRef.current = window.setTimeout(tick, chatRevealDelayMs);
       }
 
-      tick();
+      revealTimerRef.current = window.setTimeout(tick, chatRevealDelayMs);
     });
 
     try {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        pending += decoder.decode(value, { stream: true });
+        const chunk = decoder.decode(value, { stream: true });
+        if (chunk) {
+          pendingCharacters.push(...Array.from(chunk));
+        }
       }
-      pending += decoder.decode();
+      const finalChunk = decoder.decode();
+      if (finalChunk) {
+        pendingCharacters.push(...Array.from(finalChunk));
+      }
     } catch (err) {
       streamError = err;
     } finally {
@@ -211,11 +224,8 @@ export function PublicChatWidget() {
       if (response.body && !contentType.includes("application/json")) {
         await revealAssistantStream(assistantId, response.body);
       } else {
-        const data = (await response.json().catch(() => ({}))) as { reply?: string };
-        if (!data.reply) {
-          throw new Error("聊天助手暂时不可用，请稍后再试。");
-        }
-        revealAssistantReply(assistantId, data.reply);
+        const data = (await response.json().catch(() => ({}))) as { reply?: unknown };
+        await revealAssistantReply(assistantId, data.reply);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "聊天助手暂时不可用，请稍后再试。");
@@ -334,10 +344,6 @@ export function PublicChatWidget() {
   );
 }
 
-function prefersReducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
 async function fetchChatResponse(messages: ChatMessage[]) {
   const body = JSON.stringify({
     messages: messages.map(({ role, content }) => ({ role, content })),
@@ -396,14 +402,7 @@ function wait(ms: number) {
   });
 }
 
-async function readStreamText(reader: ReadableStreamDefaultReader<Uint8Array>, decoder: TextDecoder) {
-  let text = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    text += decoder.decode(value, { stream: true });
-  }
-
-  return text + decoder.decode();
+function normalizeAssistantReplyText(reply: unknown) {
+  if (typeof reply !== "string") return emptyAssistantReply;
+  return reply.trim() || emptyAssistantReply;
 }

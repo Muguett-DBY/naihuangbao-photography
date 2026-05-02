@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { PhotoItem } from "../types/photo";
 
@@ -32,10 +32,10 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
   const dialogRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
-  const [imageLoadState, setImageLoadState] = useState<ImageLoadState>({
-    src: "",
+  const [imageLoadState, setImageLoadState] = useState<ImageLoadState>(() => ({
+    src: photos[currentIndex]?.imageUrl ?? "",
     status: "loading",
-  });
+  }));
   const photo = photos[currentIndex];
 
   // 预加载相邻图片
@@ -83,15 +83,14 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
     };
   }, [onClose, onPrev, onNext]);
 
-  // 切换图片时重置加载状态；如果图片已在缓存中，立即标记为 loaded
-  useEffect(() => {
+  // Check the DOM image before paint so cached images cannot miss onLoad.
+  useLayoutEffect(() => {
     if (!photo) return;
-    setImageLoadState({ src: photo.imageUrl, status: "loading" });
-    const img = imgRef.current;
-    if (img?.complete && img.naturalHeight > 0) {
-      setImageLoadState({ src: photo.imageUrl, status: "loaded" });
-    }
-  }, [currentIndex, photo]);
+    setImageLoadState({
+      src: photo.imageUrl,
+      status: readImageElementStatus(imgRef.current),
+    });
+  }, [photo?.imageUrl]);
 
   if (!photo) return null;
 
@@ -223,4 +222,9 @@ function trapDialogFocus(event: KeyboardEvent, dialog: HTMLElement | null) {
     event.preventDefault();
     firstElement.focus();
   }
+}
+
+function readImageElementStatus(img: HTMLImageElement | null): ImageLoadState["status"] {
+  if (!img?.complete) return "loading";
+  return img.naturalWidth > 0 && img.naturalHeight > 0 ? "loaded" : "error";
 }
