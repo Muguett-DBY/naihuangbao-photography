@@ -44,8 +44,10 @@ describe("gallery filter styles", () => {
     expect(cssSource).toContain("--caramel-text: #8B5E4A");
     expect(cssSource).toContain(".hero-card::before");
     expect(cssSource).toContain(".section-heading h2::before");
-    expect(cssSource).toContain("border-radius: 26px");
-    expect(cssSource).toContain("rgba(255, 184, 161, 0.15)");
+    expect(cssSource).toContain("--font-heading-cn");
+    expect(cssSource).toContain("border-radius: 18px");
+    expect(cssSource).toContain("rgba(255, 184, 161, 0.13)");
+    expect(cssSource).toContain("@media (hover: none)");
   });
 });
 
