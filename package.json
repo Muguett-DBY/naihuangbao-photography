@@ -15,22 +15,22 @@
     "assets:crop": "node scripts/crop-gallery-assets.mjs"
   },
   "dependencies": {
-    "lucide-react": "^0.468.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "lucide-react": "^1.14.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260424.0",
     "@tailwindcss/vite": "^4.1.17",
-    "@types/node": "^20.19.25",
+    "@types/node": "^25.6.2",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.0.4",
+    "@vitejs/plugin-react": "^6.0.1",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.17",
-    "typescript": "^5.9.3",
-    "vite": "^7.2.7",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.11",
     "vite-plugin-pwa": "^1.2.0",
-    "vitest": "^2.1.9"
+    "vitest": "^4.1.5"
   }
 }
