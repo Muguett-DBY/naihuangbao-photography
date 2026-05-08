@@ -49,11 +49,16 @@ describe("performance resources", () => {
     }
   });
 
-  it("self-hosts the display font and avoids runtime Google Fonts import", () => {
+  it("self-hosts Nunito through fontsource and avoids runtime Google Fonts import", () => {
     expect(globalCss).not.toContain("fonts.googleapis.com");
-    expect(globalCss).toContain("@font-face");
-    expect(globalCss).toContain("font-display: swap");
-    expect(existsSync(resolve(root, "public/fonts/cormorant-garamond.woff2"))).toBe(true);
+    expect(globalCss).toContain('@import "@fontsource/nunito/400.css"');
+    expect(globalCss).toContain('--font-heading: "Nunito", var(--font-heading-cn)');
+    expect(globalCss).toContain('--font-ui: "Nunito", var(--font-body)');
+    expect(html).toContain(
+      'href="/node_modules/@fontsource/nunito/files/nunito-latin-400-normal.woff2"',
+    );
+    expect(existsSync(resolve(root, "public/fonts/cormorant-garamond.woff2"))).toBe(false);
+    expect(existsSync(resolve(root, "public/fonts/inter.woff2"))).toBe(false);
   });
 
   it("declares static asset caching headers and short API photo caching", () => {
