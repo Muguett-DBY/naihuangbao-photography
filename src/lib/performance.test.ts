@@ -13,6 +13,11 @@ const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
 const navSource = readFileSync(resolve(root, "src/components/SiteNav.tsx"), "utf8");
 const parallaxSource = readFileSync(resolve(root, "src/hooks/useParallax.ts"), "utf8");
 const photosApiSource = readFileSync(resolve(root, "functions/api/photos.ts"), "utf8");
+const viteConfigSource = readFileSync(resolve(root, "vite.config.ts"), "utf8");
+const chatLauncherPath = resolve(root, "src/components/PublicChatLauncher.tsx");
+const chatLauncherSource = existsSync(chatLauncherPath)
+  ? readFileSync(chatLauncherPath, "utf8")
+  : "";
 
 describe("performance resources", () => {
   it("preloads the actual static hero image with the gallery asset version", () => {
@@ -49,14 +54,14 @@ describe("performance resources", () => {
     }
   });
 
-  it("self-hosts Nunito through fontsource and avoids runtime Google Fonts import", () => {
+  it("uses system typography without bundling fontsource or preloading fonts", () => {
     expect(globalCss).not.toContain("fonts.googleapis.com");
-    expect(globalCss).toContain('@import "@fontsource/nunito/400.css"');
-    expect(globalCss).toContain('--font-heading: "Nunito", var(--font-heading-cn)');
-    expect(globalCss).toContain('--font-ui: "Nunito", var(--font-body)');
-    expect(html).toContain(
-      'href="/node_modules/@fontsource/nunito/files/nunito-latin-400-normal.woff2"',
-    );
+    expect(globalCss).not.toContain("@fontsource/nunito");
+    expect(globalCss).not.toContain("font-family: \"Nunito\"");
+    expect(globalCss).toContain("--font-heading: var(--font-heading-cn)");
+    expect(globalCss).toContain("--font-ui: var(--font-body)");
+    expect(html).not.toContain('rel="preload" as="font"');
+    expect(html).not.toContain("/node_modules/@fontsource");
     expect(existsSync(resolve(root, "public/fonts/cormorant-garamond.woff2"))).toBe(false);
     expect(existsSync(resolve(root, "public/fonts/inter.woff2"))).toBe(false);
   });
@@ -70,6 +75,16 @@ describe("performance resources", () => {
     expect(photosApiSource).toContain("stale-while-revalidate=300");
   });
 
+  it("keeps gallery photos out of the precache and runtime-caches them", () => {
+    expect(viteConfigSource).toContain("globIgnores");
+    expect(viteConfigSource).toContain("**/images/gallery/**/*");
+    expect(viteConfigSource).toContain("runtimeCaching");
+    expect(viteConfigSource).toContain('url.pathname.startsWith("/images/gallery/")');
+    expect(viteConfigSource).toContain('handler: "CacheFirst"');
+    expect(viteConfigSource).toContain("maxEntries: 36");
+    expect(viteConfigSource).toContain("maxAgeSeconds: 60 * 60 * 24 * 30");
+  });
+
   it("keeps admin pages out of browser caches and search indexes", () => {
     const headers = readFileSync(resolve(root, "public/_headers"), "utf8");
 
@@ -78,13 +93,18 @@ describe("performance resources", () => {
     expect(headers).toContain("X-Robots-Tag: noindex");
   });
 
-  it("lazy-loads gallery images, the lightbox, and admin CSS outside the public shell", () => {
+  it("lazy-loads gallery images, the lightbox, chat panel, and admin CSS outside the public shell", () => {
     expect(gallerySource).toContain("new IntersectionObserver");
     expect(gallerySource).toContain('rootMargin: "200px"');
     expect(gallerySource).toContain("observer.disconnect()");
     expect(globalCss).toContain(".gallery-skeleton");
 
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
+    expect(appSource).toContain('lazy(() => import("./components/PublicChatWidget"))');
+    expect(appSource).toContain("<PublicChatLauncher");
+    expect(appSource).not.toContain('import { PublicChatWidget } from "./components/PublicChatWidget"');
+    expect(chatLauncherSource).toContain("function PublicChatLauncher");
+    expect(chatLauncherSource).not.toContain('fetch("/api/chat"');
     expect(appSource).toContain('import("./components/AdminDashboard")');
     expect(appSource).toContain('import("./styles/admin.css")');
     expect(globalCss).not.toContain(".adm-root");

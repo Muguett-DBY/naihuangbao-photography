@@ -20,7 +20,27 @@ export default defineConfig({
         "icons/pwa-maskable-512.png",
       ],
       workbox: {
-        globPatterns: ["**/*.{js,css,html,png,svg,jpg,jpeg,webp,woff2}"],
+        globPatterns: ["**/*.{js,css,html,png,svg,jpg,jpeg}"],
+        globIgnores: ["**/images/gallery/**/*"],
+        runtimeCaching: [
+          {
+            urlPattern: ({ request, url }) => {
+              const imageRequest = request as unknown as { destination?: string };
+              return imageRequest.destination === "image" && url.pathname.startsWith("/images/gallery/");
+            },
+            handler: "CacheFirst",
+            options: {
+              cacheName: "gallery-images",
+              expiration: {
+                maxEntries: 36,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
       },
     }),
   ],

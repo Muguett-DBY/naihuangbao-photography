@@ -1,8 +1,3 @@
-@import "@fontsource/nunito/300.css";
-@import "@fontsource/nunito/400.css";
-@import "@fontsource/nunito/500.css";
-@import "@fontsource/nunito/600.css";
-@import "@fontsource/nunito/700.css";
 @import "tailwindcss";
 
 :root {
@@ -11,11 +6,14 @@
     BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-heading-cn:
     "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif;
-  --font-heading: "Nunito", var(--font-heading-cn);
-  --font-ui: "Nunito", var(--font-body);
+  --font-heading: var(--font-heading-cn);
+  --font-ui: var(--font-body);
   --custard-bg: #FEF3DD;
   --custard-cream: #FFF9EC;
   --custard-soft: #FFE8C5;
+  --sage-mist: #DDE7D7;
+  --sage-soft: #EDF4EA;
+  --sage-text: #65785F;
   --peach-accent: #FFB8A1;
   --peach-soft: #FFD2B8;
   --caramel-text: #8B5E4A;
@@ -28,16 +26,16 @@
   --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
   --section-inline: clamp(22px, 5vw, 52px);
   --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.08'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.38'/%3E%3C/svg%3E");
-  --shadow-core: 0 1px 3px rgba(95, 60, 49, 0.08);
-  --shadow-mid: 0 14px 34px rgba(139, 94, 74, 0.075);
-  --shadow-ambient: 0 24px 70px rgba(255, 184, 161, 0.13);
-  --shadow-far: 0 42px 100px rgba(255, 210, 184, 0.15);
+  --shadow-core: 0 1px 2px rgba(95, 60, 49, 0.06);
+  --shadow-mid: 0 10px 26px rgba(139, 94, 74, 0.06);
+  --shadow-ambient: 0 20px 54px rgba(255, 184, 161, 0.1);
+  --shadow-far: 0 32px 78px rgba(255, 210, 184, 0.1);
   --warm-shadow: var(--shadow-core), var(--shadow-mid), var(--shadow-ambient), var(--shadow-far);
   --warm-shadow-strong:
-    0 4px 9px rgba(95, 60, 49, 0.09),
-    0 18px 48px rgba(139, 94, 74, 0.12),
-    0 30px 84px rgba(255, 184, 161, 0.22),
-    0 52px 118px rgba(255, 210, 184, 0.2);
+    0 3px 8px rgba(95, 60, 49, 0.08),
+    0 14px 38px rgba(139, 94, 74, 0.09),
+    0 24px 68px rgba(255, 184, 161, 0.16),
+    0 40px 96px rgba(255, 210, 184, 0.14);
   --paper-inset:
     inset 0 1px 0 rgba(255, 255, 255, 0.88),
     inset 0 -18px 28px rgba(139, 94, 74, 0.035),
@@ -75,6 +73,8 @@ html {
 
 /* ── Scroll Reveal Animations ── */
 .section-shell {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 860px;
   opacity: 0;
   transform: translateY(36px);
   transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
@@ -174,7 +174,6 @@ html {
   opacity: 0;
   transform: scale(1.08);
   filter: blur(14px);
-  will-change: transform, opacity, filter;
   transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
               filter 0.7s cubic-bezier(0.22, 1, 0.36, 1);
@@ -228,10 +227,11 @@ body {
   letter-spacing: 0.005em;
   background:
     var(--paper-noise),
-    radial-gradient(ellipse at 12% 8%, rgba(255, 184, 161, 0.28), transparent 34%),
+    radial-gradient(ellipse at 12% 8%, rgba(255, 184, 161, 0.22), transparent 34%),
     radial-gradient(ellipse at 82% 14%, rgba(255, 255, 255, 0.72), transparent 30%),
-    radial-gradient(ellipse at 72% 62%, rgba(255, 210, 184, 0.28), transparent 36%),
-    linear-gradient(180deg, #FEF3DD 0%, #FFF8EA 42%, #FEE9C9 100%);
+    radial-gradient(ellipse at 74% 58%, rgba(221, 231, 215, 0.42), transparent 34%),
+    radial-gradient(ellipse at 72% 78%, rgba(255, 210, 184, 0.18), transparent 36%),
+    linear-gradient(180deg, #FEF3DD 0%, #FFF8EA 44%, #F6EEDB 100%);
 }
 body.nav-lock {
   overflow: hidden;
@@ -246,7 +246,7 @@ body::before {
   color: var(--peach-accent);
   font-size: clamp(18px, 2.6vw, 34px);
   letter-spacing: 0.55em;
-  opacity: 0.2;
+  opacity: 0.11;
   pointer-events: none;
   transform: rotate(9deg);
 }
@@ -256,7 +256,7 @@ body::after {
   inset: 0;
   pointer-events: none;
   z-index: 50;
-  opacity: 0.032;
+  opacity: 0.022;
   background: repeating-linear-gradient(
     0deg,
     transparent,
@@ -278,7 +278,7 @@ main::after {
   color: var(--peach-accent);
   font-size: clamp(20px, 3vw, 38px);
   letter-spacing: 0.4em;
-  opacity: 0.16;
+  opacity: 0.08;
   pointer-events: none;
 }
 
@@ -314,26 +314,10 @@ a {
   -webkit-tap-highlight-color: rgba(255, 184, 161, 0.2);
 }
 
-.kicker,
-.hero h1,
-.hero-intro,
-.hero-actions > *,
-.hero-scroll-cue,
-.section-shell,
-.section-body > *,
-.package-card,
-.why-card,
-.process-step,
-.service-detail-card,
-.booking-card,
-.mid-cta-card,
 .nav-menu a,
 .hamburger,
 .lightbox-close,
-.lightbox-nav,
-.public-chat-panel,
-.public-chat-message {
-  will-change: transform;
+.lightbox-nav {
   backface-visibility: hidden;
 }
 
@@ -359,7 +343,6 @@ a {
               border-color 0.35s ease,
               box-shadow 0.35s ease,
               backdrop-filter 0.35s ease;
-  will-change: transform, padding;
   backface-visibility: hidden;
 }
 .site-nav::after {
@@ -481,7 +464,6 @@ body.nav-lock .site-nav {
   transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1),
               background 0.25s ease;
-  will-change: transform;
   backface-visibility: hidden;
 }
 .nav-cta:hover,
@@ -587,6 +569,15 @@ body.nav-lock .site-nav {
   line-height: 1.92;
   letter-spacing: 0.012em;
 }
+.hero-intro strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--sage-text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
 .hero-intro::before {
   content: "“";
   position: absolute;
@@ -635,7 +626,6 @@ body.nav-lock .site-nav {
   letter-spacing: 0.04em;
   padding: 14px 10px;
   transition: color 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
 }
 .text-button:hover {
   color: var(--caramel-deep);
@@ -802,7 +792,6 @@ body.nav-lock .site-nav {
     var(--paper-inset),
     0 10px 30px rgba(255, 184, 161, 0.18),
     0 22px 50px rgba(139, 94, 74, 0.08);
-  will-change: transform;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -997,6 +986,8 @@ body.nav-lock .site-nav {
 
 .section-shell,
 .booking-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 720px;
   max-width: 1220px;
   margin: 0 auto;
   padding: clamp(96px, 12vw, 166px) var(--section-inline);
@@ -1138,7 +1129,6 @@ body.nav-lock .site-nav {
               border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
 }
 
 .filter-row button:hover {
@@ -1206,6 +1196,23 @@ body.nav-lock .site-nav {
               box-shadow 0.36s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
   backface-visibility: hidden;
+}
+.gallery-card-featured {
+  --polaroid-tilt: -0.8deg;
+  grid-column: span 6;
+  background:
+    linear-gradient(145deg, rgba(237, 244, 234, 0.72), rgba(255, 253, 247, 0.94)),
+    var(--paper-white);
+}
+.gallery-card-featured .gallery-card-btn {
+  aspect-ratio: 5 / 6;
+}
+.gallery-card-featured > div:last-child {
+  min-height: 92px;
+  padding-top: 20px;
+}
+.gallery-card-featured h3 {
+  font-size: clamp(24px, 3vw, 34px);
 }
 .section-body.is-visible .gallery-card {
   opacity: 1;
@@ -1378,20 +1385,21 @@ body.nav-lock .site-nav {
 .admin-card {
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 20px;
-  background: rgba(255, 253, 247, 0.82);
+  background:
+    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.28)),
+    rgba(255, 253, 247, 0.82);
   box-shadow:
     var(--paper-inset),
     var(--warm-shadow);
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
               opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
   backface-visibility: hidden;
 }
 .package-card:hover,
 .why-card:hover,
 .service-detail-card:hover {
-  transform: translate3d(0, -5px, 0) scale(1.01);
+  transform: translate3d(0, -3px, 0);
   box-shadow:
     var(--paper-inset),
     var(--warm-shadow-strong);
@@ -1407,7 +1415,10 @@ body.nav-lock .site-nav {
 }
 
 .package-card.is-popular {
-  border-color: rgba(255, 184, 161, 0.56);
+  border-color: rgba(101, 120, 95, 0.28);
+  background:
+    linear-gradient(145deg, rgba(237, 244, 234, 0.86), rgba(255, 253, 247, 0.94)),
+    var(--paper-white);
   box-shadow:
     var(--paper-inset),
     0 3px 7px rgba(95, 60, 49, 0.08),
@@ -1468,13 +1479,12 @@ body.nav-lock .site-nav {
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 20px;
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.92), rgba(255, 210, 184, 0.24)),
+    linear-gradient(145deg, rgba(255, 253, 247, 0.92), rgba(221, 231, 215, 0.24)),
     var(--paper-white);
   box-shadow: var(--warm-shadow);
   padding: clamp(24px, 3vw, 30px);
   transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
   backface-visibility: hidden;
 }
 
@@ -1770,7 +1780,6 @@ body.nav-lock .site-nav {
   box-shadow: var(--button-shadow);
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
 }
 
 .booking-cta:hover {
@@ -1794,7 +1803,9 @@ body.nav-lock .site-nav {
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 20px;
   padding: clamp(24px, 2.7vw, 30px);
-  background: rgba(255, 253, 247, 0.82);
+  background:
+    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    rgba(255, 253, 247, 0.82);
   box-shadow:
     var(--paper-inset),
     var(--warm-shadow);
@@ -1802,7 +1813,6 @@ body.nav-lock .site-nav {
               box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
               opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
   backface-visibility: hidden;
 }
 
@@ -1895,7 +1905,6 @@ body.nav-lock .site-nav {
     transform: translate3d(0, -10px, 0);
     transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
                 transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: opacity, transform;
   }
 
   .nav-menu::before {
@@ -1998,6 +2007,7 @@ body.nav-lock .site-nav {
 
 @media (max-width: 620px) {
   .site-nav {
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 10px;
     padding: 12px 16px;
   }
@@ -2012,9 +2022,7 @@ body.nav-lock .site-nav {
     padding-top: 44px;
   }
   .nav-cta {
-    min-height: 40px;
-    padding: 9px 12px;
-    font-size: 12px;
+    display: none;
   }
 
   .hero {
@@ -2294,6 +2302,8 @@ body.nav-lock .site-nav {
 }
 
 .mid-cta {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 320px;
   max-width: 860px;
   margin: 0 auto;
   padding: 0 var(--section-inline);
@@ -2301,7 +2311,6 @@ body.nav-lock .site-nav {
   transform: translateY(24px) scale(0.98);
   transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform, opacity;
 }
 .mid-cta.is-visible {
   opacity: 1;
@@ -2371,7 +2380,6 @@ body.nav-lock .site-nav {
     0 28px 54px rgba(255, 210, 184, 0.14);
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
 }
 .mid-cta-card a:hover {
   transform: translate3d(0, -3px, 0) scale(1.02);
@@ -2554,6 +2562,10 @@ body.nav-lock .site-nav {
   .gallery-card {
     grid-column: span 6;
   }
+
+  .gallery-card-featured {
+    grid-column: span 12;
+  }
 }
 
 @media (max-width: 620px) {
@@ -2567,6 +2579,10 @@ body.nav-lock .site-nav {
     grid-column: span 1;
     padding: 8px 8px 16px;
     border-radius: 15px;
+  }
+
+  .gallery-card-featured {
+    grid-column: span 2;
   }
 
   .gallery-card:nth-child(2n) {
@@ -2911,7 +2927,6 @@ a:focus-visible {
     transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
     background 0.28s ease;
-  will-change: transform;
 }
 
 .public-chat-launcher:hover {
@@ -2945,6 +2960,14 @@ a:focus-visible {
     0 60px 132px rgba(255, 210, 184, 0.18);
   transform-origin: right bottom;
   animation: publicChatPanelIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.public-chat-panel-loading {
+  place-items: center;
+  height: 112px;
+  color: var(--caramel-muted);
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .public-chat-head {
@@ -3137,7 +3160,6 @@ a:focus-visible {
     var(--paper-inset),
     0 8px 20px rgba(255, 184, 161, 0.08);
   transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  will-change: transform;
 }
 
 .public-chat-prompts button:hover:not(:disabled) {
@@ -3212,7 +3234,6 @@ a:focus-visible {
   cursor: pointer;
   box-shadow: var(--button-shadow);
   transition: transform 0.2s ease, opacity 0.2s ease;
-  will-change: transform;
 }
 
 .public-chat-form button:hover:not(:disabled) {

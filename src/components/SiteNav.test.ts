@@ -30,6 +30,13 @@ describe("mobile site navigation", () => {
 });
 
 describe("gallery filter styles", () => {
+  it("promotes the first all-gallery photo into a larger portfolio feature card", () => {
+    expect(gallerySource).toContain("isFeaturedGalleryCard");
+    expect(gallerySource).toContain("gallery-card-featured");
+    expect(cssSource).toContain(".gallery-card-featured");
+    expect(cssSource).toContain("grid-column: span 6");
+  });
+
   it("keeps the active filter readable while hovered or focused", () => {
     expect(cssSource).toContain(".filter-row .is-active:hover");
     expect(cssSource).toContain(".filter-row .is-active:focus-visible");

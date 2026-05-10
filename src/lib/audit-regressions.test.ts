@@ -107,6 +107,15 @@ describe("audit regression coverage", () => {
     expect(cssSource).toContain("@keyframes publicChatTypingBlink");
   });
 
+  it("limits will-change to elements that are actively animated or interacted with", () => {
+    expect(cssSource).not.toMatch(/\.kicker,\s*\.hero h1,\s*\.hero-intro,\s*\.hero-actions > \*,\s*\.hero-scroll-cue/s);
+    expect(cssSource).not.toMatch(/\.section-shell,\s*\.section-body > \*,\s*\.package-card,\s*\.why-card/s);
+    expect(cssSource).not.toMatch(/\.public-chat-panel,\s*\.public-chat-message\s*\{[\s\S]*will-change:\s*transform/s);
+    expect(cssSource).toMatch(/\.site-nav::after\s*\{[\s\S]*will-change:\s*transform/s);
+    expect(cssSource).toMatch(/\.hero-card\s*\{[\s\S]*will-change:\s*transform/s);
+    expect(cssSource).toMatch(/\.scroll-top\s*\{[\s\S]*will-change:\s*transform,\s*opacity/s);
+  });
+
   it("does not keep duplicated global accessibility blocks", () => {
     expect(countOccurrences(cssSource, "Accessibility: Focus Styles")).toBe(1);
     expect(countOccurrences(cssSource, "Accessibility: Reduced Motion")).toBe(1);

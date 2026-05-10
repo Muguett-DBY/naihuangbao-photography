@@ -117,40 +117,48 @@ export function Gallery() {
         ))}
       </div>
       <div className="gallery-grid" ref={galleryGridRef}>
-        {photos.map((photo, index) => (
-          <article
-            className="gallery-card"
-            data-gallery-photo-id={photo.id}
-            key={photo.id}
-            style={{ transitionDelay: `${index * 0.06}s` }}
-          >
-            <button
-              className="gallery-card-btn"
-              type="button"
-              onClick={() => setLightboxIndex(index)}
-              aria-label={`查看大图：${photo.title}`}
+        {photos.map((photo, index) => {
+          const isFeaturedGalleryCard = filter === "all" && index === 0;
+
+          return (
+            <article
+              className={`gallery-card${isFeaturedGalleryCard ? " gallery-card-featured" : ""}`}
+              data-gallery-photo-id={photo.id}
+              key={photo.id}
+              style={{ transitionDelay: `${index * 0.06}s` }}
             >
-              <ImageWithFallback
-                src={photo.imageUrl || ""}
-                alt={photo.alt}
-                title={photo.title}
-                tone={tones[index % tones.length]}
-                load={!photo.imageUrl || visiblePhotoIds.has(photo.id)}
-                sizes="(max-width: 620px) 50vw, (max-width: 900px) 50vw, 33vw"
-              />
-              <div className="gallery-hover-overlay">
-                <span className="gallery-hover-style">{styleLabels[photo.style]}</span>
-                <strong className="gallery-hover-title">{photo.title}</strong>
-                <span className="gallery-hover-location">{photo.location}</span>
+              <button
+                className="gallery-card-btn"
+                type="button"
+                onClick={() => setLightboxIndex(index)}
+                aria-label={`查看大图：${photo.title}`}
+              >
+                <ImageWithFallback
+                  src={photo.imageUrl || ""}
+                  alt={photo.alt}
+                  title={photo.title}
+                  tone={tones[index % tones.length]}
+                  load={!photo.imageUrl || visiblePhotoIds.has(photo.id)}
+                  sizes={
+                    isFeaturedGalleryCard
+                      ? "(max-width: 620px) 100vw, (max-width: 900px) 92vw, 50vw"
+                      : "(max-width: 620px) 50vw, (max-width: 900px) 50vw, 33vw"
+                  }
+                />
+                <div className="gallery-hover-overlay">
+                  <span className="gallery-hover-style">{styleLabels[photo.style]}</span>
+                  <strong className="gallery-hover-title">{photo.title}</strong>
+                  <span className="gallery-hover-location">{photo.location}</span>
+                </div>
+              </button>
+              <div>
+                <p>{styleLabels[photo.style]}</p>
+                <h3>{photo.title}</h3>
+                <span>{photo.location}</span>
               </div>
-            </button>
-            <div>
-              <p>{styleLabels[photo.style]}</p>
-              <h3>{photo.title}</h3>
-              <span>{photo.location}</span>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
 
       {lightboxIndex !== null && (

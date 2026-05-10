@@ -117,13 +117,16 @@ export function Hero() {
       <div className="hero-copy">
         <p className="kicker">
           <Sparkles size={15} />
-          {siteConfig.city} · 女生写真 / 情侣约拍
+          {siteConfig.brandName} · {siteConfig.city}约拍
         </p>
         <h1>
-          把柔软的日常，
-          <span>拍成有呼吸感的纪念。</span>
+          南京女生写真
+          <span>与情侣约拍</span>
         </h1>
-        <p className="hero-intro">{siteConfig.description}</p>
+        <p className="hero-intro">
+          <strong>奶黄包摄影</strong>
+          把柔软的日常拍成有呼吸感的纪念。{siteConfig.description}
+        </p>
         <div className="hero-actions">
           <a className="primary-button" href="#booking">
             预约咨询

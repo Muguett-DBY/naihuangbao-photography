@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 import { AboutBooking } from "./components/AboutBooking";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
@@ -8,7 +8,7 @@ import { MidCTA } from "./components/MidCTA";
 import { NotFound } from "./components/NotFound";
 import { Packages } from "./components/Packages";
 import { ProcessAndFaq } from "./components/ProcessAndFaq";
-import { PublicChatWidget } from "./components/PublicChatWidget";
+import { PublicChatLauncher } from "./components/PublicChatLauncher";
 import { ServiceDetails } from "./components/ServiceDetails";
 import { SiteNav } from "./components/SiteNav";
 import { WhyChooseUs } from "./components/WhyChooseUs";
@@ -19,6 +19,7 @@ const AdminDashboard = lazy(async () => {
   await import("./styles/admin.css");
   return import("./components/AdminDashboard");
 });
+const PublicChatWidget = lazy(() => import("./components/PublicChatWidget"));
 
 function AdminRoute() {
   return (
@@ -35,6 +36,8 @@ function isNotFound(): boolean {
 }
 
 export function App() {
+  const [chatOpen, setChatOpen] = useState(false);
+
   if (window.location.pathname.startsWith("/admin")) {
     return (
       <ErrorBoundary>
@@ -66,7 +69,20 @@ export function App() {
             <AboutBooking />
           </main>
           <Footer />
-          <PublicChatWidget />
+          <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
+            <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((value) => !value)} />
+            {chatOpen ? (
+              <Suspense
+                fallback={
+                  <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
+                    加载中...
+                  </div>
+                }
+              >
+                <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
+              </Suspense>
+            ) : null}
+          </div>
         </PublicPhotosProvider>
       </SiteContentProvider>
     </ErrorBoundary>

@@ -17,6 +17,11 @@ type ChatMessage = {
   content: string;
 };
 
+type PublicChatWidgetProps = {
+  open: boolean;
+  onClose: () => void;
+};
+
 const starterPrompts = [
   "套餐有哪些？",
   "我适合拍什么风格？",
@@ -34,8 +39,7 @@ const welcomeMessage: ChatMessage = {
   content: "你好，我是奶黄包摄影的咨询助手。可以问我套餐、风格、预约流程和拍摄边界。",
 };
 
-export function PublicChatWidget() {
-  const [open, setOpen] = useState(false);
+export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([welcomeMessage]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -52,7 +56,7 @@ export function PublicChatWidget() {
     const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 120);
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key === "Escape") {
-        setOpen(false);
+        onClose();
       }
     };
 
@@ -61,7 +65,7 @@ export function PublicChatWidget() {
       window.clearTimeout(focusTimer);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [open]);
+  }, [open, onClose]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
@@ -208,7 +212,6 @@ export function PublicChatWidget() {
       userMessage,
     ].slice(-6);
 
-    setOpen(true);
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setError("");
@@ -241,21 +244,10 @@ export function PublicChatWidget() {
     void sendMessage();
   }
 
-  return (
-    <div className={`public-chat-widget${open ? " is-open" : ""}`}>
-      <button
-        className="public-chat-launcher"
-        type="button"
-        aria-expanded={open}
-        aria-controls="public-chat-panel"
-        onClick={() => setOpen((value) => !value)}
-      >
-        {open ? <X size={22} /> : <Bot size={22} />}
-        <span>AI问答</span>
-      </button>
+  if (!open) return null;
 
-      {open ? (
-        <section
+  return (
+    <section
           className="public-chat-panel"
           id="public-chat-panel"
           aria-label="奶黄包摄影咨询助手"
@@ -268,7 +260,7 @@ export function PublicChatWidget() {
               <span><Sparkles size={14} /> 奶黄包摄影</span>
               <h2>预约咨询助手</h2>
             </div>
-            <button type="button" className="public-chat-close" onClick={() => setOpen(false)} aria-label="关闭咨询窗口">
+            <button type="button" className="public-chat-close" onClick={onClose} aria-label="关闭咨询窗口">
               <X size={18} />
             </button>
           </header>
@@ -339,8 +331,6 @@ export function PublicChatWidget() {
             </button>
           </div>
         </section>
-      ) : null}
-    </div>
   );
 }
 

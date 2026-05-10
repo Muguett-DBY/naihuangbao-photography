@@ -8,6 +8,7 @@ const publicChatApiPath = resolve(root, "functions/api/chat.ts");
 const chatHelperPath = resolve(root, "functions/_chat.ts");
 const adminChatApiPath = resolve(root, "functions/api/admin/chat.ts");
 const widgetPath = resolve(root, "src/components/PublicChatWidget.tsx");
+const launcherPath = resolve(root, "src/components/PublicChatLauncher.tsx");
 const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
 const adminSource = readFileSync(resolve(root, "src/components/AdminDashboard.tsx"), "utf8");
 const adminCss = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
@@ -164,10 +165,16 @@ describe("public AI chat integration", () => {
 
   it("moves chat UI to the public site and removes the admin AI tab", () => {
     expect(existsSync(widgetPath)).toBe(true);
+    expect(existsSync(launcherPath)).toBe(true);
     const widgetSource = readFileSync(widgetPath, "utf8");
+    const launcherSource = readFileSync(launcherPath, "utf8");
 
     expect(appSource).toContain("PublicChatWidget");
-    expect(appSource).toContain("<PublicChatWidget />");
+    expect(appSource).toContain('lazy(() => import("./components/PublicChatWidget"))');
+    expect(appSource).toContain("<PublicChatLauncher");
+    expect(appSource).toContain("<PublicChatWidget open={chatOpen} onClose");
+    expect(launcherSource).toContain("AI问答");
+    expect(launcherSource).not.toContain('fetch("/api/chat"');
     expect(widgetSource).toContain('fetch("/api/chat"');
     expect(widgetSource).toContain("revealAssistantStream");
     expect(widgetSource).toContain("fetchChatResponse");
@@ -180,7 +187,6 @@ describe("public AI chat integration", () => {
     expect(widgetSource).toContain("onCompositionStart");
     expect(widgetSource).toContain("Shift+Enter");
     expect(widgetSource).toContain("sendingRef");
-    expect(widgetSource).toContain("AI问答");
     expect(widgetSource).not.toContain("sk-");
 
     expect(globalCss).toContain(".public-chat-widget");
@@ -198,13 +204,13 @@ describe("public AI chat integration", () => {
 
   it("distinguishes the public chat launcher from booking CTA and avoids fixed-button overlap", () => {
     const navSource = readFileSync(resolve(root, "src/components/SiteNav.tsx"), "utf8");
-    const widgetSource = readFileSync(widgetPath, "utf8");
+    const launcherSource = readFileSync(launcherPath, "utf8");
 
     expect(navSource).toContain("CalendarCheck");
     expect(navSource).toContain("预约");
     expect(navSource).not.toContain("MessageCircle");
-    expect(widgetSource).toContain("AI问答");
-    expect(widgetSource).not.toContain("<span>咨询</span>");
+    expect(launcherSource).toContain("AI问答");
+    expect(launcherSource).not.toContain("<span>咨询</span>");
     expect(globalCss).toContain("right: 156px");
     expect(globalCss).toContain("left: max(12px, env(safe-area-inset-left))");
   });
