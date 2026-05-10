@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { galleryItems } from "../data/gallery";
@@ -54,16 +54,24 @@ describe("performance resources", () => {
     }
   });
 
-  it("uses system typography without bundling fontsource or preloading fonts", () => {
+  it("uses one self-hosted display font subset without fontsource or font preloads", () => {
+    const displayFontPath = resolve(root, "public/fonts/naihuangbao-wenkai-subset.woff2");
+
     expect(globalCss).not.toContain("fonts.googleapis.com");
     expect(globalCss).not.toContain("@fontsource/nunito");
     expect(globalCss).not.toContain("font-family: \"Nunito\"");
+    expect(globalCss).toContain('font-family: "Naihuangbao WenKai"');
+    expect(globalCss).toContain("/fonts/naihuangbao-wenkai-subset.woff2");
+    expect(globalCss).toContain("font-display: swap");
+    expect(globalCss).toContain("--font-display-cn");
     expect(globalCss).toContain("--font-heading: var(--font-heading-cn)");
     expect(globalCss).toContain("--font-ui: var(--font-body)");
     expect(html).not.toContain('rel="preload" as="font"');
     expect(html).not.toContain("/node_modules/@fontsource");
     expect(existsSync(resolve(root, "public/fonts/cormorant-garamond.woff2"))).toBe(false);
     expect(existsSync(resolve(root, "public/fonts/inter.woff2"))).toBe(false);
+    expect(existsSync(displayFontPath)).toBe(true);
+    expect(statSync(displayFontPath).size).toBeLessThanOrEqual(220 * 1024);
   });
 
   it("declares static asset caching headers and short API photo caching", () => {

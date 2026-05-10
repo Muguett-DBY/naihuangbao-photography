@@ -1,11 +1,21 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Naihuangbao WenKai";
+  src: url("/fonts/naihuangbao-wenkai-subset.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+}
+
 :root {
   --font-body:
     "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display-cn:
+    "Naihuangbao WenKai", "Kaiti SC", "KaiTi", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
   --font-heading-cn:
-    "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", serif;
+    var(--font-display-cn);
   --font-heading: var(--font-heading-cn);
   --font-ui: var(--font-body);
   --custard-bg: #FEF3DD;
@@ -389,10 +399,10 @@ body.nav-lock .site-nav {
 }
 
 .brand-mark {
-  font-family: var(--font-heading-cn);
+  font-family: var(--font-display-cn);
   font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.045em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   color: var(--caramel-ink);
   transition: color 0.25s ease, transform 0.25s var(--ease-out);
 }
@@ -457,6 +467,7 @@ body.nav-lock .site-nav {
 .nav-cta,
 .primary-button {
   border-radius: 999px;
+  font-family: var(--font-display-cn);
   background:
     linear-gradient(135deg, #8B5E4A 0%, #A86E58 58%, #FFB8A1 150%);
   color: #FFF9EC;
@@ -486,9 +497,9 @@ body.nav-lock .site-nav {
   min-height: 42px;
   padding: 10px 17px;
   font-size: 13px;
-  font-family: var(--font-ui);
-  font-weight: 720;
-  letter-spacing: 0.045em;
+  font-family: var(--font-display-cn);
+  font-weight: 700;
+  letter-spacing: 0.018em;
 }
 
 .hero {
@@ -521,20 +532,20 @@ body.nav-lock .site-nav {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.72),
     0 12px 32px rgba(255, 184, 161, 0.12);
-  font-family: var(--font-ui);
+  font-family: var(--font-display-cn);
   font-size: 12px;
-  font-weight: 720;
-  letter-spacing: 0.095em;
+  font-weight: 600;
+  letter-spacing: 0.035em;
 }
 
 .hero h1 {
   margin: 0;
   max-width: 800px;
-  font-family: var(--font-heading-cn);
+  font-family: var(--font-display-cn);
   font-size: clamp(48px, 7.9vw, 112px);
-  font-weight: 650;
-  line-height: 1.02;
-  letter-spacing: 0.008em;
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: 0;
   color: var(--caramel-ink);
   text-shadow:
     0 1px 0 rgba(255, 253, 247, 0.84),
@@ -573,10 +584,10 @@ body.nav-lock .site-nav {
   display: block;
   margin-bottom: 6px;
   color: var(--sage-text);
-  font-family: var(--font-ui);
+  font-family: var(--font-display-cn);
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
+  font-weight: 700;
+  letter-spacing: 0.055em;
 }
 .hero-intro::before {
   content: "“";
@@ -610,10 +621,10 @@ body.nav-lock .site-nav {
 .primary-button {
   min-height: 50px;
   padding: 14px 28px;
-  font-family: var(--font-ui);
-  font-weight: 760;
+  font-family: var(--font-display-cn);
+  font-weight: 700;
   font-size: 15px;
-  letter-spacing: 0.045em;
+  letter-spacing: 0.018em;
 }
 
 .text-button {
@@ -621,9 +632,9 @@ body.nav-lock .site-nav {
   align-items: center;
   gap: 8px;
   color: var(--caramel-text);
-  font-family: var(--font-ui);
-  font-weight: 720;
-  letter-spacing: 0.04em;
+  font-family: var(--font-display-cn);
+  font-weight: 700;
+  letter-spacing: 0.016em;
   padding: 14px 10px;
   transition: color 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -701,10 +712,10 @@ body.nav-lock .site-nav {
   right: 18px;
   bottom: 14px;
   color: rgba(139, 94, 74, 0.62);
-  font-family: var(--font-ui);
+  font-family: var(--font-display-cn);
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
+  font-weight: 700;
+  letter-spacing: 0.055em;
 }
 
 .hero-card:hover {
@@ -977,11 +988,11 @@ body.nav-lock .site-nav {
 }
 
 .film-placeholder strong {
-  font-family: var(--font-heading-cn);
+  font-family: var(--font-display-cn);
   font-size: clamp(24px, 3vw, 40px);
-  font-weight: 650;
-  line-height: 1.08;
-  letter-spacing: 0.01em;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: 0;
 }
 
 .section-shell,
@@ -1036,14 +1047,13 @@ body.nav-lock .site-nav {
 }
 
 .section-heading h2,
-.booking-section h2,
-.admin-page h1 {
+.booking-section h2 {
   margin: 0;
-  font-family: var(--font-heading-cn);
+  font-family: var(--font-display-cn);
   font-size: clamp(38px, 5.5vw, 70px);
-  font-weight: 650;
-  line-height: 1.04;
-  letter-spacing: 0.006em;
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: 0;
   color: var(--caramel-ink);
   text-shadow:
     0 1px 0 rgba(255, 253, 247, 0.82),
@@ -1116,10 +1126,10 @@ body.nav-lock .site-nav {
   color: var(--caramel-text);
   background: rgba(255, 253, 247, 0.72);
   cursor: pointer;
-  font-family: var(--font-ui);
+  font-family: var(--font-display-cn);
   font-size: 12px;
-  font-weight: 760;
-  letter-spacing: 0.055em;
+  font-weight: 700;
+  letter-spacing: 0.018em;
   box-shadow:
     var(--paper-inset),
     0 2px 4px rgba(95, 60, 49, 0.04),
@@ -1267,19 +1277,18 @@ body.nav-lock .site-nav {
   opacity: 1;
 }
 .gallery-hover-style {
-  font-family: var(--font-ui);
+  font-family: var(--font-display-cn);
   font-size: 10px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.045em;
   color: rgba(255, 249, 236, 0.76);
 }
 .gallery-hover-title {
   margin: 5px 0 2px;
-  font-family: var(--font-heading-cn);
+  font-family: var(--font-display-cn);
   font-size: 20px;
-  font-weight: 650;
-  line-height: 1.2;
+  font-weight: 600;
+  line-height: 1.24;
   color: #FFF9EC;
 }
 .gallery-hover-location {
@@ -1338,30 +1347,30 @@ body.nav-lock .site-nav {
 }
 
 .gallery-card p,
-.package-card p,
-.admin-card p {
+.package-card p {
   margin: 0;
   color: var(--caramel-muted);
-  font-family: var(--font-ui);
+  font-family: var(--font-display-cn);
   font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.075em;
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
 .gallery-card h3,
 .package-card h3,
-.admin-card h2,
 .safety-panel h3 {
   margin: 7px 0;
   color: var(--caramel-ink);
 }
 
-.gallery-card h3 {
-  font-family: var(--font-heading-cn);
+.gallery-card h3,
+.package-card h3,
+.safety-panel h3 {
+  font-family: var(--font-display-cn);
   font-size: clamp(19px, 2.3vw, 25px);
-  font-weight: 650;
-  line-height: 1.18;
-  letter-spacing: 0.01em;
+  font-weight: 600;
+  line-height: 1.24;
+  letter-spacing: 0;
 }
 
 .gallery-card span,
@@ -1613,8 +1622,8 @@ body.nav-lock .site-nav {
 
 .process-step p {
   color: var(--caramel-ink);
-  font-family: var(--font-ui);
-  font-weight: 760;
+  font-family: var(--font-display-cn);
+  font-weight: 700;
   font-size: 15px;
   line-height: 1.58;
 }
@@ -1656,8 +1665,8 @@ body.nav-lock .site-nav {
 .faq-list summary {
   cursor: pointer;
   color: var(--caramel-ink);
-  font-family: var(--font-ui);
-  font-weight: 760;
+  font-family: var(--font-display-cn);
+  font-weight: 700;
   font-size: 15px;
   list-style: none;
   display: flex;
@@ -1774,9 +1783,10 @@ body.nav-lock .site-nav {
   background: linear-gradient(135deg, #FFF9EC, #FFD2B8);
   border-radius: 999px;
   padding: 13px 22px;
-  font-weight: 760;
+  font-family: var(--font-display-cn);
+  font-weight: 700;
   font-size: 15px;
-  letter-spacing: 0.035em;
+  letter-spacing: 0.016em;
   box-shadow: var(--button-shadow);
   transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
               box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
@@ -2368,9 +2378,10 @@ body.nav-lock .site-nav {
   border-radius: 999px;
   padding: 13px 26px;
   min-height: 48px;
-  font-weight: 760;
+  font-family: var(--font-display-cn);
+  font-weight: 700;
   font-size: 15px;
-  letter-spacing: 0.035em;
+  letter-spacing: 0.016em;
   color: var(--caramel-deep);
   background: linear-gradient(135deg, #FFF9EC, #FFD2B8);
   box-shadow:
@@ -2920,8 +2931,10 @@ a:focus-visible {
     0 3px 7px rgba(95, 60, 49, 0.08),
     0 18px 48px rgba(255, 184, 161, 0.26),
     0 36px 78px rgba(255, 210, 184, 0.16);
+  font-family: var(--font-display-cn);
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: 0.012em;
   cursor: pointer;
   transition:
     transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),

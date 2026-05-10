@@ -14,6 +14,21 @@ function countOccurrences(source: string, token: string) {
 }
 
 describe("audit regression coverage", () => {
+  it("limits the hand-written display font to titles and compact UI accents", () => {
+    const bodyBlock = cssSource.match(/body\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
+    const heroTitleBlock = cssSource.match(/\.hero h1\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
+    const primaryButtonBlock = cssSource.match(/\.primary-button\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
+    const chatTextareaBlock = cssSource.match(/\.public-chat-form textarea\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
+
+    expect(cssSource).toContain("--font-display-cn");
+    expect(cssSource).toContain('"Naihuangbao WenKai"');
+    expect(bodyBlock).toContain("font-family: var(--font-body)");
+    expect(heroTitleBlock).toContain("font-family: var(--font-display-cn)");
+    expect(primaryButtonBlock).toContain("font-family: var(--font-display-cn)");
+    expect(chatTextareaBlock).not.toContain("var(--font-display-cn)");
+    expect(cssSource).not.toMatch(/\.public-chat-form textarea\s*\{[\s\S]*Naihuangbao WenKai/s);
+  });
+
   it("keeps the lightbox fade animation paired with its keyframes and reduced-motion override", () => {
     expect(cssSource).toContain("@keyframes lightboxFade");
     expect(cssSource).toMatch(/\.lightbox-image\.is-loaded\s*\{[^}]*animation:\s*lightboxFade/s);
