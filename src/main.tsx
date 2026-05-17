@@ -3,6 +3,14 @@ import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import "./styles/global.css";
 
+for (const href of ["https://www.xiaohongshu.com"]) {
+  const preconnect = document.createElement("link");
+  preconnect.rel = "preconnect";
+  preconnect.href = href;
+  preconnect.crossOrigin = "anonymous";
+  document.head.append(preconnect);
+}
+
 const root = document.getElementById("root");
 
 if (!root) {

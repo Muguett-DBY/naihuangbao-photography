@@ -12,7 +12,12 @@ const launcherPath = resolve(root, "src/components/PublicChatLauncher.tsx");
 const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
 const adminSource = readFileSync(resolve(root, "src/components/AdminDashboard.tsx"), "utf8");
 const adminCss = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
-const globalCss = readFileSync(resolve(root, "src/styles/global.css"), "utf8");
+const globalCss = [
+  "src/styles/global.css",
+  "src/styles/base.css",
+  "src/styles/site.css",
+  "src/styles/chat.css",
+].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const schema = readFileSync(resolve(root, "schema.sql"), "utf8");
 
 describe("public AI chat integration", () => {

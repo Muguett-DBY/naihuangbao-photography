@@ -10,5 +10,5 @@
     "noEmit": true,
     "types": ["node", "@cloudflare/workers-types"]
   },
-  "include": ["vite.config.ts", "functions/**/*.ts"]
+  "include": ["vite.config.ts", "functions/**/*.ts", "worker-configuration.d.ts"]
 }

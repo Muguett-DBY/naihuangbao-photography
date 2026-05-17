@@ -4,7 +4,12 @@ import { describe, expect, it } from "vitest";
 
 const navSource = readFileSync(resolve(process.cwd(), "src/components/SiteNav.tsx"), "utf8");
 const gallerySource = readFileSync(resolve(process.cwd(), "src/components/Gallery.tsx"), "utf8");
-const cssSource = readFileSync(resolve(process.cwd(), "src/styles/global.css"), "utf8");
+const cssSource = [
+  "src/styles/global.css",
+  "src/styles/base.css",
+  "src/styles/site.css",
+  "src/styles/chat.css",
+].map((path) => readFileSync(resolve(process.cwd(), path), "utf8")).join("\n");
 
 describe("mobile site navigation", () => {
   it("exposes the expanded menu state and closes through escape", () => {

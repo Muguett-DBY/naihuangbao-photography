@@ -5,7 +5,12 @@ import { galleryItems } from "../data/gallery";
 
 const root = process.cwd();
 const html = readFileSync(resolve(root, "index.html"), "utf8");
-const globalCss = readFileSync(resolve(root, "src/styles/global.css"), "utf8");
+const globalCss = [
+  "src/styles/global.css",
+  "src/styles/base.css",
+  "src/styles/site.css",
+  "src/styles/chat.css",
+].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
 const heroSource = readFileSync(resolve(root, "src/components/Hero.tsx"), "utf8");
@@ -115,7 +120,7 @@ describe("performance resources", () => {
     expect(chatLauncherSource).not.toContain('fetch("/api/chat"');
     expect(appSource).toContain('import("./components/AdminDashboard")');
     expect(appSource).toContain('import("./styles/admin.css")');
-    expect(globalCss).not.toContain(".adm-root");
+    expect(readFileSync(resolve(root, "src/styles/global.css"), "utf8")).not.toContain(".adm-root");
   });
 
   it("updates parallax with a CSS variable instead of scroll-time React state", () => {

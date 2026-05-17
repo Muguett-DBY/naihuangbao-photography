@@ -6,9 +6,9 @@ import {
   validateContentPatch,
 } from "../../../src/data/content";
 import type { PartialSiteContent } from "../../../src/types/content";
+import { badRequest, jsonResponse, unauthorized, unavailable } from "../../_responses";
 
-type Env = {
-  DB: D1Database;
+type AdminContentEnv = Env & {
   ADMIN_PASSWORD?: string;
 };
 
@@ -17,10 +17,10 @@ type ContentRow = {
   value_json: string;
 };
 
-export const onRequestGet: PagesFunction<Env> = async (context) => {
+export const onRequestGet: PagesFunction<AdminContentEnv> = async (context) => {
   const isAdmin = await isAdminRequest(context.request, context.env);
   if (!isAdmin) {
-    return json({ error: "请先登录后台" }, 401);
+    return unauthorized();
   }
 
   try {
@@ -32,16 +32,16 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       .bind(...contentKeys)
       .all<ContentRow>();
 
-    return json({ content: mergeSiteContent(rowsToContent(rows.results)), storageReady: true });
+    return jsonResponse({ content: mergeSiteContent(rowsToContent(rows.results)), storageReady: true });
   } catch {
-    return json({ content: defaultSiteContent, storageReady: false });
+    return jsonResponse({ content: defaultSiteContent, storageReady: false });
   }
 };
 
-export const onRequestPatch: PagesFunction<Env> = async (context) => {
+export const onRequestPatch: PagesFunction<AdminContentEnv> = async (context) => {
   const isAdmin = await isAdminRequest(context.request, context.env);
   if (!isAdmin) {
-    return json({ error: "请先登录后台" }, 401);
+    return unauthorized();
   }
 
   const body = (await context.request.json().catch(() => ({}))) as {
@@ -51,21 +51,25 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   const validated = validateContentPatch(String(body.key ?? ""), body.value);
   if (validated.ok === false) {
-    return json({ error: validated.error }, 400);
+    return badRequest(validated.error);
   }
 
   const updatedAt = new Date().toISOString();
-  await context.env.DB.prepare(
-    `insert into cms_content (key, value_json, updated_at)
-     values (?, ?, ?)
-     on conflict(key) do update set
-       value_json = excluded.value_json,
-       updated_at = excluded.updated_at`,
-  )
-    .bind(body.key, JSON.stringify(validated.value), updatedAt)
-    .run();
+  try {
+    await context.env.DB.prepare(
+      `insert into cms_content (key, value_json, updated_at)
+       values (?, ?, ?)
+       on conflict(key) do update set
+         value_json = excluded.value_json,
+         updated_at = excluded.updated_at`,
+    )
+      .bind(body.key, JSON.stringify(validated.value), updatedAt)
+      .run();
 
-  return json({ ok: true, updatedAt });
+    return jsonResponse({ ok: true, updatedAt });
+  } catch (error) {
+    return unavailable("保存失败，请稍后重试。", error, { route: "/api/admin/content", method: "PATCH" });
+  }
 };
 
 function rowsToContent(rows: ContentRow[]): PartialSiteContent {
@@ -81,11 +85,4 @@ function rowsToContent(rows: ContentRow[]): PartialSiteContent {
   }
 
   return content as PartialSiteContent;
-}
-
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "content-type": "application/json; charset=utf-8" },
-  });
 }

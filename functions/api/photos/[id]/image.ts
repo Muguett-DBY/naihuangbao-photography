@@ -1,8 +1,3 @@
-type Env = {
-  PHOTO_BUCKET: R2Bucket;
-  DB: D1Database;
-};
-
 type PhotoObjectRow = {
   object_key: string;
 };

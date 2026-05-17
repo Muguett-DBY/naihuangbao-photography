@@ -1,6 +1,11 @@
 name = "naihuangbao-photography"
 pages_build_output_dir = "dist"
-compatibility_date = "2026-04-27"
+compatibility_date = "2026-05-17"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+head_sampling_rate = 1
 
 [[r2_buckets]]
 binding = "PHOTO_BUCKET"
@@ -10,3 +15,35 @@ bucket_name = "naihuangbao-photography"
 binding = "DB"
 database_name = "naihuangbao-photography"
 database_id = "e052d4a9-d8aa-4a34-aee0-c328ac2e23dc"
+
+[env.preview]
+name = "naihuangbao-photography-preview"
+
+[[env.preview.r2_buckets]]
+binding = "PHOTO_BUCKET"
+bucket_name = "naihuangbao-photography"
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "naihuangbao-photography"
+database_id = "e052d4a9-d8aa-4a34-aee0-c328ac2e23dc"
+
+[env.preview.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.production]
+name = "naihuangbao-photography"
+
+[[env.production.r2_buckets]]
+binding = "PHOTO_BUCKET"
+bucket_name = "naihuangbao-photography"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "naihuangbao-photography"
+database_id = "e052d4a9-d8aa-4a34-aee0-c328ac2e23dc"
+
+[env.production.observability]
+enabled = true
+head_sampling_rate = 1

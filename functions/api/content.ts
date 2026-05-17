@@ -1,9 +1,6 @@
 import { contentKeys, defaultSiteContent, mergeSiteContent } from "../../src/data/content";
 import type { PartialSiteContent } from "../../src/types/content";
-
-type Env = {
-  DB: D1Database;
-};
+import { jsonResponse, logWorkerError } from "../_responses";
 
 type ContentRow = {
   key: string;
@@ -20,9 +17,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       .bind(...contentKeys)
       .all<ContentRow>();
 
-    return json({ content: mergeSiteContent(rowsToContent(rows.results)) });
-  } catch {
-    return json({ content: defaultSiteContent, source: "defaults" });
+    return jsonResponse({ content: mergeSiteContent(rowsToContent(rows.results)), source: "remote" });
+  } catch (error) {
+    logWorkerError("Public content fallback", error, { route: "/api/content" });
+    return jsonResponse({ content: defaultSiteContent, source: "defaults" });
   }
 };
 
@@ -39,11 +37,4 @@ function rowsToContent(rows: ContentRow[]): PartialSiteContent {
   }
 
   return content as PartialSiteContent;
-}
-
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "content-type": "application/json; charset=utf-8" },
-  });
 }

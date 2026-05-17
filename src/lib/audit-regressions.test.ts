@@ -3,8 +3,16 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
-const adminSource = readFileSync(resolve(root, "src/components/AdminDashboard.tsx"), "utf8");
-const cssSource = readFileSync(resolve(root, "src/styles/global.css"), "utf8");
+const adminSource = [
+  "src/components/AdminDashboard.tsx",
+  "src/components/admin/AdminShell.tsx",
+].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
+const cssSource = [
+  "src/styles/global.css",
+  "src/styles/base.css",
+  "src/styles/site.css",
+  "src/styles/chat.css",
+].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const imageSource = readFileSync(resolve(root, "src/components/ImageWithFallback.tsx"), "utf8");
 const lightboxSource = readFileSync(resolve(root, "src/components/Lightbox.tsx"), "utf8");
 const widgetSource = readFileSync(resolve(root, "src/components/PublicChatWidget.tsx"), "utf8");

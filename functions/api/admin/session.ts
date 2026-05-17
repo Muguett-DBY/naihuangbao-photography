@@ -1,16 +1,17 @@
 import { clearSessionCookie, isAdminRequest } from "../../_auth";
+import { jsonResponse } from "../../_responses";
 
-type Env = {
+type AdminSessionEnv = Env & {
   ADMIN_PASSWORD?: string;
 };
 
-export const onRequestGet: PagesFunction<Env> = async (context) => {
+export const onRequestGet: PagesFunction<AdminSessionEnv> = async (context) => {
   const authenticated = await isAdminRequest(context.request, context.env);
-  return json({ authenticated });
+  return jsonResponse({ authenticated });
 };
 
-export const onRequestDelete: PagesFunction<Env> = async () => {
-  return json(
+export const onRequestDelete: PagesFunction<AdminSessionEnv> = async () => {
+  return jsonResponse(
     { ok: true },
     200,
     {
@@ -18,13 +19,3 @@ export const onRequestDelete: PagesFunction<Env> = async () => {
     },
   );
 };
-
-function json(body: unknown, status = 200, headers: Record<string, string> = {}) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      ...headers,
-    },
-  });
-}

@@ -1,20 +1,21 @@
 import { createAdminSession, sessionCookie } from "../../_auth";
+import { badRequest, jsonResponse } from "../../_responses";
 
-type Env = {
+type AdminLoginEnv = Env & {
   ADMIN_PASSWORD?: string;
 };
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+export const onRequestPost: PagesFunction<AdminLoginEnv> = async (context) => {
   const body = (await context.request.json().catch(() => ({}))) as {
     password?: string;
   };
 
   if (!context.env.ADMIN_PASSWORD) {
-    return json({ error: "后台密码未配置" }, 500);
+    return jsonResponse({ error: "后台密码未配置" }, 500);
   }
 
   if (!body.password) {
-    return json({ error: "请输入密码" }, 400);
+    return badRequest("请输入密码");
   }
 
   const inputPassword = body.password.trim();
@@ -22,11 +23,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const valid = await timingSafeEqual(inputPassword, storedPassword);
   if (!valid) {
-    return json({ error: "密码不正确" }, 401);
+    return jsonResponse({ error: "密码不正确" }, 401);
   }
 
   const session = await createAdminSession(context.env);
-  return json(
+  return jsonResponse(
     { ok: true },
     200,
     {
@@ -65,14 +66,4 @@ function timingSafeCompare(a: Uint8Array, b: Uint8Array): boolean {
     result |= a[i]! ^ b[i]!;
   }
   return result === 0;
-}
-
-function json(body: unknown, status = 200, headers: Record<string, string> = {}) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      ...headers,
-    },
-  });
 }
