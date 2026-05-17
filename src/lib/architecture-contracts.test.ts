@@ -25,8 +25,9 @@ describe("architecture optimization contracts", () => {
 
     expect(existsSync(resolve(root, "worker-configuration.d.ts"))).toBe(true);
     expect(tsconfigNode).toContain("worker-configuration.d.ts");
-    expect(wrangler).toContain("[observability]");
-    expect(wrangler).toContain("enabled = true");
+    expect(wrangler).not.toContain("[observability]");
+    expect(wrangler).not.toContain("env.preview.observability");
+    expect(wrangler).not.toContain("env.production.observability");
     expect(wrangler).toContain("[env.preview]");
     expect(wrangler).toContain("[env.production]");
     expect(functionSources.join("\n")).not.toMatch(/^type Env =/m);
