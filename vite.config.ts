@@ -39,6 +39,7 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,png,svg,jpg,jpeg}"],
         globIgnores: [
           "**/images/gallery/**/*",
+          "**/images/cinematic/**/*",
           "**/three.module-*.js",
           "**/gsap-*.js",
           "**/ScrollTrigger-*.js",

@@ -14,6 +14,7 @@ const globalCss = [
 const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
 const heroSource = readFileSync(resolve(root, "src/components/Hero.tsx"), "utf8");
+const cinematicAssetsSource = readFileSync(resolve(root, "src/data/cinematic.ts"), "utf8");
 const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
 const navSource = readFileSync(resolve(root, "src/components/SiteNav.tsx"), "utf8");
 const parallaxSource = readFileSync(resolve(root, "src/hooks/useParallax.ts"), "utf8");
@@ -94,11 +95,20 @@ describe("performance resources", () => {
     expect(viteConfigSource).toContain("**/three.module-*.js");
     expect(viteConfigSource).toContain("**/gsap-*.js");
     expect(viteConfigSource).toContain("**/ScrollTrigger-*.js");
+    expect(viteConfigSource).toContain("**/images/cinematic/**/*");
     expect(viteConfigSource).toContain("runtimeCaching");
     expect(viteConfigSource).toContain('url.pathname.startsWith("/images/gallery/")');
     expect(viteConfigSource).toContain('handler: "CacheFirst"');
     expect(viteConfigSource).toContain("maxEntries: 36");
     expect(viteConfigSource).toContain("maxAgeSeconds: 60 * 60 * 24 * 30");
+  });
+
+  it("keeps cinematic image assets explicit and outside the JS entrypoint", () => {
+    expect(cinematicAssetsSource).toContain("/images/cinematic/hero-studio.webp");
+    expect(cinematicAssetsSource).toContain("/images/cinematic/gallery-corridor.webp");
+    expect(heroSource).not.toContain("ig_");
+    expect(gallerySource).not.toContain("ig_");
+    expect(mainSource).not.toContain("/images/cinematic/");
   });
 
   it("keeps admin pages out of browser caches and search indexes", () => {

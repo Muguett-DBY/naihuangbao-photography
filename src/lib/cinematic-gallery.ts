@@ -1,6 +1,8 @@
 import type { PhotoItem } from "../types/photo";
 
 export const MAX_CINEMATIC_PHOTOS = 24;
+export const MAX_CINEMATIC_PLANE_SCALE = 0.74;
+export const MIN_CINEMATIC_CAMERA_DISTANCE = 3.15;
 
 export function selectCinematicPhotos(
   photos: PhotoItem[],

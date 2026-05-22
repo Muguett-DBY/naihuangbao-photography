@@ -12,6 +12,9 @@ export function Hero() {
 
   return (
     <section id="top" className="hero">
+      <div className="hero-visual" aria-label="暖色宠物影棚与胶片作品预览">
+        <CinematicGalleryScene photos={cinematicPhotos} mode="hero" />
+      </div>
       <div className="hero-copy">
         <p className="kicker">
           <Sparkles size={15} />
@@ -34,9 +37,6 @@ export function Hero() {
             <ArrowDown size={16} />
           </a>
         </div>
-      </div>
-      <div className="hero-visual" aria-label="柔雾胶片感作品预览">
-        <CinematicGalleryScene photos={cinematicPhotos} mode="hero" />
       </div>
       <a className="hero-scroll-cue" href="#gallery" aria-label="向下滚动到作品">
         <ArrowDown size={18} />

@@ -108,14 +108,19 @@ describe("architecture optimization contracts", () => {
 
     const cinematicSource = read("src/components/CinematicGalleryScene.tsx");
     const cinematicDataSource = read("src/lib/cinematic-gallery.ts");
+    const cinematicAssetsSource = read("src/data/cinematic.ts");
 
     expect(cinematicDataSource).toContain("MAX_CINEMATIC_PHOTOS = 24");
+    expect(cinematicDataSource).toContain("MAX_CINEMATIC_PLANE_SCALE");
+    expect(cinematicDataSource).toContain("MIN_CINEMATIC_CAMERA_DISTANCE");
     expect(cinematicSource).toContain("ScrollTrigger");
     expect(cinematicSource).toContain("three");
     expect(cinematicSource).toContain("WebGL");
     expect(cinematicSource).toContain("cinematic-fallback");
     expect(cinematicSource).toContain("prefers-reduced-motion");
     expect(cinematicSource).toContain("Product decision");
+    expect(cinematicSource).not.toContain("+=240%");
+    expect(cinematicAssetsSource).toContain("kind: \"atmosphere\"");
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
     expect(gallerySource).toContain("<CinematicGalleryScene");
   });

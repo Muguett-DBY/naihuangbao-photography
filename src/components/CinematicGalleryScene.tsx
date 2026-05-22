@@ -1,7 +1,17 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type * as Three from "three";
+import {
+  atmosphereGalleryItems,
+  cinematicDetailAssets,
+  cinematicGalleryAssets,
+  cinematicHeroAssets,
+} from "../data/cinematic";
+import {
+  MAX_CINEMATIC_PHOTOS,
+  MAX_CINEMATIC_PLANE_SCALE,
+  MIN_CINEMATIC_CAMERA_DISTANCE,
+} from "../lib/cinematic-gallery";
 import type { PhotoItem } from "../types/photo";
-import { MAX_CINEMATIC_PHOTOS } from "../lib/cinematic-gallery";
 import { ImageWithFallback } from "./ImageWithFallback";
 
 type CinematicGallerySceneProps = {
@@ -12,6 +22,19 @@ type CinematicGallerySceneProps = {
 
 type WebGLState = "pending" | "ready" | "fallback";
 
+const sceneCopy = {
+  hero: {
+    label: "warm studio",
+    title: "南京女生写真 / 与情侣约拍",
+    body: "柔光、相纸、胶片轨道一起进入奶黄包的影棚世界。",
+  },
+  gallery: {
+    label: "gallery story",
+    title: "作品在胶片轨道里慢慢落位",
+    body: "真实客片保持小中尺寸相纸呈现，镜头穿梭但不贴脸。",
+  },
+} as const;
+
 function canCreateWebGLContext() {
   const canvas = document.createElement("canvas");
   const context =
@@ -21,30 +44,45 @@ function canCreateWebGLContext() {
   return Boolean(context);
 }
 
+function getPlanePosition(index: number, isNarrow: boolean) {
+  const laneCount = isNarrow ? 3 : 5;
+  const lane = (index % laneCount) - (laneCount - 1) / 2;
+  const x = lane * (isNarrow ? 0.58 : 0.76);
+  const y = Math.sin(index * 0.86) * (isNarrow ? 0.32 : 0.46) + (isNarrow ? 0.12 : 0);
+  const z = -index * (isNarrow ? 0.56 : 0.72) - 1.4;
+  return { x, y, z, lane };
+}
+
 export function CinematicGalleryScene({
   photos,
   mode,
   className = "",
 }: CinematicGallerySceneProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<HTMLDivElement>(null);
   const [webglState, setWebglState] = useState<WebGLState>("pending");
   const scenePhotos = useMemo(
     () => photos.filter((photo) => Boolean(photo.imageUrl)).slice(0, MAX_CINEMATIC_PHOTOS),
     [photos],
   );
-  const fallbackPhotos = scenePhotos.slice(0, mode === "hero" ? 5 : 8);
+  const fallbackPhotos = scenePhotos.slice(0, mode === "hero" ? 5 : 9);
+  const atmosphereCards = atmosphereGalleryItems.slice(0, mode === "hero" ? 3 : 5);
+  const detailCards = cinematicDetailAssets.slice(mode === "hero" ? 0 : 3, mode === "hero" ? 3 : 8);
+  const assets = mode === "hero" ? cinematicHeroAssets : cinematicGalleryAssets;
+  const copy = sceneCopy[mode];
 
   useEffect(() => {
     const root = rootRef.current;
+    const stage = stageRef.current;
     const mount = mountRef.current;
-    if (!root || !mount || scenePhotos.length === 0) {
+    if (!root || !stage || !mount || scenePhotos.length === 0) {
       setWebglState("fallback");
       return;
     }
+
     const rootElement = root;
     const mountElement = mount;
-
     let disposed = false;
     let frameId: number | null = null;
     let active = false;
@@ -75,47 +113,68 @@ export function CinematicGalleryScene({
           antialias: true,
           powerPreference: "high-performance",
         });
-        renderer.setClearColor(0xfff6e8, 0);
+        renderer.setClearColor(0xfff3df, 0);
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         renderer.domElement.setAttribute("aria-hidden", "true");
         renderer.domElement.dataset.cinematicCanvas = mode;
         mountElement.appendChild(renderer.domElement);
 
         const scene = new THREE.Scene();
-        scene.fog = new THREE.Fog(0xfff0df, 7, 26);
-        const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 100);
-        camera.position.set(0, 0.05, 4.8);
+        scene.fog = new THREE.Fog(0xffeed7, 6.5, 19);
+        const camera = new THREE.PerspectiveCamera(mode === "hero" ? 48 : 52, 1, 0.1, 60);
+        camera.position.set(0, 0.08, MIN_CINEMATIC_CAMERA_DISTANCE + 2.35);
+
+        const ambient = new THREE.AmbientLight(0xfff3df, 2.15);
+        scene.add(ambient);
 
         const galleryGroup = new THREE.Group();
         scene.add(galleryGroup);
 
-        const geometry = new THREE.PlaneGeometry(1.78, 2.28, 1, 1);
+        const frameGeometry = new THREE.PlaneGeometry(1.08, 1.38, 1, 1);
+        const photoGeometry = new THREE.PlaneGeometry(0.9, 1.1, 1, 1);
+        const frameMaterial = new THREE.MeshBasicMaterial({
+          color: 0xfffbf2,
+          transparent: true,
+          opacity: 0.96,
+          side: THREE.DoubleSide,
+        });
         const loader = new THREE.TextureLoader();
         const planes: Array<{
-          mesh: Three.Mesh<Three.PlaneGeometry, Three.MeshBasicMaterial>;
+          group: Three.Group;
+          photoMaterial: Three.MeshBasicMaterial;
           baseRotation: number;
           baseY: number;
+          baseZ: number;
         }> = [];
-        const palette = [0xffd6bd, 0xf8e8c9, 0xdde7ce, 0xffc4b4, 0xf5dcc6];
+        const palette = [0xffcfb7, 0xfff1d8, 0xe7ead0, 0xffc2ad, 0xf5d7ba];
 
         scenePhotos.forEach((photo, index) => {
-          const material = new THREE.MeshBasicMaterial({
+          const photoMaterial = new THREE.MeshBasicMaterial({
             color: palette[index % palette.length],
             transparent: true,
-            opacity: 0.92,
+            opacity: 0.9,
             side: THREE.DoubleSide,
           });
-          const mesh = new THREE.Mesh(geometry, material);
-          const lane = (index % 4) - 1.5;
-          const depth = -index * 1.18 - 1.1;
-          const baseY = Math.sin(index * 0.74) * 0.34;
-          const baseRotation = ((index % 5) - 2) * 0.055;
+          const group = new THREE.Group();
+          const frame = new THREE.Mesh(frameGeometry, frameMaterial.clone());
+          const image = new THREE.Mesh(photoGeometry, photoMaterial);
+          image.position.z = 0.012;
+          image.position.y = 0.08;
+          group.add(frame, image);
 
-          mesh.position.set(lane * 1.03, baseY, depth);
-          mesh.rotation.set(0, lane * -0.09, baseRotation);
-          mesh.scale.setScalar(index % 3 === 0 ? 1.08 : 0.94);
-          galleryGroup.add(mesh);
-          planes.push({ mesh, baseRotation, baseY });
+          const position = getPlanePosition(index, false);
+          const baseRotation = ((index % 7) - 3) * 0.035;
+          group.position.set(position.x, position.y, position.z);
+          group.rotation.set(0, position.lane * -0.075, baseRotation);
+          group.scale.setScalar(MAX_CINEMATIC_PLANE_SCALE * (index % 4 === 0 ? 0.94 : 0.82));
+          galleryGroup.add(group);
+          planes.push({
+            group,
+            photoMaterial,
+            baseRotation,
+            baseY: position.y,
+            baseZ: position.z,
+          });
 
           loader.load(
             photo.imageUrl,
@@ -126,59 +185,70 @@ export function CinematicGalleryScene({
               }
               texture.colorSpace = THREE.SRGBColorSpace;
               texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
-              material.map = texture;
-              material.needsUpdate = true;
+              photoMaterial.map = texture;
+              photoMaterial.needsUpdate = true;
               renderFrame(performance.now());
             },
             undefined,
             () => {
-              material.opacity = 0.72;
+              photoMaterial.opacity = 0.68;
             },
           );
         });
 
-        const travelDistance = Math.max(6.8, scenePhotos.length * 1.02);
         const progress = { value: 0 };
-        let sceneLift = mode === "hero" ? 0.28 : 0.18;
+        const travelDistance = Math.min(8.4, Math.max(4.2, scenePhotos.length * 0.42));
 
         function resize() {
           if (disposed) return;
           const width = Math.max(1, mountElement.clientWidth);
           const height = Math.max(1, mountElement.clientHeight);
           const isNarrow = width < 700;
-          sceneLift = isNarrow ? (mode === "hero" ? 0.86 : 0.78) : (mode === "hero" ? 0.28 : 0.18);
           camera.aspect = width / height;
-          camera.fov = isNarrow ? 63 : mode === "hero" ? 50 : 55;
+          camera.fov = isNarrow ? 58 : mode === "hero" ? 48 : 52;
+          camera.position.z = MIN_CINEMATIC_CAMERA_DISTANCE + (isNarrow ? 2.8 : 2.35);
           camera.updateProjectionMatrix();
-          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.65));
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
           renderer.setSize(width, height, false);
+          galleryGroup.position.x = mode === "hero" ? (isNarrow ? 0.18 : 2.05) : 0;
 
-          const laneScale = isNarrow ? 0.72 : 1.03;
-          planes.forEach(({ mesh }, index) => {
-            const lane = (index % 4) - 1.5;
-            mesh.position.x = lane * laneScale;
+          planes.forEach(({ group }, index) => {
+            const position = getPlanePosition(index, isNarrow);
+            group.position.x = position.x;
+            group.position.y = position.y;
+            group.position.z = position.z;
+            group.rotation.y = position.lane * (isNarrow ? -0.04 : -0.075);
+            group.scale.setScalar(MAX_CINEMATIC_PLANE_SCALE * (isNarrow ? 0.68 : index % 4 === 0 ? 0.94 : 0.82));
           });
           renderFrame(performance.now());
         }
 
         function renderFrame(time: number) {
           const p = progress.value;
-          const shimmer = Math.sin(time * 0.0007) * 0.035;
-          camera.position.z = 4.8 - p * travelDistance;
-          camera.position.x = Math.sin(p * Math.PI * 1.7) * 0.28;
-          camera.position.y = 0.12 + Math.cos(p * Math.PI * 1.35) * 0.12;
-          camera.rotation.y = Math.sin(p * Math.PI * 1.4) * 0.035;
-          camera.rotation.x = -0.018 + Math.cos(p * Math.PI * 1.2) * 0.012;
+          const cameraBaseZ = Math.max(
+            MIN_CINEMATIC_CAMERA_DISTANCE,
+            MIN_CINEMATIC_CAMERA_DISTANCE + 2.35 - p * 0.62,
+          );
+          const travel = p * travelDistance;
+          const shimmer = Math.sin(time * 0.00072) * 0.028;
 
-          galleryGroup.rotation.y = (p - 0.5) * -0.12;
-          galleryGroup.position.y = sceneLift + shimmer;
+          camera.position.z = cameraBaseZ;
+          camera.position.x = Math.sin(p * Math.PI * 1.45) * (mode === "hero" ? 0.18 : 0.32);
+          camera.position.y = 0.12 + Math.cos(p * Math.PI * 1.2) * 0.1;
+          camera.rotation.y = Math.sin(p * Math.PI * 1.25) * 0.026;
+          camera.rotation.x = -0.012 + Math.cos(p * Math.PI * 1.1) * 0.01;
 
-          planes.forEach(({ mesh, baseRotation, baseY }, index) => {
-            const material = mesh.material;
-            const distance = Math.abs(mesh.position.z - camera.position.z);
-            material.opacity = THREE.MathUtils.clamp(1 - distance / 21, 0.26, 0.96);
-            mesh.position.y = baseY + Math.sin(time * 0.0009 + index) * 0.025;
-            mesh.rotation.z = baseRotation + Math.sin(time * 0.00055 + index * 0.4) * 0.018;
+          galleryGroup.position.z = travel;
+          galleryGroup.position.x = mode === "hero" ? galleryGroup.position.x : 0;
+          galleryGroup.position.y = (mode === "hero" ? 0.42 : 0.18) + shimmer;
+          galleryGroup.rotation.y = (p - 0.5) * (mode === "hero" ? -0.09 : -0.15);
+
+          planes.forEach(({ group, photoMaterial, baseRotation, baseY, baseZ }, index) => {
+            const worldZ = baseZ + galleryGroup.position.z;
+            const distance = Math.abs(worldZ - camera.position.z);
+            photoMaterial.opacity = THREE.MathUtils.clamp(1 - distance / 11, 0.18, 0.92);
+            group.position.y = baseY + Math.sin(time * 0.00082 + index) * 0.022;
+            group.rotation.z = baseRotation + Math.sin(time * 0.00052 + index * 0.42) * 0.014;
           });
 
           renderer.render(scene, camera);
@@ -191,19 +261,37 @@ export function CinematicGalleryScene({
           frameId = requestAnimationFrame(tick);
         }
 
-        const scrollTrigger = ScrollTrigger.create({
-          trigger: rootElement,
-          start: mode === "gallery" ? "top top" : "top 20%",
-          end: mode === "gallery" ? "+=240%" : "bottom top",
-          pin: mode === "gallery",
-          scrub: mode === "gallery" ? 0.85 : 0.55,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            progress.value = self.progress;
-            renderFrame(performance.now());
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: rootElement,
+            start: mode === "gallery" ? "top 78%" : "top 70%",
+            end: mode === "gallery" ? "bottom 18%" : "bottom top",
+            pin: false,
+            pinSpacing: false,
+            scrub: mode === "gallery" ? 0.9 : 0.55,
+            anticipatePin: 0.7,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              progress.value = self.progress;
+              rootElement.style.setProperty("--scene-progress", self.progress.toFixed(4));
+              renderFrame(performance.now());
+            },
           },
         });
+
+        timeline
+          .fromTo(
+            rootElement.querySelectorAll(".cinematic-float"),
+            { yPercent: mode === "gallery" ? 18 : 8, rotate: mode === "gallery" ? -4 : -2 },
+            { yPercent: mode === "gallery" ? -18 : -8, rotate: mode === "gallery" ? 4 : 2, stagger: 0.08, ease: "none" },
+            0,
+          )
+          .fromTo(
+            rootElement.querySelector(".cinematic-stage-caption"),
+            { y: mode === "gallery" ? 28 : 12, opacity: 0.78 },
+            { y: mode === "gallery" ? -18 : -8, opacity: 1, ease: "none" },
+            0,
+          );
 
         const visibilityObserver = new IntersectionObserver(
           ([entry]) => {
@@ -223,15 +311,28 @@ export function CinematicGalleryScene({
 
         cleanupScene = () => {
           visibilityObserver.disconnect();
-          scrollTrigger.kill();
+          timeline.scrollTrigger?.kill();
+          timeline.kill();
           window.removeEventListener("resize", resize);
           if (frameId !== null) {
             cancelAnimationFrame(frameId);
           }
-          geometry.dispose();
-          planes.forEach(({ mesh }) => {
-            mesh.material.map?.dispose();
-            mesh.material.dispose();
+          frameGeometry.dispose();
+          photoGeometry.dispose();
+          planes.forEach(({ group, photoMaterial }) => {
+            photoMaterial.map?.dispose();
+            photoMaterial.dispose();
+            group.children.forEach((child) => {
+              const mesh = child as Three.Mesh<Three.BufferGeometry, Three.Material>;
+              if ("material" in mesh) {
+                const material = mesh.material;
+                if (Array.isArray(material)) {
+                  material.forEach((item) => item.dispose());
+                } else {
+                  material.dispose();
+                }
+              }
+            });
           });
           renderer.dispose();
           renderer.domElement.remove();
@@ -264,23 +365,71 @@ export function CinematicGalleryScene({
         className,
       ].filter(Boolean).join(" ")}
       data-webgl-state={webglState}
+      style={{ "--scene-progress": 0 } as CSSProperties}
     >
-      <div className="cinematic-webgl" ref={mountRef} aria-hidden="true" />
-      <div className="cinematic-grain" aria-hidden="true" />
-      <div className="cinematic-fallback" aria-label="电影胶片作品预览">
-        {fallbackPhotos.map((photo, index) => (
-          <figure key={photo.id} style={{ "--scene-index": index } as CSSProperties}>
-            <ImageWithFallback
-              src={photo.imageUrl}
-              alt={photo.alt}
-              title={photo.title}
-              tone={index % 2 === 0 ? "cream" : "rose"}
-              sizes={mode === "hero" ? "(max-width: 900px) 45vw, 18vw" : "(max-width: 900px) 38vw, 14vw"}
-              priority={mode === "hero" && index === 0}
+      <div className="cinematic-pin-stage" ref={stageRef}>
+        <picture className="cinematic-bg">
+          <source media="(max-width: 700px)" srcSet={assets.mobileBackground} />
+          <img
+            src={assets.background}
+            alt=""
+            loading={mode === "hero" ? "eager" : "lazy"}
+            fetchPriority={mode === "hero" ? "high" : "auto"}
+            decoding="async"
+            aria-hidden="true"
+          />
+        </picture>
+        <div className="cinematic-webgl" ref={mountRef} aria-hidden="true" />
+        <div className="cinematic-light-sweep" aria-hidden="true" />
+        <div className="cinematic-film-rail cinematic-film-rail-a" aria-hidden="true" />
+        <div className="cinematic-film-rail cinematic-film-rail-b" aria-hidden="true" />
+        <div className="cinematic-props" aria-hidden="true">
+          {detailCards.map((src, index) => (
+            <img
+              className="cinematic-float cinematic-detail-card"
+              key={src}
+              src={src}
+              alt=""
+              loading={mode === "hero" && index === 0 ? "eager" : "lazy"}
+              decoding="async"
+              style={{ "--float-index": index } as CSSProperties}
             />
-            <figcaption>{photo.title}</figcaption>
-          </figure>
-        ))}
+          ))}
+        </div>
+        <div className="cinematic-atmosphere" aria-hidden="true">
+          {atmosphereCards.map((item, index) => (
+            <img
+              className="cinematic-float cinematic-atmosphere-card"
+              key={item.id}
+              src={item.imageUrl}
+              alt=""
+              loading={mode === "hero" && index === 0 ? "eager" : "lazy"}
+              decoding="async"
+              style={{ "--float-index": index } as CSSProperties}
+            />
+          ))}
+        </div>
+        <div className="cinematic-stage-caption">
+          <span>{copy.label}</span>
+          <strong>{copy.title}</strong>
+          <p>{copy.body}</p>
+        </div>
+        <div className="cinematic-grain" aria-hidden="true" />
+        <div className="cinematic-fallback" aria-label="电影胶片作品预览">
+          {fallbackPhotos.map((photo, index) => (
+            <figure key={photo.id} style={{ "--scene-index": index } as CSSProperties}>
+              <ImageWithFallback
+                src={photo.imageUrl}
+                alt={photo.alt}
+                title={photo.title}
+                tone={index % 2 === 0 ? "cream" : "rose"}
+                sizes={mode === "hero" ? "(max-width: 900px) 42vw, 14vw" : "(max-width: 900px) 36vw, 11vw"}
+                priority={mode === "hero" && index === 0}
+              />
+              <figcaption>{photo.title}</figcaption>
+            </figure>
+          ))}
+        </div>
       </div>
     </div>
   );
