@@ -91,6 +91,9 @@ describe("performance resources", () => {
   it("keeps gallery photos out of the precache and runtime-caches them", () => {
     expect(viteConfigSource).toContain("globIgnores");
     expect(viteConfigSource).toContain("**/images/gallery/**/*");
+    expect(viteConfigSource).toContain("**/three.module-*.js");
+    expect(viteConfigSource).toContain("**/gsap-*.js");
+    expect(viteConfigSource).toContain("**/ScrollTrigger-*.js");
     expect(viteConfigSource).toContain("runtimeCaching");
     expect(viteConfigSource).toContain('url.pathname.startsWith("/images/gallery/")');
     expect(viteConfigSource).toContain('handler: "CacheFirst"');
@@ -132,12 +135,11 @@ describe("performance resources", () => {
     expect(globalCss).toContain("--parallax-offset");
   });
 
-  it("adds first-load motion and scroll progress without large animation libraries", () => {
+  it("keeps first-load motion and scroll progress outside the app shell", () => {
     expect(mainSource).toContain('document.body.classList.add("is-loaded")');
     expect(navSource).toContain('style.setProperty("--scroll-progress"');
     expect(globalCss).toContain("body.is-loaded");
     expect(globalCss).toContain(".site-nav::after");
-    expect(globalCss).toContain("hero-card-large");
     expect(globalCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(appSource).not.toContain("framer-motion");
     expect(appSource).not.toContain("gsap");

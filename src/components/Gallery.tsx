@@ -2,8 +2,10 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { styleLabels } from "../data/site";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
+import { selectCinematicPhotos } from "../lib/cinematic-gallery";
 import { getPhotosByStyle } from "../lib/gallery";
 import type { PhotoItem, PhotoStyle } from "../types/photo";
+import { CinematicGalleryScene } from "./CinematicGalleryScene";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { Section } from "./Section";
 
@@ -22,6 +24,7 @@ export function Gallery() {
   const galleryGridRef = useRef<HTMLDivElement>(null);
 
   const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
+  const cinematicPhotos = useMemo(() => selectCinematicPhotos(sourcePhotos), [sourcePhotos]);
 
   useEffect(() => {
     void import("./Lightbox");
@@ -103,6 +106,9 @@ export function Gallery() {
       title={sectionCopy.gallery.title}
       intro={sectionCopy.gallery.intro}
     >
+      <div className="gallery-cinematic-stage">
+        <CinematicGalleryScene photos={cinematicPhotos} mode="gallery" />
+      </div>
       <div className="filter-row" role="group" aria-label="作品分类筛选">
         {filters.map((item) => (
           <button

@@ -37,7 +37,12 @@ export default defineConfig({
       ],
       workbox: {
         globPatterns: ["**/*.{js,css,html,png,svg,jpg,jpeg}"],
-        globIgnores: ["**/images/gallery/**/*"],
+        globIgnores: [
+          "**/images/gallery/**/*",
+          "**/three.module-*.js",
+          "**/gsap-*.js",
+          "**/ScrollTrigger-*.js",
+        ],
         runtimeCaching: [
           {
             urlPattern: ({ request, url }) => {

@@ -96,4 +96,27 @@ describe("architecture optimization contracts", () => {
     expect(viteConfig).toContain("assetsInlineLimit");
     expect(mainSource).toContain("preconnect");
   });
+
+  it("isolates the cinematic WebGL gallery behind a focused component contract", () => {
+    const packageJson = read("package.json");
+    const gallerySource = read("src/components/Gallery.tsx");
+
+    expect(packageJson).toContain('"gsap"');
+    expect(packageJson).toContain('"three"');
+    expect(existsSync(resolve(root, "src/components/CinematicGalleryScene.tsx"))).toBe(true);
+    expect(existsSync(resolve(root, "src/lib/cinematic-gallery.ts"))).toBe(true);
+
+    const cinematicSource = read("src/components/CinematicGalleryScene.tsx");
+    const cinematicDataSource = read("src/lib/cinematic-gallery.ts");
+
+    expect(cinematicDataSource).toContain("MAX_CINEMATIC_PHOTOS = 24");
+    expect(cinematicSource).toContain("ScrollTrigger");
+    expect(cinematicSource).toContain("three");
+    expect(cinematicSource).toContain("WebGL");
+    expect(cinematicSource).toContain("cinematic-fallback");
+    expect(cinematicSource).toContain("prefers-reduced-motion");
+    expect(cinematicSource).toContain("Product decision");
+    expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
+    expect(gallerySource).toContain("<CinematicGalleryScene");
+  });
 });
