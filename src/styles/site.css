@@ -2420,7 +2420,7 @@ body.nav-lock .site-nav {
   --hero-copy-width: min(560px, 48vw);
   display: block;
   min-height: calc(100svh - 72px);
-  padding: clamp(88px, 10vw, 132px) clamp(20px, 5vw, 76px) clamp(74px, 8vw, 104px);
+  padding: clamp(54px, 7vw, 88px) clamp(20px, 5vw, 76px) clamp(58px, 7vw, 86px);
   overflow: hidden;
   background:
     linear-gradient(90deg, rgba(255, 249, 236, 0.96) 0%, rgba(255, 249, 236, 0.78) 31%, rgba(255, 249, 236, 0.08) 63%),
@@ -2438,11 +2438,23 @@ body.nav-lock .site-nav {
   background: linear-gradient(180deg, transparent, rgba(255, 249, 236, 0.98));
 }
 
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: 2;
+  width: min(58vw, 760px);
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 250, 238, 0.99) 0%, rgba(255, 250, 238, 0.97) 55%, rgba(255, 246, 230, 0.78) 78%, transparent 100%),
+    radial-gradient(circle at 22% 78%, rgba(255, 197, 174, 0.34), transparent 38%);
+}
+
 .hero-copy {
   position: relative;
-  z-index: 5;
+  z-index: 6;
   max-width: var(--hero-copy-width);
-  padding-top: clamp(28px, 5vh, 64px);
+  padding-top: clamp(0px, 2.4vh, 24px);
 }
 
 .hero .kicker {
@@ -2454,10 +2466,12 @@ body.nav-lock .site-nav {
 
 .hero-visual {
   position: absolute;
-  inset: 0;
+  inset: 0 0 0 34%;
   z-index: 1;
   min-height: 100%;
   height: 100%;
+  overflow: hidden;
+  opacity: 0.94;
 }
 
 .hero-visual .cinematic-scene {
@@ -2466,18 +2480,32 @@ body.nav-lock .site-nav {
 }
 
 .hero h1 {
-  max-width: 8.6em;
-  font-size: clamp(50px, 7vw, 104px);
+  max-width: 7.5em;
+  font-size: clamp(50px, 6.4vw, 92px);
+  color: #3f281f;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.58);
+}
+
+.hero h1 span {
+  color: #7a5144;
 }
 
 .hero-intro {
-  max-width: 510px;
-  text-shadow: 0 1px 0 rgba(255, 253, 247, 0.72);
+  max-width: 500px;
+  margin-top: 22px;
+  color: #6f554d;
+  text-shadow: none;
+  background: rgba(255, 250, 238, 0.54);
+  border-left: 2px solid rgba(187, 116, 91, 0.34);
+  border-radius: 0 14px 14px 0;
+  padding: 16px 20px 16px 28px;
+  backdrop-filter: blur(8px);
 }
 
 .hero-actions {
   position: relative;
   z-index: 8;
+  margin-top: 34px;
 }
 
 .cinematic-scene {
@@ -2528,7 +2556,7 @@ body.nav-lock .site-nav {
 }
 
 .cinematic-scene-hero .cinematic-bg img {
-  object-position: 58% center;
+  object-position: 62% center;
 }
 
 .cinematic-scene-hero,
@@ -2754,29 +2782,39 @@ body.nav-lock .site-nav {
 @media (max-width: 900px) {
   .hero {
     --hero-copy-width: min(620px, 82vw);
-    min-height: calc(100svh - 64px);
-    display: flex;
-    align-items: flex-end;
-    padding: 92px 20px 46px;
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    padding: 84px 20px 42px;
     background:
-      linear-gradient(180deg, rgba(255, 249, 236, 0.7) 0%, rgba(255, 249, 236, 0.12) 38%, rgba(255, 246, 232, 0.78) 72%, rgba(255, 249, 236, 0.96) 100%),
+      linear-gradient(180deg, rgba(255, 249, 236, 0.98), rgba(255, 244, 226, 0.96)),
       #fff4df;
   }
 
+  .hero::before,
+  .hero::after {
+    display: none;
+  }
+
   .hero-copy {
+    order: 1;
     padding-top: 0;
   }
 
   .hero-visual {
-    position: absolute;
-    inset: 0;
-    min-height: 0;
-    height: auto;
-    margin: 0;
+    order: 2;
+    position: relative;
+    inset: auto;
+    min-height: 420px;
+    height: clamp(420px, 72vw, 560px);
+    margin: 34px -20px 0;
+    border-radius: 24px 24px 0 0;
+    opacity: 1;
   }
 
   .hero-visual .cinematic-scene {
-    border-radius: 0;
+    border-radius: inherit;
   }
 
   .cinematic-scene-hero .cinematic-fallback {
@@ -2798,26 +2836,27 @@ body.nav-lock .site-nav {
 
 @media (max-width: 620px) {
   .hero {
-    min-height: calc(100svh - 58px);
-    padding: 74px 18px 92px;
+    padding: 74px 18px 34px;
   }
 
   .hero-visual {
-    inset: 0;
-    min-height: 0;
-    height: auto;
-    margin: 0;
+    min-height: 360px;
+    height: 390px;
+    margin: 28px -18px 0;
+    border-radius: 20px 20px 0 0;
   }
 
   .hero h1 {
-    font-size: clamp(42px, 13vw, 58px);
-    max-width: 7.2em;
+    font-size: clamp(42px, 12vw, 54px);
+    max-width: 7.8em;
   }
 
   .hero-intro {
-    max-width: 22rem;
+    max-width: none;
+    margin-top: 20px;
     font-size: 14px;
     line-height: 1.8;
+    background: rgba(255, 250, 238, 0.7);
   }
 
   .hero-actions {
@@ -2825,8 +2864,8 @@ body.nav-lock .site-nav {
   }
 
   .cinematic-scene-hero {
-    min-height: 100%;
-    height: 100%;
+    min-height: 390px;
+    height: 390px;
   }
 
   .cinematic-scene-gallery {
