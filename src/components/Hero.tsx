@@ -12,7 +12,7 @@ export function Hero() {
 
   return (
     <section id="top" className="hero">
-      <div className="hero-visual" aria-label="暖色宠物影棚与胶片作品预览">
+      <div className="hero-visual" aria-label="暖色电影暗房与胶片作品预览">
         <CinematicGalleryScene photos={cinematicPhotos} mode="hero" />
       </div>
       <div className="hero-copy">

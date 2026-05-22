@@ -91,7 +91,7 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     `<meta itemprop="image" content="${metadata.shareImage}" />`,
     `<link rel="canonical" href="${metadata.origin}/" />`,
     '<link rel="manifest" href="/manifest.webmanifest" />',
-    '<link rel="preload" as="image" href="/images/gallery/gallery-jiangnan-01.webp?v=20260427-2" imagesrcset="/images/gallery/640/gallery-jiangnan-01.webp?v=20260427-2 640w, /images/gallery/960/gallery-jiangnan-01.webp?v=20260427-2 960w, /images/gallery/gallery-jiangnan-01.webp?v=20260427-2 1200w" imagesizes="(max-width: 900px) 92vw, 48vw" />',
+    '<link rel="preload" as="image" href="/images/cinematic/hero-studio.webp" imagesizes="100vw" />',
     '<link rel="icon" href="/icons/pwa-icon.svg" />',
     '<script type="application/ld+json">',
     JSON.stringify(schema, null, 6),

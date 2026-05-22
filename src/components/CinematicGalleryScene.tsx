@@ -67,8 +67,8 @@ export function CinematicGalleryScene({
     [photos],
   );
   const fallbackPhotos = scenePhotos.slice(0, mode === "hero" ? 5 : 9);
-  const atmosphereCards = atmosphereGalleryItems.slice(0, mode === "hero" ? 3 : 5);
-  const detailCards = cinematicDetailAssets.slice(mode === "hero" ? 0 : 3, mode === "hero" ? 3 : 8);
+  const atmosphereCards = atmosphereGalleryItems.slice(0, mode === "hero" ? 1 : 2);
+  const detailCards = cinematicDetailAssets.slice(mode === "hero" ? 0 : 3, mode === "hero" ? 2 : 6);
   const assets = mode === "hero" ? cinematicHeroAssets : cinematicGalleryAssets;
   const copy = sceneCopy[mode];
 

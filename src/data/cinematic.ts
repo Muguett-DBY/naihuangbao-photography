@@ -35,58 +35,58 @@ export const cinematicDetailAssets = [
 export const atmosphereGalleryItems: AtmosphereGalleryItem[] = [
   {
     id: "atmosphere-01",
-    title: "暖光影棚",
+    title: "玻璃相纸",
     imageUrl: "/images/cinematic/atmosphere-01.webp",
-    alt: "暖色影棚中的猫和小狗品牌氛围图",
+    alt: "暖色玻璃相纸与电影光轨品牌氛围图",
     kind: "atmosphere",
   },
   {
     id: "atmosphere-02",
-    title: "胶片小径",
+    title: "暗房光轨",
     imageUrl: "/images/cinematic/atmosphere-02.webp",
-    alt: "奶油色影棚里的胶片轨道品牌氛围图",
+    alt: "暗房空间里的金色胶片光轨品牌氛围图",
     kind: "atmosphere",
   },
   {
     id: "atmosphere-03",
-    title: "花窗午后",
+    title: "棱镜微光",
     imageUrl: "/images/cinematic/atmosphere-03.webp",
-    alt: "柔光花窗与相纸陈列品牌氛围图",
+    alt: "棱镜玻璃与柔暖人像相纸品牌氛围图",
     kind: "atmosphere",
   },
   {
     id: "atmosphere-04",
-    title: "焦糖相纸",
+    title: "焦糖暗幕",
     imageUrl: "/images/cinematic/atmosphere-04.webp",
-    alt: "焦糖暖色相纸和影棚道具品牌氛围图",
+    alt: "焦糖色暗幕与透明相纸品牌氛围图",
     kind: "atmosphere",
   },
   {
     id: "atmosphere-05",
-    title: "柔纱轨道",
+    title: "曲线胶片",
     imageUrl: "/images/cinematic/atmosphere-05.webp",
-    alt: "柔纱与胶片轨道构成的品牌氛围图",
+    alt: "曲线胶片走廊与暖色光带品牌氛围图",
     kind: "atmosphere",
   },
   {
     id: "atmosphere-06",
-    title: "奶油布景",
+    title: "光带走廊",
     imageUrl: "/images/cinematic/atmosphere-06.webp",
-    alt: "奶油色宠物影棚与相机道具品牌氛围图",
+    alt: "暖色光带穿过玻璃相纸走廊品牌氛围图",
     kind: "atmosphere",
   },
   {
     id: "atmosphere-07",
-    title: "蜜桃光影",
+    title: "悬浮相纸",
     imageUrl: "/images/cinematic/atmosphere-07.webp",
-    alt: "蜜桃色自然光与相纸品牌氛围图",
+    alt: "悬浮相纸与金色镜头光斑品牌氛围图",
     kind: "atmosphere",
   },
   {
     id: "atmosphere-08",
-    title: "相册终幕",
+    title: "胶片终幕",
     imageUrl: "/images/cinematic/atmosphere-08.webp",
-    alt: "暖色相册陈列和胶片装置品牌氛围图",
+    alt: "电影胶片终幕与透明照片墙品牌氛围图",
     kind: "atmosphere",
   },
 ];
@@ -107,10 +107,6 @@ export function isAtmosphereItem(item: GalleryDisplayItem): item is AtmosphereGa
 export function getGalleryDisplayItems(
   photos: PhotoItem[],
   style: PhotoStyle | "all",
-): GalleryDisplayItem[] {
-  const realPhotos = getPhotosByStyle(photos, style);
-  if (style !== "all") {
-    return realPhotos;
-  }
-  return [...realPhotos, ...atmosphereGalleryItems];
+): PhotoItem[] {
+  return getPhotosByStyle(photos, style);
 }

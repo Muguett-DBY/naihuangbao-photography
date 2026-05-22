@@ -2,7 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { styleLabels } from "../data/site";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
-import { getGalleryDisplayItems, isAtmosphereItem } from "../data/cinematic";
+import { getGalleryDisplayItems } from "../data/cinematic";
 import { selectCinematicPhotos } from "../lib/cinematic-gallery";
 import { getPhotosByStyle } from "../lib/gallery";
 import type { PhotoItem, PhotoStyle } from "../types/photo";
@@ -126,67 +126,47 @@ export function Gallery() {
       </div>
       <div className="gallery-grid" ref={galleryGridRef}>
         {displayItems.map((item, index) => {
-          const isAtmosphere = isAtmosphereItem(item);
           const isFeaturedGalleryCard = filter === "all" && index === 0;
-          const realPhotoIndex = isAtmosphere ? -1 : photos.findIndex((photo) => photo.id === item.id);
+          const realPhotoIndex = photos.findIndex((photo) => photo.id === item.id);
 
           return (
             <article
               className={[
                 "gallery-card",
                 isFeaturedGalleryCard ? "gallery-card-featured" : "",
-                isAtmosphere ? "gallery-card-atmosphere" : "",
               ].filter(Boolean).join(" ")}
-              data-gallery-photo-id={isAtmosphere ? undefined : item.id}
-              data-gallery-atmosphere-id={isAtmosphere ? item.id : undefined}
+              data-gallery-photo-id={item.id}
               key={item.id}
               style={{ transitionDelay: `${index * 0.06}s` }}
             >
-              {isAtmosphere ? (
-                <div className="gallery-card-btn gallery-card-static" aria-label={item.alt}>
-                  <ImageWithFallback
-                    src={item.imageUrl}
-                    alt={item.alt}
-                    title={item.title}
-                    tone={tones[index % tones.length]}
-                    sizes="(max-width: 620px) 50vw, (max-width: 900px) 50vw, 33vw"
-                  />
-                  <div className="gallery-hover-overlay gallery-hover-overlay-soft">
-                    <span className="gallery-hover-style">品牌氛围</span>
-                    <strong className="gallery-hover-title">{item.title}</strong>
-                    <span className="gallery-hover-location">奶黄包暖色影棚</span>
-                  </div>
+              <button
+                className="gallery-card-btn"
+                type="button"
+                onClick={() => setLightboxIndex(realPhotoIndex)}
+                aria-label={`查看大图：${item.title}`}
+              >
+                <ImageWithFallback
+                  src={item.imageUrl || ""}
+                  alt={item.alt}
+                  title={item.title}
+                  tone={tones[index % tones.length]}
+                  load={!item.imageUrl || visiblePhotoIds.has(item.id)}
+                  sizes={
+                    isFeaturedGalleryCard
+                      ? "(max-width: 620px) 100vw, (max-width: 900px) 92vw, 50vw"
+                      : "(max-width: 620px) 50vw, (max-width: 900px) 50vw, 33vw"
+                  }
+                />
+                <div className="gallery-hover-overlay">
+                  <span className="gallery-hover-style">{styleLabels[item.style]}</span>
+                  <strong className="gallery-hover-title">{item.title}</strong>
+                  <span className="gallery-hover-location">{item.location}</span>
                 </div>
-              ) : (
-                <button
-                  className="gallery-card-btn"
-                  type="button"
-                  onClick={() => setLightboxIndex(realPhotoIndex)}
-                  aria-label={`查看大图：${item.title}`}
-                >
-                  <ImageWithFallback
-                    src={item.imageUrl || ""}
-                    alt={item.alt}
-                    title={item.title}
-                    tone={tones[index % tones.length]}
-                    load={!item.imageUrl || visiblePhotoIds.has(item.id)}
-                    sizes={
-                      isFeaturedGalleryCard
-                        ? "(max-width: 620px) 100vw, (max-width: 900px) 92vw, 50vw"
-                        : "(max-width: 620px) 50vw, (max-width: 900px) 50vw, 33vw"
-                    }
-                  />
-                  <div className="gallery-hover-overlay">
-                    <span className="gallery-hover-style">{styleLabels[item.style]}</span>
-                    <strong className="gallery-hover-title">{item.title}</strong>
-                    <span className="gallery-hover-location">{item.location}</span>
-                  </div>
-                </button>
-              )}
+              </button>
               <div>
-                <p>{isAtmosphere ? "品牌氛围" : styleLabels[item.style]}</p>
+                <p>{styleLabels[item.style]}</p>
                 <h3>{item.title}</h3>
-                <span>{isAtmosphere ? "不作为真实客片展示" : item.location}</span>
+                <span>{item.location}</span>
               </div>
             </article>
           );

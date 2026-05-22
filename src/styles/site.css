@@ -2415,7 +2415,7 @@ body.nav-lock .site-nav {
   }
 }
 
-/* Cinematic pet studio redesign */
+/* Cinematic light-stage redesign */
 .hero {
   --hero-copy-width: min(560px, 48vw);
   display: block;
@@ -2655,7 +2655,7 @@ body.nav-lock .site-nav {
 
 .cinematic-atmosphere-card {
   z-index: 6;
-  opacity: 0.72;
+  opacity: 0.42;
   filter: saturate(1.02);
 }
 
@@ -2740,8 +2740,8 @@ body.nav-lock .site-nav {
 }
 
 .is-webgl-ready .cinematic-fallback {
-  opacity: 0.22;
-  visibility: visible;
+  opacity: 0;
+  visibility: hidden;
 }
 
 .cinematic-fallback figure {
@@ -2762,12 +2762,6 @@ body.nav-lock .site-nav {
   border-radius: 7px;
 }
 
-.gallery-card-atmosphere {
-  background:
-    radial-gradient(circle at 24px 20px, rgba(255, 255, 255, 0.94), transparent 28px),
-    linear-gradient(145deg, rgba(255, 236, 208, 0.92), rgba(255, 253, 247, 0.96));
-}
-
 .gallery-card-static {
   cursor: default;
 }
@@ -2775,14 +2769,6 @@ body.nav-lock .site-nav {
 .gallery-card-static .img-blur-wrap,
 .gallery-card-static img {
   cursor: default;
-}
-
-.gallery-card-atmosphere .gallery-hover-overlay {
-  opacity: 0;
-}
-
-.section-body.is-visible .gallery-card-atmosphere:hover {
-  transform: translate3d(0, -5px, 0) rotate(var(--polaroid-tilt)) scale(1.01);
 }
 
 @media (max-width: 900px) {

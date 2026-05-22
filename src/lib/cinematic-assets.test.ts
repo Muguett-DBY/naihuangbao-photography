@@ -44,20 +44,19 @@ describe("cinematic brand assets", () => {
     expect(getGalleryDisplayItems(realPhotos, "all").map((item) => item.id)).toEqual([
       "real-a",
       "real-b",
-      ...atmosphereGalleryItems.map((item) => item.id),
     ]);
     expect(getGalleryDisplayItems(realPhotos, "jiangnan").map((item) => item.id)).toEqual(["real-a"]);
   });
 
-  it("lets callers distinguish atmosphere cards from lightbox photos", () => {
+  it("keeps the gallery grid and lightbox limited to real photos", () => {
     const allItems = getGalleryDisplayItems(realPhotos, "all");
     const lightboxItems = allItems.filter((item): item is PhotoItem => !isAtmosphereItem(item));
 
     expect(lightboxItems).toEqual(realPhotos);
-    expect(allItems.some(isAtmosphereItem)).toBe(true);
+    expect(allItems.some(isAtmosphereItem)).toBe(false);
   });
 
-  it("declares a luxury cinematic asset package for the pet studio", () => {
+  it("declares a luxury cinematic asset package for the light-stage scene", () => {
     expect(cinematicAssetManifest.length).toBeGreaterThanOrEqual(20);
     expect(cinematicAssetManifest.length).toBeLessThanOrEqual(28);
     expect(cinematicAssetManifest).toContain("/images/cinematic/hero-studio.webp");
