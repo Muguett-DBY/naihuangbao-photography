@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type * as Three from "three";
 import {
-  atmosphereGalleryItems,
   cinematicDetailAssets,
   cinematicGalleryAssets,
   cinematicHeroAssets,
@@ -67,8 +66,7 @@ export function CinematicGalleryScene({
     [photos],
   );
   const fallbackPhotos = scenePhotos.slice(0, mode === "hero" ? 5 : 9);
-  const atmosphereCards = atmosphereGalleryItems.slice(0, mode === "hero" ? 1 : 2);
-  const detailCards = cinematicDetailAssets.slice(mode === "hero" ? 0 : 3, mode === "hero" ? 2 : 6);
+  const detailCards = cinematicDetailAssets.slice(mode === "hero" ? 0 : 3, mode === "hero" ? 1 : 4);
   const assets = mode === "hero" ? cinematicHeroAssets : cinematicGalleryAssets;
   const copy = sceneCopy[mode];
 
@@ -210,7 +208,7 @@ export function CinematicGalleryScene({
           camera.updateProjectionMatrix();
           renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
           renderer.setSize(width, height, false);
-          galleryGroup.position.x = mode === "hero" ? (isNarrow ? 0.18 : 2.05) : 0;
+          galleryGroup.position.x = mode === "hero" ? (isNarrow ? 2.4 : 2.05) : 0;
 
           planes.forEach(({ group }, index) => {
             const position = getPlanePosition(index, isNarrow);
@@ -218,7 +216,7 @@ export function CinematicGalleryScene({
             group.position.y = position.y;
             group.position.z = position.z;
             group.rotation.y = position.lane * (isNarrow ? -0.04 : -0.075);
-            group.scale.setScalar(MAX_CINEMATIC_PLANE_SCALE * (isNarrow ? 0.68 : index % 4 === 0 ? 0.94 : 0.82));
+            group.scale.setScalar(MAX_CINEMATIC_PLANE_SCALE * (isNarrow ? 0.42 : index % 4 === 0 ? 0.94 : 0.82));
           });
           renderFrame(performance.now());
         }
@@ -389,19 +387,6 @@ export function CinematicGalleryScene({
               className="cinematic-float cinematic-detail-card"
               key={src}
               src={src}
-              alt=""
-              loading={mode === "hero" && index === 0 ? "eager" : "lazy"}
-              decoding="async"
-              style={{ "--float-index": index } as CSSProperties}
-            />
-          ))}
-        </div>
-        <div className="cinematic-atmosphere" aria-hidden="true">
-          {atmosphereCards.map((item, index) => (
-            <img
-              className="cinematic-float cinematic-atmosphere-card"
-              key={item.id}
-              src={item.imageUrl}
               alt=""
               loading={mode === "hero" && index === 0 ? "eager" : "lazy"}
               decoding="async"
