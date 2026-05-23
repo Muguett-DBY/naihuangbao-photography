@@ -89,7 +89,7 @@ describe("audit regression coverage", () => {
   });
 
   it("mounts the lightbox outside transformed gallery containers", () => {
-    expect(cssSource).toMatch(/main\s*\{[^}]*overflow-x:\s*hidden/s);
+    expect(cssSource).toMatch(/main\s*\{[^}]*overflow:\s*hidden/s);
     expect(cssSource).toMatch(/\.section-shell\s*\{[^}]*transform:\s*translateY\(36px\)/s);
     expect(lightboxSource).toContain('from "react-dom"');
     expect(lightboxSource).toContain("createPortal");

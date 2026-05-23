@@ -81,7 +81,6 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 0;
   text-size-adjust: 100%;
-  overflow-y: scroll;
 }
 
 /* ── Scroll Reveal Animations ── */
@@ -322,7 +321,7 @@ body::after {
 
 main {
   position: relative;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 main::before,
