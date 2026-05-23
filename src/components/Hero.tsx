@@ -1,13 +1,19 @@
 import { ArrowDown, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
+import { useGsapAnimations } from "../hooks/useGsapAnimations";
 
 export function Hero() {
+  useGsapAnimations();
   const { siteConfig } = useSiteContent();
 
   return (
     <section id="top" className="hero">
       {/* Designed gradient background — replaces real photo */}
       <div className="hero-cover-design" />
+
+      {/* Floating glow orbs — GSAP animated */}
+      <div className="hero-glow-orb hero-glow-orb--1" aria-hidden="true" />
+      <div className="hero-glow-orb hero-glow-orb--2" aria-hidden="true" />
 
       <div className="hero-cover-content">
         <div className="hero-cover-left">

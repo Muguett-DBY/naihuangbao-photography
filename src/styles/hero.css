@@ -188,11 +188,45 @@ body.nav-lock .site-nav {
   transform: translateZ(0);
 }
 
+/* ── Floating glow orbs ── */
+.hero-glow-orb {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+  filter: blur(60px);
+  opacity: 0.3;
+}
+
+.hero-glow-orb--1 {
+  width: 480px;
+  height: 480px;
+  top: 8%;
+  left: -6%;
+  background: radial-gradient(circle, rgba(255, 210, 184, 0.45) 0%, rgba(255, 184, 161, 0.15) 40%, transparent 70%);
+}
+
+.hero-glow-orb--2 {
+  width: 360px;
+  height: 360px;
+  bottom: 10%;
+  right: 4%;
+  background: radial-gradient(circle, rgba(221, 231, 215, 0.2) 0%, rgba(255, 210, 184, 0.18) 30%, transparent 65%);
+}
+
+/* ── Film grain subtle pulse ── */
+@keyframes grainPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.5; }
+}
+
 /* ── Designed gradient background (replaces real photo) ── */
 .hero-cover-design {
   position: absolute;
   inset: 0;
   z-index: 0;
+  animation: grainPulse 6s ease-in-out infinite;
   background:
     /* Paper texture for tactile warmth */
     var(--paper-noise),
@@ -442,6 +476,7 @@ body.nav-lock .site-nav {
 }
 
 /* ── Hero Entry Animations ── */
+/* Background reveal — kept as CSS for zero-JS initial paint */
 @media (prefers-reduced-motion: no-preference) {
   body:not(.is-loaded) .hero-cover-design {
     opacity: 0;
@@ -453,36 +488,15 @@ body.nav-lock .site-nav {
     animation: heroDesignReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
 
-  body.is-loaded .hero-vol-badge {
-    animation: heroTextIn 0.58s 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-
-  body.is-loaded .hero-magazine-title {
-    animation: heroTitleIn 1s 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-
-  body.is-loaded .hero-magazine-subtitle {
-    animation: heroTextIn 0.65s 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-
-  body.is-loaded .hero-cover-intro {
-    animation: heroTextIn 0.65s 0.85s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-
-  body.is-loaded .hero-trust-tag {
-    animation: heroTextIn 0.5s 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-  }
-
-  body.is-loaded .hero-cover-cta-group > * {
-    animation: heroButtonPop 0.52s 0.9s cubic-bezier(0.2, 1.42, 0.36, 1) backwards;
-  }
-
-  body.is-loaded .hero-cover-cta-group > *:nth-child(2) {
-    animation-delay: 0.98s;
-  }
-
-  body.is-loaded .hero-scroll-indicator {
-    animation: heroTextIn 0.6s 1.2s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  /* Text elements animated by GSAP — keep initial hidden state */
+  body:not(.is-loaded) .hero-vol-badge,
+  body:not(.is-loaded) .hero-magazine-title,
+  body:not(.is-loaded) .hero-magazine-subtitle,
+  body:not(.is-loaded) .hero-cover-intro,
+  body:not(.is-loaded) .hero-trust-tag,
+  body:not(.is-loaded) .hero-cover-cta-group > *,
+  body:not(.is-loaded) .hero-scroll-indicator {
+    opacity: 0;
   }
 }
 

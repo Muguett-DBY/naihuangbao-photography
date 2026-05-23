@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState } from "react";
+import { useGsapAnimations } from "./hooks/useGsapAnimations";
 import { AboutBooking } from "./components/AboutBooking";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
@@ -50,6 +51,8 @@ export function App() {
   if (isNotFound()) {
     return <NotFound />;
   }
+
+  useGsapAnimations();
 
   return (
     <ErrorBoundary>
