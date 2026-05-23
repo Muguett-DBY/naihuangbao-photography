@@ -1,9 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://shoot.custard.top/</loc>
     <lastmod>2026-04-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/gallery/gallery-jiangnan-01.webp</image:loc>
+      <image:title>南京江南感写真｜女生约拍</image:title>
+      <image:caption>奶黄包摄影南京女生写真，江南感风格</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/gallery/gallery-jiangnan-02.webp</image:loc>
+      <image:title>南京探店写真｜室内约拍</image:title>
+      <image:caption>南京室内写真约拍，柔雾胶片感</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/gallery/gallery-street-01.webp</image:loc>
+      <image:title>南京街拍写真｜室外约拍</image:title>
+      <image:caption>南京街拍女生写真，自然光日常记录</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/gallery/gallery-couple-01.webp</image:loc>
+      <image:title>南京情侣约拍｜室外写真</image:title>
+      <image:caption>南京情侣约拍，自然甜蜜风格</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/gallery/gallery-sweet-01.webp</image:loc>
+      <image:title>南京甜系写真｜室内棚拍</image:title>
+      <image:caption>南京甜系女生写真，温柔柔雾风格</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/gallery/gallery-park-01.webp</image:loc>
+      <image:title>南京公园写真｜自然光约拍</image:title>
+      <image:caption>南京公园女生写真，自然柔光风格</image:caption>
+    </image:image>
   </url>
 </urlset>

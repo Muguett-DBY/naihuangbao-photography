@@ -1,4 +1,5 @@
 import { defaultSiteContent } from "../data/content";
+import { faqs } from "../data/faq";
 import { galleryItems } from "../data/gallery";
 import type { SiteContent } from "../types/content";
 
@@ -38,9 +39,10 @@ export function buildSeoMetadata(content: SiteContent = defaultSiteContent) {
 
 export function renderSeoHead(content: SiteContent = defaultSiteContent) {
   const metadata = buildSeoMetadata(content);
-  const schema = {
+  const mainEntity = {
     "@context": "https://schema.org",
-    "@type": "ProfessionalService",
+    "@type": "LocalBusiness",
+    "@id": `${metadata.origin}/#business`,
     name: content.siteConfig.brandName,
     alternateName: `${content.siteConfig.brandName}约拍`,
     description: metadata.description,
@@ -55,6 +57,7 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
       addressLocality: content.siteConfig.city,
       addressCountry: "CN",
     },
+    telephone: "",
     serviceType: [
       `${content.siteConfig.city}女生写真`,
       `${content.siteConfig.city}情侣约拍`,
@@ -71,6 +74,20 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
       price: item.price.replace(/[^\d.]/g, ""),
       priceCurrency: "CNY",
       description: `${item.name} ${item.price}，${item.duration}。`,
+    })),
+  };
+
+  // FAQPage schema — enables rich FAQ results in SERPs
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
     })),
   };
 
@@ -99,8 +116,16 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     '<link rel="preload" as="image" href="/images/gallery/gallery-jiangnan-01.webp?v=20260427-2" imagesizes="(max-width: 900px) 86vw, 38vw" />',
     '<link rel="icon" href="/icons/pwa-icon.svg" />',
     '<script type="application/ld+json">',
-    JSON.stringify(schema, null, 6),
+    JSON.stringify(mainEntity, null, 6),
     "</script>",
+    '<script type="application/ld+json">',
+    JSON.stringify(faqSchema, null, 6),
+    "</script>",
+    // Google Search Console verification (replace with your own ID)
+    // '<meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />',
+    // hreflang for Chinese locale
+    '<link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/" />',
+    '<link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/" />',
     `<title>${escapeHtml(metadata.title)}</title>`,
   ].join("\n    ");
 }
