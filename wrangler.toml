@@ -7,6 +7,10 @@ compatibility_flags = ["nodejs_compat"]
 binding = "PHOTO_BUCKET"
 bucket_name = "naihuangbao-photography"
 
+[[kv_namespaces]]
+binding = "CACHE"
+id = ""
+
 [[d1_databases]]
 binding = "DB"
 database_name = "naihuangbao-photography"

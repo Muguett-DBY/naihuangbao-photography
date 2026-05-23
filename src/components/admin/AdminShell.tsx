@@ -1,5 +1,6 @@
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import {
+  BarChart3,
   FileText,
   HelpCircle,
   ImagePlus,
@@ -18,6 +19,7 @@ import { AdminServicesTab } from "./AdminServicesTab";
 
 const tabs: Array<{ id: AdminTab; label: string; icon: typeof ImagePlus }> = [
   { id: "photos", label: "照片", icon: ImagePlus },
+  { id: "stats", label: "数据", icon: BarChart3 },
   { id: "packages", label: "套餐价格", icon: Layers },
   { id: "services", label: "服务规则", icon: Settings },
   { id: "faq", label: "FAQ/流程", icon: HelpCircle },
@@ -123,6 +125,9 @@ export function AdminShell() {
         {activeTab === "services" && <AdminServicesTab />}
         {activeTab === "faq" && <AdminFaqTab />}
         {activeTab === "copy" && <AdminCopyTab />}
+        {activeTab === "stats" && <div className="admin-stats">
+          <p style={{padding:'20px',color:'var(--caramel-muted)',fontSize:'14px'}}>📊 统计功能开发中</p>
+        </div>}
       </div>
     </div>
   );

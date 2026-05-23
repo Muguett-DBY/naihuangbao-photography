@@ -12,6 +12,7 @@ import { MidCTA } from "./components/MidCTA";
 import { NotFound } from "./components/NotFound";
 import { Packages } from "./components/Packages";
 import { ProcessAndFaq } from "./components/ProcessAndFaq";
+import { Reviews } from "./components/Reviews";
 import { PublicChatLauncher } from "./components/PublicChatLauncher";
 import { ServiceDetails } from "./components/ServiceDetails";
 import { SiteNav } from "./components/SiteNav";
@@ -76,6 +77,7 @@ export function App() {
             <WhyChooseUs />
             <Packages />
             <ServiceDetails />
+            <Reviews />
             <ProcessAndFaq />
             <AboutBooking />
           </main>
