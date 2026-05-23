@@ -248,7 +248,10 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
        ══════════════════════════════════════════ */
     const galleryTracks = $<HTMLElement>(".gallery-auto-scroll");
     galleryTracks.forEach((track) => {
-      const speed = parseFloat(track.getAttribute("data-scroll-speed") || "0.3");
+      const speed = parseFloat(track.getAttribute("data-scroll-speed") || "0.25");
+      let xPos = 0;
+      let rafId = 0;
+      let isVisible = true;
 
       // Clone children for seamless loop
       const children = Array.from(track.children);
@@ -257,13 +260,18 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         track.appendChild(clone);
       });
 
-      let xPos = 0;
+      // Pause RAF when offscreen
+      const io = new IntersectionObserver(([entry]) => {
+        isVisible = entry.isIntersecting;
+      });
+      io.observe(track);
+      (track as any)._autoScrollIO = io;
+
       const scrollFn = () => {
-        if (!track.matches(":hover")) {
+        if (isVisible && !track.matches(":hover")) {
           xPos -= speed;
           track.style.transform = `translateX(${xPos}px)`;
 
-          // Reset when scrolled past one set
           const totalWidth = track.scrollWidth / 2;
           if (Math.abs(xPos) >= totalWidth) {
             xPos = 0;
@@ -273,9 +281,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         rafId = requestAnimationFrame(scrollFn);
       };
 
-      let rafId = requestAnimationFrame(scrollFn);
-
-      // Store cleanup
+      rafId = requestAnimationFrame(scrollFn);
       (track as any)._autoScrollRaf = rafId;
     });
 
@@ -304,7 +310,100 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     });
 
     /* ══════════════════════════════════════════
-       EFFECT 10: Scroll Parallax (existing)
+       EFFECT 10: 图片悬停视差 (Hover Image Parallax)
+       ══════════════════════════════════════════ */
+    const galleryItems = $<HTMLElement>(".gallery-masonry-item");
+    galleryItems.forEach((item) => {
+      const img = item.querySelector<HTMLElement>("img");
+      if (!img) return;
+      item.addEventListener("mousemove", (e: MouseEvent) => {
+        const rect = item.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+        const y = ((e.clientY - rect.top) / rect.height - 0.5) * 8;
+        gsap.to(img, {
+          x, y, duration: 0.6, ease: "power2.out", overwrite: "auto",
+        });
+      });
+      item.addEventListener("mouseleave", () => {
+        gsap.to(img, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.35)" });
+      });
+    });
+
+    /* ══════════════════════════════════════════
+       EFFECT 11: 滚动图片裁剪揭示 (Clip Reveal)
+       ══════════════════════════════════════════ */
+    const galleryImgs = $<HTMLElement>(".gallery-masonry-item");
+    galleryImgs.forEach((item) => {
+      gsap.fromTo(
+        item,
+        { clipPath: "inset(0 100% 0 0)" },
+        {
+          clipPath: "inset(0 0% 0 0)",
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: item,
+            start: "top 85%",
+            toggleActions: "play none none none",
+          },
+        },
+      );
+    });
+
+    /* ══════════════════════════════════════════
+       EFFECT 12: 滚动文字变色 (Text Color Shift)
+       ══════════════════════════════════════════ */
+    const colorShiftEls = $<HTMLElement>(".section-heading h2, .hero-magazine-title");
+    colorShiftEls.forEach((el) => {
+      gsap.to(el, {
+        color: "#F5A891",
+        duration: 0.01,
+        ease: "none",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 40%",
+          end: "bottom top",
+          toggleActions: "play reverse play reverse",
+        },
+      });
+    });
+
+    /* ══════════════════════════════════════════
+       EFFECT 13: 页面转场动画 (Page Transition)
+       ══════════════════════════════════════════ */
+    $<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener("click", (e: MouseEvent) => {
+        const href = anchor.getAttribute("href");
+        if (!href || href === "#") return;
+        const target = document.querySelector(href);
+        if (!target) return;
+        e.preventDefault();
+
+        const mainContent = document.querySelector<HTMLElement>("#main-content");
+        if (!mainContent) {
+          gsap.to(window, { scrollTo: { y: target, offsetY: 64 }, duration: 1.0, ease: "power3.inOut" });
+          return;
+        }
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            gsap.to(window, {
+              scrollTo: { y: target, offsetY: 64 },
+              duration: 0.8,
+              ease: "power2.inOut",
+              onComplete: () => {
+                gsap.to(mainContent, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
+              },
+            });
+          },
+        });
+
+        tl.to(mainContent, { opacity: 0, y: -12, duration: 0.25, ease: "power2.in" });
+      });
+    });
+
+    /* ══════════════════════════════════════════
+       EFFECT 14: Scroll Parallax (existing)
        ══════════════════════════════════════════ */
     const hero = $1<HTMLElement>(".hero");
     const heroContent = $1<HTMLElement>(".hero-cover-content");
@@ -425,6 +524,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
       $<HTMLElement>(".gallery-auto-scroll").forEach((el) => {
         const rafId = (el as any)._autoScrollRaf;
         if (rafId) cancelAnimationFrame(rafId);
+        (el as any)._autoScrollIO?.disconnect();
       });
 
       ScrollTrigger.getAll().forEach((st) => st.kill());

@@ -119,25 +119,14 @@ html {
 .why-card {
   transform: translateX(-24px);
   opacity: 0;
-}
-.section-body.is-visible .why-card {
-  opacity: 1;
-  transform: translateX(0);
+  /* .is-visible handled by GSAP ScrollTrigger */
 }
 
 .package-card {
   opacity: 0;
   transform: translateY(40px) scale(0.96);
-  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  /* transition removed — GSAP handles card entrance */
 }
-.section-body.is-visible .package-card {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-.section-body.is-visible .package-card:nth-child(1) { transition-delay: 0.05s; }
-.section-body.is-visible .package-card:nth-child(2) { transition-delay: 0.20s; }
-.section-body.is-visible .package-card:nth-child(3) { transition-delay: 0.35s; }
 
 .process-step {
   opacity: 0;
@@ -348,6 +337,50 @@ main::after {
   bottom: 14rem;
   transform: rotate(8deg);
   animation: breatheGlow 12s ease-in-out 5s infinite;
+}
+
+/* ── Particles canvas ── */
+.canvas-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Custom cursor ── */
+.custom-cursor {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 210, 184, 0.35);
+  border: 1.5px solid rgba(255, 184, 161, 0.5);
+  transform: translate(-100px, -100px);
+  transition: width 0.3s cubic-bezier(0.22,1,0.36,1),
+              height 0.3s cubic-bezier(0.22,1,0.36,1),
+              background 0.3s ease,
+              border-color 0.3s ease;
+  will-change: transform;
+  backdrop-filter: blur(2px);
+}
+
+.custom-cursor.is-hover {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 184, 161, 0.2);
+  border-color: rgba(255, 184, 161, 0.7);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .custom-cursor { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .custom-cursor { display: none; }
 }
 
 a {
