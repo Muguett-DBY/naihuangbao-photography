@@ -7,7 +7,7 @@ export function MidCTA() {
   const { sectionCopy, siteConfig } = useSiteContent();
 
   return (
-    <section className={`mid-cta ${inView ? "is-visible" : ""}`} ref={ref}>
+    <section id="mid-cta" className={`mid-cta ${inView ? "is-visible" : ""}`} ref={ref}>
       <div className="mid-cta-card">
         <p className="mid-cta-eyebrow">{sectionCopy.midCta.eyebrow}</p>
         <h2>{sectionCopy.midCta.title}</h2>

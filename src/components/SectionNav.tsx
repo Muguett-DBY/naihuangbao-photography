@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 
 const SECTIONS = [
-  { id: "hero", label: "首页" },
+  { id: "top", label: "首页" },
   { id: "gallery", label: "作品" },
   { id: "mid-cta", label: "风格" },
-  { id: "why-choose-us", label: "优势" },
+  { id: "why", label: "优势" },
   { id: "packages", label: "套餐" },
-  { id: "service-details", label: "服务" },
-  { id: "process-and-faq", label: "流程" },
-  { id: "about-booking", label: "预约" },
+  { id: "details", label: "服务" },
+  { id: "process", label: "流程" },
+  { id: "booking", label: "预约" },
 ] as const;
 
 export function SectionNav() {
