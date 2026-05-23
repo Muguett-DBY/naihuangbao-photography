@@ -9,9 +9,6 @@ export function Hero() {
       {/* Designed gradient background — replaces real photo */}
       <div className="hero-cover-design" />
 
-      {/* Decorative concentric circles — magazine "lens" aesthetic */}
-      <div className="hero-deco-circle hero-deco-circle--l" aria-hidden="true" />
-      <div className="hero-deco-circle hero-deco-circle--s" aria-hidden="true" />
       <div className="hero-bottom-accent" aria-hidden="true" />
 
       <div className="hero-cover-content">

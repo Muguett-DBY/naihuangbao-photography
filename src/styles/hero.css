@@ -218,30 +218,6 @@ body.nav-lock .site-nav {
       #5F3C31 100%);
 }
 
-/* ── Decorative concentric rings ── */
-.hero-deco-circle {
-  position: absolute;
-  z-index: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 249, 236, 0.06);
-  pointer-events: none;
-  will-change: transform;
-}
-
-.hero-deco-circle--l {
-  top: -80px;
-  right: -60px;
-  width: 460px;
-  height: 460px;
-}
-
-.hero-deco-circle--s {
-  top: -30px;
-  right: 10px;
-  width: 340px;
-  height: 340px;
-}
-
 /* ── Magazine bottom accent line ── */
 .hero-bottom-accent {
   position: absolute;
@@ -451,56 +427,35 @@ body.nav-lock .site-nav {
   transform: translate3d(0, 1px, 0) scale(0.98);
 }
 
-/* ── Scroll-down indicator ── */
+/* ── Minimal scroll cue ── */
 .hero-scroll-indicator {
   position: absolute;
   z-index: 3;
   left: 50%;
-  bottom: 28px;
+  bottom: 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  color: rgba(255, 253, 247, 0.5);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.18em;
+  gap: 6px;
+  color: rgba(255, 253, 247, 0.3);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   transform: translateX(-50%);
   transition: opacity 0.6s ease;
 }
 
-.hero-scroll-indicator span {
-  position: relative;
-  padding-bottom: 3px;
-}
-
-.hero-scroll-indicator span::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: rgba(255, 253, 247, 0.2);
-  animation: scrollLineExpand 2.4s ease-in-out infinite;
-}
-
 .hero-scroll-line {
   width: 1px;
-  height: 42px;
-  background: linear-gradient(180deg, rgba(255, 253, 247, 0.5), transparent);
-  animation: scrollLinePulse 2.4s ease-in-out infinite;
+  height: 24px;
+  background: linear-gradient(180deg, rgba(255, 253, 247, 0.35), transparent);
+  animation: scrollLinePulse 2.6s ease-in-out infinite;
 }
 
 @keyframes scrollLinePulse {
-  0%, 100% { opacity: 0.3; height: 32px; }
-  50% { opacity: 0.85; height: 52px; }
-}
-
-@keyframes scrollLineExpand {
-  0%, 100% { transform: scaleX(0.3); opacity: 0.3; }
-  50% { transform: scaleX(1); opacity: 0.7; }
+  0%, 100% { opacity: 0.25; height: 18px; }
+  50% { opacity: 0.65; height: 28px; }
 }
 
 /* ── Hero Entry Animations ── */
