@@ -218,23 +218,6 @@ body.nav-lock .site-nav {
       #5F3C31 100%);
 }
 
-/* ── Magazine bottom accent line ── */
-.hero-bottom-accent {
-  position: absolute;
-  z-index: 2;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 184, 161, 0.28) 15%,
-    rgba(255, 210, 184, 0.4) 50%,
-    rgba(255, 184, 161, 0.28) 85%,
-    transparent 100%);
-  pointer-events: none;
-}
-
 /* Gradient overlays for text readability */
 .hero::before {
   content: "";
@@ -245,10 +228,10 @@ body.nav-lock .site-nav {
   background:
     linear-gradient(180deg,
       rgba(68, 43, 36, 0.28) 0%,
-      transparent 38%,
-      transparent 62%,
-      rgba(68, 43, 36, 0.58) 88%,
-      rgba(68, 43, 36, 0.82) 100%);
+      transparent 32%,
+      transparent 56%,
+      rgba(68, 43, 36, 0.50) 78%,
+      transparent 100%);
 }
 
 .hero::after {

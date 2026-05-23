@@ -9,8 +9,6 @@ export function Hero() {
       {/* Designed gradient background — replaces real photo */}
       <div className="hero-cover-design" />
 
-      <div className="hero-bottom-accent" aria-hidden="true" />
-
       <div className="hero-cover-content">
         <div className="hero-cover-left">
           <div className="hero-vol-badge">
