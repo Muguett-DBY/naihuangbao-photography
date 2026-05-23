@@ -317,7 +317,8 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
        EFFECT 11: 滚动图片裁剪揭示 (Clip Reveal)
        ══════════════════════════════════════════ */
     const galleryImgs = $<HTMLElement>(".gallery-masonry-item");
-    galleryImgs.forEach((item) => {
+    galleryImgs.forEach((item, i) => {
+      if (i < 3) return; // First 3 remain fully visible
       gsap.fromTo(
         item,
         { clipPath: "inset(0 100% 0 0)" },

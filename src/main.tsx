@@ -49,6 +49,14 @@ requestAnimationFrame(() => {
 });
 
 // ── Fairy dust cursor effect ──
-fairyDustCursor({
+const cursor = fairyDustCursor({
   colors: ["#F5A891", "#FFD2B8", "#FFB8A1", "#FCE4D6"],
+});
+// Ensure cursor canvas paints above content (section-shell z-index:1)
+requestAnimationFrame(() => {
+  const canvases = document.querySelectorAll<HTMLCanvasElement>("canvas");
+  const last = canvases[canvases.length - 1];
+  if (last && !last.classList.contains("canvas-particles")) {
+    last.style.zIndex = "9998";
+  }
 });
