@@ -1,8 +1,17 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+/* ── Text morph phrases ── */
+const morphPhrases = [
+  "南京女生写真与情侣约拍",
+  "把日常拍成可以反复翻看的记忆",
+  "柔和·胶片感·尊重隐私",
+  "约拍南京 · 公园 / 街拍 / 室内",
+];
 
 export function useGsapAnimations() {
   const initialized = useRef(false);
@@ -11,7 +20,42 @@ export function useGsapAnimations() {
     if (initialized.current) return;
     initialized.current = true;
 
-    // ── Hero floating glow orbs ──
+    /* ══════════════════════════════════════════
+       EFFECT 1: 滚动进度条 (Scroll Progress Bar)
+       ══════════════════════════════════════════ */
+    const progressBar = document.querySelector<HTMLElement>(".scroll-progress-bar");
+    if (progressBar) {
+      gsap.to(progressBar, {
+        scaleX: 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: document.body,
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 0.3,
+        },
+      });
+    }
+
+    /* ══════════════════════════════════════════
+       EFFECT 2: 浮动飘浮元素 (Floating decor)
+       ══════════════════════════════════════════ */
+    const floatEls = document.querySelectorAll<HTMLElement>(".float-element");
+    floatEls.forEach((el, i) => {
+      gsap.to(el, {
+        y: i % 2 === 0 ? -18 : 16,
+        x: i % 3 === 0 ? 10 : -8,
+        duration: 4 + i * 0.5,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+        delay: i * 0.3,
+      });
+    });
+
+    /* ══════════════════════════════════════════
+       EFFECT 3: Hero 浮动光晕 (existing)
+       ══════════════════════════════════════════ */
     const glowOrbs = document.querySelectorAll<HTMLElement>(".hero-glow-orb");
     if (glowOrbs.length) {
       glowOrbs.forEach((orb, i) => {
@@ -26,7 +70,9 @@ export function useGsapAnimations() {
       });
     }
 
-    // ── Hero title clip reveal ──
+    /* ══════════════════════════════════════════
+       EFFECT 4: Hero title clip reveal (existing)
+       ══════════════════════════════════════════ */
     const title = document.querySelector<HTMLElement>(".hero-magazine-title");
     const subtitle = document.querySelector<HTMLElement>(".hero-magazine-subtitle");
     const intro = document.querySelector<HTMLElement>(".hero-cover-intro");
@@ -99,7 +145,158 @@ export function useGsapAnimations() {
       );
     }
 
-    // ── Scroll Parallax: Hero ──
+    /* ══════════════════════════════════════════
+       EFFECT 5: Text Morph (文字轮换)
+       ══════════════════════════════════════════ */
+    const morphEl = document.querySelector<HTMLElement>(".hero-magazine-subtitle");
+    if (morphEl) {
+      let morphIndex = 0;
+      const morphTimeline = gsap.timeline({ repeat: -1, delay: 3.5 });
+
+      morphPhrases.forEach((phrase, i) => {
+        if (i === 0) return; // skip first — already shown in reveal
+
+        morphTimeline
+          .to(morphEl, {
+            opacity: 0,
+            y: -6,
+            filter: "blur(3px)",
+            duration: 0.3,
+            ease: "power2.in",
+            onComplete: () => {
+              morphEl.textContent = phrase;
+            },
+          })
+          .to(morphEl, {
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.45,
+            ease: "power2.out",
+          })
+          .to(morphEl, {
+            duration: 3.2,
+            ease: "none",
+            onComplete: () => {
+              morphIndex = (i + 1) % morphPhrases.length;
+            },
+          });
+      });
+    }
+
+    /* ══════════════════════════════════════════
+       EFFECT 6: 平滑锚点滚动 (Smooth Scroll)
+       ══════════════════════════════════════════ */
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener("click", (e: MouseEvent) => {
+        const href = anchor.getAttribute("href");
+        if (!href || href === "#") return;
+        const target = document.querySelector(href);
+        if (!target) return;
+        e.preventDefault();
+        gsap.to(window, {
+          scrollTo: { y: target, offsetY: 64 },
+          duration: 1.0,
+          ease: "power3.inOut",
+        });
+      });
+    });
+
+    /* ══════════════════════════════════════════
+       EFFECT 7: 数字计数器 (Count-Up)
+       ══════════════════════════════════════════ */
+    document.querySelectorAll<HTMLElement>("[data-count-target]").forEach((el) => {
+      const target = parseFloat(el.getAttribute("data-count-target") || "0");
+      const suffix = el.getAttribute("data-count-suffix") || "";
+      const prefix = el.getAttribute("data-count-prefix") || "";
+      const isPrice = el.getAttribute("data-count-format") === "price";
+
+      // Start from 0
+      el.textContent = prefix + "0" + suffix;
+
+      const counter = { val: 0 };
+      gsap.to(counter, {
+        val: target,
+        duration: 1.4,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 88%",
+          toggleActions: "play none none none",
+        },
+        onUpdate: () => {
+          if (isPrice) {
+            el.textContent = prefix + Math.round(counter.val) + suffix;
+          } else {
+            el.textContent = prefix + Math.round(counter.val) + suffix;
+          }
+        },
+      });
+    });
+
+    /* ══════════════════════════════════════════
+       EFFECT 8: 无限水平滚动图库 (Auto-Scroll Gallery)
+       ══════════════════════════════════════════ */
+    const galleryTracks = document.querySelectorAll<HTMLElement>(".gallery-auto-scroll");
+    galleryTracks.forEach((track) => {
+      const speed = parseFloat(track.getAttribute("data-scroll-speed") || "0.3");
+
+      // Clone children for seamless loop
+      const children = Array.from(track.children);
+      children.forEach((child) => {
+        const clone = child.cloneNode(true) as HTMLElement;
+        track.appendChild(clone);
+      });
+
+      let xPos = 0;
+      const scrollFn = () => {
+        if (!track.matches(":hover")) {
+          xPos -= speed;
+          track.style.transform = `translateX(${xPos}px)`;
+
+          // Reset when scrolled past one set
+          const totalWidth = track.scrollWidth / 2;
+          if (Math.abs(xPos) >= totalWidth) {
+            xPos = 0;
+            track.style.transform = `translateX(0px)`;
+          }
+        }
+        rafId = requestAnimationFrame(scrollFn);
+      };
+
+      let rafId = requestAnimationFrame(scrollFn);
+
+      // Store cleanup
+      (track as any)._autoScrollRaf = rafId;
+    });
+
+    /* ══════════════════════════════════════════
+       EFFECT 9: SVG 装饰路径绘制
+       ══════════════════════════════════════════ */
+    const svgPaths = document.querySelectorAll<SVGPathElement>(".deco-svg-path path");
+    svgPaths.forEach((path) => {
+      const length = path.getTotalLength?.() || 0;
+      if (length) {
+        gsap.fromTo(
+          path,
+          { strokeDasharray: length, strokeDashoffset: length },
+          {
+            strokeDashoffset: 0,
+            duration: 2.5,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: path,
+              start: "top 85%",
+              toggleActions: "play none none none",
+            },
+          },
+        );
+      }
+    });
+
+    /* ══════════════════════════════════════════
+       EFFECT 10: Scroll Parallax (existing)
+       ══════════════════════════════════════════ */
     const hero = document.querySelector<HTMLElement>(".hero");
     const heroContent = document.querySelector<HTMLElement>(".hero-cover-content");
 
@@ -116,10 +313,10 @@ export function useGsapAnimations() {
       });
     }
 
-    // ── Cards Parallax: Package / Why / Service cards ──
-    const cardSections = document.querySelectorAll<HTMLElement>(
-      ".section-shell:not(.hero)",
-    );
+    /* ══════════════════════════════════════════
+       EFFECT 11: Cards scroll-reveal (existing)
+       ══════════════════════════════════════════ */
+    const cardSections = document.querySelectorAll<HTMLElement>(".section-shell:not(.hero)");
 
     cardSections.forEach((section) => {
       const cards = section.querySelectorAll<HTMLElement>(
@@ -148,7 +345,9 @@ export function useGsapAnimations() {
       }
     });
 
-    // ── Magnetic Buttons ──
+    /* ══════════════════════════════════════════
+       EFFECT 12: Magnetic Buttons (existing)
+       ══════════════════════════════════════════ */
     const magneticBtns = document.querySelectorAll<HTMLElement>(
       ".hero-cover-primary-btn, .hero-cover-secondary-btn, .nav-cta, .booking-cta, .package-cta",
     );
@@ -177,7 +376,9 @@ export function useGsapAnimations() {
       });
     });
 
-    // ── 3D Card Tilt ──
+    /* ══════════════════════════════════════════
+       EFFECT 13: 3D Card Tilt (existing)
+       ══════════════════════════════════════════ */
     const tiltCards = document.querySelectorAll<HTMLElement>(
       ".package-card, .why-card, .service-detail-card",
     );
@@ -207,10 +408,16 @@ export function useGsapAnimations() {
       });
     });
 
-    // ── Refresh ScrollTrigger on load ──
+    // ── Refresh ScrollTrigger ──
     ScrollTrigger.refresh();
 
     return () => {
+      // Cleanup RAFs
+      document.querySelectorAll<HTMLElement>(".gallery-auto-scroll").forEach((el) => {
+        const rafId = (el as any)._autoScrollRaf;
+        if (rafId) cancelAnimationFrame(rafId);
+      });
+
       ScrollTrigger.getAll().forEach((st) => st.kill());
     };
   }, []);

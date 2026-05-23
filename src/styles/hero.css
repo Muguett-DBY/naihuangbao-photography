@@ -444,6 +444,73 @@ body.nav-lock .site-nav {
   transform: translate3d(0, 1px, 0) scale(0.98);
 }
 
+/* ── Scroll Progress Bar ── */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  height: 2px;
+  background: linear-gradient(90deg, #FFB8A1, #FFD2B8, #FFB8A1);
+  transform-origin: left center;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+
+/* ── Floating decor elements ── */
+.float-element {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.float-element--1 {
+  width: 12px;
+  height: 12px;
+  top: 18%;
+  right: 22%;
+  background: rgba(255, 210, 184, 0.25);
+  filter: blur(1px);
+}
+
+.float-element--2 {
+  width: 8px;
+  height: 8px;
+  top: 52%;
+  left: 18%;
+  background: rgba(221, 231, 215, 0.3);
+  filter: blur(0.5px);
+}
+
+.float-element--3 {
+  width: 16px;
+  height: 16px;
+  bottom: 28%;
+  right: 36%;
+  background: rgba(255, 184, 161, 0.18);
+  filter: blur(2px);
+}
+
+/* ── Decorative SVG path ── */
+.deco-svg-path {
+  position: absolute;
+  z-index: 1;
+  bottom: 80px;
+  left: 5%;
+  width: 40%;
+  height: auto;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* ── Count-up numbers ── */
+[data-count-target] {
+  font-variant-numeric: tabular-nums;
+}
+
 /* ── Minimal scroll cue ── */
 .hero-scroll-indicator {
   position: absolute;

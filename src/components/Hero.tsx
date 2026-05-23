@@ -15,6 +15,21 @@ export function Hero() {
       <div className="hero-glow-orb hero-glow-orb--1" aria-hidden="true" />
       <div className="hero-glow-orb hero-glow-orb--2" aria-hidden="true" />
 
+      {/* Floating decorative elements */}
+      <div className="float-element float-element--1" aria-hidden="true" />
+      <div className="float-element float-element--2" aria-hidden="true" />
+      <div className="float-element float-element--3" aria-hidden="true" />
+
+      {/* Decorative SVG path — draws on scroll */}
+      <svg className="deco-svg-path" viewBox="0 0 200 100" fill="none" aria-hidden="true">
+        <path
+          d="M 0 50 Q 50 0 100 50 T 200 50"
+          stroke="rgba(255,210,184,0.15)"
+          strokeWidth="1.5"
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+
       <div className="hero-cover-content">
         <div className="hero-cover-left">
           <div className="hero-vol-badge">

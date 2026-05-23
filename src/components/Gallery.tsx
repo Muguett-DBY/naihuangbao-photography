@@ -127,6 +127,23 @@ export function Gallery() {
         ))}
       </div>
 
+      {/* Filmstrip: auto-scrolling photo strip */}
+      <div className="gallery-filmstrip-wrap" aria-hidden="true">
+        <div className="gallery-auto-scroll" data-scroll-speed="0.25">
+          {photos.slice(0, 6).map((photo) => (
+            <div className="gallery-filmstrip-item" key={photo.id}>
+              <img
+                src={photo.imageUrl || ""}
+                alt=""
+                loading="lazy"
+                width={120}
+                height={90}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="gallery-masonry" ref={masonryRef}>
         {photos.map((item, index) => {
           const isFeatured = filter === "all" && index === 0;

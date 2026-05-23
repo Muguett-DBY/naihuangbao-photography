@@ -34,7 +34,16 @@ export function Packages() {
             <div>
               <p>{item.duration}</p>
               <h3>{item.name}</h3>
-              <strong>{item.price}</strong>
+              <strong>
+                <span
+                  data-count-target={item.price.match(/^[\d.]+/)?.[0] || "0"}
+                  data-count-suffix={item.price.replace(/^[\d.]+/, "")}
+                  data-count-format="price"
+                  data-count-prefix="¥"
+                >
+                  ¥0{item.price.replace(/^[\d.]+/, "")}
+                </span>
+              </strong>
               <span>{item.summary}</span>
             </div>
             <ul>
