@@ -15,6 +15,23 @@ for (const href of ["https://www.xiaohongshu.com"]) {
   document.head.append(preconnect);
 }
 
+// Idle-time prefetch of key gallery images
+if ("requestIdleCallback" in window) {
+  requestIdleCallback(
+    () => {
+      const imgs = ["/images/gallery/640/girl-1.webp", "/images/gallery/640/girl-2.webp", "/images/gallery/640/girl-3.webp"];
+      imgs.forEach((src) => {
+        const link = document.createElement("link");
+        link.rel = "prefetch";
+        link.as = "image";
+        link.href = src;
+        document.head.append(link);
+      });
+    },
+    { timeout: 3000 },
+  );
+}
+
 const root = document.getElementById("root");
 
 if (!root) {

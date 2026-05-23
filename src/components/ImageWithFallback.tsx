@@ -31,9 +31,16 @@ export function ImageWithFallback({
   }, [src]);
 
   if (!load) {
+    const toneBg: Record<string, string> = {
+      rose: "linear-gradient(135deg, rgba(230,190,180,0.3), rgba(210,170,160,0.15))",
+      sage: "linear-gradient(135deg, rgba(180,200,180,0.3), rgba(160,185,165,0.15))",
+      cream: "linear-gradient(135deg, rgba(240,220,200,0.3), rgba(220,200,180,0.15))",
+      ink: "linear-gradient(135deg, rgba(180,165,155,0.3), rgba(160,145,135,0.15))",
+    };
     return (
-      <div className={`img-blur-wrap gallery-image-placeholder ${className || ""}`} aria-hidden="true">
-        <div className="gallery-skeleton" />
+      <div className={`img-blur-wrap gallery-image-placeholder tone-${tone} ${className || ""}`} aria-hidden="true">
+        <div className="gallery-skeleton" style={{ background: toneBg[tone] || toneBg.cream }} />
+        <span className="gallery-skeleton-title">{title}</span>
       </div>
     );
   }
