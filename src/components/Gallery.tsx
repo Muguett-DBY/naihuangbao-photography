@@ -162,6 +162,13 @@ export function Gallery() {
                 className="gallery-masonry-btn"
                 type="button"
                 onClick={() => setLightboxIndex(index)}
+                onTouchStart={() => {
+                  // Haptic feedback on long-press
+                  const timer = setTimeout(() => navigator.vibrate?.(12), 400);
+                  const clear = () => { clearTimeout(timer); };
+                  document.addEventListener("touchend", clear, { once: true });
+                  document.addEventListener("touchmove", clear, { once: true });
+                }}
                 aria-label={`查看大图：${item.title}`}
               >
                 <ImageWithFallback

@@ -32,12 +32,82 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const imgWrapRef = useRef<HTMLDivElement>(null);
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
   const [imageLoadState, setImageLoadState] = useState<ImageLoadState>(() => ({
     src: photos[currentIndex]?.imageUrl ?? "",
     status: "loading",
   }));
+  const [scale, setScale] = useState(1);
+  const [translate, setTranslate] = useState({ x: 0, y: 0 });
+  const dragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0, tx: 0, ty: 0 });
+  const lastDist = useRef(0);
   const photo = photos[currentIndex];
+
+  // Reset zoom on image change
+  useEffect(() => {
+    setScale(1);
+    setTranslate({ x: 0, y: 0 });
+  }, [currentIndex]);
+
+  // Wheel zoom
+  useEffect(() => {
+    const wrap = imgWrapRef.current;
+    if (!wrap) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      setScale((s) => Math.max(0.5, Math.min(5, s - e.deltaY * 0.003)));
+    };
+    wrap.addEventListener("wheel", onWheel, { passive: false });
+    return () => wrap.removeEventListener("wheel", onWheel);
+  }, []);
+
+  // Touch pinch-zoom
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      lastDist.current = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY,
+      );
+    }
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY,
+      );
+      setScale((s) => Math.max(0.5, Math.min(5, s + (dist - lastDist.current) * 0.01)));
+      lastDist.current = dist;
+    }
+  };
+
+  // Drag to pan
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (scale <= 1) return;
+    dragging.current = true;
+    dragStart.current = { x: e.clientX, y: e.clientY, tx: translate.x, ty: translate.y };
+  };
+
+  useEffect(() => {
+    if (!dragging.current) return;
+    const onMouseMove = (e: MouseEvent) => {
+      if (!dragging.current) return;
+      setTranslate({
+        x: dragStart.current.tx + (e.clientX - dragStart.current.x),
+        y: dragStart.current.ty + (e.clientY - dragStart.current.y),
+      });
+    };
+    const onMouseUp = () => { dragging.current = false; };
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [scale, translate]);
 
   // 预加载相邻图片
   const prevIndex = currentIndex > 0 ? currentIndex - 1 : photos.length - 1;
@@ -144,8 +214,13 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
 
       <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
         <div
-          className={`lightbox-image-wrap ${isImageLoaded ? "is-loaded" : ""} ${isImageError ? "is-error" : ""}`}
+          ref={imgWrapRef}
+          className={`lightbox-image-wrap ${isImageLoaded ? "is-loaded" : ""} ${isImageError ? "is-error" : ""} ${scale > 1 ? "is-zoomed" : ""}`}
           aria-busy={!isImageLoaded && !isImageError}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onMouseDown={onMouseDown}
+          style={{ cursor: scale > 1 ? "grab" : undefined }}
         >
           {!isImageLoaded && !isImageError ? (
             <div className="lightbox-loading" role="status" aria-live="polite">
@@ -167,6 +242,10 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
             loading="eager"
             onLoad={handleImageLoad}
             onError={handleImageError}
+            style={{
+              transform: `scale(${scale}) translate(${translate.x / scale}px, ${translate.y / scale}px)`,
+              transition: dragging.current ? "none" : "transform 0.15s ease",
+            }}
           />
         </div>
         <div className="lightbox-info">
