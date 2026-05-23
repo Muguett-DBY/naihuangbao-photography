@@ -81,6 +81,7 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 0;
   text-size-adjust: 100%;
+  overflow-y: scroll;
 }
 
 /* ── Scroll Reveal Animations ── */
