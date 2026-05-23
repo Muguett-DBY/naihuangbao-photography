@@ -6,9 +6,6 @@ export function getPublicPhotos(photos: PhotoItem[]): PhotoItem[] {
   );
 }
 
-export function getFeaturedPhotos(photos: PhotoItem[], limit = 6): PhotoItem[] {
-  return getPublicPhotos(photos).filter((photo) => photo.featured).slice(0, limit);
-}
 
 export function getPhotosByStyle(photos: PhotoItem[], style: PhotoStyle | "all"): PhotoItem[] {
   const publicPhotos = getPublicPhotos(photos);

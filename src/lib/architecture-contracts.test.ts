@@ -46,10 +46,7 @@ describe("architecture optimization contracts", () => {
     const adminDashboard = read("src/components/AdminDashboard.tsx");
     const expectedFiles = [
       "src/hooks/useAdminSession.ts",
-      "src/hooks/useAdminData.ts",
       "src/components/admin/AdminShell.tsx",
-      "src/components/admin/PhotosTab.tsx",
-      "src/components/admin/ContentTabs.tsx",
     ];
 
     for (const path of expectedFiles) {

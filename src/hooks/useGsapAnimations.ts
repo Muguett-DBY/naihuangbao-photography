@@ -209,15 +209,14 @@ export function useGsapAnimations() {
       const target = parseFloat(el.getAttribute("data-count-target") || "0");
       const suffix = el.getAttribute("data-count-suffix") || "";
       const prefix = el.getAttribute("data-count-prefix") || "";
-      const isPrice = el.getAttribute("data-count-format") === "price";
+      // Start from mock high price for dramatic count-down (psychological pricing)
+      const startVal = Math.max(target * 18, 180);
+      el.textContent = prefix + Math.round(startVal) + suffix;
 
-      // Start from 0
-      el.textContent = prefix + "0" + suffix;
-
-      const counter = { val: 0 };
+      const counter = { val: startVal };
       gsap.to(counter, {
         val: target,
-        duration: 1.4,
+        duration: 1.8,
         ease: "power2.out",
         scrollTrigger: {
           trigger: el,
@@ -225,11 +224,7 @@ export function useGsapAnimations() {
           toggleActions: "play none none none",
         },
         onUpdate: () => {
-          if (isPrice) {
-            el.textContent = prefix + Math.round(counter.val) + suffix;
-          } else {
-            el.textContent = prefix + Math.round(counter.val) + suffix;
-          }
+          el.textContent = prefix + Math.round(counter.val) + suffix;
         },
       });
     });

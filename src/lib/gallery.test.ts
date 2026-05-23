@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getFeaturedPhotos, getPhotosByStyle, getPublicPhotos } from "./gallery";
+import { getPhotosByStyle, getPublicPhotos } from "./gallery";
 import type { PhotoItem } from "../types/photo";
 
 const photos: PhotoItem[] = [
@@ -41,12 +41,6 @@ const photos: PhotoItem[] = [
 describe("gallery policy", () => {
   it("only exposes photos that are client-authorized and public", () => {
     expect(getPublicPhotos(photos).map((photo) => photo.id)).toEqual([
-      "authorized-public",
-    ]);
-  });
-
-  it("never includes unauthorized or hidden photos in featured work", () => {
-    expect(getFeaturedPhotos(photos).map((photo) => photo.id)).toEqual([
       "authorized-public",
     ]);
   });
