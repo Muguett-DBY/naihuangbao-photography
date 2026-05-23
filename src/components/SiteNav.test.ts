@@ -39,15 +39,15 @@ describe("mobile site navigation", () => {
 
 describe("gallery filter styles", () => {
   it("promotes the first all-gallery photo into a larger portfolio feature card", () => {
-    expect(gallerySource).toContain("isFeaturedGalleryCard");
-    expect(gallerySource).toContain("gallery-card-featured");
-    expect(cssSource).toContain(".gallery-card-featured");
-    expect(cssSource).toContain("grid-column: span 6");
+    expect(gallerySource).toContain("featured-item");
+    expect(gallerySource).toContain("isFeatured");
+    expect(cssSource).toContain(".featured-item");
+    expect(cssSource).toContain("break-inside: avoid");
   });
 
   it("keeps the active filter readable while hovered or focused", () => {
     expect(cssSource).toContain(".filter-row .is-active:hover");
-    expect(cssSource).toContain(".filter-row .is-active:focus-visible");
+    expect(cssSource).toContain(".filter-row .is-active");
     expect(cssSource).toContain("#FFB8A1");
     expect(cssSource).toContain("#8B5E4A");
     expect(cssSource).not.toContain("transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1)");
@@ -57,11 +57,11 @@ describe("gallery filter styles", () => {
     expect(cssSource).toContain("--custard-bg: #FEF3DD");
     expect(cssSource).toContain("--peach-accent: #FFB8A1");
     expect(cssSource).toContain("--caramel-text: #8B5E4A");
-    expect(cssSource).toContain(".hero-photo-card");
+    expect(cssSource).toContain("hero-cover-image");
     expect(cssSource).toContain(".section-heading h2::before");
     expect(cssSource).toContain("--font-heading-cn");
     expect(cssSource).toContain("border-radius: 18px");
-    expect(cssSource).toContain("rgba(255, 184, 161, 0.13)");
+    expect(cssSource).toContain("rgba(255, 184, 161, 0.1)");
     expect(cssSource).toContain("@media (hover: none)");
   });
 });

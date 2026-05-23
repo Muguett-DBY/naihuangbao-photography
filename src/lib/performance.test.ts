@@ -126,7 +126,7 @@ describe("performance resources", () => {
 
   it("lazy-loads gallery images, the lightbox, chat panel, and admin CSS outside the public shell", () => {
     expect(gallerySource).toContain("new IntersectionObserver");
-    expect(gallerySource).toContain('rootMargin: "200px"');
+    expect(gallerySource).toContain('rootMargin: "300px"');
     expect(gallerySource).toContain("observer.disconnect()");
     expect(globalCss).toContain(".gallery-skeleton");
 
@@ -149,7 +149,7 @@ describe("performance resources", () => {
     expect(siteContentHookSource).toContain("AbortController");
     expect(publicPhotosHookSource).toContain("AbortController");
     expect(heroSource).not.toContain("offset *");
-    expect(globalCss).toContain("--parallax-offset");
+    expect(globalCss).toContain("--cover-scale");
   });
 
   it("keeps first-load motion and scroll progress outside the app shell", () => {

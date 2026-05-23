@@ -27,15 +27,13 @@ function countOccurrences(source: string, token: string) {
 describe("audit regression coverage", () => {
   it("limits the hand-written display font to titles and compact UI accents", () => {
     const bodyBlock = cssSource.match(/body\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
-    const heroTitleBlock = cssSource.match(/\.hero h1\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
-    const primaryButtonBlock = cssSource.match(/\.primary-button\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
     const chatTextareaBlock = cssSource.match(/\.public-chat-form textarea\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
 
     expect(cssSource).toContain("--font-display-cn");
     expect(cssSource).toContain('"Naihuangbao WenKai"');
     expect(bodyBlock).toContain("font-family: var(--font-body)");
-    expect(heroTitleBlock).toContain("font-family: var(--font-display-cn)");
-    expect(primaryButtonBlock).toContain("font-family: var(--font-display-cn)");
+    expect(cssSource).toMatch(/\.hero-magazine-title\s*\{[^}]*font-family:\s*var\(--font-display-cn\)/s);
+    expect(cssSource).toMatch(/\.hero-cover-primary-btn\s*\{[^}]*font-family:\s*var\(--font-display-cn\)/s);
     expect(chatTextareaBlock).not.toContain("var(--font-display-cn)");
     expect(cssSource).not.toMatch(/\.public-chat-form textarea\s*\{[\s\S]*Naihuangbao WenKai/s);
   });
@@ -91,7 +89,7 @@ describe("audit regression coverage", () => {
   });
 
   it("mounts the lightbox outside transformed gallery containers", () => {
-    expect(cssSource).toMatch(/main\s*\{[^}]*overflow:\s*hidden/s);
+    expect(cssSource).toMatch(/main\s*\{[^}]*overflow-x:\s*hidden/s);
     expect(cssSource).toMatch(/\.section-shell\s*\{[^}]*transform:\s*translateY\(36px\)/s);
     expect(lightboxSource).toContain('from "react-dom"');
     expect(lightboxSource).toContain("createPortal");
@@ -138,12 +136,12 @@ describe("audit regression coverage", () => {
     expect(cssSource).not.toMatch(/\.section-shell,\s*\.section-body > \*,\s*\.package-card,\s*\.why-card/s);
     expect(cssSource).not.toMatch(/\.public-chat-panel,\s*\.public-chat-message\s*\{[\s\S]*will-change:\s*transform/s);
     expect(cssSource).toMatch(/\.site-nav::after\s*\{[\s\S]*will-change:\s*transform/s);
-    expect(cssSource).toMatch(/\.hero-photo-card\s*\{[\s\S]*position:\s*absolute/s);
+    expect(cssSource).toMatch(/\.hero-cover-image\s*\{[\s\S]*position:\s*absolute/s);
     expect(cssSource).toMatch(/\.scroll-top\s*\{[\s\S]*will-change:\s*transform,\s*opacity/s);
   });
 
   it("does not keep duplicated global accessibility blocks", () => {
-    expect(countOccurrences(cssSource, "Accessibility: Focus Styles")).toBe(1);
-    expect(countOccurrences(cssSource, "Accessibility: Reduced Motion")).toBe(1);
+    expect(countOccurrences(cssSource, "Focus Styles")).toBe(1);
+    expect(countOccurrences(cssSource, "Reduced Motion")).toBe(1);
   });
 });

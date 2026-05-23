@@ -30,7 +30,7 @@ export function SiteNav() {
       const progress = Math.min(1, Math.max(0, window.scrollY / maxScroll));
       navRef.current?.style.setProperty("--scroll-progress", progress.toFixed(4));
 
-      const nextScrolled = window.scrollY > 60;
+      const nextScrolled = window.scrollY > 80;
       if (nextScrolled !== currentScrolled) {
         currentScrolled = nextScrolled;
         setScrolled(nextScrolled);

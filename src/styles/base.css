@@ -34,6 +34,8 @@
   --warm-border: rgba(139, 94, 74, 0.14);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.45, 0, 0.15, 1);
   --section-inline: clamp(22px, 5vw, 52px);
   --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.08'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.38'/%3E%3C/svg%3E");
   --shadow-core: 0 1px 2px rgba(95, 60, 49, 0.06);
@@ -77,7 +79,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 76px;
+  scroll-padding-top: 0;
   text-size-adjust: 100%;
 }
 
@@ -135,8 +137,8 @@ html {
   transform: translateY(0) scale(1);
 }
 .section-body.is-visible .package-card:nth-child(1) { transition-delay: 0.05s; }
-.section-body.is-visible .package-card:nth-child(2) { transition-delay: 0.16s; }
-.section-body.is-visible .package-card:nth-child(3) { transition-delay: 0.27s; }
+.section-body.is-visible .package-card:nth-child(2) { transition-delay: 0.20s; }
+.section-body.is-visible .package-card:nth-child(3) { transition-delay: 0.35s; }
 
 .process-step {
   opacity: 0;
@@ -228,6 +230,44 @@ html {
   50% { opacity: 1; }
 }
 
+/* ── Magazine Ambient Animations ── */
+@keyframes floatOrb {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(12px, -8px) rotate(2deg); }
+  66% { transform: translate(-6px, 6px) rotate(-1deg); }
+}
+
+@keyframes breatheGlow {
+  0%, 100% { opacity: 0.32; }
+  50% { opacity: 0.48; }
+}
+
+@keyframes driftLine {
+  0% { transform: translateX(-10px); opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { transform: translateX(10px); opacity: 0.6; }
+}
+
+@keyframes textReveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes cardTiltIn {
+  from {
+    opacity: 0;
+    transform: perspective(800px) rotateY(-12deg) rotateX(6deg) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(800px) rotateY(0) rotateX(0) translateY(0);
+  }
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -247,18 +287,21 @@ body.nav-lock {
   overflow: hidden;
   touch-action: none;
 }
+
+/* Ambient floating decorations */
 body::before {
   content: "✦  ♡  ✧";
   position: fixed;
-  top: 96px;
+  top: 18vh;
   right: clamp(18px, 5vw, 70px);
   z-index: 1;
   color: var(--peach-accent);
-  font-size: clamp(18px, 2.6vw, 34px);
+  font-size: clamp(18px, 2.6vw, 32px);
   letter-spacing: 0.55em;
-  opacity: 0.11;
+  opacity: 0.09;
   pointer-events: none;
   transform: rotate(9deg);
+  animation: breatheGlow 8s ease-in-out infinite;
 }
 body::after {
   content: "";
@@ -278,7 +321,7 @@ body::after {
 
 main {
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 main::before,
@@ -288,15 +331,16 @@ main::after {
   color: var(--peach-accent);
   font-size: clamp(20px, 3vw, 38px);
   letter-spacing: 0.4em;
-  opacity: 0.08;
+  opacity: 0.07;
   pointer-events: none;
 }
 
 main::before {
   content: "✿  ✦";
   left: clamp(18px, 4vw, 64px);
-  top: 45rem;
+  top: 65rem;
   transform: rotate(-10deg);
+  animation: breatheGlow 10s ease-in-out 2s infinite;
 }
 
 main::after {
@@ -304,6 +348,7 @@ main::after {
   right: clamp(18px, 6vw, 82px);
   bottom: 14rem;
   transform: rotate(8deg);
+  animation: breatheGlow 12s ease-in-out 5s infinite;
 }
 
 a {
@@ -331,3 +376,69 @@ a {
   backface-visibility: hidden;
 }
 
+/* ── 3D Card Tilt Effect (micro-interaction) ── */
+[data-tilt] {
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+}
+
+/* ── Button Ripple Effect ── */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+.ripple::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.ripple:active::after {
+  opacity: 1;
+  transition: opacity 0s;
+}
+
+/* ── Enhanced Magazine Cover Animation ── */
+@keyframes heroMagazineReveal {
+  0% {
+    clip-path: inset(0 0 100% 0);
+  }
+  30% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes heroTitleIn {
+  from {
+    opacity: 0;
+    transform: translateY(34px);
+    letter-spacing: 0.2em;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: 0;
+  }
+}
+
+/* ── Stagger text reveal lines ── */
+.text-reveal-line {
+  overflow: hidden;
+}
+.text-reveal-line span {
+  display: block;
+  animation: textReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-play-state: paused;
+}
+.is-loaded .text-reveal-line span {
+  animation-play-state: running;
+}
+.text-reveal-line:nth-child(1) span { animation-delay: 0.3s; }
+.text-reveal-line:nth-child(2) span { animation-delay: 0.5s; }
+.text-reveal-line:nth-child(3) span { animation-delay: 0.7s; }

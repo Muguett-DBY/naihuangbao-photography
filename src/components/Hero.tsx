@@ -1,71 +1,99 @@
 import { ArrowDown, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
-import { styleLabels } from "../data/site";
-import { ImageWithFallback } from "./ImageWithFallback";
 
 export function Hero() {
   const { siteConfig } = useSiteContent();
   const { photos } = usePublicPhotos();
-  const featuredPhotos = photos.filter((photo) => photo.imageUrl).slice(0, 4);
+  const heroRef = useRef<HTMLElement>(null);
+
+  const heroPhoto = photos.find((p) => p.imageUrl) || null;
+
+  useEffect(() => {
+    if (!heroRef.current) return;
+
+    let rafId: number | null = null;
+
+    function onScroll() {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const el = heroRef.current;
+        if (!el) return;
+        const scrollY = window.scrollY;
+        const scale = 1 + scrollY * 0.0004;
+        el.style.setProperty("--cover-scale", Math.min(scale, 1.2).toString());
+      });
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   return (
-    <section id="top" className="hero">
-      <div className="hero-copy">
-        <p className="kicker">
-          <Sparkles size={15} />
-          {siteConfig.city}约拍 · 柔雾胶片感日常记录
-        </p>
-        <h1>
-          {siteConfig.brandName}｜
-          <span>南京女生写真与情侣约拍</span>
-        </h1>
-        <p className="hero-intro">
-          把自然、柔和、带一点胶片感的日常，拍成可以反复翻看的南京记忆。适合第一次约拍的女生、情侣纪念和轻松的城市散步。
-        </p>
-        <ul className="hero-trust-list" aria-label="约拍安心承诺">
-          <li><ShieldCheck size={15} />不默认公开客片</li>
-          <li>全程动作与表情引导</li>
-          <li>江南感 / 公园日常 / 城市街拍</li>
-        </ul>
-        <div className="hero-actions">
-          <a className="primary-button" href="#gallery">
-            查看作品
-            <ArrowDown size={16} />
-          </a>
-          <a className="text-button hero-xhs-button" href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
-            <MessageCircle size={16} />
-            小红书私信预约
-          </a>
+    <section id="top" className="hero" ref={heroRef}>
+      {heroPhoto ? (
+        <img
+          className="hero-cover-image"
+          src={heroPhoto.imageUrl}
+          alt={heroPhoto.alt || "奶黄包摄影作品"}
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          width={1920}
+          height={1440}
+          sizes="100vw"
+        />
+      ) : (
+        <div className="hero-cover-placeholder" />
+      )}
+
+      <div className="hero-cover-content">
+        <div className="hero-cover-left">
+          <div className="hero-vol-badge">
+            <Sparkles size={11} />
+            <span>✦ Vol.1</span>
+            {siteConfig.city}约拍
+          </div>
+          <h1 className="hero-magazine-title">
+            {siteConfig.brandName}
+            <span className="hero-magazine-subtitle">南京女生写真与情侣约拍</span>
+          </h1>
+          <p className="hero-cover-intro">
+            把自然、柔和、带一点胶片感的日常，拍成可以反复翻看的南京记忆。适合第一次约拍的女生、情侣纪念和轻松的城市散步。
+          </p>
         </div>
-      </div>
-      <div className="hero-visual" aria-label="奶黄包摄影作品预览">
-        <div className="hero-portfolio-stage">
-          {featuredPhotos.map((photo, index) => (
-            <figure className={`hero-photo-card hero-photo-card-${index + 1}`} key={photo.id}>
-              <ImageWithFallback
-                src={photo.imageUrl}
-                alt={photo.alt}
-                title={photo.title}
-                tone={index % 2 === 0 ? "cream" : "rose"}
-                priority={index === 0}
-                sizes={index === 0 ? "(max-width: 900px) 86vw, 38vw" : "(max-width: 900px) 42vw, 18vw"}
-              />
-              <figcaption>
-                <span>{styleLabels[photo.style]}</span>
-                {photo.title}
-              </figcaption>
-            </figure>
-          ))}
-          <div className="hero-note-card">
-            <span>Privacy first</span>
-            <strong>未经明确授权不会公开客片</strong>
+
+        <div className="hero-cover-right">
+          <div className="hero-trust-tags">
+            <span className="hero-trust-tag">
+              <ShieldCheck size={13} />
+              不默认公开客片
+            </span>
+            <span className="hero-trust-tag">全程动作引导</span>
+            <span className="hero-trust-tag">江南 / 街拍 / 公园</span>
+          </div>
+          <div className="hero-cover-cta-group">
+            <a className="hero-cover-primary-btn" href="#gallery">
+              查看作品
+              <ArrowDown size={16} />
+            </a>
+            <a className="hero-cover-secondary-btn" href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
+              <MessageCircle size={14} />
+              小红书预约
+            </a>
           </div>
         </div>
       </div>
-      <a className="hero-scroll-cue" href="#gallery" aria-label="向下滚动到作品">
-        <ArrowDown size={18} />
-      </a>
+
+      <div className="hero-scroll-indicator" aria-hidden="true">
+        <span>SCROLL</span>
+        <div className="hero-scroll-line" />
+      </div>
     </section>
   );
 }

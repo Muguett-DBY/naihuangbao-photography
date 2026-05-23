@@ -17,18 +17,21 @@ export function ProcessAndFaq() {
       title={sectionCopy.notice.title}
       intro={sectionCopy.notice.intro}
     >
-      <div className="process-grid">
-        {processSteps.map((step, index) => {
-          const { title, detail } = splitStep(step);
-          return (
-          <div className="process-step" key={`${step}-${index}`}>
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            <h3>{title}</h3>
-            {detail ? <p>{detail}</p> : null}
-          </div>
-          );
-        })}
+      <div className="process-scroll-wrap" aria-label="拍摄流程">
+        <div className="process-timeline">
+          {processSteps.map((step, index) => {
+            const { title, detail } = splitStep(step);
+            return (
+              <div className="process-step" key={`${step}-${index}`}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{title}</h3>
+                {detail ? <p>{detail}</p> : null}
+              </div>
+            );
+          })}
+        </div>
       </div>
+
       <div className="notice-layout">
         <div className="safety-panel">
           <ShieldCheck size={24} />

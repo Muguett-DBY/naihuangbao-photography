@@ -19,7 +19,7 @@ export function Gallery() {
   const [filter, setFilter] = useState<StyleFilter>("all");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [visiblePhotoIds, setVisiblePhotoIds] = useState<Set<string>>(() => new Set());
-  const galleryGridRef = useRef<HTMLDivElement>(null);
+  const masonryRef = useRef<HTMLDivElement>(null);
 
   const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
 
@@ -28,8 +28,8 @@ export function Gallery() {
   }, []);
 
   useEffect(() => {
-    const galleryGrid = galleryGridRef.current;
-    if (!galleryGrid) return;
+    const masonry = masonryRef.current;
+    if (!masonry) return;
 
     if (!("IntersectionObserver" in window)) {
       setVisiblePhotoIds((currentIds) => {
@@ -73,10 +73,10 @@ export function Gallery() {
           }
         });
       },
-      { rootMargin: "200px" },
+      { rootMargin: "300px" },
     );
 
-    galleryGrid.querySelectorAll<HTMLElement>("[data-gallery-photo-id]").forEach((card) => {
+    masonry.querySelectorAll<HTMLElement>("[data-gallery-photo-id]").forEach((card) => {
       const photoId = card.getAttribute("data-gallery-photo-id");
       if (photoId && !visiblePhotoIds.has(photoId)) {
         observer.observe(card);
@@ -112,6 +112,7 @@ export function Gallery() {
           公园日常、江南感、城市街拍、室内写真和情侣约拍会分开筛选。这里只展示已授权公开的真实作品，不混入氛围图。
         </p>
       </div>
+
       <div className="filter-row" role="group" aria-label="作品分类筛选">
         {filters.map((item) => (
           <button
@@ -125,22 +126,23 @@ export function Gallery() {
           </button>
         ))}
       </div>
-      <div className="gallery-grid" ref={galleryGridRef}>
+
+      <div className="gallery-masonry" ref={masonryRef}>
         {photos.map((item, index) => {
-          const isFeaturedGalleryCard = filter === "all" && index === 0;
+          const isFeatured = filter === "all" && index === 0;
 
           return (
             <article
               className={[
-                "gallery-card",
-                isFeaturedGalleryCard ? "gallery-card-featured" : "",
+                "gallery-masonry-item",
+                isFeatured ? "featured-item" : "",
               ].filter(Boolean).join(" ")}
               data-gallery-photo-id={item.id}
               key={item.id}
               style={{ transitionDelay: `${index * 0.06}s` }}
             >
               <button
-                className="gallery-card-btn"
+                className="gallery-masonry-btn"
                 type="button"
                 onClick={() => setLightboxIndex(index)}
                 aria-label={`查看大图：${item.title}`}
@@ -151,19 +153,15 @@ export function Gallery() {
                   title={item.title}
                   tone={tones[index % tones.length]}
                   load={!item.imageUrl || visiblePhotoIds.has(item.id)}
-                  sizes={
-                    isFeaturedGalleryCard
-                      ? "(max-width: 620px) 100vw, (max-width: 900px) 92vw, 50vw"
-                      : "(max-width: 620px) 50vw, (max-width: 900px) 50vw, 33vw"
-                  }
+                  sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
                 />
-                <div className="gallery-hover-overlay">
-                  <span className="gallery-hover-style">{styleLabels[item.style]}</span>
-                  <strong className="gallery-hover-title">{item.title}</strong>
-                  <span className="gallery-hover-location">{item.location}</span>
+                <div className="gallery-masonry-overlay">
+                  <span className="gallery-masonry-overlay-style">{styleLabels[item.style]}</span>
+                  <strong className="gallery-masonry-overlay-title">{item.title}</strong>
+                  <span className="gallery-masonry-overlay-location">{item.location}</span>
                 </div>
               </button>
-              <div>
+              <div className="gallery-masonry-caption">
                 <p>{styleLabels[item.style]}</p>
                 <h3>{item.title}</h3>
                 <span>{item.location}</span>
