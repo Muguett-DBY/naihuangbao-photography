@@ -10,3 +10,5 @@ dist
 .Rhistory
 source-assets/gallery/raw/*
 !source-assets/gallery/raw/README.md
+.playwright-mcp/
+opencode.json
