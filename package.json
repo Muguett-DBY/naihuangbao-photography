@@ -18,29 +18,25 @@
     "assets:crop": "node scripts/crop-gallery-assets.mjs"
   },
   "dependencies": {
-    "@fontsource/nunito": "^5.2.7",
-    "gsap": "^3.15.0",
-    "lucide-react": "^1.14.0",
+    "lucide-react": "^1.16.0",
     "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "three": "^0.184.0"
+    "react-dom": "^19.2.6"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260424.0",
+    "@cloudflare/workers-types": "^4.20260523.1",
     "@tailwindcss/vite": "^4.1.17",
-    "@types/node": "^25.6.2",
-    "@types/react": "^19.2.7",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
-    "@types/three": "^0.184.1",
-    "@vitejs/plugin-react": "^6.0.1",
+    "@vitejs/plugin-react": "^6.0.2",
     "playwright": "^1.60.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.17",
-    "tsx": "^4.22.1",
+    "tsx": "^4.22.3",
     "typescript": "^6.0.3",
-    "vite": "^8.0.11",
+    "vite": "^8.0.14",
     "vite-plugin-pwa": "^1.2.0",
-    "vitest": "^4.1.5",
-    "wrangler": "^4.92.0"
+    "vitest": "^4.1.7",
+    "wrangler": "^4.94.0"
   }
 }

@@ -9,16 +9,19 @@ const globalCss = [
   "src/styles/global.css",
   "src/styles/base.css",
   "src/styles/site.css",
+  "src/styles/hero.css",
+  "src/styles/gallery.css",
+  "src/styles/sections.css",
   "src/styles/chat.css",
 ].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
 const heroSource = readFileSync(resolve(root, "src/components/Hero.tsx"), "utf8");
-const cinematicAssetsSource = readFileSync(resolve(root, "src/data/cinematic.ts"), "utf8");
 const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
 const navSource = readFileSync(resolve(root, "src/components/SiteNav.tsx"), "utf8");
-const parallaxSource = readFileSync(resolve(root, "src/hooks/useParallax.ts"), "utf8");
 const photosApiSource = readFileSync(resolve(root, "functions/api/photos.ts"), "utf8");
+const siteContentHookSource = readFileSync(resolve(root, "src/hooks/useSiteContent.tsx"), "utf8");
+const publicPhotosHookSource = readFileSync(resolve(root, "src/hooks/usePublicPhotos.tsx"), "utf8");
 const viteConfigSource = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const chatLauncherPath = resolve(root, "src/components/PublicChatLauncher.tsx");
 const chatLauncherSource = existsSync(chatLauncherPath)
@@ -93,10 +96,10 @@ describe("performance resources", () => {
   it("keeps gallery photos out of the precache and runtime-caches them", () => {
     expect(viteConfigSource).toContain("globIgnores");
     expect(viteConfigSource).toContain("**/images/gallery/**/*");
-    expect(viteConfigSource).toContain("**/three.module-*.js");
-    expect(viteConfigSource).toContain("**/gsap-*.js");
-    expect(viteConfigSource).toContain("**/ScrollTrigger-*.js");
-    expect(viteConfigSource).toContain("**/images/cinematic/**/*");
+    expect(viteConfigSource).not.toContain("**/three.module-*.js");
+    expect(viteConfigSource).not.toContain("**/gsap-*.js");
+    expect(viteConfigSource).not.toContain("**/ScrollTrigger-*.js");
+    expect(viteConfigSource).not.toContain("**/images/cinematic/**/*");
     expect(viteConfigSource).toContain("runtimeCaching");
     expect(viteConfigSource).toContain('url.pathname.startsWith("/images/gallery/")');
     expect(viteConfigSource).toContain('handler: "CacheFirst"');
@@ -104,9 +107,10 @@ describe("performance resources", () => {
     expect(viteConfigSource).toContain("maxAgeSeconds: 60 * 60 * 24 * 30");
   });
 
-  it("keeps cinematic image assets explicit and outside the JS entrypoint", () => {
-    expect(cinematicAssetsSource).toContain("/images/cinematic/hero-studio.webp");
-    expect(cinematicAssetsSource).toContain("/images/cinematic/gallery-corridor.webp");
+  it("keeps removed cinematic assets out of the public shell", () => {
+    expect(existsSync(resolve(root, "src/data/cinematic.ts"))).toBe(false);
+    expect(existsSync(resolve(root, "src/components/CinematicGalleryScene.tsx"))).toBe(false);
+    expect(existsSync(resolve(root, "public/images/cinematic"))).toBe(false);
     expect(heroSource).not.toContain("ig_");
     expect(gallerySource).not.toContain("ig_");
     expect(mainSource).not.toContain("/images/cinematic/");
@@ -137,11 +141,13 @@ describe("performance resources", () => {
     expect(readFileSync(resolve(root, "src/styles/global.css"), "utf8")).not.toContain(".adm-root");
   });
 
-  it("updates parallax with a CSS variable instead of scroll-time React state", () => {
-    expect(parallaxSource).not.toContain("useState");
-    expect(parallaxSource).not.toContain("setOffset");
-    expect(parallaxSource).toContain('style.setProperty("--parallax-offset"');
-    expect(parallaxSource).toContain("requestAnimationFrame");
+  it("renders default homepage data first and defers remote enhancement until idle", () => {
+    expect(siteContentHookSource).toContain("defaultSiteContent");
+    expect(publicPhotosHookSource).toContain("galleryItems");
+    expect(siteContentHookSource).toContain("requestIdleCallback");
+    expect(publicPhotosHookSource).toContain("requestIdleCallback");
+    expect(siteContentHookSource).toContain("AbortController");
+    expect(publicPhotosHookSource).toContain("AbortController");
     expect(heroSource).not.toContain("offset *");
     expect(globalCss).toContain("--parallax-offset");
   });

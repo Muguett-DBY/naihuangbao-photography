@@ -9,10 +9,11 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let ignore = false;
+    const abortController = new AbortController();
 
     async function loadContent() {
       try {
-        const response = await fetch("/api/content");
+        const response = await fetch("/api/content", { signal: abortController.signal });
         if (!response.ok) return;
         const data = (await response.json()) as { content?: PartialSiteContent };
         if (!ignore && data.content) {
@@ -23,9 +24,11 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    void loadContent();
+    const cancelIdleLoad = scheduleIdleTask(() => void loadContent());
     return () => {
       ignore = true;
+      abortController.abort();
+      cancelIdleLoad();
     };
   }, []);
 
@@ -40,4 +43,28 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
 
 export function useSiteContent() {
   return useContext(SiteContentContext);
+}
+
+function scheduleIdleTask(callback: () => void) {
+  const browserWindow = window as Window & {
+    requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+    cancelIdleCallback?: (handle: number) => void;
+  };
+  let idleHandle: number | null = null;
+
+  const timeoutHandle = window.setTimeout(() => {
+    if (browserWindow.requestIdleCallback) {
+      idleHandle = browserWindow.requestIdleCallback(callback, { timeout: 2500 });
+      return;
+    }
+
+    callback();
+  }, 1200);
+
+  return () => {
+    window.clearTimeout(timeoutHandle);
+    if (idleHandle !== null) {
+      browserWindow.cancelIdleCallback?.(idleHandle);
+    }
+  };
 }

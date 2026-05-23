@@ -19,10 +19,11 @@ export function PublicPhotosProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let ignore = false;
+    const abortController = new AbortController();
 
     async function loadRemotePhotos() {
       try {
-        const response = await fetch("/api/photos");
+        const response = await fetch("/api/photos", { signal: abortController.signal });
         if (!response.ok) return;
         const data = (await response.json()) as { photos?: PhotoItem[] };
         if (!ignore && Array.isArray(data.photos)) {
@@ -34,9 +35,11 @@ export function PublicPhotosProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    void loadRemotePhotos();
+    const cancelIdleLoad = scheduleIdleTask(() => void loadRemotePhotos());
     return () => {
       ignore = true;
+      abortController.abort();
+      cancelIdleLoad();
     };
   }, []);
 
@@ -54,4 +57,28 @@ export function PublicPhotosProvider({ children }: { children: ReactNode }) {
 
 export function usePublicPhotos() {
   return useContext(PublicPhotosContext);
+}
+
+function scheduleIdleTask(callback: () => void) {
+  const browserWindow = window as Window & {
+    requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+    cancelIdleCallback?: (handle: number) => void;
+  };
+  let idleHandle: number | null = null;
+
+  const timeoutHandle = window.setTimeout(() => {
+    if (browserWindow.requestIdleCallback) {
+      idleHandle = browserWindow.requestIdleCallback(callback, { timeout: 2500 });
+      return;
+    }
+
+    callback();
+  }, 1200);
+
+  return () => {
+    window.clearTimeout(timeoutHandle);
+    if (idleHandle !== null) {
+      browserWindow.cancelIdleCallback?.(idleHandle);
+    }
+  };
 }

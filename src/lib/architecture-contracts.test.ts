@@ -61,16 +61,24 @@ describe("architecture optimization contracts", () => {
     expect(adminDashboard).not.toContain("function renderPackagesTab");
   });
 
-  it("uses CSS modules through a small global entrypoint", () => {
+  it("uses focused CSS modules through a small global entrypoint", () => {
     const globalCss = read("src/styles/global.css");
+    const siteCss = read("src/styles/site.css");
 
     expect(existsSync(resolve(root, "src/styles/base.css"))).toBe(true);
     expect(existsSync(resolve(root, "src/styles/site.css"))).toBe(true);
+    expect(existsSync(resolve(root, "src/styles/hero.css"))).toBe(true);
+    expect(existsSync(resolve(root, "src/styles/gallery.css"))).toBe(true);
+    expect(existsSync(resolve(root, "src/styles/sections.css"))).toBe(true);
     expect(existsSync(resolve(root, "src/styles/chat.css"))).toBe(true);
     expect(globalCss).toContain('@import "./base.css"');
     expect(globalCss).toContain('@import "./site.css"');
     expect(globalCss).toContain('@import "./chat.css"');
+    expect(siteCss).toContain('@import "./hero.css"');
+    expect(siteCss).toContain('@import "./gallery.css"');
+    expect(siteCss).toContain('@import "./sections.css"');
     expect(globalCss.split(/\r?\n/).length).toBeLessThan(80);
+    expect(siteCss.split(/\r?\n/).length).toBeLessThan(10);
   });
 
   it("generates the static SEO shell from the default content model", () => {
@@ -97,30 +105,25 @@ describe("architecture optimization contracts", () => {
     expect(mainSource).toContain("preconnect");
   });
 
-  it("isolates the cinematic WebGL gallery behind a focused component contract", () => {
+  it("removes the unused cinematic WebGL gallery from the public architecture", () => {
     const packageJson = read("package.json");
     const gallerySource = read("src/components/Gallery.tsx");
+    const viteConfig = read("vite.config.ts");
+    const cssSource = [
+      "src/styles/hero.css",
+      "src/styles/gallery.css",
+      "src/styles/sections.css",
+    ].map((path) => read(path)).join("\n");
 
-    expect(packageJson).toContain('"gsap"');
-    expect(packageJson).toContain('"three"');
-    expect(existsSync(resolve(root, "src/components/CinematicGalleryScene.tsx"))).toBe(true);
-    expect(existsSync(resolve(root, "src/lib/cinematic-gallery.ts"))).toBe(true);
-
-    const cinematicSource = read("src/components/CinematicGalleryScene.tsx");
-    const cinematicDataSource = read("src/lib/cinematic-gallery.ts");
-    const cinematicAssetsSource = read("src/data/cinematic.ts");
-
-    expect(cinematicDataSource).toContain("MAX_CINEMATIC_PHOTOS = 24");
-    expect(cinematicDataSource).toContain("MAX_CINEMATIC_PLANE_SCALE");
-    expect(cinematicDataSource).toContain("MIN_CINEMATIC_CAMERA_DISTANCE");
-    expect(cinematicSource).toContain("ScrollTrigger");
-    expect(cinematicSource).toContain("three");
-    expect(cinematicSource).toContain("WebGL");
-    expect(cinematicSource).toContain("cinematic-fallback");
-    expect(cinematicSource).toContain("prefers-reduced-motion");
-    expect(cinematicSource).toContain("Product decision");
-    expect(cinematicSource).not.toContain("+=240%");
-    expect(cinematicAssetsSource).toContain("kind: \"atmosphere\"");
+    expect(packageJson).not.toContain('"gsap"');
+    expect(packageJson).not.toContain('"three"');
+    expect(packageJson).not.toContain('"@fontsource/nunito"');
+    expect(existsSync(resolve(root, "src/components/CinematicGalleryScene.tsx"))).toBe(false);
+    expect(existsSync(resolve(root, "src/lib/cinematic-gallery.ts"))).toBe(false);
+    expect(existsSync(resolve(root, "src/data/cinematic.ts"))).toBe(false);
+    expect(existsSync(resolve(root, "public/images/cinematic"))).toBe(false);
+    expect(viteConfig).not.toContain("images/cinematic");
+    expect(cssSource).not.toContain("cinematic");
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
     expect(gallerySource).not.toContain("<CinematicGalleryScene");
     expect(gallerySource).toContain("这里只展示已授权公开的真实作品");

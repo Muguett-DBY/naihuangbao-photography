@@ -36,13 +36,9 @@ export default defineConfig({
         "icons/pwa-maskable-512.png",
       ],
       workbox: {
-        globPatterns: ["**/*.{js,css,html,png,svg,jpg,jpeg}"],
+        globPatterns: ["**/*.{js,css,html}"],
         globIgnores: [
           "**/images/gallery/**/*",
-          "**/images/cinematic/**/*",
-          "**/three.module-*.js",
-          "**/gsap-*.js",
-          "**/ScrollTrigger-*.js",
         ],
         runtimeCaching: [
           {

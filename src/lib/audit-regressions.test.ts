@@ -11,6 +11,9 @@ const cssSource = [
   "src/styles/global.css",
   "src/styles/base.css",
   "src/styles/site.css",
+  "src/styles/hero.css",
+  "src/styles/gallery.css",
+  "src/styles/sections.css",
   "src/styles/chat.css",
 ].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const imageSource = readFileSync(resolve(root, "src/components/ImageWithFallback.tsx"), "utf8");
@@ -135,7 +138,7 @@ describe("audit regression coverage", () => {
     expect(cssSource).not.toMatch(/\.section-shell,\s*\.section-body > \*,\s*\.package-card,\s*\.why-card/s);
     expect(cssSource).not.toMatch(/\.public-chat-panel,\s*\.public-chat-message\s*\{[\s\S]*will-change:\s*transform/s);
     expect(cssSource).toMatch(/\.site-nav::after\s*\{[\s\S]*will-change:\s*transform/s);
-    expect(cssSource).toMatch(/\.hero-card\s*\{[\s\S]*will-change:\s*transform/s);
+    expect(cssSource).toMatch(/\.hero-photo-card\s*\{[\s\S]*position:\s*absolute/s);
     expect(cssSource).toMatch(/\.scroll-top\s*\{[\s\S]*will-change:\s*transform,\s*opacity/s);
   });
 

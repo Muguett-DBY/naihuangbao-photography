@@ -16,6 +16,9 @@ const globalCss = [
   "src/styles/global.css",
   "src/styles/base.css",
   "src/styles/site.css",
+  "src/styles/hero.css",
+  "src/styles/gallery.css",
+  "src/styles/sections.css",
   "src/styles/chat.css",
 ].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const schema = readFileSync(resolve(root, "schema.sql"), "utf8");
