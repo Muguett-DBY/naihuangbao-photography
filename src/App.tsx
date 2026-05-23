@@ -1,6 +1,5 @@
 import { lazy, Suspense, useRef, useState } from "react";
 import { useGsapAnimations } from "./hooks/useGsapAnimations";
-import { CustomCursor } from "./components/CustomCursor";
 import { CanvasParticles } from "./components/CanvasParticles";
 import { AboutBooking } from "./components/AboutBooking";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -63,7 +62,6 @@ export function App() {
       <SiteContentProvider>
         <PublicPhotosProvider>
           <div className="scroll-progress-bar" role="progressbar" aria-label="页面阅读进度" />
-          <CustomCursor />
           <CanvasParticles />
           <a className="skip-link" href="#main-content">
             跳过导航，直接查看内容

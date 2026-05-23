@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { fairyDustCursor } from "cursor-effects";
 import { App } from "./App";
 import "./styles/global.css";
 
@@ -46,3 +47,14 @@ createRoot(root).render(
 requestAnimationFrame(() => {
   document.body.classList.add("is-loaded");
 });
+
+// ── Fairy dust cursor effect ──
+// Only on non-touch, non-reduced-motion devices
+if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  if (!isTouch) {
+    fairyDustCursor({
+      colors: ["#F5A891", "#FFD2B8", "#FFB8A1", "#FCE4D6"],
+    });
+  }
+}
