@@ -57,7 +57,7 @@ describe("gallery filter styles", () => {
     expect(cssSource).toContain("--custard-bg: #FEF3DD");
     expect(cssSource).toContain("--peach-accent: #FFB8A1");
     expect(cssSource).toContain("--caramel-text: #8B5E4A");
-    expect(cssSource).toContain("hero-cover-image");
+    expect(cssSource).toContain("hero-cover-design");
     expect(cssSource).toContain(".section-heading h2::before");
     expect(cssSource).toContain("--font-heading-cn");
     expect(cssSource).toContain("border-radius: 18px");

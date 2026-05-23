@@ -149,7 +149,7 @@ describe("performance resources", () => {
     expect(siteContentHookSource).toContain("AbortController");
     expect(publicPhotosHookSource).toContain("AbortController");
     expect(heroSource).not.toContain("offset *");
-    expect(globalCss).toContain("--cover-scale");
+    expect(globalCss).toContain("--paper-noise");
   });
 
   it("keeps first-load motion and scroll progress outside the app shell", () => {
