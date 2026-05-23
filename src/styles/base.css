@@ -357,9 +357,11 @@ main::after {
   pointer-events: none;
   width: 20px;
   height: 20px;
+  margin: -10px 0 0 -10px;
   border-radius: 50%;
-  background: rgba(255, 210, 184, 0.35);
-  border: 1.5px solid rgba(255, 184, 161, 0.5);
+  background: rgba(255, 210, 184, 0.25);
+  border: 1.5px solid rgba(230, 160, 140, 0.6);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(255,255,255,0.2);
   opacity: 0;
   transition: width 0.3s cubic-bezier(0.22,1,0.36,1),
               height 0.3s cubic-bezier(0.22,1,0.36,1),
@@ -367,14 +369,14 @@ main::after {
               border-color 0.3s ease,
               opacity 0.3s ease;
   will-change: transform;
-  backdrop-filter: blur(2px);
 }
 
 .custom-cursor.is-hover {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
   background: rgba(255, 184, 161, 0.2);
-  border-color: rgba(255, 184, 161, 0.7);
+  border-color: rgba(230, 160, 140, 0.8);
 }
 
 @media (hover: none) and (pointer: coarse) {
