@@ -1,0 +1,65 @@
+import { useState } from "react";
+import { Plus } from "lucide-react";
+import { defaultSiteContent } from "../../data/content";
+import type { FaqItem, SiteContent } from "../../types/content";
+import { linesFromText, PanelHeader } from "../../lib/admin-helpers";
+
+const emptyFaq: FaqItem = { question: "新问题", answer: "填写回答" };
+
+export function AdminFaqTab() {
+  const [content, setContent] = useState(() => defaultSiteContent);
+  const [saving, setSaving] = useState<string | null>(null);
+
+  const updateContent = <K extends keyof SiteContent>(key: K, value: SiteContent[K]) =>
+    setContent((prev) => ({ ...prev, [key]: value }));
+
+  const saveSection = async (label: string, keys: (keyof SiteContent)[]) => {
+    setSaving(label);
+    try {
+      for (const key of keys) {
+        await fetch("/api/admin/content", {
+          method: "PATCH", credentials: "include",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ key, value: content[key] }),
+        });
+      }
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const updateFq = (index: number, patch: Partial<FaqItem>) =>
+    updateContent("faqs", content.faqs.map((p, i) => i === index ? { ...p, ...patch } : p));
+
+  return (
+    <div className="adm-content-panel">
+      <PanelHeader title="FAQ/流程" onSave={() => saveSection("FAQ/流程", ["faqs", "processSteps"])} saving={saving === "FAQ/流程"} />
+
+      <div className="adm-cms-item">
+        <h3>预约流程</h3>
+        <label>流程步骤（一行一个）
+          <textarea value={content.processSteps.join("\n")}
+            onChange={(e) => updateContent("processSteps", linesFromText(e.target.value))} />
+        </label>
+      </div>
+
+      <div className="adm-cms-list">
+        {content.faqs.map((item, index) => (
+          <div className="adm-cms-item" key={`${item.question}-${index}`}>
+            <div className="adm-cms-item-head">
+              <strong>问题 {index + 1}</strong>
+              <button type="button" onClick={() => updateContent("faqs", content.faqs.filter((_, i) => i !== index))}>删除</button>
+            </div>
+            <div className="adm-form-grid">
+              <label>问题 <input value={item.question} onChange={(e) => updateFq(index, { question: e.target.value })} /></label>
+              <label className="adm-span-2">回答 <textarea value={item.answer} onChange={(e) => updateFq(index, { answer: e.target.value })} /></label>
+            </div>
+          </div>
+        ))}
+      </div>
+      <button className="adm-add" type="button" onClick={() => updateContent("faqs", [...content.faqs, emptyFaq])}>
+        <Plus size={14} /> 添加问题
+      </button>
+    </div>
+  );
+}

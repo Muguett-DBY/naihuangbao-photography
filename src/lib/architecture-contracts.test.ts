@@ -47,6 +47,11 @@ describe("architecture optimization contracts", () => {
     const expectedFiles = [
       "src/hooks/useAdminSession.ts",
       "src/components/admin/AdminShell.tsx",
+      "src/components/admin/AdminPhotosTab.tsx",
+      "src/components/admin/AdminPackagesTab.tsx",
+      "src/components/admin/AdminServicesTab.tsx",
+      "src/components/admin/AdminFaqTab.tsx",
+      "src/components/admin/AdminCopyTab.tsx",
     ];
 
     for (const path of expectedFiles) {

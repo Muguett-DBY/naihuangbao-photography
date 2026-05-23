@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { useGsapAnimations } from "./hooks/useGsapAnimations";
 import { AboutBooking } from "./components/AboutBooking";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -39,6 +39,7 @@ function isNotFound(): boolean {
 
 export function App() {
   const [chatOpen, setChatOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   if (window.location.pathname.startsWith("/admin")) {
     return (
@@ -52,10 +53,11 @@ export function App() {
     return <NotFound />;
   }
 
-  useGsapAnimations();
+  useGsapAnimations(rootRef);
 
   return (
     <ErrorBoundary>
+      <div ref={rootRef}>
       <SiteContentProvider>
         <PublicPhotosProvider>
           <div className="scroll-progress-bar" role="progressbar" aria-label="页面阅读进度" />
@@ -91,6 +93,7 @@ export function App() {
           </div>
         </PublicPhotosProvider>
       </SiteContentProvider>
+      </div>
     </ErrorBoundary>
   );
 }

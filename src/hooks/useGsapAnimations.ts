@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
@@ -13,17 +13,31 @@ const morphPhrases = [
   "约拍南京 · 公园 / 街拍 / 室内",
 ];
 
-export function useGsapAnimations() {
+export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
   const initialized = useRef(false);
 
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
 
+    const $ = <T extends Element>(sel: string): T[] => {
+      if (rootRef?.current) {
+        return Array.from(rootRef.current.querySelectorAll<T>(sel));
+      }
+      return Array.from(document.querySelectorAll<T>(sel));
+    };
+
+    const $1 = <T extends Element>(sel: string): T | null => {
+      if (rootRef?.current) {
+        return rootRef.current.querySelector<T>(sel);
+      }
+      return document.querySelector<T>(sel);
+    };
+
     /* ══════════════════════════════════════════
        EFFECT 1: 滚动进度条 (Scroll Progress Bar)
        ══════════════════════════════════════════ */
-    const progressBar = document.querySelector<HTMLElement>(".scroll-progress-bar");
+    const progressBar = $1<HTMLElement>(".scroll-progress-bar");
     if (progressBar) {
       gsap.to(progressBar, {
         scaleX: 1,
@@ -40,7 +54,7 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 2: 浮动飘浮元素 (Floating decor)
        ══════════════════════════════════════════ */
-    const floatEls = document.querySelectorAll<HTMLElement>(".float-element");
+    const floatEls = $<HTMLElement>(".float-element");
     floatEls.forEach((el, i) => {
       gsap.to(el, {
         y: i % 2 === 0 ? -18 : 16,
@@ -56,7 +70,7 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 3: Hero 浮动光晕 (existing)
        ══════════════════════════════════════════ */
-    const glowOrbs = document.querySelectorAll<HTMLElement>(".hero-glow-orb");
+    const glowOrbs = $<HTMLElement>(".hero-glow-orb");
     if (glowOrbs.length) {
       glowOrbs.forEach((orb, i) => {
         gsap.to(orb, {
@@ -73,13 +87,13 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 4: Hero title clip reveal (existing)
        ══════════════════════════════════════════ */
-    const title = document.querySelector<HTMLElement>(".hero-magazine-title");
-    const subtitle = document.querySelector<HTMLElement>(".hero-magazine-subtitle");
-    const intro = document.querySelector<HTMLElement>(".hero-cover-intro");
-    const badge = document.querySelector<HTMLElement>(".hero-vol-badge");
-    const trustTags = document.querySelectorAll<HTMLElement>(".hero-trust-tag");
-    const ctaGroup = document.querySelectorAll<HTMLElement>(".hero-cover-cta-group > *");
-    const scrollCue = document.querySelector<HTMLElement>(".hero-scroll-indicator");
+    const title = $1<HTMLElement>(".hero-magazine-title");
+    const subtitle = $1<HTMLElement>(".hero-magazine-subtitle");
+    const intro = $1<HTMLElement>(".hero-cover-intro");
+    const badge = $1<HTMLElement>(".hero-vol-badge");
+    const trustTags = $<HTMLElement>(".hero-trust-tag");
+    const ctaGroup = $<HTMLElement>(".hero-cover-cta-group > *");
+    const scrollCue = $1<HTMLElement>(".hero-scroll-indicator");
 
     const heroTimeline = gsap.timeline({ delay: 0.3 });
 
@@ -148,7 +162,7 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 5: Text Morph (文字轮换)
        ══════════════════════════════════════════ */
-    const morphEl = document.querySelector<HTMLElement>(".hero-magazine-subtitle");
+    const morphEl = $1<HTMLElement>(".hero-magazine-subtitle");
     if (morphEl) {
       let morphIndex = 0;
       const morphTimeline = gsap.timeline({ repeat: -1, delay: 3.5 });
@@ -187,7 +201,7 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 6: 平滑锚点滚动 (Smooth Scroll)
        ══════════════════════════════════════════ */
-    document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
+    $<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener("click", (e: MouseEvent) => {
         const href = anchor.getAttribute("href");
         if (!href || href === "#") return;
@@ -205,7 +219,7 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 7: 数字计数器 (Count-Up)
        ══════════════════════════════════════════ */
-    document.querySelectorAll<HTMLElement>("[data-count-target]").forEach((el) => {
+    $<HTMLElement>("[data-count-target]").forEach((el) => {
       const target = parseFloat(el.getAttribute("data-count-target") || "0");
       const suffix = el.getAttribute("data-count-suffix") || "";
       const prefix = el.getAttribute("data-count-prefix") || "";
@@ -232,7 +246,7 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 8: 无限水平滚动图库 (Auto-Scroll Gallery)
        ══════════════════════════════════════════ */
-    const galleryTracks = document.querySelectorAll<HTMLElement>(".gallery-auto-scroll");
+    const galleryTracks = $<HTMLElement>(".gallery-auto-scroll");
     galleryTracks.forEach((track) => {
       const speed = parseFloat(track.getAttribute("data-scroll-speed") || "0.3");
 
@@ -268,7 +282,7 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 9: SVG 装饰路径绘制
        ══════════════════════════════════════════ */
-    const svgPaths = document.querySelectorAll<SVGPathElement>(".deco-svg-path path");
+    const svgPaths = $<SVGPathElement>(".deco-svg-path path");
     svgPaths.forEach((path) => {
       const length = path.getTotalLength?.() || 0;
       if (length) {
@@ -292,8 +306,8 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 10: Scroll Parallax (existing)
        ══════════════════════════════════════════ */
-    const hero = document.querySelector<HTMLElement>(".hero");
-    const heroContent = document.querySelector<HTMLElement>(".hero-cover-content");
+    const hero = $1<HTMLElement>(".hero");
+    const heroContent = $1<HTMLElement>(".hero-cover-content");
 
     if (hero && heroContent) {
       gsap.to(heroContent, {
@@ -311,7 +325,7 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 11: Cards scroll-reveal (existing)
        ══════════════════════════════════════════ */
-    const cardSections = document.querySelectorAll<HTMLElement>(".section-shell:not(.hero)");
+    const cardSections = $<HTMLElement>(".section-shell:not(.hero)");
 
     cardSections.forEach((section) => {
       const cards = section.querySelectorAll<HTMLElement>(
@@ -343,7 +357,7 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 12: Magnetic Buttons (existing)
        ══════════════════════════════════════════ */
-    const magneticBtns = document.querySelectorAll<HTMLElement>(
+    const magneticBtns = $<HTMLElement>(
       ".hero-cover-primary-btn, .hero-cover-secondary-btn, .nav-cta, .booking-cta, .package-cta",
     );
 
@@ -374,7 +388,7 @@ export function useGsapAnimations() {
     /* ══════════════════════════════════════════
        EFFECT 13: 3D Card Tilt (existing)
        ══════════════════════════════════════════ */
-    const tiltCards = document.querySelectorAll<HTMLElement>(
+    const tiltCards = $<HTMLElement>(
       ".package-card, .why-card, .service-detail-card",
     );
 
@@ -408,7 +422,7 @@ export function useGsapAnimations() {
 
     return () => {
       // Cleanup RAFs
-      document.querySelectorAll<HTMLElement>(".gallery-auto-scroll").forEach((el) => {
+      $<HTMLElement>(".gallery-auto-scroll").forEach((el) => {
         const rafId = (el as any)._autoScrollRaf;
         if (rafId) cancelAnimationFrame(rafId);
       });

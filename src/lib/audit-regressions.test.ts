@@ -6,6 +6,7 @@ const root = process.cwd();
 const adminSource = [
   "src/components/AdminDashboard.tsx",
   "src/components/admin/AdminShell.tsx",
+  "src/components/admin/AdminPhotosTab.tsx",
 ].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const cssSource = [
   "src/styles/global.css",
