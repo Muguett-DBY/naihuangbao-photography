@@ -26,12 +26,12 @@ const chatLauncherSource = existsSync(chatLauncherPath)
   : "";
 
 describe("performance resources", () => {
-  it("preloads the cinematic hero background instead of an unused gallery texture", () => {
+  it("preloads the featured portfolio image used in the hero", () => {
     const heroImage = galleryItems.find((item) => item.featured)?.imageUrl;
 
     expect(heroImage).toBe("/images/gallery/gallery-jiangnan-01.webp?v=20260427-2");
-    expect(html).toContain('<link rel="preload" as="image" href="/images/cinematic/hero-studio.webp"');
-    expect(html).not.toContain(`<link rel="preload" as="image" href="${heroImage}"`);
+    expect(html).toContain(`<link rel="preload" as="image" href="${heroImage}"`);
+    expect(html).not.toContain('<link rel="preload" as="image" href="/images/cinematic/hero-studio.webp"');
   });
 
   it("builds responsive variants for static gallery images but not remote R2 images", async () => {

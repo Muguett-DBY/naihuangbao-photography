@@ -2,23 +2,32 @@ import { ShieldCheck } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { Section } from "./Section";
 
+function splitStep(step: string) {
+  const [title, detail] = step.split("｜");
+  return { title, detail };
+}
+
 export function ProcessAndFaq() {
   const { faqs, processSteps, sectionCopy } = useSiteContent();
 
   return (
     <Section
-      id="notice"
+      id="process"
       eyebrow={sectionCopy.notice.eyebrow}
       title={sectionCopy.notice.title}
       intro={sectionCopy.notice.intro}
     >
       <div className="process-grid">
-        {processSteps.map((step, index) => (
+        {processSteps.map((step, index) => {
+          const { title, detail } = splitStep(step);
+          return (
           <div className="process-step" key={`${step}-${index}`}>
             <span>{String(index + 1).padStart(2, "0")}</span>
-            <p>{step}</p>
+            <h3>{title}</h3>
+            {detail ? <p>{detail}</p> : null}
           </div>
-        ))}
+          );
+        })}
       </div>
       <div className="notice-layout">
         <div className="safety-panel">
@@ -28,7 +37,7 @@ export function ProcessAndFaq() {
             <p key={line}>{line}</p>
           ))}
         </div>
-        <div className="faq-list">
+        <div className="faq-list" id="faq">
           {faqs.map((item) => (
             <details key={item.question}>
               <summary>{item.question}</summary>

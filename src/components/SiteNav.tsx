@@ -2,6 +2,15 @@ import { CalendarCheck, Camera, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSiteContent } from "../hooks/useSiteContent";
 
+const navItems = [
+  { href: "#top", label: "首页" },
+  { href: "#gallery", label: "作品风格" },
+  { href: "#packages", label: "套餐价格" },
+  { href: "#process", label: "拍摄流程" },
+  { href: "#faq", label: "常见问题" },
+  { href: "#booking", label: "预约" },
+];
+
 export function SiteNav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -69,9 +78,11 @@ export function SiteNav() {
         <span>{siteConfig.brandName}</span>
       </a>
       <nav id="site-navigation-menu" className={`nav-menu${open ? " is-open" : ""}`} aria-label="主导航">
-        <a href="#gallery" onClick={() => setOpen(false)}>作品</a>
-        <a href="#packages" onClick={() => setOpen(false)}>套餐</a>
-        <a href="#notice" onClick={() => setOpen(false)}>须知</a>
+        {navItems.map((item) => (
+          <a href={item.href} key={item.href} onClick={() => setOpen(false)}>
+            {item.label}
+          </a>
+        ))}
       </nav>
       <button
         className="hamburger"

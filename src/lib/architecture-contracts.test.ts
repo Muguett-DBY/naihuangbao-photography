@@ -122,6 +122,7 @@ describe("architecture optimization contracts", () => {
     expect(cinematicSource).not.toContain("+=240%");
     expect(cinematicAssetsSource).toContain("kind: \"atmosphere\"");
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
-    expect(gallerySource).toContain("<CinematicGalleryScene");
+    expect(gallerySource).not.toContain("<CinematicGalleryScene");
+    expect(gallerySource).toContain("这里只展示已授权公开的真实作品");
   });
 });

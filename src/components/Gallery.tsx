@@ -2,11 +2,8 @@ import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } fro
 import { styleLabels } from "../data/site";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
-import { getGalleryDisplayItems } from "../data/cinematic";
-import { selectCinematicPhotos } from "../lib/cinematic-gallery";
 import { getPhotosByStyle } from "../lib/gallery";
 import type { PhotoItem, PhotoStyle } from "../types/photo";
-import { CinematicGalleryScene } from "./CinematicGalleryScene";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { Section } from "./Section";
 
@@ -25,8 +22,6 @@ export function Gallery() {
   const galleryGridRef = useRef<HTMLDivElement>(null);
 
   const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
-  const displayItems = useMemo(() => getGalleryDisplayItems(sourcePhotos, filter), [sourcePhotos, filter]);
-  const cinematicPhotos = useMemo(() => selectCinematicPhotos(sourcePhotos), [sourcePhotos]);
 
   useEffect(() => {
     void import("./Lightbox");
@@ -108,8 +103,14 @@ export function Gallery() {
       title={sectionCopy.gallery.title}
       intro={sectionCopy.gallery.intro}
     >
-      <div className="gallery-cinematic-stage">
-        <CinematicGalleryScene photos={cinematicPhotos} mode="gallery" />
+      <div className="gallery-story-panel" aria-label="作品风格说明">
+        <div>
+          <span>Portfolio</span>
+          <strong>真实作品按风格整理，点击可看大图</strong>
+        </div>
+        <p>
+          公园日常、江南感、城市街拍、室内写真和情侣约拍会分开筛选。这里只展示已授权公开的真实作品，不混入氛围图。
+        </p>
       </div>
       <div className="filter-row" role="group" aria-label="作品分类筛选">
         {filters.map((item) => (
@@ -125,9 +126,8 @@ export function Gallery() {
         ))}
       </div>
       <div className="gallery-grid" ref={galleryGridRef}>
-        {displayItems.map((item, index) => {
+        {photos.map((item, index) => {
           const isFeaturedGalleryCard = filter === "all" && index === 0;
-          const realPhotoIndex = photos.findIndex((photo) => photo.id === item.id);
 
           return (
             <article
@@ -142,7 +142,7 @@ export function Gallery() {
               <button
                 className="gallery-card-btn"
                 type="button"
-                onClick={() => setLightboxIndex(realPhotoIndex)}
+                onClick={() => setLightboxIndex(index)}
                 aria-label={`查看大图：${item.title}`}
               >
                 <ImageWithFallback

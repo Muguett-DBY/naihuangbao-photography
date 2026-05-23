@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from "react";
 import { AboutBooking } from "./components/AboutBooking";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
+import { FloatingBookingCta } from "./components/FloatingBookingCta";
 import { Gallery } from "./components/Gallery";
 import { Hero } from "./components/Hero";
 import { MidCTA } from "./components/MidCTA";
@@ -69,6 +70,7 @@ export function App() {
             <AboutBooking />
           </main>
           <Footer />
+          <FloatingBookingCta />
           <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
             <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((value) => !value)} />
             {chatOpen ? (

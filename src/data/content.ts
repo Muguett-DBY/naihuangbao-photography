@@ -38,35 +38,35 @@ export const defaultSiteContent: SiteContent = {
   whyCards: [
     {
       icon: "heart",
-      title: "只拍女生和情侣",
-      detail: "氛围轻松安全，拍摄全程由女摄影师引导，不需要担心水尬或不适。",
+      title: "适合第一次约拍",
+      detail: "不用担心不会摆动作，拍摄过程中会给动作、表情和视线引导，节奏会尽量放轻松。",
     },
     {
       icon: "camera",
-      title: "第一次拍也没关系",
-      detail: "会全程引导动作和情绪，不知道怎么摆姿势完全没问题。",
+      title: "柔雾胶片感审美",
+      detail: "偏自然光、低饱和、日常记录的照片气质，不做过硬的影楼感。",
     },
     {
       icon: "message",
-      title: "前期充分沟通",
-      detail: "拍摄前沟通风格、服装、地点和参考图，确保拍出你想要的效果。",
+      title: "拍前沟通边界",
+      detail: "拍摄前会沟通风格、服装、地点、参考图和舒适边界，减少临场压力。",
     },
     {
       icon: "shield",
-      title: "隐私保护",
-      detail: "未经明确授权不会公开任何客片，可以放心拍摄。",
+      title: "隐私保护清楚",
+      detail: "照片不默认公开，只有获得明确授权才会展示；未经明确授权不会公开客片。",
     },
   ],
   sectionCopy: {
     gallery: {
-      eyebrow: "Gallery",
-      title: "作品像一本慢慢翻开的相册",
-      intro: "以下是不同风格的作品参考，点击可以查看大图。",
+      eyebrow: "作品风格",
+      title: "像翻一本柔和的南京相册",
+      intro: "按公园日常、江南感、城市街拍、室内写真和情侣约拍整理，所有公开作品都来自已授权展示的照片。",
     },
     packages: {
-      eyebrow: "Packages",
-      title: "先了解适合你的拍摄方式",
-      intro: "每种拍摄方式都包含风格沟通和全程引导，先看看哪种更适合你。",
+      eyebrow: "套餐价格",
+      title: "价格清楚，预约前就能看明白",
+      intro: "室内写真、室外约拍和拍立得加拍分开列出，每种拍摄方式都包含前期沟通和拍摄引导。",
     },
     details: {
       eyebrow: "Details",
@@ -74,13 +74,14 @@ export const defaultSiteContent: SiteContent = {
       intro: "以下是拍摄设备、附加服务和预约须知，方便你在预约前了解清楚。",
     },
     notice: {
-      eyebrow: "Process",
-      title: "边界清晰，拍摄才会更放松",
-      intro: "网站会把预约、隐私和授权规则放在用户能看见的位置，减少反复解释。",
+      eyebrow: "约拍流程",
+      title: "第一次约拍，也可以按步骤慢慢来",
+      intro: "从小红书私信咨询到拍摄、选片和交付，每一步都会提前说清楚，降低临场压力。",
     },
     why: {
-      eyebrow: "Why",
-      title: "为什么选择奶黄包摄影",
+      eyebrow: "安心约拍",
+      title: "边界清楚，拍摄才会更放松",
+      intro: "拍摄前会沟通舒适度和公开授权，现场也会给动作引导，适合第一次拍照的女生。",
     },
     about: {
       eyebrow: "About",
@@ -100,10 +101,10 @@ export const defaultSiteContent: SiteContent = {
       tagline: "每一次快门，都是一次温柔照亮。",
     },
     safety: {
-      title: "安全与边界说明",
+      title: "拍摄说明与隐私承诺",
       paragraphs: [
-        "只接受女生或情侣约拍。尊重拍摄者隐私，未经明确授权不会公开客片。",
-        "不接受让摄影师或客人不舒适的越界拍摄需求。",
+        "不默认公开客片，只有获得明确授权才会展示照片；未经明确授权不会公开客片。",
+        "拍摄前会沟通边界、风格和舒适度，现场会给予动作和表情引导，适合第一次拍照的女生。",
       ],
     },
   },

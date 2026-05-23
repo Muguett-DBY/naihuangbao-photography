@@ -49,6 +49,8 @@ export function ImageWithFallback({
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
         decoding="async"
+        width={960}
+        height={1200}
         {...imageAttrs}
         alt={alt}
         onError={() => setFailed(true)}

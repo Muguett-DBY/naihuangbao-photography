@@ -7,13 +7,16 @@ const shareImage = `${siteOrigin}/wechat-share.jpg`;
 
 export function buildSeoMetadata(content: SiteContent = defaultSiteContent) {
   const title = `${content.siteConfig.brandName}｜${content.siteConfig.tagline}`;
-  const description = `${content.siteConfig.brandName}，${content.siteConfig.city}女生写真与情侣约拍。提供室内写真、室外约拍、拍立得加拍，主打温柔自然、柔雾胶片感和尊重隐私的个人摄影服务。`;
+  const description = `${content.siteConfig.brandName}，${content.siteConfig.city}女生写真与情侣约拍。提供南京约拍、南京个人写真、南京江南感写真、室内写真与室外约拍，主打温柔自然、柔雾胶片感和尊重隐私的小红书约拍体验。`;
   const keywords = [
     content.siteConfig.brandName,
     `${content.siteConfig.city}女生写真`,
     `${content.siteConfig.city}情侣约拍`,
     `${content.siteConfig.city}约拍`,
     `${content.siteConfig.city}个人摄影`,
+    `${content.siteConfig.city}个人写真`,
+    `${content.siteConfig.city}江南感写真`,
+    "小红书约拍",
     "女生写真",
     "情侣写真",
   ].join(",");
@@ -56,6 +59,8 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
       `${content.siteConfig.city}女生写真`,
       `${content.siteConfig.city}情侣约拍`,
       `${content.siteConfig.city}个人摄影`,
+      `${content.siteConfig.city}个人写真`,
+      `${content.siteConfig.city}江南感写真`,
       `${content.siteConfig.city}约拍`,
     ],
     priceRange: metadata.priceRange,
@@ -91,7 +96,7 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     `<meta itemprop="image" content="${metadata.shareImage}" />`,
     `<link rel="canonical" href="${metadata.origin}/" />`,
     '<link rel="manifest" href="/manifest.webmanifest" />',
-    '<link rel="preload" as="image" href="/images/cinematic/hero-studio.webp" imagesizes="100vw" />',
+    '<link rel="preload" as="image" href="/images/gallery/gallery-jiangnan-01.webp?v=20260427-2" imagesizes="(max-width: 900px) 86vw, 38vw" />',
     '<link rel="icon" href="/icons/pwa-icon.svg" />',
     '<script type="application/ld+json">',
     JSON.stringify(schema, null, 6),
