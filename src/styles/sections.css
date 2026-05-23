@@ -1649,8 +1649,9 @@
     animation: none !important;
   }
 
-  .hero-cover-image {
+  .hero-cover-design {
     animation: none !important;
+    opacity: 1 !important;
     transform: none !important;
   }
 }

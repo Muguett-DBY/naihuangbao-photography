@@ -177,7 +177,6 @@ body.nav-lock .site-nav {
    Hero - Full-bleed Magazine Cover
    ══════════════════════════════════════════════ */
 .hero {
-  --cover-scale: 1;
   position: relative;
   min-height: 100svh;
   display: grid;
@@ -186,20 +185,78 @@ body.nav-lock .site-nav {
   overflow: hidden;
   background: var(--caramel-deep);
   isolation: isolate;
+  transform: translateZ(0);
 }
 
-/* Full-bleed cover image */
-.hero-cover-image {
+/* ── Designed gradient background (replaces real photo) ── */
+.hero-cover-design {
   position: absolute;
   inset: 0;
   z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 40%;
-  transform: scale(var(--cover-scale));
-  transition: transform 0.1s linear;
+  background:
+    /* Paper texture for tactile warmth */
+    var(--paper-noise),
+    /* Large warm editorial light source */
+    radial-gradient(ellipse 80% 65% at 32% 36%,
+      rgba(255, 210, 184, 0.30) 0%,
+      rgba(255, 184, 161, 0.12) 36%,
+      transparent 64%),
+    /* Cool atmospheric accent — right */
+    radial-gradient(ellipse 45% 55% at 80% 44%,
+      rgba(221, 231, 215, 0.08) 0%,
+      transparent 52%),
+    /* Bottom warm vignette */
+    radial-gradient(ellipse 90% 30% at 50% 100%,
+      rgba(255, 210, 184, 0.10) 0%,
+      transparent 68%),
+    /* Base gradient — warm editorial caramel */
+    linear-gradient(164deg,
+      #5F3C31 0%,
+      #7A5342 22%,
+      #8B5E4A 46%,
+      #7A5342 72%,
+      #5F3C31 100%);
+}
+
+/* ── Decorative concentric rings ── */
+.hero-deco-circle {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 249, 236, 0.06);
+  pointer-events: none;
   will-change: transform;
+}
+
+.hero-deco-circle--l {
+  top: -80px;
+  right: -60px;
+  width: 460px;
+  height: 460px;
+}
+
+.hero-deco-circle--s {
+  top: -30px;
+  right: 10px;
+  width: 340px;
+  height: 340px;
+}
+
+/* ── Magazine bottom accent line ── */
+.hero-bottom-accent {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 184, 161, 0.28) 15%,
+    rgba(255, 210, 184, 0.4) 50%,
+    rgba(255, 184, 161, 0.28) 85%,
+    transparent 100%);
+  pointer-events: none;
 }
 
 /* Gradient overlays for text readability */
@@ -394,7 +451,7 @@ body.nav-lock .site-nav {
   transform: translate3d(0, 1px, 0) scale(0.98);
 }
 
-/* Scroll-down indicator */
+/* ── Scroll-down indicator ── */
 .hero-scroll-indicator {
   position: absolute;
   z-index: 3;
@@ -403,36 +460,59 @@ body.nav-lock .site-nav {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  color: rgba(255, 253, 247, 0.42);
+  gap: 10px;
+  color: rgba(255, 253, 247, 0.5);
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   transform: translateX(-50%);
+  transition: opacity 0.6s ease;
+}
+
+.hero-scroll-indicator span {
+  position: relative;
+  padding-bottom: 3px;
+}
+
+.hero-scroll-indicator span::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 253, 247, 0.2);
+  animation: scrollLineExpand 2.4s ease-in-out infinite;
 }
 
 .hero-scroll-line {
   width: 1px;
-  height: 40px;
-  background: linear-gradient(180deg, rgba(255, 253, 247, 0.48), transparent);
-  animation: scrollLinePulse 2.2s ease-in-out infinite;
+  height: 42px;
+  background: linear-gradient(180deg, rgba(255, 253, 247, 0.5), transparent);
+  animation: scrollLinePulse 2.4s ease-in-out infinite;
 }
 
 @keyframes scrollLinePulse {
-  0%, 100% { opacity: 0.4; height: 32px; }
-  50% { opacity: 0.9; height: 48px; }
+  0%, 100% { opacity: 0.3; height: 32px; }
+  50% { opacity: 0.85; height: 52px; }
+}
+
+@keyframes scrollLineExpand {
+  0%, 100% { transform: scaleX(0.3); opacity: 0.3; }
+  50% { transform: scaleX(1); opacity: 0.7; }
 }
 
 /* ── Hero Entry Animations ── */
 @media (prefers-reduced-motion: no-preference) {
-  body:not(.is-loaded) .hero-cover-image {
+  body:not(.is-loaded) .hero-cover-design {
+    opacity: 0;
     transform: scale(1.06);
     filter: brightness(0.7);
   }
 
-  body.is-loaded .hero-cover-image {
-    animation: heroImageReveal 1.8s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  body.is-loaded .hero-cover-design {
+    animation: heroDesignReveal 1.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
 
   body.is-loaded .hero-vol-badge {
@@ -468,15 +548,18 @@ body.nav-lock .site-nav {
   }
 }
 
-@keyframes heroImageReveal {
+@keyframes heroDesignReveal {
   0% {
-    transform: scale(1.08);
-    filter: brightness(0.65) blur(4px);
+    opacity: 0;
+    transform: scale(1.06);
+    filter: brightness(0.7) blur(2px);
   }
-  40% {
-    filter: brightness(0.78) blur(0);
+  60% {
+    opacity: 1;
+    filter: brightness(0.92) blur(0);
   }
   100% {
+    opacity: 1;
     transform: scale(1);
     filter: brightness(1) blur(0);
   }

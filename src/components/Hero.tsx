@@ -1,56 +1,18 @@
 import { ArrowDown, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
-import { useEffect, useRef } from "react";
-import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
 
 export function Hero() {
   const { siteConfig } = useSiteContent();
-  const { photos } = usePublicPhotos();
-  const heroRef = useRef<HTMLElement>(null);
-
-  const heroPhoto = photos.find((p) => p.imageUrl) || null;
-
-  useEffect(() => {
-    if (!heroRef.current) return;
-
-    let rafId: number | null = null;
-
-    function onScroll() {
-      if (rafId !== null) return;
-      rafId = requestAnimationFrame(() => {
-        rafId = null;
-        const el = heroRef.current;
-        if (!el) return;
-        const scrollY = window.scrollY;
-        const scale = 1 + scrollY * 0.0004;
-        el.style.setProperty("--cover-scale", Math.min(scale, 1.2).toString());
-      });
-    }
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (rafId !== null) cancelAnimationFrame(rafId);
-    };
-  }, []);
 
   return (
-    <section id="top" className="hero" ref={heroRef}>
-      {heroPhoto ? (
-        <img
-          className="hero-cover-image"
-          src={heroPhoto.imageUrl}
-          alt={heroPhoto.alt || "奶黄包摄影作品"}
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-          width={1920}
-          height={1440}
-          sizes="100vw"
-        />
-      ) : (
-        <div className="hero-cover-placeholder" />
-      )}
+    <section id="top" className="hero">
+      {/* Designed gradient background — replaces real photo */}
+      <div className="hero-cover-design" />
+
+      {/* Decorative concentric circles — magazine "lens" aesthetic */}
+      <div className="hero-deco-circle hero-deco-circle--l" aria-hidden="true" />
+      <div className="hero-deco-circle hero-deco-circle--s" aria-hidden="true" />
+      <div className="hero-bottom-accent" aria-hidden="true" />
 
       <div className="hero-cover-content">
         <div className="hero-cover-left">
