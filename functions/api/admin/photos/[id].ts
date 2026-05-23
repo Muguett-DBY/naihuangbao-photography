@@ -64,6 +64,7 @@ export const onRequestPatch: PagesFunction<AdminPhotoEnv> = async (context) => {
       .bind(...values)
       .run();
 
+    context.waitUntil(context.env.CACHE?.delete("photos:public").catch(() => {}));
     return jsonResponse({ ok: true });
   } catch (error) {
     return unavailable("保存失败，请稍后重试。", error, { route: "/api/admin/photos/:id", method: "PATCH" });
@@ -87,6 +88,7 @@ export const onRequestDelete: PagesFunction<AdminPhotoEnv> = async (context) => 
       return jsonResponse({ error: result.error }, result.status);
     }
 
+    context.waitUntil(context.env.CACHE?.delete("photos:public").catch(() => {}));
     return jsonResponse({ ok: true });
   } catch (error) {
     return unavailable("删除失败，请稍后重试。", error, { route: "/api/admin/photos/:id", method: "DELETE" });

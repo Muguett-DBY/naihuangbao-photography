@@ -88,6 +88,9 @@ export const onRequestPost: PagesFunction<AdminPhotosEnv> = async (context) => {
       featured,
     });
 
+    // Invalidate list cache
+    context.waitUntil(context.env.CACHE?.delete("photos:public").catch(() => {}));
+
     return jsonResponse({ id, imageUrl }, 201);
   } catch (error) {
     return unavailable("上传失败，请稍后重试。", error, { route: "/api/admin/photos", method: "POST" });
