@@ -49,8 +49,6 @@ requestAnimationFrame(() => {
 });
 
 // ── Fairy dust cursor effect ──
-if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  fairyDustCursor({
-    colors: ["#F5A891", "#FFD2B8", "#FFB8A1", "#FCE4D6"],
-  });
-}
+fairyDustCursor({
+  colors: ["#F5A891", "#FFD2B8", "#FFB8A1", "#FCE4D6"],
+});
