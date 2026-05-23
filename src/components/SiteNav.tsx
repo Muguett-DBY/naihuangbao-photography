@@ -1,4 +1,5 @@
 import { CalendarCheck, Camera, Menu, X } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 import { useEffect, useRef, useState } from "react";
 import { useSiteContent } from "../hooks/useSiteContent";
 
@@ -94,6 +95,7 @@ export function SiteNav() {
       >
         {open ? <X size={20} /> : <Menu size={20} />}
       </button>
+      <ThemeToggle />
       <a className="nav-cta" href="#booking" onClick={() => setOpen(false)}>
         <CalendarCheck size={16} />
         预约

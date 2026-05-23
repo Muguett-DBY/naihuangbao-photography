@@ -68,6 +68,119 @@
   font-synthesis: none;
   font-size: 16px;
   line-height: 1.68;
+
+/* ── Dark mode ── */
+/* System preference drives root.dark by default; manual toggle overrides via .dark class */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) { --dm: 1; }
+}
+:root.dark { --dm: 1; }
+
+:root {
+  /* Warm dark palette — applied when --dm = 1 */
+  --dm-bg: #2D201A;
+  --dm-cream: #3A2A22;
+  --dm-soft: #4A352C;
+  --dm-white: #33241E;
+  --dm-text: #D4B8A8;
+  --dm-deep: #E8D4C8;
+  --dm-muted: #BFA392;
+  --dm-ink: #F0E4DC;
+  --dm-border: rgba(255, 210, 184, 0.12);
+  --dm-accent: #E89A80;
+  --dm-soft-accent: #C47A60;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --custard-bg: var(--dm-bg);
+  --custard-cream: var(--dm-cream);
+  --custard-soft: var(--dm-soft);
+  --paper-white: var(--dm-white);
+  --caramel-text: var(--dm-text);
+  --caramel-deep: var(--dm-deep);
+  --caramel-muted: var(--dm-muted);
+  --caramel-ink: var(--dm-ink);
+  --warm-border: var(--dm-border);
+  --peach-accent: var(--dm-accent);
+  --peach-soft: var(--dm-soft-accent);
+  --sage-mist: #4A5A4A;
+  --sage-text: #A8BEA0;
+  --warm-shadow:
+    0 1px 2px rgba(0,0,0,0.2),
+    0 8px 20px rgba(0,0,0,0.15),
+    0 16px 40px rgba(0,0,0,0.12);
+  --button-shadow:
+    0 2px 4px rgba(0,0,0,0.3),
+    0 12px 28px rgba(0,0,0,0.2);
+  --button-shadow-hover:
+    0 3px 7px rgba(0,0,0,0.35),
+    0 18px 38px rgba(0,0,0,0.25);
+  background: var(--custard-bg);
+  color: var(--caramel-text);
+}
+} /* end system dark-mode */
+
+:root.dark {
+  --custard-bg: var(--dm-bg);
+  --custard-cream: var(--dm-cream);
+  --custard-soft: var(--dm-soft);
+  --paper-white: var(--dm-white);
+  --caramel-text: var(--dm-text);
+  --caramel-deep: var(--dm-deep);
+  --caramel-muted: var(--dm-muted);
+  --caramel-ink: var(--dm-ink);
+  --warm-border: var(--dm-border);
+  --peach-accent: var(--dm-accent);
+  --peach-soft: var(--dm-soft-accent);
+  --sage-mist: #4A5A4A;
+  --sage-text: #A8BEA0;
+  --warm-shadow:
+    0 1px 2px rgba(0,0,0,0.2),
+    0 8px 20px rgba(0,0,0,0.15),
+    0 16px 40px rgba(0,0,0,0.12);
+  --button-shadow:
+    0 2px 4px rgba(0,0,0,0.3),
+    0 12px 28px rgba(0,0,0,0.2);
+  --button-shadow-hover:
+    0 3px 7px rgba(0,0,0,0.35),
+    0 18px 38px rgba(0,0,0,0.25);
+  background: var(--custard-bg);
+  color: var(--caramel-text);
+}
+/* Override system with .light class */
+:root.light {
+  --custard-bg: #FEF3DD;
+  --custard-cream: #FFF9EC;
+  --custard-soft: #FFE8C5;
+  --paper-white: #FFFDF7;
+  --caramel-text: #8B5E4A;
+  --caramel-deep: #5F3C31;
+  --caramel-muted: #9C7664;
+  --caramel-ink: #442B24;
+  --warm-border: rgba(139, 94, 74, 0.14);
+  --peach-accent: #FFB8A1;
+  --peach-soft: #FFD2B8;
+  --sage-mist: #DDE7D7;
+  --sage-text: #65785F;
+  --warm-shadow:
+    0 1px 2px rgba(95, 60, 49, 0.06),
+    0 10px 26px rgba(139, 94, 74, 0.06),
+    0 20px 54px rgba(255, 184, 161, 0.1),
+    0 32px 78px rgba(255, 210, 184, 0.1);
+  --button-shadow:
+    0 2px 4px rgba(95, 60, 49, 0.12),
+    0 12px 28px rgba(139, 94, 74, 0.12),
+    0 22px 48px rgba(255, 184, 161, 0.26),
+    0 34px 74px rgba(255, 210, 184, 0.16);
+  --button-shadow-hover:
+    0 3px 7px rgba(95, 60, 49, 0.15),
+    0 18px 38px rgba(139, 94, 74, 0.16),
+    0 30px 66px rgba(255, 184, 161, 0.34),
+    0 44px 92px rgba(255, 210, 184, 0.22);
+  background: var(--custard-bg);
+  color: var(--caramel-text);
+}
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -440,6 +553,26 @@ button:active {
 
 @media (max-width: 768px) {
   .section-nav { display: none; }
+}
+
+/* ── Theme toggle in nav ── */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--warm-border);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  background: rgba(255, 210, 184, 0.1);
+  border-color: var(--peach-accent);
 }
 
 a {
