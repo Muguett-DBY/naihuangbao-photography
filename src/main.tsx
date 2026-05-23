@@ -47,6 +47,9 @@ const lenis = new Lenis({
   syncTouch: true,
 });
 
+// Expose Lenis globally for other components (SectionNav, etc.)
+(window as any).lenis = lenis;
+
 // Sync Lenis with GSAP ScrollTrigger
 lenis.on("scroll", () => ScrollTrigger.update());
 

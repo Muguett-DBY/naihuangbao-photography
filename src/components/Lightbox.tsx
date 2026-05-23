@@ -51,12 +51,22 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
     setTranslate({ x: 0, y: 0 });
   }, [currentIndex]);
 
+  // Stop Lenis scroll while lightbox is open
+  useEffect(() => {
+    const win = window as any;
+    if (win.lenis) win.lenis.stop();
+    return () => {
+      if (win.lenis) win.lenis.start();
+    };
+  }, []);
+
   // Wheel zoom
   useEffect(() => {
     const wrap = imgWrapRef.current;
     if (!wrap) return;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
+      e.stopPropagation();
       setScale((s) => Math.max(0.5, Math.min(5, s - e.deltaY * 0.003)));
     };
     wrap.addEventListener("wheel", onWheel, { passive: false });

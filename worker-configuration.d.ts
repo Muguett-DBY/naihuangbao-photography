@@ -4,6 +4,7 @@
 interface __BaseEnv_Env {
 	PHOTO_BUCKET: R2Bucket;
 	DB: D1Database;
+	CACHE: KVNamespace;
 }
 declare namespace Cloudflare {
 	interface PreviewEnv {

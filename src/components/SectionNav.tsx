@@ -23,10 +23,11 @@ export function SectionNav() {
     if (!els.length) return;
 
     const update = () => {
-      const scrollY = window.scrollY + window.innerHeight * 0.3;
+      const viewportH = window.innerHeight;
       let activeIdx = 0;
       for (let i = els.length - 1; i >= 0; i--) {
-        if (els[i].offsetTop <= scrollY) {
+        const rect = els[i].getBoundingClientRect();
+        if (rect.top < viewportH * 0.4) {
           activeIdx = i;
           break;
         }
@@ -51,7 +52,14 @@ export function SectionNav() {
   const scrollTo = (index: number) => {
     const el = document.getElementById(SECTIONS[index].id) ||
       document.querySelector(`[data-section="${SECTIONS[index].id}"]`);
-    el?.scrollIntoView({ behavior: "smooth" });
+    if (el) {
+      const win = window as any;
+      if (win.lenis) {
+        win.lenis.scrollTo(el, { offset: 64 });
+      } else {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
   };
 
   return (

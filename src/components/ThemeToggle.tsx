@@ -9,13 +9,12 @@ export function ThemeToggle() {
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove("light", "dark");
-
     if (theme === "system") {
+      root.removeAttribute("data-theme");
       localStorage.removeItem("theme");
     } else {
+      root.setAttribute("data-theme", theme);
       localStorage.setItem("theme", theme);
-      root.classList.add(theme);
     }
   }, [theme]);
 

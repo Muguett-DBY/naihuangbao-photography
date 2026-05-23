@@ -69,41 +69,19 @@
   font-size: 16px;
   line-height: 1.68;
 
-/* ── Dark mode ── */
-/* System preference drives root.dark by default; manual toggle overrides via .dark class */
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) { --dm: 1; }
-}
-:root.dark { --dm: 1; }
-
-:root {
-  /* Warm dark palette — applied when --dm = 1 */
-  --dm-bg: #2D201A;
-  --dm-cream: #3A2A22;
-  --dm-soft: #4A352C;
-  --dm-white: #33241E;
-  --dm-text: #D4B8A8;
-  --dm-deep: #E8D4C8;
-  --dm-muted: #BFA392;
-  --dm-ink: #F0E4DC;
-  --dm-border: rgba(255, 210, 184, 0.12);
-  --dm-accent: #E89A80;
-  --dm-soft-accent: #C47A60;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --custard-bg: var(--dm-bg);
-  --custard-cream: var(--dm-cream);
-  --custard-soft: var(--dm-soft);
-  --paper-white: var(--dm-white);
-  --caramel-text: var(--dm-text);
-  --caramel-deep: var(--dm-deep);
-  --caramel-muted: var(--dm-muted);
-  --caramel-ink: var(--dm-ink);
-  --warm-border: var(--dm-border);
-  --peach-accent: var(--dm-accent);
-  --peach-soft: var(--dm-soft-accent);
+/* ── Dark mode via html[data-theme] ── */
+html[data-theme="dark"] {
+  --custard-bg: #2D201A;
+  --custard-cream: #3A2A22;
+  --custard-soft: #4A352C;
+  --paper-white: #33241E;
+  --caramel-text: #D4B8A8;
+  --caramel-deep: #E8D4C8;
+  --caramel-muted: #BFA392;
+  --caramel-ink: #F0E4DC;
+  --warm-border: rgba(255, 210, 184, 0.12);
+  --peach-accent: #E89A80;
+  --peach-soft: #C47A60;
   --sage-mist: #4A5A4A;
   --sage-text: #A8BEA0;
   --warm-shadow:
@@ -119,37 +97,36 @@
   background: var(--custard-bg);
   color: var(--caramel-text);
 }
-} /* end system dark-mode */
-
-:root.dark {
-  --custard-bg: var(--dm-bg);
-  --custard-cream: var(--dm-cream);
-  --custard-soft: var(--dm-soft);
-  --paper-white: var(--dm-white);
-  --caramel-text: var(--dm-text);
-  --caramel-deep: var(--dm-deep);
-  --caramel-muted: var(--dm-muted);
-  --caramel-ink: var(--dm-ink);
-  --warm-border: var(--dm-border);
-  --peach-accent: var(--dm-accent);
-  --peach-soft: var(--dm-soft-accent);
-  --sage-mist: #4A5A4A;
-  --sage-text: #A8BEA0;
-  --warm-shadow:
-    0 1px 2px rgba(0,0,0,0.2),
-    0 8px 20px rgba(0,0,0,0.15),
-    0 16px 40px rgba(0,0,0,0.12);
-  --button-shadow:
-    0 2px 4px rgba(0,0,0,0.3),
-    0 12px 28px rgba(0,0,0,0.2);
-  --button-shadow-hover:
-    0 3px 7px rgba(0,0,0,0.35),
-    0 18px 38px rgba(0,0,0,0.25);
-  background: var(--custard-bg);
-  color: var(--caramel-text);
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --custard-bg: #2D201A;
+    --custard-cream: #3A2A22;
+    --custard-soft: #4A352C;
+    --paper-white: #33241E;
+    --caramel-text: #D4B8A8;
+    --caramel-deep: #E8D4C8;
+    --caramel-muted: #BFA392;
+    --caramel-ink: #F0E4DC;
+    --warm-border: rgba(255, 210, 184, 0.12);
+    --peach-accent: #E89A80;
+    --peach-soft: #C47A60;
+    --sage-mist: #4A5A4A;
+    --sage-text: #A8BEA0;
+    --warm-shadow:
+      0 1px 2px rgba(0,0,0,0.2),
+      0 8px 20px rgba(0,0,0,0.15),
+      0 16px 40px rgba(0,0,0,0.12);
+    --button-shadow:
+      0 2px 4px rgba(0,0,0,0.3),
+      0 12px 28px rgba(0,0,0,0.2);
+    --button-shadow-hover:
+      0 3px 7px rgba(0,0,0,0.35),
+      0 18px 38px rgba(0,0,0,0.25);
+    background: var(--custard-bg);
+    color: var(--caramel-text);
+  }
 }
-/* Override system with .light class */
-:root.light {
+html[data-theme="light"] {
   --custard-bg: #FEF3DD;
   --custard-cream: #FFF9EC;
   --custard-soft: #FFE8C5;
