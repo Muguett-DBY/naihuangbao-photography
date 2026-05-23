@@ -198,23 +198,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
       });
     }
 
-    /* ══════════════════════════════════════════
-       EFFECT 6: 平滑锚点滚动 (Smooth Scroll)
-       ══════════════════════════════════════════ */
-    $<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
-      anchor.addEventListener("click", (e: MouseEvent) => {
-        const href = anchor.getAttribute("href");
-        if (!href || href === "#") return;
-        const target = document.querySelector(href);
-        if (!target) return;
-        e.preventDefault();
-        gsap.to(window, {
-          scrollTo: { y: target, offsetY: 64 },
-          duration: 1.0,
-          ease: "power3.inOut",
-        });
-      });
-    });
+    /* EFFECT 6 removed — superseded by EFFECT 16 (Page Transition) */
 
     /* ══════════════════════════════════════════
        EFFECT 7: 数字计数器 (Count-Up)

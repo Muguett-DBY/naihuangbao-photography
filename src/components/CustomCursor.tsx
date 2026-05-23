@@ -7,77 +7,39 @@ export function CustomCursor() {
     const cursor = cursorRef.current;
     if (!cursor) return;
 
-    // Safety: restore native cursor on cleanup no matter what
-    let cursorHidden = false;
-
-    const showNative = () => {
-      if (cursorHidden) {
-        document.body.style.cursor = "";
-        cursorHidden = false;
-      }
-    };
-
-    const hideNative = () => {
-      if (!cursorHidden) {
-        document.body.style.cursor = "none";
-        cursorHidden = true;
-      }
-    };
-
-    // Center the cursor on mount so it's never offscreen
-    const cx = window.innerWidth / 2;
-    const cy = window.innerHeight / 2;
-    cursor.style.transform = `translate(${cx}px, ${cy}px)`;
-    cursor.style.opacity = "1";
-    hideNative();
+    // Use CSS left/top for positioning — more reliable than margin offset
+    cursor.style.top = "0";
+    cursor.style.left = "0";
 
     const move = (e: MouseEvent) => {
-      if (!cursorHidden) hideNative();
-      cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+      cursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px)`;
+      if (!document.body.style.cursor) {
+        document.body.style.cursor = "none";
+      }
     };
 
     const addHover = () => cursor.classList.add("is-hover");
     const rmHover = () => cursor.classList.remove("is-hover");
-
     const hoverSel =
       "a, button, .package-card, .why-card, .service-detail-card, " +
       ".gallery-masonry-item, .hero-cover-primary-btn, .hero-cover-secondary-btn, " +
       ".nav-cta, .booking-cta";
 
+    // Position cursor at center immediately
+    const cx = window.innerWidth / 2 - 10;
+    const cy = window.innerHeight / 2 - 10;
+    cursor.style.transform = `translate(${cx}px, ${cy}px)`;
+    cursor.style.opacity = "1";
+
     document.addEventListener("mousemove", move, { passive: true });
-
-    // Query hover elements dynamically (handle lazy-loaded content)
-    const attachHover = () => {
-      document.querySelectorAll(hoverSel).forEach((el) => {
-        el.addEventListener("mouseenter", addHover);
-        el.addEventListener("mouseleave", rmHover);
-      });
-    };
-    attachHover();
-
-    // Re-attach when DOM changes (for lazy-loaded content)
-    const observer = new MutationObserver(attachHover);
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // Fallback: if mouse hasn't been seen in 5s, restore native cursor
-    let lastMove = Date.now();
-    const pingInterval = setInterval(() => {
-      if (Date.now() - lastMove > 5000) {
-        showNative();
-        cursor.style.opacity = "0";
-      }
-    }, 1000);
-
-    // Override ping on each move
-    const pingMove = () => { lastMove = Date.now(); };
-    document.addEventListener("mousemove", pingMove, { passive: true });
+    document.querySelectorAll(hoverSel).forEach((el) => {
+      el.addEventListener("mouseenter", addHover);
+      el.addEventListener("mouseleave", rmHover);
+    });
 
     return () => {
-      showNative();
+      document.body.style.cursor = "";
       document.removeEventListener("mousemove", move);
-      document.removeEventListener("mousemove", pingMove);
-      observer.disconnect();
-      clearInterval(pingInterval);
       document.querySelectorAll(hoverSel).forEach((el) => {
         el.removeEventListener("mouseenter", addHover);
         el.removeEventListener("mouseleave", rmHover);

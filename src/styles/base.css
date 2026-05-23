@@ -357,7 +357,8 @@ main::after {
   pointer-events: none;
   width: 20px;
   height: 20px;
-  margin: -10px 0 0 -10px;
+  top: 0;
+  left: 0;
   border-radius: 50%;
   background: rgba(255, 210, 184, 0.25);
   border: 1.5px solid rgba(230, 160, 140, 0.6);
@@ -374,7 +375,6 @@ main::after {
 .custom-cursor.is-hover {
   width: 40px;
   height: 40px;
-  margin: -20px 0 0 -20px;
   background: rgba(255, 184, 161, 0.2);
   border-color: rgba(230, 160, 140, 0.8);
 }
