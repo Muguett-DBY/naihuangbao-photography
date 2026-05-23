@@ -49,12 +49,8 @@ requestAnimationFrame(() => {
 });
 
 // ── Fairy dust cursor effect ──
-// Only on non-touch, non-reduced-motion devices
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-  if (!isTouch) {
-    fairyDustCursor({
-      colors: ["#F5A891", "#FFD2B8", "#FFB8A1", "#FCE4D6"],
-    });
-  }
+  fairyDustCursor({
+    colors: ["#F5A891", "#FFD2B8", "#FFB8A1", "#FCE4D6"],
+  });
 }

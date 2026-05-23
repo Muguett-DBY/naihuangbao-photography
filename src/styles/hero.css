@@ -13,8 +13,8 @@
   align-items: center;
   gap: 18px;
   padding: 18px clamp(20px, 4vw, 56px);
-  background: transparent;
-  backdrop-filter: none;
+  background: rgba(95, 60, 49, 0.18);
+  backdrop-filter: blur(8px);
   border-bottom: none;
   box-shadow: none;
   isolation: isolate;

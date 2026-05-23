@@ -73,7 +73,7 @@ function scheduleIdleTask(callback: () => void) {
     }
 
     callback();
-  }, 1200);
+  }, 200);
 
   return () => {
     window.clearTimeout(timeoutHandle);

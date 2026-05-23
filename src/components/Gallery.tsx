@@ -169,7 +169,8 @@ export function Gallery() {
                   alt={item.alt}
                   title={item.title}
                   tone={tones[index % tones.length]}
-                  load={!item.imageUrl || visiblePhotoIds.has(item.id)}
+                  load={index < 3 || !item.imageUrl || visiblePhotoIds.has(item.id)}
+                  priority={index < 3}
                   sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
                 />
                 <div className="gallery-masonry-overlay">
