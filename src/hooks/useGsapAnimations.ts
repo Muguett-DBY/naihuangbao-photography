@@ -231,7 +231,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
       gsap.to(counter, {
         val: target,
         duration: 1.8,
-        ease: "power2.out",
+        ease: "expo.out",
         scrollTrigger: {
           trigger: el,
           start: "top 88%",
