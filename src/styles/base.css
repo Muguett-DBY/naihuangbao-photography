@@ -360,11 +360,12 @@ main::after {
   border-radius: 50%;
   background: rgba(255, 210, 184, 0.35);
   border: 1.5px solid rgba(255, 184, 161, 0.5);
-  transform: translate(-100px, -100px);
+  opacity: 0;
   transition: width 0.3s cubic-bezier(0.22,1,0.36,1),
               height 0.3s cubic-bezier(0.22,1,0.36,1),
               background 0.3s ease,
-              border-color 0.3s ease;
+              border-color 0.3s ease,
+              opacity 0.3s ease;
   will-change: transform;
   backdrop-filter: blur(2px);
 }
