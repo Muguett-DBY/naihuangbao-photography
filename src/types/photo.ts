@@ -19,4 +19,6 @@ export type PhotoItem = {
   clientAuthorized: boolean;
   visibility: PhotoVisibility;
   noteUrl?: string;
+  album?: string;
+  videoUrl?: string;
 };

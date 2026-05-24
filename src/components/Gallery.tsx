@@ -105,57 +105,65 @@ export function Gallery() {
         </div>
       </div>
 
-      <div className="gallery-masonry" ref={masonryRef}>
-        {photos.map((item, index) => {
-          const isFeatured = filter === "all" && index === 0;
-
-          return (
-            <article
-              className={[
-                "gallery-masonry-item",
-                isFeatured ? "featured-item" : "",
-              ].filter(Boolean).join(" ")}
-              data-gallery-photo-id={item.id}
-              key={item.id}
-              style={{ transitionDelay: `${index * 0.06}s` }}
-            >
-              <button
-                className="gallery-masonry-btn"
-                type="button"
-                data-distort
-                onClick={() => setLightboxIndex(index)}
-                onTouchStart={() => {
-                  // Haptic feedback on long-press
-                  const timer = setTimeout(() => navigator.vibrate?.(12), 400);
-                  const clear = () => { clearTimeout(timer); };
-                  document.addEventListener("touchend", clear, { once: true });
-                  document.addEventListener("touchmove", clear, { once: true });
-                }}
-                aria-label={`查看大图：${item.title}`}
-              >
-                <ImageWithFallback
-                  src={item.imageUrl || ""}
-                  alt={item.alt}
-                  title={item.title}
-                  tone={tones[index % tones.length]}
-                  load={true}
-                  priority={index < 6 || item.id === "gallery-daily-01"}
-                  sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
-                />
-                <div className="gallery-masonry-overlay">
-                  <span className="gallery-masonry-overlay-style">{styleLabels[item.style]}</span>
-                  <strong className="gallery-masonry-overlay-title">{item.title}</strong>
-                  <span className="gallery-masonry-overlay-location">{item.location}</span>
-                </div>
-              </button>
-              <div className="gallery-masonry-caption">
-                <p>{styleLabels[item.style]}</p>
-                <h3>{item.title}</h3>
-                <span>{item.location}</span>
+      <div ref={masonryRef}>
+        {/* Album groupings */}
+        {(() => {
+          const albums = new Map<string, typeof photos>();
+          for (const p of photos) {
+            const key = p.album || "其他";
+            if (!albums.has(key)) albums.set(key, []);
+            albums.get(key)!.push(p);
+          }
+          return Array.from(albums).map(([albumName, albumPhotos]) => (
+            <div key={albumName} className="gallery-album">
+              <h3 className="gallery-album-title">{albumName}</h3>
+              <div className="gallery-masonry">
+                {albumPhotos.map((item, index) => (
+                  <article
+                    className="gallery-masonry-item"
+                    data-gallery-photo-id={item.id}
+                    key={item.id}
+                    style={{ transitionDelay: `${index * 0.06}s` }}
+                  >
+                    <button
+                      className="gallery-masonry-btn"
+                      type="button"
+                      data-distort
+                      onClick={() => setLightboxIndex(photos.indexOf(item))}
+                      onTouchStart={() => {
+                        const timer = setTimeout(() => navigator.vibrate?.(12), 400);
+                        const clear = () => { clearTimeout(timer); };
+                        document.addEventListener("touchend", clear, { once: true });
+                        document.addEventListener("touchmove", clear, { once: true });
+                      }}
+                      aria-label={`查看大图：${item.title}`}
+                    >
+                      <ImageWithFallback
+                        src={item.imageUrl || ""}
+                        alt={item.alt}
+                        title={item.title}
+                        tone={tones[photos.indexOf(item) % tones.length]}
+                        load={true}
+                        priority={photos.indexOf(item) < 6 || item.id === "gallery-daily-01"}
+                        sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
+                      />
+                      <div className="gallery-masonry-overlay">
+                        <span className="gallery-masonry-overlay-style">{styleLabels[item.style]}</span>
+                        <strong className="gallery-masonry-overlay-title">{item.title}</strong>
+                        <span className="gallery-masonry-overlay-location">{item.location}</span>
+                      </div>
+                    </button>
+                    <div className="gallery-masonry-caption">
+                      <p>{styleLabels[item.style]}</p>
+                      <h3>{item.title}</h3>
+                      <span>{item.location}</span>
+                    </div>
+                  </article>
+                ))}
               </div>
-            </article>
-          );
-        })}
+            </div>
+          ));
+        })()}
       </div>
 
       {lightboxIndex !== null && (

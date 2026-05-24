@@ -38,10 +38,10 @@ describe("mobile site navigation", () => {
 });
 
 describe("gallery filter styles", () => {
-  it("promotes the first all-gallery photo into a larger portfolio feature card", () => {
-    expect(gallerySource).toContain("featured-item");
-    expect(gallerySource).toContain("isFeatured");
-    expect(cssSource).toContain(".featured-item");
+  it("groups gallery photos into albums with section headers", () => {
+    expect(gallerySource).toContain("gallery-album");
+    expect(gallerySource).toContain('p.album || "其他"');
+    expect(cssSource).toContain(".gallery-album-title");
     expect(cssSource).toContain("break-inside: avoid");
   });
 

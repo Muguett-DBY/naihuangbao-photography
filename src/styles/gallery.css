@@ -193,6 +193,39 @@
 }
 
 /* ══════════════════════════════════════════════
+   Gallery Albums
+   ══════════════════════════════════════════════ */
+.gallery-album {
+  margin-bottom: clamp(48px, 6vw, 64px);
+}
+
+.gallery-album:last-child {
+  margin-bottom: 0;
+}
+
+.gallery-album-title {
+  font-family: var(--font-display-cn);
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 600;
+  color: var(--caramel-ink);
+  margin: 0 0 4px;
+  line-height: 1.2;
+  position: relative;
+  padding-left: 16px;
+}
+
+.gallery-album-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: 3px;
+  background: linear-gradient(180deg, var(--peach-accent), var(--caramel-text));
+  border-radius: 2px;
+}
+
+/* ══════════════════════════════════════════════
    Gallery Story Panel
    ══════════════════════════════════════════════ */
 .gallery-story-panel {

@@ -14,6 +14,7 @@ export const galleryItems: PhotoItem[] = [
     featured: true,
     clientAuthorized: true,
     visibility: "public",
+    album: "江南系列",
   },
   {
     id: "gallery-urban-01",
@@ -25,6 +26,7 @@ export const galleryItems: PhotoItem[] = [
     featured: true,
     clientAuthorized: true,
     visibility: "public",
+    album: "城市漫步",
   },
   {
     id: "gallery-garden-01",
@@ -36,6 +38,7 @@ export const galleryItems: PhotoItem[] = [
     featured: true,
     clientAuthorized: true,
     visibility: "public",
+    album: "公园日常",
   },
   {
     id: "gallery-sweet-01",
@@ -47,6 +50,7 @@ export const galleryItems: PhotoItem[] = [
     featured: false,
     clientAuthorized: true,
     visibility: "public",
+    album: "城市漫步",
   },
   {
     id: "gallery-flower-01",
@@ -58,6 +62,7 @@ export const galleryItems: PhotoItem[] = [
     featured: false,
     clientAuthorized: true,
     visibility: "public",
+    album: "公园日常",
   },
   {
     id: "gallery-daily-01",
@@ -69,5 +74,6 @@ export const galleryItems: PhotoItem[] = [
     featured: false,
     clientAuthorized: true,
     visibility: "public",
+    album: "公园日常",
   },
 ];
