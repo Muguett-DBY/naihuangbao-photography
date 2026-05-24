@@ -76,7 +76,7 @@ export function Gallery() {
           }
         });
       },
-      { rootMargin: "300px" },
+      { rootMargin: "800px" },
     );
 
     masonry.querySelectorAll<HTMLElement>("[data-gallery-photo-id]").forEach((card) => {
@@ -180,8 +180,8 @@ export function Gallery() {
                   alt={item.alt}
                   title={item.title}
                   tone={tones[index % tones.length]}
-                  load={index < 3 || !item.imageUrl || visiblePhotoIds.has(item.id)}
-                  priority={index < 3}
+                  load={index < 6 || !item.imageUrl || visiblePhotoIds.has(item.id)}
+                  priority={index < 6}
                   sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
                 />
                 <div className="gallery-masonry-overlay">
