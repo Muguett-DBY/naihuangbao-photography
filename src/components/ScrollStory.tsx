@@ -14,14 +14,14 @@ const STORIES = [
     title: "光影之间",
     line: "捕捉真实",
     text: "自然光是最好的画笔。在南京的梧桐树下、老街转角，光影本身就是故事。",
-    img: galleryItems[3]?.imageUrl || "",
+    img: galleryItems[2]?.imageUrl || "",
   },
   {
     id: "03",
     title: "不止于美",
     line: "更是记忆",
     text: "我们拍的不是完美，是真实。是你们第一次约会的紧张、毕业季的不舍、城市漫游的自由。",
-    img: galleryItems[6]?.imageUrl || "",
+    img: galleryItems[4]?.imageUrl || "",
   },
 ];
 

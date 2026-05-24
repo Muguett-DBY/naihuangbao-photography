@@ -173,8 +173,14 @@ export function ParticleHero() {
 
     // Animation loop
     let time = 0;
+    let animRaf = 0;
     const animate = () => {
-      requestAnimationFrame(animate);
+      if (material.opacity <= 0.001 && progress > 0.99) {
+        renderer.render(scene, camera);
+        return; // Stop the loop once fully faded
+      }
+
+      animRaf = requestAnimationFrame(animate);
       time += 0.01;
 
       // Smooth progress
@@ -215,7 +221,7 @@ export function ParticleHero() {
 
       renderer.render(scene, camera);
     };
-    animate();
+    animRaf = requestAnimationFrame(animate);
 
     // Resize
     const handleResize = () => {
@@ -228,6 +234,7 @@ export function ParticleHero() {
     window.addEventListener("resize", handleResize);
 
     return () => {
+      cancelAnimationFrame(animRaf);
       clearTimeout(autoTimer);
       document.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", handleResize);

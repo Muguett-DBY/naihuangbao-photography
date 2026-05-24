@@ -1,17 +1,31 @@
-import { useRef, type WheelEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type WheelEvent } from "react";
 import { galleryItems } from "../data/gallery";
 
 export function HorizontalGallery() {
   const trackRef = useRef<HTMLDivElement>(null);
+  const [pageIdx, setPageIdx] = useState(0);
 
-  const onWheel = (e: WheelEvent) => {
+  const onWheel = useCallback((e: WheelEvent) => {
     const track = trackRef.current;
     if (!track) return;
-    // Only intercept when horizontal scroll is possible
     if (track.scrollWidth > track.clientWidth) {
       track.scrollLeft += e.deltaY;
     }
-  };
+  }, []);
+
+  // Sync dot active state with scroll position
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const onScroll = () => {
+      const pageW = track.clientWidth;
+      const idx = Math.round(track.scrollLeft / pageW);
+      setPageIdx(Math.min(idx, 2));
+    };
+    track.addEventListener("scroll", onScroll, { passive: true });
+    return () => track.removeEventListener("scroll", onScroll);
+  }, []);
 
   const items = [...galleryItems, ...galleryItems, ...galleryItems].slice(0, 12);
 
@@ -45,9 +59,18 @@ export function HorizontalGallery() {
       </div>
       {/* Scroll hint dots */}
       <div className="horiz-gallery-scroll-hint">
-        <span className="horiz-dot" />
-        <span className="horiz-dot is-active" />
-        <span className="horiz-dot" />
+        {[0, 1, 2].map((i) => (
+          <span
+            key={i}
+            className={`horiz-dot${i === pageIdx ? " is-active" : ""}`}
+            onClick={() => {
+              const track = trackRef.current;
+              if (track) {
+                track.scrollTo({ left: i * track.clientWidth, behavior: "smooth" });
+              }
+            }}
+          />
+        ))}
       </div>
     </section>
   );

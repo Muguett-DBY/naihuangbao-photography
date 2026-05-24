@@ -632,6 +632,7 @@
   margin-top: 14px;
 }
 .horiz-dot {
+  cursor: pointer;
   width: 6px;
   height: 6px;
   border-radius: 50%;
