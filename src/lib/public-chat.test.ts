@@ -21,7 +21,7 @@ const globalCss = [
   "src/styles/sections.css",
   "src/styles/chat.css",
 ].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
-const schema = readFileSync(resolve(root, "schema.sql"), "utf8");
+const schema = readFileSync(resolve(root, "db/schema.sql"), "utf8");
 
 describe("public AI chat integration", () => {
   it("defines a public OpenCode Go chat endpoint without admin auth or hardcoded secrets", () => {

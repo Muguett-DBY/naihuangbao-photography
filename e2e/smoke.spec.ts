@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 
+// Playwright config is at e2e/playwright.config.ts — run with: npx playwright test --config=e2e/playwright.config.ts
+
 test.describe("shoot.custard.top", () => {
   test("首页加载正确", async ({ page }) => {
     await page.goto("https://shoot.custard.top/");
