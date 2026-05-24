@@ -370,20 +370,31 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
           return;
         }
 
+        // Clip-path circle transition overlay
+        const overlay = document.createElement("div");
+        overlay.style.cssText = "position:fixed;inset:0;z-index:999;pointer-events:none;background:#FEF3DD;clip-path:circle(0% at 50% 50%);";
+        document.body.appendChild(overlay);
+
         const tl = gsap.timeline({
           onComplete: () => {
+            gsap.set(overlay, { clipPath: "circle(150% at 50% 50%)" });
             gsap.to(window, {
               scrollTo: { y: target, offsetY: 64 },
               duration: 0.8,
               ease: "power2.inOut",
               onComplete: () => {
-                gsap.to(mainContent, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
+                gsap.to(overlay, {
+                  clipPath: "circle(0% at 50% 50%)",
+                  duration: 0.5,
+                  ease: "power2.in",
+                  onComplete: () => overlay.remove(),
+                });
               },
             });
           },
         });
-
-        tl.to(mainContent, { opacity: 0, y: -12, duration: 0.25, ease: "power2.in" });
+        tl.to(overlay, { clipPath: "circle(150% at 50% 50%)", duration: 0.4, ease: "power2.inOut" });
+        tl.to(mainContent, { opacity: 0, y: -12, duration: 0.15, ease: "power2.in" }, 0);
       });
     });
 

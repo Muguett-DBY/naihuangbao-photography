@@ -4,9 +4,12 @@ import { CanvasParticles } from "./components/CanvasParticles";
 import { SectionNav } from "./components/SectionNav";
 import { AboutBooking } from "./components/AboutBooking";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { CustomCursor } from "./components/CustomCursor";
+import { LoadingScreen } from "./components/LoadingScreen";
 import { Footer } from "./components/Footer";
 import { FloatingBookingCta } from "./components/FloatingBookingCta";
 import { Gallery } from "./components/Gallery";
+import { HorizontalGallery } from "./components/HorizontalGallery";
 import { Hero } from "./components/Hero";
 import { MidCTA } from "./components/MidCTA";
 import { NotFound } from "./components/NotFound";
@@ -60,6 +63,8 @@ export function App() {
 
   return (
     <ErrorBoundary>
+      <LoadingScreen />
+      <CustomCursor />
       <div ref={rootRef}>
       <SiteContentProvider>
         <PublicPhotosProvider>
@@ -72,6 +77,7 @@ export function App() {
           <SiteNav />
           <main id="main-content">
             <Hero />
+            <HorizontalGallery />
             <Gallery />
             <MidCTA />
             <WhyChooseUs />

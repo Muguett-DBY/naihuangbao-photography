@@ -523,3 +523,137 @@
 .gallery-card-static {
   /* Legacy - superseded by masonry */
 }
+
+/* ── Horizontal Scroll Gallery ── */
+.horiz-gallery {
+  position: relative;
+  min-height: 100vh;
+  background: var(--custard-cream);
+  overflow: hidden;
+}
+.horiz-gallery-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.horiz-gallery-header {
+  position: absolute;
+  left: clamp(22px, 5vw, 52px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  max-width: 200px;
+}
+.horiz-gallery-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--peach-accent);
+  margin-bottom: 8px;
+}
+.horiz-gallery-header h2 {
+  font-family: var(--font-display-cn);
+  font-size: clamp(24px, 3.5vw, 40px);
+  color: var(--caramel-deep);
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+.horiz-gallery-hint {
+  font-size: 12px;
+  color: var(--caramel-muted);
+  animation: hintBounce 2s ease-in-out infinite;
+}
+@keyframes hintBounce {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(4px); opacity: 1; }
+}
+.horiz-gallery-track {
+  display: flex;
+  gap: 16px;
+  padding-left: 280px;
+  padding-right: 40px;
+  will-change: transform;
+}
+.horiz-gallery-card {
+  flex: 0 0 clamp(280px, 28vw, 400px);
+  aspect-ratio: 3 / 4;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+}
+.horiz-gallery-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(95, 60, 49, 0.15);
+}
+.horiz-gallery-img-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.horiz-gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.horiz-gallery-card:hover .horiz-gallery-img {
+  transform: scale(1.08);
+}
+.horiz-gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 50%, rgba(0,0,0,0.5));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.horiz-gallery-card:hover .horiz-gallery-overlay {
+  opacity: 1;
+}
+.horiz-gallery-overlay strong {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+.horiz-gallery-overlay span {
+  color: rgba(255,255,255,0.7);
+  font-size: 12px;
+  margin-top: 2px;
+}
+@media (max-width: 768px) {
+  .horiz-gallery-header {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    max-width: none;
+    padding: 60px clamp(22px, 5vw, 52px) 20px;
+    text-align: center;
+  }
+  .horiz-gallery-sticky {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    position: relative;
+  }
+  .horiz-gallery-track {
+    padding-left: clamp(22px, 5vw, 52px);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  .horiz-gallery-card {
+    scroll-snap-align: start;
+  }
+  .horiz-gallery-hint { display: none; }
+}
