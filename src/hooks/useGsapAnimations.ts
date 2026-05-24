@@ -578,6 +578,56 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
       });
     }
 
+    /* ══════════════════════════════════════════
+       EFFECT 18: Price Countdown — 从高价慢慢降到实际价
+       ══════════════════════════════════════════ */
+    const priceEls = $<HTMLElement>('[data-count-format="price"]');
+    priceEls.forEach((el) => {
+      const rawTarget = el.getAttribute("data-count-target");
+      const prefix = el.getAttribute("data-count-prefix") || "¥";
+      const suffix = el.getAttribute("data-count-suffix") || "";
+      const targetVal = parseFloat(rawTarget || "0");
+      if (!targetVal) return;
+
+      const startVal = Math.round(targetVal * 1.4 / 100) * 100; // 40% higher, rounded to 100
+      const startText = `${prefix}${startVal}${suffix}`;
+
+      // Set initial high price
+      el.textContent = startText;
+
+      // Store original rendered text so GSAP doesn't fight React re-render
+      const origText = el.textContent;
+
+      const obj = { val: startVal };
+
+      gsap.to(obj, {
+        val: targetVal,
+        duration: 2.2,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: el.closest(".package-card") || el.parentElement,
+          start: "top 72%",
+          end: "top 40%",
+          scrub: 2.5,
+        },
+        onUpdate: () => {
+          el.textContent = `${prefix}${Math.round(obj.val)}${suffix}`;
+        },
+        onComplete: () => {
+          el.textContent = `${prefix}${targetVal}${suffix}`;
+          // Pop scale effect when reaching real price
+          gsap.fromTo(el,
+            { scale: 1 },
+            { scale: 1.18, duration: 0.25, ease: "back.out(3)" },
+          );
+          gsap.fromTo(el.parentElement,
+            { color: "var(--peach-accent)" },
+            { color: "", duration: 0.6, delay: 0.1 },
+          );
+        },
+      });
+    });
+
     // ── Refresh ScrollTrigger ──
     ScrollTrigger.refresh();
 
