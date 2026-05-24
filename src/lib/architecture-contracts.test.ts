@@ -28,8 +28,7 @@ describe("architecture optimization contracts", () => {
     expect(wrangler).not.toContain("[observability]");
     expect(wrangler).not.toContain("env.preview.observability");
     expect(wrangler).not.toContain("env.production.observability");
-    expect(wrangler).toContain("[env.preview]");
-    expect(wrangler).toContain("[env.production]");
+    expect(wrangler).toContain("pages_build_output_dir");
     expect(functionSources.join("\n")).not.toMatch(/^type Env =/m);
   });
 

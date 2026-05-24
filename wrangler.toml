@@ -15,35 +15,3 @@ id = "7824c3fdacda4e28b7fceb9ee4fa7987"
 binding = "DB"
 database_name = "naihuangbao-photography"
 database_id = "e052d4a9-d8aa-4a34-aee0-c328ac2e23dc"
-
-[env.preview]
-name = "naihuangbao-photography-preview"
-
-[[env.preview.kv_namespaces]]
-binding = "CACHE"
-id = "7824c3fdacda4e28b7fceb9ee4fa7987"
-
-[[env.preview.r2_buckets]]
-binding = "PHOTO_BUCKET"
-bucket_name = "naihuangbao-photography"
-
-[[env.preview.d1_databases]]
-binding = "DB"
-database_name = "naihuangbao-photography"
-database_id = "e052d4a9-d8aa-4a34-aee0-c328ac2e23dc"
-
-[env.production]
-name = "naihuangbao-photography"
-
-[[env.production.kv_namespaces]]
-binding = "CACHE"
-id = "7824c3fdacda4e28b7fceb9ee4fa7987"
-
-[[env.production.r2_buckets]]
-binding = "PHOTO_BUCKET"
-bucket_name = "naihuangbao-photography"
-
-[[env.production.d1_databases]]
-binding = "DB"
-database_name = "naihuangbao-photography"
-database_id = "e052d4a9-d8aa-4a34-aee0-c328ac2e23dc"
