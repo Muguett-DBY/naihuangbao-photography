@@ -74,7 +74,8 @@ export async function loadSiteContent(env: ChatEnv): Promise<SiteContent> {
       .all<ContentRow>();
 
     return mergeSiteContent(rowsToContent(rows.results));
-  } catch {
+  } catch (error) {
+    console.warn("Chat: loadSiteContent fallback", error);
     return defaultSiteContent;
   }
 }
@@ -86,8 +87,8 @@ function rowsToContent(rows: ContentRow[]): PartialSiteContent {
     if (!contentKeys.includes(row.key as never)) continue;
     try {
       content[row.key] = JSON.parse(row.value_json);
-    } catch {
-      // Ignore malformed CMS rows and fall back to defaults for that section.
+    } catch (error) {
+      console.warn("Chat: malformed CMS row", row.key, error);
     }
   }
 

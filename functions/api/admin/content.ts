@@ -79,8 +79,8 @@ function rowsToContent(rows: ContentRow[]): PartialSiteContent {
     if (!contentKeys.includes(row.key as never)) continue;
     try {
       content[row.key] = JSON.parse(row.value_json);
-    } catch {
-      // Ignore malformed rows and let defaults cover the missing section.
+    } catch (error) {
+      console.warn("Admin content API: malformed row", row.key, error);
     }
   }
 
