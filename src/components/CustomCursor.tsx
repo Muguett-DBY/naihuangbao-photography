@@ -6,7 +6,7 @@ export function CustomCursor() {
   const rafId = useRef(0);
   const pos = useRef({ x: 0, y: 0 });
   const ringPos = useRef({ x: 0, y: 0 });
-  const isTouchDevice = useRef(false);
+  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
   const onMove = useCallback((e: MouseEvent) => {
     pos.current = { x: e.clientX, y: e.clientY };
@@ -23,8 +23,7 @@ export function CustomCursor() {
   }, []);
 
   useEffect(() => {
-    isTouchDevice.current = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-    if (isTouchDevice.current) return;
+    if (isTouchDevice) return;
 
     const dot = dotRef.current;
     const ring = ringRef.current;
@@ -48,7 +47,7 @@ export function CustomCursor() {
     };
   }, [onMove]);
 
-  if (isTouchDevice.current) return null;
+  if (isTouchDevice) return null;
 
   return (
     <>
@@ -89,9 +88,11 @@ export function CustomCursor() {
         }}
       />
       <style>{`
-        body { cursor: none !important; }
-        body * { cursor: none !important; }
-        a, button, [role="button"], input, select, textarea, label { cursor: none !important; }
+        @media (hover: hover) and (pointer: fine) {
+          body { cursor: none !important; }
+          body * { cursor: none !important; }
+          a, button, [role="button"], input, select, textarea, label { cursor: none !important; }
+        }
 
         .is-clickable {
           width: 24px !important;

@@ -164,7 +164,6 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
        ══════════════════════════════════════════ */
     const morphEl = $1<HTMLElement>(".hero-magazine-subtitle");
     if (morphEl) {
-      let morphIndex = 0;
       const morphTimeline = gsap.timeline({ repeat: -1, delay: 3.5 });
 
       morphPhrases.forEach((phrase, i) => {
@@ -188,13 +187,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
             duration: 0.45,
             ease: "power2.out",
           })
-          .to(morphEl, {
-            duration: 3.2,
-            ease: "none",
-            onComplete: () => {
-              morphIndex = (i + 1) % morphPhrases.length;
-            },
-          });
+          .to(morphEl, { duration: 3.2, ease: "none" });
       });
     }
 

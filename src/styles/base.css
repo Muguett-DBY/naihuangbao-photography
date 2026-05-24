@@ -1,5 +1,4 @@
-@import "tailwindcss";
-
+/* No Tailwind — custom CSS only */
 @font-face {
   font-family: "Naihuangbao WenKai";
   src: url("/fonts/naihuangbao-wenkai-subset.woff2") format("woff2");

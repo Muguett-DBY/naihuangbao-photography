@@ -610,25 +610,4 @@ body.nav-lock .site-nav {
   }
 }
 
-/* ── Legacy Hero Cards (removed in magazine style) ── */
-.hero-visual,
-.hero-card,
-.hero-card-large,
-.hero-card-small,
-.hero-card-top,
-.hero-card-bottom,
-.hero-photo-card,
-.hero-portfolio-stage,
-.hero-note-card,
-.hero-scroll-cue,
-.hero-copy,
-.kicker,
-.hero h1,
-.hero-intro,
-.hero-trust-list,
-.hero-actions,
-.primary-button,
-.text-button,
-.hero-xhs-button {
-  /* Legacy styles - kept for reference, overridden above */
-}
+

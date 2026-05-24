@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { reviews } from "../data/reviews";
 
 export function Reviews() {
@@ -14,6 +14,11 @@ export function Reviews() {
     intervalRef.current = setInterval(next, 4000);
   };
   const stopAuto = () => clearInterval(intervalRef.current);
+
+  useEffect(() => {
+    startAuto();
+    return stopAuto;
+  }, []);
 
   return (
     <section id="reviews" className="reviews-shell">

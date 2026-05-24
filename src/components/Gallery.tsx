@@ -24,7 +24,6 @@ export function Gallery() {
   const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
 
   useEffect(() => {
-    void import("./Lightbox");
   }, []);
 
   useEffect(() => {
