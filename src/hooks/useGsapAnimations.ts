@@ -603,30 +603,35 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
 
       const card = el.closest(".package-card") || el.parentElement;
 
-      // Set initial text to high price immediately (no ¥0 flash)
+      // 1. 页面加载就设置高价文本，用户翻到时就看见 ¥200/h
       el.textContent = `${prefix}${startVal}${suffix}`;
 
-      // Scroll-triggered countdown: card刚露出底部就开始
+      // 2. fromTo 明确起止值，invalidateOnRefresh 防位置偏差
       const proxy = { val: startVal };
-      gsap.to(proxy, {
-        val: targetVal,
-        ease: "none",
-        scrollTrigger: {
-          trigger: card,
-          start: "top bottom",
-          end: "top 20%",
-          scrub: 1.2,
+      gsap.fromTo(
+        proxy,
+        { val: startVal },
+        {
+          val: targetVal,
+          ease: "none",
+          scrollTrigger: {
+            trigger: card,
+            start: "top 70%",
+            end: "top 15%",
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
+          onUpdate: () => {
+            el.textContent = `${prefix}${Math.round(proxy.val)}${suffix}`;
+          },
+          onComplete: () => {
+            el.textContent = `${prefix}${targetVal}${suffix}`;
+            gsap.timeline()
+              .to(el, { scale: 1.18, duration: 0.2, ease: "power2.out" })
+              .to(el, { scale: 1, duration: 0.5, ease: "elastic.out(1, 0.3)" });
+          },
         },
-        onUpdate: () => {
-          el.textContent = `${prefix}${Math.round(proxy.val)}${suffix}`;
-        },
-        onComplete: () => {
-          el.textContent = `${prefix}${targetVal}${suffix}`;
-          gsap.timeline()
-            .to(el, { scale: 1.18, duration: 0.2, ease: "power2.out" })
-            .to(el, { scale: 1, duration: 0.5, ease: "elastic.out(1, 0.3)" });
-        },
-      });
+      );
     });
 
     // ── Refresh ScrollTrigger ──
