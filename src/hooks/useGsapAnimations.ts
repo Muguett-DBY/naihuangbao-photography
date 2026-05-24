@@ -596,15 +596,15 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
       // Set initial high price
       el.textContent = `${prefix}${startVal}${suffix}`;
 
-      // Scroll-triggered countdown: high → actual, wide range so descent is slow
+      // Scroll-triggered countdown: card刚露出底部就开始，到卡片到1/3处完成
       const proxy = { val: startVal };
       gsap.to(proxy, {
         val: targetVal,
         ease: "none",
         scrollTrigger: {
           trigger: card,
-          start: "top 85%",
-          end: "top 35%",
+          start: "top bottom",    // 卡片顶部刚碰到底部视口边缘 → 开始
+          end: "top 20%",          // 卡片顶部到视口上方20% → 完成降至实际价
           scrub: 1.5,
         },
         onUpdate: () => {
