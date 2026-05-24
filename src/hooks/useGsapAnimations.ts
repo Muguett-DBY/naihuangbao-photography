@@ -516,23 +516,26 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     /* ══════════════════════════════════════════
        EFFECT 17: Apple Scroll Story
        ══════════════════════════════════════════ */
+    const storySection = document.querySelector(".scroll-story");
     const storyFrames = $<HTMLElement>(".scroll-story-frame");
-    if (storyFrames.length) {
+    if (storySection && storyFrames.length) {
+      const total = storyFrames.length;
       storyFrames.forEach((frame, i) => {
-        if (i === 0) return; // first frame visible by default
+        const progressStart = i / total;
+        const progressEnd = (i + 0.7) / total;
+
         gsap.fromTo(frame,
-          { opacity: 0, scale: 0.92 },
+          { opacity: 0, scale: 0.9, y: 30 },
           {
             opacity: 1,
             scale: 1,
-            duration: 0.8,
+            y: 0,
             ease: "power2.out",
             scrollTrigger: {
-              trigger: frame,
-              start: "top 70%",
-              end: "top 30%",
-              scrub: 1.2,
-              toggleActions: "play none none reverse",
+              trigger: storySection,
+              start: `${progressStart * 100}%`,
+              end: `${progressEnd * 100}%`,
+              scrub: 1.5,
             },
           },
         );
@@ -545,7 +548,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
           height: "100%",
           ease: "none",
           scrollTrigger: {
-            trigger: ".scroll-story",
+            trigger: storySection,
             start: "top top",
             end: "bottom bottom",
             scrub: 1,

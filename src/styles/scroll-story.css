@@ -1,9 +1,11 @@
-/* ── Apple-Style Scroll Story ── */
+/* ══════════════════════════════════════════════
+   Apple-Style Scroll Story — 叙事型沉浸滚动区
+   ══════════════════════════════════════════════ */
 
 .scroll-story {
   position: relative;
-  min-height: 200vh;
-  background: #1a1410;
+  height: 300vh;                   /* 3 frames × 100vh scroll distance */
+  background: #120e0b;
   overflow: hidden;
   color: #fff;
 }
@@ -14,9 +16,11 @@
   height: 100vh;
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
-  will-change: transform;
 }
+
+/* ── Each Frame ── */
 
 .scroll-story-frame {
   position: absolute;
@@ -24,40 +28,56 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(40px, 6vw, 100px);
+  gap: clamp(32px, 5vw, 80px);
   padding: clamp(24px, 4vw, 60px);
   opacity: 0;
-  transform: scale(0.92);
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: scale(0.9) translateY(30px);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 
 .scroll-story-frame--0 {
   opacity: 1;
-  transform: scale(1);
+  transform: scale(1) translateY(0);
 }
 
-@media (max-width: 768px) {
-  .scroll-story-frame {
-    flex-direction: column;
-    text-align: center;
-  }
+/* ── Decorative Background Number ── */
+
+.scroll-story-bg-number {
+  position: absolute;
+  right: max(5vw, 40px);
+  bottom: -5vh;
+  font-size: clamp(160px, 25vw, 360px);
+  font-weight: 900;
+  color: rgba(255, 180, 120, 0.04);
+  line-height: 0.8;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -0.04em;
 }
 
-/* Visual Side */
+/* ── Visual / Image ── */
+
 .scroll-story-visual {
-  flex: 0 0 clamp(240px, 30vw, 400px);
+  flex: 0 0 clamp(220px, 28vw, 380px);
   aspect-ratio: 3 / 4;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-  transform: perspective(800px) rotateY(-4deg) rotateX(2deg);
-  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
+  transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.5s ease;
 }
 
 .scroll-story-frame:hover .scroll-story-visual {
-  transform: perspective(800px) rotateY(0deg) rotateX(0deg);
+  transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .scroll-story-img {
@@ -65,78 +85,92 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .scroll-story-frame:hover .scroll-story-img {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
-.scroll-story-img-overlay {
+/* Glow overlay on image */
+.scroll-story-img-glow {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(255, 180, 120, 0.15) 0%,
-    transparent 40%,
-    rgba(0, 0, 0, 0.2) 100%
+    rgba(255, 180, 120, 0.12) 0%,
+    transparent 45%,
+    rgba(0, 0, 0, 0.25) 100%
   );
   pointer-events: none;
 }
 
-/* Content Side */
+/* ── Content ── */
+
 .scroll-story-content {
-  flex: 0 0 clamp(280px, 35vw, 480px);
+  flex: 0 0 clamp(260px, 32vw, 440px);
   position: relative;
 }
 
-.scroll-story-number {
-  font-size: clamp(60px, 8vw, 120px);
-  font-weight: 900;
-  color: rgba(255, 180, 120, 0.08);
-  position: absolute;
-  top: -40px;
-  left: -20px;
-  line-height: 1;
-  pointer-events: none;
-  user-select: none;
+/* Small label */
+.scroll-story-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 180, 120, 0.5);
+  margin-bottom: 10px;
 }
 
+/* Decorative rule */
+.scroll-story-rule {
+  width: 32px;
+  height: 2px;
+  background: rgba(255, 180, 120, 0.3);
+  margin-bottom: 16px;
+  border-radius: 2px;
+}
+
+/* Title */
 .scroll-story-title {
   font-family: var(--font-display-cn);
-  font-size: clamp(28px, 4vw, 56px);
+  font-size: clamp(26px, 3.8vw, 50px);
   font-weight: 700;
   color: #fff;
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   line-height: 1.15;
-  position: relative;
-}
-
-.scroll-story-subtitle {
-  font-size: clamp(15px, 1.6vw, 22px);
-  font-weight: 400;
-  color: rgba(255, 180, 120, 0.7);
-  margin: 0 0 20px;
   letter-spacing: 0.02em;
 }
 
+/* Subtitle — accent color */
+.scroll-story-subtitle {
+  font-size: clamp(16px, 1.6vw, 24px);
+  font-weight: 400;
+  color: rgba(255, 200, 170, 0.8);
+  margin: 0 0 18px;
+  letter-spacing: 0.04em;
+}
+
+/* Body text */
 .scroll-story-text {
-  font-size: clamp(13px, 1.2vw, 16px);
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(13px, 1.1vw, 15px);
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.55);
   max-width: 380px;
 }
 
-/* Progress */
+/* ── Progress Bar ── */
+
 .scroll-story-progress {
   position: fixed;
-  right: 24px;
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
   width: 2px;
-  height: 120px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 100px;
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -144,37 +178,62 @@
 .scroll-story-progress-bar {
   width: 100%;
   height: 0%;
-  background: rgba(255, 180, 120, 0.6);
+  background: linear-gradient(to bottom, rgba(255, 180, 120, 0.6), rgba(255, 140, 100, 0.3));
   border-radius: 2px;
-  transition: height 0.3s ease;
+  transition: height 0.2s ease;
 }
 
-/* Ambient grain overlay */
-.scroll-story-grain {
-  position: absolute;
-  inset: 0;
-  opacity: 0.03;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.08'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-}
+/* ── Responsive ── */
 
-/* Responsive */
 @media (max-width: 768px) {
-  .scroll-story-pin {
-    flex-direction: column;
+  .scroll-story {
     height: auto;
-    min-height: 100vh;
-    position: relative;
+    min-height: auto;
+    background: #120e0b;
   }
+
+  .scroll-story-pin {
+    position: relative;
+    top: auto;
+    height: auto;
+    flex-direction: column;
+    padding: 0;
+  }
+
   .scroll-story-frame {
     position: relative;
     inset: auto;
     flex-direction: column;
+    text-align: left;
     padding: 60px clamp(22px, 5vw, 52px);
     min-height: 100vh;
     opacity: 1 !important;
     transform: none !important;
+    gap: 24px;
   }
+
+  .scroll-story-visual {
+    flex: none;
+    width: 100%;
+    max-width: 360px;
+    transform: none;
+  }
+  .scroll-story-frame:hover .scroll-story-visual {
+    transform: none;
+  }
+
+  .scroll-story-content {
+    flex: none;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .scroll-story-bg-number {
+    right: -10px;
+    bottom: -20px;
+    font-size: clamp(120px, 30vw, 200px);
+  }
+
   .scroll-story-progress {
     display: none;
   }
