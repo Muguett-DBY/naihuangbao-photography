@@ -104,7 +104,7 @@ describe("architecture optimization contracts", () => {
     expect(viteConfig).toContain("manualChunks");
     expect(viteConfig).toContain("react-vendor");
     expect(viteConfig).toContain("assetsInlineLimit");
-    expect(mainSource).toContain("preconnect");
+    expect(mainSource).toContain("requestIdleCallback");
   });
 
   it("removes the unused cinematic WebGL gallery from the public architecture", () => {

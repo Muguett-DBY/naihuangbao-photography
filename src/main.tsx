@@ -6,14 +6,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { App } from "./App";
 import "./styles/global.css";
 
-for (const href of ["https://www.xiaohongshu.com"]) {
-  const preconnect = document.createElement("link");
-  preconnect.rel = "preconnect";
-  preconnect.href = href;
-  preconnect.crossOrigin = "anonymous";
-  document.head.append(preconnect);
-}
-
 // Idle-time prefetch of key gallery images
 if ("requestIdleCallback" in window) {
   requestIdleCallback(

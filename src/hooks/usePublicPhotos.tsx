@@ -2,6 +2,7 @@ import { createContext, type ReactNode, useContext, useEffect, useMemo, useState
 import { galleryItems } from "../data/gallery";
 import { resolvePublicPhotoSource } from "../lib/gallery-source";
 import { scheduleIdleTask } from "../lib/idle";
+import { isAbortError } from "../lib/errors";
 import type { PhotoItem } from "../types/photo";
 
 type PublicPhotosState = {
@@ -31,8 +32,8 @@ export function PublicPhotosProvider({ children }: { children: ReactNode }) {
           setRemotePhotos(data.photos);
           setRemoteLoaded(true);
         }
-      } catch {
-        // Local Vite dev has no Pages Functions; static placeholders remain visible.
+      } catch (err) {
+        if (!isAbortError(err)) console.warn("Public photos fetch failed", err);
       }
     }
 

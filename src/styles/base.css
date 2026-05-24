@@ -412,14 +412,7 @@ button:active {
 }
 
 /* ── Image load spring ── */
-.img-blur-wrap.is-loaded img {
-  opacity: 1;
-  transform: scale(1);
-  filter: blur(0);
-  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
-              filter 0.7s ease;
-}
+
 
 /* ── Section nav dots ── */
 .section-nav {

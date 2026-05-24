@@ -120,11 +120,11 @@ export function AdminShell() {
           })}
         </nav>
 
-        {activeTab === "photos" && <AdminPhotosTab />}
-        {activeTab === "packages" && <AdminPackagesTab />}
-        {activeTab === "services" && <AdminServicesTab />}
-        {activeTab === "faq" && <AdminFaqTab />}
-        {activeTab === "copy" && <AdminCopyTab />}
+        {activeTab === "photos" && <AdminPhotosTab showToast={showToast} />}
+        {activeTab === "packages" && <AdminPackagesTab showToast={showToast} />}
+        {activeTab === "services" && <AdminServicesTab showToast={showToast} />}
+        {activeTab === "faq" && <AdminFaqTab showToast={showToast} />}
+        {activeTab === "copy" && <AdminCopyTab showToast={showToast} />}
         {activeTab === "stats" && <div className="adm-content-panel" style={{textAlign:'center',padding:'40px 20px'}}>
           <p style={{fontSize:'18px',margin:'0 0 8px',color:'#5d4e49'}}>📊</p>
           <p style={{fontSize:'13px',margin:0,color:'#8f7d77'}}>统计功能开发中</p>

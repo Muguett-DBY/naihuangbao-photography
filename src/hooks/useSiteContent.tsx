@@ -1,6 +1,7 @@
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { defaultSiteContent, mergeSiteContent } from "../data/content";
 import { scheduleIdleTask } from "../lib/idle";
+import { isAbortError } from "../lib/errors";
 import type { PartialSiteContent, SiteContent } from "../types/content";
 
 const SiteContentContext = createContext<SiteContent>(defaultSiteContent);
@@ -20,8 +21,8 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
         if (!ignore && data.content) {
           setRemoteContent(data.content);
         }
-      } catch {
-        // Local Vite dev has no Pages Functions; static content remains visible.
+      } catch (err) {
+        if (!isAbortError(err)) console.warn("Site content fetch failed", err);
       }
     }
 

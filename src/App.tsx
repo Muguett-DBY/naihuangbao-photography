@@ -11,7 +11,6 @@ import { Footer } from "./components/Footer";
 import { FloatingBookingCta } from "./components/FloatingBookingCta";
 import { Gallery } from "./components/Gallery";
 import { ScrollStory } from "./components/ScrollStory";
-import { HorizontalGallery } from "./components/HorizontalGallery";
 import { Hero } from "./components/Hero";
 import { MidCTA } from "./components/MidCTA";
 import { NotFound } from "./components/NotFound";
@@ -24,6 +23,8 @@ import { SiteNav } from "./components/SiteNav";
 import { WhyChooseUs } from "./components/WhyChooseUs";
 import { PublicPhotosProvider } from "./hooks/usePublicPhotos";
 import { SiteContentProvider } from "./hooks/useSiteContent";
+
+const HorizontalGallery = lazy(() => import("./components/HorizontalGallery").then((m) => ({ default: m.HorizontalGallery })));
 
 const AdminDashboard = lazy(async () => {
   await import("./styles/admin.css");
@@ -81,7 +82,9 @@ export function App() {
           <main id="main-content">
             <Hero />
             <ScrollStory />
-            <HorizontalGallery />
+            <Suspense fallback={<div className="section-shell" style={{minHeight:200}} />}>
+              <HorizontalGallery />
+            </Suspense>
             <Gallery />
             <MidCTA />
             <WhyChooseUs />

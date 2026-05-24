@@ -473,13 +473,6 @@
   font-size: 13px;
 }
 
-/* ══════════════════════════════════════════════
-   Hidden legacy gallery grid (keep for reference)
-   ══════════════════════════════════════════════ */
-.gallery-grid {
-  display: none;
-}
-
 /* ── Auto-scrolling filmstrip ── */
 .gallery-filmstrip-wrap {
   width: 100%;

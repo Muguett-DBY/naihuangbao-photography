@@ -2,8 +2,9 @@ import { ImagePlus, Pencil, Trash2, Upload } from "lucide-react";
 import { type FormEvent, useRef, useState } from "react";
 import { styleLabels } from "../../data/site";
 import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
+import type { ToastType } from "../../lib/admin-helpers";
 
-export function AdminPhotosTab() {
+export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: ToastType) => void }) {
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const [deletingPhoto, setDeletingPhoto] = useState<PhotoItem | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -25,7 +26,7 @@ export function AdminPhotosTab() {
       .then((d: { photos?: PhotoItem[] }) => {
         if (!signal?.aborted && d.photos) setPhotos(d.photos);
       })
-      .catch(() => {});
+      .catch(() => showToast("加载照片失败", "error"));
   };
 
   const revokePreview = () => {
@@ -42,7 +43,8 @@ export function AdminPhotosTab() {
     try {
       const fd = new FormData(form);
       const r = await fetch("/api/admin/photos", { method: "POST", credentials: "include", body: fd });
-      if (!r.ok) return;
+      if (!r.ok) { showToast("上传失败", "error"); return; }
+      showToast("上传成功", "success");
       form.reset();
       revokePreview();
       setPreviewUrl(null);
@@ -56,7 +58,9 @@ export function AdminPhotosTab() {
     if (!deletingPhoto) return;
     setDeleting(true);
     try {
-      await fetch(`/api/admin/photos/${deletingPhoto.id}`, { method: "DELETE", credentials: "include" });
+      const r = await fetch(`/api/admin/photos/${deletingPhoto.id}`, { method: "DELETE", credentials: "include" });
+      if (!r.ok) { showToast("删除失败", "error"); return; }
+      showToast("删除成功", "success");
       setPhotos((p) => p.filter((x) => x.id !== deletingPhoto.id));
     } finally {
       setDeleting(false);
@@ -73,7 +77,8 @@ export function AdminPhotosTab() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(editForm),
       });
-      if (!r.ok) return;
+      if (!r.ok) { showToast("保存失败", "error"); return; }
+      showToast("保存成功", "success");
       setPhotos((prev) => prev.map((p) => p.id === editingPhoto.id ? { ...p, ...editForm } : p));
       setEditingPhoto(null);
     } finally {

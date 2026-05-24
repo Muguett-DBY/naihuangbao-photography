@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { defaultSiteContent } from "../../data/content";
 import type { SiteContent, WhyCard, WhyCardIcon } from "../../types/content";
-import { linesFromText, PanelHeader } from "../../lib/admin-helpers";
+import { linesFromText, PanelHeader, type ToastType } from "../../lib/admin-helpers";
+import { isAbortError } from "../../lib/errors";
 
 const whyIconOptions: Array<{ value: WhyCardIcon; label: string }> = [
   { value: "heart", label: "爱心" },
@@ -13,8 +14,17 @@ const whyIconOptions: Array<{ value: WhyCardIcon; label: string }> = [
 
 const emptyWhyCard: WhyCard = { icon: "heart", title: "新亮点", detail: "填写说明" };
 
-export function AdminCopyTab() {
+export function AdminCopyTab({ showToast }: { showToast: (text: string, type: ToastType) => void }) {
   const [content, setContent] = useState(() => defaultSiteContent);
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetch("/api/admin/content", { credentials: "include", signal: ctrl.signal })
+      .then((r) => r.json())
+      .then((d: { content?: SiteContent }) => { if (d.content && !ctrl.signal.aborted) setContent(d.content); })
+      .catch((err) => { if (!isAbortError(err)) showToast("无法加载内容数据", "error"); });
+    return () => ctrl.abort();
+  }, []);
   const [saving, setSaving] = useState<string | null>(null);
 
   const updateContent = <K extends keyof SiteContent>(key: K, value: SiteContent[K]) =>
@@ -24,12 +34,14 @@ export function AdminCopyTab() {
     setSaving(label);
     try {
       for (const key of keys) {
-        await fetch("/api/admin/content", {
+        const r = await fetch("/api/admin/content", {
           method: "PATCH", credentials: "include",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ key, value: content[key] }),
         });
+        if (!r.ok) { showToast(`${label} 保存失败`, "error"); return; }
       }
+      showToast(`${label} 已保存`, "success");
     } finally {
       setSaving(null);
     }
