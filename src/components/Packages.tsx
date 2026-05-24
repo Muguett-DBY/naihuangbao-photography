@@ -41,7 +41,7 @@ export function Packages() {
                   data-count-format="price"
                   data-count-prefix="¥"
                 >
-                  ¥0{item.price.replace(/^[\d.]+/, "")}
+                  {/* GSAP manages this text via el.textContent */}
                 </span>
               </strong>
               <span>{item.summary}</span>
