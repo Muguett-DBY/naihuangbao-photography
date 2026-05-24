@@ -1,0 +1,180 @@
+/* ── Apple-Style Scroll Story ── */
+
+.scroll-story {
+  position: relative;
+  min-height: 200vh;
+  background: #1a1410;
+  overflow: hidden;
+  color: #fff;
+}
+
+.scroll-story-pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.scroll-story-frame {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(40px, 6vw, 100px);
+  padding: clamp(24px, 4vw, 60px);
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scroll-story-frame--0 {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (max-width: 768px) {
+  .scroll-story-frame {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Visual Side */
+.scroll-story-visual {
+  flex: 0 0 clamp(240px, 30vw, 400px);
+  aspect-ratio: 3 / 4;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  transform: perspective(800px) rotateY(-4deg) rotateX(2deg);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.scroll-story-frame:hover .scroll-story-visual {
+  transform: perspective(800px) rotateY(0deg) rotateX(0deg);
+}
+
+.scroll-story-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scroll-story-frame:hover .scroll-story-img {
+  transform: scale(1.05);
+}
+
+.scroll-story-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 180, 120, 0.15) 0%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+  pointer-events: none;
+}
+
+/* Content Side */
+.scroll-story-content {
+  flex: 0 0 clamp(280px, 35vw, 480px);
+  position: relative;
+}
+
+.scroll-story-number {
+  font-size: clamp(60px, 8vw, 120px);
+  font-weight: 900;
+  color: rgba(255, 180, 120, 0.08);
+  position: absolute;
+  top: -40px;
+  left: -20px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.scroll-story-title {
+  font-family: var(--font-display-cn);
+  font-size: clamp(28px, 4vw, 56px);
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px;
+  line-height: 1.15;
+  position: relative;
+}
+
+.scroll-story-subtitle {
+  font-size: clamp(15px, 1.6vw, 22px);
+  font-weight: 400;
+  color: rgba(255, 180, 120, 0.7);
+  margin: 0 0 20px;
+  letter-spacing: 0.02em;
+}
+
+.scroll-story-text {
+  font-size: clamp(13px, 1.2vw, 16px);
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 380px;
+}
+
+/* Progress */
+.scroll-story-progress {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 2px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.scroll-story-progress-bar {
+  width: 100%;
+  height: 0%;
+  background: rgba(255, 180, 120, 0.6);
+  border-radius: 2px;
+  transition: height 0.3s ease;
+}
+
+/* Ambient grain overlay */
+.scroll-story-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.08'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .scroll-story-pin {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+    position: relative;
+  }
+  .scroll-story-frame {
+    position: relative;
+    inset: auto;
+    flex-direction: column;
+    padding: 60px clamp(22px, 5vw, 52px);
+    min-height: 100vh;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .scroll-story-progress {
+    display: none;
+  }
+}

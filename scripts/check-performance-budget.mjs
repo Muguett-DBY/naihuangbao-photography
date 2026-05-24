@@ -2,7 +2,7 @@ import { readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 
 const assetsDir = join(process.cwd(), "dist", "assets");
-const maxMainJsBytes = 260 * 1024;
+const maxMainJsBytes = 760 * 1024;  // Increased for Three.js
 const maxMainCssBytes = 90 * 1024;
 
 const files = await readdir(assetsDir);

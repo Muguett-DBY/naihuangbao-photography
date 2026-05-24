@@ -6,6 +6,7 @@ import { getPhotosByStyle } from "../lib/gallery";
 import type { PhotoItem, PhotoStyle } from "../types/photo";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { Section } from "./Section";
+import { useDistortionHover } from "../hooks/useDistortionHover";
 
 type StyleFilter = PhotoStyle | "all";
 
@@ -20,6 +21,9 @@ export function Gallery() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [visiblePhotoIds, setVisiblePhotoIds] = useState<Set<string>>(() => new Set());
   const masonryRef = useRef<HTMLDivElement>(null);
+
+  // Distortion hover on gallery cards
+  useDistortionHover();
 
   const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
 
@@ -160,6 +164,7 @@ export function Gallery() {
               <button
                 className="gallery-masonry-btn"
                 type="button"
+                data-distort
                 onClick={() => setLightboxIndex(index)}
                 onTouchStart={() => {
                   // Haptic feedback on long-press

@@ -369,21 +369,26 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         document.body.appendChild(overlay);
 
         const tl = gsap.timeline();
-        tl.to(overlay, { clipPath: "circle(150% at 50% 50%)", duration: 0.35, ease: "power2.inOut" });
-        tl.to(mainContent, { opacity: 0, y: -12, duration: 0.12, ease: "power2.in" }, 0);
+        tl.to(overlay, { clipPath: "circle(150% at 50% 50%)", duration: 0.4, ease: "power3.inOut" });
+        tl.to(mainContent, { opacity: 0, y: -12, duration: 0.1, ease: "power2.in" }, 0);
+        tl.to(overlay, {
+          background: "radial-gradient(circle at 50% 50%, #FEF3DD 0%, #F5E6D3 40%, #E8D5C4 100%)",
+          duration: 0.01,
+        }, 0);
         tl.to({}, {
-          duration: 0.25,
+          duration: 0.3,
           onComplete: () => {
             gsap.to(window, {
               scrollTo: { y: target, offsetY: 64 },
               duration: 0.6,
-              ease: "power2.inOut",
+              ease: "expo.inOut",
               onComplete: () => {
-                gsap.to(mainContent, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" });
+                gsap.to(mainContent, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" });
                 gsap.to(overlay, {
                   clipPath: "circle(0% at 50% 50%)",
-                  duration: 0.35,
-                  ease: "power2.in",
+                  background: "radial-gradient(circle at 50% 50%, #FEF3DD 0%, #F5E6D3 100%)",
+                  duration: 0.4,
+                  ease: "power3.in",
                   onComplete: () => overlay.remove(),
                 });
               },
@@ -506,6 +511,47 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         });
       });
     });
+
+    /* ══════════════════════════════════════════
+       EFFECT 17: Apple Scroll Story
+       ══════════════════════════════════════════ */
+    const storyFrames = $<HTMLElement>(".scroll-story-frame");
+    if (storyFrames.length) {
+      storyFrames.forEach((frame, i) => {
+        if (i === 0) return; // first frame visible by default
+        gsap.fromTo(frame,
+          { opacity: 0, scale: 0.92 },
+          {
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: frame,
+              start: "top 70%",
+              end: "top 30%",
+              scrub: 1.2,
+              toggleActions: "play none none reverse",
+            },
+          },
+        );
+      });
+
+      // Progress bar
+      const progressBar = document.querySelector(".scroll-story-progress-bar");
+      if (progressBar) {
+        gsap.to(progressBar, {
+          height: "100%",
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".scroll-story",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1,
+          },
+        });
+      }
+    }
 
     // ── Refresh ScrollTrigger ──
     ScrollTrigger.refresh();

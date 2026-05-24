@@ -5,10 +5,12 @@ import { SectionNav } from "./components/SectionNav";
 import { AboutBooking } from "./components/AboutBooking";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CustomCursor } from "./components/CustomCursor";
+import { FilmGrain } from "./components/FilmGrain";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { Footer } from "./components/Footer";
 import { FloatingBookingCta } from "./components/FloatingBookingCta";
 import { Gallery } from "./components/Gallery";
+import { ScrollStory } from "./components/ScrollStory";
 import { HorizontalGallery } from "./components/HorizontalGallery";
 import { Hero } from "./components/Hero";
 import { MidCTA } from "./components/MidCTA";
@@ -64,6 +66,7 @@ export function App() {
   return (
     <ErrorBoundary>
       <LoadingScreen />
+      <FilmGrain />
       <CustomCursor />
       <div ref={rootRef}>
       <SiteContentProvider>
@@ -77,6 +80,7 @@ export function App() {
           <SiteNav />
           <main id="main-content">
             <Hero />
+            <ScrollStory />
             <HorizontalGallery />
             <Gallery />
             <MidCTA />
