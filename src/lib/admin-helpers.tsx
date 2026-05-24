@@ -31,7 +31,7 @@ export function isAbortError(error: unknown) {
   return error instanceof DOMException && error.name === "AbortError";
 }
 
-export type AdminTab = "photos" | "packages" | "services" | "faq" | "copy" | "stats";
+export type AdminTab = "photos" | "bookings" | "packages" | "services" | "faq" | "copy" | "stats";
 export type ToastType = "success" | "error" | "info";
 
 export type EditForm = {

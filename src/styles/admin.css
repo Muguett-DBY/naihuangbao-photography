@@ -375,6 +375,97 @@
 .adm-btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
 .adm-btn-cancel:hover,.adm-btn-confirm:hover:not(:disabled) { opacity: 0.85; }
 
+.adm-booking-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.adm-booking-card {
+  background: #fffdf7;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 14px;
+  padding: 18px 20px;
+  transition: box-shadow 0.2s ease;
+}
+.adm-booking-card:hover {
+  box-shadow: 0 4px 12px rgba(139, 94, 74, 0.08);
+}
+
+.adm-booking-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.adm-booking-head strong {
+  font-size: 16px;
+  color: #442b24;
+}
+
+.adm-booking-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.badge-pending { background: #fef1e0; color: #b87840; }
+.badge-contacted { background: #e0f0e0; color: #4a7a50; }
+.badge-done { background: #eee; color: #888; }
+
+.adm-booking-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: #7a5a4a;
+}
+.adm-booking-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.adm-booking-time {
+  color: #a08880;
+  font-size: 12px;
+}
+
+.adm-booking-notes {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  background: rgba(255, 244, 226, 0.5);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #5a3a2a;
+  line-height: 1.6;
+}
+
+.adm-booking-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.adm-booking-actions button {
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s;
+}
+.adm-booking-actions button:hover { opacity: 0.8; }
+
+.adm-btn-contact { background: #493735; color: #fff8f3; }
+.adm-btn-done { background: #6a9a70; color: #fff; }
+.adm-btn-skip { background: transparent; color: #a08880; }
+
 @media (max-width: 800px) {
   .adm-body { grid-template-columns: 1fr; }
   .adm-side { position: static; }

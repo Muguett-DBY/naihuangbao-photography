@@ -1,6 +1,7 @@
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import {
   BarChart3,
+  CalendarCheck,
   FileText,
   HelpCircle,
   ImagePlus,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { isAbortError, type AdminTab, type ToastType } from "../../lib/admin-helpers";
+import { AdminBookingsTab } from "./AdminBookingsTab";
 import { AdminCopyTab } from "./AdminCopyTab";
 import { AdminFaqTab } from "./AdminFaqTab";
 import { AdminPackagesTab } from "./AdminPackagesTab";
@@ -18,6 +20,7 @@ import { AdminPhotosTab } from "./AdminPhotosTab";
 import { AdminServicesTab } from "./AdminServicesTab";
 
 const tabs: Array<{ id: AdminTab; label: string; icon: typeof ImagePlus }> = [
+  { id: "bookings", label: "预约", icon: CalendarCheck },
   { id: "photos", label: "照片", icon: ImagePlus },
   { id: "stats", label: "数据", icon: BarChart3 },
   { id: "packages", label: "套餐价格", icon: Layers },
@@ -120,6 +123,7 @@ export function AdminShell() {
           })}
         </nav>
 
+        {activeTab === "bookings" && <AdminBookingsTab showToast={showToast} />}
         {activeTab === "photos" && <AdminPhotosTab showToast={showToast} />}
         {activeTab === "packages" && <AdminPackagesTab showToast={showToast} />}
         {activeTab === "services" && <AdminServicesTab showToast={showToast} />}
