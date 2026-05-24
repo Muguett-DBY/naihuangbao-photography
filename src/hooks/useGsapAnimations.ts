@@ -5,6 +5,9 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
+// Module-level guard: effects only initialize once even if hook called twice
+let _initialized = false;
+
 /* ── Text morph phrases ── */
 const morphPhrases = [
   "南京女生写真与情侣约拍",
@@ -14,11 +17,9 @@ const morphPhrases = [
 ];
 
 export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
-  const initialized = useRef(false);
-
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
+    if (_initialized) return;
+    _initialized = true;
 
     const $ = <T extends Element>(sel: string): T[] => {
       if (rootRef?.current) {

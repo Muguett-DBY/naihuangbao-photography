@@ -23,7 +23,7 @@ export function Gallery() {
   const masonryRef = useRef<HTMLDivElement>(null);
 
   // Distortion hover on gallery cards
-  useDistortionHover();
+  const distortRef = useDistortionHover();
 
   const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
 
@@ -106,7 +106,7 @@ export function Gallery() {
       title={sectionCopy.gallery.title}
       intro={sectionCopy.gallery.intro}
     >
-      <div className="gallery-story-panel" aria-label="作品风格说明">
+      <div ref={distortRef} className="gallery-story-panel" aria-label="作品风格说明">
         <div>
           <span>Portfolio</span>
           <strong>真实作品按风格整理，点击可看大图</strong>

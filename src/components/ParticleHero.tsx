@@ -31,12 +31,34 @@ export function ParticleHero() {
     const ctx = canvas.getContext("2d")!;
     ctx.clearRect(0, 0, 400, 120);
 
-    // Draw text
+    // Draw text — await custom font
     ctx.font = "Bold 72px 'Naihuangbao WenKai','Kaiti SC',serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#FFF";
     ctx.fillText("奶黄包摄影", 200, 60);
+
+    // If custom font not loaded, re-sample after it loads
+    document.fonts.ready.then(() => {
+      ctx.clearRect(0, 0, 400, 120);
+      ctx.font = "Bold 72px 'Naihuangbao WenKai','Kaiti SC',serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#FFF";
+      ctx.fillText("奶黄包摄影", 200, 60);
+      const newData = ctx.getImageData(0, 0, 400, 120);
+      let idx = 0;
+      for (let y = 0; y < 120; y += 3) {
+        for (let x = 0; x < 400; x += 3) {
+          const i = (y * 400 + x) * 4;
+          if (newData.data[i + 3] > 128 && idx < count) {
+            targetPos[idx * 3] = (x - 200) * 0.5;
+            targetPos[idx * 3 + 1] = (60 - y) * 0.5;
+            idx++;
+          }
+        }
+      }
+    });
 
     // Sample pixels
     const imageData = ctx.getImageData(0, 0, 400, 120);

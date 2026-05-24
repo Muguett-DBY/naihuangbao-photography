@@ -1,95 +1,136 @@
 import { useEffect, useRef } from "react";
 
+const GRAIN_SIZE = 128;
+
 export function FilmGrain() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const grainRef = useRef<HTMLCanvasElement>(null);
+  const leakRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    // ── Grain: small canvas, low FPS ──
+    const grain = grainRef.current;
+    if (!grain) return;
+    const gCtx = grain.getContext("2d");
+    if (!gCtx) return;
+
+    let frame = 0;
+    let rafId = 0;
+
+    const updateGrain = () => {
+      frame++;
+      // Only update grain every 6 frames (~10fps)
+      if (frame % 6 === 0) {
+        gCtx.clearRect(0, 0, GRAIN_SIZE, GRAIN_SIZE);
+        const imageData = gCtx.createImageData(GRAIN_SIZE, GRAIN_SIZE);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const noise = (Math.random() - 0.5) * 40;
+          data[i] = 255 + noise;
+          data[i + 1] = 245 + noise;
+          data[i + 2] = 230 + noise;
+          data[i + 3] = 10;
+        }
+        gCtx.putImageData(imageData, 0, 0);
+      }
+      rafId = requestAnimationFrame(updateGrain);
+    };
+    rafId = requestAnimationFrame(updateGrain);
+
+    // ── Light leak ──
+    const leak = leakRef.current;
+    if (!leak) return;
+    const lCtx = leak.getContext("2d");
+    if (!lCtx) return;
 
     let w = window.innerWidth;
     let h = window.innerHeight;
-    canvas.width = w;
-    canvas.height = h;
+    leak.width = w;
+    leak.height = h;
 
-    let lightLeakTimer = 0;
-    let lightLeakActive = false;
+    let leakTimer = 0;
+    let leakActive = false;
     let leakX = 0;
     let leakOpacity = 0;
 
-    const draw = () => {
-      ctx.clearRect(0, 0, w, h);
+    const updateLeak = () => {
+      lCtx.clearRect(0, 0, w, h);
 
-      // 1. Film grain — subtle noise
-      const imageData = ctx.createImageData(w, h);
-      const data = imageData.data;
-      for (let i = 0; i < data.length; i += 4) {
-        const noise = (Math.random() - 0.5) * 30;
-        data[i] = 255 + noise;
-        data[i + 1] = 245 + noise;
-        data[i + 2] = 230 + noise;
-        data[i + 3] = 8;
-      }
-      ctx.putImageData(imageData, 0, 0);
-
-      // 2. Light leak — random warm beams
-      lightLeakTimer++;
-      if (!lightLeakActive && lightLeakTimer > 200 + Math.random() * 400) {
-        lightLeakActive = true;
-        lightLeakTimer = 0;
+      leakTimer++;
+      if (!leakActive && leakTimer > 300 + Math.random() * 500) {
+        leakActive = true;
+        leakTimer = 0;
         leakX = Math.random() * w;
         leakOpacity = 0;
       }
 
-      if (lightLeakActive) {
-        leakOpacity += 0.008;
-        if (leakOpacity > 0.12) leakOpacity = 0.12;
+      if (leakActive) {
+        leakOpacity += 0.005;
+        if (leakOpacity > 0.08) leakOpacity = 0.08;
 
-        const gradient = ctx.createRadialGradient(leakX, 0, 0, leakX, 0, h * 0.8);
+        const gradient = lCtx.createRadialGradient(leakX, 0, 0, leakX, 0, h * 0.6);
         gradient.addColorStop(0, `rgba(255, 180, 120, ${leakOpacity})`);
         gradient.addColorStop(0.3, `rgba(255, 150, 100, ${leakOpacity * 0.5})`);
         gradient.addColorStop(1, "rgba(255, 150, 100, 0)");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, w, h);
+        lCtx.fillStyle = gradient;
+        lCtx.fillRect(0, 0, w, h);
 
-        leakX += 2;
+        leakX += 1.5;
         if (leakX > w + 200) {
-          lightLeakActive = false;
-          lightLeakTimer = 0;
+          leakActive = false;
+          leakTimer = 0;
         }
       }
 
-      requestAnimationFrame(draw);
+      requestAnimationFrame(updateLeak);
     };
+    requestAnimationFrame(updateLeak);
 
     const handleResize = () => {
       w = window.innerWidth;
       h = window.innerHeight;
-      canvas.width = w;
-      canvas.height = h;
+      leak.width = w;
+      leak.height = h;
     };
     window.addEventListener("resize", handleResize);
 
-    draw();
-
     return () => {
+      cancelAnimationFrame(rafId);
+      cancelAnimationFrame(rafId + 1);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 9995,
-        pointerEvents: "none",
-        mixBlendMode: "overlay",
-        opacity: 0.6,
-      }}
-    />
+    <>
+      {/* Grain — small canvas scaled up */}
+      <canvas
+        ref={grainRef}
+        width={GRAIN_SIZE}
+        height={GRAIN_SIZE}
+        style={{
+          position: "fixed",
+          inset: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: 9995,
+          pointerEvents: "none",
+          mixBlendMode: "overlay",
+          opacity: 0.5,
+          imageRendering: "pixelated",
+        }}
+      />
+      {/* Light leak — full canvas, rare updates */}
+      <canvas
+        ref={leakRef}
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 9994,
+          pointerEvents: "none",
+          mixBlendMode: "screen",
+          opacity: 0.8,
+        }}
+      />
+    </>
   );
 }

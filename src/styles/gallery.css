@@ -389,10 +389,16 @@
   height: auto;
   border-radius: 12px;
   transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Distortion hover via CSS custom properties */
+  transform:
+    scale(1.04)
+    perspective(600px)
+    rotateX(calc(var(--distort-y, 0) * -6deg))
+    rotateY(calc(var(--distort-x, 0) * 6deg));
 }
 
 .gallery-masonry-btn:hover img {
-  transform: scale(1.04);
+  filter: brightness(1.06) saturate(1.03);
 }
 
 .gallery-masonry-btn:active img {
