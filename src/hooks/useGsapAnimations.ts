@@ -589,41 +589,33 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
       const targetVal = parseFloat(rawTarget || "0");
       if (!targetVal) return;
 
-      const startVal = Math.round(targetVal * 1.4 / 100) * 100; // 40% higher, rounded to 100
-      const startText = `${prefix}${startVal}${suffix}`;
+      // Start at ~1.5x actual price, round to nearest 100
+      const startVal = Math.ceil(targetVal * 1.5 / 100) * 100;
+      const card = el.closest(".package-card") || el.parentElement;
 
       // Set initial high price
-      el.textContent = startText;
+      el.textContent = `${prefix}${startVal}${suffix}`;
 
-      // Store original rendered text so GSAP doesn't fight React re-render
-      const origText = el.textContent;
-
-      const obj = { val: startVal };
-
-      gsap.to(obj, {
+      // Scroll-triggered countdown: high → actual, wide range so descent is slow
+      const proxy = { val: startVal };
+      gsap.to(proxy, {
         val: targetVal,
-        duration: 2.2,
-        ease: "power2.out",
+        ease: "none",
         scrollTrigger: {
-          trigger: el.closest(".package-card") || el.parentElement,
-          start: "top 72%",
-          end: "top 40%",
-          scrub: 2.5,
+          trigger: card,
+          start: "top 85%",
+          end: "top 35%",
+          scrub: 1.5,
         },
         onUpdate: () => {
-          el.textContent = `${prefix}${Math.round(obj.val)}${suffix}`;
+          el.textContent = `${prefix}${Math.round(proxy.val)}${suffix}`;
         },
         onComplete: () => {
           el.textContent = `${prefix}${targetVal}${suffix}`;
-          // Pop scale effect when reaching real price
-          gsap.fromTo(el,
-            { scale: 1 },
-            { scale: 1.18, duration: 0.25, ease: "back.out(3)" },
-          );
-          gsap.fromTo(el.parentElement,
-            { color: "var(--peach-accent)" },
-            { color: "", duration: 0.6, delay: 0.1 },
-          );
+          // Pop animation: 1 → 1.18 → 1 (弹性弹回缩小)
+          gsap.timeline()
+            .to(el, { scale: 1.18, duration: 0.2, ease: "power2.out" })
+            .to(el, { scale: 1, duration: 0.5, ease: "elastic.out(1, 0.3)" });
         },
       });
     });
