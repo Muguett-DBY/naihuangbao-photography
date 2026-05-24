@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { fairyDustCursor } from "cursor-effects";
 import { App } from "./App";
 import "./styles/global.css";
 
@@ -19,7 +18,7 @@ for (const href of ["https://www.xiaohongshu.com"]) {
 if ("requestIdleCallback" in window) {
   requestIdleCallback(
     () => {
-      const imgs = ["/images/gallery/640/girl-1.webp", "/images/gallery/640/girl-2.webp", "/images/gallery/640/girl-3.webp"];
+      const imgs = ["/images/gallery/640/gallery-urban-01.webp", "/images/gallery/640/gallery-garden-01.webp", "/images/gallery/640/gallery-jiangnan-01.webp"];
       imgs.forEach((src) => {
         const link = document.createElement("link");
         link.rel = "prefetch";
@@ -71,15 +70,4 @@ requestAnimationFrame(() => {
   document.body.classList.add("is-loaded");
 });
 
-// ── Fairy dust cursor effect ──
-const cursor = fairyDustCursor({
-  colors: ["#F5A891", "#FFD2B8", "#FFB8A1", "#FCE4D6"],
-});
-// Ensure cursor canvas paints above content (section-shell z-index:1)
-requestAnimationFrame(() => {
-  const canvases = document.querySelectorAll<HTMLCanvasElement>("canvas");
-  const last = canvases[canvases.length - 1];
-  if (last && !last.classList.contains("canvas-particles")) {
-    last.style.zIndex = "9998";
-  }
-});
+

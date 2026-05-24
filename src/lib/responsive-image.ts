@@ -1,6 +1,3 @@
-const responsiveWidths = [640, 960] as const;
-const staticGalleryPattern = /^\/images\/gallery\/([^/?#]+)(\?[^#]*)?$/;
-
 export type ResponsiveImageAttrs = {
   src: string;
   srcSet?: string;
@@ -8,19 +5,13 @@ export type ResponsiveImageAttrs = {
 };
 
 export function getResponsiveImageAttrs(src: string, sizes?: string): ResponsiveImageAttrs {
-  const match = src.match(staticGalleryPattern);
-  if (!match || !sizes) {
-    return { src };
-  }
-
-  const [, fileName, version = ""] = match;
-  const variants = responsiveWidths.map(
-    (width) => `/images/gallery/${width}/${fileName}${version} ${width}w`,
-  );
-
+  if (!sizes) return { src };
+  // Strip query string so variant URLs are clean
+  const base = src.replace(/\?.*$/, "");
+  const fileName = base.split("/").pop() || "";
   return {
     src,
-    srcSet: [...variants, `/images/gallery/${fileName}${version} 1200w`].join(", "),
+    srcSet: `/images/gallery/640/${fileName} 640w, /images/gallery/960/${fileName} 960w, ${base} 1200w`,
     sizes,
   };
 }
