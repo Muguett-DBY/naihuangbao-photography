@@ -60,6 +60,12 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
     };
   }, []);
 
+  // Double-click zoom toggle
+  function handleDoubleClick() {
+    setScale((s) => s > 1.2 ? 1 : 2.5);
+    setTranslate({ x: 0, y: 0 });
+  }
+
   // Wheel zoom
   useEffect(() => {
     const wrap = imgWrapRef.current;
@@ -145,6 +151,20 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
           event.preventDefault();
           onNext();
           break;
+        case "=":
+        case "+":
+          event.preventDefault();
+          setScale((s) => Math.min(5, s + 0.5));
+          break;
+        case "-":
+          event.preventDefault();
+          setScale((s) => Math.max(0.5, s - 0.5));
+          break;
+        case "0":
+          event.preventDefault();
+          setScale(1);
+          setTranslate({ x: 0, y: 0 });
+          break;
         case "Tab":
           trapDialogFocus(event, dialogRef.current);
           break;
@@ -200,7 +220,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
       role="dialog"
       aria-modal="true"
       aria-label="图片预览"
-      aria-keyshortcuts="ArrowLeft ArrowRight Escape"
+      aria-keyshortcuts="ArrowLeft ArrowRight Escape +/-"
       tabIndex={-1}
       onClick={onClose}
     >
@@ -248,6 +268,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onMouseDown={onMouseDown}
+          onDoubleClick={handleDoubleClick}
           style={{ cursor: scale > 1 ? "grab" : undefined }}
         >
           {!isImageLoaded && !isImageError ? (
