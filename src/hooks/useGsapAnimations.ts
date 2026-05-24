@@ -645,6 +645,9 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         (el as any)._autoScrollIO?.disconnect();
       });
 
+      // Reset guards so effect can re-init on StrictMode double-render
+      _initialized = false;
+      guardRef.current = false;
     };
   }, [guardRef]);
 }

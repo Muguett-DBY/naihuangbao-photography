@@ -200,6 +200,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
       role="dialog"
       aria-modal="true"
       aria-label="图片预览"
+      aria-keyshortcuts="ArrowLeft ArrowRight Escape"
       tabIndex={-1}
       onClick={onClose}
     >

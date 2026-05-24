@@ -42,7 +42,6 @@ export function HorizontalGallery() {
               <img
                 src={item.imageUrl}
                 alt={item.alt}
-                loading="lazy"
                 className="horiz-swiper-img"
                 width={400}
                 height={533}
