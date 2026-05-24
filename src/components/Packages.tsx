@@ -40,9 +40,8 @@ export function Packages() {
                   data-count-suffix={item.price.replace(/^[\d.]+/, "")}
                   data-count-format="price"
                   data-count-prefix="¥"
-                >
-                  {/* GSAP manages this text via el.textContent */}
-                </span>
+                  dangerouslySetInnerHTML={{ __html: "" }}
+                ></span>
               </strong>
               <span>{item.summary}</span>
             </div>
