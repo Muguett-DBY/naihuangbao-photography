@@ -31,3 +31,18 @@ create table if not exists chat_rate_limits (
 
 create index if not exists idx_chat_rate_limits_updated
   on chat_rate_limits (updated_at);
+
+create table if not exists booking_requests (
+  id text primary key,
+  package_name text not null,
+  preferred_date text,
+  preferred_time text,
+  name text not null,
+  contact text not null,
+  notes text not null default '',
+  status text not null default 'pending',
+  created_at text not null
+);
+
+create index if not exists idx_booking_status
+  on booking_requests (status, created_at);

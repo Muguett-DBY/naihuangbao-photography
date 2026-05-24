@@ -1,8 +1,10 @@
 import { ArrowDown, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
+import { useBookingModal } from "../hooks/useBookingModal";
 
 export function Hero() {
   const { siteConfig } = useSiteContent();
+  const { openBookingModal } = useBookingModal();
 
   return (
     <section id="top" className="hero">
@@ -58,10 +60,10 @@ export function Hero() {
               查看作品
               <ArrowDown size={16} />
             </a>
-            <a className="hero-cover-secondary-btn" href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
+            <button className="hero-cover-secondary-btn" onClick={() => openBookingModal()} type="button">
               <MessageCircle size={14} />
-              小红书预约
-            </a>
+              预约
+            </button>
           </div>
         </div>
       </div>

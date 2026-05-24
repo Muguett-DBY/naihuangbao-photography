@@ -23,6 +23,7 @@ import { SiteNav } from "./components/SiteNav";
 import { WhyChooseUs } from "./components/WhyChooseUs";
 import { PublicPhotosProvider } from "./hooks/usePublicPhotos";
 import { SiteContentProvider } from "./hooks/useSiteContent";
+import { BookingProvider } from "./hooks/useBookingModal";
 
 const HorizontalGallery = lazy(() => import("./components/HorizontalGallery").then((m) => ({ default: m.HorizontalGallery })));
 
@@ -70,6 +71,7 @@ export function App() {
       <FilmGrain />
       <CustomCursor />
       <div ref={rootRef}>
+      <BookingProvider>
       <SiteContentProvider>
         <PublicPhotosProvider>
           <div className="scroll-progress-bar" role="progressbar" aria-label="页面阅读进度" />
@@ -112,6 +114,7 @@ export function App() {
           </div>
         </PublicPhotosProvider>
       </SiteContentProvider>
+      </BookingProvider>
       </div>
     </ErrorBoundary>
   );

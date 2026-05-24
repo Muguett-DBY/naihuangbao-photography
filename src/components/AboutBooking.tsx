@@ -1,10 +1,12 @@
 import { ExternalLink, HeartHandshake, MessageCircle } from "lucide-react";
 import { useInView } from "../hooks/useInView";
 import { useSiteContent } from "../hooks/useSiteContent";
+import { useBookingModal } from "../hooks/useBookingModal";
 
 export function AboutBooking() {
   const { ref, inView } = useInView<HTMLElement>({ threshold: 0.1 });
   const { sectionCopy, siteConfig } = useSiteContent();
+  const { openBookingModal } = useBookingModal();
 
   return (
     <section id="booking" className={`booking-section ${inView ? "is-visible" : ""}`} ref={ref}>
@@ -17,15 +19,14 @@ export function AboutBooking() {
         <HeartHandshake size={28} />
         <h2>{sectionCopy.about.bookingTitle}</h2>
         <p>{siteConfig.contactHint}</p>
-        <a
+        <button
           className="booking-cta"
-          href={siteConfig.xiaohongshuProfile}
-          target="_blank"
-          rel="noreferrer"
+          onClick={() => openBookingModal()}
+          type="button"
         >
           <MessageCircle size={16} />
           {siteConfig.contactStatus}
-        </a>
+        </button>
         <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
           {sectionCopy.about.profileLinkLabel}
           <ExternalLink size={15} />

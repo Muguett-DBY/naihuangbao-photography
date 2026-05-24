@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, MessageCircle } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
+import { useBookingModal } from "../hooks/useBookingModal";
 import { Section } from "./Section";
 
 const packageFit: Record<string, { scene: string; people: string }> = {
@@ -19,7 +20,8 @@ const packageFit: Record<string, { scene: string; people: string }> = {
 };
 
 export function Packages() {
-  const { packages, sectionCopy, siteConfig } = useSiteContent();
+  const { packages, sectionCopy } = useSiteContent();
+  const { openBookingModal } = useBookingModal();
 
   return (
     <Section
@@ -54,10 +56,10 @@ export function Packages() {
                 <p>{packageFit[item.name].people}</p>
               </div>
             ) : null}
-            <a className="package-cta" href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
+            <button className="package-cta" onClick={() => openBookingModal(item.name)} type="button">
               <MessageCircle size={15} />
               预约这个套餐
-            </a>
+            </button>
           </article>
         ))}
       </div>

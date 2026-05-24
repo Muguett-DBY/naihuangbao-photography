@@ -1,10 +1,12 @@
 import { MessageCircle } from "lucide-react";
 import { useInView } from "../hooks/useInView";
 import { useSiteContent } from "../hooks/useSiteContent";
+import { useBookingModal } from "../hooks/useBookingModal";
 
 export function MidCTA() {
   const { ref, inView } = useInView<HTMLElement>({ threshold: 0.2 });
   const { sectionCopy, siteConfig } = useSiteContent();
+  const { openBookingModal } = useBookingModal();
 
   return (
     <section id="mid-cta" className={`mid-cta ${inView ? "is-visible" : ""}`} ref={ref}>
@@ -12,10 +14,10 @@ export function MidCTA() {
         <p className="mid-cta-eyebrow">{sectionCopy.midCta.eyebrow}</p>
         <h2>{sectionCopy.midCta.title}</h2>
         <p className="mid-cta-desc">{sectionCopy.midCta.intro}</p>
-        <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
+        <button className="mid-cta-btn" onClick={() => openBookingModal()} type="button">
           <MessageCircle size={18} />
           {sectionCopy.midCta.actionLabel}
-        </a>
+        </button>
       </div>
     </section>
   );
