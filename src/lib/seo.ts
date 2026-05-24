@@ -121,6 +121,34 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     '<script type="application/ld+json">',
     JSON.stringify(faqSchema, null, 6),
     "</script>",
+    // ImageGallery structured data
+    '<script type="application/ld+json">',
+    JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ImageGallery",
+      "name": `${content.siteConfig.brandName}作品集`,
+      "description": `${content.siteConfig.city}女生写真与情侣约拍作品展示`,
+      "url": `${metadata.origin}/#gallery`,
+      "image": galleryItems.slice(0, 9).map((photo) => ({
+        "@type": "ImageObject",
+        "contentUrl": `${siteOrigin}${photo.imageUrl.replace(/\?.*$/, "")}`,
+        "name": photo.title,
+        "caption": photo.alt,
+      })),
+    }, null, 6),
+    "</script>",
+    // BreadcrumbList structured data
+    '<script type="application/ld+json">',
+    JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "首页", "item": `${metadata.origin}/` },
+        { "@type": "ListItem", "position": 2, "name": "作品", "item": `${metadata.origin}/#gallery` },
+        { "@type": "ListItem", "position": 3, "name": "套餐", "item": `${metadata.origin}/#packages` },
+      ],
+    }, null, 6),
+    "</script>",
     // Google Search Console verification (replace with your own ID)
     // '<meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />',
     // hreflang for Chinese locale
