@@ -144,8 +144,8 @@ describe("performance resources", () => {
   it("renders default homepage data first and defers remote enhancement until idle", () => {
     expect(siteContentHookSource).toContain("defaultSiteContent");
     expect(publicPhotosHookSource).toContain("galleryItems");
-    expect(siteContentHookSource).toContain("requestIdleCallback");
-    expect(publicPhotosHookSource).toContain("requestIdleCallback");
+    expect(siteContentHookSource).toContain("scheduleIdleTask");
+    expect(readFileSync(resolve(root, "src/lib/idle.ts"), "utf8")).toContain("requestIdleCallback");
     expect(siteContentHookSource).toContain("AbortController");
     expect(publicPhotosHookSource).toContain("AbortController");
     expect(heroSource).not.toContain("offset *");

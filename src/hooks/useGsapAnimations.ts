@@ -196,7 +196,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
       });
     }
 
-    /* EFFECT 6 removed — superseded by EFFECT 16 (Page Transition) */
+    /* EFFECT 6 removed — superseded by EFFECT 13 (Page Transition) */
 
     /* ══════════════════════════════════════════
        EFFECT 7: 数字计数器 (Count-Up)
@@ -423,7 +423,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     }
 
     /* ══════════════════════════════════════════
-       EFFECT 11: Cards scroll-reveal (existing)
+       EFFECT 15: Cards scroll-reveal (existing)
        ══════════════════════════════════════════ */
     const cardSections = $<HTMLElement>(".section-shell:not(.hero)");
 
@@ -455,7 +455,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     });
 
     /* ══════════════════════════════════════════
-       EFFECT 12: Magnetic Buttons (existing)
+       EFFECT 16: Magnetic Buttons (existing)
        ══════════════════════════════════════════ */
     const magneticBtns = $<HTMLElement>(
       ".hero-cover-primary-btn, .hero-cover-secondary-btn, .nav-cta, .booking-cta, .package-cta",
@@ -486,7 +486,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     });
 
     /* ══════════════════════════════════════════
-       EFFECT 13: 3D Card Tilt (existing)
+       EFFECT 20: 3D Card Tilt (existing)
        ══════════════════════════════════════════ */
     const tiltCards = $<HTMLElement>(
       ".package-card, .why-card, .service-detail-card",

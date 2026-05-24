@@ -1,5 +1,6 @@
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { defaultSiteContent, mergeSiteContent } from "../data/content";
+import { scheduleIdleTask } from "../lib/idle";
 import type { PartialSiteContent, SiteContent } from "../types/content";
 
 const SiteContentContext = createContext<SiteContent>(defaultSiteContent);
@@ -24,7 +25,7 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    const cancelIdleLoad = scheduleIdleTask(() => void loadContent());
+    const cancelIdleLoad = scheduleIdleTask(() => void loadContent(), 1200);
     return () => {
       ignore = true;
       abortController.abort();
@@ -43,28 +44,4 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
 
 export function useSiteContent() {
   return useContext(SiteContentContext);
-}
-
-function scheduleIdleTask(callback: () => void) {
-  const browserWindow = window as Window & {
-    requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
-    cancelIdleCallback?: (handle: number) => void;
-  };
-  let idleHandle: number | null = null;
-
-  const timeoutHandle = window.setTimeout(() => {
-    if (browserWindow.requestIdleCallback) {
-      idleHandle = browserWindow.requestIdleCallback(callback, { timeout: 2500 });
-      return;
-    }
-
-    callback();
-  }, 1200);
-
-  return () => {
-    window.clearTimeout(timeoutHandle);
-    if (idleHandle !== null) {
-      browserWindow.cancelIdleCallback?.(idleHandle);
-    }
-  };
 }

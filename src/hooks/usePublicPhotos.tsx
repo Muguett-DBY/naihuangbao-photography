@@ -1,6 +1,7 @@
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { galleryItems } from "../data/gallery";
 import { resolvePublicPhotoSource } from "../lib/gallery-source";
+import { scheduleIdleTask } from "../lib/idle";
 import type { PhotoItem } from "../types/photo";
 
 type PublicPhotosState = {
@@ -35,7 +36,7 @@ export function PublicPhotosProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    const cancelIdleLoad = scheduleIdleTask(() => void loadRemotePhotos());
+    const cancelIdleLoad = scheduleIdleTask(() => void loadRemotePhotos(), 200);
     return () => {
       ignore = true;
       abortController.abort();
@@ -57,28 +58,4 @@ export function PublicPhotosProvider({ children }: { children: ReactNode }) {
 
 export function usePublicPhotos() {
   return useContext(PublicPhotosContext);
-}
-
-function scheduleIdleTask(callback: () => void) {
-  const browserWindow = window as Window & {
-    requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
-    cancelIdleCallback?: (handle: number) => void;
-  };
-  let idleHandle: number | null = null;
-
-  const timeoutHandle = window.setTimeout(() => {
-    if (browserWindow.requestIdleCallback) {
-      idleHandle = browserWindow.requestIdleCallback(callback, { timeout: 2500 });
-      return;
-    }
-
-    callback();
-  }, 200);
-
-  return () => {
-    window.clearTimeout(timeoutHandle);
-    if (idleHandle !== null) {
-      browserWindow.cancelIdleCallback?.(idleHandle);
-    }
-  };
 }
