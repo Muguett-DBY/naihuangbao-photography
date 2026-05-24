@@ -1,11 +1,10 @@
 import { ArrowDown, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
-import { useGsapAnimations } from "../hooks/useGsapAnimations";
+
 import { lazy } from "react";
 const ParticleHero = lazy(() => import("./ParticleHero").then(m => ({ default: m.ParticleHero })));
 
 export function Hero() {
-  useGsapAnimations();
   const { siteConfig } = useSiteContent();
 
   return (

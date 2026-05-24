@@ -5,8 +5,8 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-// Module-level guard: effects only initialize once even if hook called twice
-let _initialized = false;
+// Module-level guard prevents double-registration from App+Hero calls
+let _initialized = false; // eslint-disable-line prefer-const
 
 /* ── Text morph phrases ── */
 const morphPhrases = [
@@ -17,8 +17,12 @@ const morphPhrases = [
 ];
 
 export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
+  const guardRef = useRef(false);
+
   useEffect(() => {
     if (_initialized) return;
+    if (guardRef.current) return;
+    guardRef.current = true;
     _initialized = true;
 
     const $ = <T extends Element>(sel: string): T[] => {
@@ -589,30 +593,35 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
       const targetVal = parseFloat(rawTarget || "0");
       if (!targetVal) return;
 
-      // Start at ~1.5x actual price, round to nearest 100
-      const startVal = Math.ceil(targetVal * 1.5 / 100) * 100;
+      // For small prices (under 100), use 3x multiplier so drop is visible
+      const multiplier = targetVal < 100 ? 3 : 1.8;
+      let startVal = Math.ceil(targetVal * multiplier / 100) * 100;
+      // Ensure at least 100 difference so animation is obvious
+      if (startVal - targetVal < 100) {
+        startVal = Math.ceil((targetVal + 200) / 100) * 100;
+      }
+
       const card = el.closest(".package-card") || el.parentElement;
 
-      // Set initial high price
+      // Set initial text to high price immediately (no ¥0 flash)
       el.textContent = `${prefix}${startVal}${suffix}`;
 
-      // Scroll-triggered countdown: card刚露出底部就开始，到卡片到1/3处完成
+      // Scroll-triggered countdown: card刚露出底部就开始
       const proxy = { val: startVal };
       gsap.to(proxy, {
         val: targetVal,
         ease: "none",
         scrollTrigger: {
           trigger: card,
-          start: "top bottom",    // 卡片顶部刚碰到底部视口边缘 → 开始
-          end: "top 20%",          // 卡片顶部到视口上方20% → 完成降至实际价
-          scrub: 1.5,
+          start: "top bottom",
+          end: "top 20%",
+          scrub: 1.2,
         },
         onUpdate: () => {
           el.textContent = `${prefix}${Math.round(proxy.val)}${suffix}`;
         },
         onComplete: () => {
           el.textContent = `${prefix}${targetVal}${suffix}`;
-          // Pop animation: 1 → 1.18 → 1 (弹性弹回缩小)
           gsap.timeline()
             .to(el, { scale: 1.18, duration: 0.2, ease: "power2.out" })
             .to(el, { scale: 1, duration: 0.5, ease: "elastic.out(1, 0.3)" });
@@ -631,7 +640,6 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         (el as any)._autoScrollIO?.disconnect();
       });
 
-      ScrollTrigger.getAll().forEach((st) => st.kill());
     };
-  }, []);
+  }, [guardRef]);
 }
