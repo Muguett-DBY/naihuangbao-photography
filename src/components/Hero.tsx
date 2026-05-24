@@ -1,15 +1,11 @@
 import { ArrowDown, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
 
-import { lazy } from "react";
-const ParticleHero = lazy(() => import("./ParticleHero").then(m => ({ default: m.ParticleHero })));
-
 export function Hero() {
   const { siteConfig } = useSiteContent();
 
   return (
     <section id="top" className="hero">
-      <ParticleHero />
       {/* Designed gradient background — replaces real photo */}
       <div className="hero-cover-design" />
 

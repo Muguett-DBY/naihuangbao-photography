@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { styleLabels } from "../data/site";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
@@ -13,6 +13,11 @@ type StyleFilter = PhotoStyle | "all";
 const filters = Object.keys(styleLabels) as StyleFilter[];
 const tones = ["rose", "sage", "cream", "ink"] as const;
 const Lightbox = lazy(() => import("./Lightbox"));
+const galleryThumb = (src: string) => {
+  const base = src.replace(/\?.*$/, "");
+  const fileName = base.split("/").pop();
+  return fileName ? `/images/gallery/640/${fileName}` : src;
+};
 
 export function Gallery() {
   const { sectionCopy } = useSiteContent();
@@ -33,6 +38,23 @@ export function Gallery() {
   const handleNext = useCallback(() => {
     setLightboxIndex((prev) => (prev !== null && prev < photos.length - 1 ? prev + 1 : 0));
   }, [photos.length]);
+
+  useEffect(() => {
+    const target = masonryRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        void import("./Lightbox");
+        observer.disconnect();
+      },
+      { rootMargin: "300px" },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <Section
@@ -71,9 +93,10 @@ export function Gallery() {
           {photos.slice(0, 6).map((photo) => (
             <div className="gallery-filmstrip-item" key={photo.id}>
               <img
-                src={photo.imageUrl || ""}
+                src={galleryThumb(photo.imageUrl || "")}
                 alt=""
                 loading="lazy"
+                fetchPriority="low"
                 width={120}
                 height={90}
               />
@@ -116,7 +139,7 @@ export function Gallery() {
                   title={item.title}
                   tone={tones[index % tones.length]}
                   load={true}
-                  priority={index < 6}
+                  priority={index < 6 || item.id === "gallery-daily-01"}
                   sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
                 />
                 <div className="gallery-masonry-overlay">

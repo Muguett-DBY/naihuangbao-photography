@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getResponsiveImageAttrs } from "../lib/responsive-image";
 import { FilmPlaceholder } from "./FilmPlaceholder";
 
@@ -23,11 +23,18 @@ export function ImageWithFallback({
 }) {
   const [failed, setFailed] = useState(!src);
   const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
   const imageAttrs = getResponsiveImageAttrs(src, sizes);
 
   useEffect(() => {
     setFailed(!src);
     setLoaded(false);
+    const image = imgRef.current;
+    if (!src || !image) return;
+
+    if (image.complete && image.naturalWidth > 0) {
+      setLoaded(true);
+    }
   }, [src]);
 
   if (!load) {
@@ -53,6 +60,7 @@ export function ImageWithFallback({
     <div className={`img-blur-wrap ${loaded ? "is-loaded" : ""} ${className || ""}`}>
       <div className="img-skeleton gallery-skeleton" aria-hidden="true" />
       <img
+        ref={imgRef}
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
         decoding="async"

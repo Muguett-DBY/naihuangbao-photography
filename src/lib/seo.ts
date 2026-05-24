@@ -41,7 +41,7 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
   const metadata = buildSeoMetadata(content);
   const mainEntity = {
     "@context": "https://schema.org",
-    "@type": "LocalBusiness",
+    "@type": "ProfessionalService",
     "@id": `${metadata.origin}/#business`,
     name: content.siteConfig.brandName,
     alternateName: `${content.siteConfig.brandName}约拍`,

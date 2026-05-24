@@ -106,9 +106,23 @@
   letter-spacing: 0.01em;
 }
 
-.package-card [data-count-format="price"] {
+.package-card .price-count {
   display: inline-block;
   white-space: nowrap;
+  background: linear-gradient(90deg, var(--caramel-text), #c4775e, var(--caramel-text));
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  will-change: transform;
+}
+
+.package-card .price-count-running {
+  animation: priceCountGlow 1.45s ease both;
+}
+
+.package-card .price-count-settled {
+  animation: priceSettlePop 0.68s var(--ease-spring) both;
 }
 
 .package-card > span {
@@ -116,6 +130,33 @@
   color: var(--caramel-muted);
   font-size: 14px;
   line-height: 1.7;
+}
+
+@keyframes priceCountGlow {
+  0% {
+    background-position: 0% 50%;
+    text-shadow: 0 0 0 rgba(255, 184, 161, 0);
+  }
+  58% {
+    background-position: 100% 50%;
+    text-shadow: 0 14px 30px rgba(255, 184, 161, 0.22);
+  }
+  100% {
+    background-position: 180% 50%;
+    text-shadow: 0 6px 16px rgba(255, 184, 161, 0.12);
+  }
+}
+
+@keyframes priceSettlePop {
+  0% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.13);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .package-card ul {

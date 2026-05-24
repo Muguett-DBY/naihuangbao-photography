@@ -5,5 +5,13 @@ export function resolvePublicPhotoSource(
   remotePhotos: PhotoItem[],
   remoteLoaded: boolean,
 ): PhotoItem[] {
-  return remoteLoaded ? remotePhotos : staticPhotos;
+  if (!remoteLoaded) return staticPhotos;
+  if (!remotePhotos.length) return staticPhotos;
+
+  const remoteById = new Map(remotePhotos.map((photo) => [photo.id, photo]));
+  const staticIds = new Set(staticPhotos.map((photo) => photo.id));
+  const orderedKnownPhotos = staticPhotos.map((photo) => remoteById.get(photo.id) ?? photo);
+  const remoteOnlyPhotos = remotePhotos.filter((photo) => !staticIds.has(photo.id));
+
+  return [...orderedKnownPhotos, ...remoteOnlyPhotos];
 }
