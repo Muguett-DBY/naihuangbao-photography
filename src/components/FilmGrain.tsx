@@ -51,6 +51,7 @@ export function FilmGrain() {
     let leakActive = false;
     let leakX = 0;
     let leakOpacity = 0;
+    let leakRaf = 0;
 
     const updateLeak = () => {
       lCtx.clearRect(0, 0, w, h);
@@ -81,9 +82,9 @@ export function FilmGrain() {
         }
       }
 
-      requestAnimationFrame(updateLeak);
+      leakRaf = requestAnimationFrame(updateLeak);
     };
-    requestAnimationFrame(updateLeak);
+    leakRaf = requestAnimationFrame(updateLeak);
 
     const handleResize = () => {
       w = window.innerWidth;
@@ -95,7 +96,7 @@ export function FilmGrain() {
 
     return () => {
       cancelAnimationFrame(rafId);
-      cancelAnimationFrame(rafId + 1);
+      cancelAnimationFrame(leakRaf);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
