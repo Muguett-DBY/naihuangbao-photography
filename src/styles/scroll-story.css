@@ -1,240 +1,176 @@
 /* ══════════════════════════════════════════════
-   Apple-Style Scroll Story — 叙事型沉浸滚动区
+   Stacked Card Scroll Story
+   每张卡片 sticky 叠放，滚动时一张接一张出现
    ══════════════════════════════════════════════ */
 
-.scroll-story {
+.story-stack {
   position: relative;
-  height: 300vh;                   /* 3 frames × 100vh scroll distance */
-  background: #120e0b;
-  overflow: hidden;
+  background: #000;
   color: #fff;
 }
 
-.scroll-story-pin {
+/* ── Each card: sticky stacked ── */
+
+.story-stack-card {
   position: sticky;
   top: 0;
   height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: clamp(28px, 5vw, 70px);
+  padding: 0 clamp(24px, 4vw, 60px);
   overflow: hidden;
+  will-change: transform;
 }
 
-/* ── Each Frame ── */
+/* ── Background index number (decorative) ── */
 
-.scroll-story-frame {
+.story-stack-index {
   position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(32px, 5vw, 80px);
-  padding: clamp(24px, 4vw, 60px);
-  opacity: 0;
-  transform: scale(0.9) translateY(30px);
-  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
-}
-
-.scroll-story-frame--0 {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-/* ── Decorative Background Number ── */
-
-.scroll-story-bg-number {
-  position: absolute;
-  right: max(5vw, 40px);
-  bottom: -5vh;
-  font-size: clamp(160px, 25vw, 360px);
+  right: max(4vw, 30px);
+  bottom: -3vh;
+  font-size: clamp(180px, 28vw, 400px);
   font-weight: 900;
-  color: rgba(255, 180, 120, 0.04);
-  line-height: 0.8;
+  line-height: 0.7;
+  color: rgba(255, 180, 120, 0.035);
   pointer-events: none;
   user-select: none;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.05em;
 }
 
-/* ── Visual / Image ── */
+/* ── Image ── */
 
-.scroll-story-visual {
-  flex: 0 0 clamp(220px, 28vw, 380px);
+.story-stack-image-wrap {
+  flex: 0 0 clamp(200px, 26vw, 360px);
   aspect-ratio: 3 / 4;
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
   position: relative;
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 24px 64px rgba(0, 0, 0, 0.6),
     0 0 0 1px rgba(255, 255, 255, 0.04);
-  transform: perspective(1000px) rotateY(-5deg) rotateX(2deg);
-  transition: transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.5s ease;
+  transform: perspective(900px) rotateY(-3deg) rotateX(1deg);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.scroll-story-frame:hover .scroll-story-visual {
-  transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
-  box-shadow:
-    0 30px 80px rgba(0, 0, 0, 0.6),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
+.story-stack-card:hover .story-stack-image-wrap {
+  transform: perspective(900px) rotateY(0) rotateX(0);
 }
 
-.scroll-story-img {
+.story-stack-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.scroll-story-frame:hover .scroll-story-img {
-  transform: scale(1.06);
+.story-stack-card:hover .story-stack-image {
+  transform: scale(1.05);
 }
 
-/* Glow overlay on image */
-.scroll-story-img-glow {
+/* Warm glow overlay */
+.story-stack-glow {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     135deg,
-    rgba(255, 180, 120, 0.12) 0%,
-    transparent 45%,
-    rgba(0, 0, 0, 0.25) 100%
+    rgba(255, 180, 120, 0.10) 0%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.30) 100%
   );
   pointer-events: none;
 }
 
-/* ── Content ── */
+/* ── Text ── */
 
-.scroll-story-content {
-  flex: 0 0 clamp(260px, 32vw, 440px);
+.story-stack-text {
+  flex: 0 0 clamp(240px, 30vw, 420px);
   position: relative;
 }
 
-/* Small label */
-.scroll-story-label {
-  display: inline-block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: rgba(255, 180, 120, 0.5);
-  margin-bottom: 10px;
-}
-
-/* Decorative rule */
-.scroll-story-rule {
-  width: 32px;
+.story-stack-accent-line {
+  width: 28px;
   height: 2px;
-  background: rgba(255, 180, 120, 0.3);
-  margin-bottom: 16px;
+  background: rgba(255, 180, 120, 0.35);
   border-radius: 2px;
+  margin-bottom: 14px;
 }
 
-/* Title */
-.scroll-story-title {
+.story-stack-title {
   font-family: var(--font-display-cn);
-  font-size: clamp(26px, 3.8vw, 50px);
+  font-size: clamp(24px, 3.5vw, 46px);
   font-weight: 700;
-  color: #fff;
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   line-height: 1.15;
   letter-spacing: 0.02em;
 }
 
-/* Subtitle — accent color */
-.scroll-story-subtitle {
-  font-size: clamp(16px, 1.6vw, 24px);
+.story-stack-line {
+  font-size: clamp(15px, 1.5vw, 22px);
   font-weight: 400;
-  color: rgba(255, 200, 170, 0.8);
-  margin: 0 0 18px;
+  color: rgba(255, 200, 170, 0.75);
+  margin: 0 0 16px;
   letter-spacing: 0.04em;
 }
 
-/* Body text */
-.scroll-story-text {
-  font-size: clamp(13px, 1.1vw, 15px);
+.story-stack-body {
+  font-size: clamp(12px, 1vw, 14.5px);
   line-height: 1.8;
-  color: rgba(255, 255, 255, 0.55);
-  max-width: 380px;
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 360px;
 }
 
 /* ── Progress Bar ── */
 
-.scroll-story-progress {
+.story-stack::after {
+  content: "";
   position: fixed;
-  right: 20px;
+  right: 18px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
   width: 2px;
-  height: 100px;
+  height: 80px;
   background: rgba(255, 255, 255, 0.06);
   border-radius: 2px;
-  overflow: hidden;
-}
-
-.scroll-story-progress-bar {
-  width: 100%;
-  height: 0%;
-  background: linear-gradient(to bottom, rgba(255, 180, 120, 0.6), rgba(255, 140, 100, 0.3));
-  border-radius: 2px;
-  transition: height 0.2s ease;
+  pointer-events: none;
 }
 
 /* ── Responsive ── */
 
 @media (max-width: 768px) {
-  .scroll-story {
-    height: auto;
-    min-height: auto;
-    background: #120e0b;
-  }
-
-  .scroll-story-pin {
-    position: relative;
-    top: auto;
-    height: auto;
-    flex-direction: column;
-    padding: 0;
-  }
-
-  .scroll-story-frame {
-    position: relative;
-    inset: auto;
+  .story-stack-card {
     flex-direction: column;
     text-align: left;
-    padding: 60px clamp(22px, 5vw, 52px);
-    min-height: 100vh;
-    opacity: 1 !important;
-    transform: none !important;
-    gap: 24px;
+    gap: 20px;
+    padding: 40px clamp(20px, 5vw, 40px);
   }
 
-  .scroll-story-visual {
+  .story-stack-image-wrap {
+    flex: none;
+    width: 100%;
+    max-width: 320px;
+    transform: none;
+  }
+  .story-stack-card:hover .story-stack-image-wrap {
+    transform: none;
+  }
+
+  .story-stack-text {
     flex: none;
     width: 100%;
     max-width: 360px;
-    transform: none;
-  }
-  .scroll-story-frame:hover .scroll-story-visual {
-    transform: none;
   }
 
-  .scroll-story-content {
-    flex: none;
-    width: 100%;
-    max-width: 400px;
-  }
-
-  .scroll-story-bg-number {
+  .story-stack-index {
+    font-size: clamp(100px, 30vw, 180px);
     right: -10px;
-    bottom: -20px;
-    font-size: clamp(120px, 30vw, 200px);
+    bottom: -10px;
   }
 
-  .scroll-story-progress {
+  .story-stack::after {
     display: none;
   }
 }

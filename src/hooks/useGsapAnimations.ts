@@ -514,47 +514,68 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     });
 
     /* ══════════════════════════════════════════
-       EFFECT 17: Apple Scroll Story
+       EFFECT 17: Stacked Scroll Story (sticky cards)
+       Each card reveals image + text as user scrolls through it
        ══════════════════════════════════════════ */
-    const storySection = document.querySelector(".scroll-story");
-    const storyFrames = $<HTMLElement>(".scroll-story-frame");
-    if (storySection && storyFrames.length) {
-      const total = storyFrames.length;
-      storyFrames.forEach((frame, i) => {
-        const progressStart = i / total;
-        const progressEnd = (i + 0.7) / total;
+    const storyCards = $<HTMLElement>(".story-stack-card");
+    if (storyCards.length) {
+      storyCards.forEach((card) => {
+        const image = card.querySelector<HTMLElement>(".story-stack-image");
+        const text = card.querySelector<HTMLElement>(".story-stack-text");
+        const accent = card.querySelector<HTMLElement>(".story-stack-accent-line");
 
-        gsap.fromTo(frame,
-          { opacity: 0, scale: 0.9, y: 30 },
-          {
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: storySection,
-              start: `${progressStart * 100}%`,
-              end: `${progressEnd * 100}%`,
-              scrub: 1.5,
+        if (image) {
+          gsap.fromTo(image,
+            { clipPath: "inset(0 0 0 100%)", opacity: 0.3 },
+            {
+              clipPath: "inset(0 0 0 0%)",
+              opacity: 1,
+              duration: 0.8,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 80%",
+                end: "top 30%",
+                scrub: 1.2,
+              },
             },
-          },
-        );
-      });
+          );
+        }
 
-      // Progress bar
-      const progressBar = document.querySelector(".scroll-story-progress-bar");
-      if (progressBar) {
-        gsap.to(progressBar, {
-          height: "100%",
-          ease: "none",
-          scrollTrigger: {
-            trigger: storySection,
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 1,
-          },
-        });
-      }
+        if (text) {
+          gsap.fromTo(text,
+            { opacity: 0, x: -20 },
+            {
+              opacity: 1, x: 0,
+              duration: 0.6,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 75%",
+                end: "top 35%",
+                scrub: 1.2,
+              },
+            },
+          );
+        }
+
+        if (accent) {
+          gsap.fromTo(accent,
+            { width: 0 },
+            {
+              width: 28,
+              duration: 0.4,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 75%",
+                end: "top 50%",
+                scrub: 1,
+              },
+            },
+          );
+        }
+      });
     }
 
     // ── Refresh ScrollTrigger ──
