@@ -8,8 +8,8 @@
   },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "npm run seo:sync && tsc -b && vite build && npm run perf:budget",
-    "build:cf": "tsc -b && vite build",
+    "build": "tsc -b && vite build",
+    "build:full": "npm run seo:sync && tsc -b && vite build && npm run perf:budget",
     "preview": "vite preview --host 0.0.0.0",
     "lint": "tsc -b --noEmit",
     "test": "vitest run",
