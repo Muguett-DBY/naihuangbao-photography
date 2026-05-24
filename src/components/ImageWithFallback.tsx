@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getResponsiveImageAttrs } from "../lib/responsive-image";
+import { getResponsivePictureAttrs } from "../lib/responsive-picture";
 import { FilmPlaceholder } from "./FilmPlaceholder";
 
 export function ImageWithFallback({
@@ -24,7 +25,11 @@ export function ImageWithFallback({
   const [failed, setFailed] = useState(!src);
   const [loaded, setLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
-  const imageAttrs = getResponsiveImageAttrs(src, sizes);
+
+  // Use <picture> with AVIF for gallery images, regular <img> otherwise
+  const usePicture = sizes && src.startsWith("/images/gallery/");
+  const pictureAttrs = usePicture ? getResponsivePictureAttrs(src, sizes) : null;
+  const imageAttrs = !usePicture ? getResponsiveImageAttrs(src, sizes) : null;
 
   useEffect(() => {
     setFailed(!src);
@@ -59,18 +64,40 @@ export function ImageWithFallback({
   return (
     <div className={`img-blur-wrap ${loaded ? "is-loaded" : ""} ${className || ""}`}>
       <div className="img-skeleton gallery-skeleton" aria-hidden="true" />
-      <img
-        ref={imgRef}
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "auto"}
-        decoding="async"
-        width={960}
-        height={1200}
-        {...imageAttrs}
-        alt={alt}
-        onError={() => setFailed(true)}
-        onLoad={() => setLoaded(true)}
-      />
+      {pictureAttrs ? (
+        <picture>
+          {pictureAttrs.sources.map((source) => (
+            <source key={source.type} type={source.type} srcSet={source.srcSet} sizes={source.sizes} />
+          ))}
+          <img
+            ref={imgRef}
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
+            decoding="async"
+            width={960}
+            height={1200}
+            src={pictureAttrs.fallback.src}
+            srcSet={pictureAttrs.fallback.srcSet}
+            sizes={pictureAttrs.fallback.sizes}
+            alt={alt}
+            onError={() => setFailed(true)}
+            onLoad={() => setLoaded(true)}
+          />
+        </picture>
+      ) : (
+        <img
+          ref={imgRef}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          decoding="async"
+          width={960}
+          height={1200}
+          {...(imageAttrs || { src })}
+          alt={alt}
+          onError={() => setFailed(true)}
+          onLoad={() => setLoaded(true)}
+        />
+      )}
     </div>
   );
 }
