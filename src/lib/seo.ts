@@ -154,6 +154,7 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     // hreflang for Chinese locale
     '<link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/" />',
     '<link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/" />',
+    // To enable Cloudflare Web Analytics, add your beacon script here
     `<title>${escapeHtml(metadata.title)}</title>`,
   ].join("\n    ");
 }

@@ -129,10 +129,56 @@ export function AdminShell() {
         {activeTab === "services" && <AdminServicesTab showToast={showToast} />}
         {activeTab === "faq" && <AdminFaqTab showToast={showToast} />}
         {activeTab === "copy" && <AdminCopyTab showToast={showToast} />}
-        {activeTab === "stats" && <div className="adm-content-panel" style={{textAlign:'center',padding:'40px 20px'}}>
-          <p style={{fontSize:'18px',margin:'0 0 8px',color:'#5d4e49'}}>📊</p>
-          <p style={{fontSize:'13px',margin:0,color:'#8f7d77'}}>统计功能开发中</p>
-        </div>}
+        {activeTab === "stats" && <AdminStats />}
+      </div>
+    </div>
+  );
+}
+
+type StatsData = {
+  photos: { total: number; public: number; hidden: number };
+  bookings: { pending: number; total: number };
+};
+
+function AdminStats() {
+  const [data, setData] = useState<StatsData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetch("/api/admin/stats", { credentials: "include", signal: ctrl.signal })
+      .then((r) => r.json())
+      .then((d: StatsData) => { if (!ctrl.signal.aborted) setData(d); })
+      .catch(() => {})
+      .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
+    return () => ctrl.abort();
+  }, []);
+
+  if (loading) {
+    return <div className="adm-content-panel" style={{textAlign:'center',padding:'40px 20px'}}><p>加载中...</p></div>;
+  }
+
+  if (!data) {
+    return <div className="adm-content-panel" style={{textAlign:'center',padding:'40px 20px'}}><p>暂时无法加载数据</p></div>;
+  }
+
+  return (
+    <div className="adm-content-panel">
+      <h2>数据概览</h2>
+      <div className="adm-stats-grid">
+        <div className="adm-stat-card">
+          <span className="adm-stat-number">{data.photos.total}</span>
+          <span className="adm-stat-label">照片总数</span>
+          <div className="adm-stat-bar">
+            <div className="adm-stat-bar-fill" style={{width: `${data.photos.total ? (data.photos.public / data.photos.total) * 100 : 0}%`}} />
+          </div>
+          <span className="adm-stat-sub">{data.photos.public} 公开 · {data.photos.hidden} 隐藏</span>
+        </div>
+        <div className="adm-stat-card">
+          <span className="adm-stat-number">{data.bookings.total}</span>
+          <span className="adm-stat-label">预约总数</span>
+          <span className="adm-stat-sub">{data.bookings.pending} 个待处理</span>
+        </div>
       </div>
     </div>
   );

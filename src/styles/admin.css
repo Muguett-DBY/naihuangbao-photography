@@ -466,6 +466,55 @@
 .adm-btn-done { background: #6a9a70; color: #fff; }
 .adm-btn-skip { background: transparent; color: #a08880; }
 
+.adm-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.adm-stat-card {
+  background: #fffdf7;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adm-stat-number {
+  font-size: 36px;
+  font-weight: 700;
+  color: #493735;
+  line-height: 1;
+}
+
+.adm-stat-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #7a5a4a;
+}
+
+.adm-stat-sub {
+  font-size: 13px;
+  color: #a08880;
+}
+
+.adm-stat-bar {
+  height: 4px;
+  background: #eee;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.adm-stat-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5e4a, #c4775e);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
 @media (max-width: 800px) {
   .adm-body { grid-template-columns: 1fr; }
   .adm-side { position: static; }
