@@ -10,6 +10,8 @@ import {
   LogOut,
   Settings,
 } from "lucide-react";
+import { Button, Input, Tabs } from "animal-island-ui";
+import type { TabItem } from "animal-island-ui";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { isAbortError, type AdminTab, type ToastType } from "../../lib/admin-helpers";
 import { AdminBookingsTab } from "./AdminBookingsTab";
@@ -19,14 +21,14 @@ import { AdminPackagesTab } from "./AdminPackagesTab";
 import { AdminPhotosTab } from "./AdminPhotosTab";
 import { AdminServicesTab } from "./AdminServicesTab";
 
-const tabs: Array<{ id: AdminTab; label: string; icon: typeof ImagePlus }> = [
-  { id: "bookings", label: "预约", icon: CalendarCheck },
-  { id: "photos", label: "照片", icon: ImagePlus },
-  { id: "stats", label: "数据", icon: BarChart3 },
-  { id: "packages", label: "套餐价格", icon: Layers },
-  { id: "services", label: "服务规则", icon: Settings },
-  { id: "faq", label: "FAQ/流程", icon: HelpCircle },
-  { id: "copy", label: "主页文案", icon: FileText },
+const adminTabItems: TabItem[] = [
+  { key: "bookings", label: "预约", children: null },
+  { key: "photos", label: "照片", children: null },
+  { key: "stats", label: "数据", children: null },
+  { key: "packages", label: "套餐价格", children: null },
+  { key: "services", label: "服务规则", children: null },
+  { key: "faq", label: "FAQ/流程", children: null },
+  { key: "copy", label: "主页文案", children: null },
 ];
 
 export function AdminShell() {
@@ -87,9 +89,9 @@ export function AdminShell() {
           <h1>作品与内容管理</h1>
           <p>输入后台密码登录</p>
           <form onSubmit={handleLogin}>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+            <Input value={password} onChange={(e) => setPassword(e.target.value)}
               placeholder="输入密码" autoComplete="current-password" required />
-            <button type="submit">{loginMessage || "登录"}</button>
+            <Button type="primary" htmlType="submit">{loginMessage || "登录"}</Button>
           </form>
           {loginMessage ? <p className="adm-msg">{loginMessage}</p> : null}
           <a href="/">← 返回官网</a>
@@ -103,7 +105,9 @@ export function AdminShell() {
       <header className="adm-bar">
         <div className="adm-bar-brand">{siteConfig.brandName} · 后台管理</div>
         <div className="adm-bar-actions">
-          <button onClick={handleLogout}><LogOut size={14} /> 退出</button>
+          <Button type="text" onClick={handleLogout}>
+            <LogOut size={14} /> 退出
+          </Button>
           <a href="/">← 官网</a>
         </div>
       </header>
@@ -111,17 +115,13 @@ export function AdminShell() {
       {toast && <div className={`adm-toast adm-toast-${toast.type}`}>{toast.text}</div>}
 
       <div className="adm-shell">
-        <nav className="adm-tabs" aria-label="后台功能">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button key={tab.id} className={activeTab === tab.id ? "is-active" : ""}
-                onClick={() => setActiveTab(tab.id)} type="button">
-                <Icon size={15} /> {tab.label}
-              </button>
-            );
-          })}
-        </nav>
+        <Tabs
+          items={adminTabItems}
+          activeKey={activeTab}
+          onChange={(key) => setActiveTab(key as AdminTab)}
+          leafAnimation={false}
+          shadow={false}
+        />
 
         {activeTab === "bookings" && <AdminBookingsTab showToast={showToast} />}
         {activeTab === "photos" && <AdminPhotosTab showToast={showToast} />}

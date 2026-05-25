@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { type FormEvent, useState } from "react";
+import { Button, Input, Select } from "animal-island-ui";
 import { useSiteContent } from "../hooks/useSiteContent";
 
 type BookingModalProps = {
@@ -64,9 +65,9 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
             <h2>预约已提交！</h2>
             <p>我们会尽快通过你留下的联系方式和你确认档期。</p>
             <p className="booking-success-hint">你也可以直接联系小红书：{siteConfig.xiaohongshuProfile}</p>
-            <button className="booking-btn booking-btn-primary" onClick={onClose}>
+            <Button type="primary" onClick={onClose}>
               知道了
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -126,9 +127,9 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
           {error ? <p className="booking-error">{error}</p> : null}
 
-          <button className="booking-btn booking-btn-primary" type="submit" disabled={sending}>
+          <Button type="primary" htmlType="submit" disabled={sending || !name.trim() || !contact.trim()}>
             {sending ? "提交中..." : "提交预约"}
-          </button>
+          </Button>
 
           <p className="booking-footer">
             提交即表示你同意拍摄边界说明。也可以直接去 <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">小红书私信</a>

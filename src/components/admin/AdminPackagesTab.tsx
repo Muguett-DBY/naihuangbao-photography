@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
+import { Button } from "animal-island-ui";
 import { defaultSiteContent } from "../../data/content";
 import type { PackageItem, SiteContent } from "../../types/content";
 import { linesFromText, PanelHeader, type ToastType } from "../../lib/admin-helpers";
@@ -54,7 +55,7 @@ export function AdminPackagesTab({ showToast }: { showToast: (text: string, type
           <div className="adm-cms-item" key={`${item.name}-${index}`}>
             <div className="adm-cms-item-head">
               <strong>套餐 {index + 1}</strong>
-              <button type="button" onClick={() => updateContent("packages", content.packages.filter((_, i) => i !== index))} disabled={content.packages.length <= 1}>删除</button>
+              <Button type="text" size="small" onClick={() => updateContent("packages", content.packages.filter((_, i) => i !== index))} disabled={content.packages.length <= 1}>删除</Button>
             </div>
             <div className="adm-form-grid">
               <label>套餐名 <input value={item.name} onChange={(e) => updatePkg(index, { name: e.target.value })} /></label>
@@ -66,9 +67,9 @@ export function AdminPackagesTab({ showToast }: { showToast: (text: string, type
           </div>
         ))}
       </div>
-      <button className="adm-add" type="button" onClick={() => updateContent("packages", [...content.packages, emptyPkg])}>
+      <Button type="primary" className="adm-add" onClick={() => updateContent("packages", [...content.packages, emptyPkg])}>
         <Plus size={14} /> 添加套餐
-      </button>
+      </Button>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
+import { Button } from "animal-island-ui";
 import { defaultSiteContent } from "../../data/content";
 import type { SiteContent, WhyCard, WhyCardIcon } from "../../types/content";
 import { linesFromText, PanelHeader, type ToastType } from "../../lib/admin-helpers";
@@ -100,7 +101,7 @@ export function AdminCopyTab({ showToast }: { showToast: (text: string, type: To
           <div className="adm-cms-item" key={`${card.title}-${index}`}>
             <div className="adm-cms-item-head">
               <strong>选择理由 {index + 1}</strong>
-              <button type="button" onClick={() => updateContent("whyCards", content.whyCards.filter((_, i) => i !== index))} disabled={content.whyCards.length <= 1}>删除</button>
+              <Button type="text" size="small" onClick={() => updateContent("whyCards", content.whyCards.filter((_, i) => i !== index))} disabled={content.whyCards.length <= 1}>删除</Button>
             </div>
             <div className="adm-form-grid">
               <label>图标
@@ -114,9 +115,9 @@ export function AdminCopyTab({ showToast }: { showToast: (text: string, type: To
           </div>
         ))}
       </div>
-      <button className="adm-add" type="button" onClick={() => updateContent("whyCards", [...content.whyCards, emptyWhyCard])}>
+      <Button type="primary" className="adm-add" onClick={() => updateContent("whyCards", [...content.whyCards, emptyWhyCard])}>
         <Plus size={14} /> 添加选择理由
-      </button>
+      </Button>
     </div>
   );
 }

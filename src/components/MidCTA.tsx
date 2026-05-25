@@ -1,4 +1,5 @@
 import { MessageCircle } from "lucide-react";
+import { Button } from "animal-island-ui";
 import { useInView } from "../hooks/useInView";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useBookingModal } from "../hooks/useBookingModal";
@@ -14,10 +15,10 @@ export function MidCTA() {
         <p className="mid-cta-eyebrow">{sectionCopy.midCta.eyebrow}</p>
         <h2>{sectionCopy.midCta.title}</h2>
         <p className="mid-cta-desc">{sectionCopy.midCta.intro}</p>
-        <button className="mid-cta-btn" onClick={() => openBookingModal()} type="button">
+        <Button type="primary" size="large" className="mid-cta-btn" onClick={() => openBookingModal()}>
           <MessageCircle size={18} />
           {sectionCopy.midCta.actionLabel}
-        </button>
+        </Button>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, MessageCircle } from "lucide-react";
+import { Button, Card } from "animal-island-ui";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useBookingModal } from "../hooks/useBookingModal";
 import { Section } from "./Section";
@@ -32,7 +33,7 @@ export function Packages() {
     >
       <div className="package-grid">
         {packages.map((item, index) => (
-          <article className={`package-card${index === 1 ? " is-popular" : ""}`} key={item.name}>
+          <Card className={`package-card${index === 1 ? " is-popular" : ""}`} key={item.name}>
             {index === 1 && <span className="package-badge">推荐</span>}
             <div>
               <p>{item.duration}</p>
@@ -56,11 +57,11 @@ export function Packages() {
                 <p>{packageFit[item.name].people}</p>
               </div>
             ) : null}
-            <button className="package-cta" onClick={() => openBookingModal(item.name)} type="button">
+            <Button type="primary" className="package-cta" onClick={() => openBookingModal(item.name)}>
               <MessageCircle size={15} />
               预约这个套餐
-            </button>
-          </article>
+            </Button>
+          </Card>
         ))}
       </div>
     </Section>

@@ -4,7 +4,9 @@ import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { App } from "./App";
+import "animal-island-ui/style";
 import "./styles/global.css";
+import "./styles/animal-theme.css";
 
 // Idle-time prefetch of key gallery images
 if ("requestIdleCallback" in window) {

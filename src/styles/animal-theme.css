@@ -1,0 +1,196 @@
+/* ══════════════════════════════════════════════════════════
+   animal-island-ui Theme Override — Photography Warm Tone
+   Maps the Animal Crossing palette to naihuangbao-photography
+   warm creamy / caramel / peach design tokens.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── CSS Variable Override ──────────────────────────── */
+:root {
+  /* Primary — warm peach/terracotta (replaces teal #19c8b9) */
+  --animal-primary-color: #D4A88C;
+  --animal-primary-color-hover: #E0BCA4;
+  --animal-primary-color-active: #C0947A;
+  --animal-primary-color-bg: #FDF5EE;
+
+  /* Semantic colors */
+  --animal-success-color: #8FB88A;
+  --animal-success-color-hover: #A2C89D;
+  --animal-success-color-active: #7AA675;
+  --animal-warning-color: #E8C87A;
+  --animal-warning-color-hover: #F0D694;
+  --animal-warning-color-active: #D4B05E;
+  --animal-error-color: #D48383;
+  --animal-error-color-hover: #E09A9A;
+  --animal-error-color-active: #C46A6A;
+
+  /* Text — caramel palette from the project */
+  --animal-text-color: #8B5E4A;
+  --animal-text-color-secondary: #A88B7A;
+  --animal-text-color-muted: #8B5E4A;
+  --animal-text-color-disabled: #CBB8A8;
+
+  /* Border */
+  --animal-border-color: #D4C4B4;
+  --animal-border-color-hover: #B8A090;
+  --animal-border-color-light: #EDE4DC;
+
+  /* Background — custard cream */
+  --animal-bg-color: #FEF7ED;
+  --animal-bg-color-secondary: #F5EBE0;
+  --animal-bg-color-disabled: #F0E8DC;
+
+  /* Border radius — slightly softer */
+  --animal-border-radius-sm: 14px;
+  --animal-border-radius-base: 16px;
+  --animal-border-radius-lg: 22px;
+
+  /* Shadow — using project's warm shadows */
+  --animal-shadow-sm: 0 2px 4px 0 rgba(95, 60, 49, 0.06);
+  --animal-shadow-base: 0 3px 10px 0 rgba(95, 60, 49, 0.1);
+  --animal-shadow-lg: 0 8px 24px 0 rgba(95, 60, 49, 0.14);
+
+  /* Font — use project's existing font stack, keep Nunito/Noto Sans SC */
+  --animal-font-family: Nunito, "Noto Sans SC",
+    "Naihuangbao WenKai", "Kaiti SC",
+    "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei",
+    system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* ── Dark Mode ─────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --animal-primary-color: #D4A88C;
+    --animal-primary-color-hover: #E0BCA4;
+    --animal-primary-color-active: #C0947A;
+    --animal-primary-color-bg: #3A2A22;
+
+    --animal-success-color: #7AA675;
+    --animal-success-color-hover: #8FB88A;
+    --animal-success-color-active: #6A9665;
+    --animal-warning-color: #C4A050;
+    --animal-warning-color-hover: #D4B05E;
+    --animal-warning-color-active: #B08E42;
+    --animal-error-color: #B86A6A;
+    --animal-error-color-hover: #C88080;
+    --animal-error-color-active: #A85858;
+
+    --animal-text-color: #D4B8A8;
+    --animal-text-color-secondary: #B89E8E;
+    --animal-text-color-disabled: #8A7060;
+
+    --animal-border-color: #5A4A3E;
+    --animal-border-color-hover: #7A6A5A;
+    --animal-border-color-light: #4A3A2E;
+
+    --animal-bg-color: #2D201A;
+    --animal-bg-color-secondary: #3A2A22;
+    --animal-bg-color-disabled: #33241E;
+
+    --animal-shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+    --animal-shadow-base: 0 3px 10px 0 rgba(0, 0, 0, 0.25);
+    --animal-shadow-lg: 0 8px 24px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* ── Hardcoded Color Overrides ─────────────────────── */
+/* The library's compiled CSS has some hardcoded colors   */
+/* that don't use CSS variables. We override them here.   */
+
+/* Button — Primary variant (hardcoded bg/color/shadow) */
+[class*="animal-btn-primary"] {
+  color: #FFFDF7 !important;
+  background: var(--animal-primary-color) !important;
+  border-color: var(--animal-primary-color) !important;
+  box-shadow: 0 5px 0 0 var(--animal-primary-color-active) !important;
+}
+[class*="animal-btn-primary"]:hover:not(:disabled) {
+  background: var(--animal-primary-color-hover) !important;
+  border-color: var(--animal-primary-color-hover) !important;
+  box-shadow: 0 6px 0 0 var(--animal-primary-color-active) !important;
+}
+[class*="animal-btn-primary"]:active:not(:disabled) {
+  background: var(--animal-primary-color-active) !important;
+  border-color: var(--animal-primary-color-active) !important;
+  box-shadow: 0 1px 0 0 var(--animal-primary-color-active) !important;
+}
+
+/* Button — Loading (hardcoded teal stripes) */
+[class*="animal-btn-loading"] {
+  background: var(--animal-primary-color) !important;
+  border-color: var(--animal-primary-color-hover) !important;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--animal-primary-color),
+    var(--animal-primary-color) 10px,
+    var(--animal-primary-color-hover) 10px,
+    var(--animal-primary-color-hover) 20px
+  ) !important;
+}
+
+/* Input wrapper (hardcoded bg #f7f3df) */
+[class*="animal-wrapper"] {
+  background: var(--animal-bg-color) !important;
+  border-color: var(--animal-border-color) !important;
+  box-shadow: 0 3px var(--animal-border-color) !important;
+}
+[class*="animal-wrapper"]:hover:not([class*="animal-wrapper-disabled"]) {
+  border-color: var(--animal-border-color-hover) !important;
+  box-shadow: 0 3px var(--animal-border-color-hover) !important;
+}
+[class*="animal-wrapper-disabled"] {
+  background: var(--animal-bg-color-disabled) !important;
+  border-color: var(--animal-border-color-light) !important;
+}
+
+/* Switch (hardcoded bg) */
+[class*="animal-switch"] {
+  background: var(--animal-border-color) !important;
+  border-color: var(--animal-border-color-hover) !important;
+}
+[class*="animal-switch-checked"] {
+  background: var(--animal-success-color) !important;
+  border-color: var(--animal-success-color-active) !important;
+}
+
+/* Card (hardcoded bg #f7f3df) */
+[class*="animal-card"]:not([class*="animal-card-title"]):not([class*="animal-card-dashed"]):not([class*="animal-card-app-"]):not([class*="animal-card-purple"]):not([class*="animal-card-lime-"]):not([class*="animal-card-yellow-"]):not([class*="animal-card-brown"]):not([class*="animal-card-warm-"]) {
+  background: var(--animal-bg-color) !important;
+  color: var(--animal-text-color) !important;
+}
+[class*="animal-card-title"] {
+  background: var(--paper-white) !important;
+}
+[class*="animal-card-dashed"] {
+  background: var(--animal-bg-color) !important;
+  border-color: var(--animal-border-color) !important;
+}
+
+/* Modal (hardcoded bg #f7f3df) */
+[class*="animal-modalClipped"] {
+  background: var(--animal-bg-color) !important;
+  color: var(--animal-text-color) !important;
+}
+[class*="animal-title"] {
+  color: var(--animal-text-color) !important;
+}
+
+/* Collapse / FAQ Card (hardcoded bg) */
+[class*="animal-faqCard"] {
+  background: var(--animal-bg-color) !important;
+  border-color: var(--animal-border-color) !important;
+}
+
+/* Loading overlay (hardcoded bg) */
+[class*="animal-loadingOverlay"] {
+  background: color-mix(in srgb, var(--animal-bg-color) 80%, transparent) !important;
+}
+
+/* Switch inner text (hardcoded white) */
+[class*="animal-inner"] {
+  color: var(--animal-text-color) !important;
+}
+
+/* Select / dropdown (hardcoded bg) */
+[class*="animal-select"] {
+  background: var(--animal-bg-color) !important;
+}

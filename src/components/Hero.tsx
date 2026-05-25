@@ -1,4 +1,5 @@
 import { ArrowDown, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { Button, Typewriter } from "animal-island-ui";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useBookingModal } from "../hooks/useBookingModal";
 
@@ -42,7 +43,9 @@ export function Hero() {
             <span className="hero-magazine-subtitle">南京女生写真与情侣约拍</span>
           </h1>
           <p className="hero-cover-intro">
-            把自然、柔和、带一点胶片感的日常，拍成可以反复翻看的南京记忆。适合第一次约拍的女生、情侣纪念和轻松的城市散步。
+            <Typewriter speed={50}>
+              把自然、柔和、带一点胶片感的日常，拍成可以反复翻看的南京记忆。适合第一次约拍的女生、情侣纪念和轻松的城市散步。
+            </Typewriter>
           </p>
         </div>
 
@@ -56,14 +59,16 @@ export function Hero() {
             <span className="hero-trust-tag">江南 / 街拍 / 公园</span>
           </div>
           <div className="hero-cover-cta-group">
-            <a className="hero-cover-primary-btn" href="#gallery">
+            <Button type="primary" size="large" className="hero-cover-primary-btn" onClick={() => {
+              document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth" });
+            }}>
               查看作品
               <ArrowDown size={16} />
-            </a>
-            <button className="hero-cover-secondary-btn" onClick={() => openBookingModal()} type="button">
+            </Button>
+            <Button type="primary" size="large" className="hero-cover-secondary-btn" onClick={() => openBookingModal()}>
               <MessageCircle size={14} />
               预约
-            </button>
+            </Button>
           </div>
         </div>
       </div>

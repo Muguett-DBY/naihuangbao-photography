@@ -1,4 +1,5 @@
 import { ShieldCheck } from "lucide-react";
+import { Collapse } from "animal-island-ui";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { Section } from "./Section";
 
@@ -42,10 +43,11 @@ export function ProcessAndFaq() {
         </div>
         <div className="faq-list" id="faq">
           {faqs.map((item) => (
-            <details key={item.question}>
-              <summary>{item.question}</summary>
-              <p>{item.answer}</p>
-            </details>
+            <Collapse
+              key={item.question}
+              question={item.question}
+              answer={<p>{item.answer}</p>}
+            />
           ))}
         </div>
       </div>

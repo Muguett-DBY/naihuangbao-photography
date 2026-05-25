@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
+import { Button } from "animal-island-ui";
 import { defaultSiteContent } from "../../data/content";
 import type { ServicePolicy, SiteContent } from "../../types/content";
 import { linesFromText, PanelHeader, type ToastType } from "../../lib/admin-helpers";
@@ -70,7 +71,7 @@ export function AdminServicesTab({ showToast }: { showToast: (text: string, type
           <div className="adm-cms-item" key={`${item.title}-${index}`}>
             <div className="adm-cms-item-head">
               <strong>预约规则 {index + 1}</strong>
-              <button type="button" onClick={() => updateContent("servicePolicies", content.servicePolicies.filter((_, i) => i !== index))}>删除</button>
+              <Button type="text" size="small" onClick={() => updateContent("servicePolicies", content.servicePolicies.filter((_, i) => i !== index))}>删除</Button>
             </div>
             <div className="adm-form-grid">
               <label>标题 <input value={item.title} onChange={(e) => updatePol(index, { title: e.target.value })} /></label>
@@ -79,9 +80,9 @@ export function AdminServicesTab({ showToast }: { showToast: (text: string, type
           </div>
         ))}
       </div>
-      <button className="adm-add" type="button" onClick={() => updateContent("servicePolicies", [...content.servicePolicies, emptyPolicy])}>
+      <Button type="primary" className="adm-add" onClick={() => updateContent("servicePolicies", [...content.servicePolicies, emptyPolicy])}>
         <Plus size={14} /> 添加规则
-      </button>
+      </Button>
     </div>
   );
 }

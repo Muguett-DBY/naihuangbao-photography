@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
+import { Button, Collapse } from "animal-island-ui";
 import { defaultSiteContent } from "../../data/content";
 import type { FaqItem, SiteContent } from "../../types/content";
 import { linesFromText, PanelHeader, type ToastType } from "../../lib/admin-helpers";
@@ -60,7 +61,7 @@ export function AdminFaqTab({ showToast }: { showToast: (text: string, type: Toa
           <div className="adm-cms-item" key={`${item.question}-${index}`}>
             <div className="adm-cms-item-head">
               <strong>问题 {index + 1}</strong>
-              <button type="button" onClick={() => updateContent("faqs", content.faqs.filter((_, i) => i !== index))}>删除</button>
+              <Button type="text" size="small" onClick={() => updateContent("faqs", content.faqs.filter((_, i) => i !== index))}>删除</Button>
             </div>
             <div className="adm-form-grid">
               <label>问题 <input value={item.question} onChange={(e) => updateFq(index, { question: e.target.value })} /></label>
@@ -69,9 +70,9 @@ export function AdminFaqTab({ showToast }: { showToast: (text: string, type: Toa
           </div>
         ))}
       </div>
-      <button className="adm-add" type="button" onClick={() => updateContent("faqs", [...content.faqs, emptyFaq])}>
+      <Button type="primary" className="adm-add" onClick={() => updateContent("faqs", [...content.faqs, emptyFaq])}>
         <Plus size={14} /> 添加问题
-      </button>
+      </Button>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { ImagePlus, Pencil, Trash2, Upload } from "lucide-react";
 import { type FormEvent, useRef, useState } from "react";
+import { Button } from "animal-island-ui";
 import { styleLabels } from "../../data/site";
 import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
 import type { ToastType } from "../../lib/admin-helpers";
@@ -109,8 +110,8 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
               <label className="adm-check"><input type="checkbox" checked={editForm.featured} onChange={(e) => setEditForm({ ...editForm, featured: e.target.checked })} /> 精选作品</label>
             </div>
             <div className="adm-actions">
-              <button className="adm-btn-cancel" onClick={() => setEditingPhoto(null)}>取消</button>
-              <button className="adm-btn-confirm" onClick={handleSaveEdit} disabled={saving}>{saving ? "保存中..." : "保存"}</button>
+              <Button type="default" size="small" className="adm-btn-cancel" onClick={() => setEditingPhoto(null)}>取消</Button>
+              <Button type="primary" size="small" className="adm-btn-confirm" onClick={handleSaveEdit} disabled={saving}>{saving ? "保存中..." : "保存"}</Button>
             </div>
           </div>
         </div>
@@ -140,7 +141,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
             <label>地点 <input name="location" placeholder="南京" required /></label>
             <label className="adm-check"><input name="clientAuthorized" type="checkbox" value="true" required /> 客人已授权</label>
             <label className="adm-check"><input name="featured" type="checkbox" value="true" /> 设为精选</label>
-            <button className="adm-submit" type="submit" disabled={uploading}><Upload size={14} /> {uploading ? "上传中..." : "上传"}</button>
+            <Button type="primary" htmlType="submit" className="adm-submit" disabled={uploading}>{uploading ? "上传中..." : "上传"}</Button>
           </form>
           <p className="adm-hint">JPEG/PNG/WebP · 最大 10MB</p>
         </div>
@@ -164,8 +165,8 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
                   <span>{styleLabels[p.style]} · {p.location}</span>
                 </div>
                 <div className="adm-photo-actions">
-                  <button className="adm-edit" onClick={() => { setEditingPhoto(p); setEditForm({ title: p.title, style: p.style, location: p.location, featured: p.featured, visibility: p.visibility }); }} title="编辑"><Pencil size={13} /></button>
-                  <button className="adm-del" onClick={() => setDeletingPhoto(p)} title="删除"><Trash2 size={13} /></button>
+                  <Button type="text" size="small" className="adm-edit" onClick={() => { setEditingPhoto(p); setEditForm({ title: p.title, style: p.style, location: p.location, featured: p.featured, visibility: p.visibility }); }} title="编辑"><Pencil size={13} /></Button>
+                  <Button type="text" size="small" className="adm-del" onClick={() => setDeletingPhoto(p)} title="删除"><Trash2 size={13} /></Button>
                 </div>
               </div>
             ))
@@ -179,8 +180,8 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
             <h3>确认删除</h3>
             <p>确定删除「{deletingPhoto.title}」？删除后不可恢复。</p>
             <div className="adm-actions">
-              <button className="adm-btn-cancel" onClick={() => setDeletingPhoto(null)}>取消</button>
-              <button className="adm-btn-confirm" onClick={handleDelete} disabled={deleting}>{deleting ? "删除中..." : "确认删除"}</button>
+              <Button type="default" size="small" className="adm-btn-cancel" onClick={() => setDeletingPhoto(null)}>取消</Button>
+              <Button type="primary" size="small" className="adm-btn-confirm" onClick={handleDelete} disabled={deleting}>{deleting ? "删除中..." : "确认删除"}</Button>
             </div>
           </div>
         </div>

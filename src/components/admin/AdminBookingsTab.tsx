@@ -1,4 +1,5 @@
 import { CalendarCheck, CheckCircle, Clock, MessageCircle, XCircle } from "lucide-react";
+import { Button } from "animal-island-ui";
 import { useEffect, useState } from "react";
 import type { ToastType } from "../../lib/admin-helpers";
 
@@ -85,19 +86,19 @@ export function AdminBookingsTab({ showToast }: { showToast: (text: string, type
                 {b.notes ? <p className="adm-booking-notes">{b.notes}</p> : null}
                 <div className="adm-booking-actions">
                   {b.status === "pending" && (
-                    <button className="adm-btn-contact" onClick={() => updateStatus(b.id, "contacted")}>
+                    <Button type="primary" size="small" className="adm-btn-contact" onClick={() => updateStatus(b.id, "contacted")}>
                       <CheckCircle size={13} /> 标记已联系
-                    </button>
+                    </Button>
                   )}
                   {b.status === "contacted" && (
-                    <button className="adm-btn-done" onClick={() => updateStatus(b.id, "done")}>
+                    <Button type="primary" size="small" className="adm-btn-done" onClick={() => updateStatus(b.id, "done")}>
                       <XCircle size={13} /> 标记已完成
-                    </button>
+                    </Button>
                   )}
                   {b.status === "done" ? null : (
-                    <button className="adm-btn-skip" onClick={() => updateStatus(b.id, "done")}>
+                    <Button type="text" size="small" className="adm-btn-skip" onClick={() => updateStatus(b.id, "done")}>
                       忽略
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
