@@ -2062,6 +2062,228 @@
 }
 
 /* ══════════════════════════════════════════════
+   Polaroid Wall
+   ══════════════════════════════════════════════ */
+.polaroid-wall-section {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: clamp(60px, 8vw, 100px) var(--section-inline);
+  text-align: center;
+  overflow: hidden;
+}
+
+.polaroid-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--peach-accent);
+  margin-bottom: 6px;
+}
+
+.polaroid-header h2 {
+  font-family: var(--font-display-cn);
+  font-size: clamp(28px, 4vw, 40px);
+  color: var(--caramel-ink);
+  margin: 0 0 4px;
+}
+
+.polaroid-hint {
+  font-size: 13px;
+  color: var(--caramel-muted);
+  margin: 0 0 32px;
+}
+
+.polaroid-stage {
+  position: relative;
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.polaroid-deck {
+  position: relative;
+  width: 280px;
+  height: 360px;
+  transform-style: preserve-3d;
+}
+
+.polaroid-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 340px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.polaroid-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.polaroid-card.is-flipped .polaroid-card-inner {
+  transform: rotateY(180deg);
+}
+
+.polaroid-card-front,
+.polaroid-card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Front — Polaroid photo */
+.polaroid-card-front {
+  background: #fffaf5;
+  padding: 10px 10px 38px;
+  box-shadow:
+    0 4px 16px rgba(95, 60, 49, 0.12),
+    0 12px 40px rgba(95, 60, 49, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.polaroid-photo-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #f0e8e0;
+}
+
+.polaroid-photo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.polaroid-photo-wrap img.is-loaded {
+  opacity: 1;
+}
+
+.polaroid-photo-skeleton {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #f0e8e0 25%, #f8f0e8 50%, #f0e8e0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.polaroid-caption {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #7a5a4a;
+  font-family: "Kaiti SC", "KaiTi", serif;
+  letter-spacing: 0.04em;
+}
+.polaroid-caption-sep { color: #c0a898; }
+
+/* Back — story / info */
+.polaroid-card-back {
+  background: linear-gradient(145deg, #fef7ee, #f5e6d3);
+  transform: rotateY(180deg);
+  padding: 28px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 4px 16px rgba(95, 60, 49, 0.12),
+    0 12px 40px rgba(95, 60, 49, 0.08);
+}
+
+.polaroid-back-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.polaroid-back-content strong {
+  font-family: var(--font-display-cn);
+  font-size: 20px;
+  font-weight: 600;
+  color: #442b24;
+  line-height: 1.3;
+}
+
+.polaroid-back-style {
+  font-size: 13px;
+  color: var(--peach-accent);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.polaroid-back-location {
+  font-size: 12px;
+  color: var(--caramel-muted);
+}
+
+.polaroid-back-note {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--caramel-muted);
+  line-height: 1.6;
+  font-style: italic;
+  max-width: 180px;
+}
+
+/* Navigation arrows */
+.polaroid-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 200;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  color: #5a3a2a;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  opacity: 0;
+}
+.polaroid-stage.is-fanned .polaroid-nav {
+  opacity: 1;
+}
+.polaroid-nav:hover {
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+}
+.polaroid-nav-left { left: -24px; }
+.polaroid-nav-right { right: -24px; }
+
+/* Stacked hover lift */
+.polaroid-card:not(.is-fanned):hover {
+  filter: brightness(1.04);
+}
+
+/* ══════════════════════════════════════════════
    Focus Styles
    ══════════════════════════════════════════════ */
 :focus-visible {

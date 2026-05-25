@@ -15,6 +15,7 @@ import { Hero } from "./components/Hero";
 import { MidCTA } from "./components/MidCTA";
 import { NotFound } from "./components/NotFound";
 import { Packages } from "./components/Packages";
+import { PolaroidWall } from "./components/PolaroidWall";
 import { ProcessAndFaq } from "./components/ProcessAndFaq";
 import { Reviews } from "./components/Reviews";
 import { PublicChatLauncher } from "./components/PublicChatLauncher";
@@ -87,6 +88,7 @@ export function App() {
             <Suspense fallback={<div className="section-shell" style={{minHeight:200}} />}>
               <HorizontalGallery />
             </Suspense>
+            <PolaroidWall />
             <Gallery />
             <MidCTA />
             <WhyChooseUs />
