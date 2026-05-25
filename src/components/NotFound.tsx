@@ -1,13 +1,15 @@
 import { ArrowLeft } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function NotFound() {
+  const { t } = useTranslation();
   return (
     <div className="not-found">
       <h1>404</h1>
-      <p>这个页面不存在，或者已经被移除了。</p>
+      <p>{t("notFound.desc")}</p>
       <a href="/">
         <ArrowLeft size={18} aria-hidden="true" />
-        回到首页
+        {t("notFound.cta")}
       </a>
     </div>
   );

@@ -1,6 +1,7 @@
-import { MapContainer, TileLayer, Marker, Popup, Circle, Tooltip } from "react-leaflet";
-import { Icon, divIcon } from "leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle, Tooltip, useMapEvents, useMap } from "react-leaflet";
+import L, { Icon, divIcon } from "leaflet";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import "leaflet/dist/leaflet.css";
@@ -50,6 +51,20 @@ const knownLocations: Record<string, [number, number]> = {
   "南京·夫子庙": [32.022, 118.792],
   "南京·老门东": [32.015, 118.786],
   "南京·鱼嘴湿地": [31.984, 118.686],
+  "南京·钟山体育": [32.050, 118.864],
+  "南京·南京博物院": [32.043, 118.823],
+  "南京·明孝陵": [32.058, 118.850],
+  "南京·美龄宫": [32.052, 118.838],
+  "南京·灵谷寺": [32.040, 118.878],
+  "南京·红山森林动物园": [32.084, 118.810],
+  "南京·清凉山": [32.047, 118.755],
+  "南京·莫愁湖": [32.036, 118.756],
+  "南京·瞻园": [32.018, 118.788],
+  "南京·1865创意园": [32.010, 118.795],
+  "南京·南京眼": [31.995, 118.708],
+  "南京·大报恩寺": [32.010, 118.780],
+  "南京·牛首山": [31.912, 118.758],
+  "南京·江宁大学城": [31.946, 118.892],
 };
 
 const locationInfoCache = new Map<string, LocationInfo>();
@@ -112,9 +127,86 @@ const zoneIcon = (zone: LocationInfo["zone"]) => {
 };
 
 /* ══════════════════════════════════════════════
+   Theme-aware tile layer
+   ══════════════════════════════════════════════ */
+function ThemeAwareTileLayer() {
+  const [isDark, setIsDark] = useState(() =>
+    document.documentElement.getAttribute("data-theme") === "dark"
+  );
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const dark = document.documentElement.getAttribute("data-theme") === "dark";
+      setIsDark(dark);
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <TileLayer
+      key={isDark ? "dark" : "light"}
+      attribution=""
+      url={isDark
+        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      }
+    />
+  );
+}
+
+/* ══════════════════════════════════════════════
+   Click handler — shows distance when clicking map
+   ══════════════════════════════════════════════ */
+function MapClickHandler() {
+  const { t } = useTranslation();
+  const map = useMap();
+
+  useMapEvents({
+    click(e) {
+      const { lat, lng } = e.latlng;
+      const distance = distKm(STUDIO_CENTER, [lat, lng]);
+      const zone = zoneLabel(distance);
+
+      const zoneColors: Record<string, string> = {
+        free: "#7AA675",
+        fee: "#D4B05E",
+        unreachable: "#B8A090",
+      };
+      const zoneLabels: Record<string, string> = {
+        free: t("photoMap.clickFree"),
+        fee: t("photoMap.clickFee"),
+        unreachable: t("photoMap.clickUnreachable"),
+      };
+      const zoneTitle = t("photoMap.clickTitle");
+
+      L.popup()
+        .setLatLng(e.latlng)
+        .setContent(`
+          <div style="min-width:140px;font-family:sans-serif;">
+            <strong style="font-size:13px;color:#5F3C31;">${zoneTitle}</strong>
+            <br/>
+            <span style="font-size:12px;color:#8B7A6A;">
+              ${distance.toFixed(1)} km
+            </span>
+            <br/>
+            <span style="font-size:11px;font-weight:600;color:${zoneColors[zone]};">
+              ${zoneLabels[zone]}
+            </span>
+          </div>
+        `)
+        .openOn(map);
+    },
+  });
+
+  return null;
+}
+
+/* ══════════════════════════════════════════════
    Component
    ══════════════════════════════════════════════ */
 export function PhotoMap() {
+  const { t } = useTranslation();
   const { photos } = usePublicPhotos();
   const [mounted, setMounted] = useState(false);
 
@@ -136,9 +228,9 @@ export function PhotoMap() {
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="section-heading">
-        <p>服务范围</p>
-        <h2>拍摄可达地图</h2>
-        <span>以仙林大学城金审学院为中心，展示拍摄服务覆盖区域</span>
+        <p>{t("photoMap.eyebrow")}</p>
+        <h2>{t("photoMap.title")}</h2>
+        <span>{t("photoMap.intro")}</span>
       </div>
 
       {/* ── Zone Legend ── */}
@@ -146,22 +238,22 @@ export function PhotoMap() {
         <div className="travel-zone-item">
           <span className="travel-zone-dot travel-zone-dot--free" />
           <div>
-            <strong>免费区</strong>
-            <span>2公里内 · 无需路费</span>
+            <strong>{t("photoMap.legend.free")}</strong>
+            <span>{t("photoMap.legend.freeDesc")}</span>
           </div>
         </div>
         <div className="travel-zone-item">
           <span className="travel-zone-dot travel-zone-dot--fee" />
           <div>
-            <strong>收费区</strong>
-            <span>2~10公里 · 报销路费</span>
+            <strong>{t("photoMap.legend.fee")}</strong>
+            <span>{t("photoMap.legend.feeDesc")}</span>
           </div>
         </div>
         <div className="travel-zone-item">
           <span className="travel-zone-dot travel-zone-dot--unreachable" />
           <div>
-            <strong>暂不可达</strong>
-            <span>10公里以上 · 暂不可达</span>
+            <strong>{t("photoMap.legend.unreachable")}</strong>
+            <span>{t("photoMap.legend.unreachableDesc")}</span>
           </div>
         </div>
       </div>
@@ -175,10 +267,8 @@ export function PhotoMap() {
           style={{ width: "100%", height: "100%" }}
           zoomControl={true}
         >
-          <TileLayer
-            attribution=''
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          <ThemeAwareTileLayer />
+          <MapClickHandler />
 
           {/* 10km reachable zone boundary */}
           <Circle
@@ -194,7 +284,7 @@ export function PhotoMap() {
           >
             <Tooltip direction="top" permanent>
               <span className="travel-map-label travel-map-label--fee">
-                10km — 有偿可达
+                {t("photoMap.mapLabelFee")}
               </span>
             </Tooltip>
           </Circle>
@@ -212,7 +302,7 @@ export function PhotoMap() {
           >
             <Tooltip direction="top" permanent>
               <span className="travel-map-label travel-map-label--free">
-                2km — 免费
+                {t("photoMap.mapLabelFree")}
               </span>
             </Tooltip>
           </Circle>
@@ -223,18 +313,18 @@ export function PhotoMap() {
               <div style={{ textAlign: "center", minWidth: 170 }}>
                 <div style={{ fontSize: 22, marginBottom: 4 }}>📸</div>
                 <strong style={{ color: "#5F3C31", fontSize: 14 }}>
-                  金审学院 · 仙林大学城
+                  {t("photoMap.studioLabel")}
                 </strong>
                 <br />
                 <span style={{ fontSize: 12, color: "#8B7A6A" }}>
-                  拍摄基地 · 从这里出发
+                  {t("photoMap.studioDesc")}
                 </span>
                 <hr style={{ margin: "8px 0", border: "none", borderTop: "1px solid #EDE4DC" }} />
                 <div style={{ fontSize: 11, color: "#7AA675" }}>
-                  ✅ 2km内免费到达
+                  {t("photoMap.freeLabel")}
                 </div>
                 <div style={{ fontSize: 11, color: "#D4B05E" }}>
-                  🚗 2~10km 报销路费
+                  {t("photoMap.feeLabel")}
                 </div>
               </div>
             </Popup>
@@ -243,15 +333,20 @@ export function PhotoMap() {
           {/* Photo location markers */}
           {uniqueLocs.map((loc) => {
             const info = getLocationInfo(loc);
-            const count = photos.filter((p) => p.location === loc).length;
+            const locPhotos = photos.filter((p) => p.location === loc);
+            const count = locPhotos.length;
+            const thumb = (src: string) => {
+              const fileName = src.replace(/\?.*$/, "").split("/").pop() || "";
+              return `/images/gallery/640/${fileName}`;
+            };
             return (
               <Marker key={loc} position={info.coords} icon={zoneIcon(info.zone)}>
                 <Popup>
-                  <div style={{ minWidth: 150 }}>
-                    <strong style={{ color: "#5F3C31" }}>{loc}</strong>
+                  <div style={{ minWidth: 150, maxWidth: 220 }}>
+                    <strong style={{ color: "#5F3C31", fontSize: 13 }}>{loc}</strong>
                     <br />
                     <span style={{ fontSize: 12, color: "#8B7A6A" }}>
-                      {count} 张作品 · {info.distance.toFixed(1)}km
+                      {count} {t("photoMap.worksLabel")} · {info.distance.toFixed(1)}km
                     </span>
                     <br />
                     <span style={{
@@ -259,9 +354,44 @@ export function PhotoMap() {
                       color: info.zone === "free" ? "#7AA675" :
                              info.zone === "fee" ? "#D4B05E" : "#B8A090",
                     }}>
-                      {info.zone === "free" ? "✅ 免费到达" :
-                       info.zone === "fee" ? "🚗 需报销路费" : "✗ 无法抵达"}
+                      {info.zone === "free" ? t("photoMap.freePopup") :
+                       info.zone === "fee" ? t("photoMap.feePopup") : t("photoMap.unreachablePopup")}
                     </span>
+                    {locPhotos.length > 0 && (
+                      <div style={{
+                        display: "flex",
+                        gap: 4,
+                        marginTop: 8,
+                        flexWrap: "wrap",
+                      }}>
+                        {locPhotos.slice(0, 3).map((p) => (
+                          <img
+                            key={p.id}
+                            src={thumb(p.imageUrl || "")}
+                            alt={p.alt || p.title}
+                            loading="lazy"
+                            style={{
+                              width: 60,
+                              height: 75,
+                              objectFit: "cover",
+                              borderRadius: 6,
+                              border: "1px solid rgba(139,94,74,0.1)",
+                            }}
+                          />
+                        ))}
+                        {locPhotos.length > 3 && (
+                          <span style={{
+                            fontSize: 11,
+                            color: "#8B7A6A",
+                            display: "flex",
+                            alignItems: "center",
+                            paddingLeft: 2,
+                          }}>
+                            +{locPhotos.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </Popup>
               </Marker>
@@ -275,22 +405,22 @@ export function PhotoMap() {
         <div className="travel-zone-card travel-zone-card--free">
           <span className="travel-zone-emoji">📍</span>
           <div>
-            <h4>2公里内 · 免费</h4>
-            <p>仙林大学城、金审学院周边，步行或电瓶车可达，不收路费。</p>
+            <h4>{t("photoMap.cards.freeTitle")}</h4>
+            <p>{t("photoMap.cards.freeText")}</p>
           </div>
         </div>
         <div className="travel-zone-card travel-zone-card--fee">
           <span className="travel-zone-emoji">🚗</span>
           <div>
-            <h4>2~10公里 · 报销路费</h4>
-            <p>超出免费区但在10公里范围内，需报销实际路费（打车或地铁）。</p>
+            <h4>{t("photoMap.cards.feeTitle")}</h4>
+            <p>{t("photoMap.cards.feeText")}</p>
           </div>
         </div>
         <div className="travel-zone-card travel-zone-card--unreachable">
           <span className="travel-zone-emoji">✗</span>
           <div>
-            <h4>10公里以上 · 暂不可达</h4>
-            <p>超出日常拍摄范围（10公里以上），暂时无法提供服务，敬请谅解。</p>
+            <h4>{t("photoMap.cards.unreachableTitle")}</h4>
+            <p>{t("photoMap.cards.unreachableText")}</p>
           </div>
         </div>
       </div>

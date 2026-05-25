@@ -1,0 +1,281 @@
+{
+  "nav": {
+    "home": "Home",
+    "gallery": "Gallery",
+    "packages": "Packages",
+    "details": "Details",
+    "reviews": "Reviews",
+    "faq": "FAQ",
+    "booking": "Book Now",
+    "skipLink": "Skip navigation to main content"
+  },
+  "hero": {
+    "volBadge": "✦ Vol.1",
+    "brandPrefix": "Nanjing Portrait & Couple Photography",
+    "intro": "Soft, film-like, natural everyday portraits — captured as Nanjing memories you'll want to revisit. Perfect for first-timers, couple anniversaries, and relaxed city walks.",
+    "trustTags": {
+      "privacy": "Photos private by default",
+      "guidance": "Full posing guidance",
+      "styles": "Jiangnan / Street / Park"
+    },
+    "ctaView": "View Gallery",
+    "ctaBooking": "Book",
+    "scroll": "SCROLL"
+  },
+  "gallery": {
+    "eyebrow": "Portfolio",
+    "title": "Gallery",
+    "intro": "Real client photos organized by style — click to view full size",
+    "description": "Park shoots, Jiangnan vibes, street style, indoor portraits and couple sessions are filtered separately. Only authorized real client works are shown here.",
+    "filters": {
+      "all": "All",
+      "jiangnan": "Jiangnan",
+      "street": "Street",
+      "park": "Park",
+      "sweet": "Sweet",
+      "couple": "Couple",
+      "indoor": "Indoor"
+    }
+  },
+  "photoWall3D": {
+    "close": "Close"
+  },
+  "horizontalGallery": {
+    "eyebrow": "Featured",
+    "title": "3D Cover Flow",
+    "hint": "Drag or scroll to browse"
+  },
+  "polaroid": {
+    "eyebrow": "Interactive",
+    "title": "Polaroid Album",
+    "hintCollapsed": "Click to expand album",
+    "hintExpanded": "Click photo to flip · Click backdrop to close",
+    "backNote": "Every shutter click is a gentle light."
+  },
+  "scrollStory": {
+    "cards": [
+      {
+        "title": "Every Photo",
+        "line": "Tells a Story",
+        "text": "It's more than pressing the shutter. From the moment we meet, we're writing a visual narrative together."
+      },
+      {
+        "title": "Light & Shadow",
+        "line": "Capturing Reality",
+        "text": "Natural light is the best brush. Under Nanjing's plane trees and old street corners, light and shadow tell their own stories."
+      },
+      {
+        "title": "Beyond Beauty",
+        "line": "It's Memory",
+        "text": "We don't shoot perfection — we shoot truth. Your first date nerves, graduation reluctance, and the freedom of city wandering."
+      }
+    ]
+  },
+  "photoMap": {
+    "eyebrow": "Service Area",
+    "title": "Coverage Map",
+    "intro": "Centered at JinShen College in Xianlin University Town",
+    "legend": {
+      "free": "Free Zone",
+      "freeDesc": "Within 2km · No travel fee",
+      "fee": "Fee Zone",
+      "feeDesc": "2~10km · Travel reimbursed",
+      "unreachable": "Unreachable",
+      "unreachableDesc": "Beyond 10km · Not available"
+    },
+    "cards": {
+      "freeTitle": "Within 2km · Free",
+      "freeText": "Xianlin University Town and JinShen College area — walking or e-bike distance, no travel fee.",
+      "feeTitle": "2~10km · Travel Reimbursed",
+      "feeText": "Beyond free zone but within 10km range — actual travel costs reimbursed (taxi or metro).",
+      "unreachableTitle": "Beyond 10km · Unavailable",
+      "unreachableText": "Outside daily shooting range — temporarily unable to serve. Sorry for the inconvenience."
+    },
+    "studioLabel": "JinShen College · Xianlin",
+    "studioDesc": "Studio Base · Starting point",
+    "freeLabel": "✅ Free within 2km",
+    "feeLabel": "🚗 2~10km travel reimbursed",
+    "freePopup": "✅ Free arrival",
+    "feePopup": "🚗 Travel fee required",
+    "unreachablePopup": "✗ Cannot reach",
+    "clickFree": "✅ Free arrival (within 2km)",
+    "clickFee": "🚗 Travel reimbursed (2~10km)",
+    "clickUnreachable": "✗ Unreachable (10km+)",
+    "clickTitle": "📍 Distance from studio",
+    "worksLabel": "works",
+    "mapLabelFree": "2km — Free",
+    "mapLabelFee": "10km — Reachable"
+  },
+  "midCTA": {
+    "eyebrow": "Book Now",
+    "title": "Turn Your Day Into Poetry",
+    "desc": "Alone, as a couple, or with your best friend — every shutter release captures your Nanjing story.",
+    "cta": "Book a Session →"
+  },
+  "whyChooseUs": {
+    "eyebrow": "Why Choose Us",
+    "reasons": [
+      {
+        "title": "Soft Film Look",
+        "text": "We favor soft misty light and low-saturation tones — no harsh flash, just peaceful, comfortable results."
+      },
+      {
+        "title": "Full Posing Guidance",
+        "text": "No experience needed. From stance to eye direction, every detail is gently guided. Just relax and be yourself."
+      },
+      {
+        "title": "Privacy First",
+        "text": "No photos are shared by default. Every displayed image is individually authorized by the client."
+      },
+      {
+        "title": "Nanjing Local",
+        "text": "Deep knowledge of Nanjing's best photo spots — Xianlin, Xuanwu Lake, Yihe Road, Purple Mountain and beyond."
+      }
+    ]
+  },
+  "packages": {
+    "eyebrow": "Packages & Pricing",
+    "popular": "Popular",
+    "cta": "Book Now",
+    "perSession": "/session",
+    "priceFrom": "from"
+  },
+  "serviceDetails": {
+    "eyebrow": "Service Details",
+    "includes": "Includes",
+    "detailItems": {
+      "outfit": {
+        "title": "Styling & Outfit",
+        "desc": "Each session includes basic styling and one outfit recommendation. Extra looks can be arranged."
+      },
+      "retouching": {
+        "title": "Retouched Photos",
+        "desc": "All digital negatives included. Retouched count per package. Additional retouching available."
+      },
+      "timing": {
+        "title": "Session Length",
+        "desc": "Timed from meet-up, includes styling and transit. Overtime billed per hour."
+      },
+      "delivery": {
+        "title": "Delivery Time",
+        "desc": "Retouched photos within 7 business days. All negatives via cloud link within 3 days."
+      }
+    },
+    "equipment": "Equipment",
+    "camera": "Sony A7C II",
+    "lens": "Sigma 28-70 / 85 1.4",
+    "light": "Natural light + Reflector",
+    "policies": {
+      "deposit": {
+        "title": "Deposit Locks Date",
+        "text": "A deposit secures your booking. Balance is due on the shoot day."
+      },
+      "reschedule": {
+        "title": "Free Reschedule",
+        "text": "One free reschedule 48h before the shoot. Deposit forfeited after that."
+      },
+      "weather": {
+        "title": "Weather Guarantee",
+        "text": "Free reschedule in case of bad weather — doesn't count toward your reschedule limit."
+      },
+      "copyright": {
+        "title": "Copyright",
+        "text": "Copyright belongs to the photographer. Clients have permanent usage rights."
+      }
+    }
+  },
+  "process": {
+    "eyebrow": "How It Works",
+    "steps": [
+      { "title": "Consultation", "text": "Contact me via Xiaohongshu or WeChat — tell me your preferred style and ideas." },
+      { "title": "Book & Deposit", "text": "Confirm the date, location and package. Pay a deposit to lock your slot." },
+      { "title": "Shoot Day", "text": "Arrive at the location. Full posing guidance throughout. Relax and enjoy!" },
+      { "title": "Select & Retouch", "text": "Receive a gallery link within 2 days. Pick your favorites for retouching." },
+      { "title": "Delivery", "text": "Final retouched photos delivered via cloud. Your smile is the best feedback." }
+    ]
+  },
+  "faq": {
+    "common": "FAQ",
+    "safety": "Safety & Comfort",
+    "safetyText": "Your safety and comfort are our priority. All shoots take place in public or pre-agreed locations. For indoor shoots, venue details and safety are confirmed beforehand. You're welcome to bring a friend — just let me know!",
+    "questions": [
+      {
+        "q": "I've never done this before. What if I don't know how to pose?",
+        "a": "No worries at all. 80% of our clients are first-timers. I'll guide you through every pose, angle and expression — you just relax and be yourself."
+      },
+      {
+        "q": "Can I bring a friend?",
+        "a": "Absolutely! Bringing a friend makes the atmosphere more relaxed. They can also help with your belongings. For couple or bestie shoots, choose the corresponding package."
+      },
+      {
+        "q": "How do we pick a location?",
+        "a": "I'll recommend locations based on your preferred style. Nanjing has plenty of great spots — parks, old streets, campuses, cafes... or we can go somewhere special to you."
+      },
+      {
+        "q": "Will my photos be shared publicly?",
+        "a": "No, never by default. Every photo displayed here is individually authorized by the client. Only you decide if your photos are shared."
+      },
+      {
+        "q": "What if the weather is bad?",
+        "a": "Free reschedule for bad weather — doesn't count toward your limit. Actually, overcast days are great for photos — soft, even light makes skin look even better."
+      },
+      {
+        "q": "Can retouched photos be revised?",
+        "a": "Each retouched photo includes one free revision to meet reasonable adjustment requests."
+      }
+    ]
+  },
+  "reviews": {
+    "eyebrow": "Testimonials",
+    "title": "What Clients Say"
+  },
+  "aboutBooking": {
+    "eyebrow": "Booking Info",
+    "title": "About Booking & Shooting",
+    "desc": "Browse the gallery first to find your preferred style. Contact me via Xiaohongshu or WeChat to confirm availability and package, then pay a deposit to lock your date.",
+    "bookingCard": {
+      "title": "Book a Session",
+      "contact": "Message me on Xiaohongshu",
+      "cta": "Send Message →"
+    },
+    "footer": {
+      "tagline": "Nanjing · Soft Film Portrait Photography",
+      "copyright": "© Naihuangbao Photography",
+      "social": "Xiaohongshu @naihuangbaosy"
+    }
+  },
+  "themeToggle": {
+    "light": "☀️ Light",
+    "dark": "🌙 Dark",
+    "system": "💻 System",
+    "label": "Current: {{theme}}, click to switch"
+  },
+  "moodToggle": {
+    "magazine": "Switch to Cute",
+    "cute": "Switch to Magazine",
+    "labelMagazine": "Current: Magazine, click to switch",
+    "labelCute": "Current: Cute, click to switch"
+  },
+  "langToggle": {
+    "switchTo": "中文",
+    "label": "Switch language"
+  },
+  "loading": "Loading...",
+  "notFound": {
+    "title": "Page Not Found",
+    "desc": "The page you're looking for doesn't exist or has been removed.",
+    "cta": "Back to Home"
+  },
+  "bookingModal": {
+    "title": "Book a Session",
+    "name": "Your Name",
+    "contact": "Contact (WeChat/Phone)",
+    "style": "Preferred Style",
+    "stylePlaceholder": "e.g. Park, Jiangnan, Street...",
+    "date": "Preferred Date",
+    "message": "Anything else?",
+    "submit": "Send Booking",
+    "success": "Booking sent! I'll get back to you soon.",
+    "error": "Failed to send. Please try again or DM me on Xiaohongshu."
+  }
+}

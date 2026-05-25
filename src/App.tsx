@@ -11,18 +11,10 @@ import { LoadingScreen } from "./components/LoadingScreen";
 import { Footer } from "./components/Footer";
 import { FloatingBookingCta } from "./components/FloatingBookingCta";
 import { Gallery } from "./components/Gallery";
-import { ScrollStory } from "./components/ScrollStory";
 import { Hero } from "./components/Hero";
-import { MidCTA } from "./components/MidCTA";
 import { NotFound } from "./components/NotFound";
-import { Packages } from "./components/Packages";
-import { PolaroidWall } from "./components/PolaroidWall";
-import { ProcessAndFaq } from "./components/ProcessAndFaq";
-import { Reviews } from "./components/Reviews";
 import { PublicChatLauncher } from "./components/PublicChatLauncher";
-import { ServiceDetails } from "./components/ServiceDetails";
 import { SiteNav } from "./components/SiteNav";
-import { WhyChooseUs } from "./components/WhyChooseUs";
 import { PublicPhotosProvider } from "./hooks/usePublicPhotos";
 import { SiteContentProvider } from "./hooks/useSiteContent";
 import { BookingProvider } from "./hooks/useBookingModal";
@@ -30,6 +22,14 @@ import { BookingProvider } from "./hooks/useBookingModal";
 const HorizontalGallery = lazy(() => import("./components/HorizontalGallery").then((m) => ({ default: m.HorizontalGallery })));
 const PhotoWall3D = lazy(() => import("./components/PhotoWall3D").then((m) => ({ default: m.PhotoWall3D })));
 const PhotoMap = lazy(() => import("./components/PhotoMap").then((m) => ({ default: m.PhotoMap })));
+const ScrollStory = lazy(() => import("./components/ScrollStory").then((m) => ({ default: m.ScrollStory })));
+const PolaroidWall = lazy(() => import("./components/PolaroidWall").then((m) => ({ default: m.PolaroidWall })));
+const MidCTA = lazy(() => import("./components/MidCTA").then((m) => ({ default: m.MidCTA })));
+const WhyChooseUs = lazy(() => import("./components/WhyChooseUs").then((m) => ({ default: m.WhyChooseUs })));
+const Packages = lazy(() => import("./components/Packages").then((m) => ({ default: m.Packages })));
+const ServiceDetails = lazy(() => import("./components/ServiceDetails").then((m) => ({ default: m.ServiceDetails })));
+const Reviews = lazy(() => import("./components/Reviews").then((m) => ({ default: m.Reviews })));
+const ProcessAndFaq = lazy(() => import("./components/ProcessAndFaq").then((m) => ({ default: m.ProcessAndFaq })));
 
 const AdminDashboard = lazy(async () => {
   await import("./styles/admin.css");
@@ -95,21 +95,37 @@ export function App() {
             <Suspense fallback={<div style={{height:'min(60vh, 480px)'}} />}>
               <PhotoWall3D />
             </Suspense>
-            <ScrollStory />
+            <Suspense fallback={<div style={{height:'100vh'}} />}>
+              <ScrollStory />
+            </Suspense>
             <Suspense fallback={<div className="section-shell" style={{minHeight:200}} />}>
               <HorizontalGallery />
             </Suspense>
-            <PolaroidWall />
+            <Suspense fallback={<div className="section-shell" style={{minHeight:200}} />}>
+              <PolaroidWall />
+            </Suspense>
             <Gallery />
             <Suspense fallback={<div style={{height:'min(55vh, 440px)'}} />}>
               <PhotoMap />
             </Suspense>
-            <MidCTA />
-            <WhyChooseUs />
-            <Packages />
-            <ServiceDetails />
-            <Reviews />
-            <ProcessAndFaq />
+            <Suspense fallback={<div className="section-shell" style={{minHeight:300}} />}>
+              <MidCTA />
+            </Suspense>
+            <Suspense fallback={<div className="section-shell" style={{minHeight:300}} />}>
+              <WhyChooseUs />
+            </Suspense>
+            <Suspense fallback={<div className="section-shell" style={{minHeight:300}} />}>
+              <Packages />
+            </Suspense>
+            <Suspense fallback={<div className="section-shell" style={{minHeight:300}} />}>
+              <ServiceDetails />
+            </Suspense>
+            <Suspense fallback={<div className="section-shell" style={{minHeight:300}} />}>
+              <Reviews />
+            </Suspense>
+            <Suspense fallback={<div className="section-shell" style={{minHeight:200}} />}>
+              <ProcessAndFaq />
+            </Suspense>
             <AboutBooking />
           </motion.main>
           <Footer />

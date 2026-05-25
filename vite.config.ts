@@ -48,11 +48,27 @@ export default defineConfig({
             options: {
               cacheName: "gallery-images",
               expiration: {
-                maxEntries: 36,
-                maxAgeSeconds: 60 * 60 * 24 * 30,
+                maxEntries: 48,
+                maxAgeSeconds: 60 * 60 * 24 * 60,
               },
               cacheableResponse: {
                 statuses: [0, 200],
+              },
+              backgroundSync: {
+                name: "gallery-images-queue",
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => {
+              return url.pathname.startsWith("/api/photos");
+            },
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-photos",
+              expiration: {
+                maxEntries: 1,
+                maxAgeSeconds: 60 * 5,
               },
             },
           },

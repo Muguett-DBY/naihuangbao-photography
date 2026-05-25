@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Theme = "light" | "dark" | "system";
 
@@ -102,6 +103,7 @@ function watchSystem(handler: (isDark: boolean) => void) {
 }
 
 export function ThemeToggle() {
+  const { t } = useTranslation();
   const [theme, setTheme] = useState<Theme>(() => {
     return (localStorage.getItem("theme") as Theme) || "system";
   });
@@ -163,15 +165,15 @@ export function ThemeToggle() {
     setTheme((t) => (t === "light" ? "dark" : t === "dark" ? "system" : "light"));
   };
 
-  const label =
-    theme === "light" ? "🌞 浅色" : theme === "dark" ? "🌙 深色" : "🖥️ 跟随系统";
+  const themeLabel =
+    theme === "light" ? t("themeToggle.light") : theme === "dark" ? t("themeToggle.dark") : t("themeToggle.system");
 
   return (
     <button
       className="theme-toggle"
       onClick={cycle}
-      title={label}
-      aria-label={`当前：${label}，点击切换`}
+      title={themeLabel}
+      aria-label={t("themeToggle.label", { theme: themeLabel })}
     >
       {theme === "light" ? "☀️" : theme === "dark" ? "🌙" : "💻"}
     </button>

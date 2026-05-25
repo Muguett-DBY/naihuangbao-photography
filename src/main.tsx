@@ -4,6 +4,7 @@ import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { App } from "./App";
+import "./i18n"; // Initialize i18n
 import "animal-island-ui/style";
 import "./styles/global.css";
 import "./styles/animal-theme.css";

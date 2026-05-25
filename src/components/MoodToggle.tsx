@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Mood = "magazine" | "cute";
 
 export function MoodToggle() {
+  const { t } = useTranslation();
   const [mood, setMood] = useState<Mood>(() => {
     return (localStorage.getItem("mood") as Mood) || "magazine";
   });
@@ -32,8 +34,8 @@ export function MoodToggle() {
     <button
       className="mood-toggle"
       onClick={toggle}
-      title={mood === "magazine" ? "切换可爱风" : "切换杂志风"}
-      aria-label={`当前：${mood === "magazine" ? "杂志风" : "可爱风"}，点击切换`}
+      title={mood === "magazine" ? t("moodToggle.magazine") : t("moodToggle.cute")}
+      aria-label={mood === "magazine" ? t("moodToggle.labelMagazine") : t("moodToggle.labelCute")}
     >
       {mood === "magazine" ? "🎨" : "🌿"}
     </button>

@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { styleLabels } from "../data/site";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
@@ -20,6 +21,7 @@ const galleryThumb = (src: string) => {
 };
 
 export function Gallery() {
+  const { t } = useTranslation();
   const { sectionCopy } = useSiteContent();
   const { photos: sourcePhotos } = usePublicPhotos();
   const [filter, setFilter] = useState<StyleFilter>("all");
@@ -63,17 +65,15 @@ export function Gallery() {
       title={sectionCopy.gallery.title}
       intro={sectionCopy.gallery.intro}
     >
-      <div ref={distortRef} className="gallery-story-panel" aria-label="作品风格说明">
+      <div ref={distortRef} className="gallery-story-panel" aria-label={t("gallery.intro")}>
         <div>
-          <span>Portfolio</span>
-          <strong>真实作品按风格整理，点击可看大图</strong>
+          <span>{t("gallery.eyebrow")}</span>
+          <strong>{t("gallery.intro")}</strong>
         </div>
-        <p>
-          公园日常、江南感、城市街拍、室内写真和情侣约拍会分开筛选。这里只展示已授权公开的真实作品，不混入氛围图。
-        </p>
+        <p>{t("gallery.description")}</p>
       </div>
 
-      <div className="filter-row" role="group" aria-label="作品分类筛选">
+      <div className="filter-row" role="group" aria-label={t("gallery.intro")}>
         {filters.map((item) => (
           <button
             key={item}
@@ -82,7 +82,7 @@ export function Gallery() {
             className={item === filter ? "is-active" : ""}
             onClick={() => setFilter(item)}
           >
-            {styleLabels[item]}
+            {item === "all" ? t("gallery.filters.all") : styleLabels[item]}
           </button>
         ))}
       </div>

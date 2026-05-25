@@ -215,7 +215,7 @@ describe("public AI chat integration", () => {
     const launcherSource = readFileSync(launcherPath, "utf8");
 
     expect(navSource).toContain("CalendarCheck");
-    expect(navSource).toContain("预约");
+    expect(navSource).toContain('t("nav.booking")');
     expect(navSource).not.toContain("MessageCircle");
     expect(launcherSource).toContain("AI问答");
     expect(launcherSource).not.toContain("<span>咨询</span>");

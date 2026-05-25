@@ -2,12 +2,14 @@
 
 import { useCallback, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { galleryItems } from "../data/gallery";
 import type { PhotoItem } from "../types/photo";
 
 const POLAROID_ITEMS = galleryItems.slice(0, 6);
 
 export function PolaroidWall() {
+  const { t } = useTranslation();
   const [fannedOut, setFannedOut] = useState(false);
   const [flippedId, setFlippedId] = useState<string | null>(null);
   const [focusIdx, setFocusIdx] = useState(0);
@@ -37,10 +39,10 @@ export function PolaroidWall() {
   return (
     <section className="polaroid-wall-section">
       <div className="polaroid-header">
-        <span className="polaroid-eyebrow">Interactive</span>
-        <h2>宝丽来相册</h2>
+        <span className="polaroid-eyebrow">{t("polaroid.eyebrow")}</span>
+        <h2>{t("polaroid.title")}</h2>
         <p className="polaroid-hint">
-          {fannedOut ? "点击照片翻看背面 · 点击空白处收起" : "点击展开相册"}
+          {fannedOut ? t("polaroid.hintExpanded") : t("polaroid.hintCollapsed")}
         </p>
       </div>
 
@@ -99,6 +101,7 @@ function PolaroidCard({
 }: {
   photo: PhotoItem; transform: string; isFlipped: boolean; isFocused: boolean; isFanned: boolean; index: number; onCardClick: () => void;
 }) {
+  const { t } = useTranslation();
   const [imgLoaded, setImgLoaded] = useState(false);
   const thumbSrc = photo.imageUrl?.replace("/images/gallery/", "/images/gallery/640/") ?? "";
 
@@ -139,7 +142,7 @@ function PolaroidCard({
             <strong>{photo.title}</strong>
             <span className="polaroid-back-style">{styleLabel(photo.style)}</span>
             <span className="polaroid-back-location">{photo.location}</span>
-            <p className="polaroid-back-note">每一次快门，都是一次温柔照亮。</p>
+            <p className="polaroid-back-note">{t("polaroid.backNote")}</p>
           </div>
         </div>
       </div>

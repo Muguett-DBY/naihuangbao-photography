@@ -1,5 +1,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectCoverflow, Mousewheel } from "swiper/modules";
+import { useTranslation } from "react-i18next";
 import { galleryItems } from "../data/gallery";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
@@ -7,14 +8,15 @@ import "swiper/css/effect-coverflow";
 const items = [...galleryItems, ...galleryItems].slice(0, 10);
 
 export function HorizontalGallery() {
+  const { t } = useTranslation();
   return (
     <section className="horiz-gallery-swiper">
       <div className="horiz-gallery-swiper-header">
-        <span className="horiz-gallery-eyebrow">精选作品</span>
-        <h2>3D 封面流</h2>
+        <span className="horiz-gallery-eyebrow">{t("horizontalGallery.eyebrow")}</span>
+        <h2>{t("horizontalGallery.title")}</h2>
         <p className="horiz-gallery-hint">
           <span className="horiz-scroll-icon">↔</span>
-          拖拽或滚轮浏览
+          {t("horizontalGallery.hint")}
         </p>
       </div>
 

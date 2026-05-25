@@ -1,23 +1,31 @@
-import { CalendarCheck, Camera, Menu, X } from "lucide-react";
+import { CalendarCheck, Camera, Languages, Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { MoodToggle } from "./MoodToggle";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSiteContent } from "../hooks/useSiteContent";
-
-const navItems = [
-  { href: "#top", label: "首页" },
-  { href: "#gallery", label: "作品风格" },
-  { href: "#packages", label: "套餐价格" },
-  { href: "#process", label: "拍摄流程" },
-  { href: "#faq", label: "常见问题" },
-  { href: "#booking", label: "预约" },
-];
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const { t, i18n } = useTranslation();
   const { siteConfig } = useSiteContent();
+
+  const navItems = [
+    { href: "#top", label: t("nav.home") },
+    { href: "#gallery", label: t("nav.gallery") },
+    { href: "#packages", label: t("nav.packages") },
+    { href: "#process", label: t("nav.details") },
+    { href: "#faq", label: t("nav.faq") },
+    { href: "#booking", label: t("nav.booking") },
+  ];
+
+  const toggleLang = () => {
+    const next = i18n.language === "zh-CN" ? "en" : "zh-CN";
+    i18n.changeLanguage(next);
+    localStorage.setItem("lang", next);
+  };
 
   useEffect(() => {
     let frameId: number | null = null;
@@ -92,15 +100,25 @@ export function SiteNav() {
         onClick={() => setOpen(!open)}
         aria-controls="site-navigation-menu"
         aria-expanded={open}
-        aria-label={open ? "关闭菜单" : "打开菜单"}
+        aria-label={open ? t("nav.close", "关闭菜单") : t("nav.open", "打开菜单")}
       >
         {open ? <X size={20} /> : <Menu size={20} />}
       </button>
       <MoodToggle />
       <ThemeToggle />
+      <button
+        className="mood-toggle"
+        onClick={toggleLang}
+        title={t("langToggle.label")}
+        aria-label={t("langToggle.label")}
+        style={{ fontSize: 13, width: "auto", paddingInline: 8 }}
+      >
+        <Languages size={14} />
+        <span style={{ marginLeft: 3 }}>{t("langToggle.switchTo")}</span>
+      </button>
       <a className="nav-cta" href="#booking" onClick={() => setOpen(false)}>
         <CalendarCheck size={16} />
-        预约
+        {t("nav.booking")}
       </a>
     </header>
   );

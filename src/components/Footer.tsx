@@ -1,9 +1,11 @@
 import { ArrowUp, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useInView } from "../hooks/useInView";
 import { useSiteContent } from "../hooks/useSiteContent";
 
 export function Footer() {
+  const { t } = useTranslation();
   const [showTop, setShowTop] = useState(false);
   const { ref, inView } = useInView<HTMLElement>({ threshold: 0.1 });
   const { sectionCopy, siteConfig } = useSiteContent();
@@ -21,9 +23,9 @@ export function Footer() {
         <p>{siteConfig.city} · 女生写真 · 情侣约拍</p>
       </div>
       <div className="footer-links">
-        <a href="#gallery">作品</a>
-        <a href="#packages">套餐</a>
-        <a href="#notice">须知</a>
+        <a href="#gallery">{t("nav.gallery")}</a>
+        <a href="#packages">{t("nav.packages")}</a>
+        <a href="#notice">{t("nav.faq")}</a>
       </div>
       <div className="footer-social">
         <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
