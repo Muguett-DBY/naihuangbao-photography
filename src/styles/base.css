@@ -110,13 +110,16 @@ html {
   content-visibility: auto;
   contain-intrinsic-size: 1px 860px;
   opacity: 0;
-  transform: translateY(36px);
+  transform: translateY(24px) scale(0.98);
+  clip-path: inset(0 0 2% 0);
   transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+              transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+              clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .section-shell.is-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
+  clip-path: inset(0 0 0 0);
 }
 
 .section-body > * {
@@ -209,16 +212,31 @@ html {
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transform: scale(1.08);
-  filter: blur(14px);
-  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-              filter 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: scale(1.12);
+  filter: blur(18px);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .img-blur-wrap.is-loaded img {
   opacity: 1;
   transform: scale(1);
   filter: blur(0);
+}
+
+/* Flash reveal overlay on image load */
+.img-blur-wrap.is-loaded::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgba(255, 253, 247, 0.15);
+  pointer-events: none;
+  animation: flashReveal 0.5s ease forwards;
+}
+@keyframes flashReveal {
+  0% { opacity: 0.35; }
+  100% { opacity: 0; }
 }
 .img-skeleton {
   position: absolute;

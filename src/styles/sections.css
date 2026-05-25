@@ -989,6 +989,15 @@
   border: 0;
   border-radius: 999px;
   cursor: pointer;
+  opacity: 0;
+  transform: translateY(16px) scale(0.92);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.floating-booking-cta.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
   background: linear-gradient(135deg, #8b5e4a, #c4775e);
   color: #fff9ec;
   font-size: 13px;

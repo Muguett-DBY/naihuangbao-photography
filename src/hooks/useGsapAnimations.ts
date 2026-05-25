@@ -165,34 +165,50 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     }
 
     /* ══════════════════════════════════════════
-       EFFECT 5: Text Morph (文字轮换)
+       EFFECT 5: Text Morph (文字轮换 — 交叉淡入淡出)
        ══════════════════════════════════════════ */
+    const morphContainer = $1<HTMLElement>(".hero-magazine-subtitle")?.parentElement;
     const morphEl = $1<HTMLElement>(".hero-magazine-subtitle");
-    if (morphEl) {
-      const morphTimeline = gsap.timeline({ repeat: -1, delay: 3.5 });
+    if (morphContainer && morphEl) {
+      // Create a clone element for crossfade
+      const morphClone = morphEl.cloneNode(true) as HTMLElement;
+      morphClone.style.position = "absolute";
+      morphClone.style.inset = "0";
+      morphClone.style.pointerEvents = "none";
+      morphContainer.style.position = "relative";
+      morphContainer.appendChild(morphClone);
+
+      const tl = gsap.timeline({ repeat: -1, delay: 3.5 });
+      let currentEl = morphEl;
+      let nextEl = morphClone;
 
       morphPhrases.forEach((phrase, i) => {
-        if (i === 0) return; // skip first — already shown in reveal
+        if (i === 0) return;
 
-        morphTimeline
-          .to(morphEl, {
+        tl
+          .call(() => {
+            // Swap roles
+            const temp = currentEl;
+            currentEl = nextEl;
+            nextEl = temp;
+            nextEl.textContent = phrase;
+            gsap.set(nextEl, { opacity: 0, scale: 0.92, filter: "blur(6px)" });
+          })
+          .to(currentEl, {
             opacity: 0,
-            y: -6,
-            filter: "blur(3px)",
-            duration: 0.3,
+            scale: 0.92,
+            filter: "blur(6px)",
+            duration: 0.35,
             ease: "power2.in",
-            onComplete: () => {
-              morphEl.textContent = phrase;
-            },
-          })
-          .to(morphEl, {
+          }, 0)
+          .to(nextEl, {
             opacity: 1,
-            y: 0,
+            scale: 1,
             filter: "blur(0px)",
-            duration: 0.45,
+            duration: 0.5,
             ease: "power2.out",
-          })
-          .to(morphEl, { duration: 3.2, ease: "none" });
+          }, 0.2)
+          .to({}, { duration: 3.0, ease: "none" });
       });
     }
 
@@ -340,8 +356,8 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     colorShiftEls.forEach((el) => {
       gsap.to(el, {
         color: "#F5A891",
-        duration: 0.01,
-        ease: "none",
+        duration: 0.35,
+        ease: "power1.inOut",
         scrollTrigger: {
           trigger: el,
           start: "top 40%",
