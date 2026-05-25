@@ -21,7 +21,7 @@ const imageSource = readFileSync(resolve(root, "src/components/ImageWithFallback
 const lightboxSource = readFileSync(resolve(root, "src/components/Lightbox.tsx"), "utf8");
 const widgetSource = readFileSync(resolve(root, "src/components/PublicChatWidget.tsx"), "utf8");
 
-function countOccurrences(source, token) {
+function countOccurrences(source: string, token: string) {
   return source.split(token).length - 1;
 }
 

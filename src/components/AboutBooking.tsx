@@ -28,10 +28,10 @@ export function AboutBooking() {
           <MessageCircle size={16} />
           {siteConfig.contactStatus}
         </Button>
-        <Button type="link" href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
+        <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer" className="booking-profile-link">
           {sectionCopy.about.profileLinkLabel}
           <ExternalLink size={15} />
-        </Button>
+        </a>
       </div>
     </section>
   );
