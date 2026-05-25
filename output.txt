@@ -1,0 +1,1185 @@
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/performance.test.ts[2m > [22mperformance budgets[2m > [22mdeclares static asset caching headers and short API photo caching
+[31m[1mAssertionError[22m: expected 'import { defineConfig } from "vitest/…' to contain 'headers'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- headers[39m
+[31m+ import { defineConfig } from "vitest/config";[39m
+[31m+ import react from "@vitejs/plugin-react";[39m
+[31m+ import { VitePWA } from "vite-plugin-pwa";[39m
+[31m+[39m
+[31m+ export default defineConfig({[39m
+[31m+   build: {[39m
+[31m+     assetsInlineLimit: 0,[39m
+[31m+     rollupOptions: {[39m
+[31m+       output: {[39m
+[31m+         manualChunks(id) {[39m
+[31m+           if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {[39m
+[31m+             return "react-vendor";[39m
+[31m+           }[39m
+[31m+           if (id.includes("node_modules/lucide-react")) {[39m
+[31m+             return "icon-vendor";[39m
+[31m+           }[39m
+[31m+           return undefined;[39m
+[31m+         },[39m
+[31m+       },[39m
+[31m+     },[39m
+[31m+   },[39m
+[31m+   plugins: [[39m
+[31m+     react(),[39m
+[31m+     VitePWA({[39m
+[31m+       registerType: "autoUpdate",[39m
+[31m+       injectRegister: "script-defer",[39m
+[31m+       manifest: false,[39m
+[31m+       includeAssets: [[39m
+[31m+         "manifest.webmanifest",[39m
+[31m+         "wechat-share.jpg",[39m
+[31m+         "icons/pwa-icon.svg",[39m
+[31m+         "icons/pwa-icon-192.png",[39m
+[31m+         "icons/pwa-icon-512.png",[39m
+[31m+         "icons/pwa-maskable-512.png",[39m
+[31m+       ],[39m
+[31m+       workbox: {[39m
+[31m+         globPatterns: ["**/*.{js,css,html}"],[39m
+[31m+         globIgnores: [[39m
+[31m+           "**/images/gallery/**/*",[39m
+[31m+         ],[39m
+[31m+         runtimeCaching: [[39m
+[31m+           {[39m
+[31m+             urlPattern: ({ request, url }) => {[39m
+[31m+               const imageRequest = request as unknown as { destination?: string };[39m
+[31m+               return imageRequest.destination === "image" && url.pathname.startsWith("/images/gallery/");[39m
+[31m+             },[39m
+[31m+             handler: "CacheFirst",[39m
+[31m+             options: {[39m
+[31m+               cacheName: "gallery-images",[39m
+[31m+               expiration: {[39m
+[31m+                 maxEntries: 36,[39m
+[31m+                 maxAgeSeconds: 60 * 60 * 24 * 30,[39m
+[31m+               },[39m
+[31m+               cacheableResponse: {[39m
+[31m+                 statuses: [0, 200],[39m
+[31m+               },[39m
+[31m+             },[39m
+[31m+           },[39m
+[31m+         ],[39m
+[31m+       },[39m
+[31m+     }),[39m
+[31m+   ],[39m
+[31m+   test: {[39m
+[31m+     exclude: ["**/node_modules/**", "**/dist/**", "e2e/**"],[39m
+[31m+   },[39m
+[31m+ });[39m
+[31m+[39m
+
+[36m [2m❯[22m src/lib/performance.test.ts:[2m55:24[22m[39m
+    [90m 53|[39m
+    [90m 54|[39m   it("declares static asset caching headers and short API photo cachin…
+    [90m 55|[39m     [34mexpect[39m(viteConfig)[33m.[39m[34mtoContain[39m([32m"headers"[39m)[33m;[39m
+    [90m   |[39m                        [31m^[39m
+    [90m 56|[39m   })[33m;[39m
+    [90m 57|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/performance.test.ts[2m > [22mperformance budgets[2m > [22mkeeps admin pages out of browser caches and search indexes
+[31m[1mAssertionError[22m: expected '<!doctype html>\n<html lang="zh-CN">\…' to contain 'noindex'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- noindex[39m
+[31m+ <!doctype html>[39m
+[31m+ <html lang="zh-CN">[39m
+[31m+   <head>[39m
+[31m+     <meta charset="UTF-8" />[39m
+[31m+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />[39m
+[31m+     <!-- seo:generated:start -->[39m
+[31m+     <meta name="robots" content="index,follow" />[39m
+[31m+     <meta name="description" content="奶黄包摄影，南京女生写真与情侣约拍。提供南京约拍、南京个人写真、南京江南感写真、室内写真与室外约拍，主打温柔自然、柔雾胶片感和尊重隐私的小红书约拍体验。" />[39m
+[31m+     <meta name="keywords" content="奶黄包摄影,南京女生写真,南京情侣约拍,南京约拍,南京个人摄影,南京个人写真,南京江南感写真,小红书约拍,女生写真,情侣写真" />[39m
+[31m+     <meta name="theme-color" content="#F5E6D3" />[39m
+[31m+     <meta name="apple-mobile-web-app-title" content="奶黄包摄影" />[39m
+[31m+     <meta property="og:title" content="奶黄包摄影｜南京女生写真与情侣约拍" />[39m
+[31m+     <meta property="og:description" content="偏柔雾胶片感的自然约拍，适合日常记录、江南感写真、情侣纪念和轻松陪拍。" />[39m
+[31m+     <meta property="og:type" content="website" />[39m
+[31m+     <meta property="og:url" content="https://shoot.custard.top/" />[39m
+[31m+     <meta property="og:site_name" content="奶黄包摄影" />[39m
+[31m+     <meta property="og:image" content="https://shoot.custard.top/wechat-share.jpg" />[39m
+[31m+     <meta property="og:image:type" content="image/jpeg" />[39m
+[31m+     <meta property="og:image:width" content="900" />[39m
+[31m+     <meta property="og:image:height" content="500" />[39m
+[31m+     <meta name="twitter:card" content="summary_large_image" />[39m
+[31m+     <meta name="twitter:title" content="奶黄包摄影｜南京女生写真与情侣约拍" />[39m
+[31m+     <meta name="twitter:description" content="偏柔雾胶片感的自然约拍，适合日常记录、江南感写真、情侣纪念和轻松陪拍。" />[39m
+[31m+     <meta name="twitter:image" content="https://shoot.custard.top/wechat-share.jpg" />[39m
+[31m+     <meta itemprop="image" content="https://shoot.custard.top/wechat-share.jpg" />[39m
+[31m+     <link rel="canonical" href="https://shoot.custard.top/" />[39m
+[31m+     <link rel="manifest" href="/manifest.webmanifest" />[39m
+[31m+     <link rel="preload" as="image" href="/images/gallery/gallery-jiangnan-01.webp?v=20260427-2" imagesizes="(max-width: 900px) 86vw, 38vw" />[39m
+[31m+     <link rel="icon" href="/icons/pwa-icon.svg" />[39m
+[31m+     <script type="application/ld+json">[39m
+[31m+     {[39m
+[31m+       "@context": "https://schema.org",[39m
+[31m+       "@type": "ProfessionalService",[39m
+[31m+       "@id": "https://shoot.custard.top/#business",[39m
+[31m+       "name": "奶黄包摄影",[39m
+[31m+       "alternateName": "奶黄包摄影约拍",[39m
+[31m+       "description": "奶黄包摄影，南京女生写真与情侣约拍。提供南京约拍、南京个人写真、南京江南感写真、室内写真与室外约拍，主打温柔自然、柔雾胶片感和尊重隐私的小红书约拍体验。",[39m
+[31m+       "url": "https://shoot.custard.top/",[39m
+[31m+       "image": [[39m
+[31m+             "https://shoot.custard.top/wechat-share.jpg",[39m
+[31m+             "https://shoot.custard.top/images/gallery/gallery-jiangnan-01.webp",[39m
+[31m+             "https://shoot.custard.top/images/gallery/gallery-urban-01.webp",[39m
+[31m+             "https://shoot.custard.top/images/gallery/gallery-garden-01.webp"[39m
+[31m+       ],[39m
+[31m+       "areaServed": {[39m
+[31m+             "@type": "City",[39m
+[31m+             "name": "南京"[39m
+[31m+       },[39m
+[31m+       "address": {[39m
+[31m+             "@type": "PostalAddress",[39m
+[31m+             "addressLocality": "南京",[39m
+[31m+             "addressCountry": "CN"[39m
+[31m+       },[39m
+[31m+       "telephone": "",[39m
+[31m+       "serviceType": [[39m
+[31m+             "南京女生写真",[39m
+[31m+             "南京情侣约拍",[39m
+[31m+             "南京个人摄影",[39m
+[31m+             "南京个人写真",[39m
+[31m+             "南京江南感写真",[39m
+[31m+             "南京约拍"[39m
+[31m+       ],[39m
+[31m+       "priceRange": "50/h-60/h-9.9/张",[39m
+[31m+       "sameAs": [[39m
+[31m+             "https://www.xiaohongshu.com/user/profile/60f5b14b000000002002fa9f"[39m
+[31m+       ],[39m
+[31m+       "offers": [[39m
+[31m+             {[39m
+[31m+                   "@type": "Offer",[39m
+[31m+                   "name": "室内写真",[39m
+[31m+                   "price": "50",[39m
+[31m+                   "priceCurrency": "CNY",[39m
+[31m+                   "description": "室内写真 50/h，2小时起拍。"[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Offer",[39m
+[31m+                   "name": "室外约拍",[39m
+[31m+                   "price": "60",[39m
+[31m+                   "priceCurrency": "CNY",[39m
+[31m+                   "description": "室外约拍 60/h，2小时起拍。"[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Offer",[39m
+[31m+                   "name": "拍立得加拍",[39m
+[31m+                   "price": "9.9",[39m
+[31m+                   "priceCurrency": "CNY",[39m
+[31m+                   "description": "拍立得加拍 9.9/张，富士 mini 11。"[39m
+[31m+             }[39m
+[31m+       ][39m
+[31m+ }[39m
+[31m+     </script>[39m
+[31m+     <script type="application/ld+json">[39m
+[31m+     {[39m
+[31m+       "@context": "https://schema.org",[39m
+[31m+       "@type": "FAQPage",[39m
+[31m+       "mainEntity": [[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "可以拍哪些类型？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "仅提供日常人像、纪念记录与生活方式摄影，拍摄以舒适、尊重和公开合规为边界。"[39m
+[31m+                   }[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "拍摄地点怎么定？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "可以提前沟通风格和预算，优先选择公共交通可达的地点；需要报销来回路费，特殊地点需打车，探店、景区门票需报销。"[39m
+[31m+                   }[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "第一次拍照不会摆动作怎么办？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "完全没关系。拍摄时会给动作、表情和视线引导，也会根据你的舒适度慢慢调整，不需要一开始就很会表现。"[39m
+[31m+                   }[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "服装需要准备什么？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "建议提前发送服装照片或风格参考。网站后续会整理不同风格的穿搭建议。"[39m
+[31m+                   }[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "照片会公开吗？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "不会默认公开。只有客人明确授权的照片，才会上传到作品展示区；未经明确授权不会公开客片。"[39m
+[31m+                   }[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "可以自己选地点吗？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "可以。你有想去的地点可以直接发来，也可以只说想要的感觉，再一起判断光线、交通和拍摄动线是否适合。"[39m
+[31m+                   }[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "阴天或下雨怎么办？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "轻微阴天通常很适合柔和照片；如果遇到明显下雨或恶劣天气，可以提前沟通改期，尽量不让拍摄体验变得勉强。"[39m
+[31m+                   }[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "多久交付照片？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "具体交付时间会在预约时说明，一般会根据拍摄量和修图排期沟通确认；如果有急用需求，请在拍摄前提前说明。"[39m
+[31m+                   }[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "是否可以不公开照片？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "可以。照片不默认公开，未经明确授权不会公开客片；如果你只想自己留存，也会尊重这个决定。"[39m
+[31m+                   }[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "取消或改期怎么处理？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "定金50，跑单不退；非恶劣天气不退定金，可改日期。迟到15分钟开始计时，当天不可更改拍摄时间。"[39m
+[31m+                   }[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "Question",[39m
+[31m+                   "name": "拍摄风格怎么沟通？",[39m
+[31m+                   "acceptedAnswer": {[39m
+[31m+                         "@type": "Answer",[39m
+[31m+                         "text": "请提前沟通想要的风格和效果，拍摄过程中如果有不满意请当面提出，结款后默认完成确认。"[39m
+[31m+                   }[39m
+[31m+             }[39m
+[31m+       ][39m
+[31m+ }[39m
+[31m+     </script>[39m
+[31m+     <script type="application/ld+json">[39m
+[31m+     {[39m
+[31m+       "@context": "https://schema.org",[39m
+[31m+       "@type": "ImageGallery",[39m
+[31m+       "name": "奶黄包摄影作品集",[39m
+[31m+       "description": "南京女生写真与情侣约拍作品展示",[39m
+[31m+       "url": "https://shoot.custard.top/#gallery",[39m
+[31m+       "image": [[39m
+[31m+             {[39m
+[31m+                   "@type": "ImageObject",[39m
+[31m+                   "contentUrl": "https://shoot.custard.top/images/gallery/gallery-jiangnan-01.webp",[39m
+[31m+                   "name": "伞下春光",[39m
+[31m+                   "caption": "南京园林里手持纸伞的江南感女生写真拼图"[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "ImageObject",[39m
+[31m+                   "contentUrl": "https://shoot.custard.top/images/gallery/gallery-urban-01.webp",[39m
+[31m+                   "name": "台阶午后",[39m
+[31m+                   "caption": "南京室内台阶场景里的都市感女生写真拼图"[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "ImageObject",[39m
+[31m+                   "contentUrl": "https://shoot.custard.top/images/gallery/gallery-garden-01.webp",[39m
+[31m+                   "name": "绿意裙摆",[39m
+[31m+                   "caption": "南京公园绿裙和纸伞的清新女生写真拼图"[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "ImageObject",[39m
+[31m+                   "contentUrl": "https://shoot.custard.top/images/gallery/gallery-sweet-01.webp",[39m
+[31m+                   "name": "黄 hoodie 街角",[39m
+[31m+                   "caption": "南京街区黄色连帽衫日常陪拍拼图"[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "ImageObject",[39m
+[31m+                   "contentUrl": "https://shoot.custard.top/images/gallery/gallery-flower-01.webp",[39m
+[31m+                   "name": "花墙紫调",[39m
+[31m+                   "caption": "白色花墙前紫色上衣女生写真拼图"[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "ImageObject",[39m
+[31m+                   "contentUrl": "https://shoot.custard.top/images/gallery/gallery-daily-01.webp",[39m
+[31m+                   "name": "廊下白衬衫",[39m
+[31m+                   "caption": "南京公园廊下白衬衫日常女生写真拼图"[39m
+[31m+             }[39m
+[31m+       ][39m
+[31m+ }[39m
+[31m+     </script>[39m
+[31m+     <script type="application/ld+json">[39m
+[31m+     {[39m
+[31m+       "@context": "https://schema.org",[39m
+[31m+       "@type": "BreadcrumbList",[39m
+[31m+       "itemListElement": [[39m
+[31m+             {[39m
+[31m+                   "@type": "ListItem",[39m
+[31m+                   "position": 1,[39m
+[31m+                   "name": "首页",[39m
+[31m+                   "item": "https://shoot.custard.top/"[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "ListItem",[39m
+[31m+                   "position": 2,[39m
+[31m+                   "name": "作品",[39m
+[31m+                   "item": "https://shoot.custard.top/#gallery"[39m
+[31m+             },[39m
+[31m+             {[39m
+[31m+                   "@type": "ListItem",[39m
+[31m+                   "position": 3,[39m
+[31m+                   "name": "套餐",[39m
+[31m+                   "item": "https://shoot.custard.top/#packages"[39m
+[31m+             }[39m
+[31m+       ][39m
+[31m+ }[39m
+[31m+     </script>[39m
+[31m+     <link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/" />[39m
+[31m+     <link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/" />[39m
+[31m+     <title>奶黄包摄影｜南京女生写真与情侣约拍</title>[39m
+[31m+     <!-- seo:generated:end -->[39m
+[31m+   </head>[39m
+[31m+   <body>[39m
+[31m+     <div id="root">[39m
+[31m+       <main class="seo-fallback">[39m
+[31m+         <header>[39m
+[31m+           <p>南京女生写真 / 情侣约拍</p>[39m
+[31m+           <h1>奶黄包摄影｜南京女生写真与情侣约拍</h1>[39m
+[31m+           <p>[39m
+[31m+             奶黄包摄影是南京个人摄影服务，专注女生写真、情侣约拍、南京约拍和柔雾胶片感日常记录。[39m
+[31m+             拍摄前会沟通风格、服装、地点和参考图，未经明确授权不会公开客片。[39m
+[31m+           </p>[39m
+[31m+           <p>[39m
+[31m+             预约方式：小红书私信咨询。[39m
+[31m+             官网地址：https://shoot.custard.top/[39m
+[31m+           </p>[39m
+[31m+         </header>[39m
+[31m+[39m
+[31m+         <section aria-label="约拍套餐">[39m
+[31m+           <h2>南京约拍套餐价格</h2>[39m
+[31m+           <ul>[39m
+[31m+             <li>室内写真 50/h，2小时起拍，适合室内棚拍、探店、轻量主题。</li>[39m
+[31m+             <li>室外约拍 60/h，2小时起拍，适合南京街区、公园、江南感路线和自然光日常记录。</li>[39m
+[31m+             <li>拍立得加拍 9.9/张，可与任意套餐叠加。</li>[39m
+[31m+           </ul>[39m
+[31m+         </section>[39m
+[31m+[39m
+[31m+         <section aria-label="作品风格">[39m
+[31m+           <h2>奶黄包摄影作品风格</h2>[39m
+[31m+           <p>可拍江南感、街拍、公园、甜酷、情侣、室内写真等风格。</p>[39m
+[31m+           <ul>[39m
+[31m+             <li><img src="/images/gallery/gallery-garden-01.webp" alt="南京公园女生写真作品，奶黄包摄影" width="320" height="400" /></li>[39m
+[31m+             <li><img src="/images/gallery/gallery-jiangnan-01.webp" alt="南京江南感女生写真作品，奶黄包摄影" width="320" height="400" /></li>[39m
+[31m+             <li><img src="/images/gallery/gallery-urban-01.webp" alt="南京街拍女生写真作品，奶黄包摄影" width="320" height="400" /></li>[39m
+[31m+           </ul>[39m
+[31m+         </section>[39m
+[31m+[39m
+[31m+         <section aria-label="常见问题">[39m
+[31m+           <h2>约拍常见问题</h2>[39m
+[31m+           <h3>可以拍哪些类型？</h3>[39m
+[31m+           <p>仅提供日常人像、纪念记录与生活方式摄影，拍摄以舒适、尊重和公开合规为边界。</p>[39m
+[31m+           <h3>照片会公开吗？</h3>[39m
+[31m+           <p>不会默认公开。只有客人明确授权的照片，才会上传到作品展示区。</p>[39m
+[31m+           <h3>如何预约奶黄包摄影？</h3>[39m
+[31m+           <p>通过小红书私信咨询，确认风格、地点、档期和定金后锁定拍摄时间。</p>[39m
+[31m+         </section>[39m
+[31m+       </main>[39m
+[31m+     </div>[39m
+[31m+     <script type="module" src="/src/main.tsx"></script>[39m
+[31m+   </body>[39m
+[31m+ </html>[39m
+[31m+[39m
+
+[36m [2m❯[22m src/lib/performance.test.ts:[2m69:18[22m[39m
+    [90m 67|[39m
+    [90m 68|[39m   it("keeps admin pages out of browser caches and search indexes", () …
+    [90m 69|[39m     [34mexpect[39m(html)[33m.[39m[34mtoContain[39m([32m'noindex'[39m)[33m;[39m
+    [90m   |[39m                  [31m^[39m
+    [90m 70|[39m     [34mexpect[39m(html)[33m.[39m[34mtoContain[39m([32m'nofollow'[39m)[33m;[39m
+    [90m 71|[39m     [34mexpect[39m(html)[33m.[39m[34mtoContain[39m([32m'noarchive'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/performance.test.ts[2m > [22mperformance budgets[2m > [22mlazy-loads gallery images, the lightbox, chat panel, and admin CSS outside the public shell
+[31m[1mAssertionError[22m: expected 'import { StrictMode } from "react";\r…' to contain 'lazy(() => import("./components/Publi…'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- lazy(() => import("./components/PublicChatWidget")[39m
+[31m+ import { StrictMode } from "react";[39m
+[31m+ import { createRoot } from "react-dom/client";[39m
+[31m+ import Lenis from "lenis";[39m
+[31m+ import gsap from "gsap";[39m
+[31m+ import { ScrollTrigger } from "gsap/ScrollTrigger";[39m
+[31m+ import { App } from "./App";[39m
+[31m+ import "animal-island-ui/style";[39m
+[31m+ import "./styles/global.css";[39m
+[31m+ import "./styles/animal-theme.css";[39m
+[31m+ [39m
+[31m+ // Idle-time prefetch of key gallery images[39m
+[31m+ if ("requestIdleCallback" in window) {[39m
+[31m+   requestIdleCallback([39m
+[31m+     () => {[39m
+[31m+       const imgs = ["/images/gallery/640/gallery-urban-01.webp", "/images/gallery/640/gallery-garden-01.webp", "/images/gallery/640/gallery-jiangnan-01.webp"];[39m
+[31m+       imgs.forEach((src) => {[39m
+[31m+         const link = document.createElement("link");[39m
+[31m+         link.rel = "prefetch";[39m
+[31m+         link.as = "image";[39m
+[31m+         link.href = src;[39m
+[31m+         document.head.append(link);[39m
+[31m+       });[39m
+[31m+     },[39m
+[31m+     { timeout: 3000 },[39m
+[31m+   );[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ const root = document.getElementById("root");[39m
+[31m+ [39m
+[31m+ if (!root) {[39m
+[31m+   throw new Error("Root element #root was not found");[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ // ── Lenis smooth scroll ──[39m
+[31m+ const lenis = new Lenis({[39m
+[31m+   duration: 1.2,[39m
+[31m+   easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),[39m
+[31m+   orientation: "vertical",[39m
+[31m+   smoothWheel: true,[39m
+[31m+   syncTouch: true,[39m
+[31m+   touchMultiplier: 1.5,[39m
+[31m+   wheelMultiplier: 1.0,[39m
+[31m+   infinite: false,[39m
+[31m+ });[39m
+[31m+ [39m
+[31m+ // Expose Lenis globally for other components (SectionNav, etc.)[39m
+[31m+ (window as any).lenis = lenis;[39m
+[31m+ [39m
+[31m+ // Sync Lenis with GSAP ScrollTrigger[39m
+[31m+ lenis.on("scroll", () => ScrollTrigger.update());[39m
+[31m+ [39m
+[31m+ gsap.ticker.add((time) => {[39m
+[31m+   lenis.raf(time * 1000);[39m
+[31m+ });[39m
+[31m+ gsap.ticker.lagSmoothing(0);[39m
+[31m+ [39m
+[31m+ createRoot(root).render([39m
+[31m+   <StrictMode>[39m
+[31m+     <App />[39m
+[31m+   </StrictMode>,[39m
+[31m+ );[39m
+[31m+ [39m
+[31m+ requestAnimationFrame(() => {[39m
+[31m+   document.body.classList.add("is-loaded");[39m
+[31m+ });[39m
+[31m+ [39m
+[31m+ [39m
+[31m+[39m
+
+[36m [2m❯[22m src/lib/performance.test.ts:[2m77:24[22m[39m
+    [90m 75|[39m     [34mexpect[39m(gallerySource)[33m.[39m[34mtoContain[39m([32m'loading="lazy"'[39m)[33m;[39m
+    [90m 76|[39m     expect(gallerySource).toContain("lazy(() => import(\"./Lightbox\")…
+    [90m 77|[39m     expect(mainSource).toContain('lazy(() => import("./components/Publ…
+    [90m   |[39m                        [31m^[39m
+    [90m 78|[39m     [34mexpect[39m(mainSource)[33m.[39m[34mtoContain[39m([32m'import("./styles/admin.css")'[39m)[33m;[39m
+    [90m 79|[39m     [34mexpect[39m(viteConfig)[33m.[39m[34mtoContain[39m([32m"dynamicImport"[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/performance.test.ts[2m > [22mperformance budgets[2m > [22mkeeps first-load scroll progress outside the app shell
+[31m[1mAssertionError[22m: expected '@import "./base.css";\r\n@import "./s…' to contain 'body.is-loaded'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- body.is-loaded[39m
+[31m+ @import "./base.css";[39m
+[31m+ @import "./site.css";[39m
+[31m+ @import "./chat.css";[39m
+[31m+ @import "./scroll-story.css";[39m
+[31m+[39m
+[31m+ /* ── Cute theme fonts (Nunito + Noto Sans SC) ── */[39m
+[31m+ /* Unconditionally imported; only used when data-mood="cute" references them */[39m
+[31m+ @import "@fontsource/nunito/latin-500.css";[39m
+[31m+ @import "@fontsource/nunito/latin-700.css";[39m
+[31m+ @import "@fontsource/nunito/latin-900.css";[39m
+[31m+ @import "@fontsource/noto-sans-sc/latin-500.css";[39m
+[31m+ @import "@fontsource/noto-sans-sc/latin-700.css";[39m
+[31m+ @import "@fontsource/noto-sans-sc/latin-900.css";[39m
+[31m+ @import "@fontsource/noto-sans-sc/chinese-simplified-500.css";[39m
+[31m+ @import "@fontsource/noto-sans-sc/chinese-simplified-700.css";[39m
+[31m+ @import "@fontsource/noto-sans-sc/chinese-simplified-900.css";[39m
+[31m+ [39m
+[31m+ /* No Tailwind — custom CSS only */[39m
+[31m+ @font-face {[39m
+[31m+   font-family: "Naihuangbao WenKai";[39m
+[31m+   src: url("/fonts/naihuangbao-wenkai-subset.woff2") format("woff2");[39m
+[31m+   font-style: normal;[39m
+[31m+   font-weight: 400 800;[39m
+[31m+   font-display: swap;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ :root {[39m
+[31m+   --font-body:[39m
+[31m+     "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, -apple-system,[39m
+[31m+     BlinkMacSystemFont, "Segoe UI", sans-serif;[39m
+[31m+   --font-display-cn:[39m
+[31m+     "Naihuangbao WenKai", "Kaiti SC", "KaiTi", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;[39m
+[31m+   --font-heading-cn:[39m
+[31m+     var(--font-display-cn);[39m
+[31m+   --font-heading: var(--font-heading-cn);[39m
+[31m+   --font-ui: var(--font-body);[39m
+[31m+   --custard-bg: #FEF3DD;[39m
+[31m+   --custard-cream: #FFF9EC;[39m
+[31m+   --custard-soft: #FFE8C5;[39m
+[31m+   --sage-mist: #DDE7D7;[39m
+[31m+   --sage-soft: #EDF4EA;[39m
+[31m+   --sage-text: #65785F;[39m
+[31m+   --peach-accent: #FFB8A1;[39m
+[31m+   --peach-soft: #FFD2B8;[39m
+[31m+   --caramel-text: #8B5E4A;[39m
+[31m+   --caramel-deep: #5F3C31;[39m
+[31m+   --caramel-muted: #7F5A44;[39m
+[31m+   --caramel-ink: #442B24;[39m
+[31m+   --paper-white: #FFFDF7;[39m
+[31m+   --warm-border: rgba(139, 94, 74, 0.14);[39m
+[31m+   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);[39m
+[31m+   --ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);[39m
+[31m+   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);[39m
+[31m+   --ease-smooth: cubic-bezier(0.45, 0, 0.15, 1);[39m
+[31m+   --section-inline: clamp(22px, 5vw, 52px);[39m
+[31m+   --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.08'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.38'/%3E%3C/svg%3E");[39m
+[31m+   --shadow-core: 0 1px 2px rgba(95, 60, 49, 0.06);[39m
+[31m+   --shadow-mid: 0 10px 26px rgba(139, 94, 74, 0.06);[39m
+[31m+   --shadow-ambient: 0 20px 54px rgba(255, 184, 161, 0.1);[39m
+[31m+   --shadow-far: 0 32px 78px rgba(255, 210, 184, 0.1);[39m
+[31m+   --warm-shadow: var(--shadow-core), var(--shadow-mid), var(--shadow-ambient), var(--shadow-far);[39m
+[31m+   --warm-shadow-strong:[39m
+[31m+     0 3px 8px rgba(95, 60, 49, 0.08),[39m
+[31m+     0 14px 38px rgba(139, 94, 74, 0.09),[39m
+[31m+     0 24px 68px rgba(255, 184, 161, 0.16),[39m
+[31m+     0 40px 96px rgba(255, 210, 184, 0.14);[39m
+[31m+   --paper-inset:[39m
+[31m+     inset 0 1px 0 rgba(255, 255, 255, 0.88),[39m
+[31m+     inset 0 -18px 28px rgba(139, 94, 74, 0.035),[39m
+[31m+     inset 0 0 0 1px rgba(139, 94, 74, 0.045);[39m
+[31m+   --button-shadow:[39m
+[31m+     0 2px 4px rgba(95, 60, 49, 0.12),[39m
+[31m+     0 12px 28px rgba(139, 94, 74, 0.12),[39m
+[31m+     0 22px 48px rgba(255, 184, 161, 0.26),[39m
+[31m+     0 34px 74px rgba(255, 210, 184, 0.16);[39m
+[31m+   --button-shadow-hover:[39m
+[31m+     0 3px 7px rgba(95, 60, 49, 0.15),[39m
+[31m+     0 18px 38px rgba(139, 94, 74, 0.16),[39m
+[31m+     0 30px 66px rgba(255, 184, 161, 0.34),[39m
+[31m+     0 44px 92px rgba(255, 210, 184, 0.22);[39m
+[31m+   color: var(--caramel-text);[39m
+[31m+   background: var(--custard-bg);[39m
+[31m+   font-family: var(--font-body);[39m
+[31m+   font-synthesis: none;[39m
+[31m+   font-size: 16px;[39m
+[31m+   line-height: 1.68;[39m
+[31m+ [39m
+[31m+ /* ── Dark mode (system) ── */[39m
+[31m+ @media (prefers-color-scheme: dark) {[39m
+[31m+   :root {[39m
+[31m+     --custard-bg: #2D201A;[39m
+[31m+     --custard-cream: #3A2A22;[39m
+[31m+     --custard-soft: #4A352C;[39m
+[31m+     --paper-white: #33241E;[39m
+[31m+     --caramel-text: #D4B8A8;[39m
+[31m+     --caramel-deep: #E8D4C8;[39m
+[31m+     --caramel-muted: #C9AD9E;[39m
+[31m+     --caramel-ink: #F0E4DC;[39m
+[31m+     --warm-border: rgba(255, 210, 184, 0.12);[39m
+[31m+     --peach-accent: #E89A80;[39m
+[31m+     --peach-soft: #C47A60;[39m
+[31m+     --sage-mist: #4A5A4A;[39m
+[31m+     --sage-text: #A8BEA0;[39m
+[31m+     --warm-shadow: 0 1px 2px rgba(0,0,0,0.2), 0 8px 20px rgba(0,0,0,0.15), 0 16px 40px rgba(0,0,0,0.12);[39m
+[31m+     --button-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 12px 28px rgba(0,0,0,0.2);[39m
+[31m+     --button-shadow-hover: 0 3px 7px rgba(0,0,0,0.35), 0 18px 38px rgba(0,0,0,0.25);[39m
+[31m+     background: var(--custard-bg);[39m
+[31m+     color: var(--caramel-text);[39m
+[31m+   }[39m
+[31m+ }[39m
+[31m+   text-rendering: optimizeLegibility;[39m
+[31m+   -webkit-font-smoothing: antialiased;[39m
+[31m+   -moz-osx-font-smoothing: grayscale;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* Smooth mood-switch transition */[39m
+[31m+ :root.style-transition *,[39m
+[31m+ :root.style-transition *::before,[39m
+[31m+ :root.style-transition *::after {[39m
+[31m+   transition: background 0.45s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               color 0.35s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ══════════════════════════════════════════════[39m
+[31m+    Cute / Animal Island Theme[39m
+[31m+    ══════════════════════════════════════════════ */[39m
+[31m+ :root[data-mood="cute"] {[39m
+[31m+   /* Fonts — Nunito (English) + Noto Sans SC (Chinese) */[39m
+[31m+   --font-body: 'Nunito', 'Noto Sans SC',[39m
+[31m+     "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;[39m
+[31m+   --font-display-cn: 'Noto Sans SC',[39m
+[31m+     "Kaiti SC", "PingFang SC", "Microsoft YaHei", sans-serif;[39m
+[31m+   --font-heading-cn: var(--font-display-cn);[39m
+[31m+   --font-heading: 'Nunito', var(--font-heading-cn);[39m
+[31m+   --font-ui: var(--font-body);[39m
+[31m+ [39m
+[31m+   /* Rounded corners — more pill-like */[39m
+[31m+   --paper-inset:[39m
+[31m+     inset 0 1px 0 rgba(255, 255, 255, 0.88),[39m
+[31m+     inset 0 0 0 1px rgba(121, 79, 39, 0.06);[39m
+[31m+ [39m
+[31m+   /* Button shadows — Animal Crossing 3D style */[39m
+[31m+   --button-shadow: 0 5px 0 0 #bdaea0, 0 3px 6px rgba(61, 52, 40, 0.08);[39m
+[31m+   --button-shadow-hover: 0 6px 0 0 #bdaea0, 0 5px 12px rgba(61, 52, 40, 0.14);[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ * {[39m
+[31m+   box-sizing: border-box;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ html {[39m
+[31m+   scroll-padding-top: 0;[39m
+[31m+   text-size-adjust: 100%;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ── Scroll Reveal Animations ── */[39m
+[31m+ .section-shell {[39m
+[31m+   content-visibility: auto;[39m
+[31m+   contain-intrinsic-size: 1px 860px;[39m
+[31m+   opacity: 0;[39m
+[31m+   transform: translateY(24px) scale(0.98);[39m
+[31m+   clip-path: inset(0 0 2% 0);[39m
+[31m+   transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);[39m
+[31m+ }[39m
+[31m+ .section-shell.is-visible {[39m
+[31m+   opacity: 1;[39m
+[31m+   transform: translateY(0) scale(1);[39m
+[31m+   clip-path: inset(0 0 0 0);[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .section-body > * {[39m
+[31m+   opacity: 0;[39m
+[31m+   transform: translateY(18px);[39m
+[31m+   transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);[39m
+[31m+ }[39m
+[31m+ .section-body.is-visible > * {[39m
+[31m+   opacity: 1;[39m
+[31m+   transform: translateY(0);[39m
+[31m+ }[39m
+[31m+ .section-body.is-visible > *:nth-child(1) { transition-delay: 0.04s; }[39m
+[31m+ .section-body.is-visible > *:nth-child(2) { transition-delay: 0.10s; }[39m
+[31m+ .section-body.is-visible > *:nth-child(3) { transition-delay: 0.16s; }[39m
+[31m+ .section-body.is-visible > *:nth-child(4) { transition-delay: 0.22s; }[39m
+[31m+ .section-body.is-visible > *:nth-child(5) { transition-delay: 0.28s; }[39m
+[31m+ .section-body.is-visible > *:nth-child(6) { transition-delay: 0.34s; }[39m
+[31m+ .section-body.is-visible > *:nth-child(7) { transition-delay: 0.40s; }[39m
+[31m+ .section-body.is-visible > *:nth-child(8) { transition-delay: 0.46s; }[39m
+[31m+ [39m
+[31m+ /* Varied scroll animations */[39m
+[31m+ .why-card {[39m
+[31m+   transform: translateX(-24px);[39m
+[31m+   opacity: 0;[39m
+[31m+   /* .is-visible handled by GSAP ScrollTrigger */[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .package-card {[39m
+[31m+   opacity: 0;[39m
+[31m+   transform: translateY(40px) scale(0.96);[39m
+[31m+   transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);[39m
+[31m+ }[39m
+[31m+ .section-body.is-visible .package-card {[39m
+[31m+   opacity: 1;[39m
+[31m+   transform: translateY(0) scale(1);[39m
+[31m+ }[39m
+[31m+ .section-body.is-visible .package-card:nth-child(1) {[39m
+[31m+   transition-delay: 0.06s;[39m
+[31m+ }[39m
+[31m+ .section-body.is-visible .package-card:nth-child(2) {[39m
+[31m+   transition-delay: 0.14s;[39m
+[31m+ }[39m
+[31m+ .section-body.is-visible .package-card:nth-child(3) {[39m
+[31m+   transition-delay: 0.22s;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .process-step {[39m
+[31m+   opacity: 0;[39m
+[31m+   transform: translateX(20px);[39m
+[31m+   transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               border-color 0.3s ease;[39m
+[31m+ }[39m
+[31m+ .section-body.is-visible .process-step {[39m
+[31m+   opacity: 1;[39m
+[31m+   transform: translateX(0);[39m
+[31m+ }[39m
+[31m+ .section-body.is-visible .process-step:nth-child(1) { transition-delay: 0.04s; }[39m
+[31m+ .section-body.is-visible .process-step:nth-child(2) { transition-delay: 0.12s; }[39m
+[31m+ .section-body.is-visible .process-step:nth-child(3) { transition-delay: 0.20s; }[39m
+[31m+ .section-body.is-visible .process-step:nth-child(4) { transition-delay: 0.28s; }[39m
+[31m+ .section-body.is-visible .process-step:nth-child(5) { transition-delay: 0.36s; }[39m
+[31m+ [39m
+[31m+ /* ── Image Blur-up Loading ── */[39m
+[31m+ .img-blur-wrap {[39m
+[31m+   position: relative;[39m
+[31m+   overflow: hidden;[39m
+[31m+   width: 100%;[39m
+[31m+   height: 100%;[39m
+[31m+ }[39m
+[31m+ /* photo vignette */[39m
+[31m+ .img-blur-wrap::after {[39m
+[31m+   content: "";[39m
+[31m+   position: absolute;[39m
+[31m+   inset: 0;[39m
+[31m+   z-index: 1;[39m
+[31m+   border-radius: inherit;[39m
+[31m+   pointer-events: none;[39m
+[31m+   opacity: 0.5;[39m
+[31m+   background:[39m
+[31m+     radial-gradient(ellipse at center, transparent 56%, rgba(95, 60, 49, 0.22) 100%),[39m
+[31m+     linear-gradient(145deg, rgba(255, 253, 247, 0.18), transparent 36%, rgba(95, 60, 49, 0.1));[39m
+[31m+   mix-blend-mode: multiply;[39m
+[31m+ }[39m
+[31m+ .img-blur-wrap img {[39m
+[31m+   display: block;[39m
+[31m+   width: 100%;[39m
+[31m+   height: 100%;[39m
+[31m+   object-fit: cover;[39m
+[31m+   opacity: 0;[39m
+[31m+   transform: scale(1.12);[39m
+[31m+   filter: blur(18px);[39m
+[31m+   transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),[39m
+[31m+               filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);[39m
+[31m+ }[39m
+[31m+ .img-blur-wrap.is-loaded img {[39m
+[31m+   opacity: 1;[39m
+[31m+   transform: scale(1);[39m
+[31m+   filter: blur(0);[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* Flash reveal overlay on image load */[39m
+[31m+ .img-blur-wrap.is-loaded::before {[39m
+[31m+   content: "";[39m
+[31m+   position: absolute;[39m
+[31m+   inset: 0;[39m
+[31m+   z-index: 2;[39m
+[31m+   background: rgba(255, 253, 247, 0.15);[39m
+[31m+   pointer-events: none;[39m
+[31m+   animation: flashReveal 0.5s ease forwards;[39m
+[31m+ }[39m
+[31m+ @keyframes flashReveal {[39m
+[31m+   0% { opacity: 0.35; }[39m
+[31m+   100% { opacity: 0; }[39m
+[31m+ }[39m
+[31m+ .img-skeleton {[39m
+[31m+   position: absolute;[39m
+[31m+   inset: 0;[39m
+[31m+   background: linear-gradient(90deg, #F7E6C8 25%, #FFF8EA 50%, #F7E6C8 75%);[39m
+[31m+   background-size: 200% 100%;[39m
+[31m+   animation: skeleton-shimmer 1.5s ease-in-out infinite;[39m
+[31m+   z-index: 0;[39m
+[31m+ }[39m
+[31m+ @keyframes skeleton-shimmer {[39m
+[31m+   0% { background-position: 200% 0; }[39m
+[31m+   100% { background-position: -200% 0; }[39m
+[31m+ }[39m
+[31m+ .img-blur-wrap.is-loaded .img-skeleton {[39m
+[31m+   opacity: 0;[39m
+[31m+   transition: opacity 0.4s ease;[39m
+[31m+ }[39m
+[31m+ .gallery-image-placeholder {[39m
+[31m+   aspect-ratio: 4 / 5;[39m
+[31m+   border-radius: 20px;[39m
+[31m+   display: flex;[39m
+[31m+   align-items: flex-end;[39m
+[31m+   padding: 14px;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .gallery-skeleton-title {[39m
+[31m+   position: relative;[39m
+[31m+   z-index: 1;[39m
+[31m+   font-family: var(--font-display-cn);[39m
+[31m+   font-size: 13px;[39m
+[31m+   color: rgba(68, 43, 36, 0.4);[39m
+[31m+   line-height: 1.3;[39m
+[31m+ }[39m
+[31m+ .gallery-skeleton {[39m
+[31m+   position: absolute;[39m
+[31m+   inset: 0;[39m
+[31m+   border-radius: inherit;[39m
+[31m+   background:[39m
+[31m+     linear-gradient(135deg, rgba(255, 249, 236, 0.96), rgba(255, 232, 197, 0.82)),[39m
+[31m+     var(--custard-cream);[39m
+[31m+   box-shadow: inset 0 0 0 1px var(--warm-border);[39m
+[31m+   animation: gallerySkeletonPulse 1.45s ease-in-out infinite;[39m
+[31m+ }[39m
+[31m+ @keyframes gallerySkeletonPulse {[39m
+[31m+   0%, 100% { opacity: 0.68; }[39m
+[31m+   50% { opacity: 1; }[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ── Magazine Ambient Animations ── */[39m
+[31m+ @keyframes floatOrb {[39m
+[31m+   0%, 100% { transform: translate(0, 0) rotate(0deg); }[39m
+[31m+   33% { transform: translate(12px, -8px) rotate(2deg); }[39m
+[31m+   66% { transform: translate(-6px, 6px) rotate(-1deg); }[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ @keyframes breatheGlow {[39m
+[31m+   0%, 100% { opacity: 0.32; }[39m
+[31m+   50% { opacity: 0.48; }[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ @keyframes driftLine {[39m
+[31m+   0% { transform: translateX(-10px); opacity: 0.6; }[39m
+[31m+   50% { opacity: 1; }[39m
+[31m+   100% { transform: translateX(10px); opacity: 0.6; }[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ @keyframes textReveal {[39m
+[31m+   from {[39m
+[31m+     clip-path: inset(0 100% 0 0);[39m
+[31m+   }[39m
+[31m+   to {[39m
+[31m+     clip-path: inset(0 0 0 0);[39m
+[31m+   }[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ @keyframes cardTiltIn {[39m
+[31m+   from {[39m
+[31m+     opacity: 0;[39m
+[31m+     transform: perspective(800px) rotateY(-12deg) rotateX(6deg) translateY(30px);[39m
+[31m+   }[39m
+[31m+   to {[39m
+[31m+     opacity: 1;[39m
+[31m+     transform: perspective(800px) rotateY(0) rotateX(0) translateY(0);[39m
+[31m+   }[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ body {[39m
+[31m+   margin: 0;[39m
+[31m+   min-width: 320px;[39m
+[31m+   min-height: 100vh;[39m
+[31m+   color: var(--caramel-text);[39m
+[31m+   font-family: var(--font-body);[39m
+[31m+   letter-spacing: 0.005em;[39m
+[31m+   background:[39m
+[31m+     var(--paper-noise),[39m
+[31m+     radial-gradient(ellipse at 12% 8%, rgba(255, 184, 161, 0.22), transparent 34%),[39m
+[31m+     radial-gradient(ellipse at 82% 14%, rgba(255, 255, 255, 0.72), transparent 30%),[39m
+[31m+     radial-gradient(ellipse at 74% 58%, rgba(221, 231, 215, 0.42), transparent 34%),[39m
+[31m+     radial-gradient(ellipse at 72% 78%, rgba(255, 210, 184, 0.18), transparent 36%),[39m
+[31m+     linear-gradient(180deg, #FEF3DD 0%, #FFF8EA 44%, #F6EEDB 100%);[39m
+[31m+ }[39m
+[31m+ body.nav-lock {[39m
+[31m+   overflow: hidden;[39m
+[31m+   touch-action: none;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* Ambient floating decorations */[39m
+[31m+ body::before {[39m
+[31m+   content: "✦  ♡  ✧";[39m
+[31m+   position: fixed;[39m
+[31m+   top: 18vh;[39m
+[31m+   right: clamp(18px, 5vw, 70px);[39m
+[31m+   z-index: 1;[39m
+[31m+   color: var(--peach-accent);[39m
+[31m+   font-size: clamp(18px, 2.6vw, 32px);[39m
+[31m+   letter-spacing: 0.55em;[39m
+[31m+   opacity: 0.09;[39m
+[31m+   pointer-events: none;[39m
+[31m+   transform: rotate(9deg);[39m
+[31m+   animation: breatheGlow 8s ease-in-out infinite;[39m
+[31m+ }[39m
+[31m+ body::after {[39m
+[31m+   content: "";[39m
+[31m+   position: fixed;[39m
+[31m+   inset: 0;[39m
+[31m+   pointer-events: none;[39m
+[31m+   z-index: 50;[39m
+[31m+   opacity: 0.022;[39m
+[31m+   background: repeating-linear-gradient([39m
+[31m+     0deg,[39m
+[31m+     transparent,[39m
+[31m+     transparent 1px,[39m
+[31m+     rgba(139, 94, 74, 0.13) 1px,[39m
+[31m+     rgba(139, 94, 74, 0.13) 2px[39m
+[31m+   );[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ main {[39m
+[31m+   position: relative;[39m
+[31m+   overflow: hidden;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ main::before,[39m
+[31m+ main::after {[39m
+[31m+   position: absolute;[39m
+[31m+   z-index: 0;[39m
+[31m+   color: var(--peach-accent);[39m
+[31m+   font-size: clamp(20px, 3vw, 38px);[39m
+[31m+   letter-spacing: 0.4em;[39m
+[31m+   opacity: 0.07;[39m
+[31m+   pointer-events: none;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ main::before {[39m
+[31m+   content: "✿  ✦";[39m
+[31m+   left: clamp(18px, 4vw, 64px);[39m
+[31m+   top: 65rem;[39m
+[31m+   transform: rotate(-10deg);[39m
+[31m+   animation: breatheGlow 10s ease-in-out 2s infinite;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ main::after {[39m
+[31m+   content: "♡  ✧";[39m
+[31m+   right: clamp(18px, 6vw, 82px);[39m
+[31m+   bottom: 14rem;[39m
+[31m+   transform: rotate(8deg);[39m
+[31m+   animation: breatheGlow 12s ease-in-out 5s infinite;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ── Particles canvas ── */[39m
+[31m+ .canvas-particles {[39m
+[31m+   position: fixed;[39m
+[31m+   top: 0;[39m
+[31m+   left: 0;[39m
+[31m+   width: 100vw;[39m
+[31m+   height: 100vh;[39m
+[31m+   z-index: 0;[39m
+[31m+   pointer-events: none;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ── Button press micro-interaction ── */[39m
+[31m+ button:active {[39m
+[31m+   transform: scale(0.97);[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .hero-cover-primary-btn:active,[39m
+[31m+ .hero-cover-secondary-btn:active,[39m
+[31m+ .nav-cta:active,[39m
+[31m+ .floating-booking-cta:active {[39m
+[31m+   transform: scale(0.95);[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ── Image load spring ── */[39m
+[31m+ [39m
+[31m+ [39m
+[31m+ /* ── Section nav dots ── */[39m
+[31m+ .section-nav {[39m
+[31m+   position: fixed;[39m
+[31m+   right: 16px;[39m
+[31m+   top: 50%;[39m
+[31m+   transform: translateY(-50%);[39m
+[31m+   z-index: 70;[39m
+[31m+   display: flex;[39m
+[31m+   flex-direction: column;[39m
+[31m+   gap: 10px;[39m
+[31m+   pointer-events: none;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .section-nav-dot {[39m
+[31m+   pointer-events: auto;[39m
+[31m+   width: 10px;[39m
+[31m+   height: 10px;[39m
+[31m+   border-radius: 50%;[39m
+[31m+   border: 1.5px solid rgba(139, 94, 74, 0.25);[39m
+[31m+   background: transparent;[39m
+[31m+   padding: 0;[39m
+[31m+   cursor: pointer;[39m
+[31m+   position: relative;[39m
+[31m+   transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .section-nav-dot:hover {[39m
+[31m+   transform: scale(1.4);[39m
+[31m+   border-color: rgba(139, 94, 74, 0.5);[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .section-nav-dot.is-active {[39m
+[31m+   background: rgba(139, 94, 74, 0.6);[39m
+[31m+   border-color: rgba(139, 94, 74, 0.4);[39m
+[31m+   transform: scale(1.2);[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .section-nav-label {[39m
+[31m+   position: absolute;[39m
+[31m+   right: 18px;[39m
+[31m+   top: 50%;[39m
+[31m+   transform: translateY(-50%);[39m
+[31m+   font-size: 11px;[39m
+[31m+   color: rgba(139, 94, 74, 0.5);[39m
+[31m+   white-space: nowrap;[39m
+[31m+   opacity: 0;[39m
+[31m+   transition: opacity 0.2s ease;[39m
+[31m+   pointer-events: none;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .section-nav-dot:hover .section-nav-label {[39m
+[31m+   opacity: 1;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ @media (max-width: 768px) {[39m
+[31m+   .section-nav { display: none; }[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ── Theme toggle in nav ── */[39m
+[31m+ .theme-toggle,[39m
+[31m+ .mood-toggle {[39m
+[31m+   display: inline-flex;[39m
+[31m+   align-items: center;[39m
+[31m+   justify-content: center;[39m
+[31m+   width: 32px;[39m
+[31m+   height: 32px;[39m
+[31m+   border: 1px solid var(--warm-border);[39m
+[31m+   border-radius: 8px;[39m
+[31m+   background: transparent;[39m
+[31m+   cursor: pointer;[39m
+[31m+   font-size: 14px;[39m
+[31m+   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s var(--ease-spring);[39m
+[31m+   flex-shrink: 0;[39m
+[31m+ }[39m
+[31m+ .theme-toggle:hover,[39m
+[31m+ .mood-toggle:hover {[39m
+[31m+   background: rgba(255, 210, 184, 0.1);[39m
+[31m+   border-color: var(--peach-accent);[39m
+[31m+   transform: scale(1.08);[39m
+[31m+ }[39m
+[31m+ .mood-toggle:active {[39m
+[31m+   transform: scale(0.92) rotate(-15deg);[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ a {[39m
+[31m+   color: inherit;[39m
+[31m+   text-decoration: none;[39m
+[31m+   text-underline-offset: 0.22em;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ button,[39m
+[31m+ input,[39m
+[31m+ select,[39m
+[31m+ textarea {[39m
+[31m+   font: inherit;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ button,[39m
+[31m+ a {[39m
+[31m+   -webkit-tap-highlight-color: rgba(255, 184, 161, 0.2);[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ .nav-menu a,[39m
+[31m+ .hamburger,[39m
+[31m+ .lightbox-close,[39m
+[31m+ .lightbox-nav {[39m
+[31m+   backface-visibility: hidden;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ── 3D Card Tilt Effect (micro-interaction) ── */[39m
+[31m+ [data-tilt] {[39m
+[31m+   transition: transform 0.1s ease-out;[39m
+[31m+   will-change: transform;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ── Button Ripple Effect ── */[39m
+[31m+ .ripple {[39m
+[31m+   position: relative;[39m
+[31m+   overflow: hidden;[39m
+[31m+ }[39m
+[31m+ .ripple::after {[39m
+[31m+   content: "";[39m
+[31m+   position: absolute;[39m
+[31m+   inset: 0;[39m
+[31m+   background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 60%);[39m
+[31m+   opacity: 0;[39m
+[31m+   transition: opacity 0.4s ease;[39m
+[31m+   pointer-events: none;[39m
+[31m+ }[39m
+[31m+ .ripple:active::after {[39m
+[31m+   opacity: 1;[39m
+[31m+   transition: opacity 0s;[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ── Enhanced Magazine Cover Animation ── */[39m
+[31m+ @keyframes heroMagazineReveal {[39m
+[31m+   0% {[39m
+[31m+     clip-path: inset(0 0 100% 0);[39m
+[31m+   }[39m
+[31m+   30% {[39m
+[31m+     clip-path: inset(0 0 0 0);[39m
+[31m+   }[39m
+[31m+   100% {[39m
+[31m+     clip-path: inset(0 0 0 0);[39m
+[31m+   }[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ @keyframes heroTitleIn {[39m
+[31m+   from {[39m
+[31m+     opacity: 0;[39m
+[31m+     transform: translateY(34px);[39m
+[31m+     letter-spacing: 0.2em;[39m
+[31m+   }[39m
+[31m+   to {[39m
+[31m+     opacity: 1;[39m
+[31m+     transform: translateY(0);[39m
+[31m+     letter-spacing: 0;[39m
+[31m+   }[39m
+[31m+ }[39m
+[31m+ [39m
+[31m+ /* ── Stagger text reveal lines ── */[39m
+[31m+ .text-reveal-line {[39m
+[31m+   overflow: hidden;[39m
+[31m+ }[39m
+[31m+ .text-reveal-line span {[39m
+[31m+   display: block;[39m
+[31m+   animation: textReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;[39m
+[31m+   animation-play-state: paused;[39m
+[31m+ }[39m
+[31m+ .is-loaded .text-reveal-line span {[39m
+[31m+   animation-play-state: running;[39m
+[31m+ }[39m
+[31m+ .text-reveal-line:nth-child(1) span { animation-delay: 0.3s; }[39m
+[31m+ .text-reveal-line:nth-child(2) span { animation-delay: 0.5s; }[39m
+[31m+ .text-reveal-line:nth-child(3) span { animation-delay: 0.7s; }[39m
+[31m+[39m
+
+[36m [2m❯[22m src/lib/performance.test.ts:[2m90:23[22m[39m
+    [90m 88|[39m     expect(mainSource).toContain('document.body.classList.add("is-load…
+    [90m 89|[39m     expect(navSource).toContain('style.setProperty("--scroll-progress"…
+    [90m 90|[39m     [34mexpect[39m(globalCss)[33m.[39m[34mtoContain[39m([32m"body.is-loaded"[39m)[33m;[39m
+    [90m   |[39m                       [31m^[39m
+    [90m 91|[39m     [34mexpect[39m(globalCss)[33m.[39m[34mtoContain[39m([32m".site-nav::after"[39m)[33m;[39m
+    [90m 92|[39m     expect(globalCss).toContain("@media (prefers-reduced-motion: reduc…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
