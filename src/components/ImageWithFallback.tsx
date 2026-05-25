@@ -22,25 +22,44 @@ export function ImageWithFallback({
   load?: boolean;
   sizes?: string;
 }) {
-  const [failed, setFailed] = useState(!src);
+  const [failed, setFailed] = useState(false);
+  const [useDirectImg, setUseDirectImg] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
   // Use <picture> with AVIF for gallery images, regular <img> otherwise
-  const usePicture = sizes && src.startsWith("/images/gallery/");
+  const usePicture = sizes && src.startsWith("/images/gallery/") && !useDirectImg;
   const pictureAttrs = usePicture ? getResponsivePictureAttrs(src, sizes) : null;
   const imageAttrs = !usePicture ? getResponsiveImageAttrs(src, sizes) : null;
 
+  // When picture sources fail, fall back to direct <img>
+  const handleError = () => {
+    if (usePicture) {
+      // Don't give up yet — fall back to direct <img> first
+      setUseDirectImg(true);
+    } else {
+      setFailed(true);
+    }
+  };
+
   useEffect(() => {
-    setFailed(!src);
+    setFailed(false);
+    setUseDirectImg(false);
     setLoaded(false);
     const image = imgRef.current;
-    if (!src || !image) return;
+    if (!src || !image) {
+      if (!src) setFailed(true);
+      return;
+    }
 
     if (image.complete && image.naturalWidth > 0) {
       setLoaded(true);
     }
   }, [src]);
+
+  if (!src) {
+    return <FilmPlaceholder title={title} tone={tone} />;
+  }
 
   if (!load) {
     const toneBg: Record<string, string> = {
@@ -80,7 +99,7 @@ export function ImageWithFallback({
             srcSet={pictureAttrs.fallback.srcSet}
             sizes={pictureAttrs.fallback.sizes}
             alt={alt}
-            onError={() => setFailed(true)}
+            onError={handleError}
             onLoad={() => setLoaded(true)}
           />
         </picture>

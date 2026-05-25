@@ -76,7 +76,7 @@ describe("audit regression coverage", () => {
 
   it("resets image fallback state when the source changes", () => {
     expect(imageSource).toContain("useEffect");
-    expect(imageSource).toContain("setFailed(!src)");
+    expect(imageSource).toContain("setFailed(false)");
     expect(imageSource).toContain("setLoaded(false)");
   });
 
