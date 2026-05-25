@@ -610,4 +610,85 @@ body.nav-lock .site-nav {
   }
 }
 
+/* ══════════════════════════════════════════════
+   Cute Theme Overrides — Nav & Hero
+   ══════════════════════════════════════════════ */
+:root[data-mood="cute"] .site-nav.is-scrolled {
+  background: rgba(248, 248, 240, 0.94);
+  backdrop-filter: blur(20px) saturate(1.12);
+}
+
+:root[data-mood="cute"] .nav-cta {
+  border-radius: 999px;
+  background: linear-gradient(135deg, #19c8b9, #3dd4c6);
+  box-shadow: 0 4px 0 0 #bdaea0;
+}
+:root[data-mood="cute"] .nav-cta:hover {
+  transform: translate3d(0, -3px, 0) scale(1.02);
+  background: linear-gradient(135deg, #15b0a2, #4dd8ca);
+  box-shadow: 0 5px 0 0 #bdaea0;
+}
+:root[data-mood="cute"] .nav-cta:active {
+  transform: translate3d(0, 2px, 0) scale(0.98);
+  box-shadow: 0 1px 0 0 #bdaea0;
+}
+
+:root[data-mood="cute"] .hero-cover-primary-btn {
+  border-radius: 999px;
+  box-shadow: 0 4px 0 0 #bdaea0;
+}
+:root[data-mood="cute"] .hero-cover-primary-btn:hover {
+  transform: translate3d(0, -2px, 0) scale(1.03);
+  box-shadow: 0 5px 0 0 #bdaea0;
+}
+:root[data-mood="cute"] .hero-cover-primary-btn:active {
+  transform: translate3d(0, 2px, 0) scale(0.98);
+  box-shadow: 0 1px 0 0 #bdaea0;
+}
+
+:root[data-mood="cute"] .hero-cover-secondary-btn {
+  border-radius: 999px;
+}
+
+:root[data-mood="cute"] .nav-menu a::after {
+  background: var(--peach-accent);
+}
+
+/* Cute decorative elements on hero */
+:root[data-mood="cute"] .hero-cover-design {
+  background:
+    var(--paper-noise),
+    radial-gradient(ellipse 80% 65% at 32% 36%,
+      rgba(61, 212, 198, 0.18) 0%,
+      rgba(25, 200, 185, 0.08) 36%,
+      transparent 64%),
+    radial-gradient(ellipse 45% 55% at 80% 44%,
+      rgba(130, 213, 187, 0.06) 0%,
+      transparent 52%),
+    radial-gradient(ellipse 90% 30% at 50% 100%,
+      rgba(25, 200, 185, 0.06) 0%,
+      transparent 68%),
+    linear-gradient(164deg,
+      #7a5c4a 0%,
+      #8b6a55 22%,
+      #9a7a65 46%,
+      #8b6a55 72%,
+      #7a5c4a 100%);
+}
+
+/* Leaf particle decoration in cute mode */
+:root[data-mood="cute"] .hero-magazine-title::after {
+  content: " 🌿";
+  display: inline-block;
+  font-size: 0.4em;
+  vertical-align: super;
+  margin-left: 0.1em;
+  animation: cuteLeafBob 3s ease-in-out infinite;
+}
+
+@keyframes cuteLeafBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(8deg); }
+}
+
 

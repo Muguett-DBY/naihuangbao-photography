@@ -645,3 +645,17 @@
   font-size: 12px;
   margin-top: 2px;
 }
+
+/* ══════════════════════════════════════════════
+   Cute Theme Overrides — Gallery
+   ══════════════════════════════════════════════ */
+:root[data-mood="cute"] .polaroid-card {
+  border-radius: 18px;
+  box-shadow: 0 4px 0 0 #bdaea0;
+}
+:root[data-mood="cute"] .polaroid-card.is-fanned {
+  box-shadow: 0 8px 28px rgba(61, 52, 40, 0.08), 0 4px 0 0 #bdaea0;
+}
+:root[data-mood="cute"] .gallery-teaser-grid img {
+  border-radius: 18px;
+}

@@ -1,8 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type Theme = "light" | "dark" | "system";
 
-const DARK = {
+/* ══════════════════════════════════════════════
+   Magazine (default) palettes
+   ══════════════════════════════════════════════ */
+const MAGAZINE_DARK = {
   "--custard-bg": "#2D201A",
   "--custard-cream": "#3A2A22",
   "--custard-soft": "#4A352C",
@@ -18,7 +21,7 @@ const DARK = {
   "--sage-text": "#A8BEA0",
 } as const;
 
-const LIGHT = {
+const MAGAZINE_LIGHT = {
   "--custard-bg": "#FEF3DD",
   "--custard-cream": "#FFF9EC",
   "--custard-soft": "#FFE8C5",
@@ -33,6 +36,51 @@ const LIGHT = {
   "--sage-mist": "#DDE7D7",
   "--sage-text": "#65785F",
 } as const;
+
+/* ══════════════════════════════════════════════
+   Cute / Animal Island palettes
+   ══════════════════════════════════════════════ */
+const CUTE_DARK = {
+  "--custard-bg": "#2d2820",
+  "--custard-cream": "#3a342a",
+  "--custard-soft": "#4a4030",
+  "--paper-white": "#332c22",
+  "--caramel-text": "#D4C4B0",
+  "--caramel-deep": "#E0D4C0",
+  "--caramel-muted": "#A89A84",
+  "--caramel-ink": "#F0E8D8",
+  "--warm-border": "rgba(200, 184, 160, 0.12)",
+  "--peach-accent": "#3dd4c6",
+  "--peach-soft": "#5CE0D4",
+  "--sage-mist": "#5a7a6a",
+  "--sage-text": "#8ab8a0",
+} as const;
+
+const CUTE_LIGHT = {
+  "--custard-bg": "#f8f8f0",
+  "--custard-cream": "#fdfdf5",
+  "--custard-soft": "#f0e8d8",
+  "--paper-white": "#fffdf7",
+  "--caramel-text": "#794f27",
+  "--caramel-deep": "#5a3a1a",
+  "--caramel-muted": "#9f927d",
+  "--caramel-ink": "#4a3018",
+  "--warm-border": "rgba(121, 79, 39, 0.14)",
+  "--peach-accent": "#19c8b9",
+  "--peach-soft": "#3dd4c6",
+  "--sage-mist": "#82d5bb",
+  "--sage-text": "#5c8a7a",
+} as const;
+
+function getMood() {
+  return document.documentElement.getAttribute("data-mood") as "cute" | "magazine" | null;
+}
+
+function pickPalette(isDark: boolean) {
+  const mood = getMood();
+  if (mood === "cute") return isDark ? CUTE_DARK : CUTE_LIGHT;
+  return isDark ? MAGAZINE_DARK : MAGAZINE_LIGHT;
+}
 
 function applyVars(root: HTMLElement, vars: Record<string, string>) {
   for (const [key, val] of Object.entries(vars)) {
@@ -59,6 +107,30 @@ export function ThemeToggle() {
   });
   const systemCleanup = useRef<(() => void) | null>(null);
 
+  // Re-apply when mood changes
+  const reapply = useCallback(() => {
+    const root = document.documentElement;
+    const storedTheme = localStorage.getItem("theme") as Theme | null;
+    if (!storedTheme || storedTheme === "system") {
+      clearVars(root);
+      // Re-fire system handler
+      if (systemCleanup.current) {
+        systemCleanup.current();
+        systemCleanup.current = null;
+      }
+      systemCleanup.current = watchSystem((isDark) => {
+        applyVars(root, pickPalette(isDark));
+      });
+    } else {
+      applyVars(root, storedTheme === "dark" ? pickPalette(true) : pickPalette(false));
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("moodchange", reapply);
+    return () => window.removeEventListener("moodchange", reapply);
+  }, [reapply]);
+
   useEffect(() => {
     const root = document.documentElement;
 
@@ -72,11 +144,11 @@ export function ThemeToggle() {
       localStorage.removeItem("theme");
       clearVars(root);
       systemCleanup.current = watchSystem((isDark) => {
-        applyVars(root, isDark ? DARK : LIGHT);
+        applyVars(root, pickPalette(isDark));
       });
     } else {
       localStorage.setItem("theme", theme);
-      applyVars(root, theme === "dark" ? DARK : LIGHT);
+      applyVars(root, theme === "dark" ? pickPalette(true) : pickPalette(false));
     }
 
     return () => {

@@ -1,3 +1,15 @@
+/* ── Cute theme fonts (Nunito + Noto Sans SC) ── */
+/* Unconditionally imported; only used when data-mood="cute" references them */
+@import "@fontsource/nunito/latin-500.css";
+@import "@fontsource/nunito/latin-700.css";
+@import "@fontsource/nunito/latin-900.css";
+@import "@fontsource/noto-sans-sc/latin-500.css";
+@import "@fontsource/noto-sans-sc/latin-700.css";
+@import "@fontsource/noto-sans-sc/latin-900.css";
+@import "@fontsource/noto-sans-sc/chinese-simplified-500.css";
+@import "@fontsource/noto-sans-sc/chinese-simplified-700.css";
+@import "@fontsource/noto-sans-sc/chinese-simplified-900.css";
+
 /* No Tailwind — custom CSS only */
 @font-face {
   font-family: "Naihuangbao WenKai";
@@ -94,6 +106,39 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth mood-switch transition */
+:root.style-transition *,
+:root.style-transition *::before,
+:root.style-transition *::after {
+  transition: background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+              color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/* ══════════════════════════════════════════════
+   Cute / Animal Island Theme
+   ══════════════════════════════════════════════ */
+:root[data-mood="cute"] {
+  /* Fonts — Nunito (English) + Noto Sans SC (Chinese) */
+  --font-body: 'Nunito', 'Noto Sans SC',
+    "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  --font-display-cn: 'Noto Sans SC',
+    "Kaiti SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-heading-cn: var(--font-display-cn);
+  --font-heading: 'Nunito', var(--font-heading-cn);
+  --font-ui: var(--font-body);
+
+  /* Rounded corners — more pill-like */
+  --paper-inset:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    inset 0 0 0 1px rgba(121, 79, 39, 0.06);
+
+  /* Button shadows — Animal Crossing 3D style */
+  --button-shadow: 0 5px 0 0 #bdaea0, 0 3px 6px rgba(61, 52, 40, 0.08);
+  --button-shadow-hover: 0 6px 0 0 #bdaea0, 0 5px 12px rgba(61, 52, 40, 0.14);
 }
 
 * {
@@ -491,7 +536,8 @@ button:active {
 }
 
 /* ── Theme toggle in nav ── */
-.theme-toggle {
+.theme-toggle,
+.mood-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -502,12 +548,17 @@ button:active {
   background: transparent;
   cursor: pointer;
   font-size: 14px;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s var(--ease-spring);
   flex-shrink: 0;
 }
-.theme-toggle:hover {
+.theme-toggle:hover,
+.mood-toggle:hover {
   background: rgba(255, 210, 184, 0.1);
   border-color: var(--peach-accent);
+  transform: scale(1.08);
+}
+.mood-toggle:active {
+  transform: scale(0.92) rotate(-15deg);
 }
 
 a {
