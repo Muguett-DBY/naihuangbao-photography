@@ -2122,6 +2122,14 @@
   background: rgba(212, 176, 94, 0.12);
 }
 
+/* Hide Leaflet attribution */
+.leaflet-control-attribution {
+  display: none !important;
+}
+.leaflet-control-zoom {
+  display: none !important;
+}
+
 /* ── Zone Legend ── */
 .travel-zone-legend {
   display: flex;

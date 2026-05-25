@@ -545,13 +545,14 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         const accent = card.querySelector<HTMLElement>(".story-stack-accent-line");
 
         if (image) {
+          // Subtle scale/brightness entrance — image stays visible at all times
           gsap.fromTo(image,
-            { clipPath: "inset(0 0 0 100%)", opacity: 0.3 },
+            { scale: 1.06, filter: "brightness(0.88)" },
             {
-              clipPath: "inset(0 0 0 0%)",
-              opacity: 1,
+              scale: 1,
+              filter: "brightness(1)",
               duration: 0.8,
-              ease: "power3.out",
+              ease: "power2.out",
               scrollTrigger: {
                 trigger: card,
                 start: "top 80%",
@@ -563,8 +564,9 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         }
 
         if (text) {
+          // Text slides in — but starts mostly visible
           gsap.fromTo(text,
-            { opacity: 0, x: -20 },
+            { opacity: 0.7, x: -12 },
             {
               opacity: 1, x: 0,
               duration: 0.6,

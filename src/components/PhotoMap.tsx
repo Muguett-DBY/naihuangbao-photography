@@ -14,7 +14,7 @@ import markerShadow from "leaflet/dist/images/marker-shadow.png";
    ══════════════════════════════════════════════ */
 const STUDIO_CENTER: [number, number] = [32.106, 118.922];
 const FREE_RADIUS = 2; // km — no travel fee
-const MAX_RADIUS = 6; // km — can reach (with fee)
+const MAX_RADIUS = 10; // km — can reach (with fee)
 const DEG_PER_KM = 0.009; // approximate at Nanjing latitude (111km/°)
 
 /* ══════════════════════════════════════════════
@@ -154,14 +154,14 @@ export function PhotoMap() {
           <span className="travel-zone-dot travel-zone-dot--fee" />
           <div>
             <strong>收费区</strong>
-            <span>2~6公里 · 报销路费</span>
+            <span>2~10公里 · 报销路费</span>
           </div>
         </div>
         <div className="travel-zone-item">
           <span className="travel-zone-dot travel-zone-dot--unreachable" />
           <div>
-            <strong>超出范围</strong>
-            <span>6公里以上 · 无法抵达</span>
+            <strong>暂不可达</strong>
+            <span>10公里以上 · 暂不可达</span>
           </div>
         </div>
       </div>
@@ -176,11 +176,11 @@ export function PhotoMap() {
           zoomControl={true}
         >
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            attribution=''
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {/* 6km reachable zone boundary */}
+          {/* 10km reachable zone boundary */}
           <Circle
             center={STUDIO_CENTER}
             radius={MAX_RADIUS * 1000}
@@ -194,7 +194,7 @@ export function PhotoMap() {
           >
             <Tooltip direction="top" permanent>
               <span className="travel-map-label travel-map-label--fee">
-                6km — 有偿可达
+                10km — 有偿可达
               </span>
             </Tooltip>
           </Circle>
@@ -234,7 +234,7 @@ export function PhotoMap() {
                   ✅ 2km内免费到达
                 </div>
                 <div style={{ fontSize: 11, color: "#D4B05E" }}>
-                  🚗 2~6km 报销路费
+                  🚗 2~10km 报销路费
                 </div>
               </div>
             </Popup>
@@ -282,15 +282,15 @@ export function PhotoMap() {
         <div className="travel-zone-card travel-zone-card--fee">
           <span className="travel-zone-emoji">🚗</span>
           <div>
-            <h4>2~6公里 · 报销路费</h4>
-            <p>超出免费区但在可达范围内，需报销实际路费（打车或地铁）。</p>
+            <h4>2~10公里 · 报销路费</h4>
+            <p>超出免费区但在10公里范围内，需报销实际路费（打车或地铁）。</p>
           </div>
         </div>
         <div className="travel-zone-card travel-zone-card--unreachable">
           <span className="travel-zone-emoji">✗</span>
           <div>
-            <h4>6公里以上 · 暂不可达</h4>
-            <p>超出日常拍摄范围，暂时无法提供服务，敬请谅解。</p>
+            <h4>10公里以上 · 暂不可达</h4>
+            <p>超出日常拍摄范围（10公里以上），暂时无法提供服务，敬请谅解。</p>
           </div>
         </div>
       </div>

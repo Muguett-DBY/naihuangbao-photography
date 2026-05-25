@@ -5,8 +5,9 @@
 
 .story-stack {
   position: relative;
-  background: #000;
-  color: #fff;
+  background: #1F1612;
+  color: rgba(255, 253, 247, 0.88);
+  transition: background 0.45s ease;
 }
 
 /* ── Each card: sticky stacked ── */

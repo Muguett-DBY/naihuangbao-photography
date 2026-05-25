@@ -143,12 +143,15 @@ export function ThemeToggle() {
     if (theme === "system") {
       localStorage.removeItem("theme");
       clearVars(root);
+      root.removeAttribute("data-theme");
       systemCleanup.current = watchSystem((isDark) => {
         applyVars(root, pickPalette(isDark));
+        root.setAttribute("data-theme", isDark ? "dark" : "light");
       });
     } else {
       localStorage.setItem("theme", theme);
       applyVars(root, theme === "dark" ? pickPalette(true) : pickPalette(false));
+      root.setAttribute("data-theme", theme === "dark" ? "dark" : "light");
     }
 
     return () => {
