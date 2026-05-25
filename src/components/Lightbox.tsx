@@ -236,7 +236,7 @@ export default function Lightbox({ photos, currentIndex, onClose, onPrev, onNext
       {photo.imageUrl ? (
         <a
           className="lightbox-download"
-          href={photo.imageUrl}
+          href={photo.imageUrl.startsWith("/api/") ? photo.imageUrl.replace("/image", "/download") : photo.imageUrl}
           download={photo.title}
           target="_blank"
           rel="noreferrer"
