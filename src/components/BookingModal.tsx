@@ -1,6 +1,5 @@
-import { X } from "lucide-react";
+import { Button, Input, Modal } from "animal-island-ui";
 import { type FormEvent, useState } from "react";
-import { Button, Input, Select } from "animal-island-ui";
 import { useSiteContent } from "../hooks/useSiteContent";
 
 type BookingModalProps = {
@@ -53,89 +52,112 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     }
   }
 
+  const packageOptions = packages.map((p) => (
+    <option key={p.name} value={p.name}>{p.name} — {p.price}</option>
+  ));
+
+  // ── Success state ──
   if (done) {
     return (
-      <div className="booking-modal-overlay" onClick={onClose}>
-        <div className="booking-modal" onClick={(e) => e.stopPropagation()}>
-          <button className="booking-modal-close" onClick={onClose} aria-label="关闭">
-            <X size={20} />
-          </button>
-          <div className="booking-modal-success">
-            <div className="booking-success-icon">✓</div>
-            <h2>预约已提交！</h2>
-            <p>我们会尽快通过你留下的联系方式和你确认档期。</p>
-            <p className="booking-success-hint">你也可以直接联系小红书：{siteConfig.xiaohongshuProfile}</p>
-            <Button type="primary" onClick={onClose}>
-              知道了
-            </Button>
+      <Modal open onClose={onClose} footer={null} typewriter={false}>
+        <div className="booking-modal-success">
+          <h2>✅ 预约已提交！</h2>
+          <p>我们会尽快通过你留下的联系方式和你确认档期。</p>
+          <p className="booking-success-hint">你也可以直接联系小红书：{siteConfig.xiaohongshuProfile}</p>
+          <div style={{ marginTop: 20, textAlign: "center" }}>
+            <Button type="primary" onClick={onClose}>知道了</Button>
           </div>
         </div>
-      </div>
+      </Modal>
     );
   }
 
+  // ── Form state ──
   return (
-    <div className="booking-modal-overlay" onClick={onClose}>
-      <div className="booking-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="booking-modal-close" onClick={onClose} aria-label="关闭">
-          <X size={20} />
-        </button>
-        <h2>预约拍摄</h2>
-        <p className="booking-modal-sub">留下信息，确认档期后锁定时间</p>
+    <Modal
+      open
+      onClose={onClose}
+      title="预约拍摄"
+      typewriter={false}
+      maskClosable={false}
+      footer={null}
+    >
+      <p style={{ margin: "0 0 16px", color: "var(--animal-text-color-secondary)", fontSize: 14 }}>
+        留下信息，确认档期后锁定时间
+      </p>
 
-        <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
+        <div className="booking-field">
+          <label>感兴趣的套餐</label>
+          <select value={selectedPkg} onChange={(e) => setSelectedPkg(e.target.value)}>
+            <option value="">不限（都可以聊）</option>
+            {packageOptions}
+          </select>
+        </div>
+
+        <div className="booking-row">
           <div className="booking-field">
-            <label>感兴趣的套餐</label>
-            <select value={selectedPkg} onChange={(e) => setSelectedPkg(e.target.value)}>
-              <option value="">不限（都可以聊）</option>
-              {packages.map((p) => (
-                <option key={p.name} value={p.name}>{p.name} — {p.price}</option>
-              ))}
+            <label>期望日期 <span className="booking-optional">可选</span></label>
+            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
+          </div>
+          <div className="booking-field">
+            <label>期望时段 <span className="booking-optional">可选</span></label>
+            <select value={time} onChange={(e) => setTime(e.target.value)}>
+              <option value="">不限</option>
+              <option value="上午">上午</option>
+              <option value="下午">下午</option>
+              <option value="全天">全天</option>
             </select>
           </div>
+        </div>
 
-          <div className="booking-row">
-            <div className="booking-field">
-              <label>期望日期 <span className="booking-optional">可选</span></label>
-              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
-            </div>
-            <div className="booking-field">
-              <label>期望时段 <span className="booking-optional">可选</span></label>
-              <select value={time} onChange={(e) => setTime(e.target.value)}>
-                <option value="">不限</option>
-                <option value="上午">上午</option>
-                <option value="下午">下午</option>
-                <option value="全天">全天</option>
-              </select>
-            </div>
-          </div>
+        <div className="booking-field">
+          <label>你的名字 <span className="booking-required">*</span></label>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="怎么称呼你？"
+            required
+            shadow
+          />
+        </div>
 
-          <div className="booking-field">
-            <label>你的名字 <span className="booking-required">*</span></label>
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="怎么称呼你？" required />
-          </div>
+        <div className="booking-field">
+          <label>联系方式 <span className="booking-required">*</span></label>
+          <Input
+            value={contact}
+            onChange={(e) => setContact(e.target.value)}
+            placeholder="手机号 / 微信 / 小红书 ID"
+            required
+            shadow
+          />
+        </div>
 
-          <div className="booking-field">
-            <label>联系方式 <span className="booking-required">*</span></label>
-            <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="手机号 / 微信 / 小红书 ID" required />
-          </div>
+        <div className="booking-field">
+          <label>想说的话 <span className="booking-optional">可选</span></label>
+          <textarea
+            className="booking-textarea"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="风格偏好、地点想法、任何想问的……"
+            rows={3}
+          />
+        </div>
 
-          <div className="booking-field">
-            <label>想说的话 <span className="booking-optional">可选</span></label>
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="风格偏好、地点想法、任何想问的……" rows={3} />
-          </div>
+        {error ? <p className="booking-error">{error}</p> : null}
 
-          {error ? <p className="booking-error">{error}</p> : null}
-
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+          <Button type="default" onClick={onClose}>取消</Button>
           <Button type="primary" htmlType="submit" disabled={sending || !name.trim() || !contact.trim()}>
             {sending ? "提交中..." : "提交预约"}
           </Button>
+        </div>
 
-          <p className="booking-footer">
-            提交即表示你同意拍摄边界说明。也可以直接去 <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">小红书私信</a>
-          </p>
-        </form>
-      </div>
-    </div>
+        <p className="booking-footer">
+          提交即表示你同意拍摄边界说明。也可以直接去{" "}
+          <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">小红书私信</a>
+        </p>
+      </form>
+    </Modal>
   );
 }

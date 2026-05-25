@@ -1,5 +1,5 @@
 import { ArrowDown, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
-import { Button, Typewriter } from "animal-island-ui";
+import { Button, Icon, Typewriter } from "animal-island-ui";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useBookingModal } from "../hooks/useBookingModal";
 
@@ -20,6 +20,9 @@ export function Hero() {
       <div className="float-element float-element--1" aria-hidden="true" />
       <div className="float-element float-element--2" aria-hidden="true" />
       <div className="float-element float-element--3" aria-hidden="true" />
+      <div className="float-element float-element--icon" aria-hidden="true">
+        <Icon name="icon-camera" size={28} bounce />
+      </div>
 
       {/* Decorative SVG path — draws on scroll */}
       <svg className="deco-svg-path" viewBox="0 0 200 100" fill="none" aria-hidden="true">

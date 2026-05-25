@@ -10,8 +10,9 @@ import {
   LogOut,
   Settings,
 } from "lucide-react";
-import { Button, Input, Tabs } from "animal-island-ui";
+import { Button, Input, Loading, Table, Tabs } from "animal-island-ui";
 import type { TabItem } from "animal-island-ui";
+import type { TableColumn } from "animal-island-ui";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { isAbortError, type AdminTab, type ToastType } from "../../lib/admin-helpers";
 import { AdminBookingsTab } from "./AdminBookingsTab";
@@ -155,31 +156,32 @@ function AdminStats() {
   }, []);
 
   if (loading) {
-    return <div className="adm-content-panel" style={{textAlign:'center',padding:'40px 20px'}}><p>加载中...</p></div>;
+    return (
+      <div className="adm-content-panel" style={{ position: "relative", minHeight: 250 }}>
+        <Loading active />
+      </div>
+    );
   }
 
   if (!data) {
     return <div className="adm-content-panel" style={{textAlign:'center',padding:'40px 20px'}}><p>暂时无法加载数据</p></div>;
   }
 
+  const columns: TableColumn[] = [
+    { title: "指标", dataIndex: "metric", width: "30%" },
+    { title: "数值", dataIndex: "value", width: "20%", align: "center" },
+    { title: "详情", dataIndex: "detail" },
+  ];
+
+  const dataSource = [
+    { key: "photos", metric: "照片总数", value: data.photos.total, detail: `${data.photos.public} 公开 · ${data.photos.hidden} 隐藏` },
+    { key: "bookings", metric: "预约总数", value: data.bookings.total, detail: `${data.bookings.pending} 个待处理` },
+  ];
+
   return (
     <div className="adm-content-panel">
       <h2>数据概览</h2>
-      <div className="adm-stats-grid">
-        <div className="adm-stat-card">
-          <span className="adm-stat-number">{data.photos.total}</span>
-          <span className="adm-stat-label">照片总数</span>
-          <div className="adm-stat-bar">
-            <div className="adm-stat-bar-fill" style={{width: `${data.photos.total ? (data.photos.public / data.photos.total) * 100 : 0}%`}} />
-          </div>
-          <span className="adm-stat-sub">{data.photos.public} 公开 · {data.photos.hidden} 隐藏</span>
-        </div>
-        <div className="adm-stat-card">
-          <span className="adm-stat-number">{data.bookings.total}</span>
-          <span className="adm-stat-label">预约总数</span>
-          <span className="adm-stat-sub">{data.bookings.pending} 个待处理</span>
-        </div>
-      </div>
+      <Table columns={columns} dataSource={dataSource} rowKey="key" striped={false} />
     </div>
   );
 }
