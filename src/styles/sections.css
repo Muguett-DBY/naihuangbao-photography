@@ -2090,3 +2090,166 @@
   display: inline-block;
   animation: cuteLeafBob 3s ease-in-out infinite;
 }
+
+/* ══════════════════════════════════════════════
+   Travel Zone Map
+   ══════════════════════════════════════════════ */
+.photo-map-section {
+  margin-bottom: clamp(40px, 6vw, 80px);
+}
+
+.travel-map-container {
+  width: 100%;
+  height: min(60vh, 500px);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(95, 60, 49, 0.1);
+}
+
+.travel-map-label {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.travel-map-label--free {
+  color: #5A8065;
+  background: rgba(122, 166, 117, 0.12);
+}
+.travel-map-label--fee {
+  color: #8B7A5E;
+  background: rgba(212, 176, 94, 0.12);
+}
+
+/* ── Zone Legend ── */
+.travel-zone-legend {
+  display: flex;
+  gap: clamp(12px, 2vw, 24px);
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.travel-zone-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: var(--paper-white);
+  border: 1px solid var(--warm-border);
+  flex: 1;
+  min-width: 180px;
+  transition: transform 0.25s var(--ease-spring);
+}
+.travel-zone-item:hover {
+  transform: translateY(-2px);
+}
+
+.travel-zone-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.travel-zone-item strong {
+  font-size: 14px;
+  color: var(--caramel-ink);
+  line-height: 1.2;
+}
+.travel-zone-item span {
+  font-size: 12px;
+  color: var(--caramel-muted);
+}
+
+.travel-zone-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.travel-zone-dot--free {
+  background: #7AA675;
+}
+.travel-zone-dot--fee {
+  background: #D4B05E;
+}
+.travel-zone-dot--unreachable {
+  background: #B8A090;
+}
+
+/* ── Zone Info Cards ── */
+.travel-zone-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(12px, 2vw, 20px);
+  margin-top: 20px;
+}
+
+.travel-zone-card {
+  display: flex;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 18px;
+  border: 1px solid var(--warm-border);
+  background: var(--paper-white);
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s ease;
+}
+.travel-zone-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--warm-shadow);
+}
+
+.travel-zone-card--free {
+  border-left: 3px solid #7AA675;
+}
+.travel-zone-card--fee {
+  border-left: 3px solid #D4B05E;
+}
+.travel-zone-card--unreachable {
+  border-left: 3px solid #B8A090;
+}
+
+.travel-zone-emoji {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.travel-zone-card h4 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--caramel-ink);
+  font-family: var(--font-display-cn);
+}
+.travel-zone-card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--caramel-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .travel-zone-legend {
+    flex-direction: column;
+  }
+  .travel-zone-info {
+    grid-template-columns: 1fr;
+  }
+  .travel-map-container {
+    height: min(50vh, 380px);
+  }
+}
+
+/* ══════════════════════════════════════════════
+   Cute Theme Overrides — Travel Zone
+   ══════════════════════════════════════════════ */
+:root[data-mood="cute"] .travel-zone-card {
+  border-radius: 20px;
+}
+:root[data-mood="cute"] .travel-zone-item {
+  border-radius: 16px;
+}

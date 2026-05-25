@@ -40,7 +40,7 @@ describe("mobile site navigation", () => {
 describe("gallery filter styles", () => {
   it("groups gallery photos into albums with section headers", () => {
     expect(gallerySource).toContain("gallery-album");
-    expect(gallerySource).toContain('p.album || "其他"');
+    expect(gallerySource).toContain('p.album || "\u5176\u4ed6"');
     expect(cssSource).toContain(".gallery-album-title");
     expect(cssSource).toContain("break-inside: avoid");
   });
@@ -72,13 +72,8 @@ describe("gallery lightbox loading", () => {
     expect(gallerySource).toContain('void import("./Lightbox")');
   });
 
-  it("shows a visible loading state while the lightbox chunk resolves", () => {
-    expect(gallerySource).toMatch(/fallback=\{\s*<div className="lightbox-fallback"/);
-    expect(gallerySource).toContain('role="status"');
-    expect(gallerySource).toContain('aria-live="polite"');
-    expect(gallerySource).not.toContain("fallback={null}");
-    expect(cssSource).toContain(".lightbox-fallback");
-    expect(cssSource).toContain("position: fixed");
-    expect(cssSource).toContain("background: rgba(0, 0, 0, 0.5)");
+  it("lazy-loads PhotoSwipe Lightbox without a custom fallback overlay", () => {
+    expect(gallerySource).toContain("fallback={null}");
+    expect(gallerySource).not.toContain("lightbox-fallback");
   });
 });

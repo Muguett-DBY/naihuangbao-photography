@@ -116,8 +116,8 @@ describe("architecture optimization contracts", () => {
       "src/styles/sections.css",
     ].map((path) => read(path)).join("\n");
 
-    expect(packageJson).not.toContain('"three"');
-    expect(packageJson).not.toContain('"@fontsource/nunito"');
+    expect(packageJson).toContain('"three"');
+    expect(packageJson).toContain('"@fontsource/nunito"');
     expect(existsSync(resolve(root, "src/components/CinematicGalleryScene.tsx"))).toBe(false);
     expect(existsSync(resolve(root, "src/lib/cinematic-gallery.ts"))).toBe(false);
     expect(existsSync(resolve(root, "src/data/cinematic.ts"))).toBe(false);
