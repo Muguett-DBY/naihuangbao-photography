@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { lazy, Suspense, useRef, useState } from "react";
 import { useGsapAnimations } from "./hooks/useGsapAnimations";
 import { CanvasParticles } from "./components/CanvasParticles";
@@ -27,6 +28,8 @@ import { SiteContentProvider } from "./hooks/useSiteContent";
 import { BookingProvider } from "./hooks/useBookingModal";
 
 const HorizontalGallery = lazy(() => import("./components/HorizontalGallery").then((m) => ({ default: m.HorizontalGallery })));
+const PhotoWall3D = lazy(() => import("./components/PhotoWall3D").then((m) => ({ default: m.PhotoWall3D })));
+const PhotoMap = lazy(() => import("./components/PhotoMap").then((m) => ({ default: m.PhotoMap })));
 
 const AdminDashboard = lazy(async () => {
   await import("./styles/admin.css");
@@ -82,14 +85,25 @@ export function App() {
             跳过导航，直接查看内容
           </a>
           <SiteNav />
-          <main id="main-content">
+          <motion.main
+            id="main-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
             <Hero />
+            <Suspense fallback={<div style={{height:'min(60vh, 480px)'}} />}>
+              <PhotoWall3D />
+            </Suspense>
             <ScrollStory />
             <Suspense fallback={<div className="section-shell" style={{minHeight:200}} />}>
               <HorizontalGallery />
             </Suspense>
             <PolaroidWall />
             <Gallery />
+            <Suspense fallback={<div style={{height:'min(55vh, 440px)'}} />}>
+              <PhotoMap />
+            </Suspense>
             <MidCTA />
             <WhyChooseUs />
             <Packages />
@@ -97,7 +111,7 @@ export function App() {
             <Reviews />
             <ProcessAndFaq />
             <AboutBooking />
-          </main>
+          </motion.main>
           <Footer />
           <FloatingBookingCta />
           <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>

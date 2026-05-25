@@ -167,13 +167,7 @@ export function Gallery() {
       </div>
 
       {lightboxIndex !== null && (
-        <Suspense
-          fallback={
-            <div className="lightbox-fallback" role="status" aria-live="polite">
-              加载中...
-            </div>
-          }
-        >
+        <Suspense fallback={null}>
           <Lightbox
             photos={photos}
             currentIndex={lightboxIndex}

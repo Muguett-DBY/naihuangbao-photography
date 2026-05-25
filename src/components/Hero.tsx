@@ -1,4 +1,5 @@
 import { ArrowDown, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button, Icon, Typewriter } from "animal-island-ui";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useBookingModal } from "../hooks/useBookingModal";
@@ -34,7 +35,12 @@ export function Hero() {
         />
       </svg>
 
-      <div className="hero-cover-content">
+      <motion.div
+        className="hero-cover-content"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+      >
         <div className="hero-cover-left">
           <div className="hero-vol-badge">
             <Sparkles size={11} />
@@ -74,7 +80,7 @@ export function Hero() {
             </Button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="hero-scroll-indicator" aria-hidden="true">
         <span>SCROLL</span>
