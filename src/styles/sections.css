@@ -218,12 +218,8 @@
    ══════════════════════════════════════════════ */
 .why-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: clamp(16px, 2.2vw, 24px);
-}
-
-.why-grid > *:first-child {
-  grid-column: 1 / -1;
 }
 
 .why-card {
@@ -1066,11 +1062,7 @@
   }
 
   .why-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .why-grid > *:first-child {
-    grid-column: 1 / -1;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 
   .service-detail-grid {
