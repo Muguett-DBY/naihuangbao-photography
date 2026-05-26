@@ -110,7 +110,7 @@
 .section-shell,
 .booking-section {
   content-visibility: auto;
-  contain-intrinsic-size: 1px 720px;
+  contain-intrinsic-size: 1px 1200px;
   max-width: 1220px;
   margin: 0 auto;
   padding: clamp(96px, 12vw, 166px) var(--section-inline);

@@ -208,16 +208,11 @@ function MapClickHandler() {
 export function PhotoMap() {
   const { t } = useTranslation();
   const { photos } = usePublicPhotos();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => { setMounted(true); }, []);
 
   const uniqueLocs = useMemo(
     () => Array.from(new Set(photos.map((p) => p.location))),
     [photos]
   );
-
-  if (!mounted) return null;
 
   return (
     <motion.section
