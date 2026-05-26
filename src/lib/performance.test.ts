@@ -95,8 +95,14 @@ describe("performance budgets", () => {
   });
 
   it("keeps gallery photos out of the precache and runtime-caches them", () => {
-    const sw = readFileSync(resolve(root, "dist/sw.js"), "utf8");
-    expect(sw).toMatch(/gallery|photos|image/i);
+    // Verify Vite PWA config runtime-caches gallery images
+    expect(viteConfig).toContain("runtimeCaching");
+    expect(viteConfig).toContain("gallery-images");
+    expect(viteConfig).toContain('handler: "CacheFirst"');
+    expect(viteConfig).toContain("NetworkFirst");
+    // Verify precache excludes gallery images
+    expect(viteConfig).toContain("globIgnores");
+    expect(viteConfig).toContain("gallery");
   });
 
 
