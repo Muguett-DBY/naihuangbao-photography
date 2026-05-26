@@ -56,6 +56,16 @@ export const defaultSiteContent: SiteContent = {
       title: "隐私保护清楚",
       detail: "照片不默认公开，只有获得明确授权才会展示；未经明确授权不会公开客片。",
     },
+    {
+      icon: "heart",
+      title: "全程动作引导",
+      detail: "从站姿到眼神方向全程轻声引导。你只需要放松做自己，我来负责构图和节奏。",
+    },
+    {
+      icon: "camera",
+      title: "南京本地熟悉",
+      detail: "深耕仙林、玄武湖、颐和路、紫金山等出片机位，也能陪你去探索新的角落。",
+    },
   ],
   sectionCopy: {
     gallery: {
