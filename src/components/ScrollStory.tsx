@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import { galleryItems } from "../data/gallery";
 
 const STORY_IMGS = [
@@ -28,7 +29,13 @@ export function ScrollStory() {
             {String(i + 1).padStart(2, "0")}
           </div>
 
-          <div className="story-stack-image-wrap">
+          <motion.div
+            className="story-stack-image-wrap"
+            initial={{ scale: 1.06, filter: "brightness(0.88)" }}
+            whileInView={{ scale: 1, filter: "brightness(1)" }}
+            viewport={{ once: true, margin: "-20% 0px" }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
             <img
               src={STORY_IMGS[i] || ""}
               alt={STORY_ALTS[i] || s.title}
@@ -39,14 +46,20 @@ export function ScrollStory() {
             />
             {/* Warm glow reflection */}
             <div className="story-stack-glow" />
-          </div>
+          </motion.div>
 
-          <div className="story-stack-text">
+          <motion.div
+            className="story-stack-text"
+            initial={{ opacity: 0.7, x: -12 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-25% 0px" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
             <div className="story-stack-accent-line" />
             <h2 className="story-stack-title">{s.title}</h2>
             <p className="story-stack-line">{s.line}</p>
             <p className="story-stack-body">{s.text}</p>
-          </div>
+          </motion.div>
         </div>
       ))}
     </section>
