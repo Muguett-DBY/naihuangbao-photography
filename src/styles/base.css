@@ -152,8 +152,6 @@ html {
 
 /* ── Scroll Reveal Animations ── */
 .section-shell {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 1200px;
   opacity: 0;
   transform: translateY(24px) scale(0.98);
   clip-path: inset(0 0 2% 0);

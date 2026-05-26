@@ -591,8 +591,6 @@
    Mid-CTA Magazine Overlay
    ══════════════════════════════════════════════ */
 .mid-cta {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 500px;
   max-width: 780px;
   margin: 0 auto;
   padding: 0 var(--section-inline);
