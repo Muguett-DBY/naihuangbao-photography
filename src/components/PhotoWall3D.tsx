@@ -4,8 +4,8 @@ import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { motion } from "framer-motion";
 import { X, MapPin, Camera } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
-import { styleLabels } from "../data/site";
 import type { PhotoItem } from "../types/photo";
 
 /* ══════════════════════════════════════════════
@@ -217,6 +217,7 @@ function FocusOverlay({
   photo: PhotoItem;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   // Prevent click from propagating to canvas
   const handleBackdrop = useCallback((e: React.MouseEvent) => {
     if (e.target === e.currentTarget) onClose();
@@ -274,7 +275,7 @@ function FocusOverlay({
             background: "rgba(255,249,236,0.15)",
             backdropFilter: "blur(6px)",
           }}>
-            {styleLabels[photo.style] || photo.style}
+            {t(`gallery.filters.${photo.style}`, photo.style)}
           </span>
           <span style={{
             fontSize: 11,
@@ -316,7 +317,7 @@ function FocusOverlay({
           cursor: "pointer",
           fontSize: 16,
         }}
-        aria-label="关闭"
+        aria-label={t("photoWall3D.close")}
       >
         <X size={16} />
       </button>

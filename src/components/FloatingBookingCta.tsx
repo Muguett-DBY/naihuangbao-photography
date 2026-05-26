@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { MessageCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useBookingModal } from "../hooks/useBookingModal";
 
 export function FloatingBookingCta() {
+  const { t } = useTranslation();
   const { openBookingModal } = useBookingModal();
   const [visible, setVisible] = useState(false);
 
@@ -16,10 +18,10 @@ export function FloatingBookingCta() {
       className={`floating-booking-cta ${visible ? "is-visible" : ""}`}
       onClick={() => openBookingModal()}
       type="button"
-      aria-label="预约拍摄"
+      aria-label={t("floatingBookingCta.ariaLabel")}
     >
       <MessageCircle size={17} />
-      <span>预约</span>
+      <span>{t("floatingBookingCta.text")}</span>
     </button>
   );
 }

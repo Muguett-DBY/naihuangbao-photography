@@ -1,0 +1,68 @@
+import type { SiteContent } from "../../types/content";
+
+export const defaultSiteContent: SiteContent = {
+  siteConfig: {
+    brandName: "Naihuangbao Photography",
+    city: "Nanjing",
+    domain: "shoot.custard.top",
+    tagline: "Nanjing Portrait & Couple Photography",
+    description: "Soft, film-like natural portrait photography for everyday memories, Jiangnan-style shoots, couple anniversaries, and relaxed city walks.",
+    contactStatus: "DM on Xiaohongshu",
+    contactHint: "Contact me via Xiaohongshu DM to discuss styles and availability.",
+    xiaohongshuProfile: "https://www.xiaohongshu.com/user/profile/60f5b14b000000002002fa9f",
+  },
+  packages: [
+    { name: "실내 촬영", price: "50/h", duration: "최소 2시간", summary: "실내 스튜디오, 카페, 가벼운 테마나 날씨에 영향받지 않는 촬영에 적합합니다.", includes: ["단독/듀오 동일 가격", "스타일 상담", "최소 2시간 청구"] },
+    { name: "야외 촬영", price: "60/h", duration: "최소 2시간", summary: "난징 거리, 공원, 장난 스타일, 자연광 일상 기록에 적합합니다.", includes: ["단독/듀오 동일 가격", "장소 제안", "촬영 가이드"] },
+    { name: "즉석 추가", price: "9.9/장", duration: "Fuji mini 11", summary: "촬영 당일 실물 사진을 즉석에서 — 특별한 기념품으로 남깁니다.", includes: ["장당 과금", "모든 패키지에 추가 가능", "현장 수량 확인"] },
+  ],
+  serviceAddOns: {
+    equipment: ["Canon 200D II", "Canon 95ixus", "iPhone 17 Pro", "iPhone 6 SP"],
+    instantCamera: { camera: "Fuji mini 11", price: "9.9/장" },
+  },
+  servicePolicies: [
+    { title: "최소 2시간", detail: "2시간 미만은 2시간으로 청구. 15분 지각 시 도착 시간부터 계산." },
+    { title: "보증금 50위안", detail: "노쇼 시 환불 불가. 악천후 외에는 환불 불가, 날짜 변경 가능." },
+    { title: "추천인 -15위안", detail: "지인 추천 또는 재방문 고객 15위안 할인, 예약 확인 시 적용." },
+    { title: "교통비 및 입장료", detail: "왕복 교통비 실비 보전. 특별 장소는 택시/입장료 별도." },
+  ],
+  faqs: [
+    { question: "어떤 종류의 사진을 찍나요?", answer: "인물, 라이프스타일, 기념 사진 — 편안함과 존중, 개인정보 보호를 경계로 합니다." },
+    { question: "촬영 장소는 어떻게 정하나요?", answer: "스타일과 예산을 미리 상의합니다. 대중교통으로 접근 가능한 장소를 우선합니다." },
+    { question: "포즈를 잘 못 추는데 괜찮을까요?", answer: "전혀 걱정하지 마세요. 모든 포즈, 표정, 각도를 안내해 드립니다." },
+    { question: "의상은 어떻게 준비하나요?", answer: "미리 의상 사진이나 스타일 참고자료를 보내주세요." },
+    { question: "사진이 공개되나요?", answer: "아니요, 기본적으로 공개되지 않습니다. 개별 승인을 받은 사진만 게시됩니다." },
+    { question: "원하는 장소가 있어요.", answer: "물론입니다. 원하는 장소나 분위기를 알려주시면 함께 판단해 드립니다." },
+    { question: "날씨가 안 좋으면 어떻게 하나요?", answer: "약간 흐린 날은 오히려 좋습니다. 심한 비나 악천후 시에는 일정 변경이 가능합니다." },
+    { question: "사진은 언제 받을 수 있나요?", answer: "납품 시간은 예약 시 확인해 드립니다. 급한 일정이 있다면 미리 알려주세요." },
+    { question: "사진을 비공개로 할 수 있나요?", answer: "네. 사진은 기본 비공개입니다. 명시적 허가 없이는 공개하지 않습니다." },
+    { question: "취소나 변경은 어떻게 하나요?", answer: "보증금 50위안, 노쇼 시 환불 불가. 악천후 외 변경 가능. 15분 지각 시 도착 시간부터 계산." },
+    { question: "스타일은 어떻게 상의하나요?", answer: "촬영 전에 원하는 스타일을 공유해 주세요. 촬영 중 불만 사항은 즉시 알려주세요." },
+  ],
+  processSteps: [
+    "샤오홍슈 DM 문의｜원하는 스타일을 간단히 알려주세요.",
+    "스타일, 의상, 장소, 참고 자료 상의｜잘 모르겠다면 함께 판단해 드립니다.",
+    "날짜 및 보증금 확인｜시간, 장소, 비용 확인 후 예약 확정.",
+    "촬영 당일 가이드｜포즈, 표정, 동작 안내 — 처음도 걱정 마세요.",
+    "선택, 보정, 납품｜촬영 후 마음에 드는 사진을 선택하고 보정 후 클라우드로 전송.",
+  ],
+  whyCards: [
+    { icon: "heart", title: "초보자 환영", detail: "경험 불필요. 포즈, 표정, 시선을 부드럽게 가이드합니다. 편안한 템포로 진행." },
+    { icon: "camera", title: "소프트 필름 감성", detail: "자연광, 낮은 채도, 일상적인 진정성 — 딱딱한 스튜디오 느낌 없이." },
+    { icon: "message", title: "사전 소통", detail: "스타일, 의상, 장소, 참고 자료, 경계를 사전에 논의하여 현장 스트레스 최소화." },
+    { icon: "shield", title: "명확한 개인정보 보호", detail: "기본 비공개. 명시적 허가를 받은 사진만 게시." },
+    { icon: "heart", title: "전체 포즈 가이드", detail: "자세부터 시선까지 모든 디테일을 부드럽게 안내. 편안하게 자신을 표현하세요." },
+    { icon: "camera", title: "난징 로컬", detail: "시안린, 쉬안우 호수, 이허 로드, 쯔진 산 등 현지 촬영 스팟에 정통." },
+  ],
+  sectionCopy: {
+    gallery: { eyebrow: "포트폴리오", title: "부드러운 난징 앨범처럼", intro: "공원, 장난, 거리, 실내, 커플 스타일별 정리. 모든 작품은 고객 승인 후 게시." },
+    packages: { eyebrow: "가격", title: "명확한 가격, 놀라움 없이", intro: "실내, 야외, 즉석 추가 패키지 별도 안내. 각각 사전 상담 및 가이드 포함." },
+    details: { eyebrow: "상세", title: "장비, 가격, 정책을 명확하게", intro: "예약 전에 장비, 추가 서비스, 정책을 확인하세요." },
+    notice: { eyebrow: "프로세스", title: "처음이신가요? 이렇게 진행됩니다", intro: "샤오홍슈 DM부터 촬영, 선택, 납품까지 모든 단계를 미리 안내해 드립니다." },
+    why: { eyebrow: "선택 이유", title: "명확한 경계, 편안한 촬영", intro: "편안함과 권한을 사전 논의. 현장 포즈 가이드로 초보자도 안심." },
+    about: { eyebrow: "소개", title: "Naihuangbao Photography", intro: "예약 문의", body: "난징 기반의 개인 사진작가. 여성 사진 및 커플 사진 전문. 소프트 필름 감성으로 일상, 장난, 동반 촬영.", bookingTitle: "부드럽고 자연스러운 사진을 원하시나요?", profileLinkLabel: "샤오홍슈 프로필 보기" },
+    midCta: { eyebrow: "다음 단계", title: "이 스타일이 마음에 드시나요?", intro: "샤오홍슈 DM으로 연락주세요. 빠른 답변. 천천히 상담해 드립니다.", actionLabel: "샤오홍슈 DM" },
+    footer: { tagline: "셔터를 누를 때마다 부드러운 빛을 담습니다." },
+    safety: { title: "촬영 가이드라인 및 개인정보 약속", paragraphs: ["사진은 기본 공개되지 않습니다. 명시적 승인을 받은 사진만 게시됩니다.", "경계, 스타일, 편안함을 사전 논의. 초보자도 현장 포즈 가이드 제공."] },
+  },
+};

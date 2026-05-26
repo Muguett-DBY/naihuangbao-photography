@@ -7,7 +7,9 @@
     "reviews": "Reviews",
     "faq": "FAQ",
     "booking": "Book Now",
-    "skipLink": "Skip navigation to main content"
+    "skipLink": "Skip navigation to main content",
+    "open": "Open menu",
+    "close": "Close menu"
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -136,13 +138,29 @@
   "packages": {
     "eyebrow": "Packages & Pricing",
     "popular": "Popular",
+    "recommend": "Recommend",
+    "bookThis": "Book this package",
     "cta": "Book Now",
     "perSession": "/session",
-    "priceFrom": "from"
+    "priceFrom": "from",
+    "fitScene": {
+      "indoor": "Best for: indoor studio, cafes, light themes, weather-independent shoots.",
+      "outdoor": "Best for: Nanjing parks, streets, Jiangnan-style routes, natural light.",
+      "instant": "Best for: a physical keepsake on shoot day, an instant memento."
+    },
+    "fitPeople": {
+      "indoor": "Great for: first-timers, those who want a quiet environment and consistent lighting.",
+      "outdoor": "Great for: natural interactions, couple anniversaries, relaxed candid vibes.",
+      "instant": "Great for: those who love ritual, film-like trinkets, and physical photos."
+    }
   },
   "serviceDetails": {
     "eyebrow": "Service Details",
     "includes": "Includes",
+    "equipmentTitle": "Equipment",
+    "instantTitle": "Instant Camera",
+    "timingTitle": "Timing",
+    "noticeTitle": "Booking Notes",
     "detailItems": {
       "outfit": {
         "title": "Styling & Outfit",
@@ -227,7 +245,10 @@
   },
   "reviews": {
     "eyebrow": "Testimonials",
-    "title": "What Clients Say"
+    "title": "What Clients Say",
+    "prev": "Previous review",
+    "next": "Next review",
+    "dot": "Review {{index}}"
   },
   "aboutBooking": {
     "eyebrow": "Booking Info",
@@ -257,8 +278,13 @@
     "labelCute": "Current: Cute, click to switch"
   },
   "langToggle": {
-    "switchTo": "中文",
-    "label": "Switch language"
+    "label": "Switch language",
+    "languages": {
+      "en": "EN",
+      "zh-CN": "中文",
+      "ko": "KO",
+      "ja": "JA"
+    }
   },
   "loading": "Loading...",
   "notFound": {
@@ -268,14 +294,47 @@
   },
   "bookingModal": {
     "title": "Book a Session",
+    "subtitle": "Leave your info and I'll confirm the date",
     "name": "Your Name",
+    "namePlaceholder": "What should I call you?",
     "contact": "Contact (WeChat/Phone)",
+    "contactPlaceholder": "Phone / WeChat / Xiaohongshu ID",
     "style": "Preferred Style",
     "stylePlaceholder": "e.g. Park, Jiangnan, Street...",
+    "selectPackage": "Preferred Package",
+    "anyPackage": "Any (open to discussion)",
     "date": "Preferred Date",
+    "time": "Preferred Time",
+    "any": "Any",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "fullDay": "Full Day",
     "message": "Anything else?",
+    "messagePlaceholder": "Style preference, location ideas, anything...",
     "submit": "Send Booking",
+    "submitting": "Sending...",
+    "cancel": "Cancel",
+    "agreement": "By submitting you agree to the shooting guidelines. Or DM me on ",
+    "successTitle": "✅ Booking Submitted!",
     "success": "Booking sent! I'll get back to you soon.",
-    "error": "Failed to send. Please try again or DM me on Xiaohongshu."
+    "successHint": "I'll confirm the date via your contact info.",
+    "gotIt": "Got it",
+    "error": "Failed to send. Please try again or DM me on Xiaohongshu.",
+    "submitError": "Submission failed, please try again"
+  },
+  "floatingBookingCta": {
+    "ariaLabel": "Book a session",
+    "text": "Book"
+  },
+  "loadingScreen": {
+    "brandName": "Naihuangbao Photography",
+    "subtitle": "Nanjing · Portrait · Couple"
+  },
+  "sectionNav": {
+    "ariaLabel": "Section Navigation"
+  },
+  "footer": {
+    "tagline": "{{city}} · Portrait · Couple",
+    "backToTop": "Back to top"
   }
 }

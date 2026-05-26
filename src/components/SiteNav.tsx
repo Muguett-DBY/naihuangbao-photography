@@ -21,8 +21,12 @@ export function SiteNav() {
     { href: "#booking", label: t("nav.booking") },
   ];
 
+  const LANG_CYCLE = ["en", "zh-CN", "ko", "ja"] as const;
+
   const toggleLang = () => {
-    const next = i18n.language === "zh-CN" ? "en" : "zh-CN";
+    const current = i18n.language;
+    const idx = LANG_CYCLE.indexOf(current as typeof LANG_CYCLE[number]);
+    const next = LANG_CYCLE[(idx + 1) % LANG_CYCLE.length];
     i18n.changeLanguage(next);
     localStorage.setItem("lang", next);
   };
@@ -114,7 +118,7 @@ export function SiteNav() {
         style={{ fontSize: 13, width: "auto", paddingInline: 8 }}
       >
         <Languages size={14} />
-        <span style={{ marginLeft: 3 }}>{t("langToggle.switchTo")}</span>
+        <span style={{ marginLeft: 3 }}>{t(`langToggle.languages.${i18n.language}` as any)}</span>
       </button>
       <a className="nav-cta" href="#booking" onClick={() => setOpen(false)}>
         <CalendarCheck size={16} />

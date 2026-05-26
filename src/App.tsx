@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { lazy, Suspense, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useGsapAnimations } from "./hooks/useGsapAnimations";
 import { CanvasParticles } from "./components/CanvasParticles";
 import { SectionNav } from "./components/SectionNav";
@@ -38,8 +39,9 @@ const AdminDashboard = lazy(async () => {
 const PublicChatWidget = lazy(() => import("./components/PublicChatWidget"));
 
 function AdminRoute() {
+  const { t: tAdmin } = useTranslation();
   return (
-    <Suspense fallback={<div className="adm-root"><div className="adm-loading">加载中...</div></div>}>
+    <Suspense fallback={<div className="adm-root"><div className="adm-loading">{tAdmin("loading")}</div></div>}>
       <AdminDashboard />
     </Suspense>
   );
@@ -52,6 +54,7 @@ function isNotFound(): boolean {
 }
 
 export function App() {
+  const { t } = useTranslation();
   const [chatOpen, setChatOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -78,11 +81,11 @@ export function App() {
       <BookingProvider>
       <SiteContentProvider>
         <PublicPhotosProvider>
-          <div className="scroll-progress-bar" role="progressbar" aria-label="页面阅读进度" />
+          <div className="scroll-progress-bar" role="progressbar" aria-label={t("loading")} />
           <CanvasParticles />
           <SectionNav />
           <a className="skip-link" href="#main-content">
-            跳过导航，直接查看内容
+            {t("nav.skipLink")}
           </a>
           <SiteNav />
           <motion.main
@@ -133,12 +136,12 @@ export function App() {
           <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
             <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((value) => !value)} />
             {chatOpen ? (
-              <Suspense
-                fallback={
-                  <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
-                    加载中...
-                  </div>
-                }
+            <Suspense
+              fallback={
+                <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
+                  {t("loading")}
+                </div>
+              }
               >
                 <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
               </Suspense>

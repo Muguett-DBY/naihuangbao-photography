@@ -116,7 +116,7 @@ function PolaroidCard({
       onClick={(e) => { e.stopPropagation(); onCardClick(); }}
       role="button"
       tabIndex={isFanned && isFocused ? 0 : -1}
-      aria-label={`${photo.title} — ${styleLabel(photo.style)}`}
+      aria-label={`${photo.title} — ${t(`gallery.filters.${photo.style}` as any, photo.style)}`}
     >
       <div className="polaroid-card-inner">
         <div className="polaroid-card-front">
@@ -134,13 +134,13 @@ function PolaroidCard({
           <div className="polaroid-caption">
             <span className="polaroid-caption-location">{photo.location}</span>
             <span className="polaroid-caption-sep">·</span>
-            <span className="polaroid-caption-style">{styleLabel(photo.style)}</span>
+            <span className="polaroid-caption-style">{t(`gallery.filters.${photo.style}` as any, photo.style)}</span>
           </div>
         </div>
         <div className="polaroid-card-back">
           <div className="polaroid-back-content">
             <strong>{photo.title}</strong>
-            <span className="polaroid-back-style">{styleLabel(photo.style)}</span>
+            <span className="polaroid-back-style">{t(`gallery.filters.${photo.style}` as any, photo.style)}</span>
             <span className="polaroid-back-location">{photo.location}</span>
             <p className="polaroid-back-note">{t("polaroid.backNote")}</p>
           </div>
@@ -150,10 +150,4 @@ function PolaroidCard({
   );
 }
 
-function styleLabel(style: string): string {
-  const labels: Record<string, string> = {
-    jiangnan: "江南感", street: "街拍", park: "公园",
-    sweet: "甜酷", couple: "情侣", indoor: "室内",
-  };
-  return labels[style] || style;
-}
+

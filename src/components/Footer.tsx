@@ -20,7 +20,7 @@ export function Footer() {
     <footer className={`site-footer ${inView ? "is-visible" : ""}`} ref={ref}>
       <div className="footer-brand">
         <span>{siteConfig.brandName}</span>
-        <p>{siteConfig.city} · 女生写真 · 情侣约拍</p>
+        <p>{t("footer.tagline", { city: siteConfig.city })}</p>
       </div>
       <div className="footer-links">
         <a href="#gallery">{t("nav.gallery")}</a>
@@ -36,7 +36,7 @@ export function Footer() {
       <button
         className={`scroll-top${showTop ? " is-visible" : ""}`}
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        aria-label="回到顶部"
+        aria-label={t("footer.backToTop")}
       >
         <ArrowUp size={18} />
       </button>

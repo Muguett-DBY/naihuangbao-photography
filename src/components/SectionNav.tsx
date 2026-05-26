@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const SECTIONS = [
-  { id: "top", label: "首页" },
-  { id: "gallery", label: "作品" },
-  { id: "mid-cta", label: "风格" },
-  { id: "why", label: "优势" },
-  { id: "packages", label: "套餐" },
-  { id: "details", label: "服务" },
-  { id: "process", label: "流程" },
-  { id: "booking", label: "预约" },
+  { id: "top", labelKey: "nav.home" },
+  { id: "gallery", labelKey: "nav.gallery" },
+  { id: "mid-cta", labelKey: "nav.details" },
+  { id: "why", labelKey: "nav.packages" },
+  { id: "packages", labelKey: "nav.packages" },
+  { id: "details", labelKey: "nav.details" },
+  { id: "process", labelKey: "nav.faq" },
+  { id: "booking", labelKey: "nav.booking" },
 ] as const;
 
 export function SectionNav() {
+  const { t } = useTranslation();
   const [active, setActive] = useState(0);
   const ticking = useRef(false);
 
@@ -63,17 +65,17 @@ export function SectionNav() {
   };
 
   return (
-    <nav className="section-nav" aria-label="页面章节导航">
+    <nav className="section-nav" aria-label={t("sectionNav.ariaLabel")}>
       {SECTIONS.map((s, i) => (
         <button
           key={s.id}
           className={`section-nav-dot${i === active ? " is-active" : ""}`}
           onClick={() => scrollTo(i)}
-          title={s.label}
-          aria-label={`跳转到${s.label}`}
+          title={t(s.labelKey)}
+          aria-label={t(s.labelKey)}
           aria-current={i === active ? "true" : undefined}
         >
-          <span className="section-nav-label">{s.label}</span>
+          <span className="section-nav-label">{t(s.labelKey)}</span>
         </button>
       ))}
     </nav>

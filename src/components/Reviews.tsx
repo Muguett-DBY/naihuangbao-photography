@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { reviews } from "../data/reviews";
 
 export function Reviews() {
+  const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
@@ -22,7 +24,7 @@ export function Reviews() {
 
   return (
     <section id="reviews" className="reviews-shell">
-      <h2 className="section-heading">客人怎么说</h2>
+      <h2 className="section-heading">{t("reviews.title")}</h2>
       <div
         className="reviews-track"
         onMouseEnter={stopAuto}
@@ -30,7 +32,7 @@ export function Reviews() {
         onTouchStart={stopAuto}
         onTouchEnd={startAuto}
       >
-        <button className="reviews-nav reviews-prev" onClick={prev} aria-label="上一条评价" type="button">
+        <button className="reviews-nav reviews-prev" onClick={prev} aria-label={t("reviews.prev")} type="button">
           ‹
         </button>
         <div className="reviews-card" key={index}>
@@ -40,7 +42,7 @@ export function Reviews() {
             <span className="reviews-source">{reviews[index].source}</span>
           </div>
         </div>
-        <button className="reviews-nav reviews-next" onClick={next} aria-label="下一条评价" type="button">
+        <button className="reviews-nav reviews-next" onClick={next} aria-label={t("reviews.next")} type="button">
           ›
         </button>
       </div>
@@ -50,7 +52,7 @@ export function Reviews() {
             key={i}
             className={`reviews-dot${i === index ? " is-active" : ""}`}
             onClick={() => setIndex(i)}
-            aria-label={`第${i + 1}条评价`}
+            aria-label={t("reviews.dot", { index: i + 1 })}
             type="button"
           />
         ))}

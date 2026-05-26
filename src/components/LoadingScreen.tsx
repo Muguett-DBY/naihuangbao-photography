@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="80" height="80">
   <rect width="512" height="512" rx="96" fill="#F5E6D3" />
@@ -10,6 +11,7 @@ const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" 
 </svg>`;
 
 export function LoadingScreen() {
+  const { t } = useTranslation();
   const [show, setShow] = useState(true);
   const wrapRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
@@ -74,10 +76,10 @@ export function LoadingScreen() {
           letterSpacing: "0.08em",
         }}
       >
-        奶黄包摄影
+        {t("loadingScreen.brandName")}
       </div>
       <div style={{ fontSize: 13, color: "#9C7664", marginTop: 4 }}>
-        Nanjing · Portrait · Couple
+        {t("loadingScreen.subtitle")}
       </div>
     </div>
   );

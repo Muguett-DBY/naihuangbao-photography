@@ -1,0 +1,68 @@
+import type { SiteContent } from "../../types/content";
+
+export const defaultSiteContent: SiteContent = {
+  siteConfig: {
+    brandName: "Naihuangbao Photography",
+    city: "Nanjing",
+    domain: "shoot.custard.top",
+    tagline: "Nanjing Portrait & Couple Photography",
+    description: "Soft, film-like natural portrait photography for everyday memories, Jiangnan-style shoots, couple anniversaries, and relaxed city walks.",
+    contactStatus: "DM on Xiaohongshu",
+    contactHint: "Contact me via Xiaohongshu DM to discuss styles and availability.",
+    xiaohongshuProfile: "https://www.xiaohongshu.com/user/profile/60f5b14b000000002002fa9f",
+  },
+  packages: [
+    { name: "屋内ポートレート", price: "50/h", duration: "最低2時間", summary: "屋内スタジオ、カフェ、軽めのテーマや天候に左右されない撮影に最適。", includes: ["お一人様/ペア同料金", "スタイル相談", "最低2時間からの料金"] },
+    { name: "屋外撮影", price: "60/h", duration: "最低2時間", summary: "南京の街並み、公園、江南スタイル、自然光での日常記録に最適。", includes: ["お一人様/ペア同料金", "ロケーション提案", "撮影ガイド付き"] },
+    { name: "インスタント追加", price: "9.9/枚", duration: "Fuji mini 11", summary: "撮影当日にその場で現物プリント。特別な記念品として。", includes: ["枚数課金", "どのプランにも追加可能", "現地で枚数確認"] },
+  ],
+  serviceAddOns: {
+    equipment: ["Canon 200D II", "Canon 95ixus", "iPhone 17 Pro", "iPhone 6 SP"],
+    instantCamera: { camera: "Fuji mini 11", price: "9.9/枚" },
+  },
+  servicePolicies: [
+    { title: "最低2時間", detail: "2時間未満は2時間分の料金。15分以上の遅刻は到着時間から計測。" },
+    { title: "予約金50元", detail: "無断キャンセルは返金不可。悪天候以外は返金不可、日程変更可能。" },
+    { title: "紹介割引 -15元", detail: "ご紹介またはリピーター様は15元引き、予約確定時に適用。" },
+    { title: "交通費・入場料", detail: "往復交通費実費負担。特別な場所はタクシー/入場料が別途必要。" },
+  ],
+  faqs: [
+    { question: "どんな写真を撮っていますか？", answer: "ポートレート、ライフスタイル、記念写真。快適さ、尊重、プライバシーを大切にしています。" },
+    { question: "ロケーションはどうやって決めますか？", answer: "事前にスタイルと予算を相談。公共交通機関でアクセス可能な場所を優先。" },
+    { question: "ポーズがわからないのですが？", answer: "ご安心ください。すべてのポーズ、表情、アングルをガイドします。" },
+    { question: "衣装はどう準備すれば？", answer: "事前に衣装写真やスタイル参考を送ってください。" },
+    { question: "写真は公開されますか？", answer: "いいえ、デフォルトでは公開されません。個別に許可を得たもののみ掲載。" },
+    { question: "自分で場所を選べますか？", answer: "もちろんです。ご希望の場所や雰囲気をお聞かせください。" },
+    { question: "曇りや雨の場合は？", answer: "薄曇りは柔らかい写真に最適。荒天時は日程変更可能です。" },
+    { question: "写真はいつ届きますか？", answer: "納期は予約時に確認。お急ぎの場合は事前にお知らせください。" },
+    { question: "写真を非公開にできますか？", answer: "はい。デフォルト非公開。明示的な許可なく公開することはありません。" },
+    { question: "キャンセルや変更は？", answer: "予約金50元、無断キャンセルは返金不可。悪天候以外は返金不可、日程変更可能。" },
+    { question: "スタイルの相談は？", answer: "撮影前にご希望のスタイルをお知らせください。撮影中のご不満はその場でお伝えください。" },
+  ],
+  processSteps: [
+    "小红书DMでお問い合わせ｜簡単にご希望をお聞かせください。",
+    "スタイル、衣装、場所、参考イメージの相談｜お決まりでなければ一緒に考えます。",
+    "日程と予約金の確定｜時間、場所、費用を確認後、予約確定。",
+    "撮影当日のガイド｜ポーズ、表情、動きを丁寧にサポート。初めての方も安心。",
+    "選択、レタッチ、納品｜撮影後、お気に入りを選択。レタッチ後クラウドで納品。",
+  ],
+  whyCards: [
+    { icon: "heart", title: "初心者歓迎", detail: "経験不要。ポーズ、表情、視線を優しくガイド。リラックスしたペースで進行。" },
+    { icon: "camera", title: "ソフトなフィルム調", detail: "自然光、低彩度、日常的な美しさ。堅苦しいスタジオ感はありません。" },
+    { icon: "message", title: "事前コミュニケーション", detail: "スタイル、衣装、場所、参考イメージ、境界を事前に相談し、当日のストレスを軽減。" },
+    { icon: "shield", title: "明確なプライバシー保護", detail: "デフォルト非公開。明示的な許可を得た写真のみ掲載。" },
+    { icon: "heart", title: "ポージング完全ガイド", detail: "立ち方から視線まで、すべてのディテールを優しくガイド。リラックスして自然体で。" },
+    { icon: "camera", title: "南京の撮影スポット熟知", detail: "仙林、玄武湖、頤和路、紫金山など、南京のベストスポットを熟知。" },
+  ],
+  sectionCopy: {
+    gallery: { eyebrow: "ポートフォリオ", title: "優しい南京アルバムのように", intro: "公園、江南、ストリート、屋内、カップル別に整理。すべて許可を得た作品のみ。" },
+    packages: { eyebrow: "料金", title: "明確な料金、驚きなし", intro: "屋内、屋外、インスタント追加プランを個別に表示。すべて事前相談とガイド付き。" },
+    details: { eyebrow: "詳細", title: "機材、料金、ポリシーを明確に", intro: "ご予約前に機材、追加サービス、予約ポリシーをご確認ください。" },
+    notice: { eyebrow: "流れ", title: "初めての方も安心の流れ", intro: "小红书DMから撮影、セレクト、納品まで、すべてのステップを事前にご説明します。" },
+    why: { eyebrow: "選ばれる理由", title: "明確な境界、リラックスした撮影", intro: "事前に快適さと権限を確認。当日はポーズガイド付きで初心者も安心。" },
+    about: { eyebrow: "About", title: "Naihuangbao Photography", intro: "予約問い合わせ", body: "南京を拠点とする個人写真家。女性ポートレートとカップル写真を専門とし、ソフトフィルム調の作風。", bookingTitle: "優しく自然な写真を撮りませんか？", profileLinkLabel: "小红书プロフィールを見る" },
+    midCta: { eyebrow: "次のステップ", title: "このスタイル気に入りましたか？", intro: "小红书DMでご連絡ください。すぐにお返事します。ゆっくりご相談ください。", actionLabel: "小红书DM" },
+    footer: { tagline: "シャッターを切るたびに、優しい光を灯します。" },
+    safety: { title: "撮影ガイドラインとプライバシーについて", paragraphs: ["写真はデフォルトで公開されません。明示的な許可を得たもののみ掲載します。", "境界、スタイル、快適さを事前に確認。初心者にはその場でポーズガイドを提供。"] },
+  },
+};

@@ -1,5 +1,6 @@
 import { Button, Input, Modal } from "animal-island-ui";
 import { type FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSiteContent } from "../hooks/useSiteContent";
 
 type BookingModalProps = {
@@ -8,6 +9,7 @@ type BookingModalProps = {
 };
 
 export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
+  const { t } = useTranslation();
   const { packages, siteConfig } = useSiteContent();
   const [selectedPkg, setSelectedPkg] = useState(initialPackage || "");
   const [date, setDate] = useState("");
@@ -41,12 +43,12 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
       if (!r.ok) {
         const data = await r.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error || "提交失败");
+        throw new Error((data as { error?: string }).error || t("bookingModal.submitError"));
       }
 
       setDone(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "提交失败，请稍后重试");
+      setError(err instanceof Error ? err.message : t("bookingModal.submitError"));
     } finally {
       setSending(false);
     }
@@ -61,11 +63,11 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     return (
       <Modal open onClose={onClose} footer={null} typewriter={false}>
         <div className="booking-modal-success">
-          <h2>✅ 预约已提交！</h2>
-          <p>我们会尽快通过你留下的联系方式和你确认档期。</p>
-          <p className="booking-success-hint">你也可以直接联系小红书：{siteConfig.xiaohongshuProfile}</p>
+          <h2>{t("bookingModal.successTitle")}</h2>
+          <p>{t("bookingModal.successHint")}</p>
+          <p className="booking-success-hint">{t("bookingModal.success")} {siteConfig.xiaohongshuProfile}</p>
           <div style={{ marginTop: 20, textAlign: "center" }}>
-            <Button type="primary" onClick={onClose}>知道了</Button>
+            <Button type="primary" onClick={onClose}>{t("bookingModal.gotIt")}</Button>
           </div>
         </div>
       </Modal>
@@ -77,69 +79,69 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     <Modal
       open
       onClose={onClose}
-      title="预约拍摄"
+      title={t("bookingModal.title")}
       typewriter={false}
       maskClosable={false}
       footer={null}
     >
       <p style={{ margin: "0 0 16px", color: "var(--animal-text-color-secondary)", fontSize: 14 }}>
-        留下信息，确认档期后锁定时间
+        {t("bookingModal.subtitle")}
       </p>
 
       <form onSubmit={handleSubmit}>
         <div className="booking-field">
-          <label>感兴趣的套餐</label>
+          <label>{t("bookingModal.selectPackage")}</label>
           <select value={selectedPkg} onChange={(e) => setSelectedPkg(e.target.value)}>
-            <option value="">不限（都可以聊）</option>
+            <option value="">{t("bookingModal.anyPackage")}</option>
             {packageOptions}
           </select>
         </div>
 
         <div className="booking-row">
           <div className="booking-field">
-            <label>期望日期 <span className="booking-optional">可选</span></label>
+            <label>{t("bookingModal.date")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
           </div>
           <div className="booking-field">
-            <label>期望时段 <span className="booking-optional">可选</span></label>
+            <label>{t("bookingModal.time")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
             <select value={time} onChange={(e) => setTime(e.target.value)}>
-              <option value="">不限</option>
-              <option value="上午">上午</option>
-              <option value="下午">下午</option>
-              <option value="全天">全天</option>
+              <option value="">{t("bookingModal.any")}</option>
+              <option value="morning">{t("bookingModal.morning")}</option>
+              <option value="afternoon">{t("bookingModal.afternoon")}</option>
+              <option value="fullDay">{t("bookingModal.fullDay")}</option>
             </select>
           </div>
         </div>
 
         <div className="booking-field">
-          <label>你的名字 <span className="booking-required">*</span></label>
+          <label>{t("bookingModal.name")} <span className="booking-required">*</span></label>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="怎么称呼你？"
+            placeholder={t("bookingModal.namePlaceholder")}
             required
             shadow
           />
         </div>
 
         <div className="booking-field">
-          <label>联系方式 <span className="booking-required">*</span></label>
+          <label>{t("bookingModal.contact")} <span className="booking-required">*</span></label>
           <Input
             value={contact}
             onChange={(e) => setContact(e.target.value)}
-            placeholder="手机号 / 微信 / 小红书 ID"
+            placeholder={t("bookingModal.contactPlaceholder")}
             required
             shadow
           />
         </div>
 
         <div className="booking-field">
-          <label>想说的话 <span className="booking-optional">可选</span></label>
+          <label>{t("bookingModal.message")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
           <textarea
             className="booking-textarea"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="风格偏好、地点想法、任何想问的……"
+            placeholder={t("bookingModal.messagePlaceholder")}
             rows={3}
           />
         </div>
@@ -147,15 +149,15 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         {error ? <p className="booking-error">{error}</p> : null}
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
-          <Button type="default" onClick={onClose}>取消</Button>
+          <Button type="default" onClick={onClose}>{t("bookingModal.cancel")}</Button>
           <Button type="primary" htmlType="submit" disabled={sending || !name.trim() || !contact.trim()}>
-            {sending ? "提交中..." : "提交预约"}
+            {sending ? t("bookingModal.submitting") : t("bookingModal.submit")}
           </Button>
         </div>
 
         <p className="booking-footer">
-          提交即表示你同意拍摄边界说明。也可以直接去{" "}
-          <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">小红书私信</a>
+          {t("bookingModal.agreement")}
+          <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">{t("bookingModal.contact")}</a>
         </p>
       </form>
     </Modal>

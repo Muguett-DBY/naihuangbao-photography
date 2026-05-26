@@ -1,6 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { styleLabels } from "../data/site";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { getPhotosByStyle } from "../lib/gallery";
@@ -11,7 +10,7 @@ import { useDistortionHover } from "../hooks/useDistortionHover";
 
 type StyleFilter = PhotoStyle | "all";
 
-const filters = Object.keys(styleLabels) as StyleFilter[];
+const STYLE_FILTERS: StyleFilter[] = ["all", "jiangnan", "street", "park", "sweet", "couple", "indoor"];
 const tones = ["rose", "sage", "cream", "ink"] as const;
 const Lightbox = lazy(() => import("./Lightbox"));
 const galleryThumb = (src: string) => {
@@ -74,7 +73,7 @@ export function Gallery() {
       </div>
 
       <div className="filter-row" role="group" aria-label={t("gallery.intro")}>
-        {filters.map((item) => (
+        {STYLE_FILTERS.map((item) => (
           <button
             key={item}
             type="button"
@@ -82,7 +81,7 @@ export function Gallery() {
             className={item === filter ? "is-active" : ""}
             onClick={() => setFilter(item)}
           >
-            {item === "all" ? t("gallery.filters.all") : styleLabels[item]}
+            {t(`gallery.filters.${item}`)}
           </button>
         ))}
       </div>
@@ -110,7 +109,7 @@ export function Gallery() {
         {(() => {
           const albums = new Map<string, typeof photos>();
           for (const p of photos) {
-            const key = p.album || "其他";
+            const key = p.album || "";
             if (!albums.has(key)) albums.set(key, []);
             albums.get(key)!.push(p);
           }
@@ -148,13 +147,13 @@ export function Gallery() {
                         sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
                       />
                       <div className="gallery-masonry-overlay">
-                        <span className="gallery-masonry-overlay-style">{styleLabels[item.style]}</span>
+                        <span className="gallery-masonry-overlay-style">{t(`gallery.filters.${item.style}`, item.style)}</span>
                         <strong className="gallery-masonry-overlay-title">{item.title}</strong>
                         <span className="gallery-masonry-overlay-location">{item.location}</span>
                       </div>
                     </button>
                     <div className="gallery-masonry-caption">
-                      <p>{styleLabels[item.style]}</p>
+                      <p>{t(`gallery.filters.${item.style}`, item.style)}</p>
                       <h3>{item.title}</h3>
                       <span>{item.location}</span>
                     </div>
