@@ -109,7 +109,7 @@ export function Gallery() {
         {(() => {
           const albums = new Map<string, typeof photos>();
           for (const p of photos) {
-            const key = p.album || "";
+            const key = p.album || "其他";
             if (!albums.has(key)) albums.set(key, []);
             albums.get(key)!.push(p);
           }
