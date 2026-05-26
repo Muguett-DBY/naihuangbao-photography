@@ -111,7 +111,7 @@
 .booking-section {
   max-width: 1220px;
   margin: 0 auto;
-  padding: clamp(96px, 12vw, 166px) var(--section-inline);
+  padding: clamp(64px, 8vw, 110px) var(--section-inline);
   position: relative;
   z-index: 1;
 }
