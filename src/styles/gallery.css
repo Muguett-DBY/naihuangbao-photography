@@ -169,11 +169,6 @@
     0 1px 0 rgba(255, 253, 247, 0.82),
     0 10px 24px rgba(139, 94, 74, 0.08),
     0 22px 48px rgba(255, 184, 161, 0.1);
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.section-shell.is-visible .section-heading h2 {
-  clip-path: inset(0 0 0 0);
 }
 
 #gallery .section-heading h2::before,

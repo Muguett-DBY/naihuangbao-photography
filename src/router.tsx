@@ -8,6 +8,7 @@ import { ProductsPage } from "./pages/ProductsPage";
 import { WorkshopsPage } from "./pages/WorkshopsPage";
 import { ShopPage } from "./pages/ShopPage";
 import { BookingPage } from "./pages/BookingPage";
+import { MapPage } from "./pages/MapPage";
 import { NotFound } from "./components/NotFound";
 
 const AdminDashboard = lazy(async () => {
@@ -43,6 +44,7 @@ export const router = createBrowserRouter([
       { path: "workshops", element: <WorkshopsPage /> },
       { path: "shop", element: <ShopPage /> },
       { path: "booking", element: <BookingPage /> },
+      { path: "map", element: <MapPage /> },
       { path: "*", element: <NotFound /> },
     ],
   },

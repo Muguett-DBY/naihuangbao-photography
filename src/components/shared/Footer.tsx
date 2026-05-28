@@ -31,6 +31,7 @@ export function Footer() {
         <Link to="/products">{t("nav.presets")}</Link>
         <Link to="/workshops">{t("nav.workshops")}</Link>
         <Link to="/shop">{t("nav.shop")}</Link>
+        <Link to="/map">{t("nav.map")}</Link>
         <Link to="/booking">{t("nav.booking")}</Link>
       </div>
       <div className="footer-social">

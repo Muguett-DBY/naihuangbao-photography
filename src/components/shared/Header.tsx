@@ -21,6 +21,7 @@ export function Header() {
     { to: "/products", label: t("nav.presets") },
     { to: "/workshops", label: t("nav.workshops") },
     { to: "/shop", label: t("nav.shop") },
+    { to: "/map", label: t("nav.map") },
     { to: "/booking", label: t("nav.booking") },
   ];
 

@@ -13,7 +13,8 @@
     "courses": "강좌",
     "presets": "프리셋",
     "workshops": "워크숍",
-    "shop": "상품"
+    "shop": "상품",
+    "map": "지도"
   },
   "hero": {
     "volBadge": "✦ Vol.1",

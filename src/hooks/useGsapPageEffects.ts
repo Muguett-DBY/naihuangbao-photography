@@ -85,48 +85,30 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       });
     });
 
-    // Hero title clip reveal
+    // Hero entrance animations (fade in only, no clip-path dependency)
     const title = $1<HTMLElement>(".hero-magazine-title");
     const subtitle = $1<HTMLElement>(".hero-magazine-subtitle");
     const intro = $1<HTMLElement>(".hero-cover-intro");
     const ctaGroup = $<HTMLElement>(".hero-cover-cta-group > *");
 
-    const heroTimeline = gsap.timeline({ delay: 0.3 });
+    // Only animate if elements start hidden (from body:not(.is-loaded) CSS)
+    // Don't use gsap.set to hide - let CSS handle initial state
+    const heroTimeline = gsap.timeline({ delay: 0.1 });
 
     if (title) {
-      heroTimeline.fromTo(
-        title,
-        { clipPath: "inset(0 100% 0 0)" },
-        { clipPath: "inset(0 0% 0 0)", duration: 0.9, ease: "power3.out" },
-        "-=0.2",
-      );
+      heroTimeline.fromTo(title, { opacity: 0.3, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
     }
 
     if (subtitle) {
-      heroTimeline.fromTo(
-        subtitle,
-        { opacity: 0, x: -20, clipPath: "inset(0 100% 0 0)" },
-        { opacity: 1, x: 0, clipPath: "inset(0 0% 0 0)", duration: 0.65, ease: "power2.out" },
-        "-=0.5",
-      );
+      heroTimeline.fromTo(subtitle, { opacity: 0.3, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, "-=0.3");
     }
 
     if (intro) {
-      heroTimeline.fromTo(
-        intro,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
-        "-=0.3",
-      );
+      heroTimeline.fromTo(intro, { opacity: 0.3, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, "-=0.3");
     }
 
     if (ctaGroup.length) {
-      heroTimeline.fromTo(
-        ctaGroup,
-        { opacity: 0, y: 14, scale: 0.92 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.7)", stagger: 0.1 },
-        "-=0.1",
-      );
+      heroTimeline.fromTo(ctaGroup, { opacity: 0.3, y: 6 }, { opacity: 1, y: 0, duration: 0.35, ease: "back.out(1.4)", stagger: 0.06 }, "-=0.2");
     }
 
     // Section heading color shift
