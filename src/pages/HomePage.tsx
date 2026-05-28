@@ -24,6 +24,7 @@ export function HomePage() {
     <PageTransition ref={rootRef}>
       <div className="scroll-progress-bar" role="progressbar" aria-label={t("loading")} />
 
+      {/* ── Hero ── */}
       <section className="hero" id="top">
         <div className="hero-cover-design" />
         <div className="hero-glow-orb hero-glow-orb--1" aria-hidden="true" />
@@ -31,16 +32,9 @@ export function HomePage() {
         <div className="float-element float-element--1" aria-hidden="true" />
         <div className="float-element float-element--2" aria-hidden="true" />
         <div className="float-element float-element--3" aria-hidden="true" />
-
         <svg className="deco-svg-path" viewBox="0 0 200 100" fill="none" aria-hidden="true">
-          <path
-            d="M 0 50 Q 50 0 100 50 T 200 50"
-            stroke="rgba(255,210,184,0.15)"
-            strokeWidth="1.5"
-            vectorEffect="non-scaling-stroke"
-          />
+          <path d="M 0 50 Q 50 0 100 50 T 200 50" stroke="rgba(255,210,184,0.15)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
         </svg>
-
         <div className="hero-cover-content">
           <div className="hero-cover-left">
             <div className="hero-vol-badge">
@@ -54,13 +48,9 @@ export function HomePage() {
             </h1>
             <p className="hero-cover-intro">{t("hero.intro")}</p>
           </div>
-
           <div className="hero-cover-right">
             <div className="hero-trust-tags">
-              <span className="hero-trust-tag">
-                <ShieldCheck size={13} />
-                {t("hero.trustTags.privacy")}
-              </span>
+              <span className="hero-trust-tag"><ShieldCheck size={13} /> {t("hero.trustTags.privacy")}</span>
               <span className="hero-trust-tag">{t("hero.trustTags.guidance")}</span>
               <span className="hero-trust-tag">{t("hero.trustTags.styles")}</span>
             </div>
@@ -74,32 +64,30 @@ export function HomePage() {
             </div>
           </div>
         </div>
-
         <div className="hero-scroll-indicator" aria-hidden="true">
           <span>{t("hero.scroll")}</span>
           <div className="hero-scroll-line" />
         </div>
       </section>
 
-      <section className="section-shell" id="featured">
-        <div className="section-heading">
-          <span className="section-eyebrow">Portfolio</span>
-          <h2>{t("gallery.title")}</h2>
-        </div>
+      {/* ── Gallery（组件自带 Section 标题，无需外层再包） ── */}
+      <div id="featured" style={{ scrollMarginTop: 80 }}>
         <Suspense fallback={<div style={{ minHeight: 400 }} />}>
           <Gallery />
         </Suspense>
-        <div style={{ textAlign: "center", marginTop: 32 }}>
-          <Link to="/gallery" className="home-page-link">
-            {t("hero.ctaView")} <ArrowRight size={16} />
-          </Link>
-        </div>
-      </section>
+      </div>
 
-      <section className="section-shell" id="services-preview">
-        <div className="section-heading">
-          <span className="section-eyebrow">Services</span>
-          <h2>{t("nav.home")}</h2>
+      <div style={{ textAlign: "center", padding: "0 16px 40px" }}>
+        <Link to="/gallery" className="home-page-link">
+          {t("hero.ctaView")} <ArrowRight size={16} />
+        </Link>
+      </div>
+
+      {/* ── 服务入口 ── */}
+      <section className="section-shell is-visible" id="services-preview" style={{ padding: "60px 0" }}>
+        <div className="section-heading" style={{ textAlign: "center", maxWidth: "100%", marginBottom: 32, paddingBottom: 0 }}>
+          <p className="section-eyebrow">Services</p>
+          <h2 style={{ clipPath: "inset(0 0 0 0)" }}>{t("nav.home")}</h2>
         </div>
         <div className="home-services-grid">
           <Link to="/courses" className="home-service-card">
@@ -129,17 +117,20 @@ export function HomePage() {
         </div>
       </section>
 
-      <Suspense fallback={<div className="section-shell" style={{ minHeight: 300 }} />}>
+      {/* ── 为什么选择我们 ── */}
+      <Suspense fallback={null}>
         <WhyChooseUs />
       </Suspense>
 
-      <Suspense fallback={<div className="section-shell" style={{ minHeight: 300 }} />}>
+      {/* ── 评价 ── */}
+      <Suspense fallback={null}>
         <Reviews />
       </Suspense>
 
-      <section className="section-shell home-cta-section">
-        <h2>{t("midCTA.title")}</h2>
-        <p>{t("midCTA.desc")}</p>
+      {/* ── CTA ── */}
+      <section className="section-shell is-visible" style={{ textAlign: "center", padding: "60px 16px" }}>
+        <h2 style={{ clipPath: "inset(0 0 0 0)", marginBottom: 12 }}>{t("midCTA.title")}</h2>
+        <p style={{ color: "var(--caramel-muted)", maxWidth: 520, margin: "0 auto 24px", lineHeight: 1.7 }}>{t("midCTA.desc")}</p>
         <Button type="primary" size="large" onClick={() => openBookingModal()}>
           <CalendarCheck size={16} /> {t("midCTA.cta")}
         </Button>
