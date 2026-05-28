@@ -351,10 +351,17 @@
       "post-processing": "Post-Processing",
       "posing": "Posing Guide"
     },
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
     "modules": "Course Modules",
     "startLearning": "Start Learning",
     "watchVideo": "Watch Video",
-    "readTutorial": "Read Tutorial"
+    "readTutorial": "Read Tutorial",
+    "duration": "{{minutes}} min",
+    "empty": "Courses coming soon, stay tuned"
   },
   "presets": {
     "title": "Presets & Resources",
@@ -366,7 +373,8 @@
       "luts": "LUT Packs"
     },
     "download": "Download",
-    "downloads": "downloads"
+    "downloads": "downloads",
+    "empty": "Presets coming soon, stay tuned"
   },
   "workshops": {
     "title": "Workshops & Events",
@@ -376,7 +384,25 @@
     "full": "Full",
     "date": "Event Date",
     "location": "Location",
-    "price": "Price"
+    "price": "Price",
+    "status": {
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "empty": "No upcoming events, stay tuned",
+    "form": {
+      "name": "Your Name",
+      "contact": "Contact (WeChat/Phone)",
+      "submit": "Submit Registration",
+      "submitting": "Submitting...",
+      "cancel": "Cancel",
+      "success": "Registration successful! We'll contact you soon.",
+      "error": "Registration failed, please try again",
+      "nameRequired": "Please enter your name",
+      "contactRequired": "Please enter your contact"
+    }
   },
   "merchandise": {
     "title": "Custom Merchandise",
@@ -389,6 +415,7 @@
       "other": "Other"
     },
     "inquire": "Inquire to Purchase",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "empty": "Merchandise coming soon, stay tuned"
   }
 }

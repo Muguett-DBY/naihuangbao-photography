@@ -42,15 +42,14 @@ export function ProductsPage() {
           <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
         ) : presets.length === 0 ? (
           <div style={{ textAlign: "center", padding: 60 }}>
-            <p>{t("presets.intro")}</p>
-            <p style={{ opacity: 0.6, marginTop: 12 }}>预设资源即将上线，敬请期待</p>
+            <p>{t("presets.empty")}</p>
           </div>
         ) : (
           <div className="presets-grid">
             {presets.map((preset) => (
               <div key={preset.id} className="preset-card">
                 {preset.preview_images && preset.preview_images[0] && (
-                  <img src={preset.preview_images[0]} alt={preset.name} className="preset-cover" />
+                  <img src={preset.preview_images[0]} alt={preset.name} className="preset-cover" loading="lazy" />
                 )}
                 <div className="preset-info">
                   <span className="preset-category">{t(`presets.categories.${preset.category}` as any)}</span>

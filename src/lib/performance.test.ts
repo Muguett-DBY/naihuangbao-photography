@@ -79,7 +79,7 @@ describe("performance budgets", () => {
     expect(allCss).toContain("body.is-loaded");
     expect(allCss).toContain(".site-nav::after");
     expect(allCss).toContain("@media (prefers-reduced-motion: reduce)");
-    expect(rootLayoutSource).toContain("framer-motion");
+    expect(rootLayoutSource).toContain("Outlet");
   });
 
   it("keeps removed cinematic assets out of the public shell", () => {

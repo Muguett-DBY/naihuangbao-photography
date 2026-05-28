@@ -39,15 +39,14 @@ export function ShopPage() {
           <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
         ) : items.length === 0 ? (
           <div style={{ textAlign: "center", padding: 60 }}>
-            <p>{t("merchandise.intro")}</p>
-            <p style={{ opacity: 0.6, marginTop: 12 }}>周边产品即将上线，敬请期待</p>
+            <p>{t("merchandise.empty")}</p>
           </div>
         ) : (
           <div className="merchandise-grid">
             {items.map((item) => (
               <div key={item.id} className="merchandise-card">
                 {item.images && item.images[0] && (
-                  <img src={item.images[0]} alt={item.name} className="merchandise-cover" />
+                  <img src={item.images[0]} alt={item.name} className="merchandise-cover" loading="lazy" />
                 )}
                 <div className="merchandise-info">
                   <span className="merchandise-category">{t(`merchandise.categories.${item.category}` as any)}</span>

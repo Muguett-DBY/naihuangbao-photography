@@ -37,21 +37,27 @@ export function CoursesPage() {
           <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
         ) : courses.length === 0 ? (
           <div style={{ textAlign: "center", padding: 60 }}>
-            <p>{t("courses.intro")}</p>
-            <p style={{ opacity: 0.6, marginTop: 12 }}>课程内容即将上线，敬请期待</p>
+            <p>{t("courses.empty")}</p>
           </div>
         ) : (
           <div className="courses-grid">
             {courses.map((course) => (
               <div key={course.id} className="course-card">
                 {course.cover_image_url && (
-                  <img src={course.cover_image_url} alt={course.title} className="course-cover" />
+                  <img src={course.cover_image_url} alt={course.title} className="course-cover" loading="lazy" />
                 )}
                 <div className="course-info">
                   <span className="course-category">{t(`courses.categories.${course.category}` as any)}</span>
                   <h3>{course.title}</h3>
                   <p>{course.description}</p>
-                  <span className="course-difficulty">{course.difficulty}</span>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <span className="course-difficulty">{t(`courses.difficulty.${course.difficulty}` as any)}</span>
+                    {course.duration_minutes && (
+                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary, #666)" }}>
+                        {t("courses.duration", { minutes: course.duration_minutes })}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

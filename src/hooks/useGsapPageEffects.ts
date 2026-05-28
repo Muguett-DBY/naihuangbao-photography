@@ -25,12 +25,7 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       return Array.from(document.querySelectorAll<T>(sel));
     };
 
-    const $1 = <T extends Element>(sel: string): T | null => {
-      if (rootRef?.current) {
-        return rootRef.current.querySelector<T>(sel);
-      }
-      return document.querySelector<T>(sel);
-    };
+    const cleanupFns: (() => void)[] = [];
 
     const addListener = <K extends keyof HTMLElementEventMap>(
       el: HTMLElement,
@@ -40,8 +35,6 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       el.addEventListener(type, handler);
       cleanupFns.push(() => el.removeEventListener(type, handler));
     };
-
-    const cleanupFns: (() => void)[] = [];
 
     // ── Floating decor elements ──
     const floatEls = $<HTMLElement>(".float-element");
@@ -83,30 +76,6 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
           end: "bottom top",
           toggleActions: "play reverse play reverse",
         },
-      });
-    });
-
-    // ── Cards scroll-reveal (translateY only, no opacity hide) ──
-    const cardSections = $<HTMLElement>(".section-shell");
-    cardSections.forEach((section) => {
-      const cards = section.querySelectorAll<HTMLElement>(
-        ".package-card, .why-card, .service-detail-card, .course-card, .preset-card, .workshop-card, .merchandise-card, .home-service-card",
-      );
-      cards.forEach((card, i) => {
-        gsap.fromTo(
-          card,
-          { y: 30 },
-          {
-            y: 0,
-            duration: 0.6,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 90%",
-              toggleActions: "play none none none",
-            },
-          },
-        );
       });
     });
 

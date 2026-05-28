@@ -3,13 +3,11 @@ import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { Button, Input } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
-import { useSiteContent } from "../hooks/useSiteContent";
 import { PageTransition } from "../components/shared/PageTransition";
 import type { Workshop } from "../types/content";
 
 export function WorkshopsPage() {
   const { t } = useTranslation();
-  const { siteConfig } = useSiteContent();
   const rootRef = useRef<HTMLDivElement>(null);
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,8 +30,12 @@ export function WorkshopsPage() {
   }, []);
 
   const handleRegister = async (workshopId: string) => {
-    if (!formName.trim() || !formContact.trim()) {
-      setFormMsg("请填写姓名和联系方式");
+    if (!formName.trim()) {
+      setFormMsg(t("workshops.form.nameRequired"));
+      return;
+    }
+    if (!formContact.trim()) {
+      setFormMsg(t("workshops.form.contactRequired"));
       return;
     }
     setRegisteringId(workshopId);
@@ -45,16 +47,16 @@ export function WorkshopsPage() {
         body: JSON.stringify({ name: formName.trim(), contact: formContact.trim(), participants: 1 }),
       });
       if (r.ok) {
-        setFormMsg("报名成功！我们会尽快联系你确认。");
+        setFormMsg(t("workshops.form.success"));
         setFormName("");
         setFormContact("");
         setTimeout(() => { setFormOpen(null); setFormMsg(""); }, 2000);
       } else {
         const d = await r.json().catch(() => ({}));
-        setFormMsg(d.error || "报名失败，请稍后重试");
+        setFormMsg(d.error || t("workshops.form.error"));
       }
     } catch {
-      setFormMsg("报名失败，请稍后重试");
+      setFormMsg(t("workshops.form.error"));
     } finally {
       setRegisteringId(null);
     }
@@ -75,8 +77,7 @@ export function WorkshopsPage() {
           <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
         ) : workshops.length === 0 ? (
           <div style={{ textAlign: "center", padding: 60 }}>
-            <p>{t("workshops.intro")}</p>
-            <p style={{ opacity: 0.6, marginTop: 12 }}>近期暂无活动安排，请关注后续通知</p>
+            <p>{t("workshops.empty")}</p>
           </div>
         ) : (
           <div className="workshops-grid">
@@ -86,7 +87,7 @@ export function WorkshopsPage() {
               return (
                 <div key={ws.id} className="workshop-card">
                   {ws.cover_image_url && (
-                    <img src={ws.cover_image_url} alt={ws.title} className="workshop-cover" />
+                    <img src={ws.cover_image_url} alt={ws.title} className="workshop-cover" loading="lazy" />
                   )}
                   <div className="workshop-info">
                     <h3>{ws.title}</h3>
@@ -96,21 +97,31 @@ export function WorkshopsPage() {
                       {ws.location && <span><MapPin size={14} /> {ws.location}</span>}
                       <span><Users size={14} /> {isFull ? t("workshops.full") : `${t("workshops.spotsLeft")}: ${spotsLeft}`}</span>
                     </div>
-                    <div className="workshop-actions">
-                      {ws.price_display && <span className="workshop-price">{ws.price_display}</span>}
-                      {formOpen === ws.id ? (
-                        <div className="workshop-register-form" style={{ width: "100%", marginTop: 12 }}>
-                          <Input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="你的名字" style={{ marginBottom: 8 }} />
-                          <Input value={formContact} onChange={(e) => setFormContact(e.target.value)} placeholder="联系方式（微信/手机）" style={{ marginBottom: 8 }} />
-                          {formMsg && <p style={{ fontSize: 13, color: formMsg.includes("成功") ? "#22c55e" : "#ef4444", margin: "4px 0" }}>{formMsg}</p>}
-                          <div style={{ display: "flex", gap: 8 }}>
-                            <Button type="primary" onClick={() => handleRegister(ws.id)} disabled={registeringId === ws.id}>
-                              {registeringId === ws.id ? "提交中..." : t("workshops.register")}
-                            </Button>
-                            <Button type="text" onClick={() => { setFormOpen(null); setFormMsg(""); }}>取消</Button>
-                          </div>
+                    {ws.price_display && <div className="workshop-price">{ws.price_display}</div>}
+                    {formOpen === ws.id ? (
+                      <div className="workshop-register-form">
+                        <input
+                          value={formName}
+                          onChange={(e) => setFormName(e.target.value)}
+                          placeholder={t("workshops.form.name")}
+                        />
+                        <input
+                          value={formContact}
+                          onChange={(e) => setFormContact(e.target.value)}
+                          placeholder={t("workshops.form.contact")}
+                        />
+                        {formMsg && <p style={{ fontSize: 13, color: formMsg.includes("成功") ? "#22c55e" : "#ef4444", margin: "4px 0" }}>{formMsg}</p>}
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <Button type="primary" onClick={() => handleRegister(ws.id)} disabled={registeringId === ws.id}>
+                            {registeringId === ws.id ? t("workshops.form.submitting") : t("workshops.form.submit")}
+                          </Button>
+                          <Button type="text" onClick={() => { setFormOpen(null); setFormMsg(""); }}>
+                            {t("workshops.form.cancel")}
+                          </Button>
                         </div>
-                      ) : (
+                      </div>
+                    ) : (
+                      <div className="workshop-actions">
                         <Button
                           type="primary"
                           disabled={isFull}
@@ -118,8 +129,8 @@ export function WorkshopsPage() {
                         >
                           {t("workshops.register")}
                         </Button>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

@@ -351,10 +351,17 @@
       "post-processing": "后期修图",
       "posing": "摆姿引导"
     },
+    "difficulty": {
+      "beginner": "入门",
+      "intermediate": "中级",
+      "advanced": "高级"
+    },
     "modules": "课程章节",
     "startLearning": "开始学习",
     "watchVideo": "观看视频",
-    "readTutorial": "阅读教程"
+    "readTutorial": "阅读教程",
+    "duration": "{{minutes}} 分钟",
+    "empty": "课程内容即将上线，敬请期待"
   },
   "presets": {
     "title": "预设与资源",
@@ -366,7 +373,8 @@
       "luts": "LUT 调色包"
     },
     "download": "下载",
-    "downloads": "次下载"
+    "downloads": "次下载",
+    "empty": "预设资源即将上线，敬请期待"
   },
   "workshops": {
     "title": "工作坊与体验",
@@ -376,7 +384,25 @@
     "full": "已满员",
     "date": "活动时间",
     "location": "活动地点",
-    "price": "费用"
+    "price": "费用",
+    "status": {
+      "upcoming": "即将开始",
+      "ongoing": "进行中",
+      "completed": "已结束",
+      "cancelled": "已取消"
+    },
+    "empty": "近期暂无活动安排，请关注后续通知",
+    "form": {
+      "name": "你的名字",
+      "contact": "联系方式（微信/手机）",
+      "submit": "提交报名",
+      "submitting": "提交中...",
+      "cancel": "取消",
+      "success": "报名成功！我们会尽快联系你确认。",
+      "error": "报名失败，请稍后重试",
+      "nameRequired": "请填写姓名",
+      "contactRequired": "请填写联系方式"
+    }
   },
   "merchandise": {
     "title": "定制周边",
@@ -389,6 +415,7 @@
       "other": "其他"
     },
     "inquire": "咨询购买",
-    "contactUs": "联系我们"
+    "contactUs": "联系我们",
+    "empty": "周边产品即将上线，敬请期待"
   }
 }

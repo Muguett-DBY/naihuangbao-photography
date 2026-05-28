@@ -1,6 +1,5 @@
 import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
 import { useGsapGlobalEffects } from "../hooks/useGsapGlobalEffects";
 import { CustomCursor } from "../components/CustomCursor";
 import { FilmGrain } from "../components/FilmGrain";
@@ -33,20 +32,11 @@ export function RootLayout() {
         <SiteContentProvider>
           <PublicPhotosProvider>
             <Header />
-            <AnimatePresence mode="wait">
-              <motion.main
-                key={location.pathname}
-                id="main-content"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
-                  <Outlet />
-                </Suspense>
-              </motion.main>
-            </AnimatePresence>
+            <main id="main-content">
+              <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
+                <Outlet />
+              </Suspense>
+            </main>
             <Footer />
             <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
               <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
