@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Download } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
@@ -47,7 +48,12 @@ export function ProductsPage() {
         ) : (
           <div className="presets-grid">
             {presets.map((preset) => (
-              <div key={preset.id} className="preset-card">
+              <Link
+                key={preset.id}
+                to={`/presets/${preset.id}`}
+                className="preset-card"
+                style={{ textDecoration: "none", color: "inherit", display: "block" }}
+              >
                 {preset.preview_images && preset.preview_images[0] && (
                   <img src={preset.preview_images[0]} alt={preset.name} className="preset-cover" loading="lazy" />
                 )}
@@ -68,7 +74,7 @@ export function ProductsPage() {
                     </a>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

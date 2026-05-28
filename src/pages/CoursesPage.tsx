@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { PageTransition } from "../components/shared/PageTransition";
@@ -42,7 +43,12 @@ export function CoursesPage() {
         ) : (
           <div className="courses-grid">
             {courses.map((course) => (
-              <div key={course.id} className="course-card">
+              <Link
+                key={course.id}
+                to={`/courses/${course.id}`}
+                className="course-card"
+                style={{ textDecoration: "none", color: "inherit", display: "block" }}
+              >
                 {course.cover_image_url && (
                   <img src={course.cover_image_url} alt={course.title} className="course-cover" loading="lazy" />
                 )}
@@ -59,7 +65,7 @@ export function CoursesPage() {
                     )}
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

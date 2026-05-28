@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { Button, Input } from "animal-island-ui";
@@ -129,6 +130,12 @@ export function WorkshopsPage() {
                         >
                           {t("workshops.register")}
                         </Button>
+                        <Link
+                          to={`/workshops/${ws.id}`}
+                          style={{ fontSize: "0.85rem", color: "var(--accent)", textDecoration: "none" }}
+                        >
+                          {t("workshops.viewDetail")}
+                        </Link>
                       </div>
                     )}
                   </div>

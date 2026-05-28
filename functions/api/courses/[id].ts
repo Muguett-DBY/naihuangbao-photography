@@ -21,7 +21,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       `select * from course_modules where course_id = ? order by sort_order asc`,
     ).bind(id).all();
 
-    return jsonResponse({ ...course, modules: modules.results }, 200);
+    return jsonResponse({ course, modules: modules.results }, 200);
   } catch {
     return jsonResponse({ error: "加载失败" }, 500);
   }

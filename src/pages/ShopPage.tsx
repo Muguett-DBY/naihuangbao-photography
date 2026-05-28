@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useBookingModal } from "../hooks/useBookingModal";
@@ -44,7 +45,12 @@ export function ShopPage() {
         ) : (
           <div className="merchandise-grid">
             {items.map((item) => (
-              <div key={item.id} className="merchandise-card">
+              <Link
+                key={item.id}
+                to={`/shop/${item.id}`}
+                className="merchandise-card"
+                style={{ textDecoration: "none", color: "inherit", display: "block" }}
+              >
                 {item.images && item.images[0] && (
                   <img src={item.images[0]} alt={item.name} className="merchandise-cover" loading="lazy" />
                 )}
@@ -62,7 +68,7 @@ export function ShopPage() {
                     </button>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

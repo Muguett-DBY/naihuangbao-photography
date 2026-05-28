@@ -17,7 +17,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return jsonResponse({ error: "活动不存在" }, 404);
     }
 
-    return jsonResponse(workshop, 200);
+    return jsonResponse({ workshop }, 200);
   } catch {
     return jsonResponse({ error: "加载失败" }, 500);
   }

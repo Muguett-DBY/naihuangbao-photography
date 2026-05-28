@@ -17,10 +17,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return jsonResponse({ error: "产品不存在" }, 404);
     }
 
-    return jsonResponse({
-      ...item,
-      images: typeof item.images === "string" ? JSON.parse(item.images as string) : item.images,
-    }, 200);
+    return jsonResponse({ merchandise: item }, 200);
   } catch {
     return jsonResponse({ error: "加载失败" }, 500);
   }
