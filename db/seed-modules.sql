@@ -1,10 +1,10 @@
--- ============================================
+﻿-- ============================================
 -- 奶黄包摄影 - 课程模块种子数据
 -- 每门课6-10个模块，含视频/文字/图集
 -- ============================================
 
 -- ── 课程1：人像摄影入门（8个模块） ──
-INSERT INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
+INSERT OR REPLACE INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
 ('mod-001-01', 'course-001', '认识你的相机', 'Know Your Camera', '카메라了解하기', 'カメラを知る', 'text',
 '【相机基础设置】
 
@@ -206,7 +206,7 @@ INSERT INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, 
 下一步建议：学习「自然光人像：南京外拍实战」课程，将理论应用到实践中！', 8);
 
 -- ── 课程2：自然光人像（7个模块） ──
-INSERT INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
+INSERT OR REPLACE INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
 ('mod-002-01', 'course-002', '南京经典外拍地点', 'Classic Nanjing Locations', '남징 촬영 명소', '南京の名所', 'text',
 '【南京最适合拍人像的地点】
 
@@ -388,7 +388,7 @@ INSERT INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, 
    • 参加「摄影作品互评沙龙」获取反馈', 7);
 
 -- ── 课程3：胶片感后期调色（6个模块） ──
-INSERT INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
+INSERT OR REPLACE INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
 ('mod-003-01', 'course-003', 'Lightroom界面与工作流', 'Lightroom Interface & Workflow', '라이트룸 인터페이스', 'Lightroomのワークフロー', 'text',
 '【Lightroom高效工作流】
 
@@ -546,7 +546,7 @@ Step 4：色调分离
 
 
 -- ── 课程4：摆姿引导（6个模块） ──
-INSERT INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
+INSERT OR REPLACE INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
 ('mod-004-01', 'course-004', '站姿的20种变化', '20 Standing Variations', '20가지 서姿', '立姿のバリエーション', 'text',
 '【站姿是人像摄影的基础】
 
@@ -703,7 +703,7 @@ INSERT INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, 
    • 预告交付时间', 6);
 
 -- ── 课程5：夜景与弱光人像（6个模块） ──
-INSERT INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
+INSERT OR REPLACE INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
 ('mod-005-01', 'course-005', '高感光度运用', 'High ISO Usage', '고감도 활용', '高ISOの活用', 'text',
 '【在弱光下获得可用画面】
 
@@ -848,7 +848,7 @@ INSERT INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, 
 • 尝试不同风格的夜景人像', 6);
 
 -- ── 课程6：PS精修全流程（8个模块） ──
-INSERT INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
+INSERT OR REPLACE INTO course_modules (id, course_id, title, title_en, title_ko, title_ja, type, content, sort_order) VALUES
 ('mod-006-01', 'course-006', 'Photoshop基础操作', 'Photoshop Fundamentals', '포토샵 기본', 'Photoshopの基本', 'text',
 '【PS精修前必须掌握的基础】
 

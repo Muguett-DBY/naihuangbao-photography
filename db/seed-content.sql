@@ -4,7 +4,7 @@
 -- ============================================
 
 -- ── 课程 ──
-INSERT INTO courses (id, title, title_en, description, description_en, cover_image_url, category, difficulty, duration_minutes, sort_order, published, created_at, updated_at) VALUES
+INSERT OR REPLACE INTO courses (id, title, title_en, description, description_en, cover_image_url, category, difficulty, duration_minutes, sort_order, published, created_at, updated_at) VALUES
 ('course-001', '人像摄影入门：从零开始', 'Portrait Photography Basics', '从相机设置到构图基础，带你迈出人像摄影第一步。适合完全零基础的摄影爱好者。', 'From camera settings to composition basics, take your first step in portrait photography.', '/icons/camera.svg', 'beginner', 'beginner', 45, 1, 1, datetime('now'), datetime('now')),
 ('course-002', '自然光人像：南京外拍实战', 'Natural Light Portraits: Nanjing Outdoor Shoot', '以南京经典场景（玄武湖、颐和路、紫金山）为例，实战讲解自然光人像拍摄技巧。', 'Using Nanjing classic locations as examples, practical natural light portrait techniques.', '/icons/sun.svg', 'beginner', 'intermediate', 60, 2, 1, datetime('now'), datetime('now')),
 ('course-003', '胶片感人像后期调色', 'Film Look Portrait Post-Processing', '从 Lightroom 基础到高级调色思路，打造柔和胶片感的人像作品。', 'From Lightroom basics to advanced color grading, create soft film-look portraits.', '/icons/palette.svg', 'post-processing', 'intermediate', 50, 3, 1, datetime('now'), datetime('now')),
@@ -13,7 +13,7 @@ INSERT INTO courses (id, title, title_en, description, description_en, cover_ima
 ('course-006', 'Photoshop 人像精修全流程', 'Photoshop Portrait Retouching Workflow', '磨皮、液化、调色、锐化的完整精修流程，打造商业级人像作品。', 'Complete retouching workflow: skin smoothing, liquify, color grading, sharpening.', '/icons/sparkle.svg', 'post-processing', 'advanced', 65, 6, 1, datetime('now'), datetime('now'));
 
 -- ── 预设/资源包 ──
-INSERT INTO presets (id, name, name_en, description, description_en, category, preview_images, download_url, price_display, featured, download_count, created_at, updated_at) VALUES
+INSERT OR REPLACE INTO presets (id, name, name_en, description, description_en, category, preview_images, download_url, price_display, featured, download_count, created_at, updated_at) VALUES
 ('preset-001', '柔和胶片感 LR 预设', 'Soft Film Look Lightroom Presets', '10 个精心调校的预设，适合日系、清新、日常风格的人像写真。一键套用即可获得柔和胶片质感。', '10 carefully crafted presets for Japanese, fresh, and daily life portrait styles.', 'lightroom', '["/icons/film.svg"]', '/downloads/preset-film-look.zip', '¥29', 1, 128, datetime('now'), datetime('now')),
 ('preset-002', '复古暖调 LR 预设', 'Vintage Warm Tone Lightroom Presets', '8 个复古暖调预设，适合秋冬季节、咖啡厅、老街等温暖场景。', '8 vintage warm tone presets for autumn, cafe, and old street scenes.', 'lightroom', '["/icons/flame.svg"]', '/downloads/preset-vintage-warm.zip', '¥29', 0, 86, datetime('now'), datetime('now')),
 ('preset-003', '人像精修 PS 动作包', 'Portrait Retouching Photoshop Actions', '一键磨皮、美白、锐化动作，大幅提升修图效率。包含 5 个常用动作。', 'One-click skin smoothing, whitening, and sharpening actions.', 'photoshop', '["/icons/bolt.svg"]', '/downloads/preset-ps-actions.zip', '¥39', 1, 64, datetime('now'), datetime('now')),
@@ -24,14 +24,14 @@ INSERT INTO presets (id, name, name_en, description, description_en, category, p
 ('preset-008', '婚纱/情侣 LR 预设', 'Wedding Couple Lightroom Presets', '10 个浪漫暖调预设，专为婚纱照、情侣写真、纪念日照设计。', '10 romantic warm presets for wedding, couple, and anniversary photos.', 'lightroom', '["/icons/heart.svg"]', '/downloads/preset-wedding-couple.zip', '¥39', 0, 71, datetime('now'), datetime('now'));
 
 -- ── 工作坊/活动 ──
-INSERT INTO workshops (id, title, title_en, description, description_en, cover_image_url, event_date, event_time, location, max_participants, current_participants, price_display, status, created_at, updated_at) VALUES
+INSERT OR REPLACE INTO workshops (id, title, title_en, description, description_en, cover_image_url, event_date, event_time, location, max_participants, current_participants, price_display, status, created_at, updated_at) VALUES
 ('ws-001', '玄武湖人像外拍实战', 'Xuanwu Lake Outdoor Portrait Shoot', '在南京玄武湖公园进行户外人像拍摄实战，全程指导构图、光线、摆姿。适合初级到中级摄影爱好者。', 'Outdoor portrait shoot at Xuanwu Lake Park with full guidance on composition, lighting, and posing.', '/icons/tree.svg', '2026-06-15', '14:00-17:00', '玄武湖公园·解放门', 12, 5, '¥199/人', 'upcoming', datetime('now'), datetime('now')),
 ('ws-002', 'Lightroom 调色工作坊', 'Lightroom Color Grading Workshop', '线上直播教学，从调色思路到实操演示，学会打造属于自己的预设风格。', 'Live online teaching, from color grading theory to practical demonstration.', '/icons/palette.svg', '2026-06-22', '19:00-21:00', '线上直播（腾讯会议）', 30, 12, '¥99/人', 'upcoming', datetime('now'), datetime('now')),
 ('ws-003', '紫金山日落人像拍摄', 'Purple Mountain Sunset Portrait Shoot', '在紫金山拍摄日落人像，捕捉黄金时刻的光影。限 10 人小班教学。', 'Sunset portrait shoot at Purple Mountain, capturing golden hour light.', '/icons/sunset.svg', '2026-07-06', '16:00-19:00', '紫金山·天文台路', 10, 3, '¥249/人', 'upcoming', datetime('now'), datetime('now')),
 ('ws-004', '摄影作品互评沙龙', 'Photography Critique Salon', '定期摄影主题聚会，带你的作品来，一起交流、互评、进步。免费参加。', 'Regular photography meetup. Bring your work for discussion and feedback.', '/icons/message-circle.svg', '2026-07-13', '14:00-16:00', '仙林·咖啡厅（具体地址另行通知）', 15, 0, '免费', 'upcoming', datetime('now'), datetime('now'));
 
 -- ── 周边产品（含P图服务） ──
-INSERT INTO merchandise (id, name, name_en, description, description_en, images, category, price_display, available, created_at, updated_at) VALUES
+INSERT OR REPLACE INTO merchandise (id, name, name_en, description, description_en, images, category, price_display, available, created_at, updated_at) VALUES
 ('merch-001', '定制写真相册（20P）', 'Custom Portrait Album (20 Pages)', '高清冲印精装相册，20 页精美排版，适合珍藏每一次拍摄回忆。', 'HD printed hardcover album, 20 pages of beautifully laid out photos.', '["/icons/book.svg"]', 'album', '¥128', 1, datetime('now'), datetime('now')),
 ('merch-002', '人像明信片套装（10张）', 'Portrait Postcard Set (10 Cards)', '哑光材质精美明信片，10 张不同风格人像作品，适合收藏或赠送。', 'Matte finish postcards, 10 different portrait works for collection or gifting.', '["/icons/mail.svg"]', 'postcard', '¥39', 1, datetime('now'), datetime('now')),
 ('merch-003', '人像摄影作品冲印', 'Portrait Photo Print', 'A4 尺寸高清艺术微喷，使用专业相纸，色彩还原精准。', 'A4 HD art giclée print on professional photo paper.', '["/icons/photo.svg"]', 'print', '¥15/张', 1, datetime('now'), datetime('now')),
