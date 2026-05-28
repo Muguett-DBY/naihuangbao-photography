@@ -19,7 +19,7 @@ export function WorkshopsPage() {
     const ctrl = new AbortController();
     fetch("/api/workshops", { signal: ctrl.signal })
       .then((r) => r.json())
-      .then((d: Workshop[]) => { if (!ctrl.signal.aborted) setWorkshops(d); })
+      .then((d: { workshops: Workshop[] }) => { if (!ctrl.signal.aborted) setWorkshops(d.workshops || []); })
       .catch(() => {})
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();

@@ -1,7 +1,7 @@
 import { Suspense, lazy, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ArrowRight, CalendarCheck, Camera, BookOpen, Download, MapPin } from "lucide-react";
+import { ArrowDown, ArrowRight, CalendarCheck, Camera, BookOpen, Download, MapPin, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useBookingModal } from "../hooks/useBookingModal";
@@ -22,30 +22,62 @@ export function HomePage() {
 
   return (
     <PageTransition ref={rootRef}>
+      <div className="scroll-progress-bar" role="progressbar" aria-label={t("loading")} />
+
       <section className="hero" id="top">
         <div className="hero-cover-design" />
         <div className="hero-glow-orb hero-glow-orb--1" aria-hidden="true" />
         <div className="hero-glow-orb hero-glow-orb--2" aria-hidden="true" />
         <div className="float-element float-element--1" aria-hidden="true" />
         <div className="float-element float-element--2" aria-hidden="true" />
+        <div className="float-element float-element--3" aria-hidden="true" />
+
+        <svg className="deco-svg-path" viewBox="0 0 200 100" fill="none" aria-hidden="true">
+          <path
+            d="M 0 50 Q 50 0 100 50 T 200 50"
+            stroke="rgba(255,210,184,0.15)"
+            strokeWidth="1.5"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+
         <div className="hero-cover-content">
           <div className="hero-cover-left">
+            <div className="hero-vol-badge">
+              <Sparkles size={11} />
+              <span>{t("hero.volBadge")}</span>
+              {siteConfig.city}
+            </div>
             <h1 className="hero-magazine-title">
               {siteConfig.brandName}
               <span className="hero-magazine-subtitle">{t("hero.brandPrefix")}</span>
             </h1>
             <p className="hero-cover-intro">{t("hero.intro")}</p>
           </div>
+
           <div className="hero-cover-right">
+            <div className="hero-trust-tags">
+              <span className="hero-trust-tag">
+                <ShieldCheck size={13} />
+                {t("hero.trustTags.privacy")}
+              </span>
+              <span className="hero-trust-tag">{t("hero.trustTags.guidance")}</span>
+              <span className="hero-trust-tag">{t("hero.trustTags.styles")}</span>
+            </div>
             <div className="hero-cover-cta-group">
               <Button type="primary" size="large" className="hero-cover-primary-btn" onClick={() => document.getElementById("featured")?.scrollIntoView({ behavior: "smooth" })}>
-                {t("hero.ctaView")} <ArrowRight size={16} />
+                {t("hero.ctaView")} <ArrowDown size={16} />
               </Button>
               <Button type="primary" size="large" className="hero-cover-secondary-btn" onClick={() => openBookingModal()}>
-                <CalendarCheck size={14} /> {t("hero.ctaBooking")}
+                <MessageCircle size={14} /> {t("hero.ctaBooking")}
               </Button>
             </div>
           </div>
+        </div>
+
+        <div className="hero-scroll-indicator" aria-hidden="true">
+          <span>{t("hero.scroll")}</span>
+          <div className="hero-scroll-line" />
         </div>
       </section>
 

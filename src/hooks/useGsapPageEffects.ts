@@ -6,8 +6,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
   const guardRef = useRef(false);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
+    // Kill any leftover ScrollTriggers from previous page
+    ScrollTrigger.getAll().forEach((t) => t.kill());
+
     if (guardRef.current) return;
     guardRef.current = true;
 
@@ -236,7 +240,13 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
 
     ScrollTrigger.refresh();
 
+    cleanupRef.current = () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+      guardRef.current = false;
+    };
+
     return () => {
+      ScrollTrigger.getAll().forEach((t) => t.kill());
       guardRef.current = false;
     };
   }, [rootRef, guardRef]);

@@ -16,7 +16,7 @@ export function CoursesPage() {
     const ctrl = new AbortController();
     fetch("/api/courses", { signal: ctrl.signal })
       .then((r) => r.json())
-      .then((d: Course[]) => { if (!ctrl.signal.aborted) setCourses(d); })
+      .then((d: { courses: Course[] }) => { if (!ctrl.signal.aborted) setCourses(d.courses || []); })
       .catch(() => {})
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useGsapGlobalEffects } from "../hooks/useGsapGlobalEffects";
@@ -18,6 +18,11 @@ export function RootLayout() {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useGsapGlobalEffects(rootRef);
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div ref={rootRef}>

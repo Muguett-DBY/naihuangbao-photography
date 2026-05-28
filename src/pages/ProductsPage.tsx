@@ -17,7 +17,7 @@ export function ProductsPage() {
     const ctrl = new AbortController();
     fetch("/api/presets", { signal: ctrl.signal })
       .then((r) => r.json())
-      .then((d: Preset[]) => { if (!ctrl.signal.aborted) setPresets(d); })
+      .then((d: { presets: Preset[] }) => { if (!ctrl.signal.aborted) setPresets(d.presets || []); })
       .catch(() => {})
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();

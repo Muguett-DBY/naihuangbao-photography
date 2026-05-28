@@ -16,7 +16,7 @@ export function ShopPage() {
     const ctrl = new AbortController();
     fetch("/api/merchandise", { signal: ctrl.signal })
       .then((r) => r.json())
-      .then((d: Merchandise[]) => { if (!ctrl.signal.aborted) setItems(d); })
+      .then((d: { merchandise: Merchandise[] }) => { if (!ctrl.signal.aborted) setItems(d.merchandise || []); })
       .catch(() => {})
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
