@@ -3,7 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { motion } from "framer-motion";
-import { X, MapPin, Camera } from "lucide-react";
+import { X, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import type { PhotoItem } from "../types/photo";

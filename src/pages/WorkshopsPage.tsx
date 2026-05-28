@@ -1,17 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, Users } from "lucide-react";
-import { Button } from "animal-island-ui";
+import { Button, Input } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useSiteContent } from "../hooks/useSiteContent";
 import { PageTransition } from "../components/shared/PageTransition";
 import type { Workshop } from "../types/content";
 
 export function WorkshopsPage() {
   const { t } = useTranslation();
+  const { siteConfig } = useSiteContent();
   const rootRef = useRef<HTMLDivElement>(null);
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
   const [registeringId, setRegisteringId] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState<string | null>(null);
+  const [formName, setFormName] = useState("");
+  const [formContact, setFormContact] = useState("");
+  const [formMsg, setFormMsg] = useState("");
 
   useGsapPageEffects(rootRef);
 
@@ -25,16 +31,30 @@ export function WorkshopsPage() {
     return () => ctrl.abort();
   }, []);
 
-  const handleRegister = async (workshopId: string, name: string, contact: string) => {
+  const handleRegister = async (workshopId: string) => {
+    if (!formName.trim() || !formContact.trim()) {
+      setFormMsg("请填写姓名和联系方式");
+      return;
+    }
     setRegisteringId(workshopId);
+    setFormMsg("");
     try {
-      await fetch(`/api/workshops/${workshopId}/register`, {
+      const r = await fetch(`/api/workshops/${workshopId}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, contact, participants: 1 }),
+        body: JSON.stringify({ name: formName.trim(), contact: formContact.trim(), participants: 1 }),
       });
+      if (r.ok) {
+        setFormMsg("报名成功！我们会尽快联系你确认。");
+        setFormName("");
+        setFormContact("");
+        setTimeout(() => { setFormOpen(null); setFormMsg(""); }, 2000);
+      } else {
+        const d = await r.json().catch(() => ({}));
+        setFormMsg(d.error || "报名失败，请稍后重试");
+      }
     } catch {
-      // ignore
+      setFormMsg("报名失败，请稍后重试");
     } finally {
       setRegisteringId(null);
     }
@@ -44,9 +64,9 @@ export function WorkshopsPage() {
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <span className="section-eyebrow">Workshops</span>
+          <p className="section-eyebrow">Workshops</p>
           <h1>{t("workshops.title")}</h1>
-          <p>{t("workshops.intro")}</p>
+          <span>{t("workshops.intro")}</span>
         </div>
       </section>
 
@@ -78,13 +98,27 @@ export function WorkshopsPage() {
                     </div>
                     <div className="workshop-actions">
                       {ws.price_display && <span className="workshop-price">{ws.price_display}</span>}
-                      <Button
-                        type="primary"
-                        disabled={isFull || registeringId === ws.id}
-                        onClick={() => handleRegister(ws.id, "", "")}
-                      >
-                        {t("workshops.register")}
-                      </Button>
+                      {formOpen === ws.id ? (
+                        <div className="workshop-register-form" style={{ width: "100%", marginTop: 12 }}>
+                          <Input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="你的名字" style={{ marginBottom: 8 }} />
+                          <Input value={formContact} onChange={(e) => setFormContact(e.target.value)} placeholder="联系方式（微信/手机）" style={{ marginBottom: 8 }} />
+                          {formMsg && <p style={{ fontSize: 13, color: formMsg.includes("成功") ? "#22c55e" : "#ef4444", margin: "4px 0" }}>{formMsg}</p>}
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <Button type="primary" onClick={() => handleRegister(ws.id)} disabled={registeringId === ws.id}>
+                              {registeringId === ws.id ? "提交中..." : t("workshops.register")}
+                            </Button>
+                            <Button type="text" onClick={() => { setFormOpen(null); setFormMsg(""); }}>取消</Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <Button
+                          type="primary"
+                          disabled={isFull}
+                          onClick={() => { setFormOpen(ws.id); setFormMsg(""); }}
+                        >
+                          {t("workshops.register")}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>

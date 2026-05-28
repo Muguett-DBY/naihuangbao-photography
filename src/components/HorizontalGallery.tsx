@@ -1,14 +1,20 @@
+import { useMemo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectCoverflow, Mousewheel } from "swiper/modules";
 import { useTranslation } from "react-i18next";
-import { galleryItems } from "../data/gallery";
+import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 
-const items = [...galleryItems, ...galleryItems].slice(0, 10);
-
 export function HorizontalGallery() {
   const { t } = useTranslation();
+  const { photos } = usePublicPhotos();
+
+  const items = useMemo(() => {
+    const base = photos.length > 0 ? photos : [];
+    return [...base, ...base].slice(0, 10);
+  }, [photos]);
+
   return (
     <section className="horiz-gallery-swiper">
       <div className="horiz-gallery-swiper-header">

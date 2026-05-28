@@ -195,6 +195,17 @@
   line-height: 1.92;
 }
 
+.section-heading .section-eyebrow {
+  margin: 0 0 14px;
+  color: var(--caramel-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 780;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  display: block;
+}
+
 /* ══════════════════════════════════════════════
    Gallery Albums
    ══════════════════════════════════════════════ */

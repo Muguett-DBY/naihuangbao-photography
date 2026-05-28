@@ -31,9 +31,9 @@ export function ProductsPage() {
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <span className="section-eyebrow">Presets</span>
+          <p className="section-eyebrow">Presets</p>
           <h1>{t("presets.title")}</h1>
-          <p>{t("presets.intro")}</p>
+          <span>{t("presets.intro")}</span>
         </div>
       </section>
 

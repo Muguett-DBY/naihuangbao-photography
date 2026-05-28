@@ -9,6 +9,7 @@ let _globalInitialized = false;
 
 export function useGsapGlobalEffects(rootRef?: RefObject<HTMLElement | null>) {
   const guardRef = useRef(false);
+  const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
     if (_globalInitialized) return;
@@ -28,6 +29,7 @@ export function useGsapGlobalEffects(rootRef?: RefObject<HTMLElement | null>) {
       infinite: false,
     });
 
+    lenisRef.current = lenis;
     (window as any).lenis = lenis;
     lenis.on("scroll", () => ScrollTrigger.update());
     gsap.ticker.add((time) => lenis.raf(time * 1000));
@@ -37,8 +39,10 @@ export function useGsapGlobalEffects(rootRef?: RefObject<HTMLElement | null>) {
     document.body.classList.add("is-loaded");
 
     return () => {
+      lenisRef.current?.destroy();
+      lenisRef.current = null;
       _globalInitialized = false;
       guardRef.current = false;
     };
-  }, [guardRef]);
+  }, [guardRef, lenisRef]);
 }

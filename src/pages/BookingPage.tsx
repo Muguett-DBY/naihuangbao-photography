@@ -17,9 +17,9 @@ export function BookingPage() {
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <span className="section-eyebrow">{t("packages.eyebrow")}</span>
+          <p className="section-eyebrow">{t("packages.eyebrow")}</p>
           <h1>{t("nav.booking")}</h1>
-          <p>{t("aboutBooking.desc")}</p>
+          <span>{t("aboutBooking.desc")}</span>
         </div>
       </section>
 

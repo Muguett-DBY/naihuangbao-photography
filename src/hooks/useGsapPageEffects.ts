@@ -6,7 +6,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
   const guardRef = useRef(false);
-  const cleanupRef = useRef<(() => void) | null>(null);
+  const cleanupFnsRef = useRef<(() => void)[]>([]);
 
   useEffect(() => {
     // Kill any leftover ScrollTriggers from previous page
@@ -14,6 +14,9 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
 
     if (guardRef.current) return;
     guardRef.current = true;
+
+    const cleanupFns: (() => void)[] = [];
+    cleanupFnsRef.current = cleanupFns;
 
     const $ = <T extends Element>(sel: string): T[] => {
       if (rootRef?.current) {
@@ -27,6 +30,17 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
         return rootRef.current.querySelector<T>(sel);
       }
       return document.querySelector<T>(sel);
+    };
+
+    // Helper to safely add event listener with cleanup tracking
+    const addListener = <K extends keyof HTMLElementEventMap>(
+      el: HTMLElement,
+      type: K,
+      handler: (e: HTMLElementEventMap[K]) => void,
+      options?: AddEventListenerOptions,
+    ) => {
+      el.addEventListener(type, handler, options);
+      cleanupFns.push(() => el.removeEventListener(type, handler, options));
     };
 
     // Scroll progress bar
@@ -163,15 +177,17 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       ".hero-cover-primary-btn, .hero-cover-secondary-btn, .nav-cta, .booking-cta, .package-cta",
     );
     magneticBtns.forEach((btn) => {
-      btn.addEventListener("mousemove", (e: MouseEvent) => {
+      const moveHandler = (e: MouseEvent) => {
         const rect = btn.getBoundingClientRect();
         const x = e.clientX - rect.left - rect.width / 2;
         const y = e.clientY - rect.top - rect.height / 2;
         gsap.to(btn, { x: x * 0.25, y: y * 0.25, duration: 0.35, ease: "power2.out", overwrite: "auto" });
-      });
-      btn.addEventListener("mouseleave", () => {
+      };
+      const leaveHandler = () => {
         gsap.to(btn, { x: 0, y: 0, duration: 0.45, ease: "elastic.out(1, 0.35)" });
-      });
+      };
+      addListener(btn, "mousemove", moveHandler);
+      addListener(btn, "mouseleave", leaveHandler);
     });
 
     // 3D card tilt
@@ -179,7 +195,7 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       ".package-card, .why-card, .service-detail-card",
     );
     tiltCards.forEach((card) => {
-      card.addEventListener("mousemove", (e: MouseEvent) => {
+      const moveHandler = (e: MouseEvent) => {
         const rect = card.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -187,10 +203,12 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
           rotateY: x * 8, rotateX: y * -6, transformPerspective: 800,
           duration: 0.5, ease: "power2.out", overwrite: "auto",
         });
-      });
-      card.addEventListener("mouseleave", () => {
+      };
+      const leaveHandler = () => {
         gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.6, ease: "elastic.out(1, 0.4)" });
-      });
+      };
+      addListener(card, "mousemove", moveHandler);
+      addListener(card, "mouseleave", leaveHandler);
     });
 
     // Price countdown
@@ -240,14 +258,13 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
 
     ScrollTrigger.refresh();
 
-    cleanupRef.current = () => {
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-      guardRef.current = false;
-    };
-
     return () => {
+      // Clean up all tracked event listeners
+      cleanupFns.forEach((fn) => fn());
+      cleanupFns.length = 0;
+      // Kill all ScrollTriggers
       ScrollTrigger.getAll().forEach((t) => t.kill());
       guardRef.current = false;
     };
-  }, [rootRef, guardRef]);
+  }, [rootRef, guardRef, cleanupFnsRef]);
 }

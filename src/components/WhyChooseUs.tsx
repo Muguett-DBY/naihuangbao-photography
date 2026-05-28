@@ -25,7 +25,7 @@ export function WhyChooseUs() {
         {whyCards.map((card, index) => {
           const Icon = icons[card.icon];
           return (
-            <Card className="why-card" key={card.title}>
+            <Card className="why-card" key={card.title} data-index={index + 1}>
               <div className="why-icon"><Icon size={22} aria-hidden="true" /></div>
               <h3>{card.title}</h3>
               <p>{card.detail}</p>

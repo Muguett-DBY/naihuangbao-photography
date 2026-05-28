@@ -26,9 +26,9 @@ export function CoursesPage() {
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <span className="section-eyebrow">Courses</span>
+          <p className="section-eyebrow">Courses</p>
           <h1>{t("courses.title")}</h1>
-          <p>{t("courses.intro")}</p>
+          <span>{t("courses.intro")}</span>
         </div>
       </section>
 

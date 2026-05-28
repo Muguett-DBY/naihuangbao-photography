@@ -155,9 +155,27 @@ body.nav-lock .site-nav {
               background 0.25s ease;
 }
 .site-nav.is-scrolled .nav-cta {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+  background: var(--caramel-deep);
+  color: var(--cream);
+  box-shadow: 0 2px 8px rgba(139, 94, 74, 0.18);
+}
+
+/* Active nav link */
+.nav-menu a.is-active {
+  color: var(--caramel-deep);
+  font-weight: 600;
+}
+.nav-menu a.is-active::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* Hide mood/theme toggles on mobile */
+@media (max-width: 760px) {
+  .site-nav .mood-toggle,
+  .site-nav .theme-toggle:nth-of-type(1),
+  .site-nav .theme-toggle:nth-of-type(2) {
+    display: none;
+  }
 }
 
 .nav-cta:hover {

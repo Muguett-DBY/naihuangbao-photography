@@ -18,7 +18,6 @@ export function ServiceDetails() {
       <div className="service-detail-grid">
         <article className="service-detail-card service-detail-card-featured">
           <Camera size={24} />
-          <p>{t("serviceDetails.equipmentTitle")}</p>
           <h3>{t("serviceDetails.equipmentTitle")}</h3>
           <div className="equipment-list">
             {serviceAddOns.equipment.map((item) => (
@@ -28,21 +27,18 @@ export function ServiceDetails() {
         </article>
         <article className="service-detail-card">
           <Coins size={24} />
-          <p>{t("serviceDetails.instantTitle")}</p>
           <h3>{t("serviceDetails.instantTitle")}</h3>
           <strong>{serviceAddOns.instantCamera.price}</strong>
           <span>{serviceAddOns.instantCamera.camera}</span>
         </article>
         <article className="service-detail-card">
           <Clock size={24} />
-          <p>{t("serviceDetails.timingTitle")}</p>
           <h3>{t("serviceDetails.timingTitle")}</h3>
           <strong>{timingPolicy?.title ?? "2小时起拍"}</strong>
           <span>{timingPolicy?.detail ?? "迟到15分钟开始计时，当天不可更改拍摄时间。"}</span>
         </article>
         <article className="service-detail-card service-detail-card-wide">
           <ReceiptText size={24} />
-          <p>{t("serviceDetails.noticeTitle")}</p>
           <h3>{t("serviceDetails.noticeTitle")}</h3>
           <div className="policy-chip-grid">
             {servicePolicies.map((item) => (

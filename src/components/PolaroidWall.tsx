@@ -1,153 +1,97 @@
-"use client";
-
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { galleryItems } from "../data/gallery";
-import type { PhotoItem } from "../types/photo";
-
-const POLAROID_ITEMS = galleryItems.slice(0, 6);
+import { usePublicPhotos } from "../hooks/usePublicPhotos";
 
 export function PolaroidWall() {
   const { t } = useTranslation();
+  const { photos } = usePublicPhotos();
   const [fannedOut, setFannedOut] = useState(false);
   const [flippedId, setFlippedId] = useState<string | null>(null);
   const [focusIdx, setFocusIdx] = useState(0);
   const stageRef = useRef<HTMLDivElement>(null);
 
-  const photos = POLAROID_ITEMS;
+  const POLAROID_ITEMS = useMemo(() => photos.slice(0, 6), [photos]);
 
   const handleCardClick = useCallback((id: string) => {
-    if (!fannedOut) { setFannedOut(true); return; }
     setFlippedId((prev) => (prev === id ? null : id));
-  }, [fannedOut]);
+  }, []);
 
-  const handleBackdrop = useCallback(() => {
-    if (flippedId) { setFlippedId(null); return; }
-    if (fannedOut) { setFannedOut(false); setFocusIdx(0); }
-  }, [fannedOut, flippedId]);
+  const handleFocus = useCallback((idx: number) => {
+    setFocusIdx(idx);
+    setFannedOut(true);
+  }, []);
 
-  const navigate = useCallback((dir: -1 | 1) => {
-    setFocusIdx((prev) => {
-      const next = prev + dir;
-      if (next < 0) return photos.length - 1;
-      if (next >= photos.length) return 0;
-      return next;
-    });
-  }, [photos.length]);
+  const handleBlur = useCallback(() => {
+    setFannedOut(false);
+    setFlippedId(null);
+  }, []);
 
   return (
-    <section className="polaroid-wall-section">
+    <section className="polaroid-shell">
       <div className="polaroid-header">
-        <span className="polaroid-eyebrow">{t("polaroid.eyebrow")}</span>
+        <span className="section-eyebrow">{t("polaroid.eyebrow")}</span>
         <h2>{t("polaroid.title")}</h2>
         <p className="polaroid-hint">
           {fannedOut ? t("polaroid.hintExpanded") : t("polaroid.hintCollapsed")}
         </p>
       </div>
 
-      <div ref={stageRef} className={`polaroid-stage ${fannedOut ? "is-fanned" : ""}`} onClick={handleBackdrop}>
-        {fannedOut && (
-          <>
-            <button className="polaroid-nav polaroid-nav-left" onClick={(e) => { e.stopPropagation(); navigate(-1); }} aria-label="上一张">
-              <ChevronLeft size={24} />
-            </button>
-            <button className="polaroid-nav polaroid-nav-right" onClick={(e) => { e.stopPropagation(); navigate(1); }} aria-label="下一张">
-              <ChevronRight size={24} />
-            </button>
-          </>
-        )}
+      <div
+        className={`polaroid-stage ${fannedOut ? "is-fanned" : ""}`}
+        ref={stageRef}
+        onClick={(e) => {
+          if (e.target === stageRef.current) handleBlur();
+        }}
+      >
+        {POLAROID_ITEMS.map((item, i) => {
+          const isFlipped = flippedId === item.id;
+          const angle = (i - (POLAROID_ITEMS.length - 1) / 2) * 8;
+          const offsetX = (i - (POLAROID_ITEMS.length - 1) / 2) * 24;
 
-        <div className="polaroid-deck" style={{ perspective: 1200 }}>
-          {photos.map((photo, index) => {
-            const offset = index - focusIdx;
-            const isFocused = index === focusIdx;
-            const isFlipped = flippedId === photo.id;
-
-            let transform = "";
-            if (!fannedOut) {
-              const rot = (index - (photos.length - 1) / 2) * 1.8;
-              const x = (index - (photos.length - 1) / 2) * 2;
-              const y = index * 0.6;
-              transform = `translateX(${x}px) translateY(${y}px) rotate(${rot}deg)`;
-            } else {
-              const spreadX = offset * 110;
-              const spreadRot = offset * 6;
-              const z = isFocused ? 80 : -Math.abs(offset) * 20;
-              transform = `translateX(${spreadX}px) translateZ(${z}px) rotateY(${spreadRot * 0.5}deg) scale(${isFocused ? 1.12 : 0.9})`;
-            }
-
-            return (
-              <PolaroidCard
-                key={photo.id}
-                photo={photo}
-                transform={transform}
-                isFlipped={isFlipped}
-                isFocused={isFocused}
-                isFanned={fannedOut}
-                index={index}
-                onCardClick={() => handleCardClick(photo.id)}
-              />
-            );
-          })}
-        </div>
+          return (
+            <div
+              key={item.id}
+              className={`polaroid-card ${isFlipped ? "is-flipped" : ""} ${focusIdx === i && fannedOut ? "is-focused" : ""}`}
+              style={{
+                transform: fannedOut
+                  ? `translateX(${offsetX}px) rotate(${angle}deg) translateY(-${Math.abs(angle) * 2}px)`
+                  : `rotate(0deg)`,
+                zIndex: focusIdx === i ? 10 : POLAROID_ITEMS.length - i,
+              }}
+              onClick={() => handleCardClick(item.id)}
+              onMouseEnter={() => handleFocus(i)}
+              onMouseLeave={() => {}}
+            >
+              <div className="polaroid-card-inner">
+                <div className="polaroid-card-front">
+                  <img src={item.imageUrl} alt={item.alt} />
+                </div>
+                <div className="polaroid-card-back">
+                  <p>{t("polaroid.backNote")}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
+
+      {fannedOut && (
+        <div className="polaroid-nav">
+          <button
+            onClick={() => setFocusIdx((prev) => (prev - 1 + POLAROID_ITEMS.length) % POLAROID_ITEMS.length)}
+            aria-label={t("reviews.prev")}
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            onClick={() => setFocusIdx((prev) => (prev + 1) % POLAROID_ITEMS.length)}
+            aria-label={t("reviews.next")}
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
+      )}
     </section>
   );
 }
-
-function PolaroidCard({
-  photo, transform, isFlipped, isFocused, isFanned, index, onCardClick,
-}: {
-  photo: PhotoItem; transform: string; isFlipped: boolean; isFocused: boolean; isFanned: boolean; index: number; onCardClick: () => void;
-}) {
-  const { t } = useTranslation();
-  const [imgLoaded, setImgLoaded] = useState(false);
-  const thumbSrc = photo.imageUrl?.replace("/images/gallery/", "/images/gallery/640/") ?? "";
-
-  return (
-    <div
-      className={`polaroid-card ${isFlipped ? "is-flipped" : ""} ${isFocused ? "is-focused" : ""} ${isFanned ? "is-fanned" : ""}`}
-      style={{
-        transform,
-        zIndex: isFocused ? 100 : isFanned ? 10 - Math.abs(index - 3) : index,
-        transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), z-index 0s",
-      }}
-      onClick={(e) => { e.stopPropagation(); onCardClick(); }}
-      role="button"
-      tabIndex={isFanned && isFocused ? 0 : -1}
-      aria-label={`${photo.title} — ${t(`gallery.filters.${photo.style}` as any, photo.style)}`}
-    >
-      <div className="polaroid-card-inner">
-        <div className="polaroid-card-front">
-          <div className="polaroid-photo-wrap">
-            {!imgLoaded && <div className="polaroid-photo-skeleton" />}
-            <img
-              src={thumbSrc}
-              alt={photo.alt}
-              loading={index < 4 ? "eager" : "lazy"}
-              onLoad={() => setImgLoaded(true)}
-              className={imgLoaded ? "is-loaded" : ""}
-              width={400} height={500}
-            />
-          </div>
-          <div className="polaroid-caption">
-            <span className="polaroid-caption-location">{photo.location}</span>
-            <span className="polaroid-caption-sep">·</span>
-            <span className="polaroid-caption-style">{t(`gallery.filters.${photo.style}` as any, photo.style)}</span>
-          </div>
-        </div>
-        <div className="polaroid-card-back">
-          <div className="polaroid-back-content">
-            <strong>{photo.title}</strong>
-            <span className="polaroid-back-style">{t(`gallery.filters.${photo.style}` as any, photo.style)}</span>
-            <span className="polaroid-back-location">{photo.location}</span>
-            <p className="polaroid-back-note">{t("polaroid.backNote")}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
