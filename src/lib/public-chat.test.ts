@@ -212,7 +212,7 @@ describe("public AI chat integration", () => {
   });
 
   it("distinguishes the public chat launcher from booking CTA and avoids fixed-button overlap", () => {
-    const navSource = readFileSync(resolve(root, "src/components/SiteNav.tsx"), "utf8");
+    const navSource = readFileSync(resolve(root, "src/components/shared/Header.tsx"), "utf8");
     const launcherSource = readFileSync(launcherPath, "utf8");
 
     expect(navSource).toContain("CalendarCheck");

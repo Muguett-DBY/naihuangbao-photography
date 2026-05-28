@@ -19,7 +19,7 @@ const allCss = [
 const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
 const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
 const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
-const navSource = readFileSync(resolve(root, "src/components/SiteNav.tsx"), "utf8");
+const navSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
 const html = readFileSync(resolve(root, "index.html"), "utf8");
 const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
@@ -75,7 +75,7 @@ describe("performance budgets", () => {
 
   it("keeps first-load reveal and scroll progress outside the app shell", () => {
     expect(mainSource).toContain('document.body.classList.add("is-loaded")');
-    expect(navSource).toContain('style.setProperty("--scroll-progress"');
+    expect(navSource).toContain('scroll-progress-bar');
     expect(allCss).toContain("body.is-loaded");
     expect(allCss).toContain(".site-nav::after");
     expect(allCss).toContain("@media (prefers-reduced-motion: reduce)");
