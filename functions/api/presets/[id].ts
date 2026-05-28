@@ -17,10 +17,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return jsonResponse({ error: "预设不存在" }, 404);
     }
 
-    return jsonResponse({
+    return jsonResponse({ preset: {
       ...preset,
       preview_images: typeof preset.preview_images === "string" ? JSON.parse(preset.preview_images as string) : preset.preview_images,
-    }, 200);
+    } }, 200);
   } catch {
     return jsonResponse({ error: "加载失败" }, 500);
   }
