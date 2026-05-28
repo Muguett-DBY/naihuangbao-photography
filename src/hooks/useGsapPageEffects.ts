@@ -4,9 +4,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/**
+ * Page-level GSAP effects — DECORATIVE ONLY.
+ * All content is visible by default. Animations enhance but never hide.
+ */
 export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
   const guardRef = useRef(false);
-  const cleanupFnsRef = useRef<(() => void)[]>([]);
 
   useEffect(() => {
     // Kill any leftover ScrollTriggers from previous page
@@ -14,9 +17,6 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
 
     if (guardRef.current) return;
     guardRef.current = true;
-
-    const cleanupFns: (() => void)[] = [];
-    cleanupFnsRef.current = cleanupFns;
 
     const $ = <T extends Element>(sel: string): T[] => {
       if (rootRef?.current) {
@@ -32,33 +32,18 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       return document.querySelector<T>(sel);
     };
 
-    // Helper to safely add event listener with cleanup tracking
     const addListener = <K extends keyof HTMLElementEventMap>(
       el: HTMLElement,
       type: K,
       handler: (e: HTMLElementEventMap[K]) => void,
-      options?: AddEventListenerOptions,
     ) => {
-      el.addEventListener(type, handler, options);
-      cleanupFns.push(() => el.removeEventListener(type, handler, options));
+      el.addEventListener(type, handler);
+      cleanupFns.push(() => el.removeEventListener(type, handler));
     };
 
-    // Scroll progress bar
-    const progressBar = $1<HTMLElement>(".scroll-progress-bar");
-    if (progressBar) {
-      gsap.to(progressBar, {
-        scaleX: 1,
-        ease: "none",
-        scrollTrigger: {
-          trigger: document.body,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.3,
-        },
-      });
-    }
+    const cleanupFns: (() => void)[] = [];
 
-    // Floating decor elements
+    // ── Floating decor elements ──
     const floatEls = $<HTMLElement>(".float-element");
     floatEls.forEach((el, i) => {
       gsap.to(el, {
@@ -72,7 +57,7 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       });
     });
 
-    // Hero glow orbs
+    // ── Hero glow orbs ──
     const glowOrbs = $<HTMLElement>(".hero-glow-orb");
     glowOrbs.forEach((orb, i) => {
       gsap.to(orb, {
@@ -85,33 +70,7 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       });
     });
 
-    // Hero entrance animations (fade in only, no clip-path dependency)
-    const title = $1<HTMLElement>(".hero-magazine-title");
-    const subtitle = $1<HTMLElement>(".hero-magazine-subtitle");
-    const intro = $1<HTMLElement>(".hero-cover-intro");
-    const ctaGroup = $<HTMLElement>(".hero-cover-cta-group > *");
-
-    // Only animate if elements start hidden (from body:not(.is-loaded) CSS)
-    // Don't use gsap.set to hide - let CSS handle initial state
-    const heroTimeline = gsap.timeline({ delay: 0.1 });
-
-    if (title) {
-      heroTimeline.fromTo(title, { opacity: 0.3, y: 8 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" });
-    }
-
-    if (subtitle) {
-      heroTimeline.fromTo(subtitle, { opacity: 0.3, y: 6 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, "-=0.3");
-    }
-
-    if (intro) {
-      heroTimeline.fromTo(intro, { opacity: 0.3, y: 8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, "-=0.3");
-    }
-
-    if (ctaGroup.length) {
-      heroTimeline.fromTo(ctaGroup, { opacity: 0.3, y: 6 }, { opacity: 1, y: 0, duration: 0.35, ease: "back.out(1.4)", stagger: 0.06 }, "-=0.2");
-    }
-
-    // Section heading color shift
+    // ── Section heading color shift on scroll ──
     const colorShiftEls = $<HTMLElement>(".section-heading h2");
     colorShiftEls.forEach((el) => {
       gsap.to(el, {
@@ -127,8 +86,8 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       });
     });
 
-    // Cards scroll-reveal
-    const cardSections = $<HTMLElement>(".section-shell:not(.hero)");
+    // ── Cards scroll-reveal (translateY only, no opacity hide) ──
+    const cardSections = $<HTMLElement>(".section-shell");
     cardSections.forEach((section) => {
       const cards = section.querySelectorAll<HTMLElement>(
         ".package-card, .why-card, .service-detail-card, .course-card, .preset-card, .workshop-card, .merchandise-card, .home-service-card",
@@ -136,17 +95,14 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       cards.forEach((card, i) => {
         gsap.fromTo(
           card,
-          { opacity: 0, y: 40, scale: 0.96, rotateX: i % 2 === 0 ? 4 : -4 },
+          { y: 30 },
           {
-            opacity: 1,
             y: 0,
-            scale: 1,
-            rotateX: 0,
-            duration: 0.7,
+            duration: 0.6,
             ease: "power2.out",
             scrollTrigger: {
               trigger: card,
-              start: "top 88%",
+              start: "top 90%",
               toggleActions: "play none none none",
             },
           },
@@ -154,7 +110,7 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       });
     });
 
-    // Magnetic buttons
+    // ── Magnetic buttons ──
     const magneticBtns = $<HTMLElement>(
       ".hero-cover-primary-btn, .hero-cover-secondary-btn, .nav-cta, .booking-cta, .package-cta",
     );
@@ -172,10 +128,8 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       addListener(btn, "mouseleave", leaveHandler);
     });
 
-    // 3D card tilt
-    const tiltCards = $<HTMLElement>(
-      ".package-card, .why-card, .service-detail-card",
-    );
+    // ── 3D card tilt ──
+    const tiltCards = $<HTMLElement>(".package-card, .why-card, .service-detail-card");
     tiltCards.forEach((card) => {
       const moveHandler = (e: MouseEvent) => {
         const rect = card.getBoundingClientRect();
@@ -193,60 +147,13 @@ export function useGsapPageEffects(rootRef?: RefObject<HTMLElement | null>) {
       addListener(card, "mouseleave", leaveHandler);
     });
 
-    // Price countdown
-    const priceEls = $<HTMLElement>('[data-count-format="price"]');
-    priceEls.forEach((el) => {
-      const rawTarget = el.getAttribute("data-count-target");
-      const prefix = el.getAttribute("data-count-prefix") || "¥";
-      const suffix = el.getAttribute("data-count-suffix") || "";
-      const targetVal = parseFloat(rawTarget || "0");
-      if (!targetVal) return;
-
-      const multiplier = targetVal < 100 ? 3 : 1.8;
-      let startVal = Math.ceil((targetVal * multiplier) / 100) * 100;
-      if (startVal - targetVal < 100) {
-        startVal = Math.ceil((targetVal + 200) / 100) * 100;
-      }
-
-      const card = el.closest(".package-card") || el.parentElement;
-      el.textContent = `${prefix}${startVal}${suffix}`;
-
-      const proxy = { val: startVal };
-      gsap.fromTo(
-        proxy,
-        { val: startVal },
-        {
-          val: targetVal,
-          ease: "none",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 70%",
-            end: "top 15%",
-            scrub: 0.8,
-            invalidateOnRefresh: true,
-          },
-          onUpdate: () => {
-            el.textContent = `${prefix}${Math.round(proxy.val)}${suffix}`;
-          },
-          onComplete: () => {
-            el.textContent = `${prefix}${targetVal}${suffix}`;
-            gsap.timeline()
-              .to(el, { scale: 1.18, duration: 0.2, ease: "power2.out" })
-              .to(el, { scale: 1, duration: 0.5, ease: "elastic.out(1, 0.3)" });
-          },
-        },
-      );
-    });
-
     ScrollTrigger.refresh();
 
     return () => {
-      // Clean up all tracked event listeners
       cleanupFns.forEach((fn) => fn());
       cleanupFns.length = 0;
-      // Kill all ScrollTriggers
       ScrollTrigger.getAll().forEach((t) => t.kill());
       guardRef.current = false;
     };
-  }, [rootRef, guardRef, cleanupFnsRef]);
+  }, [rootRef, guardRef]);
 }

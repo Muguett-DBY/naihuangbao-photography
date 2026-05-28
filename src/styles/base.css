@@ -151,32 +151,35 @@ html {
 }
 
 /* ── Scroll Reveal Animations ── */
+/* Content visible by default; is-visible adds entrance animation */
 .section-shell {
-  opacity: 0;
-  transform: translateY(24px) scale(0.98);
-  clip-path: inset(0 0 2% 0);
-  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-              clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.section-shell.is-visible {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
   clip-path: inset(0 0 0 0);
 }
 
-.section-body > * {
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+.section-shell.is-visible {
+  animation: sectionReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.section-body.is-visible > * {
+
+@keyframes sectionReveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+.section-body > * {
   opacity: 1;
   transform: translateY(0);
 }
-.section-body.is-visible > *:nth-child(1) { transition-delay: 0.04s; }
-.section-body.is-visible > *:nth-child(2) { transition-delay: 0.10s; }
+
+.section-body.is-visible > * {
+  animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.section-body.is-visible > *:nth-child(1) { animation-delay: 0.04s; }
+.section-body.is-visible > *:nth-child(2) { animation-delay: 0.10s; }
 .section-body.is-visible > *:nth-child(3) { transition-delay: 0.16s; }
 .section-body.is-visible > *:nth-child(4) { transition-delay: 0.22s; }
 .section-body.is-visible > *:nth-child(5) { transition-delay: 0.28s; }
@@ -184,43 +187,30 @@ html {
 .section-body.is-visible > *:nth-child(7) { transition-delay: 0.40s; }
 .section-body.is-visible > *:nth-child(8) { transition-delay: 0.46s; }
 
-/* Varied scroll animations */
+/* Varied scroll animations — all visible by default */
 .why-card {
-  transform: translateX(-24px);
-  opacity: 0;
-  /* .is-visible handled by GSAP ScrollTrigger */
+  transform: translateY(0);
+  opacity: 1;
 }
 
 .package-card {
-  opacity: 0;
-  transform: translateY(40px) scale(0.96);
-  transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.section-body.is-visible .package-card {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
 .section-body.is-visible .package-card:nth-child(1) {
-  transition-delay: 0.06s;
+  animation-delay: 0.06s;
 }
 .section-body.is-visible .package-card:nth-child(2) {
-  transition-delay: 0.14s;
+  animation-delay: 0.14s;
 }
 .section-body.is-visible .package-card:nth-child(3) {
-  transition-delay: 0.22s;
+  animation-delay: 0.22s;
 }
 
 .process-step {
-  opacity: 0;
-  transform: translateX(20px);
-  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-              border-color 0.3s ease;
-}
-.section-body.is-visible .process-step {
   opacity: 1;
   transform: translateX(0);
+  transition: border-color 0.3s ease;
 }
 .section-body.is-visible .process-step:nth-child(1) { transition-delay: 0.04s; }
 .section-body.is-visible .process-step:nth-child(2) { transition-delay: 0.12s; }
