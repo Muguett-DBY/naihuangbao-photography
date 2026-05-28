@@ -9,7 +9,11 @@
     "booking": "예약하기",
     "skipLink": "탐색 건너뛰고 본문 보기",
     "open": "메뉴 열기",
-    "close": "메뉴 닫기"
+    "close": "메뉴 닫기",
+    "courses": "강좌",
+    "presets": "프리셋",
+    "workshops": "워크숍",
+    "shop": "상품"
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -282,5 +286,54 @@
   "footer": {
     "tagline": "{{city}} · 여성 사진 · 커플 사진",
     "backToTop": "맨 위로"
+  },
+  "courses": {
+    "title": "사진 강좌",
+    "intro": "기초부터 심화까지 체계적으로 인물 사진 배우기",
+    "categories": {
+      "beginner": "입문 기초",
+      "advanced": "심화 기법",
+      "post-processing": "보정 편집",
+      "posing": "포즈 가이드"
+    },
+    "modules": "강좌 모듈",
+    "startLearning": "학습 시작",
+    "watchVideo": "영상 보기",
+    "readTutorial": "튜토리얼 읽기"
+  },
+  "presets": {
+    "title": "프리셋 & 리소스",
+    "intro": "전문 컬러 그레이딩 프리셋 다운로드",
+    "categories": {
+      "lightroom": "라이트룸 프리셋",
+      "photoshop": "포토샵 액션",
+      "capture-one": "캡처원 스타일",
+      "luts": "LUT 팩"
+    },
+    "download": "다운로드",
+    "downloads": "다운로드"
+  },
+  "workshops": {
+    "title": "워크숍 & 이벤트",
+    "intro": "오프라인 사진 체험 이벤트",
+    "register": "등록하기",
+    "spotsLeft": "남은 좌석",
+    "full": "마감",
+    "date": "행사 일시",
+    "location": "장소",
+    "price": "가격"
+  },
+  "merchandise": {
+    "title": "커스텀 상품",
+    "intro": "아름다운 추억을 실물로 만들어보세요",
+    "categories": {
+      "album": "맞춤 앨범",
+      "postcard": "엽서",
+      "frame": "액자",
+      "print": "인화",
+      "other": "기타"
+    },
+    "inquire": "구매 문의",
+    "contactUs": "문의하기"
   }
 }

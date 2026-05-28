@@ -9,7 +9,11 @@
     "booking": "予約する",
     "skipLink": "ナビゲーションをスキップして本文へ",
     "open": "メニューを開く",
-    "close": "メニューを閉じる"
+    "close": "メニューを閉じる",
+    "courses": "講座",
+    "presets": "プリセット",
+    "workshops": "ワークショップ",
+    "shop": "ショップ"
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -282,5 +286,54 @@
   "footer": {
     "tagline": "{{city}} · 女性写真 · カップル写真",
     "backToTop": "トップへ"
+  },
+  "courses": {
+    "title": "写真講座",
+    "intro": "基礎から応用まで、系統的にポートレート写真を学ぶ",
+    "categories": {
+      "beginner": "入門基礎",
+      "advanced": "上級テクニック",
+      "post-processing": "現像編集",
+      "posing": "ポージングガイド"
+    },
+    "modules": "講座モジュール",
+    "startLearning": "学習を始める",
+    "watchVideo": "動画を見る",
+    "readTutorial": "チュートリアルを読む"
+  },
+  "presets": {
+    "title": "プリセット & リソース",
+    "intro": "プロのカラーグレーディングプリセットをダウンロード",
+    "categories": {
+      "lightroom": "ライトルームプリセット",
+      "photoshop": "フォトショップアクション",
+      "capture-one": "キャプチャワンスタイル",
+      "luts": "LUTパック"
+    },
+    "download": "ダウンロード",
+    "downloads": "ダウンロード"
+  },
+  "workshops": {
+    "title": "ワークショップ & イベント",
+    "intro": "オフライン写真体験イベント",
+    "register": "申し込む",
+    "spotsLeft": "残り席",
+    "full": "満席",
+    "date": "イベント日時",
+    "location": "会場",
+    "price": "料金"
+  },
+  "merchandise": {
+    "title": "カスタムグッズ",
+    "intro": "美しい思い出を実物に変えましょう",
+    "categories": {
+      "album": "カスタムアルバム",
+      "postcard": "ポストカード",
+      "frame": "額縁",
+      "print": "プリント",
+      "other": "その他"
+    },
+    "inquire": "購入のお問い合わせ",
+    "contactUs": "お問い合わせ"
   }
 }

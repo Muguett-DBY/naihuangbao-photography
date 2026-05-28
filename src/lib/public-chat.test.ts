@@ -10,6 +10,7 @@ const adminChatApiPath = resolve(root, "functions/api/admin/chat.ts");
 const widgetPath = resolve(root, "src/components/PublicChatWidget.tsx");
 const launcherPath = resolve(root, "src/components/PublicChatLauncher.tsx");
 const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
+const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
 const adminSource = readFileSync(resolve(root, "src/components/AdminDashboard.tsx"), "utf8");
 const adminCss = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
 const globalCss = [
@@ -177,10 +178,10 @@ describe("public AI chat integration", () => {
     const widgetSource = readFileSync(widgetPath, "utf8");
     const launcherSource = readFileSync(launcherPath, "utf8");
 
-    expect(appSource).toContain("PublicChatWidget");
-    expect(appSource).toContain('lazy(() => import("./components/PublicChatWidget"))');
-    expect(appSource).toContain("<PublicChatLauncher");
-    expect(appSource).toContain("<PublicChatWidget open={chatOpen} onClose");
+    expect(rootLayoutSource).toContain("PublicChatWidget");
+    expect(rootLayoutSource).toContain('lazy(() => import("../components/PublicChatWidget")');
+    expect(rootLayoutSource).toContain("<PublicChatLauncher");
+    expect(rootLayoutSource).toContain("<PublicChatWidget open={chatOpen} onClose");
     expect(launcherSource).toContain("AI问答");
     expect(launcherSource).not.toContain('fetch("/api/chat"');
     expect(widgetSource).toContain('fetch("/api/chat"');

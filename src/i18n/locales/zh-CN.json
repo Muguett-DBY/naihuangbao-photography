@@ -9,7 +9,11 @@
     "booking": "预约拍摄",
     "skipLink": "跳过导航，直接查看内容",
     "open": "打开菜单",
-    "close": "关闭菜单"
+    "close": "关闭菜单",
+    "courses": "课程",
+    "presets": "预设",
+    "workshops": "活动",
+    "shop": "周边"
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -336,5 +340,54 @@
   "footer": {
     "tagline": "{{city}} · 女生写真 · 情侣约拍",
     "backToTop": "回到顶部"
+  },
+  "courses": {
+    "title": "摄影课程",
+    "intro": "从基础到进阶，系统学习人像摄影",
+    "categories": {
+      "beginner": "入门基础",
+      "advanced": "进阶技巧",
+      "post-processing": "后期修图",
+      "posing": "摆姿引导"
+    },
+    "modules": "课程章节",
+    "startLearning": "开始学习",
+    "watchVideo": "观看视频",
+    "readTutorial": "阅读教程"
+  },
+  "presets": {
+    "title": "预设与资源",
+    "intro": "一键获取专业调色预设",
+    "categories": {
+      "lightroom": "Lightroom 预设",
+      "photoshop": "Photoshop 动作",
+      "capture-one": "Capture One 样式",
+      "luts": "LUT 调色包"
+    },
+    "download": "下载",
+    "downloads": "次下载"
+  },
+  "workshops": {
+    "title": "工作坊与体验",
+    "intro": "线下摄影体验活动",
+    "register": "立即报名",
+    "spotsLeft": "剩余名额",
+    "full": "已满员",
+    "date": "活动时间",
+    "location": "活动地点",
+    "price": "费用"
+  },
+  "merchandise": {
+    "title": "定制周边",
+    "intro": "把美好回忆变成实物",
+    "categories": {
+      "album": "定制相册",
+      "postcard": "明信片",
+      "frame": "相框",
+      "print": "冲印",
+      "other": "其他"
+    },
+    "inquire": "咨询购买",
+    "contactUs": "联系我们"
   }
 }

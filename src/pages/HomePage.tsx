@@ -1,0 +1,117 @@
+import { Suspense, lazy, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { ArrowRight, CalendarCheck, Camera, BookOpen, Download, MapPin } from "lucide-react";
+import { Button } from "animal-island-ui";
+import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useBookingModal } from "../hooks/useBookingModal";
+import { useSiteContent } from "../hooks/useSiteContent";
+import { PageTransition } from "../components/shared/PageTransition";
+
+const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
+const WhyChooseUs = lazy(() => import("../components/WhyChooseUs").then((m) => ({ default: m.WhyChooseUs })));
+const Reviews = lazy(() => import("../components/Reviews").then((m) => ({ default: m.Reviews })));
+
+export function HomePage() {
+  const { t } = useTranslation();
+  const { siteConfig } = useSiteContent();
+  const { openBookingModal } = useBookingModal();
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useGsapPageEffects(rootRef);
+
+  return (
+    <PageTransition ref={rootRef}>
+      <section className="hero" id="top">
+        <div className="hero-cover-design" />
+        <div className="hero-glow-orb hero-glow-orb--1" aria-hidden="true" />
+        <div className="hero-glow-orb hero-glow-orb--2" aria-hidden="true" />
+        <div className="float-element float-element--1" aria-hidden="true" />
+        <div className="float-element float-element--2" aria-hidden="true" />
+        <div className="hero-cover-content">
+          <div className="hero-cover-left">
+            <h1 className="hero-magazine-title">
+              {siteConfig.brandName}
+              <span className="hero-magazine-subtitle">{t("hero.brandPrefix")}</span>
+            </h1>
+            <p className="hero-cover-intro">{t("hero.intro")}</p>
+          </div>
+          <div className="hero-cover-right">
+            <div className="hero-cover-cta-group">
+              <Button type="primary" size="large" className="hero-cover-primary-btn" onClick={() => document.getElementById("featured")?.scrollIntoView({ behavior: "smooth" })}>
+                {t("hero.ctaView")} <ArrowRight size={16} />
+              </Button>
+              <Button type="primary" size="large" className="hero-cover-secondary-btn" onClick={() => openBookingModal()}>
+                <CalendarCheck size={14} /> {t("hero.ctaBooking")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-shell" id="featured">
+        <div className="section-heading">
+          <span className="section-eyebrow">Portfolio</span>
+          <h2>{t("gallery.title")}</h2>
+        </div>
+        <Suspense fallback={<div style={{ minHeight: 400 }} />}>
+          <Gallery />
+        </Suspense>
+        <div style={{ textAlign: "center", marginTop: 32 }}>
+          <Link to="/gallery" className="home-page-link">
+            {t("hero.ctaView")} <ArrowRight size={16} />
+          </Link>
+        </div>
+      </section>
+
+      <section className="section-shell" id="services-preview">
+        <div className="section-heading">
+          <span className="section-eyebrow">Services</span>
+          <h2>{t("nav.home")}</h2>
+        </div>
+        <div className="home-services-grid">
+          <Link to="/courses" className="home-service-card">
+            <BookOpen size={32} />
+            <h3>{t("nav.courses")}</h3>
+            <p>{t("courses.intro")}</p>
+            <span className="home-service-link">了解更多 <ArrowRight size={14} /></span>
+          </Link>
+          <Link to="/products" className="home-service-card">
+            <Download size={32} />
+            <h3>{t("nav.presets")}</h3>
+            <p>{t("presets.intro")}</p>
+            <span className="home-service-link">了解更多 <ArrowRight size={14} /></span>
+          </Link>
+          <Link to="/workshops" className="home-service-card">
+            <MapPin size={32} />
+            <h3>{t("nav.workshops")}</h3>
+            <p>{t("workshops.intro")}</p>
+            <span className="home-service-link">了解更多 <ArrowRight size={14} /></span>
+          </Link>
+          <Link to="/shop" className="home-service-card">
+            <Camera size={32} />
+            <h3>{t("nav.shop")}</h3>
+            <p>{t("merchandise.intro")}</p>
+            <span className="home-service-link">了解更多 <ArrowRight size={14} /></span>
+          </Link>
+        </div>
+      </section>
+
+      <Suspense fallback={<div className="section-shell" style={{ minHeight: 300 }} />}>
+        <WhyChooseUs />
+      </Suspense>
+
+      <Suspense fallback={<div className="section-shell" style={{ minHeight: 300 }} />}>
+        <Reviews />
+      </Suspense>
+
+      <section className="section-shell home-cta-section">
+        <h2>{t("midCTA.title")}</h2>
+        <p>{t("midCTA.desc")}</p>
+        <Button type="primary" size="large" onClick={() => openBookingModal()}>
+          <CalendarCheck size={16} /> {t("midCTA.cta")}
+        </Button>
+      </section>
+    </PageTransition>
+  );
+}

@@ -9,7 +9,11 @@
     "booking": "Book Now",
     "skipLink": "Skip navigation to main content",
     "open": "Open menu",
-    "close": "Close menu"
+    "close": "Close menu",
+    "courses": "Courses",
+    "presets": "Presets",
+    "workshops": "Workshops",
+    "shop": "Shop"
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -336,5 +340,54 @@
   "footer": {
     "tagline": "{{city}} · Portrait · Couple",
     "backToTop": "Back to top"
+  },
+  "courses": {
+    "title": "Photography Courses",
+    "intro": "From basics to advanced, learn portrait photography systematically",
+    "categories": {
+      "beginner": "Beginner Basics",
+      "advanced": "Advanced Techniques",
+      "post-processing": "Post-Processing",
+      "posing": "Posing Guide"
+    },
+    "modules": "Course Modules",
+    "startLearning": "Start Learning",
+    "watchVideo": "Watch Video",
+    "readTutorial": "Read Tutorial"
+  },
+  "presets": {
+    "title": "Presets & Resources",
+    "intro": "Professional color grading presets for instant download",
+    "categories": {
+      "lightroom": "Lightroom Presets",
+      "photoshop": "Photoshop Actions",
+      "capture-one": "Capture One Styles",
+      "luts": "LUT Packs"
+    },
+    "download": "Download",
+    "downloads": "downloads"
+  },
+  "workshops": {
+    "title": "Workshops & Events",
+    "intro": "Offline photography experience events",
+    "register": "Register Now",
+    "spotsLeft": "Spots Left",
+    "full": "Full",
+    "date": "Event Date",
+    "location": "Location",
+    "price": "Price"
+  },
+  "merchandise": {
+    "title": "Custom Merchandise",
+    "intro": "Turn beautiful memories into physical products",
+    "categories": {
+      "album": "Custom Album",
+      "postcard": "Postcard",
+      "frame": "Frame",
+      "print": "Print",
+      "other": "Other"
+    },
+    "inquire": "Inquire to Purchase",
+    "contactUs": "Contact Us"
   }
 }

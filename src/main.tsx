@@ -1,13 +1,15 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import Lenis from "lenis";
+import { RouterProvider } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { App } from "./App";
-import "./i18n"; // Initialize i18n
+import { router } from "./router";
+import "./i18n";
 import "animal-island-ui/style";
 import "./styles/global.css";
 import "./styles/animal-theme.css";
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Idle-time prefetch of key gallery images
 if ("requestIdleCallback" in window) {
@@ -32,37 +34,12 @@ if (!root) {
   throw new Error("Root element #root was not found");
 }
 
-// ── Lenis smooth scroll ──
-const lenis = new Lenis({
-  duration: 1.2,
-  easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-  orientation: "vertical",
-  smoothWheel: true,
-  syncTouch: true,
-  touchMultiplier: 1.5,
-  wheelMultiplier: 1.0,
-  infinite: false,
-});
-
-// Expose Lenis globally for other components (SectionNav, etc.)
-(window as any).lenis = lenis;
-
-// Sync Lenis with GSAP ScrollTrigger
-lenis.on("scroll", () => ScrollTrigger.update());
-
-gsap.ticker.add((time) => {
-  lenis.raf(time * 1000);
-});
-gsap.ticker.lagSmoothing(0);
-
 createRoot(root).render(
   <StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </StrictMode>,
 );
 
 requestAnimationFrame(() => {
   document.body.classList.add("is-loaded");
 });
-
-

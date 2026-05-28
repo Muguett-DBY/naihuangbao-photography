@@ -18,6 +18,7 @@ const allCss = [
 ].map((p) => readFileSync(resolve(root, p), "utf8")).join("\n");
 const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
 const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
+const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
 const navSource = readFileSync(resolve(root, "src/components/SiteNav.tsx"), "utf8");
 const html = readFileSync(resolve(root, "index.html"), "utf8");
 const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
@@ -63,7 +64,7 @@ describe("performance budgets", () => {
   it("lazy-loads gallery images and non-critical chunks", () => {
     expect(gallerySource).toContain('loading="lazy"');
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
-    expect(appSource).toContain('lazy(() => import("./components/PublicChatWidget")');
+    expect(rootLayoutSource).toContain('lazy(() => import("../components/PublicChatWidget")');
     expect(appSource).toContain('import("./styles/admin.css")');
   });
 
@@ -78,7 +79,7 @@ describe("performance budgets", () => {
     expect(allCss).toContain("body.is-loaded");
     expect(allCss).toContain(".site-nav::after");
     expect(allCss).toContain("@media (prefers-reduced-motion: reduce)");
-    expect(appSource).toContain("framer-motion");
+    expect(rootLayoutSource).toContain("framer-motion");
   });
 
   it("keeps removed cinematic assets out of the public shell", () => {

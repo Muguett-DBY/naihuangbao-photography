@@ -36,6 +36,7 @@
     "react-dom": "^19.2.6",
     "react-i18next": "^17.0.8",
     "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.15.1",
     "swiper": "^12.1.4",
     "three": "^0.184.0"
   },

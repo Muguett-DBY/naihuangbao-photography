@@ -1,6 +1,6 @@
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import {
-  BarChart3,
+  BookOpen,
   CalendarCheck,
   FileText,
   HelpCircle,
@@ -8,7 +8,10 @@ import {
   Layers,
   LockKeyhole,
   LogOut,
+  MapPin,
+  Package,
   Settings,
+  ShoppingBag,
 } from "lucide-react";
 import { Button, Input, Loading, Table, Tabs } from "animal-island-ui";
 import type { TabItem } from "animal-island-ui";
@@ -21,11 +24,19 @@ import { AdminFaqTab } from "./AdminFaqTab";
 import { AdminPackagesTab } from "./AdminPackagesTab";
 import { AdminPhotosTab } from "./AdminPhotosTab";
 import { AdminServicesTab } from "./AdminServicesTab";
+import { AdminCoursesTab } from "./AdminCoursesTab";
+import { AdminPresetsTab } from "./AdminPresetsTab";
+import { AdminWorkshopsTab } from "./AdminWorkshopsTab";
+import { AdminMerchandiseTab } from "./AdminMerchandiseTab";
 
 const adminTabItems: TabItem[] = [
   { key: "bookings", label: "预约", children: null },
   { key: "photos", label: "照片", children: null },
   { key: "stats", label: "数据", children: null },
+  { key: "courses", label: "课程", children: null },
+  { key: "presets", label: "预设", children: null },
+  { key: "workshops", label: "活动", children: null },
+  { key: "merchandise", label: "周边", children: null },
   { key: "packages", label: "套餐价格", children: null },
   { key: "services", label: "服务规则", children: null },
   { key: "faq", label: "FAQ/流程", children: null },
@@ -131,6 +142,10 @@ export function AdminShell() {
         {activeTab === "faq" && <AdminFaqTab showToast={showToast} />}
         {activeTab === "copy" && <AdminCopyTab showToast={showToast} />}
         {activeTab === "stats" && <AdminStats />}
+        {activeTab === "courses" && <AdminCoursesTab showToast={showToast} />}
+        {activeTab === "presets" && <AdminPresetsTab showToast={showToast} />}
+        {activeTab === "workshops" && <AdminWorkshopsTab showToast={showToast} />}
+        {activeTab === "merchandise" && <AdminMerchandiseTab showToast={showToast} />}
       </div>
     </div>
   );
