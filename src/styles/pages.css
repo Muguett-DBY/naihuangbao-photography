@@ -118,7 +118,8 @@
 .course-cover {
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: contain;
+  background: #FEF3DD;
 }
 
 .course-info {
@@ -179,7 +180,8 @@
 .preset-cover {
   width: 100%;
   aspect-ratio: 16 / 10;
-  object-fit: cover;
+  object-fit: contain;
+  background: #FEF3DD;
 }
 
 .preset-info {
@@ -261,7 +263,8 @@
 .workshop-cover {
   width: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: contain;
+  background: #E8D5C4;
 }
 
 .workshop-info {
@@ -356,7 +359,8 @@
 .merchandise-cover {
   width: 100%;
   aspect-ratio: 1;
-  object-fit: cover;
+  object-fit: contain;
+  background: #F5D5C8;
 }
 
 .merchandise-info {
