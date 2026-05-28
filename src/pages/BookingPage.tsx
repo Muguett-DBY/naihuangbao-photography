@@ -15,23 +15,23 @@ export function BookingPage() {
 
   return (
     <PageTransition ref={rootRef}>
-      <section className="section-shell hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading">
+      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
+        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
           <span className="section-eyebrow">{t("packages.eyebrow")}</span>
           <h1>{t("nav.booking")}</h1>
           <p>{t("aboutBooking.desc")}</p>
         </div>
       </section>
 
-      <Suspense fallback={<div className="section-shell" style={{ minHeight: 300 }} />}>
+      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
         <Packages />
       </Suspense>
 
-      <Suspense fallback={<div className="section-shell" style={{ minHeight: 300 }} />}>
+      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
         <ServiceDetails />
       </Suspense>
 
-      <Suspense fallback={<div className="section-shell" style={{ minHeight: 300 }} />}>
+      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
         <ProcessAndFaq />
       </Suspense>
     </PageTransition>

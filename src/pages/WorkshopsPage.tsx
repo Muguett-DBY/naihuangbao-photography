@@ -42,15 +42,15 @@ export function WorkshopsPage() {
 
   return (
     <PageTransition ref={rootRef}>
-      <section className="section-shell hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading">
+      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
+        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
           <span className="section-eyebrow">Workshops</span>
           <h1>{t("workshops.title")}</h1>
           <p>{t("workshops.intro")}</p>
         </div>
       </section>
 
-      <section className="section-shell">
+      <section className="section-shell is-visible">
         {loading ? (
           <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
         ) : workshops.length === 0 ? (

@@ -17,8 +17,8 @@ export function GalleryPage() {
 
   return (
     <PageTransition ref={rootRef}>
-      <section className="section-shell hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading">
+      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
+        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
           <span className="section-eyebrow">Portfolio</span>
           <h1>{t("gallery.title")}</h1>
           <p>{t("gallery.description")}</p>
@@ -29,15 +29,15 @@ export function GalleryPage() {
         <PhotoWall3D />
       </Suspense>
 
-      <Suspense fallback={<div className="section-shell" style={{ minHeight: 200 }} />}>
+      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 200 }} />}>
         <HorizontalGallery />
       </Suspense>
 
-      <Suspense fallback={<div className="section-shell" style={{ minHeight: 200 }} />}>
+      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 200 }} />}>
         <PolaroidWall />
       </Suspense>
 
-      <section className="section-shell" id="gallery">
+      <section className="section-shell is-visible" id="gallery">
         <Gallery />
       </section>
 
