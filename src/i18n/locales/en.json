@@ -368,6 +368,15 @@
     "tagline": "{{city}} · Portrait · Couple",
     "backToTop": "Back to top"
   },
+  "newsletter": {
+    "title": "Stay Updated",
+    "description": "Get the latest updates on events and offers",
+    "placeholder": "Enter your email",
+    "submit": "Subscribe",
+    "success": "Subscribed successfully!",
+    "error": "Subscription failed, please try again later",
+    "duplicate": "This email is already subscribed"
+  },
   "courses": {
     "title": "Photography Courses",
     "intro": "From basics to advanced, learn portrait photography systematically",
@@ -470,6 +479,7 @@
     "backToList": "Back to Presets",
     "notFound": "Preset not found",
     "about": "About This Preset",
+    "preview": "Live Preview",
     "includes": "What's Included",
     "compatibility": "Compatible Software",
     "download": "Download Now",
@@ -651,6 +661,19 @@
       "done": "Completed",
       "cancelled": "Cancelled",
       "confirmed": "Confirmed"
+    }
+  },
+  "presetPreview": {
+    "upload": "Upload Photo to Preview",
+    "download": "Download",
+    "intensity": "Intensity",
+    "filters": {
+      "film-look": "Film Look",
+      "warm": "Warm",
+      "cool": "Cool",
+      "vintage": "Vintage",
+      "bw": "B&W",
+      "matte": "Matte"
     }
   },
   "seo": {

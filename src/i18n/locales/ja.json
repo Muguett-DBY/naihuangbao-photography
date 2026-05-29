@@ -368,6 +368,15 @@
     "tagline": "{{city}} · 女性写真 · カップル写真",
     "backToTop": "トップへ"
   },
+  "newsletter": {
+    "title": "最新情報を受け取る",
+    "description": "最新のイベントやオファー情報をお届けします",
+    "placeholder": "メールアドレスを入力",
+    "submit": "購読",
+    "success": "購読成功！",
+    "error": "購読失敗、しばらくしてからお試しください",
+    "duplicate": "このメールアドレスは既に購読されています"
+  },
   "courses": {
     "title": "写真講座",
     "intro": "基礎から応用まで、系統的にポートレート写真を学ぶ",
@@ -469,6 +478,7 @@
     "backToList": "プリセット一覧に戻る",
     "notFound": "プリセットが見つかりません",
     "about": "プリセットについて",
+    "preview": "ライブプレビュー",
     "includes": "含まれるもの",
     "compatibility": "対応ソフト",
     "download": "ダウンロード",
@@ -650,6 +660,19 @@
       "done": "完了",
       "cancelled": "キャンセル済み",
       "confirmed": "確認済み"
+    }
+  },
+  "presetPreview": {
+    "upload": "写真をアップロードしてプレビュー",
+    "download": "ダウンロード",
+    "intensity": "強度",
+    "filters": {
+      "film-look": "フィルム調",
+      "warm": "ウォーム",
+      "cool": "クール",
+      "vintage": "ビンテージ",
+      "bw": "白黒",
+      "matte": "マット"
     }
   },
   "seo": {

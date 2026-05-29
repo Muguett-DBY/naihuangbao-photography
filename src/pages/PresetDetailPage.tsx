@@ -9,6 +9,7 @@ import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { CompareSlider } from "../components/CompareSlider";
+import { PresetPreview } from "../components/PresetPreview";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import type { Preset } from "../types/content";
 
@@ -86,6 +87,13 @@ export function PresetDetailPage() {
               afterAlt={`${getName(preset, lang)} — ${t("compare.after")}`}
             />
           )}
+        </div>
+      </section>
+
+      <section className="section-shell is-visible">
+        <div className="preset-detail-section">
+          <h2>{t("presetDetail.preview")}</h2>
+          <PresetPreview presetId={id} />
         </div>
       </section>
 

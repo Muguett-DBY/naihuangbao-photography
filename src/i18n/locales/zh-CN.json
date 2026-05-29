@@ -368,6 +368,15 @@
     "tagline": "{{city}} · 女生写真 · 情侣约拍",
     "backToTop": "回到顶部"
   },
+  "newsletter": {
+    "title": "订阅更新",
+    "description": "获取最新活动和优惠信息",
+    "placeholder": "输入邮箱",
+    "submit": "订阅",
+    "success": "订阅成功！",
+    "error": "订阅失败，请稍后重试",
+    "duplicate": "该邮箱已订阅"
+  },
   "courses": {
     "title": "摄影课程",
     "intro": "从基础到进阶，系统学习人像摄影",
@@ -470,6 +479,7 @@
     "backToList": "返回预设列表",
     "notFound": "预设不存在",
     "about": "预设说明",
+    "preview": "实时预览",
     "includes": "包含内容",
     "compatibility": "兼容软件",
     "download": "立即下载",
@@ -651,6 +661,19 @@
       "done": "已完成",
       "cancelled": "已取消",
       "confirmed": "已确认"
+    }
+  },
+  "presetPreview": {
+    "upload": "上传照片预览",
+    "download": "下载",
+    "intensity": "强度",
+    "filters": {
+      "film-look": "胶片感",
+      "warm": "暖调",
+      "cool": "冷调",
+      "vintage": "复古",
+      "bw": "黑白",
+      "matte": "哑光"
     }
   },
   "seo": {

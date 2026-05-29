@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useInView } from "../../hooks/useInView";
 import { useSiteContent } from "../../hooks/useSiteContent";
+import { NewsletterForm } from "../NewsletterForm";
 
 export function Footer() {
   const { t } = useTranslation();
@@ -38,6 +39,9 @@ export function Footer() {
         <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
           {t("common.socialXiaohongshu")}<ExternalLink size={12} />
         </a>
+      </div>
+      <div className="footer-newsletter">
+        <NewsletterForm />
       </div>
       <p className="footer-tagline">{sectionCopy.footer.tagline}</p>
       <button

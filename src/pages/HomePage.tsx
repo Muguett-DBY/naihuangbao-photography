@@ -13,6 +13,9 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
 const WhyChooseUs = lazy(() => import("../components/WhyChooseUs").then((m) => ({ default: m.WhyChooseUs })));
 const Reviews = lazy(() => import("../components/Reviews").then((m) => ({ default: m.Reviews })));
+const FilmStripStory = lazy(() =>
+  import("../components/FilmStripStory").then((m) => ({ default: m.FilmStripStory }))
+);
 
 export function HomePage() {
   const { t } = useTranslation();
@@ -72,6 +75,13 @@ export function HomePage() {
           <div className="hero-scroll-line" />
         </div>
       </section>
+
+      {/* ── Film Strip Story ── */}
+      <ErrorBoundary>
+        <Suspense fallback={<div style={{ minHeight: 300 }} />}>
+          <FilmStripStory />
+        </Suspense>
+      </ErrorBoundary>
 
       {/* ── Gallery（组件自带 Section 标题，无需外层再包） ── */}
       <div id="featured" style={{ scrollMarginTop: 80 }}>
