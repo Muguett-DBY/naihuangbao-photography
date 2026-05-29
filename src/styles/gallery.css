@@ -509,6 +509,16 @@
   width: max-content;
   white-space: nowrap;
   will-change: transform;
+  animation: galleryScroll 30s linear infinite;
+}
+
+@keyframes galleryScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .gallery-filmstrip-item {
