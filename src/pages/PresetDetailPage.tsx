@@ -97,7 +97,7 @@ export function PresetDetailPage() {
           <div className="preset-detail-includes">
             <h3>{t("presetDetail.includes")}</h3>
             <ul>
-              {["Lightroom Desktop Presets (.xmp)", "Lightroom Mobile Presets (.dng)", "Lightroom Classic Presets", "Installation Guide (PDF)"].map((item) => (
+              {(t("presetDetail.includesItems", { returnObjects: true }) as string[]).map((item) => (
                 <li key={item}>
                   <Check size={16} /> {item}
                 </li>
@@ -108,7 +108,7 @@ export function PresetDetailPage() {
           <div className="preset-detail-compatibility">
             <h3>{t("presetDetail.compatibility")}</h3>
             <div className="preset-detail-compatibility-tags">
-              {["Lightroom CC", "Lightroom Classic", "Lightroom Mobile", "Photoshop Camera Raw"].map((v) => (
+              {(t("presetDetail.compatibilityTags", { returnObjects: true }) as string[]).map((v) => (
                 <span key={v} className="preset-detail-compatibility-tag">{v}</span>
               ))}
             </div>
@@ -129,11 +129,7 @@ export function PresetDetailPage() {
         <div className="preset-detail-section">
           <h2>{t("presetDetail.reviews")}</h2>
           <div className="preset-detail-reviews">
-            {[
-              { name: "小林", text: "效果非常好，一键套用就很自然！胶片感很足。", stars: 5 },
-              { name: "Amy", text: "Love the warm tones! Perfect for my autumn photos.", stars: 5 },
-              { name: "Zoe", text: "日系清新预设太好用了，拍校园写真必备。", stars: 4 },
-            ].map((r, i) => (
+            {(t("presetDetail.presetReviews", { returnObjects: true }) as Array<{ name: string; text: string; stars: number }>).map((r, i) => (
               <div key={i} className="preset-detail-review-item">
                 <div className="preset-detail-review-stars">
                   {Array.from({ length: r.stars }).map((_, j) => (

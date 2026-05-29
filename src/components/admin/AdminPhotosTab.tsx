@@ -1,11 +1,14 @@
 import { ImagePlus, Pencil, Trash2, Upload } from "lucide-react";
 import { type FormEvent, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
-import { styleLabels } from "../../data/site";
+import { getStyleLabels } from "../../data/site";
 import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
 import type { ToastType } from "../../lib/admin-helpers";
 
 export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: ToastType) => void }) {
+  const { t } = useTranslation();
+  const styleLabels = getStyleLabels(t);
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const [deletingPhoto, setDeletingPhoto] = useState<PhotoItem | null>(null);
   const [deleting, setDeleting] = useState(false);

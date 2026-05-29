@@ -108,7 +108,7 @@ export function Gallery() {
         {(() => {
           const albums = new Map<string, typeof photos>();
           for (const p of photos) {
-            const key = p.album || "其他";
+            const key = p.album || t("gallery.otherAlbum");
             if (!albums.has(key)) albums.set(key, []);
             albums.get(key)!.push(p);
           }
@@ -134,7 +134,7 @@ export function Gallery() {
                         document.addEventListener("touchend", clear, { once: true });
                         document.addEventListener("touchmove", clear, { once: true });
                       }}
-                      aria-label={`查看大图：${item.title}`}
+                      aria-label={`${t("gallery.viewLargeImage")}${item.title}`}
                     >
                       <ImageWithFallback
                         src={item.imageUrl || ""}

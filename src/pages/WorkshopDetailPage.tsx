@@ -152,9 +152,9 @@ export function WorkshopDetailPage() {
           <h2>{t("workshopDetail.guide")}</h2>
           <div className="workshop-detail-guide-grid">
             {[
-              { title: t("workshopDetail.gearTitle"), items: ["相机+镜头", "备用电池", "存储卡", "三脚架（可选）"] },
-              { title: t("workshopDetail.clothingTitle"), items: ["舒适运动鞋", "防晒帽", "深色衣物为佳", "备一件外套"] },
-              { title: t("workshopDetail.tipsTitle"), items: ["提前到场", "手机充电", "保持开放心态", "享受拍摄过程"] },
+              { title: t("workshopDetail.gearTitle"), items: t("workshopDetail.gearItems", { returnObjects: true }) as string[] },
+              { title: t("workshopDetail.clothingTitle"), items: t("workshopDetail.clothingItems", { returnObjects: true }) as string[] },
+              { title: t("workshopDetail.tipsTitle"), items: t("workshopDetail.tipsItems", { returnObjects: true }) as string[] },
             ].map((section, i) => (
               <div key={i} className="workshop-detail-guide-card">
                 <h4>{section.title}</h4>

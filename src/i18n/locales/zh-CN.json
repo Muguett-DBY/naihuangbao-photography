@@ -34,6 +34,9 @@
     "title": "作品集",
     "intro": "真实作品按风格整理，点击可看大图",
     "description": "公园日常、江南感、城市街拍、室内写真和情侣约拍会分开筛选。这里只展示已授权公开的真实作品，不混入氛围图。",
+    "otherAlbum": "其他",
+    "viewLargeImage": "查看大图：",
+    "placeholder": "授权作品待上传",
     "filters": {
       "all": "全部",
       "jiangnan": "江南感",
@@ -461,7 +464,24 @@
     "before": "原图",
     "after": "效果",
     "reviews": "用户评价",
-    "related": "相关推荐"
+    "related": "相关推荐",
+    "presetReviews": [
+      { "name": "小林", "text": "效果非常好，一键套用就很自然！胶片感很足。", "stars": 5 },
+      { "name": "Amy", "text": "Love the warm tones! Perfect for my autumn photos.", "stars": 5 },
+      { "name": "Zoe", "text": "日系清新预设太好用了，拍校园写真必备。", "stars": 4 }
+    ],
+    "includesItems": [
+      "Lightroom Desktop Presets (.xmp)",
+      "Lightroom Mobile Presets (.dng)",
+      "Lightroom Classic Presets",
+      "Installation Guide (PDF)"
+    ],
+    "compatibilityTags": [
+      "Lightroom CC",
+      "Lightroom Classic",
+      "Lightroom Mobile",
+      "Photoshop Camera Raw"
+    ]
   },
   "workshopDetail": {
     "backToList": "返回活动列表",
@@ -479,8 +499,11 @@
     "step4": "作品互评，交流心得",
     "step5": "合影留念，活动结束",
     "gearTitle": "装备清单",
+    "gearItems": ["相机+镜头", "备用电池", "存储卡", "三脚架（可选）"],
     "clothingTitle": "穿着建议",
-    "tipsTitle": "温馨提醒"
+    "clothingItems": ["舒适运动鞋", "防晒帽", "深色衣物为佳", "备一件外套"],
+    "tipsTitle": "温馨提醒",
+    "tipsItems": ["提前到场", "手机充电", "保持开放心态", "享受拍摄过程"]
   },
   "shopDetail": {
     "backToList": "返回周边列表",

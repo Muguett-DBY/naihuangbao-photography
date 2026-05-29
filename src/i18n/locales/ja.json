@@ -34,6 +34,9 @@
     "title": "ギャラリー",
     "intro": "スタイル別に整理された実際の撮影作品 — クリックで拡大表示",
     "description": "公園、江南、ストリート、屋内、カップル撮影をフィルター別に表示。許可を得た作品のみ掲載しています。",
+    "otherAlbum": "その他",
+    "viewLargeImage": "大きな画像を見る：",
+    "placeholder": "許可済み作品のアップロード待ち",
     "filters": {
       "all": "すべて",
       "jiangnan": "江南",
@@ -460,7 +463,24 @@
     "before": "元画像",
     "after": "効果",
     "reviews": "ユーザーの声",
-    "related": "関連プリセット"
+    "related": "関連プリセット",
+    "presetReviews": [
+      { "name": "コバヤシ", "text": "効果が素晴らしい! 一键適用でとても自然でフィルム感があります。", "stars": 5 },
+      { "name": "Amy", "text": "Love the warm tones! Perfect for my autumn photos.", "stars": 5 },
+      { "name": "Zoe", "text": "日系クリアプリセットがとても使いやすい。キャンパス写真撮影に必須です。", "stars": 4 }
+    ],
+    "includesItems": [
+      "Lightroom Desktop Presets (.xmp)",
+      "Lightroom Mobile Presets (.dng)",
+      "Lightroom Classic Presets",
+      "Installation Guide (PDF)"
+    ],
+    "compatibilityTags": [
+      "Lightroom CC",
+      "Lightroom Classic",
+      "Lightroom Mobile",
+      "Photoshop Camera Raw"
+    ]
   },
   "workshopDetail": {
     "backToList": "ワークショップ一覧に戻る",
@@ -478,8 +498,11 @@
     "step4": "写真レビュー・フィードバック",
     "step5": "集合写真・終了",
     "gearTitle": "装備リスト",
+    "gearItems": ["カメラ + レンズ", "予備バッテリー", "メモリカード", "三脚（任意）"],
     "clothingTitle": "服装のガイド",
-    "tipsTitle": "お役立ち情報"
+    "clothingItems": ["履きやすいスニーカー", "日よけ帽子", "ダークな服装がおすすめ", "上着を一枚持参"],
+    "tipsTitle": "お役立ち情報",
+    "tipsItems": ["早めに到着", "スマホを充電", "オープンな気持ち", "撮影を楽しむ"]
   },
   "shopDetail": {
     "backToList": "グッズ一覧に戻る",

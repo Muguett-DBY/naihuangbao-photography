@@ -1,3 +1,5 @@
+import type { TFunction } from "i18next";
+
 export const siteConfig = {
   brandName: "奶黄包摄影",
   city: "南京",
@@ -11,12 +13,17 @@ export const siteConfig = {
     "https://www.xiaohongshu.com/user/profile/60f5b14b000000002002fa9f",
 };
 
-export const styleLabels = {
-  all: "全部",
-  jiangnan: "江南感",
-  street: "街拍",
-  park: "公园",
-  sweet: "甜酷",
-  couple: "情侣",
-  indoor: "室内",
-} as const;
+export const STYLE_KEYS = ["all", "jiangnan", "street", "park", "sweet", "couple", "indoor"] as const;
+export type StyleKey = (typeof STYLE_KEYS)[number];
+
+export function getStyleLabels(t: TFunction): Record<StyleKey, string> {
+  return {
+    all: t("gallery.filters.all"),
+    jiangnan: t("gallery.filters.jiangnan"),
+    street: t("gallery.filters.street"),
+    park: t("gallery.filters.park"),
+    sweet: t("gallery.filters.sweet"),
+    couple: t("gallery.filters.couple"),
+    indoor: t("gallery.filters.indoor"),
+  };
+}

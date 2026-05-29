@@ -34,6 +34,9 @@
     "title": "갤러리",
     "intro": "스타일별로 정리된 실제 고객 사진 — 클릭하여 원본 보기",
     "description": "공원, 장난 감성, 거리, 실내 및 커플 촬영을 분류하여 보여줍니다. 승인된 실제 사진만 게시됩니다.",
+    "otherAlbum": "기타",
+    "viewLargeImage": "큰 이미지 보기: ",
+    "placeholder": "인가된 작품 업로드 대기",
     "filters": {
       "all": "전체",
       "jiangnan": "장난",
@@ -460,7 +463,24 @@
     "before": "원본",
     "after": "효과",
     "reviews": "사용 후기",
-    "related": "관련 프리셋"
+    "related": "관련 프리셋",
+    "presetReviews": [
+      { "name": "소린", "text": "효과가非常好! 원클릭 적용으로도 매우 자연스럽고 필름 감성가 충분합니다.", "stars": 5 },
+      { "name": "Amy", "text": "Love the warm tones! Perfect for my autumn photos.", "stars": 5 },
+      { "name": "Zoe", "text": "일본풍 프리셋이 너무 좋아요. 캠퍼스 사진 촬영에 필수입니다.", "stars": 4 }
+    ],
+    "includesItems": [
+      "Lightroom Desktop Presets (.xmp)",
+      "Lightroom Mobile Presets (.dng)",
+      "Lightroom Classic Presets",
+      "Installation Guide (PDF)"
+    ],
+    "compatibilityTags": [
+      "Lightroom CC",
+      "Lightroom Classic",
+      "Lightroom Mobile",
+      "Photoshop Camera Raw"
+    ]
   },
   "workshopDetail": {
     "backToList": "워크숍 목록으로",
@@ -478,8 +498,11 @@
     "step4": "사진 리뷰 및 피드백",
     "step5": "기념 촬영 및 마무리",
     "gearTitle": "장비 목록",
+    "gearItems": ["카메라 + 렌즈", "예비 배터리", "메모리 카드", "삼각대 (선택)"],
     "clothingTitle": "복장 안내",
-    "tipsTitle": "유용한 팁"
+    "clothingItems": ["편한 운동화", "양산", "어두운 의상 권장", "겉옷 준비"],
+    "tipsTitle": "유용한 팁",
+    "tipsItems": ["일찍 도착", "휴대폰 충전", "열린 마음", "촬영 즐기기"]
   },
   "shopDetail": {
     "backToList": "상품 목록으로",

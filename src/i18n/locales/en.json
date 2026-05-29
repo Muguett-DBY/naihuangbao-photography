@@ -34,6 +34,9 @@
     "title": "Gallery",
     "intro": "Real client photos organized by style — click to view full size",
     "description": "Park shoots, Jiangnan vibes, street style, indoor portraits and couple sessions are filtered separately. Only authorized real client works are shown here.",
+    "otherAlbum": "Other",
+    "viewLargeImage": "View large image: ",
+    "placeholder": "Authorized works pending upload",
     "filters": {
       "all": "All",
       "jiangnan": "Jiangnan",
@@ -461,7 +464,24 @@
     "before": "Before",
     "after": "After",
     "reviews": "User Reviews",
-    "related": "Related Presets"
+    "related": "Related Presets",
+    "presetReviews": [
+      { "name": "Xiaolin", "text": "Works great! One-click application looks very natural with a strong film feel.", "stars": 5 },
+      { "name": "Amy", "text": "Love the warm tones! Perfect for my autumn photos.", "stars": 5 },
+      { "name": "Zoe", "text": "The Japanese fresh preset is amazing, essential for campus portraits.", "stars": 4 }
+    ],
+    "includesItems": [
+      "Lightroom Desktop Presets (.xmp)",
+      "Lightroom Mobile Presets (.dng)",
+      "Lightroom Classic Presets",
+      "Installation Guide (PDF)"
+    ],
+    "compatibilityTags": [
+      "Lightroom CC",
+      "Lightroom Classic",
+      "Lightroom Mobile",
+      "Photoshop Camera Raw"
+    ]
   },
   "workshopDetail": {
     "backToList": "Back to Workshops",
@@ -479,8 +499,11 @@
     "step4": "Photo review & feedback",
     "step5": "Group photo & wrap up",
     "gearTitle": "Equipment List",
+    "gearItems": ["Camera + Lens", "Spare Battery", "Memory Card", "Tripod (optional)"],
     "clothingTitle": "What to Wear",
-    "tipsTitle": "Helpful Tips"
+    "clothingItems": ["Comfortable shoes", "Sun hat", "Dark clothing preferred", "Bring a jacket"],
+    "tipsTitle": "Helpful Tips",
+    "tipsItems": ["Arrive early", "Charge your phone", "Keep an open mind", "Enjoy the process"]
   },
   "shopDetail": {
     "backToList": "Back to Shop",
