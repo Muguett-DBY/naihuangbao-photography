@@ -1576,11 +1576,24 @@ export default function PhotoEditorPage() {
             <canvas
               ref={canvasRef}
               className="editor-canvas"
-              style={showCompare ? { clipPath: `inset(0 ${100 - comparePos}% 0 0)` } : undefined}
+              style={{
+                ...(showCompare ? { clipPath: `inset(0 ${100 - comparePos}% 0 0)` } : undefined),
+                ...(blemishMode || localBrushActive ? { cursor: "crosshair" } : undefined),
+              }}
               onClick={blemishMode ? handleCanvasClick : undefined}
               onMouseDown={localBrushActive ? (e) => { handleBrushPaint(e); } : onOverlayMouseDown}
               onMouseMove={localBrushActive ? handleBrushPaint : onOverlayMouseMove}
               onMouseUp={onOverlayMouseUp}
+              onTouchStart={(e) => {
+                if (blemishMode) { handleCanvasClick(e as any); }
+                else if (localBrushActive) { handleBrushPaint(e as any); }
+                else { onOverlayMouseDown(e as any); }
+              }}
+              onTouchMove={(e) => {
+                if (localBrushActive) { handleBrushPaint(e as any); }
+                else { onOverlayMouseMove(e as any); }
+              }}
+              onTouchEnd={onOverlayMouseUp}
               onContextMenu={onOverlayContextMenu}
               role="img"
               aria-label={t("editor.canvasLabel")}

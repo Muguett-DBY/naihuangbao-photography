@@ -2773,17 +2773,266 @@
   cursor: pointer;
 }
 
+/* ── Mobile Responsive ── */
 @media (max-width: 768px) {
+  .editor-header {
+    padding: 16px 16px 12px;
+  }
+
+  .editor-header h1 {
+    font-size: 1.3rem;
+  }
+
+  .editor-header p {
+    font-size: 0.85rem;
+  }
+
+  /* Toolbar: horizontal scroll */
+  .editor-toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+    padding: 0 12px 10px;
+    gap: 6px;
+    scrollbar-width: none;
+  }
+  .editor-toolbar::-webkit-scrollbar { display: none; }
+
+  .editor-btn {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    min-height: 36px;
+  }
+
+  /* Workspace: stacked layout */
   .editor-workspace {
     flex-direction: column;
+    gap: 12px;
+    padding: 0 8px 20px;
+  }
+
+  /* Canvas: full width */
+  .editor-canvas-container {
+    min-height: 280px;
+    border-radius: 12px;
+  }
+
+  /* Beauty panel: bottom sheet style */
+  .editor-beauty-panel {
+    width: 100%;
+    padding: 12px;
+    border-radius: 16px 16px 0 0;
+    max-height: 50vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Categories: horizontal scroll with snap */
+  .editor-categories {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+  .editor-categories::-webkit-scrollbar { display: none; }
+
+  .editor-cat-btn {
+    scroll-snap-align: start;
+    padding: 8px 14px;
+    font-size: 0.75rem;
+  }
+
+  /* Tools grid: 4 columns on mobile */
+  .editor-tools {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .editor-tool-btn {
+    padding: 10px 4px;
+    min-height: 52px;
+    border-radius: 10px;
+  }
+
+  .editor-tool-icon {
+    font-size: 1.2rem;
+  }
+
+  .editor-tool-label {
+    font-size: 0.65rem;
+    line-height: 1.1;
+  }
+
+  /* Slider: larger touch target */
+  .editor-slider {
+    height: 8px;
+    margin: 4px 0;
+  }
+
+  .editor-slider::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .editor-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+
+  .editor-slider-group {
+    margin-bottom: 14px;
+  }
+
+  /* Filter grid: 3 columns, smaller */
+  .editor-filter-grid {
+    gap: 6px;
+  }
+
+  .editor-filter-btn {
+    padding: 8px 4px;
+    min-height: 52px;
+  }
+
+  .editor-filter-icon {
+    font-size: 1.1rem;
+  }
+
+  .editor-filter-name {
+    font-size: 0.6rem;
+  }
+
+  /* Compare line: thicker for touch */
+  .editor-compare-line {
+    width: 8px;
+  }
+
+  .editor-compare-line::before {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Popup panels: full width */
+  .editor-popup-panel {
+    flex-wrap: wrap;
+    padding: 8px 12px;
+  }
+
+  .editor-text-input {
+    min-width: 150px;
+    font-size: 0.85rem;
+  }
+
+  .editor-sticker-panel {
+    gap: 4px;
+  }
+
+  .editor-sticker-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+  }
+
+  .editor-frame-panel {
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .editor-frame-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+
+  /* Export modal: full screen on mobile */
+  .editor-modal-overlay {
+    align-items: flex-end;
+  }
+
+  .editor-modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    padding: 20px 16px;
+    max-height: 70vh;
+  }
+
+  /* Preset grid: 2 columns */
+  .editor-presets {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .editor-preset-btn {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 380px) {
+  .editor-tools {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .editor-tool-btn {
+    padding: 8px 2px;
+    min-height: 48px;
+  }
+
+  .editor-tool-label {
+    font-size: 0.6rem;
+  }
+
+  .editor-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .editor-workspace {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .editor-canvas-container {
+    flex: 1;
+    min-height: 200px;
+    max-height: 60vh;
   }
 
   .editor-beauty-panel {
-    width: 100%;
+    width: 280px;
+    max-height: 60vh;
+    border-radius: 16px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .editor-btn {
+    min-height: 44px;
+    min-width: 44px;
   }
 
-  .editor-tools {
-    grid-template-columns: repeat(4, 1fr);
+  .editor-tool-btn {
+    min-height: 52px;
+  }
+
+  .editor-slider::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+  }
+
+  .editor-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
   }
 }
 
@@ -2804,7 +3053,18 @@
   box-shadow: 0 0 8px rgba(0,0,0,0.3);
 }
 
+/* Invisible larger touch area for compare handle */
 .editor-compare-line::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+}
+
+.editor-compare-line::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -2815,6 +3075,7 @@
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  pointer-events: none;
 }
 
 .editor-compare-label {
