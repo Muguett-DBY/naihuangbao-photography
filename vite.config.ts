@@ -14,9 +14,7 @@ export default defineConfig({
           if (id.includes("node_modules/lucide-react")) {
             return "icon-vendor";
           }
-          if (id.includes("node_modules/three") || id.includes("node_modules/@react-three")) {
-            return "three-vendor";
-          }
+
           if (id.includes("node_modules/gsap")) {
             return "animation-vendor";
           }

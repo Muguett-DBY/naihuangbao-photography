@@ -6,7 +6,7 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
 const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
-const PhotoWall3D = lazy(() => import("../components/PhotoWall3D").then((m) => ({ default: m.PhotoWall3D })));
+const PhotoWall3DCss = lazy(() => import("../components/PhotoWall3DCss").then((m) => ({ default: m.PhotoWall3DCss })));
 const HorizontalGallery = lazy(() => import("../components/HorizontalGallery").then((m) => ({ default: m.HorizontalGallery })));
 const PolaroidWall = lazy(() => import("../components/PolaroidWall").then((m) => ({ default: m.PolaroidWall })));
 const PhotoMap = lazy(() => import("../components/PhotoMap").then((m) => ({ default: m.PhotoMap })));
@@ -30,7 +30,7 @@ export function GalleryPage() {
 
       <ErrorBoundary>
         <Suspense fallback={<div style={{ height: "min(60vh, 480px)" }} />}>
-          <PhotoWall3D />
+          <PhotoWall3DCss />
         </Suspense>
       </ErrorBoundary>
 
