@@ -18,9 +18,15 @@ export function LoadingScreen() {
   const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let cancelled = false;
+    const fallbackTimer = setTimeout(() => {
+      if (!cancelled) setShow(false);
+    }, 5000);
+
     import("gsap").then(({ default: gsap }) => {
+      if (cancelled) return;
       const tl = gsap.timeline({
-        onComplete: () => setShow(false),
+        onComplete: () => { if (!cancelled) setShow(false); },
       });
 
       tl
@@ -40,7 +46,11 @@ export function LoadingScreen() {
           { opacity: 0, scale: 0.95, duration: 0.5, ease: "power2.in" },
           "+=1.0",
         );
+    }).catch(() => {
+      if (!cancelled) setShow(false);
     });
+
+    return () => { cancelled = true; clearTimeout(fallbackTimer); };
   }, []);
 
   if (!show) return null;

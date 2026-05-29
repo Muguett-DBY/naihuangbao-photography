@@ -155,6 +155,7 @@ export default function PhotoEditorPage() {
   const rafRef = useRef(0);
   const blemishCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const faceApiRef = useRef<any>(null);
+  const originalSizeRef = useRef<{ w: number; h: number } | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [detecting, setDetecting] = useState(false);
@@ -296,8 +297,15 @@ export default function PhotoEditorPage() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
+      // Reset canvas to original dimensions if a frame was applied
+      const orig = originalSizeRef.current;
+      if (orig && (canvas.width !== orig.w || canvas.height !== orig.h)) {
+        canvas.width = orig.w;
+        canvas.height = orig.h;
+      }
+
       // Draw original
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
       // Apply face effects if landmarks available
       if (lm) {
@@ -1179,6 +1187,7 @@ export default function PhotoEditorPage() {
           const canvas = canvasRef.current;
           if (!canvas) return;
           canvas.width = img.width; canvas.height = img.height;
+          originalSizeRef.current = { w: img.width, h: img.height };
           const ctx = canvas.getContext("2d");
           if (!ctx) return;
           ctx.drawImage(img, 0, 0);
@@ -1715,7 +1724,7 @@ function applyWarp(d: Uint8ClampedArray, w: number, h: number, cx: number, cy: n
   for (let i = 0; i < d.length; i++) d[i] = tmp[i];
 }
 
-// Helper: Apply frame
+// Helper: Apply frame (does NOT modify canvas dimensions)
 function applyFrame(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, frameId: string) {
   const frame = FRAMES.find(f => f.id === frameId);
   if (!frame || frameId === "none") return;
@@ -1723,36 +1732,32 @@ function applyFrame(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, fr
   const pad = frame.padding || 0;
   const padBottom = (frame as { paddingBottom?: number }).paddingBottom ?? pad;
 
-  // Resize canvas to fit frame
-  const newW = w + pad * 2;
-  const newH = h + pad + padBottom;
+  // Save current content
   const tmpCanvas = document.createElement("canvas");
-  tmpCanvas.width = newW;
-  tmpCanvas.height = newH;
-  const tmpCtx = tmpCanvas.getContext("2d")!;
+  tmpCanvas.width = w; tmpCanvas.height = h;
+  const tmpCtx = tmpCanvas.getContext("2d");
   if (!tmpCtx) return;
+  tmpCtx.drawImage(canvas, 0, 0);
 
   // Fill background
-  tmpCtx.fillStyle = frame.bg || "transparent";
-  tmpCtx.fillRect(0, 0, newW, newH);
+  ctx.fillStyle = frame.bg || "transparent";
+  ctx.fillRect(0, 0, w, h);
 
   // Rounded rect clip
   if (frame.borderRadius) {
-    tmpCtx.beginPath();
-    tmpCtx.roundRect(0, 0, newW, newH, frame.borderRadius);
-    tmpCtx.clip();
-    // Re-fill after clip
-    tmpCtx.fillStyle = frame.bg || "transparent";
-    tmpCtx.fillRect(0, 0, newW, newH);
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(0, 0, w, h, frame.borderRadius);
+    ctx.clip();
+    ctx.fillStyle = frame.bg || "transparent";
+    ctx.fillRect(0, 0, w, h);
+    // Draw original content centered with padding
+    ctx.drawImage(tmpCanvas, pad, pad, w - pad * 2, h - pad - padBottom);
+    ctx.restore();
+  } else {
+    // Draw original content with padding
+    ctx.drawImage(tmpCanvas, pad, pad, w - pad * 2, h - pad - padBottom);
   }
-
-  // Draw the original canvas content inside the frame
-  tmpCtx.drawImage(canvas, pad, pad);
-
-  // Resize the main canvas
-  canvas.width = newW;
-  canvas.height = newH;
-  ctx.drawImage(tmpCanvas, 0, 0);
 }
 
 // Helper: Smart auto-enhance based on face analysis

@@ -36,8 +36,10 @@ export function RootLayout() {
     }
   }, []);
 
+  const isEditor = location.pathname === "/editor";
+
   return (
-    <div ref={rootRef}>
+    <div ref={rootRef} className={isEditor ? "is-editor" : undefined}>
       <a
         href="#main-content"
         className="skip-link"

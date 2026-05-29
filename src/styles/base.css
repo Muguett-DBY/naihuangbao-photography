@@ -113,6 +113,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Editor page: hide decorative pseudo-elements ── */
+.is-editor body::before,
+.is-editor body::after,
+.is-editor main::before,
+.is-editor main::after {
+  display: none !important;
+}
+
 /* Smooth mood-switch transition */
 :root.style-transition *,
 :root.style-transition *::before,
