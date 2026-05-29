@@ -3016,3 +3016,36 @@
   color: #fff;
   border-color: var(--peach-accent);
 }
+
+/* New feature panels */
+.editor-brush-controls,
+.editor-color-splash-controls,
+.editor-double-exposure-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.editor-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--caramel-ink);
+  white-space: nowrap;
+}
+
+.editor-select {
+  padding: 6px 10px;
+  border: 1px solid rgba(139, 94, 74, 0.15);
+  border-radius: 8px;
+  background: var(--custard-bg);
+  color: var(--caramel-ink);
+  font-size: 0.85rem;
+  font-family: var(--font-ui);
+  cursor: pointer;
+}
+
+.editor-select:focus {
+  outline: none;
+  border-color: var(--peach-accent);
+}

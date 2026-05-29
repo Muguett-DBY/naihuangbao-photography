@@ -6,13 +6,18 @@ import { PageTransition } from "../components/shared/PageTransition";
 const MODEL_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model";
 const MAX_HISTORY = 20;
 
-type BeautyCategory = "beauty" | "reshape" | "color" | "filter" | "tools";
+type BeautyCategory = "beauty" | "reshape" | "color" | "filter" | "tools" | "bg" | "makeup";
 type BeautyTool =
   | "smooth" | "slim" | "bigeye" | "whiten" | "sharpen"
   | "nose" | "lip" | "forehead" | "eyebag" | "darkcircle"
   | "blemish" | "facelift" | "jawline" | "faceWidth" | "eyeDistance" | "faceLength" | "cheekbone" | "chin" | "philtrum"
   | "temperature" | "saturation" | "contrast" | "brightness" | "vignette" | "grain"
-  | "teeth" | "blur_bg";
+  | "teeth" | "blur_bg"
+  | "bg_remove" | "bg_solid" | "bg_gradient"
+  | "lipstick" | "blush" | "eyeshadow" | "eyeliner"
+  | "local_bright" | "local_warm" | "local_sat"
+  | "color_splash"
+  | "double_exposure";
 
 interface BeautySettings {
   [key: string]: number;
@@ -22,6 +27,11 @@ interface BeautySettings {
   faceWidth: number; eyeDistance: number; faceLength: number; cheekbone: number; chin: number; philtrum: number;
   temperature: number; saturation: number; contrast: number; brightness: number; vignette: number; grain: number;
   teeth: number; blur_bg: number;
+  bg_remove: number; bg_solid: number; bg_gradient: number;
+  lipstick: number; blush: number; eyeshadow: number; eyeliner: number;
+  local_bright: number; local_warm: number; local_sat: number;
+  color_splash: number;
+  double_exposure: number;
 }
 
 const INITIAL: BeautySettings = {
@@ -31,6 +41,11 @@ const INITIAL: BeautySettings = {
   faceWidth: 0, eyeDistance: 0, faceLength: 0, cheekbone: 0, chin: 0, philtrum: 0,
   temperature: 0, saturation: 0, contrast: 0, brightness: 0, vignette: 0, grain: 0,
   teeth: 0, blur_bg: 0,
+  bg_remove: 0, bg_solid: 0, bg_gradient: 0,
+  lipstick: 0, blush: 0, eyeshadow: 0, eyeliner: 0,
+  local_bright: 0, local_warm: 0, local_sat: 0,
+  color_splash: 0,
+  double_exposure: 0,
 };
 
 interface FilterPreset { name: string; icon: string; settings: Partial<BeautySettings>; }
@@ -67,6 +82,8 @@ const CATEGORIES: { key: BeautyCategory; icon: string; labelKey: string }[] = [
   { key: "color", icon: "🎨", labelKey: "editor.cat.color" },
   { key: "filter", icon: "📷", labelKey: "editor.cat.filter" },
   { key: "tools", icon: "🛠", labelKey: "editor.cat.tools" },
+  { key: "bg", icon: "🖼", labelKey: "editor.cat.bg" },
+  { key: "makeup", icon: "💄", labelKey: "editor.cat.makeup" },
 ];
 
 const TOOLS: Record<BeautyCategory, { key: BeautyTool; icon: string; labelKey: string }[]> = {
@@ -105,6 +122,19 @@ const TOOLS: Record<BeautyCategory, { key: BeautyTool; icon: string; labelKey: s
   filter: [],
   tools: [
     { key: "blur_bg", icon: "🌫", labelKey: "editor.blur_bg" },
+    { key: "color_splash", icon: "🌈", labelKey: "editor.color_splash" },
+    { key: "double_exposure", icon: "🪞", labelKey: "editor.double_exposure" },
+  ],
+  bg: [
+    { key: "bg_remove", icon: "✂", labelKey: "editor.bg_remove" },
+    { key: "bg_solid", icon: "🔲", labelKey: "editor.bg_solid" },
+    { key: "bg_gradient", icon: "🌅", labelKey: "editor.bg_gradient" },
+  ],
+  makeup: [
+    { key: "lipstick", icon: "💋", labelKey: "editor.lipstick" },
+    { key: "blush", icon: "🌸", labelKey: "editor.blush" },
+    { key: "eyeshadow", icon: "👁", labelKey: "editor.eyeshadow" },
+    { key: "eyeliner", icon: "✏", labelKey: "editor.eyeliner" },
   ],
 };
 
@@ -155,6 +185,31 @@ export default function PhotoEditorPage() {
   const [brushSize, setBrushSize] = useState(20);
   const [selectedOverlay, setSelectedOverlay] = useState<string | null>(null);
   const draggingRef = useRef<{ id: string; offsetX: number; offsetY: number } | null>(null);
+
+  // Feature 1: Background
+  const [bgSolidColor, setBgSolidColor] = useState("#ffffff");
+  const [bgGradientStart, setBgGradientStart] = useState("#ff6b6b");
+  const [bgGradientEnd, setBgGradientEnd] = useState("#4ecdc4");
+
+  // Feature 2: Makeup
+  const [lipstickColor, setLipstickColor] = useState("#e74c3c");
+  const [blushColor, setBlushColor] = useState("#f8a5c2");
+  const [eyeshadowColor, setEyeshadowColor] = useState("#a29bfe");
+
+  // Feature 3: Local adjustment brush
+  const [localBrushMask, setLocalBrushMask] = useState<ImageData | null>(null);
+  const [localBrushActive, setLocalBrushActive] = useState(false);
+  const [localBrushTool, setLocalBrushTool] = useState<"local_bright" | "local_warm" | "local_sat">("local_bright");
+  const localBrushCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Feature 4: Color Splash
+  const [colorSplashHue, setColorSplashHue] = useState(0);
+  const [colorSplashRange, setColorSplashRange] = useState(30);
+
+  // Feature 5: Double Exposure
+  const [doubleExposureImage, setDoubleExposureImage] = useState<HTMLImageElement | null>(null);
+  const [blendMode, setBlendMode] = useState<"overlay" | "screen" | "soft-light">("overlay");
+  const [doubleExposureOpacity, setDoubleExposureOpacity] = useState(50);
 
   // Load models
   useEffect(() => {
@@ -588,9 +643,38 @@ export default function PhotoEditorPage() {
           ctx.putImageData(gd, 0, 0);
         }
 
-        // 17. Background blur
+        // Feature 2: Virtual Makeup
+        if (s.lipstick > 0 || s.blush > 0 || s.eyeshadow > 0 || s.eyeliner > 0) {
+          applyMakeup(ctx, w, h, lm, s, lipstickColor, blushColor, eyeshadowColor);
+        }
+
+        // Feature 3: Local Adjustment Brush
+        if (localBrushMask && (s.local_bright !== 0 || s.local_warm !== 0 || s.local_sat !== 0)) {
+          applyLocalAdjustment(ctx, w, h, localBrushMask, s);
+        }
+
+        // Feature 4: Color Splash
+        if (s.color_splash > 0) {
+          applyColorSplash(ctx, w, h, colorSplashHue, colorSplashRange, s.color_splash / 100);
+        }
+
+        // Feature 5: Double Exposure
+        if (s.double_exposure > 0 && doubleExposureImage) {
+          applyDoubleExposure(ctx, canvas, doubleExposureImage, blendMode, s.double_exposure / 100, doubleExposureOpacity / 100);
+        }
+
+        // 17. Background effects
         if (s.blur_bg > 0 && lm) {
           applyBackgroundBlur(ctx, canvas, lm, s.blur_bg / 100);
+        }
+        if (s.bg_remove > 0 && lm) {
+          applyBackgroundRemove(ctx, canvas, lm, s.bg_remove / 100);
+        }
+        if (s.bg_solid > 0 && lm) {
+          applyBackgroundSolid(ctx, canvas, lm, s.bg_solid / 100, bgSolidColor);
+        }
+        if (s.bg_gradient > 0 && lm) {
+          applyBackgroundGradient(ctx, canvas, lm, s.bg_gradient / 100, bgGradientStart, bgGradientEnd);
         }
 
         // 18. Apply blemish patches
@@ -649,7 +733,7 @@ export default function PhotoEditorPage() {
         }
       }
     });
-  }, [frameId, texts, stickers, showMesh, selectedOverlay]);
+  }, [frameId, texts, stickers, showMesh, selectedOverlay, bgSolidColor, bgGradientStart, bgGradientEnd, lipstickColor, blushColor, eyeshadowColor, localBrushMask, colorSplashHue, colorSplashRange, doubleExposureImage, blendMode, doubleExposureOpacity]);
 
   // Background blur algorithm
   const applyBackgroundBlur = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number) => {
@@ -694,6 +778,314 @@ export default function PhotoEditorPage() {
       out.data[i + 3] = 255;
     }
 
+    ctx.putImageData(out, 0, 0);
+  }, []);
+
+  // Feature 1: Background Remove/Replace
+  const applyBackgroundRemove = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number) => {
+    const w = canvas.width, h = canvas.height;
+    const jaw = lm.slice(0, 17);
+    const fL = Math.min(...lm.map(p => p.x)) - 20;
+    const fR = Math.max(...lm.map(p => p.x)) + 20;
+    const fT = Math.min(...lm.map(p => p.y)) - 30;
+    const fB = Math.max(...lm.map(p => p.y)) + 20;
+    const maskCanvas = document.createElement("canvas");
+    maskCanvas.width = w; maskCanvas.height = h;
+    const maskCtx = maskCanvas.getContext("2d")!;
+    maskCtx.fillStyle = "white";
+    maskCtx.beginPath();
+    maskCtx.moveTo(jaw[0].x, jaw[0].y);
+    for (let i = 1; i < jaw.length; i++) { maskCtx.lineTo(jaw[i].x, jaw[i].y); }
+    maskCtx.closePath();
+    maskCtx.fill();
+    const id = ctx.getImageData(0, 0, w, h);
+    const mask = maskCtx.getImageData(0, 0, w, h);
+    for (let i = 0; i < id.data.length; i += 4) {
+      const a = mask.data[i] / 255;
+      id.data[i + 3] = Math.round(id.data[i + 3] * a * (1 - intensity) + id.data[i + 3] * a);
+    }
+    ctx.putImageData(id, 0, 0);
+  }, []);
+
+  const applyBackgroundSolid = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number, color: string) => {
+    const w = canvas.width, h = canvas.height;
+    const jaw = lm.slice(0, 17);
+    const maskCanvas = document.createElement("canvas");
+    maskCanvas.width = w; maskCanvas.height = h;
+    const maskCtx = maskCanvas.getContext("2d")!;
+    maskCtx.fillStyle = "white";
+    maskCtx.beginPath();
+    maskCtx.moveTo(jaw[0].x, jaw[0].y);
+    for (let i = 1; i < jaw.length; i++) { maskCtx.lineTo(jaw[i].x, jaw[i].y); }
+    maskCtx.closePath();
+    maskCtx.fill();
+    const r = parseInt(color.slice(1, 3), 16);
+    const g = parseInt(color.slice(3, 5), 16);
+    const b = parseInt(color.slice(5, 7), 16);
+    const bgCanvas = document.createElement("canvas");
+    bgCanvas.width = w; bgCanvas.height = h;
+    const bgCtx = bgCanvas.getContext("2d")!;
+    bgCtx.fillStyle = color;
+    bgCtx.fillRect(0, 0, w, h);
+    const original = ctx.getImageData(0, 0, w, h);
+    const bg = bgCtx.getImageData(0, 0, w, h);
+    const mask = maskCtx.getImageData(0, 0, w, h);
+    const out = ctx.createImageData(w, h);
+    for (let i = 0; i < original.data.length; i += 4) {
+      const a = (mask.data[i] / 255) * intensity;
+      out.data[i] = original.data[i] * (1 - a) + r * a;
+      out.data[i + 1] = original.data[i + 1] * (1 - a) + g * a;
+      out.data[i + 2] = original.data[i + 2] * (1 - a) + b * a;
+      out.data[i + 3] = 255;
+    }
+    ctx.putImageData(out, 0, 0);
+  }, []);
+
+  const applyBackgroundGradient = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number, c1: string, c2: string) => {
+    const w = canvas.width, h = canvas.height;
+    const jaw = lm.slice(0, 17);
+    const maskCanvas = document.createElement("canvas");
+    maskCanvas.width = w; maskCanvas.height = h;
+    const maskCtx = maskCanvas.getContext("2d")!;
+    maskCtx.fillStyle = "white";
+    maskCtx.beginPath();
+    maskCtx.moveTo(jaw[0].x, jaw[0].y);
+    for (let i = 1; i < jaw.length; i++) { maskCtx.lineTo(jaw[i].x, jaw[i].y); }
+    maskCtx.closePath();
+    maskCtx.fill();
+    const gradCanvas = document.createElement("canvas");
+    gradCanvas.width = w; gradCanvas.height = h;
+    const gradCtx = gradCanvas.getContext("2d")!;
+    const grad = gradCtx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, c1);
+    grad.addColorStop(1, c2);
+    gradCtx.fillStyle = grad;
+    gradCtx.fillRect(0, 0, w, h);
+    const original = ctx.getImageData(0, 0, w, h);
+    const bg = gradCtx.getImageData(0, 0, w, h);
+    const mask = maskCtx.getImageData(0, 0, w, h);
+    const out = ctx.createImageData(w, h);
+    for (let i = 0; i < original.data.length; i += 4) {
+      const a = (mask.data[i] / 255) * intensity;
+      out.data[i] = original.data[i] * (1 - a) + bg.data[i] * a;
+      out.data[i + 1] = original.data[i + 1] * (1 - a) + bg.data[i + 1] * a;
+      out.data[i + 2] = original.data[i + 2] * (1 - a) + bg.data[i + 2] * a;
+      out.data[i + 3] = 255;
+    }
+    ctx.putImageData(out, 0, 0);
+  }, []);
+
+  // Feature 2: Virtual Makeup
+  const applyMakeup = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, lm: Landmarks, s: BeautySettings, lipCol: string, blushCol: string, shadowCol: string) => {
+    const id = ctx.getImageData(0, 0, w, h);
+    const d = id.data;
+    const mouth = lm.slice(48, 68);
+    const lEye = lm.slice(36, 42);
+    const rEye = lm.slice(42, 48);
+    const jaw = lm.slice(0, 17);
+    const fL = Math.min(...lm.map(p => p.x)), fR = Math.max(...lm.map(p => p.x));
+    const fT = Math.min(...lm.map(p => p.y)), fB = Math.max(...lm.map(p => p.y));
+
+    // Lipstick
+    if (s.lipstick > 0) {
+      const lr = parseInt(lipCol.slice(1, 3), 16);
+      const lg = parseInt(lipCol.slice(3, 5), 16);
+      const lb = parseInt(lipCol.slice(5, 7), 16);
+      const lipCY = mouth.reduce((a, p) => a + p.y, 0) / mouth.length;
+      const lipL = Math.min(...mouth.map(p => p.x)), lipR = Math.max(...mouth.map(p => p.x));
+      const st = s.lipstick / 100;
+      for (let y = Math.max(0, lipCY - 18); y < Math.min(h, lipCY + 18); y++) {
+        for (let x = lipL - 2; x < lipR + 2; x++) {
+          if (x < 0 || x >= w) continue;
+          const idx = (y * w + x) * 4;
+          const distY = Math.abs(y - lipCY) / 18;
+          const alpha = st * 0.6 * (1 - distY);
+          d[idx] = d[idx] * (1 - alpha) + lr * alpha;
+          d[idx + 1] = d[idx + 1] * (1 - alpha) + lg * alpha;
+          d[idx + 2] = d[idx + 2] * (1 - alpha) + lb * alpha;
+        }
+      }
+    }
+
+    // Blush
+    if (s.blush > 0) {
+      const br = parseInt(blushCol.slice(1, 3), 16);
+      const bg2 = parseInt(blushCol.slice(3, 5), 16);
+      const bb = parseInt(blushCol.slice(5, 7), 16);
+      const lCheekX = (lEye[0].x + jaw[0].x) / 2;
+      const rCheekX = (rEye[3].x + jaw[16].x) / 2;
+      const cheekY = (lEye[0].y + jaw[8].y) / 2;
+      const st = s.blush / 100;
+      for (const cx of [lCheekX, rCheekX]) {
+        for (let y = cheekY - 30; y < cheekY + 30; y++) {
+          for (let x = cx - 30; x < cx + 30; x++) {
+            if (x < 0 || x >= w || y < 0 || y >= h) continue;
+            const dx = x - cx, dy = y - cheekY;
+            const dist = Math.sqrt(dx * dx + dy * dy) / 30;
+            if (dist > 1) continue;
+            const idx = (y * w + x) * 4;
+            const alpha = st * 0.35 * (1 - dist);
+            d[idx] = d[idx] * (1 - alpha) + br * alpha;
+            d[idx + 1] = d[idx + 1] * (1 - alpha) + bg2 * alpha;
+            d[idx + 2] = d[idx + 2] * (1 - alpha) + bb * alpha;
+          }
+        }
+      }
+    }
+
+    // Eyeshadow
+    if (s.eyeshadow > 0) {
+      const sr = parseInt(shadowCol.slice(1, 3), 16);
+      const sg = parseInt(shadowCol.slice(3, 5), 16);
+      const sb = parseInt(shadowCol.slice(5, 7), 16);
+      const lBrow = lm.slice(17, 22);
+      const rBrow = lm.slice(22, 27);
+      const st = s.eyeshadow / 100;
+      for (const eye of [lEye, rEye]) {
+        const eyeCX = eye.reduce((a, p) => a + p.x, 0) / 6;
+        const eyeCY = eye.reduce((a, p) => a + p.y, 0) / 6;
+        const brow = eye === lEye ? lBrow : rBrow;
+        const browCY = Math.min(...brow.map(p => p.y));
+        for (let y = browCY; y < eyeCY + 5; y++) {
+          for (let x = eyeCX - 35; x < eyeCX + 35; x++) {
+            if (x < 0 || x >= w || y < 0 || y >= h) continue;
+            const dy = (eyeCY - y) / (eyeCY - browCY);
+            const dx = Math.abs(x - eyeCX) / 35;
+            if (dy < 0 || dy > 1.2 || dx > 1) continue;
+            const idx = (y * w + x) * 4;
+            const alpha = st * 0.3 * Math.max(0, 1 - dx) * Math.min(1, dy);
+            d[idx] = d[idx] * (1 - alpha) + sr * alpha;
+            d[idx + 1] = d[idx + 1] * (1 - alpha) + sg * alpha;
+            d[idx + 2] = d[idx + 2] * (1 - alpha) + sb * alpha;
+          }
+        }
+      }
+    }
+
+    // Eyeliner
+    if (s.eyeliner > 0) {
+      const st = s.eyeliner / 100;
+      for (const eye of [lEye, rEye]) {
+        for (let i = 0; i < eye.length; i++) {
+          const p1 = eye[i], p2 = eye[(i + 1) % eye.length];
+          const steps = Math.max(Math.abs(p2.x - p1.x), Math.abs(p2.y - p1.y));
+          for (let t = 0; t <= steps; t++) {
+            const x = Math.round(p1.x + (p2.x - p1.x) * t / steps);
+            const y = Math.round(p1.y + (p2.y - p1.y) * t / steps);
+            for (let dy = -2; dy <= 2; dy++) {
+              for (let dx = -2; dx <= 2; dx++) {
+                const px = x + dx, py = y + dy;
+                if (px < 0 || px >= w || py < 0 || py >= h) continue;
+                const idx = (py * w + px) * 4;
+                const dist = Math.sqrt(dx * dx + dy * dy) / 2;
+                const alpha = st * 0.7 * Math.max(0, 1 - dist);
+                d[idx] = d[idx] * (1 - alpha);
+                d[idx + 1] = d[idx + 1] * (1 - alpha);
+                d[idx + 2] = d[idx + 2] * (1 - alpha);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    ctx.putImageData(id, 0, 0);
+  }, []);
+
+  // Feature 3: Local Adjustment Brush
+  const applyLocalAdjustment = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, mask: ImageData, s: BeautySettings) => {
+    if (!mask) return;
+    const id = ctx.getImageData(0, 0, w, h);
+    const d = id.data;
+    const md = mask.data;
+    const bright = s.local_bright / 100 * 60;
+    const warm = s.local_warm / 100 * 30;
+    const sat = s.local_sat / 100;
+    for (let i = 0; i < d.length; i += 4) {
+      const alpha = md[i + 3] / 255;
+      if (alpha < 0.01) continue;
+      let r = d[i], g = d[i + 1], b = d[i + 2];
+      r += bright * alpha;
+      g += bright * alpha;
+      b += bright * alpha;
+      r += warm * alpha;
+      b -= warm * alpha;
+      const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+      r = gray + (1 + sat * alpha) * (r - gray);
+      g = gray + (1 + sat * alpha) * (g - gray);
+      b = gray + (1 + sat * alpha) * (b - gray);
+      d[i] = Math.max(0, Math.min(255, r));
+      d[i + 1] = Math.max(0, Math.min(255, g));
+      d[i + 2] = Math.max(0, Math.min(255, b));
+    }
+    ctx.putImageData(id, 0, 0);
+  }, []);
+
+  // Feature 4: Color Splash
+  const applyColorSplash = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, targetHue: number, range: number, intensity: number) => {
+    const id = ctx.getImageData(0, 0, w, h);
+    const d = id.data;
+    const halfRange = range / 2;
+    for (let i = 0; i < d.length; i += 4) {
+      const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h2 = 0, s2 = 0;
+      const l = (max + min) / 2;
+      if (max !== min) {
+        const d2 = max - min;
+        s2 = l > 0.5 ? d2 / (2 - max - min) : d2 / (max + min);
+        if (max === r) h2 = ((g - b) / d2 + (g < b ? 6 : 0)) / 6;
+        else if (max === g) h2 = ((b - r) / d2 + 2) / 6;
+        else h2 = ((r - g) / d2 + 4) / 6;
+      }
+      const hueDeg = h2 * 360;
+      let dist = Math.abs(hueDeg - targetHue);
+      if (dist > 180) dist = 360 - dist;
+      if (dist > halfRange) {
+        const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+        const a = intensity;
+        d[i] = d[i] * (1 - a) + gray * a;
+        d[i + 1] = d[i + 1] * (1 - a) + gray * a;
+        d[i + 2] = d[i + 2] * (1 - a) + gray * a;
+      }
+    }
+    ctx.putImageData(id, 0, 0);
+  }, []);
+
+  // Feature 5: Double Exposure
+  const applyDoubleExposure = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, img2: HTMLImageElement, mode: string, intensity: number, opacity: number) => {
+    const w = canvas.width, h = canvas.height;
+    const tmpCanvas = document.createElement("canvas");
+    tmpCanvas.width = w; tmpCanvas.height = h;
+    const tmpCtx = tmpCanvas.getContext("2d")!;
+    tmpCtx.drawImage(img2, 0, 0, w, h);
+    const bg = tmpCtx.getImageData(0, 0, w, h);
+    const fg = ctx.getImageData(0, 0, w, h);
+    const out = ctx.createImageData(w, h);
+    for (let i = 0; i < fg.data.length; i += 4) {
+      let r: number, g: number, b: number;
+      const fr = fg.data[i] / 255, fb = fg.data[i + 1] / 255, fc = fg.data[i + 2] / 255;
+      const br = bg.data[i] / 255, bb2 = bg.data[i + 1] / 255, bc = bg.data[i + 2] / 255;
+      if (mode === "screen") {
+        r = 1 - (1 - fr) * (1 - br);
+        g = 1 - (1 - fb) * (1 - bb2);
+        b = 1 - (1 - fc) * (1 - bc);
+      } else if (mode === "soft-light") {
+        r = br < 0.5 ? 2 * fr * br + fr * fr * (1 - 2 * br) : Math.sqrt(fr) * (2 * br - 1) + (2 * fr) * (1 - br);
+        g = bb2 < 0.5 ? 2 * fb * bb2 + fb * fb * (1 - 2 * bb2) : Math.sqrt(fb) * (2 * bb2 - 1) + (2 * fb) * (1 - bb2);
+        b = bc < 0.5 ? 2 * fc * bc + fc * fc * (1 - 2 * bc) : Math.sqrt(fc) * (2 * bc - 1) + (2 * fc) * (1 - bc);
+      } else {
+        // overlay
+        r = fr < 0.5 ? 2 * fr * br : 1 - 2 * (1 - fr) * (1 - br);
+        g = fb < 0.5 ? 2 * fb * bb2 : 1 - 2 * (1 - fb) * (1 - bb2);
+        b = fc < 0.5 ? 2 * fc * bc : 1 - 2 * (1 - fc) * (1 - bc);
+      }
+      const a = intensity * opacity;
+      out.data[i] = Math.max(0, Math.min(255, fg.data[i] * (1 - a) + r * 255 * a));
+      out.data[i + 1] = Math.max(0, Math.min(255, fg.data[i + 1] * (1 - a) + g * 255 * a));
+      out.data[i + 2] = Math.max(0, Math.min(255, fg.data[i + 2] * (1 - a) + b * 255 * a));
+      out.data[i + 3] = 255;
+    }
     ctx.putImageData(out, 0, 0);
   }, []);
 
@@ -802,6 +1194,55 @@ export default function PhotoEditorPage() {
     };
     inp.click();
   }, []);
+
+  // Feature 3: Local brush painting
+  const handleBrushPaint = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!localBrushActive || !canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    if (!localBrushCanvasRef.current) {
+      localBrushCanvasRef.current = document.createElement("canvas");
+      localBrushCanvasRef.current.width = canvas.width;
+      localBrushCanvasRef.current.height = canvas.height;
+    }
+
+    const bCtx = localBrushCanvasRef.current.getContext("2d")!;
+    bCtx.fillStyle = "rgba(255,255,255,0.8)";
+    bCtx.beginPath();
+    bCtx.arc(x, y, brushSize, 0, Math.PI * 2);
+    bCtx.fill();
+    setLocalBrushMask(bCtx.getImageData(0, 0, canvas.width, canvas.height));
+    render(settings);
+  }, [localBrushActive, brushSize, render, settings]);
+
+  const clearBrushMask = useCallback(() => {
+    localBrushCanvasRef.current = null;
+    setLocalBrushMask(null);
+    render(settings);
+  }, [render, settings]);
+
+  // Feature 5: Double exposure upload
+  const handleDoubleExposureUpload = useCallback(() => {
+    const inp = document.createElement("input");
+    inp.type = "file"; inp.accept = "image/*";
+    inp.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => { setDoubleExposureImage(img); render(settings); };
+        img.src = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    };
+    inp.click();
+  }, [render, settings]);
 
   const handleSlider = useCallback((value: number) => {
     setSettings(prev => {
@@ -1011,15 +1452,87 @@ export default function PhotoEditorPage() {
           </div>
         )}
 
+        {/* Feature 1: Background controls */}
+        {tool === "bg_solid" && cat === "bg" && (
+          <div className="editor-popup-panel">
+            <label className="editor-label">{t("editor.bgColor")}</label>
+            <input type="color" value={bgSolidColor} onChange={e => setBgSolidColor(e.target.value)} className="editor-color-input" />
+          </div>
+        )}
+        {tool === "bg_gradient" && cat === "bg" && (
+          <div className="editor-popup-panel">
+            <label className="editor-label">{t("editor.gradientStart")}</label>
+            <input type="color" value={bgGradientStart} onChange={e => setBgGradientStart(e.target.value)} className="editor-color-input" />
+            <label className="editor-label">{t("editor.gradientEnd")}</label>
+            <input type="color" value={bgGradientEnd} onChange={e => setBgGradientEnd(e.target.value)} className="editor-color-input" />
+          </div>
+        )}
+
+        {/* Feature 2: Makeup color controls */}
+        {tool === "lipstick" && cat === "makeup" && (
+          <div className="editor-popup-panel">
+            <label className="editor-label">{t("editor.lipColor")}</label>
+            <input type="color" value={lipstickColor} onChange={e => setLipstickColor(e.target.value)} className="editor-color-input" />
+          </div>
+        )}
+        {tool === "blush" && cat === "makeup" && (
+          <div className="editor-popup-panel">
+            <label className="editor-label">{t("editor.blushColor")}</label>
+            <input type="color" value={blushColor} onChange={e => setBlushColor(e.target.value)} className="editor-color-input" />
+          </div>
+        )}
+        {tool === "eyeshadow" && cat === "makeup" && (
+          <div className="editor-popup-panel">
+            <label className="editor-label">{t("editor.eyeshadowColor")}</label>
+            <input type="color" value={eyeshadowColor} onChange={e => setEyeshadowColor(e.target.value)} className="editor-color-input" />
+          </div>
+        )}
+
+        {/* Feature 3: Local brush controls */}
+        {cat === "tools" && ["local_bright", "local_warm", "local_sat"].includes(tool) && (
+          <div className="editor-popup-panel editor-brush-controls">
+            <button type="button" className={`editor-btn ${localBrushActive ? "active" : ""}`} onClick={() => { setLocalBrushActive(!localBrushActive); setLocalBrushTool(tool as typeof localBrushTool); }}>
+              {localBrushActive ? t("editor.brushStop") : t("editor.brushStart")}
+            </button>
+            <button type="button" className="editor-btn" onClick={clearBrushMask}>{t("editor.brushClear")}</button>
+          </div>
+        )}
+
+        {/* Feature 4: Color splash controls */}
+        {tool === "color_splash" && cat === "tools" && (
+          <div className="editor-popup-panel editor-color-splash-controls">
+            <label className="editor-label">{t("editor.targetHue")}: {colorSplashHue}°</label>
+            <input type="range" min="0" max="360" value={colorSplashHue} onChange={e => { setColorSplashHue(Number(e.target.value)); render(settings); }} className="editor-slider" />
+            <label className="editor-label">{t("editor.hueRange")}: {colorSplashRange}°</label>
+            <input type="range" min="10" max="120" value={colorSplashRange} onChange={e => { setColorSplashRange(Number(e.target.value)); render(settings); }} className="editor-slider" />
+          </div>
+        )}
+
+        {/* Feature 5: Double exposure controls */}
+        {tool === "double_exposure" && cat === "tools" && (
+          <div className="editor-popup-panel editor-double-exposure-controls">
+            <button type="button" className="editor-btn" onClick={handleDoubleExposureUpload}>
+              {doubleExposureImage ? t("editor.changeImage") : t("editor.uploadOverlay")}
+            </button>
+            <select value={blendMode} onChange={e => { setBlendMode(e.target.value as typeof blendMode); render(settings); }} className="editor-select">
+              <option value="overlay">{t("editor.blendOverlay")}</option>
+              <option value="screen">{t("editor.blendScreen")}</option>
+              <option value="soft-light">{t("editor.blendSoftLight")}</option>
+            </select>
+            <label className="editor-label">{t("editor.opacity")}: {doubleExposureOpacity}%</label>
+            <input type="range" min="0" max="100" value={doubleExposureOpacity} onChange={e => { setDoubleExposureOpacity(Number(e.target.value)); render(settings); }} className="editor-slider" />
+          </div>
+        )}
+
         <div className="editor-workspace">
           <div className="editor-canvas-container">
             <canvas
               ref={canvasRef}
               className="editor-canvas"
               style={showCompare ? { clipPath: `inset(0 ${100 - comparePos}% 0 0)` } : undefined}
-              onClick={blemishMode ? handleCanvasClick : undefined}
-              onMouseDown={onOverlayMouseDown}
-              onMouseMove={onOverlayMouseMove}
+              onClick={blemishMode ? handleCanvasClick : localBrushActive ? handleBrushPaint : undefined}
+              onMouseDown={localBrushActive ? (e) => { handleBrushPaint(e); } : onOverlayMouseDown}
+              onMouseMove={localBrushActive ? handleBrushPaint : onOverlayMouseMove}
               onMouseUp={onOverlayMouseUp}
               onContextMenu={onOverlayContextMenu}
               role="img"
@@ -1062,7 +1575,7 @@ export default function PhotoEditorPage() {
                   <div className="editor-tools">
                     {currentTools?.map(tl => (
                       <button key={tl.key} type="button" className={`editor-tool-btn ${tool === tl.key ? "active" : ""}`}
-                        onClick={() => { setTool(tl.key); setBlemishMode(tl.key === "blemish"); }}>
+                        onClick={() => { setTool(tl.key); setBlemishMode(tl.key === "blemish"); setLocalBrushActive(["local_bright", "local_warm", "local_sat"].includes(tl.key)); setLocalBrushTool(tl.key as typeof localBrushTool); }}>
                         <span className="editor-tool-icon">{tl.icon}</span>
                         <span className="editor-tool-label">{t(tl.labelKey as any)}</span>
                       </button>
