@@ -458,22 +458,56 @@ a:focus-visible,
   outline-color: var(--peach-accent);
 }
 
-.not-found a,
-.error-boundary button {
-  background: linear-gradient(135deg, #8B5E4A, #FFB8A1);
-  color: #FFF9EC;
-  box-shadow: 0 12px 32px rgba(255, 184, 161, 0.22);
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 80px clamp(16px, 4vw, 48px);
+  text-align: center;
+  background:
+    radial-gradient(circle at 22% 16%, rgba(255, 184, 161, 0.12), transparent 36%),
+    radial-gradient(circle at 78% 72%, rgba(221, 231, 215, 0.08), transparent 34%);
 }
 
-
+.not-found a,
+.error-boundary button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #8B5E4A, #FFB8A1);
+  color: #FFF9EC;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 12px 32px rgba(255, 184, 161, 0.22);
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s var(--ease-spring);
+}
+.not-found a:hover {
+  transform: translate3d(0, -3px, 0) scale(1.03);
+  box-shadow: 0 18px 44px rgba(255, 184, 161, 0.34);
+}
 
 .not-found h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(72px, 12vw, 120px);
+  font-weight: 700;
   color: var(--peach-accent);
+  line-height: 1;
+  margin: 0;
+  text-shadow: 0 2px 12px rgba(255, 184, 161, 0.18);
 }
 
 .not-found p,
 .error-boundary p {
+  max-width: 420px;
+  margin: 12px 0 0;
   color: var(--caramel-muted);
+  font-size: 1rem;
+  line-height: 1.7;
 }
 
 .error-boundary h2 {

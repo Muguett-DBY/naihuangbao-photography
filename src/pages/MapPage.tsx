@@ -1,6 +1,7 @@
 import { Suspense, lazy, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 
 const PhotoMap = lazy(() => import("../components/PhotoMap").then((m) => ({ default: m.PhotoMap })));
@@ -10,6 +11,7 @@ export function MapPage() {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useGsapPageEffects(rootRef);
+  useSEO({ titleKey: "seo.mapTitle", descKey: "seo.mapDesc", path: "/map" });
 
   return (
     <PageTransition ref={rootRef}>
@@ -21,7 +23,7 @@ export function MapPage() {
         </div>
       </section>
 
-      <section className="section-shell is-visible" style={{ padding: "0 0 60px" }}>
+      <section className="section-shell" style={{ padding: "0 0 60px" }}>
         <Suspense fallback={<div style={{ height: "min(60vh, 500px)", background: "#f0e8e0", borderRadius: 16 }} />}>
           <PhotoMap />
         </Suspense>

@@ -598,6 +598,29 @@
       "pending": "个待处理"
     }
   },
+  "chat": {
+    "launcherLabel": "AI问答",
+    "open": "打开AI聊天",
+    "close": "关闭聊天",
+    "welcome": "你好！我是奶黄包摄影的AI助手，可以帮你了解套餐价格、预约流程、拍摄风格等信息。",
+    "emptyReply": "抱歉，我没有理解你的问题，请再描述一下。",
+    "unavailable": "聊天服务暂时不可用，请稍后再试。",
+    "ariaLabel": "AI聊天面板",
+    "brandName": "奶黄包摄影",
+    "title": "AI 助手",
+    "closeLabel": "关闭聊天",
+    "avatarLabel": "你",
+    "promptsLabel": "推荐问题",
+    "prompts": [
+      "有哪些套餐？",
+      "怎么预约拍摄？",
+      "可以拍什么风格？",
+      "拍摄地点在哪里？"
+    ],
+    "placeholder": "输入你的问题...",
+    "inputLabel": "聊天消息",
+    "sendLabel": "发送消息"
+  },
   "seo": {
     "homeTitle": "奶黄包摄影 | 南京约拍",
     "homeDesc": "偏柔雾胶片感的自然约拍，适合日常记录、江南感写真、情侣纪念和轻松陪拍。南京女生写真与情侣约拍首选。",
@@ -616,6 +639,8 @@
     "courseDetailDesc": "了解摄影课程详情——章节大纲、课程预览和学习内容。",
     "presetDetailDesc": "下载专业 Lightroom 预设——效果预览、用户评价和兼容信息。",
     "workshopDetailDesc": "活动详情——日程安排、地点导航、报名方式和行前准备。",
-    "shopDetailDesc": "商品详情——规格参数、购买指南和相关推荐。"
+    "shopDetailDesc": "商品详情——规格参数、购买指南和相关推荐。",
+    "mapTitle": "服务范围地图 | 奶黄包摄影",
+    "mapDesc": "查看奶黄包摄影在南京的约拍服务范围——公园、街拍和风景名胜。"
   }
 }

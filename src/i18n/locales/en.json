@@ -598,6 +598,29 @@
       "pending": " pending"
     }
   },
+  "chat": {
+    "launcherLabel": "AI Chat",
+    "open": "Open AI chat",
+    "close": "Close chat",
+    "welcome": "Hi! I'm the Naihuangbao Photography assistant. Ask me about pricing, booking, styles, or anything else!",
+    "emptyReply": "Sorry, I didn't catch that. Could you rephrase?",
+    "unavailable": "Chat service is temporarily unavailable. Please try again later.",
+    "ariaLabel": "AI Chat Panel",
+    "brandName": "Naihuangbao Photography",
+    "title": "AI Assistant",
+    "closeLabel": "Close chat",
+    "avatarLabel": "You",
+    "promptsLabel": "Suggested questions",
+    "prompts": [
+      "What packages are available?",
+      "How do I book a session?",
+      "What styles can I choose?",
+      "Where are the photo spots?"
+    ],
+    "placeholder": "Type your question...",
+    "inputLabel": "Chat message",
+    "sendLabel": "Send message"
+  },
   "seo": {
     "homeTitle": "Naihuangbao Photography | Nanjing Portrait",
     "homeDesc": "Soft, film-like portrait photography in Nanjing. Natural everyday portraits for individuals and couples — Xianlin, Xuanwu Lake, Yihe Road and beyond.",
@@ -616,6 +639,8 @@
     "courseDetailDesc": "Learn about this photography course — modules, syllabus, and preview.",
     "presetDetailDesc": "Download this professional Lightroom preset — preview, reviews, and compatibility info.",
     "workshopDetailDesc": "Workshop details — schedule, location, registration, and what to bring.",
-    "shopDetailDesc": "Product details — specifications, ordering guide, and related items."
+    "shopDetailDesc": "Product details — specifications, ordering guide, and related items.",
+    "mapTitle": "Service Area Map | Naihuangbao Photography",
+    "mapDesc": "View our portrait photography service area across Nanjing — parks, streets, and scenic locations."
   }
 }

@@ -309,6 +309,20 @@
         </section>
       </main>
     </div>
+    <script>
+      (function(){
+        try {
+          var mood = localStorage.getItem('mood');
+          if (mood === 'cute' || mood === 'magazine') {
+            document.documentElement.setAttribute('data-mood', mood);
+          }
+          var theme = localStorage.getItem('theme');
+          if (theme === 'dark' || theme === 'light') {
+            document.documentElement.setAttribute('data-theme', theme);
+          }
+        } catch(e) {}
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

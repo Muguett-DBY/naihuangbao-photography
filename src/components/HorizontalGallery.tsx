@@ -53,6 +53,7 @@ export function HorizontalGallery() {
                 className="horiz-swiper-img"
                 width={400}
                 height={533}
+                loading={i < 3 ? "eager" : "lazy"}
               />
               <div className="horiz-swiper-overlay">
                 <strong>{item.title}</strong>

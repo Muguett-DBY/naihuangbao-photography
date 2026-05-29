@@ -14,13 +14,13 @@ export const Section = memo(function Section({
   children: ReactNode;
 }) {
   return (
-    <section id={id} className="section-shell is-visible">
+    <section id={id} className="section-shell">
       <div className="section-heading">
         <p>{eyebrow}</p>
         <h2>{title}</h2>
         {intro ? <span>{intro}</span> : null}
       </div>
-      <div className="section-body is-visible">
+      <div className="section-body">
         {children}
       </div>
     </section>

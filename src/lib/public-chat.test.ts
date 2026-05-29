@@ -182,7 +182,7 @@ describe("public AI chat integration", () => {
     expect(rootLayoutSource).toContain('lazy(() => import("../components/PublicChatWidget")');
     expect(rootLayoutSource).toContain("<PublicChatLauncher");
     expect(rootLayoutSource).toContain("<PublicChatWidget open={chatOpen} onClose");
-    expect(launcherSource).toContain("AI问答");
+    expect(launcherSource).toContain("chat.launcherLabel");
     expect(launcherSource).not.toContain('fetch("/api/chat"');
     expect(widgetSource).toContain('fetch("/api/chat"');
     expect(widgetSource).toContain("revealAssistantStream");
@@ -218,7 +218,7 @@ describe("public AI chat integration", () => {
     expect(navSource).toContain("CalendarCheck");
     expect(navSource).toContain('t("nav.booking")');
     expect(navSource).not.toContain("MessageCircle");
-    expect(launcherSource).toContain("AI问答");
+    expect(launcherSource).toContain("chat.launcherLabel");
     expect(launcherSource).not.toContain("<span>咨询</span>");
     expect(globalCss).toContain("right: 28px");
     expect(globalCss).toContain("left: max(12px, env(safe-area-inset-left))");
