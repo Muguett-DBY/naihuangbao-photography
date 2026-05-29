@@ -508,5 +508,25 @@
     "learnMore": "Learn more",
     "loading": "Loading...",
     "socialXiaohongshu": "Xiaohongshu"
+  },
+  "chat": {
+    "ariaLabel": "Naihuangbao Photography Assistant",
+    "brandName": "Naihuangbao Photography",
+    "title": "Booking Assistant",
+    "closeLabel": "Close chat",
+    "welcome": "Hi! I'm the Naihuangbao Photography assistant. Ask me about packages, styles, booking process, and shooting boundaries.",
+    "emptyReply": "The assistant didn't respond. Please try again.",
+    "unavailable": "The assistant is temporarily unavailable. Please try again later.",
+    "placeholder": "Ask about packages, styles, booking...",
+    "inputLabel": "Type your question, Enter to send, Shift+Enter for new line",
+    "sendLabel": "Send message",
+    "avatarLabel": "Me",
+    "promptsLabel": "Quick questions",
+    "prompts": [
+      "What packages are available?",
+      "What style suits me?",
+      "What's the booking process?",
+      "Can guys take photos?"
+    ]
   }
 }

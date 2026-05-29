@@ -508,5 +508,25 @@
     "learnMore": "了解更多",
     "loading": "加载中...",
     "socialXiaohongshu": "小红书"
+  },
+  "chat": {
+    "ariaLabel": "奶黄包摄影咨询助手",
+    "brandName": "奶黄包摄影",
+    "title": "预约咨询助手",
+    "closeLabel": "关闭咨询窗口",
+    "welcome": "你好，我是奶黄包摄影的咨询助手。可以问我套餐、风格、预约流程和拍摄边界。",
+    "emptyReply": "聊天助手暂时没有返回内容，请再试一次。",
+    "unavailable": "聊天助手暂时不可用，请稍后再试。",
+    "placeholder": "问问套餐、风格、预约流程...",
+    "inputLabel": "输入问题，Enter 发送，Shift+Enter 换行",
+    "sendLabel": "发送咨询",
+    "avatarLabel": "我",
+    "promptsLabel": "快捷问题",
+    "prompts": [
+      "套餐有哪些？",
+      "我适合拍什么风格？",
+      "预约流程是什么？",
+      "我是男生可以拍吗？"
+    ]
   }
 }

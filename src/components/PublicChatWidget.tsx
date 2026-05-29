@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 
 type ChatMessage = {
   id: string;
@@ -22,25 +23,16 @@ type PublicChatWidgetProps = {
   onClose: () => void;
 };
 
-const starterPrompts = [
-  "套餐有哪些？",
-  "我适合拍什么风格？",
-  "预约流程是什么？",
-  "我是男生可以拍吗？",
-];
-
 const chatRequestTimeoutMs = 16_000;
 const chatRevealDelayMs = 40;
-const emptyAssistantReply = "聊天助手暂时没有返回内容，请再试一次。";
-
-const welcomeMessage: ChatMessage = {
-  id: "assistant-welcome",
-  role: "assistant",
-  content: "你好，我是奶黄包摄影的咨询助手。可以问我套餐、风格、预约流程和拍摄边界。",
-};
 
 export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([welcomeMessage]);
+  const { t } = useTranslation();
+  const [messages, setMessages] = useState<ChatMessage[]>([{
+    id: "assistant-welcome",
+    role: "assistant",
+    content: t("chat.welcome"),
+  }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -89,7 +81,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
 
   function revealAssistantReply(messageId: string, rawReply: unknown) {
     clearRevealTimer();
-    const reply = normalizeAssistantReplyText(rawReply);
+    const reply = normalizeAssistantReplyText(rawReply, t("chat.emptyReply"));
     const characters = Array.from(reply);
 
     setMessages((prev) => prev.map((message) => (
@@ -160,7 +152,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
 
         if (streamDone) {
           if (!streamError && !displayed.trim() && !fallbackQueued) {
-            pendingCharacters = Array.from(emptyAssistantReply);
+            pendingCharacters = Array.from(t("chat.emptyReply"));
             fallbackQueued = true;
             revealTimerRef.current = window.setTimeout(tick, chatRevealDelayMs);
             return;
@@ -208,7 +200,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
       content: question,
     };
     const nextMessages = [
-      ...messages.filter((message) => message.id !== welcomeMessage.id),
+      ...messages.filter((message) => message.id !== "assistant-welcome"),
       userMessage,
     ].slice(-6);
 
@@ -231,7 +223,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
         await revealAssistantReply(assistantId, data.reply);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "聊天助手暂时不可用，请稍后再试。");
+      setError(err instanceof Error && err.message !== "unavailable" ? err.message : t("chat.unavailable"));
       setLoading(false);
     } finally {
       sendingRef.current = false;
@@ -250,17 +242,17 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
     <section
           className="public-chat-panel"
           id="public-chat-panel"
-          aria-label="奶黄包摄影咨询助手"
+          aria-label={t("chat.ariaLabel")}
         >
           <header className="public-chat-head">
             <div className="public-chat-mark">
               <Bot size={18} />
             </div>
             <div>
-              <span><Sparkles size={14} /> 奶黄包摄影</span>
-              <h2>预约咨询助手</h2>
+              <span><Sparkles size={14} /> {t("chat.brandName")}</span>
+              <h2>{t("chat.title")}</h2>
             </div>
-            <button type="button" className="public-chat-close" onClick={onClose} aria-label="关闭咨询窗口">
+            <button type="button" className="public-chat-close" onClick={onClose} aria-label={t("chat.closeLabel")}>
               <X size={18} />
             </button>
           </header>
@@ -268,7 +260,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
           <div className="public-chat-log" aria-live="polite">
             {messages.map((message, index) => (
               <div className={`public-chat-message public-chat-message-${message.role}`} key={message.id}>
-                <div className="public-chat-avatar">{message.role === "assistant" ? <Bot size={15} /> : "我"}</div>
+                <div className="public-chat-avatar">{message.role === "assistant" ? <Bot size={15} /> : t("chat.avatarLabel")}</div>
                 <div className="public-chat-bubble">
                   <p>{message.content}</p>
                   {typing && index === messages.length - 1 && message.role === "assistant" ? (
@@ -293,8 +285,8 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
             <div ref={endRef} />
           </div>
 
-          <div className="public-chat-prompts" aria-label="快捷问题">
-            {starterPrompts.map((prompt) => (
+          <div className="public-chat-prompts" aria-label={t("chat.promptsLabel")}>
+            {t("chat.prompts", { returnObjects: true }).map((prompt: string) => (
               <button
                 type="button"
                 key={prompt}
@@ -316,8 +308,8 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
               onKeyDown={handleInputKeyDown}
               onCompositionStart={() => { composingRef.current = true; }}
               onCompositionEnd={() => { composingRef.current = false; }}
-              placeholder="问问套餐、风格、预约流程..."
-              aria-label="输入问题，Enter 发送，Shift+Enter 换行"
+              placeholder={t("chat.placeholder")}
+              aria-label={t("chat.inputLabel")}
               maxLength={400}
               disabled={loading || typing}
             />
@@ -325,7 +317,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
               type="button"
               onClick={() => void sendMessage()}
               disabled={!input.trim() || loading || typing}
-              aria-label="发送咨询"
+              aria-label={t("chat.sendLabel")}
             >
               <Send size={18} />
             </button>
@@ -357,7 +349,7 @@ async function fetchChatResponse(messages: ChatMessage[]) {
         await wait(650);
         continue;
       }
-      throw new Error("聊天助手暂时不可用，请稍后再试。");
+      throw new Error("unavailable");
     }
 
     timeout.clear();
@@ -367,13 +359,13 @@ async function fetchChatResponse(messages: ChatMessage[]) {
     const data = (await response.json().catch(() => ({}))) as { error?: string };
     const canRetry = (response.status === 502 || response.status === 503 || response.status === 504) && attempt === 0;
     if (!canRetry) {
-      throw new Error(data.error ?? "聊天助手暂时不可用，请稍后再试。");
+      throw new Error(data.error ?? "unavailable");
     }
 
     await wait(650);
   }
 
-  throw new Error("聊天助手暂时不可用，请稍后再试。");
+  throw new Error("unavailable");
 }
 
 function createTimeoutController(ms: number) {
@@ -392,7 +384,7 @@ function wait(ms: number) {
   });
 }
 
-function normalizeAssistantReplyText(reply: unknown) {
-  if (typeof reply !== "string") return emptyAssistantReply;
-  return reply.trim() || emptyAssistantReply;
+function normalizeAssistantReplyText(reply: unknown, fallback: string) {
+  if (typeof reply !== "string") return fallback;
+  return reply.trim() || fallback;
 }

@@ -194,7 +194,7 @@ describe("public AI chat integration", () => {
     expect(widgetSource).toContain("TextDecoder");
     expect(widgetSource).toContain("onKeyDown");
     expect(widgetSource).toContain("onCompositionStart");
-    expect(widgetSource).toContain("Shift+Enter");
+    expect(widgetSource).toContain("chat.inputLabel");
     expect(widgetSource).toContain("sendingRef");
     expect(widgetSource).not.toContain("sk-");
 
