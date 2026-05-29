@@ -744,7 +744,7 @@
   },
   "editor": {
     "title": "인물 포토 스튜디오",
-    "desc": "인물 사진을 업로드하고 AI 얼굴 감지로 피부 보정, 얼굴 축소, 눈 확대, 미백 등 전문적인 뷰티 보정을 적용하세요.",
+    "desc": "인물 사진을 업로드하고 AI 얼굴 감지로 피부 보정, 얼굴 축소, 눈 확대, 미백, 코 축소, 입술 강화 등 전문적인 뷰티 보정을 적용하세요.",
     "subtitle": "인물 사진을 업로드하여 보정을 시작하세요",
     "upload": "사진 업로드",
     "download": "다운로드",
@@ -753,16 +753,47 @@
     "detecting": "얼굴 감지 중...",
     "faceDetected": "얼굴 감지됨",
     "loadingImage": "이미지 로딩 중...",
-    "beautyTools": "뷰티 도구",
+    "cat": {
+      "beauty": "뷰티",
+      "reshape": "리쉐입",
+      "color": "컬러",
+      "filter": "필터"
+    },
     "smooth": "피부 보정",
     "slim": "얼굴 축소",
     "bigeye": "눈 확대",
     "whiten": "미백",
     "sharpen": "선명도",
+    "nose": "코 축소",
+    "lip": "입술 강화",
+    "forehead": "이마",
+    "eyebag": "다크서클 제거",
+    "darkcircle": "눈밑 다크서클",
+    "blemish": "여드름 제거",
+    "facelift": "리프팅",
+    "jawline": "턱 라인",
+    "temperature": "색온도",
+    "saturation": "채도",
+    "contrast": "명도 대비",
+    "brightness": "밝기",
+    "vignette": "비네트",
+    "grain": "노이즈",
     "preset": {
       "natural": "자연스러움",
       "beauty": "뷰티",
-      "portrait": "인물"
+      "portrait": "인물",
+      "vintage": "빈티지"
     }
+  },
+  "filmstrip": {
+    "title": "우리의 이야기",
+    "caption1": "모든 셔터 소리는 시간의 흔적입니다",
+    "caption2": "빛과 그림자로 가장 진실된 당신을 기록합니다",
+    "caption3": "자연 속 가장 아름다운 순간들",
+    "caption4": "모든 각도가 소중히 간직될 가치가 있습니다",
+    "caption5": "사진이 당신만의 이야기를 들려줍니다",
+    "caption6": "스쳐지나가는 아름다움을 포착합니다",
+    "caption7": "당신의 미소가 최고의 풍경입니다",
+    "caption8": "이 순간을 영원히, 꽃피우다"
   }
 }

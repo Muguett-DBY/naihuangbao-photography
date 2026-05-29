@@ -744,7 +744,7 @@
   },
   "editor": {
     "title": "ポートレートスタジオ",
-    "desc": "ポートレート写真をアップロードし、AI顔検出で肌補正、小顔、瞳拡大、美白などのプロ仕様のビューティーリタッチを適用できます。",
+    "desc": "ポートレート写真をアップロードし、AI顔検出で肌補正、小顔、瞳拡大、美白、鼻細め、唇補正などのプロ仕様のビューティーリタッチを適用できます。",
     "subtitle": "ポートレート写真をアップロードして補正を開始",
     "upload": "写真をアップロード",
     "download": "ダウンロード",
@@ -753,16 +753,47 @@
     "detecting": "顔を検出中...",
     "faceDetected": "顔を検出しました",
     "loadingImage": "画像を読み込み中...",
-    "beautyTools": "ビューティーツール",
+    "cat": {
+      "beauty": "ビューティー",
+      "reshape": "reshape",
+      "color": "カラー",
+      "filter": "フィルター"
+    },
     "smooth": "肌補正",
     "slim": "小顔",
     "bigeye": "瞳拡大",
     "whiten": "美白",
     "sharpen": "シャープネス",
+    "nose": "鼻細め",
+    "lip": "唇補正",
+    "forehead": "おでこ",
+    "eyebag": "クマ除去",
+    "darkcircle": "目元クマ",
+    "blemish": "キズ除去",
+    "facelift": "リフト",
+    "jawline": "顎ライン",
+    "temperature": "色温度",
+    "saturation": "彩度",
+    "contrast": "コントラスト",
+    "brightness": "明るさ",
+    "vignette": "ビネット",
+    "grain": "ノイズ",
     "preset": {
       "natural": "ナチュラル",
       "beauty": "ビューティー",
-      "portrait": "ポートレート"
+      "portrait": "ポートレート",
+      "vintage": "ヴィンテージ"
     }
+  },
+  "filmstrip": {
+    "title": "私たちの物語",
+    "caption1": "すべてのシャッターは時の痕跡を刻みます",
+    "caption2": "光と影で最もリアルなあなたを記録します",
+    "caption3": "自然光の中の最も美しい瞬間",
+    "caption4": "すべての角度が大切にされる価値があります",
+    "caption5": "写真があなただけの物語を語ります",
+    "caption6": "過ぎ去っていく美しさを捉えます",
+    "caption7": "あなたの笑顔が最高の景色です",
+    "caption8": "この瞬間を永遠に、花開かせましょう"
   }
 }

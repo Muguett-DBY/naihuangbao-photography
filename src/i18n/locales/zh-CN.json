@@ -744,7 +744,7 @@
   },
   "editor": {
     "title": "人像修图工作室",
-    "desc": "上传人像照片，使用 AI 人脸检测进行磨皮、瘦脸、大眼、美白等专业美颜处理。",
+    "desc": "上传人像照片，使用 AI 人脸检测进行磨皮、瘦脸、大眼、美白、瘦鼻、丰唇等专业美颜处理。",
     "subtitle": "上传人像照片，开始美颜",
     "upload": "上传照片",
     "download": "下载",
@@ -753,16 +753,47 @@
     "detecting": "人脸检测中...",
     "faceDetected": "已检测到人脸",
     "loadingImage": "加载图片中...",
-    "beautyTools": "美颜工具",
+    "cat": {
+      "beauty": "美颜",
+      "reshape": "重塑",
+      "color": "调色",
+      "filter": "滤镜"
+    },
     "smooth": "磨皮",
     "slim": "瘦脸",
     "bigeye": "大眼",
     "whiten": "美白",
     "sharpen": "锐化",
+    "nose": "瘦鼻",
+    "lip": "丰唇",
+    "forehead": "额头",
+    "eyebag": "去眼袋",
+    "darkcircle": "去黑眼圈",
+    "blemish": "去瑕疵",
+    "facelift": "提拉",
+    "jawline": "下颌线",
+    "temperature": "色温",
+    "saturation": "饱和度",
+    "contrast": "对比度",
+    "brightness": "亮度",
+    "vignette": "暗角",
+    "grain": "颗粒",
     "preset": {
       "natural": "自然",
       "beauty": "美颜",
-      "portrait": "人像"
+      "portrait": "人像",
+      "vintage": "复古"
     }
+  },
+  "filmstrip": {
+    "title": "我们的故事",
+    "caption1": "每一次快门，都是时光的印记",
+    "caption2": "用光影记录最真实的你",
+    "caption3": "自然光线下最美的瞬间",
+    "caption4": "每一个角度都值得被珍藏",
+    "caption5": "让照片讲述属于你的故事",
+    "caption6": "捕捉那些稍纵即逝的美好",
+    "caption7": "你的笑容是最好的风景",
+    "caption8": "定格此刻，永恒绽放"
   }
 }

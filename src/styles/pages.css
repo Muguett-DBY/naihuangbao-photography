@@ -2550,6 +2550,8 @@
 
 /* ── Photo Editor page ── */
 .editor-root {
+  position: relative;
+  z-index: 10000;
   min-height: 100vh;
   padding-top: var(--nav-h, 64px);
   background: var(--custard-bg);

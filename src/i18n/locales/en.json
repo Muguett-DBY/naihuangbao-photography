@@ -745,7 +745,7 @@
   },
   "editor": {
     "title": "Portrait Studio",
-    "desc": "Upload portrait photos and use AI face detection for professional beauty retouching including skin smoothing, face slimming, eye enlargement, and whitening.",
+    "desc": "Upload portrait photos and use AI face detection for professional beauty retouching including skin smoothing, face slimming, eye enlargement, nose slimming, lip enhancement, and more.",
     "subtitle": "Upload a portrait to start beautifying",
     "upload": "Upload Photo",
     "download": "Download",
@@ -754,16 +754,47 @@
     "detecting": "Detecting face...",
     "faceDetected": "Face detected",
     "loadingImage": "Loading image...",
-    "beautyTools": "Beauty Tools",
+    "cat": {
+      "beauty": "Beauty",
+      "reshape": "Reshape",
+      "color": "Color",
+      "filter": "Filter"
+    },
     "smooth": "Smooth",
     "slim": "Slim",
     "bigeye": "Big Eyes",
     "whiten": "Whiten",
     "sharpen": "Sharpen",
+    "nose": "Nose",
+    "lip": "Lips",
+    "forehead": "Forehead",
+    "eyebag": "Eye Bags",
+    "darkcircle": "Dark Circles",
+    "blemish": "Blemish",
+    "facelift": "Face Lift",
+    "jawline": "Jawline",
+    "temperature": "Temperature",
+    "saturation": "Saturation",
+    "contrast": "Contrast",
+    "brightness": "Brightness",
+    "vignette": "Vignette",
+    "grain": "Grain",
     "preset": {
       "natural": "Natural",
       "beauty": "Beauty",
-      "portrait": "Portrait"
+      "portrait": "Portrait",
+      "vintage": "Vintage"
     }
+  },
+  "filmstrip": {
+    "title": "Our Story",
+    "caption1": "Every shutter click captures a moment in time",
+    "caption2": "Recording the real you with light and shadow",
+    "caption3": "The most beautiful moments in natural light",
+    "caption4": "Every angle deserves to be cherished",
+    "caption5": "Let photos tell your unique story",
+    "caption6": "Capturing fleeting moments of beauty",
+    "caption7": "Your smile is the best scenery",
+    "caption8": "Freeze this moment, bloom forever"
   }
 }
