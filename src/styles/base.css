@@ -655,6 +655,19 @@ a {
 .text-reveal-line:nth-child(2) span { animation-delay: 0.5s; }
 .text-reveal-line:nth-child(3) span { animation-delay: 0.7s; }
 
+/* ── Screen-reader only (accessible hiding) ── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ── Skip-to-content link ── */
 .skip-link {
   position: fixed;

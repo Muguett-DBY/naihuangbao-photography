@@ -18,6 +18,7 @@ export function LoginPage() {
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const errorId = "login-error";
 
   useGsapPageEffects(rootRef);
 
@@ -70,6 +71,8 @@ export function LoginPage() {
                       onChange={(e) => setDisplayName(e.target.value)}
                       placeholder={t("auth.displayNamePlaceholder", "可选")}
                       className="login-input"
+                      aria-invalid={!!error || undefined}
+                      aria-describedby={error ? errorId : undefined}
                     />
                   </div>
                 </div>
@@ -79,41 +82,45 @@ export function LoginPage() {
                 <label htmlFor="email" className="login-label">
                   {t("auth.email", "邮箱")}
                 </label>
-                <div className="login-input-wrap">
-                  <Mail size={16} className="login-input-icon" />
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    placeholder={t("auth.emailPlaceholder", "your@email.com")}
-                    className="login-input"
-                  />
-                </div>
+                  <div className="login-input-wrap">
+                    <Mail size={16} className="login-input-icon" />
+                    <input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      placeholder={t("auth.emailPlaceholder", "your@email.com")}
+                      className="login-input"
+                      aria-invalid={!!error || undefined}
+                      aria-describedby={error ? errorId : undefined}
+                    />
+                  </div>
               </div>
 
               <div className="login-field login-field--last">
                 <label htmlFor="password" className="login-label">
                   {t("auth.password", "密码")}
                 </label>
-                <div className="login-input-wrap">
-                  <Lock size={16} className="login-input-icon" />
-                  <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    placeholder={t("auth.passwordPlaceholder", "至少6个字符")}
-                    className="login-input"
-                  />
-                </div>
+                  <div className="login-input-wrap">
+                    <Lock size={16} className="login-input-icon" />
+                    <input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      placeholder={t("auth.passwordPlaceholder", "至少6个字符")}
+                      className="login-input"
+                      aria-invalid={!!error || undefined}
+                      aria-describedby={error ? errorId : undefined}
+                    />
+                  </div>
               </div>
 
               {error && (
-                <p className="login-error">{error}</p>
+                <p id={errorId} className="login-error" role="alert">{error}</p>
               )}
 
               <button

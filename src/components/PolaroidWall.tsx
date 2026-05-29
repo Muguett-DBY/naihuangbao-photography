@@ -9,6 +9,7 @@ export function PolaroidWall() {
   const [fannedOut, setFannedOut] = useState(false);
   const [flippedId, setFlippedId] = useState<string | null>(null);
   const [focusIdx, setFocusIdx] = useState(0);
+  const [loadedIds, setLoadedIds] = useState<Set<string>>(new Set());
   const stageRef = useRef<HTMLDivElement>(null);
 
   const POLAROID_ITEMS = useMemo(() => photos.slice(0, 6), [photos]);
@@ -25,6 +26,10 @@ export function PolaroidWall() {
   const handleBlur = useCallback(() => {
     setFannedOut(false);
     setFlippedId(null);
+  }, []);
+
+  const handleImageLoad = useCallback((id: string) => {
+    setLoadedIds((prev) => new Set(prev).add(id));
   }, []);
 
   return (
@@ -64,6 +69,10 @@ export function PolaroidWall() {
               onClick={() => handleCardClick(item.id)}
               onMouseEnter={() => handleFocus(i)}
               onMouseLeave={() => {}}
+              role="button"
+              tabIndex={0}
+              aria-label={`${item.title} – ${item.style}. ${isFlipped ? t("polaroid.hintExpanded") : t("polaroid.hintCollapsed")}`}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleCardClick(item.id); } }}
             >
               <div className="polaroid-card-inner">
                 {/* Front — Polaroid photo */}
@@ -72,8 +81,9 @@ export function PolaroidWall() {
                     <img
                       src={item.imageUrl}
                       alt={item.alt}
-                      className="is-loaded"
+                      className={loadedIds.has(item.id) ? "is-loaded" : ""}
                       loading="lazy"
+                      onLoad={() => handleImageLoad(item.id)}
                     />
                   </div>
                   <div className="polaroid-caption">

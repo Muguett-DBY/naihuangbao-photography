@@ -212,15 +212,25 @@ export function WorkshopDetailPage() {
               />
             ) : (
               <>
+                <label htmlFor="workshop-detail-name" className="sr-only">
+                  {t("workshops.form.name")}
+                </label>
                 <input
+                  id="workshop-detail-name"
                   value={formName} onChange={(e) => setFormName(e.target.value)}
                   placeholder={t("workshops.form.name")}
                   className="workshop-detail-register-input"
+                  aria-label={t("workshops.form.name")}
                 />
+                <label htmlFor="workshop-detail-contact" className="sr-only">
+                  {t("workshops.form.contact")}
+                </label>
                 <input
+                  id="workshop-detail-contact"
                   value={formContact} onChange={(e) => setFormContact(e.target.value)}
                   placeholder={t("workshops.form.contact")}
                   className="workshop-detail-register-input"
+                  aria-label={t("workshops.form.contact")}
                 />
                 {formMsg && <p className={`workshop-detail-form-msg${formMsg === t("workshops.form.success") ? " workshop-detail-form-msg--success" : " workshop-detail-form-msg--error"}`}>{formMsg}</p>}
                 <Button type="primary" onClick={handleRegister} disabled={submitting}>

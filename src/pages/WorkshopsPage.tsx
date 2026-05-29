@@ -115,15 +115,25 @@ export function WorkshopsPage() {
                     {ws.price_display && <div className="workshop-price">{ws.price_display}</div>}
                     {formOpen === ws.id ? (
                       <div className="workshop-register-form">
+                        <label htmlFor={`workshop-name-${ws.id}`} className="sr-only">
+                          {t("workshops.form.name")}
+                        </label>
                         <input
+                          id={`workshop-name-${ws.id}`}
                           value={formName}
                           onChange={(e) => setFormName(e.target.value)}
                           placeholder={t("workshops.form.name")}
+                          aria-label={t("workshops.form.name")}
                         />
+                        <label htmlFor={`workshop-contact-${ws.id}`} className="sr-only">
+                          {t("workshops.form.contact")}
+                        </label>
                         <input
+                          id={`workshop-contact-${ws.id}`}
                           value={formContact}
                           onChange={(e) => setFormContact(e.target.value)}
                           placeholder={t("workshops.form.contact")}
+                          aria-label={t("workshops.form.contact")}
                         />
                         {formMsg && <p style={{ fontSize: 13, color: formMsg === t("workshops.form.success") ? "#22c55e" : "#ef4444", margin: "4px 0" }}>{formMsg}</p>}
                         <div style={{ display: "flex", gap: 8 }}>
