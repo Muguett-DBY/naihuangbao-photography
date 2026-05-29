@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, Users, Clock, CheckCircle } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -46,6 +47,13 @@ export function WorkshopDetailPage() {
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
   }, [id]);
+
+  const workshopTitle = workshop ? getTitle(workshop, lang) : "";
+  useSEO({
+    title: workshopTitle,
+    descKey: "seo.workshopDetailDesc",
+    path: id ? `/workshops/${id}` : undefined,
+  });
 
   const handleRegister = async () => {
     if (!formName.trim()) { setFormMsg(t("workshops.form.nameRequired")); return; }

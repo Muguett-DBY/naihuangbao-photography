@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, Package, Truck, RotateCcw, MessageCircle } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useBookingModal } from "../hooks/useBookingModal";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -44,6 +45,13 @@ export function ShopDetailPage() {
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
   }, [id]);
+
+  const itemTitle = item ? getName(item, lang) : "";
+  useSEO({
+    title: itemTitle,
+    descKey: "seo.shopDetailDesc",
+    path: id ? `/shop/${id}` : undefined,
+  });
 
   if (loading) return <DetailLoading label={t("loading")} />;
   if (error || !item) return <DetailNotFound message={t("shopDetail.notFound")} backTo="/shop" backLabel={t("shopDetail.backToList")} />;

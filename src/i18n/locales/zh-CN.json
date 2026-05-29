@@ -597,5 +597,25 @@
       "bookingsTotal": "预约总数",
       "pending": "个待处理"
     }
+  },
+  "seo": {
+    "homeTitle": "奶黄包摄影 | 南京约拍",
+    "homeDesc": "偏柔雾胶片感的自然约拍，适合日常记录、江南感写真、情侣纪念和轻松陪拍。南京女生写真与情侣约拍首选。",
+    "galleryTitle": "作品集 | 奶黄包摄影",
+    "galleryDesc": "南京写真摄影作品集——公园日常、江南感、街拍、室内写真和情侣约拍。真实授权作品展示。",
+    "coursesTitle": "摄影课程 | 奶黄包摄影",
+    "coursesDesc": "从基础到进阶，系统学习人像摄影——摆姿引导、光影运用和后期修图课程。",
+    "presetsTitle": "Lightroom 预设 | 奶黄包摄影",
+    "presetsDesc": "专业调色预设一键下载——Lightroom、Photoshop 预设与调色资源。",
+    "workshopsTitle": "摄影活动 | 奶黄包摄影",
+    "workshopsDesc": "线下摄影体验活动——专业摄影师指导，实拍练习与作品交流。",
+    "shopTitle": "周边商品 | 奶黄包摄影",
+    "shopDesc": "定制相册、明信片、相框和冲印——把美好回忆变成实物。",
+    "bookingTitle": "预约拍摄 | 奶黄包摄影",
+    "bookingDesc": "预约南京写真拍摄——室内棚拍、室外约拍和拍立得套餐可选。",
+    "courseDetailDesc": "了解摄影课程详情——章节大纲、课程预览和学习内容。",
+    "presetDetailDesc": "下载专业 Lightroom 预设——效果预览、用户评价和兼容信息。",
+    "workshopDetailDesc": "活动详情——日程安排、地点导航、报名方式和行前准备。",
+    "shopDetailDesc": "商品详情——规格参数、购买指南和相关推荐。"
   }
 }

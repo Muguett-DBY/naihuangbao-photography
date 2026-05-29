@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Download } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import type { Preset } from "../types/content";
@@ -14,6 +15,7 @@ export function ProductsPage() {
   const [presets, setPresets] = useState<Preset[]>([]);
   const [loading, setLoading] = useState(true);
 
+  useSEO({ titleKey: "seo.presetsTitle", descKey: "seo.presetsDesc", path: "/products" });
   useGsapPageEffects(rootRef);
 
   useEffect(() => {

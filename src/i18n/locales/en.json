@@ -597,5 +597,25 @@
       "bookingsTotal": "Total Bookings",
       "pending": " pending"
     }
+  },
+  "seo": {
+    "homeTitle": "Naihuangbao Photography | Nanjing Portrait",
+    "homeDesc": "Soft, film-like portrait photography in Nanjing. Natural everyday portraits for individuals and couples — Xianlin, Xuanwu Lake, Yihe Road and beyond.",
+    "galleryTitle": "Portfolio | Naihuangbao Photography",
+    "galleryDesc": "Browse our portfolio of Nanjing portrait photography — park shoots, Jiangnan vibes, street style, indoor portraits and couple sessions.",
+    "coursesTitle": "Photography Courses | Naihuangbao Photography",
+    "coursesDesc": "Learn portrait photography from basics to advanced — systematic courses covering posing, lighting, and post-processing.",
+    "presetsTitle": "Lightroom Presets | Naihuangbao Photography",
+    "presetsDesc": "Professional color grading presets for instant download — Lightroom, Photoshop, and more.",
+    "workshopsTitle": "Workshops | Naihuangbao Photography",
+    "workshopsDesc": "Join offline photography workshops and experiences — hands-on shooting, guided by professional photographers.",
+    "shopTitle": "Merchandise | Naihuangbao Photography",
+    "shopDesc": "Custom photo albums, postcards, frames and prints — turn your beautiful memories into physical products.",
+    "bookingTitle": "Book a Session | Naihuangbao Photography",
+    "bookingDesc": "Book your Nanjing portrait photography session — choose from indoor, outdoor, or instant camera packages.",
+    "courseDetailDesc": "Learn about this photography course — modules, syllabus, and preview.",
+    "presetDetailDesc": "Download this professional Lightroom preset — preview, reviews, and compatibility info.",
+    "workshopDetailDesc": "Workshop details — schedule, location, registration, and what to bring.",
+    "shopDetailDesc": "Product details — specifications, ordering guide, and related items."
   }
 }

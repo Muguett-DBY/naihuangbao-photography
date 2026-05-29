@@ -1,6 +1,7 @@
 import { Suspense, lazy, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 
 const Packages = lazy(() => import("../components/Packages").then((m) => ({ default: m.Packages })));
@@ -11,6 +12,7 @@ export function BookingPage() {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
 
+  useSEO({ titleKey: "seo.bookingTitle", descKey: "seo.bookingDesc", path: "/booking" });
   useGsapPageEffects(rootRef);
 
   return (

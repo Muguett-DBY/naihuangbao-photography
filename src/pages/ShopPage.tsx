@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useBookingModal } from "../hooks/useBookingModal";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import type { Merchandise } from "../types/content";
@@ -15,6 +16,7 @@ export function ShopPage() {
   const [items, setItems] = useState<Merchandise[]>([]);
   const [loading, setLoading] = useState(true);
 
+  useSEO({ titleKey: "seo.shopTitle", descKey: "seo.shopDesc", path: "/shop" });
   useGsapPageEffects(rootRef);
 
   useEffect(() => {

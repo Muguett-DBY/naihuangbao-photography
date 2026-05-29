@@ -1,6 +1,7 @@
 import { Suspense, lazy, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 
 const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
@@ -13,6 +14,7 @@ export function GalleryPage() {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
 
+  useSEO({ titleKey: "seo.galleryTitle", descKey: "seo.galleryDesc", path: "/gallery" });
   useGsapPageEffects(rootRef);
 
   return (

@@ -5,6 +5,7 @@ import { Calendar, MapPin, Users } from "lucide-react";
 import { Button, Input } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useNotification } from "../hooks/useNotification";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import type { Workshop } from "../types/content";
@@ -21,6 +22,7 @@ export function WorkshopsPage() {
   const [formContact, setFormContact] = useState("");
   const [formMsg, setFormMsg] = useState("");
 
+  useSEO({ titleKey: "seo.workshopsTitle", descKey: "seo.workshopsDesc", path: "/workshops" });
   useGsapPageEffects(rootRef);
 
   useEffect(() => {

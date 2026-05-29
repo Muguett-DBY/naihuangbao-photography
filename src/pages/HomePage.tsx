@@ -6,6 +6,7 @@ import { Button, Divider, Icon } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useBookingModal } from "../hooks/useBookingModal";
 import { useSiteContent } from "../hooks/useSiteContent";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 
 const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
@@ -18,6 +19,7 @@ export function HomePage() {
   const { openBookingModal } = useBookingModal();
   const rootRef = useRef<HTMLDivElement>(null);
 
+  useSEO({ titleKey: "seo.homeTitle", descKey: "seo.homeDesc", path: "/" });
   useGsapPageEffects(rootRef);
 
   return (

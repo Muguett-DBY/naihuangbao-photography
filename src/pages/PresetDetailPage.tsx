@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Download, Star, Check } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -42,6 +43,13 @@ export function PresetDetailPage() {
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
   }, [id]);
+
+  const presetTitle = preset ? getName(preset, lang) : "";
+  useSEO({
+    title: presetTitle,
+    descKey: "seo.presetDetailDesc",
+    path: id ? `/presets/${id}` : undefined,
+  });
 
   const handleDownload = async () => {
     if (!id) return;

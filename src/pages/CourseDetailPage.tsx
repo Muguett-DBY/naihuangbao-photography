@@ -5,6 +5,7 @@ import { Clock, BarChart3, Lock, Unlock, Play, FileText, Images, LogIn, Shopping
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useNotification } from "../hooks/useNotification";
+import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -28,10 +29,18 @@ export function CourseDetailPage() {
   const [verifying, setVerifying] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const { user } = useAuth();
+  const lang = i18n.language;
 
   const { data, loading, error } = useFetch<{ course: Course; modules: CourseModule[] }>(
     id ? `/api/courses/${id}` : null,
   );
+
+  const courseTitle = data?.course ? getTitle(data.course, lang) : "";
+  useSEO({
+    title: courseTitle,
+    descKey: "seo.courseDetailDesc",
+    path: id ? `/courses/${id}` : undefined,
+  });
 
   useGsapPageEffects(rootRef);
 
@@ -67,8 +76,6 @@ export function CourseDetailPage() {
       setVerifying(false);
     }
   };
-
-  const lang = i18n.language;
 
   if (loading) return <DetailLoading label={t("loading")} />;
   if (error || !data?.course) return <DetailNotFound message={t("courseDetail.notFound")} backTo="/courses" backLabel={t("courseDetail.backToList")} />;
