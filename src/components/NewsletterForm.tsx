@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 type Status = "idle" | "loading" | "success" | "error" | "duplicate";
@@ -7,11 +7,16 @@ export function NewsletterForm() {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
+  const lastSubmitTime = useRef(0);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = email.trim();
     if (!trimmed) return;
+
+    const now = Date.now();
+    if (now - lastSubmitTime.current < 3000) return;
+    lastSubmitTime.current = now;
 
     setStatus("loading");
 

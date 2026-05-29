@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 export type FetchState<T> = {
   data: T | null;
@@ -8,7 +8,8 @@ export type FetchState<T> = {
 
 export function useFetch<T>(url: string | null, fetchOptions?: RequestInit): FetchState<T> & { retry: () => void } {
   const [state, setState] = useState<FetchState<T>>({ data: null, loading: !!url, error: null });
-  const retryCount = useRef(0);
+  const [retryCount, setRetryCount] = useState(0);
+  const retryCountRef = useRef(0);
 
   useEffect(() => {
     if (!url) {
@@ -33,12 +34,12 @@ export function useFetch<T>(url: string | null, fetchOptions?: RequestInit): Fet
       });
 
     return () => ctrl.abort();
-  }, [url, retryCount.current]);
+  }, [url, retryCount, fetchOptions]);
 
-  const retry = () => {
-    retryCount.current += 1;
-    setState((s) => ({ ...s, loading: true, error: null }));
-  };
+  const retry = useCallback(() => {
+    retryCountRef.current += 1;
+    setRetryCount(retryCountRef.current);
+  }, []);
 
   return { ...state, retry };
 }

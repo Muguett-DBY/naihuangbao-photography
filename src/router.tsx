@@ -35,7 +35,25 @@ function AdminRoute() {
 }
 
 function PageSuspense({ children }: { children: React.ReactNode }) {
-  return <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>{children}</Suspense>;
+  return (
+    <Suspense fallback={
+      <div style={{
+        minHeight: "60vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 12,
+        color: "var(--caramel-muted, #7F5A44)",
+        fontSize: 14,
+      }}>
+        <div className="adm-loading-dots">
+          <span /><span /><span />
+        </div>
+      </div>
+    }>
+      {children}
+    </Suspense>
+  );
 }
 
 export const router = createBrowserRouter([

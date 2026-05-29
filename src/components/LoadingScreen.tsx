@@ -59,6 +59,7 @@ export function LoadingScreen() {
     <div
       ref={wrapRef}
       role="status"
+      aria-live="polite"
       aria-label="Loading"
       style={{
         position: "fixed",

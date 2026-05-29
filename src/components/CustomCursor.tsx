@@ -6,12 +6,11 @@ export function CustomCursor() {
   const rafId = useRef(0);
   const pos = useRef({ x: 0, y: 0 });
   const ringPos = useRef({ x: 0, y: 0 });
-  const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-
-  if (isTouchDevice) return null;
+  const idleTimer = useRef(0);
 
   const onMove = useCallback((e: MouseEvent) => {
     pos.current = { x: e.clientX, y: e.clientY };
+    idleTimer.current = 0;
 
     const target = e.target as HTMLElement;
     const isClickable = target.closest("a, button, [role='button'], input, select, textarea, label, .gallery-card, .package-card, .why-card");
@@ -24,7 +23,8 @@ export function CustomCursor() {
   }, []);
 
   useEffect(() => {
-    if (isTouchDevice) return;
+    if (typeof window === 'undefined') return;
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
 
     const dot = dotRef.current;
     const ring = ringRef.current;
@@ -33,7 +33,8 @@ export function CustomCursor() {
     document.addEventListener("mousemove", onMove, { passive: true });
 
     const loop = () => {
-      if (!document.hidden) {
+      idleTimer.current++;
+      if (!document.hidden && idleTimer.current < 300) {
         ringPos.current.x += (pos.current.x - ringPos.current.x) * 0.12;
         ringPos.current.y += (pos.current.y - ringPos.current.y) * 0.12;
 
@@ -96,7 +97,18 @@ export function CustomCursor() {
           a, button, [role="button"] { cursor: none !important; }
           .booking-modal input,
           .booking-modal textarea,
-          .booking-modal select { cursor: text !important; }
+          .booking-modal select,
+          .login-page input,
+          .login-page textarea,
+          .adm-login input,
+          .adm-login textarea,
+          .public-chat-form textarea,
+          .newsletter-form input,
+          #booking-name,
+          #booking-contact,
+          #booking-notes,
+          #booking-time,
+          input, textarea, select { cursor: text !important; }
         }
 
         .is-clickable {

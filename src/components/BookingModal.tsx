@@ -29,7 +29,10 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !contact.trim()) return;
+    const trimmedName = name.trim().slice(0, 50);
+    const trimmedContact = contact.trim().slice(0, 100);
+    const trimmedNotes = notes.trim().slice(0, 500);
+    if (!trimmedName || !trimmedContact) return;
     setSending(true);
     setError("");
 
@@ -41,9 +44,9 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           packageName: selectedPkg,
           preferredDate: date,
           preferredTime: time,
-          name: name.trim(),
-          contact: contact.trim(),
-          notes: notes.trim(),
+          name: trimmedName,
+          contact: trimmedContact,
+          notes: trimmedNotes,
         }),
       });
 
@@ -56,12 +59,12 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       setBookingId(data.id);
       setShowPayment(true);
 
-      await sendBookingConfirmation(contact.trim(), {
+      await sendBookingConfirmation(trimmedContact, {
         bookingId: data.id,
         packageName: selectedPkg,
         preferredDate: date,
         preferredTime: time,
-        name: name.trim(),
+        name: trimmedName,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : t("bookingModal.submitError"));

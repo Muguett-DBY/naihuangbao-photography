@@ -583,7 +583,9 @@
     "header": {
       "brand": "{{name}} · Admin",
       "logout": "Logout",
-      "backToSite": "← Site"
+      "backToSite": "← Site",
+      "saving": "Saving...",
+      "savePublish": "Save & Publish"
     },
     "logout": {
       "error": "Logout request failed. Local login state has been cleared."
@@ -623,7 +625,8 @@
     ],
     "placeholder": "Type your question...",
     "inputLabel": "Chat message",
-    "sendLabel": "Send message"
+    "sendLabel": "Send message",
+    "typing": "typing..."
   },
   "dashboard": {
     "title": "My Dashboard",

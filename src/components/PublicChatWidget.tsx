@@ -265,7 +265,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
                   <p>{message.content}</p>
                   {typing && index === messages.length - 1 && message.role === "assistant" ? (
                     <span className="public-chat-typing-label" aria-live="polite">
-                      typing...
+                      {t("chat.typing", "typing...")}
                       <span className="public-chat-cursor" aria-hidden="true" />
                     </span>
                   ) : null}

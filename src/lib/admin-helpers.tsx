@@ -1,4 +1,5 @@
 import { Save } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function PanelHeader({
   title,
@@ -9,12 +10,13 @@ export function PanelHeader({
   onSave: () => void;
   saving: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="adm-panel-head">
       <h2>{title}</h2>
       <button className="adm-submit" type="button" onClick={onSave} disabled={saving}>
         <Save size={14} />
-        {saving ? "保存中..." : "保存并发布"}
+        {saving ? t("admin.header.saving", "保存中...") : t("admin.header.savePublish", "保存并发布")}
       </button>
     </div>
   );
@@ -27,9 +29,7 @@ export function linesFromText(value: string) {
     .filter(Boolean);
 }
 
-export function isAbortError(error: unknown) {
-  return error instanceof DOMException && error.name === "AbortError";
-}
+export { isAbortError } from "./errors";
 
 export type AdminTab = "photos" | "bookings" | "packages" | "services" | "faq" | "copy" | "stats" | "courses" | "presets" | "workshops" | "merchandise";
 export type ToastType = "success" | "error" | "info";

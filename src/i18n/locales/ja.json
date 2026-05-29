@@ -582,7 +582,9 @@
     "header": {
       "brand": "{{name}} · 管理画面",
       "logout": "ログアウト",
-      "backToSite": "← サイト"
+      "backToSite": "← サイト",
+      "saving": "保存中...",
+      "savePublish": "保存して公開"
     },
     "logout": {
       "error": "ログアウトリクエストに失敗しました。ローカルのログイン状態が削除されました。"
@@ -622,7 +624,8 @@
     ],
     "placeholder": "質問を入力...",
     "inputLabel": "チャットメッセージ",
-    "sendLabel": "送信"
+    "sendLabel": "送信",
+    "typing": "入力中..."
   },
   "dashboard": {
     "title": "マイダッシュボード",

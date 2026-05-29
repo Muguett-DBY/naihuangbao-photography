@@ -66,6 +66,7 @@ export function FilmGrain() {
     let leakX = 0;
     let leakOpacity = 0;
     let leakRaf = 0;
+    let idleFrames = 0;
 
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
     const leakFps = capability === "medium" ? 15 : isMobile ? 20 : 30;
@@ -74,6 +75,7 @@ export function FilmGrain() {
 
     const updateLeak = (currentTime: number) => {
       if (!document.hidden) {
+        idleFrames = 0;
         const elapsed = currentTime - lastLeakFrameTime;
         if (elapsed >= leakFrameInterval) {
           lastLeakFrameTime = currentTime - (elapsed % leakFrameInterval);

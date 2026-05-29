@@ -5,9 +5,6 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-// Module-level guard prevents double-registration from App+Hero calls
-let _initialized = false; // eslint-disable-line prefer-const
-
 /* ── Text morph phrases ── */
 const morphPhrases = [
   "南京女生写真与情侣约拍",
@@ -20,10 +17,8 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
   const guardRef = useRef(false);
 
   useEffect(() => {
-    if (_initialized) return;
     if (guardRef.current) return;
     guardRef.current = true;
-    _initialized = true;
 
     const $ = <T extends Element>(sel: string): T[] => {
       if (rootRef?.current) {
@@ -549,8 +544,7 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         (el as any)._autoScrollIO?.disconnect();
       });
 
-      // Reset guards so effect can re-init on StrictMode double-render
-      _initialized = false;
+      // Reset guard so effect can re-init on StrictMode double-render
       guardRef.current = false;
     };
   }, [guardRef]);

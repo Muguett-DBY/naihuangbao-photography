@@ -582,7 +582,9 @@
     "header": {
       "brand": "{{name}} · 后台管理",
       "logout": "退出",
-      "backToSite": "← 官网"
+      "backToSite": "← 官网",
+      "saving": "保存中...",
+      "savePublish": "保存并发布"
     },
     "logout": {
       "error": "退出请求失败，本地登录状态已清除。"
@@ -622,7 +624,8 @@
     ],
     "placeholder": "输入你的问题...",
     "inputLabel": "聊天消息",
-    "sendLabel": "发送消息"
+    "sendLabel": "发送消息",
+    "typing": "正在输入..."
   },
   "dashboard": {
     "title": "个人中心",
