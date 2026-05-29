@@ -153,14 +153,14 @@
     "perSession": "/회",
     "priceFrom": "부터",
     "fitScene": {
-      "indoor": "最适合：室内拍摄、探店、轻量主题、不受天气影响。",
-      "outdoor": "最适合：南京公园、街区散步、江南风格路线、自然光日常记录。",
-      "instant": "最适合：拍摄当天留一张实体小照片，作为即时纪念。"
+      "indoor": "실내 촬영, 카페 탐방, 간편 테마, 날씨 영향 없음에 적합합니다.",
+      "outdoor": "남징 공원, 거리 산책, 강남 스타일 코스, 자연광 일상 기록에 적합합니다.",
+      "instant": "촬영 당일 즉석에서 실물 사진 한 장을 기념품으로 남기기에 적합합니다."
     },
     "fitPeople": {
-      "indoor": "最适合：第一次拍摄、想要安静环境的人。",
-      "outdoor": "最适合：喜欢自然互动、情侣纪念的人。",
-      "instant": "最适合：想要仪式感、喜欢实体照片的人。"
+      "indoor": "첫 촬영, 조용한 환경을 원하는 분에게 적합합니다.",
+      "outdoor": "자연스러운 상호작용, 커플 기념 촬영을 원하는 분에게 적합합니다.",
+      "instant": "의식감을 원하시고 실물 사진을 좋아하는 분에게 적합합니다."
     }
   },
   "serviceDetails": {
@@ -169,7 +169,7 @@
     "equipmentTitle": "장비",
     "instantTitle": "즉석 카메라",
     "timingTitle": "시간 안내",
-    "noticeTitle": "예약须知",
+    "noticeTitle": "예약 안내",
     "detailItems": {
       "outfit": {
         "title": "스타일링 & 의상",
@@ -489,7 +489,7 @@
     "reviews": "사용 후기",
     "related": "관련 프리셋",
     "presetReviews": [
-      { "name": "소린", "text": "효과가非常好! 원클릭 적용으로도 매우 자연스럽고 필름 감성가 충분합니다.", "stars": 5 },
+      { "name": "소린", "text": "효과가 매우 좋습니다! 원클릭 적용으로도 매우 자연스럽고 필름 감성이 충분합니다.", "stars": 5 },
       { "name": "Amy", "text": "Love the warm tones! Perfect for my autumn photos.", "stars": 5 },
       { "name": "Zoe", "text": "일본풍 프리셋이 너무 좋아요. 캠퍼스 사진 촬영에 필수입니다.", "stars": 4 }
     ],
@@ -659,7 +659,7 @@
   "quiz": {
     "start": "테스트 시작",
     "step1.title": "어떤 상황?",
-    "step2.title": "어떤 스타일이좋아?",
+    "step2.title": "어떤 스타일이 좋아?",
     "step3.title": "어느 계절?",
     "step4.title": "몇 명?",
     "result.title": "추천 패키지",
@@ -750,8 +750,8 @@
     "nose": "코 축소",
     "lip": "입술 강화",
     "forehead": "이마",
-    "eyebag": "다크서클 제거",
-    "darkcircle": "눈밑 다크서클",
+    "eyebag": "눈 밑 패임",
+    "darkcircle": "다크서클 개선",
     "blemish": "여드름 제거",
     "facelift": "리프팅",
     "jawline": "턱 라인",

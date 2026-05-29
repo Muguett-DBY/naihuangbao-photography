@@ -160,7 +160,7 @@
     "fitPeople": {
       "indoor": "最適：初めての方、静かな環境で撮影したい方。",
       "outdoor": "最適：自然な雰囲気を好む方、カップルの記念撮影。",
-      "instant": "最適：仪式感を大切にしたい方、現物写真が好きな方。"
+      "instant": "最適：儀式感を大切にしたい方、現物写真が好きな方。"
     }
   },
   "serviceDetails": {
@@ -169,7 +169,7 @@
     "equipmentTitle": "機材",
     "instantTitle": "インスタントカメラ",
     "timingTitle": "時間について",
-    "noticeTitle": "予約须知",
+    "noticeTitle": "ご予約ガイド",
     "detailItems": {
       "outfit": {
         "title": "スタイリング＆衣装",
@@ -489,7 +489,7 @@
     "reviews": "ユーザーの声",
     "related": "関連プリセット",
     "presetReviews": [
-      { "name": "コバヤシ", "text": "効果が素晴らしい! 一键適用でとても自然でフィルム感があります。", "stars": 5 },
+      { "name": "コバヤシ", "text": "効果が素晴らしい! ワンクリック適用でとても自然でフィルム感があります。", "stars": 5 },
       { "name": "Amy", "text": "Love the warm tones! Perfect for my autumn photos.", "stars": 5 },
       { "name": "Zoe", "text": "日系クリアプリセットがとても使いやすい。キャンパス写真撮影に必須です。", "stars": 4 }
     ],
@@ -823,7 +823,7 @@
     "targetHue": "ターゲット色相",
     "hueRange": "色相範囲",
     "double_exposure": "二重露光",
-    "uploadOverlay": "オーバーレイ上传",
+    "uploadOverlay": "オーバーレイをアップロード",
     "changeImage": "画像変更",
     "blendOverlay": "オーバーレイ",
     "blendScreen": "スクリーン",

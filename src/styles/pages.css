@@ -2665,16 +2665,7 @@
   display: block;
 }
 
-.editor-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(254, 243, 221, 0.8);
-  color: var(--caramel-ink);
-  font-weight: 600;
-}
+
 
 .editor-beauty-panel {
   width: 280px;
@@ -3048,4 +3039,83 @@
 .editor-select:focus {
   outline: none;
   border-color: var(--peach-accent);
+}
+
+/* ── Editor categories ── */
+.editor-categories {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 12px;
+  scrollbar-width: none;
+}
+.editor-categories::-webkit-scrollbar { display: none; }
+
+.editor-cat-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 12px;
+  background: var(--custard-bg);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--caramel-ink);
+}
+
+.editor-cat-btn:hover {
+  border-color: var(--peach-accent);
+  background: var(--peach-light);
+}
+
+.editor-cat-btn.active {
+  border-color: var(--peach-accent);
+  background: rgba(255, 184, 161, 0.15);
+  font-weight: 600;
+}
+
+/* ── Focus visible for editor buttons ── */
+.editor-btn:focus-visible,
+.editor-cat-btn:focus-visible,
+.editor-tool-btn:focus-visible,
+.editor-filter-btn:focus-visible,
+.editor-frame-btn:focus-visible,
+.editor-sticker-btn:focus-visible {
+  outline: 2px solid var(--peach-accent);
+  outline-offset: 2px;
+}
+
+/* ── Editor overlay z-index ── */
+.editor-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(254, 243, 221, 0.8);
+  color: var(--caramel-ink);
+  font-weight: 600;
+  z-index: 10;
+  pointer-events: all;
+}
+
+/* ── Export modal responsive ── */
+.editor-export-options label {
+  flex-wrap: wrap;
+}
+
+/* ── Editor canvas empty state ── */
+.editor-canvas--empty {
+  border: 2px dashed rgba(139, 94, 74, 0.18);
+  border-radius: 16px;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
 }

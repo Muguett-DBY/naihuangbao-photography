@@ -162,7 +162,9 @@ export default function PhotoEditorPage() {
   const [tool, setTool] = useState<BeautyTool>("smooth");
   const [settings, setSettings] = useState<BeautySettings>({ ...INITIAL });
   const [faceOk, setFaceOk] = useState(false);
+  const [faceError, setFaceError] = useState(false);
   const [modelsReady, setModelsReady] = useState(false);
+  const [modelError, setModelError] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [comparePos, setComparePos] = useState(50);
   const [historyIdx, setHistoryIdx] = useState(0);
@@ -197,7 +199,7 @@ export default function PhotoEditorPage() {
   const [eyeshadowColor, setEyeshadowColor] = useState("#a29bfe");
 
   // Feature 3: Local adjustment brush
-  const [localBrushMask, setLocalBrushMask] = useState<ImageData | null>(null);
+  const localBrushMaskRef = useRef<ImageData | null>(null);
   const [localBrushActive, setLocalBrushActive] = useState(false);
   const [localBrushTool, setLocalBrushTool] = useState<"local_bright" | "local_warm" | "local_sat">("local_bright");
   const localBrushCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -205,6 +207,16 @@ export default function PhotoEditorPage() {
   // Feature 4: Color Splash
   const [colorSplashHue, setColorSplashHue] = useState(0);
   const [colorSplashRange, setColorSplashRange] = useState(30);
+
+  // Export modal Escape key
+  useEffect(() => {
+    if (!showExport) return;
+    const h = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShowExport(false);
+    };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [showExport]);
 
   // Feature 5: Double Exposure
   const [doubleExposureImage, setDoubleExposureImage] = useState<HTMLImageElement | null>(null);
@@ -222,7 +234,13 @@ export default function PhotoEditorPage() {
           api.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
         ]);
         if (m) setModelsReady(true);
-      } catch (e) { console.error("Model load failed:", e); }
+      } catch (e) {
+        console.error("Model load failed:", e);
+        if (m) setModelError(true);
+      }
+    }).catch(e => {
+      console.error("face-api.js import failed:", e);
+      if (m) setModelError(true);
     });
     return () => { m = false; };
   }, []);
@@ -231,11 +249,11 @@ export default function PhotoEditorPage() {
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "z") { e.preventDefault(); undo(); }
-      if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.shiftKey && e.key === "z"))) { e.preventDefault(); redo(); }
+      if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.shiftKey && e.key === "Z"))) { e.preventDefault(); redo(); }
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
-  }, [historyIdx]);
+  }, []);
 
   const pushHistory = useCallback((s: BeautySettings) => {
     const idx = historyIdxRef.current;
@@ -259,6 +277,11 @@ export default function PhotoEditorPage() {
     historyIdxRef.current++;
     setHistoryIdx(historyIdxRef.current);
     setSettings({ ...historyRef.current[historyIdxRef.current] });
+  }, []);
+
+  // Cleanup RAF on unmount
+  useEffect(() => {
+    return () => { cancelAnimationFrame(rafRef.current); };
   }, []);
 
   // Core rendering
@@ -649,8 +672,8 @@ export default function PhotoEditorPage() {
         }
 
         // Feature 3: Local Adjustment Brush
-        if (localBrushMask && (s.local_bright !== 0 || s.local_warm !== 0 || s.local_sat !== 0)) {
-          applyLocalAdjustment(ctx, w, h, localBrushMask, s);
+        if (localBrushMaskRef.current && (s.local_bright !== 0 || s.local_warm !== 0 || s.local_sat !== 0)) {
+          applyLocalAdjustment(ctx, w, h, localBrushMaskRef.current, s);
         }
 
         // Feature 4: Color Splash
@@ -733,7 +756,7 @@ export default function PhotoEditorPage() {
         }
       }
     });
-  }, [frameId, texts, stickers, showMesh, selectedOverlay, bgSolidColor, bgGradientStart, bgGradientEnd, lipstickColor, blushColor, eyeshadowColor, localBrushMask, colorSplashHue, colorSplashRange, doubleExposureImage, blendMode, doubleExposureOpacity]);
+  }, [frameId, texts, stickers, showMesh, selectedOverlay, bgSolidColor, bgGradientStart, bgGradientEnd, lipstickColor, blushColor, eyeshadowColor, colorSplashHue, colorSplashRange, doubleExposureImage, blendMode, doubleExposureOpacity]);
 
   // Background blur algorithm
   const applyBackgroundBlur = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number) => {
@@ -1105,8 +1128,12 @@ export default function PhotoEditorPage() {
     const ctx = canvas.getContext("2d")!;
     const r = brushSize;
 
+    // Clamp so getImageData region stays within canvas
+    const sx = Math.max(r, Math.min(canvas.width - r, x));
+    const sy = Math.max(r, Math.min(canvas.height - r, y));
+
     // Sample surrounding pixels and blend
-    const imageData = ctx.getImageData(x - r, y - r, r * 2, r * 2);
+    const imageData = ctx.getImageData(sx - r, sy - r, r * 2, r * 2);
     const data = imageData.data;
     let sr = 0, sg = 0, sb = 0, c = 0;
     for (let py = 0; py < r * 2; py++) {
@@ -1127,11 +1154,11 @@ export default function PhotoEditorPage() {
       blemishCanvasRef.current.height = canvas.height;
     }
     const bCtx = blemishCanvasRef.current.getContext("2d")!;
-    const grad = bCtx.createRadialGradient(x, y, 0, x, y, r);
+    const grad = bCtx.createRadialGradient(sx, sy, 0, sx, sy, r);
     grad.addColorStop(0, `rgba(${avgR}, ${avgG}, ${avgB}, 1)`);
     grad.addColorStop(1, `rgba(${avgR}, ${avgG}, ${avgB}, 0)`);
     bCtx.fillStyle = grad;
-    bCtx.fillRect(x - r, y - r, r * 2, r * 2);
+    bCtx.fillRect(sx - r, sy - r, r * 2, r * 2);
 
     // Re-render
     render(settings);
@@ -1162,6 +1189,7 @@ export default function PhotoEditorPage() {
 
           // Detect face
           setDetecting(true);
+          setFaceError(false);
           try {
             const api = faceApiRef.current || await import("face-api.js");
             faceApiRef.current = api;
@@ -1174,12 +1202,14 @@ export default function PhotoEditorPage() {
               landmarksRef.current = det.landmarks.positions;
             } else {
               setFaceOk(false);
+              setFaceError(true);
               landmarksRef.current = null;
             }
           } catch (err) {
             console.error("Face detection failed:", err);
             setDetecting(false);
             setFaceOk(false);
+            setFaceError(true);
             landmarksRef.current = null;
           }
           historyRef.current = [{ ...INITIAL }];
@@ -1189,6 +1219,10 @@ export default function PhotoEditorPage() {
           setTexts([]); setStickers([]); setFrameId("none");
         };
         img.src = reader.result as string;
+      };
+      reader.onerror = () => {
+        setLoading(false);
+        console.error("FileReader error:", reader.error);
       };
       reader.readAsDataURL(file);
     };
@@ -1216,13 +1250,13 @@ export default function PhotoEditorPage() {
     bCtx.beginPath();
     bCtx.arc(x, y, brushSize, 0, Math.PI * 2);
     bCtx.fill();
-    setLocalBrushMask(bCtx.getImageData(0, 0, canvas.width, canvas.height));
+    localBrushMaskRef.current = bCtx.getImageData(0, 0, canvas.width, canvas.height);
     render(settings);
   }, [localBrushActive, brushSize, render, settings]);
 
   const clearBrushMask = useCallback(() => {
     localBrushCanvasRef.current = null;
-    setLocalBrushMask(null);
+    localBrushMaskRef.current = null;
     render(settings);
   }, [render, settings]);
 
@@ -1368,12 +1402,18 @@ export default function PhotoEditorPage() {
     const x = (e.clientX - rect.left) * scaleX - draggingRef.current.offsetX;
     const y = (e.clientY - rect.top) * scaleY - draggingRef.current.offsetY;
     const { id } = draggingRef.current;
-    setTexts(prev => prev.map(t => t.id === id ? { ...t, x, y } : t));
-    setStickers(prev => prev.map(s => s.id === id ? { ...s, x, y } : s));
+    // Update refs directly for performance during drag
+    for (const t of texts) { if (t.id === id) { t.x = x; t.y = y; } }
+    for (const s of stickers) { if (s.id === id) { s.x = x; s.y = y; } }
     render(settings);
-  }, [render, settings]);
+  }, [render, settings, texts, stickers]);
 
   const onOverlayMouseUp = useCallback(() => {
+    if (draggingRef.current) {
+      const { id } = draggingRef.current;
+      setTexts(prev => prev.map(t => t.id === id ? { ...t } : t));
+      setStickers(prev => prev.map(s => s.id === id ? { ...s } : s));
+    }
     draggingRef.current = null;
   }, []);
 
@@ -1400,27 +1440,29 @@ export default function PhotoEditorPage() {
         <header className="editor-header">
           <h1>{t("editor.title")}</h1>
           <p>{t("editor.subtitle")}</p>
-          {!modelsReady && <p className="editor-loading-models">{t("editor.loadingModels")}</p>}
+          {!modelsReady && !modelError && <p className="editor-loading-models">{t("editor.loadingModels")}</p>}
+          {modelError && <p className="editor-loading-models" role="alert">{t("editor.loadingModels")} — <button type="button" className="editor-btn" style={{fontSize: "0.8rem", padding: "4px 12px"}} onClick={() => window.location.reload()}>{t("editor.reset")}</button></p>}
         </header>
 
         <div className="editor-toolbar">
-          <button type="button" className="editor-btn editor-btn--primary" onClick={handleUpload}>{t("editor.upload")}</button>
+          <button type="button" className="editor-btn editor-btn--primary" onClick={handleUpload} aria-label={t("editor.upload")} title={t("editor.upload")}>{t("editor.upload")}</button>
           {originalRef.current && (
             <>
-              <button type="button" className="editor-btn" disabled={historyIdx <= 0} onClick={undo} aria-label={t("editor.undo")}>↩</button>
-              <button type="button" className="editor-btn" disabled={historyIdx >= historyRef.current.length - 1} onClick={redo} aria-label={t("editor.redo")}>↪</button>
-              <button type="button" className="editor-btn" onClick={handleAutoEnhance}>⚡</button>
-              <button type="button" className={`editor-btn ${showMesh ? "active" : ""}`} onClick={() => setShowMesh(!showMesh)}>🗺</button>
-              <button type="button" className="editor-btn" onClick={() => setShowCompare(!showCompare)}>⇔</button>
-              <button type="button" className="editor-btn" onClick={() => setShowTextPanel(!showTextPanel)}>T</button>
-              <button type="button" className="editor-btn" onClick={() => setShowStickerPanel(!showStickerPanel)}>😊</button>
-              <button type="button" className="editor-btn" onClick={() => setShowFramePanel(!showFramePanel)}>🖼</button>
-              <button type="button" className="editor-btn" onClick={handleReset}>⟲</button>
-              <button type="button" className="editor-btn editor-btn--primary" onClick={() => setShowExport(true)}>↓</button>
+              <button type="button" className="editor-btn" disabled={historyIdx <= 0} onClick={undo} aria-label={t("editor.undo")} title={t("editor.undo")}>↩</button>
+              <button type="button" className="editor-btn" disabled={historyIdx >= historyRef.current.length - 1} onClick={redo} aria-label={t("editor.redo")} title={t("editor.redo")}>↪</button>
+              <button type="button" className="editor-btn" onClick={handleAutoEnhance} aria-label={t("editor.auto")} title={t("editor.auto")}>⚡</button>
+              <button type="button" className={`editor-btn ${showMesh ? "active" : ""}`} onClick={() => setShowMesh(!showMesh)} aria-pressed={showMesh} aria-label="Face mesh" title="Face mesh">🗺</button>
+              <button type="button" className="editor-btn" onClick={() => setShowCompare(!showCompare)} aria-label={t("editor.compare")} title={t("editor.compare")}>⇔</button>
+              <button type="button" className="editor-btn" onClick={() => setShowTextPanel(!showTextPanel)} aria-label={t("editor.addText")} title={t("editor.addText")}>T</button>
+              <button type="button" className="editor-btn" onClick={() => setShowStickerPanel(!showStickerPanel)} aria-label={t("editor.uploadOverlay")} title={t("editor.uploadOverlay")}>😊</button>
+              <button type="button" className="editor-btn" onClick={() => setShowFramePanel(!showFramePanel)} aria-label={t("editor.frame.none")} title={t("editor.frame.none")}>🖼</button>
+              <button type="button" className="editor-btn" onClick={handleReset} aria-label={t("editor.reset")} title={t("editor.reset")}>⟲</button>
+              <button type="button" className="editor-btn editor-btn--primary" onClick={() => setShowExport(true)} aria-label={t("editor.export")} title={t("editor.export")}>↓</button>
             </>
           )}
-          {detecting && <span className="editor-detecting">{t("editor.detecting")}</span>}
-          {faceOk && <span className="editor-face-ok">✓</span>}
+          {detecting && <span className="editor-detecting" aria-live="polite">{t("editor.detecting")}</span>}
+          {faceOk && <span className="editor-face-ok" role="status" aria-label={t("editor.faceDetected")}>✓</span>}
+          {faceError && !detecting && <span className="editor-detecting" role="status" aria-live="polite">{t("editor.subtitle")}</span>}
         </div>
 
         {/* Text input panel */}
@@ -1526,11 +1568,16 @@ export default function PhotoEditorPage() {
 
         <div className="editor-workspace">
           <div className="editor-canvas-container">
+            {!originalRef.current && !loading && (
+              <div className="editor-canvas--empty">
+                <p>{t("editor.subtitle")}</p>
+              </div>
+            )}
             <canvas
               ref={canvasRef}
               className="editor-canvas"
               style={showCompare ? { clipPath: `inset(0 ${100 - comparePos}% 0 0)` } : undefined}
-              onClick={blemishMode ? handleCanvasClick : localBrushActive ? handleBrushPaint : undefined}
+              onClick={blemishMode ? handleCanvasClick : undefined}
               onMouseDown={localBrushActive ? (e) => { handleBrushPaint(e); } : onOverlayMouseDown}
               onMouseMove={localBrushActive ? handleBrushPaint : onOverlayMouseMove}
               onMouseUp={onOverlayMouseUp}
@@ -1555,6 +1602,7 @@ export default function PhotoEditorPage() {
               <div className="editor-categories">
                 {CATEGORIES.map(c => (
                   <button key={c.key} type="button" className={`editor-cat-btn ${cat === c.key ? "active" : ""}`}
+                    aria-pressed={cat === c.key}
                     onClick={() => { setCat(c.key); if (TOOLS[c.key]?.length) setTool(TOOLS[c.key][0].key); }}>
                     <span>{c.icon}</span><span>{t(c.labelKey as any)}</span>
                   </button>
@@ -1575,6 +1623,7 @@ export default function PhotoEditorPage() {
                   <div className="editor-tools">
                     {currentTools?.map(tl => (
                       <button key={tl.key} type="button" className={`editor-tool-btn ${tool === tl.key ? "active" : ""}`}
+                        aria-pressed={tool === tl.key}
                         onClick={() => { setTool(tl.key); setBlemishMode(tl.key === "blemish"); setLocalBrushActive(["local_bright", "local_warm", "local_sat"].includes(tl.key)); setLocalBrushTool(tl.key as typeof localBrushTool); }}>
                         <span className="editor-tool-icon">{tl.icon}</span>
                         <span className="editor-tool-label">{t(tl.labelKey as any)}</span>
@@ -1637,6 +1686,7 @@ export default function PhotoEditorPage() {
 function applyWarp(d: Uint8ClampedArray, w: number, h: number, cx: number, cy: number, fL: number, fR: number, fT: number, fB: number, strength: number, axis: "horizontal" | "vertical") {
   const tmp = new Uint8ClampedArray(d);
   const range = axis === "horizontal" ? (fR - fL) / 2 : (fB - fT) / 2;
+  if (range === 0) return;
   for (let y = fT; y < fB; y++) {
     for (let x = fL; x < fR; x++) {
       const dist = axis === "horizontal" ? (x - cx) / range : (y - cy) / range;
