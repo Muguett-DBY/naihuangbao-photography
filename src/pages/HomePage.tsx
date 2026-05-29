@@ -1,8 +1,8 @@
 import { Suspense, lazy, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ArrowDown, ArrowRight, CalendarCheck, Camera, BookOpen, Download, MapPin, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
-import { Button } from "animal-island-ui";
+import { ArrowDown, ArrowRight, CalendarCheck, BookOpen, Download, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { Button, Divider, Icon } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useBookingModal } from "../hooks/useBookingModal";
 import { useSiteContent } from "../hooks/useSiteContent";
@@ -83,6 +83,8 @@ export function HomePage() {
         </Link>
       </div>
 
+      <Divider type="wave-yellow" />
+
       {/* ── 服务入口 ── */}
       <section className="section-shell is-visible" id="services-preview" style={{ padding: "60px 0" }}>
         <div className="section-heading" style={{ textAlign: "center", maxWidth: "100%", marginBottom: 32, paddingBottom: 0 }}>
@@ -103,13 +105,13 @@ export function HomePage() {
             <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
           </Link>
           <Link to="/workshops" className="home-service-card">
-            <MapPin size={32} />
+            <Icon name="icon-map" size={32} />
             <h3>{t("nav.workshops")}</h3>
             <p>{t("workshops.intro")}</p>
             <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
           </Link>
           <Link to="/shop" className="home-service-card">
-            <Camera size={32} />
+            <Icon name="icon-camera" size={32} />
             <h3>{t("nav.shop")}</h3>
             <p>{t("merchandise.intro")}</p>
             <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
@@ -126,6 +128,8 @@ export function HomePage() {
       <Suspense fallback={null}>
         <Reviews />
       </Suspense>
+
+      <Divider type="wave-yellow" />
 
       {/* ── CTA ── */}
       <section className="section-shell is-visible" style={{ textAlign: "center", padding: "60px 16px" }}>
