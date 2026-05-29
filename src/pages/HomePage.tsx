@@ -8,6 +8,7 @@ import { useBookingModal } from "../hooks/useBookingModal";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 
 const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
 const WhyChooseUs = lazy(() => import("../components/WhyChooseUs").then((m) => ({ default: m.WhyChooseUs })));
@@ -74,9 +75,11 @@ export function HomePage() {
 
       {/* ── Gallery（组件自带 Section 标题，无需外层再包） ── */}
       <div id="featured" style={{ scrollMarginTop: 80 }}>
-        <Suspense fallback={<div style={{ minHeight: 400 }} />}>
-          <Gallery />
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<div style={{ minHeight: 400 }} />}>
+            <Gallery />
+          </Suspense>
+        </ErrorBoundary>
       </div>
 
       <div style={{ textAlign: "center", padding: "0 16px 40px" }}>
@@ -122,14 +125,18 @@ export function HomePage() {
       </section>
 
       {/* ── 为什么选择我们 ── */}
-      <Suspense fallback={null}>
-        <WhyChooseUs />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={null}>
+          <WhyChooseUs />
+        </Suspense>
+      </ErrorBoundary>
 
       {/* ── 评价 ── */}
-      <Suspense fallback={null}>
-        <Reviews />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={null}>
+          <Reviews />
+        </Suspense>
+      </ErrorBoundary>
 
       <Divider type="wave-yellow" />
 

@@ -814,7 +814,7 @@
 .shop-detail-price {
   font-size: 1.3rem;
   font-weight: 700;
-  margin-top: 8;
+  margin-top: 8px;
 }
 
 .shop-detail-image-stage {
@@ -1116,7 +1116,7 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 6;
+  gap: 6px;
 }
 
 .workshop-detail-guide-card li {

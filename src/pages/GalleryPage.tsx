@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 
 const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
 const PhotoWall3D = lazy(() => import("../components/PhotoWall3D").then((m) => ({ default: m.PhotoWall3D })));
@@ -27,25 +28,35 @@ export function GalleryPage() {
         </div>
       </section>
 
-      <Suspense fallback={<div style={{ height: "min(60vh, 480px)" }} />}>
-        <PhotoWall3D />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div style={{ height: "min(60vh, 480px)" }} />}>
+          <PhotoWall3D />
+        </Suspense>
+      </ErrorBoundary>
 
-      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 200 }} />}>
-        <HorizontalGallery />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 200 }} />}>
+          <HorizontalGallery />
+        </Suspense>
+      </ErrorBoundary>
 
-      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 200 }} />}>
-        <PolaroidWall />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 200 }} />}>
+          <PolaroidWall />
+        </Suspense>
+      </ErrorBoundary>
 
       <section className="section-shell is-visible" id="gallery">
-        <Gallery />
+        <ErrorBoundary>
+          <Gallery />
+        </ErrorBoundary>
       </section>
 
-      <Suspense fallback={<div style={{ height: "min(55vh, 440px)" }} />}>
-        <PhotoMap />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div style={{ height: "min(55vh, 440px)" }} />}>
+          <PhotoMap />
+        </Suspense>
+      </ErrorBoundary>
     </PageTransition>
   );
 }

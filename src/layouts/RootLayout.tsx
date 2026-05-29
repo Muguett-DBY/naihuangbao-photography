@@ -12,6 +12,7 @@ import { BookingProvider } from "../hooks/useBookingModal";
 import { AuthProvider } from "../hooks/useAuth";
 import { Header } from "../components/shared/Header";
 import { Footer } from "../components/shared/Footer";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 
 export function RootLayout() {
   const { t } = useTranslation();
@@ -45,17 +46,23 @@ export function RootLayout() {
         {t("common.skipToContent", "跳转到内容")}
       </a>
       <LoadingScreen />
-      <FilmGrain />
-      <CustomCursor />
+      <ErrorBoundary fallback={null}>
+        <FilmGrain />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <CustomCursor />
+      </ErrorBoundary>
       <AuthProvider>
         <BookingProvider>
           <SiteContentProvider>
             <PublicPhotosProvider>
               <Header />
               <main id="main-content">
-                <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
-                  <Outlet />
-                </Suspense>
+                <ErrorBoundary>
+                  <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
+                    <Outlet />
+                  </Suspense>
+                </ErrorBoundary>
               </main>
               <Footer />
               <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>

@@ -80,7 +80,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         <PaymentForm
           purpose="booking_deposit"
           amountCents={5000}
-          currency="usd"
+          currency="cny"
           referenceId={bookingId}
           metadata={{ packageName: selectedPkg, name: name.trim() }}
           onSuccess={() => {
