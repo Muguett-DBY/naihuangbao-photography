@@ -13,3 +13,4 @@ source-assets/gallery/raw/*
 .playwright-mcp/
 opencode.json
 .reasonix/
+bun.lock
