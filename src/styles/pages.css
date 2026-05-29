@@ -2814,3 +2814,132 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+/* Compare slider */
+.editor-compare-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #fff;
+  cursor: ew-resize;
+  z-index: 10;
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
+
+.editor-compare-line::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.editor-compare-label {
+  position: absolute;
+  top: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.editor-compare-label--before { right: 12px; }
+.editor-compare-label--after { left: 12px; }
+
+/* Filter grid */
+.editor-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.editor-filter-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 6px;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 12px;
+  background: var(--custard-bg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editor-filter-btn:hover {
+  border-color: var(--peach-accent);
+  background: var(--peach-light);
+}
+
+.editor-filter-icon { font-size: 1.3rem; }
+.editor-filter-name { font-size: 0.7rem; font-weight: 600; color: var(--caramel-ink); }
+
+/* Export modal */
+.editor-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10001;
+}
+
+.editor-modal {
+  background: var(--paper-white);
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--paper-inset), var(--warm-shadow);
+}
+
+.editor-modal h3 {
+  font-family: var(--font-heading-cn);
+  font-size: 1.1rem;
+  font-weight: 650;
+  color: var(--caramel-ink);
+  margin: 0 0 16px;
+}
+
+.editor-export-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.editor-export-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--caramel-ink);
+}
+
+.editor-export-options select,
+.editor-export-options input[type="range"] {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid rgba(139, 94, 74, 0.15);
+  border-radius: 8px;
+  background: var(--custard-bg);
+  color: var(--caramel-ink);
+  font-size: 0.85rem;
+}
+
+.editor-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
