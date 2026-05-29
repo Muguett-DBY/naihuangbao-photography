@@ -1,18 +1,22 @@
-import { CalendarCheck, Camera, Languages, Menu, X } from "lucide-react";
+import { CalendarCheck, Camera, Languages, Menu, X, User, LogOut, LogIn } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
 import { MoodToggle } from "../MoodToggle";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { useSiteContent } from "../../hooks/useSiteContent";
+import { useAuth } from "../../hooks/useAuth";
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const { t, i18n } = useTranslation();
   const { siteConfig } = useSiteContent();
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const navItems = useMemo(() => [
     { to: "/", label: t("nav.home") },
@@ -79,6 +83,17 @@ export function Header() {
   }, [open]);
 
   useEffect(() => {
+    if (!userMenuOpen) return;
+    function onClickOutside(event: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [userMenuOpen]);
+
+  useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
 
@@ -123,6 +138,70 @@ export function Header() {
         <Languages size={14} />
         <span style={{ marginLeft: 3 }}>{t(`langToggle.languages.${i18n.language}` as any)}</span>
       </button>
+      <div ref={userMenuRef} style={{ position: "relative" }}>
+        {user ? (
+          <>
+            <button
+              className="mood-toggle"
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              style={{ fontSize: 13, width: "auto", paddingInline: 8, display: "flex", alignItems: "center", gap: 4 }}
+              aria-label={t("auth.userMenu", "用户菜单")}
+              aria-expanded={userMenuOpen}
+            >
+              <User size={14} />
+              <span style={{ marginLeft: 3 }}>{user.displayName}</span>
+            </button>
+            {userMenuOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  right: 0,
+                  marginTop: 8,
+                  background: "var(--card-bg)",
+                  border: "1px solid var(--border-subtle)",
+                  borderRadius: 8,
+                  padding: 8,
+                  minWidth: 160,
+                  zIndex: 100,
+                }}
+              >
+                <div style={{ padding: "8px 12px", fontSize: "0.85rem", color: "var(--caramel-muted)", borderBottom: "1px solid var(--border-subtle)", marginBottom: 4 }}>
+                  {user.email}
+                </div>
+                <button
+                  onClick={() => { logout(); setUserMenuOpen(false); }}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "8px 12px",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                    color: "var(--caramel-muted)",
+                    borderRadius: 4,
+                  }}
+                >
+                  <LogOut size={14} />
+                  {t("auth.logout", "退出登录")}
+                </button>
+              </div>
+            )}
+          </>
+        ) : (
+          <Link
+            to="/login"
+            className="mood-toggle"
+            style={{ fontSize: 13, width: "auto", paddingInline: 8, display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}
+          >
+            <LogIn size={14} />
+            <span style={{ marginLeft: 3 }}>{t("auth.login", "登录")}</span>
+          </Link>
+        )}
+      </div>
       <Link className="nav-cta" to="/booking" onClick={() => setOpen(false)}>
         <CalendarCheck size={16} />
         {t("nav.booking")}

@@ -2,6 +2,8 @@ import { Button, Input, Modal } from "animal-island-ui";
 import { type FormEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSiteContent } from "../hooks/useSiteContent";
+import { useNotification } from "../hooks/useNotification";
+import { PaymentForm } from "./PaymentForm";
 
 type BookingModalProps = {
   initialPackage?: string;
@@ -11,6 +13,7 @@ type BookingModalProps = {
 export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const { t } = useTranslation();
   const { packages, siteConfig } = useSiteContent();
+  const { sendBookingConfirmation, sending: notificationSending } = useNotification();
   const [selectedPkg, setSelectedPkg] = useState(initialPackage || "");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -20,6 +23,8 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const [showPayment, setShowPayment] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -46,7 +51,17 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         throw new Error((data as { error?: string }).error || t("bookingModal.submitError"));
       }
 
-      setDone(true);
+      const data = await r.json() as { id: string };
+      setBookingId(data.id);
+      setShowPayment(true);
+
+      await sendBookingConfirmation(contact.trim(), {
+        bookingId: data.id,
+        packageName: selectedPkg,
+        preferredDate: date,
+        preferredTime: time,
+        name: name.trim(),
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : t("bookingModal.submitError"));
     } finally {
@@ -57,6 +72,33 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const packageOptions = packages.map((p) => (
     <option key={p.name} value={p.name}>{p.name} — {p.price}</option>
   ));
+
+  // ── Payment step ──
+  if (showPayment && bookingId) {
+    return (
+      <Modal open onClose={onClose} footer={null} typewriter={false}>
+        <PaymentForm
+          purpose="booking_deposit"
+          amountCents={5000}
+          currency="usd"
+          referenceId={bookingId}
+          metadata={{ packageName: selectedPkg, name: name.trim() }}
+          onSuccess={() => {
+            setDone(true);
+            setShowPayment(false);
+          }}
+          onError={(err) => {
+            setError(err);
+            setShowPayment(false);
+          }}
+          onCancel={() => {
+            setDone(true);
+            setShowPayment(false);
+          }}
+        />
+      </Modal>
+    );
+  }
 
   // ── Success state ──
   if (done) {

@@ -16,6 +16,7 @@ const ShopPage = lazy(() => import("./pages/ShopPage").then((m) => ({ default: m
 const ShopDetailPage = lazy(() => import("./pages/ShopDetailPage").then((m) => ({ default: m.ShopDetailPage })));
 const BookingPage = lazy(() => import("./pages/BookingPage").then((m) => ({ default: m.BookingPage })));
 const MapPage = lazy(() => import("./pages/MapPage").then((m) => ({ default: m.MapPage })));
+const LoginPage = lazy(() => import("./pages/LoginPage").then((m) => ({ default: m.LoginPage })));
 
 const AdminDashboard = lazy(async () => {
   await import("./styles/admin.css");
@@ -60,6 +61,7 @@ export const router = createBrowserRouter([
       { path: "shop/:id", element: <PageSuspense><ShopDetailPage /></PageSuspense> },
       { path: "booking", element: <PageSuspense><BookingPage /></PageSuspense> },
       { path: "map", element: <PageSuspense><MapPage /></PageSuspense> },
+      { path: "login", element: <PageSuspense><LoginPage /></PageSuspense> },
       { path: "*", element: <NotFound /> },
     ],
   },

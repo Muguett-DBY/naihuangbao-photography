@@ -9,6 +9,7 @@ import { PublicChatLauncher } from "../components/PublicChatLauncher";
 import { PublicPhotosProvider } from "../hooks/usePublicPhotos";
 import { SiteContentProvider } from "../hooks/useSiteContent";
 import { BookingProvider } from "../hooks/useBookingModal";
+import { AuthProvider } from "../hooks/useAuth";
 import { Header } from "../components/shared/Header";
 import { Footer } from "../components/shared/Footer";
 
@@ -46,33 +47,35 @@ export function RootLayout() {
       <LoadingScreen />
       <FilmGrain />
       <CustomCursor />
-      <BookingProvider>
-        <SiteContentProvider>
-          <PublicPhotosProvider>
-            <Header />
-            <main id="main-content">
-              <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
-                <Outlet />
-              </Suspense>
-            </main>
-            <Footer />
-            <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
-              <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
-              {chatOpen ? (
-                <Suspense
-                  fallback={
-                    <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
-                      {t("common.loading")}
-                    </div>
-                  }
-                >
-                  <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
+      <AuthProvider>
+        <BookingProvider>
+          <SiteContentProvider>
+            <PublicPhotosProvider>
+              <Header />
+              <main id="main-content">
+                <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
+                  <Outlet />
                 </Suspense>
-              ) : null}
-            </div>
-          </PublicPhotosProvider>
-        </SiteContentProvider>
-      </BookingProvider>
+              </main>
+              <Footer />
+              <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
+                <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
+                {chatOpen ? (
+                  <Suspense
+                    fallback={
+                      <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
+                        {t("common.loading")}
+                      </div>
+                    }
+                  >
+                    <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
+                  </Suspense>
+                ) : null}
+              </div>
+            </PublicPhotosProvider>
+          </SiteContentProvider>
+        </BookingProvider>
+      </AuthProvider>
     </div>
   );
 }

@@ -2,7 +2,8 @@ type AuthEnv = {
   ADMIN_PASSWORD?: string;
 };
 
-const cookieName = "nhb_admin_session";
+const adminCookieName = "nhb_admin_session";
+const userCookieName = "nhb_user_session";
 const maxAgeSeconds = 60 * 60 * 24 * 30;
 
 export async function createAdminSession(env: AuthEnv) {
@@ -27,7 +28,7 @@ export async function isAdminRequest(request: Request, env: AuthEnv) {
   }
 
   const cookieHeader = request.headers.get("cookie") ?? "";
-  const sessions = readCookies(cookieHeader, cookieName);
+  const sessions = readCookies(cookieHeader, adminCookieName);
   if (sessions.length === 0) {
     return false;
   }
@@ -41,6 +42,64 @@ export async function isAdminRequest(request: Request, env: AuthEnv) {
   return false;
 }
 
+export function adminSessionCookie(session: string) {
+  return `${adminCookieName}=${session}; Path=/; Max-Age=${maxAgeSeconds}; HttpOnly; Secure; SameSite=Lax`;
+}
+
+export function clearAdminSessionCookie() {
+  return `${adminCookieName}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`;
+}
+
+// ── User auth helpers ──
+
+export async function createUserSession(userId: string, secret: string) {
+  const expiresAt = Math.floor(Date.now() / 1000) + maxAgeSeconds;
+  const payload = `${userId}.${expiresAt}`;
+  const signature = await sign(payload, secret);
+  return `${payload}.${signature}`;
+}
+
+export async function getUserFromRequest(request: Request, secret: string): Promise<{ userId: string } | null> {
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const sessions = readCookies(cookieHeader, userCookieName);
+  if (sessions.length === 0) {
+    return null;
+  }
+
+  for (const session of sessions) {
+    const result = await validateUserSession(session, secret);
+    if (result) {
+      return { userId: result };
+    }
+  }
+
+  return null;
+}
+
+async function validateUserSession(session: string, secret: string): Promise<string | null> {
+  const parts = session.split(".");
+  if (parts.length !== 3) return null;
+
+  const [userId, expiresAt, signature] = parts;
+  if (!userId || !expiresAt || !signature) return null;
+  if (Number(expiresAt) <= Math.floor(Date.now() / 1000)) return null;
+
+  const expected = await sign(`${userId}.${expiresAt}`, secret);
+  if (signature !== expected) return null;
+
+  return userId;
+}
+
+export function userSessionCookie(session: string) {
+  return `${userCookieName}=${session}; Path=/; Max-Age=${maxAgeSeconds}; HttpOnly; Secure; SameSite=Lax`;
+}
+
+export function clearUserSessionCookie() {
+  return `${userCookieName}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`;
+}
+
+// ── Shared helpers ──
+
 async function isValidSession(session: string, password: string) {
   const [expiresAt, signature] = session.split(".");
   if (!expiresAt || !signature || Number(expiresAt) <= Math.floor(Date.now() / 1000)) {
@@ -52,11 +111,11 @@ async function isValidSession(session: string, password: string) {
 }
 
 export function sessionCookie(session: string) {
-  return `${cookieName}=${session}; Path=/; Max-Age=${maxAgeSeconds}; HttpOnly; Secure; SameSite=Lax`;
+  return adminSessionCookie(session);
 }
 
 export function clearSessionCookie() {
-  return `${cookieName}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`;
+  return clearAdminSessionCookie();
 }
 
 async function sign(value: string, secret: string) {
@@ -70,6 +129,35 @@ async function sign(value: string, secret: string) {
   );
   const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(value));
   return base64Url(signature);
+}
+
+export async function hashPassword(password: string, salt: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits"],
+  );
+
+  const bits = await crypto.subtle.deriveBits(
+    {
+      name: "PBKDF2",
+      hash: "SHA-256",
+      salt: encoder.encode(salt),
+      iterations: 100000,
+    },
+    keyMaterial,
+    256,
+  );
+
+  return base64Url(bits);
+}
+
+export function generateSalt(): string {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  return base64Url(salt.buffer);
 }
 
 function readCookies(cookieHeader: string, name: string) {

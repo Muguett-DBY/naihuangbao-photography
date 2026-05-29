@@ -109,6 +109,9 @@ export type Course = {
   category: string;
   difficulty: string;
   duration_minutes?: number;
+  price_cents?: number;
+  price_display?: string;
+  currency?: string;
   sort_order: number;
   published: number;
   created_at: string;
@@ -163,7 +166,9 @@ export type Workshop = {
   location?: string;
   max_participants?: number;
   current_participants: number;
+  price_cents?: number;
   price_display?: string;
+  currency?: string;
   status: "upcoming" | "ongoing" | "completed" | "cancelled";
   registration_form_url?: string;
   created_at: string;

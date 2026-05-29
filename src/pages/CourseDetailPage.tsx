@@ -1,25 +1,33 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Clock, BarChart3, Lock, Unlock, Play, FileText, Images } from "lucide-react";
+import { Clock, BarChart3, Lock, Unlock, Play, FileText, Images, LogIn, ShoppingCart } from "lucide-react";
+import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useNotification } from "../hooks/useNotification";
 import { PageTransition } from "../components/shared/PageTransition";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { getTitle, getDesc, getLocalizedField } from "../lib/i18n-helpers";
 import { useFetch } from "../hooks/useFetch";
+import { useAuth } from "../hooks/useAuth";
+import { VideoPlayer } from "../components/VideoPlayer";
+import { PaymentForm } from "../components/PaymentForm";
 import type { Course, CourseModule } from "../types/content";
 
 export function CourseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
+  const { sendPaymentReceipt } = useNotification();
   const [unlocked, setUnlocked] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const { user } = useAuth();
 
   const { data, loading, error } = useFetch<{ course: Course; modules: CourseModule[] }>(
     id ? `/api/courses/${id}` : null,
@@ -28,9 +36,13 @@ export function CourseDetailPage() {
   useGsapPageEffects(rootRef);
 
   useEffect(() => {
-    const stored = localStorage.getItem(`course-unlocked-${id}`);
-    if (stored === "1") setUnlocked(true);
-  }, [id]);
+    if (user) {
+      setUnlocked(true);
+    } else {
+      const stored = localStorage.getItem(`course-unlocked-${id}`);
+      if (stored === "1") setUnlocked(true);
+    }
+  }, [id, user]);
 
   const handleUnlock = async () => {
     if (!passwordInput.trim()) { setPasswordError(t("courseDetail.wrongPassword")); return; }
@@ -117,14 +129,7 @@ export function CourseDetailPage() {
         <section className="section-shell is-visible">
           <div style={{ maxWidth: 800, margin: "0 auto" }}>
             <h2 style={{ marginBottom: 16 }}>{t("courseDetail.preview")}</h2>
-            <div style={{ position: "relative", paddingBottom: "56.25%", borderRadius: 16, overflow: "hidden" }}>
-              <iframe
-                src={course.video_url}
-                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
+            <VideoPlayer src={course.video_url} title={getTitle(course, lang)} />
           </div>
         </section>
       )}
@@ -133,7 +138,43 @@ export function CourseDetailPage() {
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <h2 style={{ marginBottom: 16 }}>{t("courseDetail.syllabus")}</h2>
 
-          {!unlocked && (
+          {!unlocked && !user && (
+            <div style={{
+              background: "var(--card-bg, rgba(255,255,255,0.7))",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: 16,
+              padding: 24,
+              marginBottom: 24,
+              textAlign: "center",
+            }}>
+              <Lock size={32} style={{ color: "var(--accent)", marginBottom: 12 }} />
+              <h3 style={{ marginBottom: 8 }}>{t("courseDetail.loginRequired", "登录以访问课程内容")}</h3>
+              <p style={{ fontSize: "0.9rem", color: "var(--caramel-muted)", marginBottom: 16 }}>
+                {t("courseDetail.loginRequiredDesc", "请登录您的账户以查看完整课程内容")}
+              </p>
+              <Link
+                to="/login"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "10px 20px",
+                  background: "var(--accent)",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
+              >
+                <LogIn size={14} />
+                {t("auth.login", "登录")}
+              </Link>
+            </div>
+          )}
+
+          {!unlocked && user && (
             <div style={{
               background: "var(--card-bg, rgba(255,255,255,0.7))",
               border: "1px solid var(--border-subtle)",
@@ -241,6 +282,60 @@ export function CourseDetailPage() {
           )}
         </div>
       </section>
+
+      {course.price_cents && course.price_cents > 0 && (
+        <section className="section-shell is-visible">
+          <div style={{ maxWidth: 800, margin: "0 auto" }}>
+            <h2 style={{ marginBottom: 16 }}>{t("courseDetail.purchase", "Purchase Course")}</h2>
+            {showPayment ? (
+              <PaymentForm
+                purpose="course_purchase"
+                amountCents={course.price_cents}
+                currency={course.currency || "usd"}
+                referenceId={course.id}
+                metadata={{ title: getTitle(course, lang) }}
+                onSuccess={async (paymentIntentId) => {
+                  localStorage.setItem(`course-unlocked-${id}`, "1");
+                  setUnlocked(true);
+
+                  if (user?.email) {
+                    await sendPaymentReceipt(user.email, {
+                      paymentIntentId,
+                      purpose: "Course Purchase",
+                      amountCents: course.price_cents,
+                      currency: course.currency || "usd",
+                      name: user.displayName || user.email,
+                    });
+                  }
+                }}
+                onError={() => {}}
+                onCancel={() => setShowPayment(false)}
+              />
+            ) : (
+              <div style={{
+                background: "var(--card-bg, rgba(255,255,255,0.7))",
+                border: "1px solid var(--border-subtle)",
+                borderRadius: 16,
+                padding: 24,
+                textAlign: "center",
+              }}>
+                {course.price_display && (
+                  <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--accent)", marginBottom: 12 }}>
+                    {course.price_display}
+                  </div>
+                )}
+                <p style={{ color: "var(--caramel-muted)", fontSize: "0.9rem", marginBottom: 16 }}>
+                  {t("courseDetail.purchaseDesc", "Get full access to all course modules and materials.")}
+                </p>
+                <Button type="primary" onClick={() => setShowPayment(true)}>
+                  <ShoppingCart size={14} />
+                  {t("courseDetail.buyNow", "Buy Course")}
+                </Button>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       <section className="section-shell is-visible" style={{ textAlign: "center" }}>
         <h2 style={{ marginBottom: 16 }}>{t("courseDetail.ctaTitle")}</h2>

@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { Button, Input } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useNotification } from "../hooks/useNotification";
 import { PageTransition } from "../components/shared/PageTransition";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import type { Workshop } from "../types/content";
@@ -11,6 +12,7 @@ import type { Workshop } from "../types/content";
 export function WorkshopsPage() {
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
+  const { sendWorkshopRegistration } = useNotification();
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
   const [registeringId, setRegisteringId] = useState<string | null>(null);
@@ -49,9 +51,20 @@ export function WorkshopsPage() {
         body: JSON.stringify({ name: formName.trim(), contact: formContact.trim(), participants: 1 }),
       });
       if (r.ok) {
+        const data = await r.json().catch(() => ({}));
         setFormMsg(t("workshops.form.success"));
         setFormName("");
         setFormContact("");
+
+        const workshop = workshops.find((w) => w.id === workshopId);
+        await sendWorkshopRegistration(formContact.trim(), {
+          registrationId: data.id,
+          workshopTitle: workshop ? getTitle(workshop, i18n.language) : "Workshop",
+          eventDate: workshop?.event_date,
+          location: workshop?.location,
+          name: formName.trim(),
+        });
+
         setTimeout(() => { setFormOpen(null); setFormMsg(""); }, 2000);
       } else {
         const d = await r.json().catch(() => ({}));

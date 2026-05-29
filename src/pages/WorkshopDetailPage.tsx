@@ -9,6 +9,7 @@ import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
+import { PaymentForm } from "../components/PaymentForm";
 import type { Workshop } from "../types/content";
 
 export function WorkshopDetailPage() {
@@ -22,6 +23,8 @@ export function WorkshopDetailPage() {
   const [formContact, setFormContact] = useState("");
   const [formMsg, setFormMsg] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [registrationId, setRegistrationId] = useState<string | null>(null);
 
   useGsapPageEffects(rootRef);
 
@@ -56,6 +59,15 @@ export function WorkshopDetailPage() {
         body: JSON.stringify({ name: formName.trim(), contact: formContact.trim(), participants: 1 }),
       });
       if (r.ok) {
+        const data = await r.json() as { id: string };
+        setRegistrationId(data.id);
+
+        if (workshop?.price_cents && workshop.price_cents > 0) {
+          setShowPayment(true);
+          setSubmitting(false);
+          return;
+        }
+
         setFormMsg(t("workshops.form.success"));
         setFormName("");
         setFormContact("");
@@ -182,6 +194,23 @@ export function WorkshopDetailPage() {
             {workshop.price_display && <div style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: 16 }}>{workshop.price_display}</div>}
             {isFull ? (
               <p style={{ color: "#ef4444" }}>{t("workshopDetail.fullMessage")}</p>
+            ) : showPayment && registrationId && workshop?.price_cents ? (
+              <PaymentForm
+                purpose="workshop_registration"
+                amountCents={workshop.price_cents}
+                currency={workshop.currency || "usd"}
+                referenceId={registrationId}
+                metadata={{ workshopTitle: getTitle(workshop, lang), name: formName.trim() }}
+                onSuccess={() => {
+                  setFormMsg(t("workshops.form.success"));
+                  setShowPayment(false);
+                  setFormName("");
+                  setFormContact("");
+                  if (workshop) setWorkshop({ ...workshop, current_participants: workshop.current_participants + 1 });
+                }}
+                onError={() => {}}
+                onCancel={() => setShowPayment(false)}
+              />
             ) : (
               <>
                 <input
