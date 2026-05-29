@@ -815,7 +815,12 @@
     "exportTitle": "Export Settings",
     "format": "Format",
     "quality": "Quality",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "teeth": "Teeth Whitening",
+    "blur_bg": "Background Blur",
+    "brushSize": "Brush Size",
+    "textPlaceholder": "Enter text...",
+    "addText": "Add Text"
   },
   "filmstrip": {
     "title": "Our Story",

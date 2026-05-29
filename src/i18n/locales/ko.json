@@ -814,7 +814,12 @@
     "exportTitle": "내보내기 설정",
     "format": "형식",
     "quality": "품질",
-    "cancel": "취소"
+    "cancel": "취소",
+    "teeth": "치아 미백",
+    "blur_bg": "배경 블러",
+    "brushSize": "브러시 크기",
+    "textPlaceholder": "텍스트 입력...",
+    "addText": "텍스트 추가"
   },
   "filmstrip": {
     "title": "우리의 이야기",

@@ -814,7 +814,12 @@
     "exportTitle": "导出设置",
     "format": "格式",
     "quality": "质量",
-    "cancel": "取消"
+    "cancel": "取消",
+    "teeth": "牙齿美白",
+    "blur_bg": "背景虚化",
+    "brushSize": "画笔大小",
+    "textPlaceholder": "输入文字...",
+    "addText": "添加文字"
   },
   "filmstrip": {
     "title": "我们的故事",

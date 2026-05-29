@@ -814,7 +814,12 @@
     "exportTitle": "エクスポート設定",
     "format": "形式",
     "quality": "品質",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "teeth": "歯のホワイトニング",
+    "blur_bg": "背景ブラー",
+    "brushSize": "ブラシサイズ",
+    "textPlaceholder": "テキストを入力...",
+    "addText": "テキスト追加"
   },
   "filmstrip": {
     "title": "私たちの物語",
