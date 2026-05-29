@@ -18,6 +18,7 @@ const BookingPage = lazy(() => import("./pages/BookingPage").then((m) => ({ defa
 const MapPage = lazy(() => import("./pages/MapPage").then((m) => ({ default: m.MapPage })));
 const LoginPage = lazy(() => import("./pages/LoginPage").then((m) => ({ default: m.LoginPage })));
 const DashboardPage = lazy(() => import("./pages/DashboardPage").then((m) => ({ default: m.DashboardPage })));
+const PhotoEditorPage = lazy(() => import("./pages/PhotoEditorPage"));
 
 const AdminDashboard = lazy(async () => {
   await import("./styles/admin.css");
@@ -64,6 +65,7 @@ export const router = createBrowserRouter([
       { path: "map", element: <PageSuspense><MapPage /></PageSuspense> },
       { path: "login", element: <PageSuspense><LoginPage /></PageSuspense> },
       { path: "dashboard", element: <PageSuspense><DashboardPage /></PageSuspense> },
+      { path: "editor", element: <PageSuspense><PhotoEditorPage /></PageSuspense> },
       { path: "*", element: <NotFound /> },
     ],
   },

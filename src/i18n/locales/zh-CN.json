@@ -2,19 +2,19 @@
   "nav": {
     "home": "首页",
     "gallery": "作品",
-    "packages": "套餐",
-    "details": "详情",
-    "reviews": "评价",
-    "faq": "常见问题",
-    "booking": "预约拍摄",
-    "skipLink": "跳过导航，直接查看内容",
-    "open": "打开菜单",
-    "close": "关闭菜单",
     "courses": "课程",
     "presets": "预设",
     "workshops": "活动",
     "shop": "周边",
-    "map": "地图"
+    "map": "地图",
+    "booking": "预约拍摄",
+    "editor": "修图",
+    "skipLink": "跳过导航，直接查看内容",
+    "open": "打开菜单",
+    "close": "关闭菜单",
+    "details": "详情",
+    "reviews": "评价",
+    "faq": "常见问题"
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -741,5 +741,15 @@
     "spots": "名额",
     "full": "已满",
     "available": "可报名"
+  },
+  "editor": {
+    "title": "修图工作室",
+    "desc": "上传照片，使用专业工具进行修图、调色、裁剪、添加文字和滤镜效果。",
+    "subtitle": "上传照片，开始创作",
+    "upload": "上传照片",
+    "download": "下载",
+    "undo": "撤销",
+    "redo": "重做",
+    "reset": "重置"
   }
 }

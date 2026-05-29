@@ -1,4 +1,4 @@
-import { CalendarCheck, Camera, Languages, Menu, X, User, LogOut, LogIn, LayoutDashboard } from "lucide-react";
+import { CalendarCheck, Camera, Languages, Menu, X, User, LogOut, LogIn, LayoutDashboard, Paintbrush } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
 import { MoodToggle } from "../MoodToggle";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -25,6 +25,7 @@ export function Header() {
     { to: "/products", label: t("nav.presets") },
     { to: "/workshops", label: t("nav.workshops") },
     { to: "/shop", label: t("nav.shop") },
+    { to: "/editor", label: t("nav.editor") },
     { to: "/map", label: t("nav.map") },
     { to: "/booking", label: t("nav.booking") },
   ], [t]);

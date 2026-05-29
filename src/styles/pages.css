@@ -2547,3 +2547,90 @@
     font-size: 0.78rem;
   }
 }
+
+/* ── Photo Editor page ── */
+.editor-root {
+  min-height: 100vh;
+  padding-top: var(--nav-h, 64px);
+  background: var(--custard-bg);
+}
+
+.editor-header {
+  text-align: center;
+  padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 48px) 16px;
+}
+
+.editor-header h1 {
+  font-family: var(--font-heading-cn);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--caramel-ink);
+  margin: 0 0 8px;
+}
+
+.editor-header p {
+  color: var(--caramel-muted);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px 12px;
+  flex-wrap: wrap;
+}
+
+.editor-btn {
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(139, 94, 74, 0.2);
+  background: var(--paper-white);
+  color: var(--caramel-ink);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editor-btn:hover {
+  background: var(--peach-light);
+  border-color: var(--peach-accent);
+}
+
+.editor-btn--primary {
+  background: var(--peach-accent);
+  color: #fff;
+  border-color: var(--peach-accent);
+}
+
+.editor-btn--primary:hover {
+  opacity: 0.85;
+}
+
+.editor-canvas-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--paper-inset), var(--warm-shadow);
+  background: var(--paper-white);
+}
+
+/* Toast UI Editor theme overrides */
+.editor-canvas-wrap .tui-image-editor-container {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.editor-canvas-wrap .tui-image-editor-menu {
+  background: #fef3dd !important;
+}
+
+.editor-canvas-wrap .tui-image-editor-submenu {
+  background: #fffdf7 !important;
+}

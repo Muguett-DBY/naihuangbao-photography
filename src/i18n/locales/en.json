@@ -14,7 +14,8 @@
     "presets": "Presets",
     "workshops": "Workshops",
     "shop": "Shop",
-    "map": "Map"
+    "map": "Map",
+    "editor": "Editor"
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -741,5 +742,15 @@
     "spots": "spots",
     "full": "Full",
     "available": "Available"
+  },
+  "editor": {
+    "title": "Photo Studio",
+    "desc": "Upload photos and use professional tools to retouch, adjust colors, crop, add text and filter effects.",
+    "subtitle": "Upload a photo to start editing",
+    "upload": "Upload Photo",
+    "download": "Download",
+    "undo": "Undo",
+    "redo": "Redo",
+    "reset": "Reset"
   }
 }
