@@ -743,13 +743,26 @@
     "available": "신청 가능"
   },
   "editor": {
-    "title": "포토 스튜디오",
-    "desc": "사진을 업로드하고 전문 도구로 보정, 색상 조정, 자르기, 텍스트 및 필터 효과를 적용하세요.",
-    "subtitle": "사진을 업로드하여 편집을 시작하세요",
+    "title": "인물 포토 스튜디오",
+    "desc": "인물 사진을 업로드하고 AI 얼굴 감지로 피부 보정, 얼굴 축소, 눈 확대, 미백 등 전문적인 뷰티 보정을 적용하세요.",
+    "subtitle": "인물 사진을 업로드하여 보정을 시작하세요",
     "upload": "사진 업로드",
     "download": "다운로드",
-    "undo": "실행 취소",
-    "redo": "다시 실행",
-    "reset": "초기화"
+    "reset": "초기화",
+    "loadingModels": "AI 모델 로딩 중...",
+    "detecting": "얼굴 감지 중...",
+    "faceDetected": "얼굴 감지됨",
+    "loadingImage": "이미지 로딩 중...",
+    "beautyTools": "뷰티 도구",
+    "smooth": "피부 보정",
+    "slim": "얼굴 축소",
+    "bigeye": "눈 확대",
+    "whiten": "미백",
+    "sharpen": "선명도",
+    "preset": {
+      "natural": "자연스러움",
+      "beauty": "뷰티",
+      "portrait": "인물"
+    }
   }
 }

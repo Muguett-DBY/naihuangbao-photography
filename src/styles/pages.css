@@ -2574,6 +2574,12 @@
   margin: 0;
 }
 
+.editor-loading-models {
+  color: var(--peach-accent);
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
 .editor-toolbar {
   display: flex;
   align-items: center;
@@ -2611,26 +2617,198 @@
   opacity: 0.85;
 }
 
-.editor-canvas-wrap {
-  max-width: 1200px;
+.editor-detecting {
+  color: var(--peach-accent);
+  font-size: 0.85rem;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.editor-face-ok {
+  color: #4ade80;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.editor-workspace {
+  display: flex;
+  gap: 16px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 16px 40px;
+}
+
+.editor-canvas-container {
+  flex: 1;
+  position: relative;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--paper-inset), var(--warm-shadow);
   background: var(--paper-white);
+  min-height: 400px;
 }
 
-/* Toast UI Editor theme overrides */
-.editor-canvas-wrap .tui-image-editor-container {
+.editor-canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.editor-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(254, 243, 221, 0.8);
+  color: var(--caramel-ink);
+  font-weight: 600;
+}
+
+.editor-beauty-panel {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--paper-white);
   border-radius: 16px;
-  overflow: hidden;
+  box-shadow: var(--paper-inset), var(--warm-shadow);
+  padding: 20px;
 }
 
-.editor-canvas-wrap .tui-image-editor-menu {
-  background: #fef3dd !important;
+.editor-beauty-panel h3 {
+  font-family: var(--font-heading-cn);
+  font-size: 1rem;
+  font-weight: 650;
+  color: var(--caramel-ink);
+  margin: 0 0 16px;
 }
 
-.editor-canvas-wrap .tui-image-editor-submenu {
-  background: #fffdf7 !important;
+.editor-tools {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.editor-tool-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 12px;
+  background: var(--custard-bg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editor-tool-btn:hover {
+  border-color: var(--peach-accent);
+  background: var(--peach-light);
+}
+
+.editor-tool-btn.active {
+  border-color: var(--peach-accent);
+  background: rgba(255, 184, 161, 0.15);
+}
+
+.editor-tool-icon {
+  font-size: 1.3rem;
+}
+
+.editor-tool-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--caramel-ink);
+}
+
+.editor-slider-group {
+  margin-bottom: 20px;
+}
+
+.editor-slider-group label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--caramel-ink);
+  margin-bottom: 8px;
+}
+
+.editor-slider-value {
+  color: var(--peach-accent);
+  font-weight: 700;
+}
+
+.editor-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(139, 94, 74, 0.1);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.editor-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--peach-accent);
+  border: 2px solid var(--paper-white);
+  box-shadow: 0 2px 6px rgba(139, 94, 74, 0.2);
+  cursor: pointer;
+}
+
+.editor-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--peach-accent);
+  border: 2px solid var(--paper-white);
+  box-shadow: 0 2px 6px rgba(139, 94, 74, 0.2);
+  cursor: pointer;
+}
+
+.editor-presets {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editor-preset-btn {
+  padding: 10px 16px;
+  border: 1px solid rgba(139, 94, 74, 0.15);
+  border-radius: 999px;
+  background: var(--custard-bg);
+  color: var(--caramel-ink);
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editor-preset-btn:hover {
+  background: var(--peach-light);
+  border-color: var(--peach-accent);
+}
+
+@media (max-width: 768px) {
+  .editor-workspace {
+    flex-direction: column;
+  }
+
+  .editor-beauty-panel {
+    width: 100%;
+  }
+
+  .editor-tools {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }

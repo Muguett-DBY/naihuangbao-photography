@@ -744,13 +744,26 @@
     "available": "Available"
   },
   "editor": {
-    "title": "Photo Studio",
-    "desc": "Upload photos and use professional tools to retouch, adjust colors, crop, add text and filter effects.",
-    "subtitle": "Upload a photo to start editing",
+    "title": "Portrait Studio",
+    "desc": "Upload portrait photos and use AI face detection for professional beauty retouching including skin smoothing, face slimming, eye enlargement, and whitening.",
+    "subtitle": "Upload a portrait to start beautifying",
     "upload": "Upload Photo",
     "download": "Download",
-    "undo": "Undo",
-    "redo": "Redo",
-    "reset": "Reset"
+    "reset": "Reset",
+    "loadingModels": "Loading AI models...",
+    "detecting": "Detecting face...",
+    "faceDetected": "Face detected",
+    "loadingImage": "Loading image...",
+    "beautyTools": "Beauty Tools",
+    "smooth": "Smooth",
+    "slim": "Slim",
+    "bigeye": "Big Eyes",
+    "whiten": "Whiten",
+    "sharpen": "Sharpen",
+    "preset": {
+      "natural": "Natural",
+      "beauty": "Beauty",
+      "portrait": "Portrait"
+    }
   }
 }
