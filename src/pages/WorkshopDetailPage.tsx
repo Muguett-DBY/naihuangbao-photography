@@ -84,15 +84,15 @@ export function WorkshopDetailPage() {
           <DetailBackLink to="/workshops" label={t("workshopDetail.backToList")} />
           <h1>{getTitle(workshop, lang)}</h1>
           <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ fontSize: "0.85rem", color: "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
               <Calendar size={14} /> {workshop.event_date} {workshop.event_time}
             </span>
             {workshop.location && (
-              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+              <span style={{ fontSize: "0.85rem", color: "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
                 <MapPin size={14} /> {workshop.location}
               </span>
             )}
-            <span style={{ fontSize: "0.85rem", color: isFull ? "#ef4444" : "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ fontSize: "0.85rem", color: isFull ? "#ef4444" : "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
               <Users size={14} /> {isFull ? t("workshops.full") : `${t("workshops.spotsLeft")}: ${spotsLeft}`}
             </span>
           </div>
@@ -108,7 +108,7 @@ export function WorkshopDetailPage() {
       <section className="section-shell is-visible">
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <h2 style={{ marginBottom: 16 }}>{t("workshopDetail.about")}</h2>
-          <p style={{ lineHeight: 1.8, color: "var(--text-secondary)" }}>{getDesc(workshop, lang)}</p>
+          <p style={{ lineHeight: 1.8, color: "var(--caramel-muted)" }}>{getDesc(workshop, lang)}</p>
         </div>
       </section>
 
@@ -149,7 +149,7 @@ export function WorkshopDetailPage() {
                 <h4 style={{ margin: "0 0 8px", fontSize: "0.95rem" }}>{section.title}</h4>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
                   {section.items.map((item) => (
-                    <li key={item} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                    <li key={item} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
                       <CheckCircle size={14} style={{ color: "var(--accent)", flexShrink: 0 }} /> {item}
                     </li>
                   ))}

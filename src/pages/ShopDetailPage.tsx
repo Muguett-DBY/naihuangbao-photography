@@ -99,7 +99,7 @@ export function ShopDetailPage() {
 
           <div>
             <h2 style={{ marginBottom: 16 }}>{t("shopDetail.about")}</h2>
-            <p style={{ lineHeight: 1.8, color: "var(--text-secondary)", marginBottom: 24 }}>{getDesc(item, lang)}</p>
+            <p style={{ lineHeight: 1.8, color: "var(--caramel-muted)", marginBottom: 24 }}>{getDesc(item, lang)}</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
               <h3>{t("shopDetail.specs")}</h3>
@@ -110,7 +110,7 @@ export function ShopDetailPage() {
                   { label: t("shopDetail.specAvailability"), value: item.available ? t("shopDetail.inStock") : t("shopDetail.outOfStock") },
                 ].map((spec) => (
                   <div key={spec.label} style={{ padding: "8px 12px", background: "var(--card-bg)", borderRadius: 8 }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", display: "block" }}>{spec.label}</span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--caramel-muted)", display: "block" }}>{spec.label}</span>
                     <span style={{ fontSize: "0.9rem", fontWeight: 500 }}>{spec.value}</span>
                   </div>
                 ))}

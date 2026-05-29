@@ -61,7 +61,7 @@ export function PresetDetailPage() {
           <h1>{getName(preset, lang)}</h1>
           <div style={{ display: "flex", gap: 16, alignItems: "center", marginTop: 12 }}>
             {preset.price_display && <span style={{ fontSize: "1.2rem", fontWeight: 700 }}>{preset.price_display}</span>}
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ fontSize: "0.85rem", color: "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
               <Download size={14} /> {preset.download_count} {t("presetDetail.downloads")}
             </span>
           </div>
@@ -92,7 +92,7 @@ export function PresetDetailPage() {
       <section className="section-shell is-visible">
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <h2 style={{ marginBottom: 16 }}>{t("presetDetail.about")}</h2>
-          <p style={{ lineHeight: 1.8, color: "var(--text-secondary)" }}>{getDesc(preset, lang)}</p>
+          <p style={{ lineHeight: 1.8, color: "var(--caramel-muted)" }}>{getDesc(preset, lang)}</p>
 
           <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 12 }}>
             <h3>{t("presetDetail.includes")}</h3>
@@ -142,7 +142,7 @@ export function PresetDetailPage() {
                     <Star key={j} size={14} fill="var(--accent)" color="var(--accent)" />
                   ))}
                 </div>
-                <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", margin: "0 0 8px" }}>{r.text}</p>
+                <p style={{ fontSize: "0.9rem", color: "var(--caramel-muted)", margin: "0 0 8px" }}>{r.text}</p>
                 <span style={{ fontSize: "0.8rem", color: "var(--caramel-muted)" }}>— {r.name}</span>
               </div>
             ))}

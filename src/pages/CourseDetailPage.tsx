@@ -82,11 +82,11 @@ export function CourseDetailPage() {
           <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
             <span className="course-difficulty">{t(`courses.difficulty.${course.difficulty}` as any)}</span>
             {course.duration_minutes && (
-              <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+              <span style={{ fontSize: "0.85rem", color: "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
                 <Clock size={14} /> {t("courses.duration", { minutes: course.duration_minutes })}
               </span>
             )}
-            <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ fontSize: "0.85rem", color: "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
               <BarChart3 size={14} /> {modules.length} {t("courseDetail.modules")}
             </span>
           </div>
@@ -109,7 +109,7 @@ export function CourseDetailPage() {
       <section className="section-shell is-visible">
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <h2 style={{ marginBottom: 16 }}>{t("courseDetail.about")}</h2>
-          <p style={{ lineHeight: 1.8, color: "var(--text-secondary)" }}>{getDesc(course, lang)}</p>
+          <p style={{ lineHeight: 1.8, color: "var(--caramel-muted)" }}>{getDesc(course, lang)}</p>
         </div>
       </section>
 
@@ -144,7 +144,7 @@ export function CourseDetailPage() {
             }}>
               <Lock size={32} style={{ color: "var(--accent)", marginBottom: 12 }} />
               <h3 style={{ marginBottom: 8 }}>{t("courseDetail.lockedTitle")}</h3>
-              <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: 16 }}>
+              <p style={{ fontSize: "0.9rem", color: "var(--caramel-muted)", marginBottom: 16 }}>
                 {t("courseDetail.lockedDesc")}
               </p>
               <div style={{ display: "flex", gap: 8, justifyContent: "center", maxWidth: 320, margin: "0 auto" }}>
@@ -228,7 +228,7 @@ export function CourseDetailPage() {
                   {activeModule === mod.id && mod.content && (
                     <div style={{
                       padding: "0 18px 18px", fontSize: "0.9rem", lineHeight: 1.7,
-                      color: "var(--text-secondary)", whiteSpace: "pre-wrap",
+                      color: "var(--caramel-muted)", whiteSpace: "pre-wrap",
                     }}>
                       {mod.content}
                     </div>
@@ -237,14 +237,14 @@ export function CourseDetailPage() {
               ))}
             </div>
           ) : (
-            <p style={{ color: "var(--text-secondary)" }}>{t("courseDetail.noModules")}</p>
+            <p style={{ color: "var(--caramel-muted)" }}>{t("courseDetail.noModules")}</p>
           )}
         </div>
       </section>
 
       <section className="section-shell is-visible" style={{ textAlign: "center" }}>
         <h2 style={{ marginBottom: 16 }}>{t("courseDetail.ctaTitle")}</h2>
-        <p style={{ color: "var(--text-secondary)", marginBottom: 24 }}>{t("courseDetail.ctaDesc")}</p>
+        <p style={{ color: "var(--caramel-muted)", marginBottom: 24 }}>{t("courseDetail.ctaDesc")}</p>
         <Link
           to="/booking"
           style={{

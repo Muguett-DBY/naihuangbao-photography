@@ -60,7 +60,7 @@ export function CoursesPage() {
                   <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                     <span className="course-difficulty">{t(`courses.difficulty.${course.difficulty}` as any)}</span>
                     {course.duration_minutes && (
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary, #666)" }}>
+                      <span style={{ fontSize: "0.8rem", color: "var(--caramel-muted)" }}>
                         {t("courses.duration", { minutes: course.duration_minutes })}
                       </span>
                     )}
