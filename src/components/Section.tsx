@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 
-export function Section({
+export const Section = memo(function Section({
   id,
   eyebrow,
   title,
@@ -25,4 +25,4 @@ export function Section({
       </div>
     </section>
   );
-}
+});

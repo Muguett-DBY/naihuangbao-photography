@@ -98,6 +98,9 @@ export function CourseDetailPage() {
           <img
             src={course.cover_image_url}
             alt={getTitle(course, lang)}
+            width={800}
+            height={400}
+            loading="lazy"
             style={{ width: "100%", maxHeight: 400, objectFit: "cover", borderRadius: 16 }}
           />
         </section>

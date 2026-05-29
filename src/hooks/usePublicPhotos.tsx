@@ -50,8 +50,9 @@ export function PublicPhotosProvider({ children }: { children: ReactNode }) {
     [remoteLoaded, remotePhotos],
   );
 
+  const value = useMemo(() => ({ photos, remoteLoaded }), [photos, remoteLoaded]);
   return (
-    <PublicPhotosContext.Provider value={{ photos, remoteLoaded }}>
+    <PublicPhotosContext.Provider value={value}>
       {children}
     </PublicPhotosContext.Provider>
   );

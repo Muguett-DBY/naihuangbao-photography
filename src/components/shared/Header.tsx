@@ -1,7 +1,7 @@
 import { CalendarCheck, Camera, Languages, Menu, X } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
 import { MoodToggle } from "../MoodToggle";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { useSiteContent } from "../../hooks/useSiteContent";
@@ -14,7 +14,7 @@ export function Header() {
   const { siteConfig } = useSiteContent();
   const location = useLocation();
 
-  const navItems = [
+  const navItems = useMemo(() => [
     { to: "/", label: t("nav.home") },
     { to: "/gallery", label: t("nav.gallery") },
     { to: "/courses", label: t("nav.courses") },
@@ -23,7 +23,7 @@ export function Header() {
     { to: "/shop", label: t("nav.shop") },
     { to: "/map", label: t("nav.map") },
     { to: "/booking", label: t("nav.booking") },
-  ];
+  ], [t]);
 
   const LANG_CYCLE = ["en", "zh-CN", "ko", "ja"] as const;
 

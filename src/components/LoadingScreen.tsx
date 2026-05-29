@@ -48,6 +48,8 @@ export function LoadingScreen() {
   return (
     <div
       ref={wrapRef}
+      role="status"
+      aria-label="Loading"
       style={{
         position: "fixed",
         inset: 0,

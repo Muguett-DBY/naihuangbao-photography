@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { PageTransition } from "./PageTransition";
 import { DetailBackLink } from "./DetailBackLink";
 
@@ -7,7 +8,7 @@ type Props = {
   backLabel: string;
 };
 
-export function DetailNotFound({ message, backTo, backLabel }: Props) {
+export const DetailNotFound = memo(function DetailNotFound({ message, backTo, backLabel }: Props) {
   return (
     <PageTransition>
       <div style={{ textAlign: "center", padding: 120 }}>
@@ -16,4 +17,4 @@ export function DetailNotFound({ message, backTo, backLabel }: Props) {
       </div>
     </PageTransition>
   );
-}
+});

@@ -90,8 +90,8 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
       <form onSubmit={handleSubmit}>
         <div className="booking-field">
-          <label>{t("bookingModal.selectPackage")}</label>
-          <select value={selectedPkg} onChange={(e) => setSelectedPkg(e.target.value)} aria-label={t("bookingModal.selectPackage")}>
+          <label htmlFor="booking-package">{t("bookingModal.selectPackage")}</label>
+          <select id="booking-package" value={selectedPkg} onChange={(e) => setSelectedPkg(e.target.value)}>
             <option value="">{t("bookingModal.anyPackage")}</option>
             {packageOptions}
           </select>
@@ -99,12 +99,12 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
         <div className="booking-row">
           <div className="booking-field">
-            <label>{t("bookingModal.date")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
+            <label htmlFor="booking-date">{t("bookingModal.date")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
+            <Input id="booking-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
           </div>
           <div className="booking-field">
-            <label>{t("bookingModal.time")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
-            <select value={time} onChange={(e) => setTime(e.target.value)} aria-label={t("bookingModal.time")}>
+            <label htmlFor="booking-time">{t("bookingModal.time")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
+            <select id="booking-time" value={time} onChange={(e) => setTime(e.target.value)}>
               <option value="">{t("bookingModal.any")}</option>
               <option value="morning">{t("bookingModal.morning")}</option>
               <option value="afternoon">{t("bookingModal.afternoon")}</option>
@@ -114,8 +114,9 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         </div>
 
         <div className="booking-field">
-          <label>{t("bookingModal.name")} <span className="booking-required">*</span></label>
+          <label htmlFor="booking-name">{t("bookingModal.name")} <span className="booking-required">*</span></label>
           <Input
+            id="booking-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder={t("bookingModal.namePlaceholder")}
@@ -125,8 +126,9 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         </div>
 
         <div className="booking-field">
-          <label>{t("bookingModal.contact")} <span className="booking-required">*</span></label>
+          <label htmlFor="booking-contact">{t("bookingModal.contact")} <span className="booking-required">*</span></label>
           <Input
+            id="booking-contact"
             value={contact}
             onChange={(e) => setContact(e.target.value)}
             placeholder={t("bookingModal.contactPlaceholder")}
@@ -136,18 +138,18 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         </div>
 
         <div className="booking-field">
-          <label>{t("bookingModal.message")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
+          <label htmlFor="booking-notes">{t("bookingModal.message")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
           <textarea
+            id="booking-notes"
             className="booking-textarea"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder={t("bookingModal.messagePlaceholder")}
             rows={3}
-            aria-label={t("bookingModal.message")}
           />
         </div>
 
-        {error ? <p className="booking-error">{error}</p> : null}
+        {error ? <p className="booking-error" role="alert">{error}</p> : null}
 
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
           <Button type="default" onClick={onClose}>{t("bookingModal.cancel")}</Button>

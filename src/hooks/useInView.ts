@@ -26,7 +26,7 @@ export function useInView<T extends HTMLElement = HTMLDivElement>({
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [threshold, once, inView]);
+  }, [threshold, once]);
 
   return { ref, inView };
 }

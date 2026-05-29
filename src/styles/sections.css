@@ -1816,14 +1816,6 @@
   opacity: 1;
 }
 
-.polaroid-photo-skeleton {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, #f0e8e0 25%, #f8f0e8 50%, #f0e8e0 75%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.5s ease-in-out infinite;
-}
-
 .polaroid-caption {
   position: absolute;
   bottom: 10px;

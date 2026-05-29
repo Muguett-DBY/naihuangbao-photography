@@ -54,6 +54,7 @@ export function CustomCursor() {
     <>
       <div
         ref={dotRef}
+        aria-hidden="true"
         style={{
           position: "fixed",
           top: 0,

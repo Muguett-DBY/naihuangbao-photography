@@ -43,29 +43,7 @@
     linear-gradient(135deg, #d4a09d, #8d7770 48%, #3d3230);
 }
 
-.film-placeholder-sage::before {
-  background:
-    linear-gradient(145deg, rgba(35, 38, 32, 0.16), rgba(35, 38, 32, 0.5)),
-    radial-gradient(circle at 34% 20%, rgba(255, 247, 224, 0.72), transparent 19%),
-    radial-gradient(circle at 65% 38%, rgba(171, 179, 148, 0.56), transparent 24%),
-    linear-gradient(135deg, #c8c2a5, #8f927d 48%, #393b32);
-}
 
-.film-placeholder-cream::before {
-  background:
-    linear-gradient(145deg, rgba(45, 36, 31, 0.12), rgba(45, 36, 31, 0.5)),
-    radial-gradient(circle at 28% 22%, rgba(255, 252, 242, 0.82), transparent 18%),
-    radial-gradient(circle at 68% 38%, rgba(219, 173, 133, 0.52), transparent 23%),
-    linear-gradient(135deg, #dfbea0, #b1937e 48%, #4b3d36);
-}
-
-.film-placeholder-ink::before {
-  background:
-    linear-gradient(145deg, rgba(24, 25, 25, 0.08), rgba(24, 25, 25, 0.58)),
-    radial-gradient(circle at 30% 24%, rgba(252, 244, 229, 0.74), transparent 18%),
-    radial-gradient(circle at 66% 34%, rgba(122, 111, 107, 0.58), transparent 23%),
-    linear-gradient(135deg, #a29a94, #716661 48%, #292524);
-}
 
 .film-grain,
 .film-placeholder::after {

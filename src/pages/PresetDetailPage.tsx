@@ -72,9 +72,9 @@ export function PresetDetailPage() {
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           {preset.preview_images && preset.preview_images.length > 0 && (
             <div style={{ position: "relative", borderRadius: 16, overflow: "hidden", userSelect: "none" }}>
-              <img src={preset.preview_images[0]} alt={getName(preset, lang)} style={{ width: "100%", display: "block" }} />
+              <img src={preset.preview_images[0]} alt={getName(preset, lang)} width={800} height={450} loading="lazy" style={{ width: "100%", display: "block" }} />
               <div style={{ position: "absolute", top: 0, left: 0, width: `${sliderPos}%`, height: "100%", overflow: "hidden" }}>
-                <img src={preset.preview_images[0]} alt="" style={{ width: `${100 / (sliderPos / 100)}%`, maxWidth: "none", display: "block" }} />
+                <img src={preset.preview_images[0]} alt="" width={800} height={450} style={{ width: `${100 / (sliderPos / 100)}%`, maxWidth: "none", display: "block" }} />
               </div>
               <input
                 type="range" min={0} max={100} value={sliderPos}

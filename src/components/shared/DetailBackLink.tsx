@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -6,7 +7,7 @@ type Props = {
   label: string;
 };
 
-export function DetailBackLink({ to, label }: Props) {
+export const DetailBackLink = memo(function DetailBackLink({ to, label }: Props) {
   return (
     <Link
       to={to}
@@ -23,4 +24,4 @@ export function DetailBackLink({ to, label }: Props) {
       <ArrowLeft size={16} /> {label}
     </Link>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
 import { BookingModal } from "../components/BookingModal";
 
 type BookingContextValue = {
@@ -18,8 +18,9 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     setIsOpen(true);
   }, []);
 
+  const value = useMemo(() => ({ openBookingModal }), [openBookingModal]);
   return (
-    <BookingContext.Provider value={{ openBookingModal }}>
+    <BookingContext.Provider value={value}>
       {children}
       {isOpen && (
         <BookingModal

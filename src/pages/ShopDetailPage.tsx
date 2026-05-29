@@ -66,14 +66,16 @@ export function ShopDetailPage() {
           <div>
             {images.length > 0 && (
               <div style={{ position: "relative", borderRadius: 16, overflow: "hidden" }}>
-                <img src={images[activeImage]} alt={getName(item, lang)} style={{ width: "100%", aspectRatio: "1", objectFit: "cover" }} />
+                <img src={images[activeImage]} alt={getName(item, lang)} width={800} height={800} loading="lazy" style={{ width: "100%", aspectRatio: "1", objectFit: "cover" }} />
                 {images.length > 1 && (
                   <>
                     <button onClick={() => setActiveImage((activeImage - 1 + images.length) % images.length)}
+                      aria-label="Previous image"
                       style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.8)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <ChevronLeft size={16} />
                     </button>
                     <button onClick={() => setActiveImage((activeImage + 1) % images.length)}
+                      aria-label="Next image"
                       style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.8)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
                       <ChevronRight size={16} />
                     </button>
@@ -85,8 +87,10 @@ export function ShopDetailPage() {
               <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                 {images.map((img, i) => (
                   <button key={i} onClick={() => setActiveImage(i)}
+                    aria-label={`View image ${i + 1}`}
+                    aria-current={activeImage === i ? "true" : undefined}
                     style={{ flex: 1, border: activeImage === i ? "2px solid var(--accent)" : "2px solid transparent", borderRadius: 8, overflow: "hidden", cursor: "pointer", padding: 0, background: "none" }}>
-                    <img src={img} alt="" style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} />
+                    <img src={img} alt="" width={120} height={120} loading="lazy" style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} />
                   </button>
                 ))}
               </div>

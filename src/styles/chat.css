@@ -465,22 +465,7 @@ a:focus-visible,
   box-shadow: 0 12px 32px rgba(255, 184, 161, 0.22);
 }
 
-.skip-link {
-  position: absolute;
-  top: -100%;
-  left: 8px;
-  z-index: 999;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: var(--caramel-deep);
-  color: #FFF9EC;
-  font-size: 14px;
-  font-weight: 600;
-  transition: top 0.2s ease;
-}
-.skip-link:focus {
-  top: 8px;
-}
+
 
 .not-found h1 {
   color: var(--peach-accent);

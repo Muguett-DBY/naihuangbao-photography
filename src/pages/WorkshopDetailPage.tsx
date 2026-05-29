@@ -101,7 +101,7 @@ export function WorkshopDetailPage() {
 
       {workshop.cover_image_url && (
         <section className="section-shell is-visible" style={{ paddingTop: 0 }}>
-          <img src={workshop.cover_image_url} alt={getTitle(workshop, lang)} style={{ width: "100%", maxHeight: 400, objectFit: "cover", borderRadius: 16 }} />
+          <img src={workshop.cover_image_url} alt={getTitle(workshop, lang)} width={800} height={400} loading="lazy" style={{ width: "100%", maxHeight: 400, objectFit: "cover", borderRadius: 16 }} />
         </section>
       )}
 

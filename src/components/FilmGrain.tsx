@@ -105,6 +105,7 @@ export function FilmGrain() {
     <>
       <canvas
         ref={grainRef}
+        aria-hidden="true"
         width={GRAIN_SIZE}
         height={GRAIN_SIZE}
         style={{
@@ -121,6 +122,7 @@ export function FilmGrain() {
       />
       <canvas
         ref={leakRef}
+        aria-hidden="true"
         style={{
           position: "fixed",
           inset: 0,

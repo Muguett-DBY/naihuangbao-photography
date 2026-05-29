@@ -32,6 +32,13 @@ export function Gallery() {
 
   const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
 
+  // Build index lookup map to avoid O(n^2) indexOf in render loop
+  const photoIndexMap = useMemo(() => {
+    const map = new Map<string, number>();
+    photos.forEach((p, i) => map.set(p.id, i));
+    return map;
+  }, [photos]);
+
   useEffect(() => {
     const target = masonryRef.current;
     if (!target) return;
@@ -120,7 +127,7 @@ export function Gallery() {
                       className="gallery-masonry-btn"
                       type="button"
                       data-distort
-                      onClick={() => setLightboxIndex(photos.indexOf(item))}
+                      onClick={() => setLightboxIndex(photoIndexMap.get(item.id) ?? 0)}
                       onTouchStart={() => {
                         const timer = setTimeout(() => navigator.vibrate?.(12), 400);
                         const clear = () => { clearTimeout(timer); };
@@ -133,9 +140,9 @@ export function Gallery() {
                         src={item.imageUrl || ""}
                         alt={item.alt}
                         title={item.title}
-                        tone={tones[photos.indexOf(item) % tones.length]}
+                        tone={tones[(photoIndexMap.get(item.id) ?? 0) % tones.length]}
                         load={true}
-                        priority={photos.indexOf(item) < 6 || item.id === "gallery-daily-01"}
+                        priority={(photoIndexMap.get(item.id) ?? 0) < 6 || item.id === "gallery-daily-01"}
                         sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
                       />
                       <div className="gallery-masonry-overlay">
