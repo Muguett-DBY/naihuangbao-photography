@@ -8,9 +8,7 @@ export function CustomCursor() {
   const ringPos = useRef({ x: 0, y: 0 });
   const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
-  // Hide custom cursor on editor page
-  const isEditor = typeof window !== "undefined" && document.documentElement.getAttribute("data-page") === "editor";
-  if (isTouchDevice || isEditor) return null;
+  if (isTouchDevice) return null;
 
   const onMove = useCallback((e: MouseEvent) => {
     pos.current = { x: e.clientX, y: e.clientY };

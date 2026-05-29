@@ -14,14 +14,6 @@ export function FilmGrain() {
   const grainRef = useRef<HTMLCanvasElement>(null);
   const leakRef = useRef<HTMLCanvasElement>(null);
 
-  // Hide FilmGrain on editor page to avoid visual interference
-  // Check both path and data-page attribute for robustness
-  const isEditor = typeof window !== "undefined" && (
-    window.location.pathname === "/editor" ||
-    document.documentElement.getAttribute("data-page") === "editor"
-  );
-  if (isEditor) return null;
-
   useEffect(() => {
     const capability = getDeviceCapability();
     if (capability === "low") {

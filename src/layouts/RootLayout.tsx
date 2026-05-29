@@ -46,12 +46,16 @@ export function RootLayout() {
         {t("common.skipToContent", "跳转到内容")}
       </a>
       <LoadingScreen />
-      <ErrorBoundary fallback={null}>
-        <FilmGrain />
-      </ErrorBoundary>
-      <ErrorBoundary fallback={null}>
-        <CustomCursor />
-      </ErrorBoundary>
+      {location.pathname !== "/editor" && (
+        <>
+          <ErrorBoundary fallback={null}>
+            <FilmGrain />
+          </ErrorBoundary>
+          <ErrorBoundary fallback={null}>
+            <CustomCursor />
+          </ErrorBoundary>
+        </>
+      )}
       <AuthProvider>
         <BookingProvider>
           <SiteContentProvider>
