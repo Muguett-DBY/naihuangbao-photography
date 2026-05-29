@@ -50,13 +50,13 @@ const FILTERS: FilterPreset[] = [
 ];
 
 const FRAMES = [
-  { id: "none", label: "无边框", border: "none", padding: 0, bg: "transparent" },
-  { id: "polaroid", label: "宝丽来", border: "12px solid #fff", padding: 40, bg: "#f5f5f5", paddingBottom: 60 },
-  { id: "film", label: "胶片", border: "8px solid #222", padding: 16, bg: "#111" },
-  { id: "white", label: "白边框", border: "20px solid #fff", padding: 0, bg: "#fff" },
-  { id: "rounded", label: "圆角", border: "none", padding: 0, bg: "transparent", borderRadius: 24 },
-  { id: "magazine", label: "杂志", border: "3px solid #333", padding: 8, bg: "#fafafa" },
-  { id: "golden", label: "金色", border: "6px solid #d4a853", padding: 0, bg: "#1a1a1a" },
+  { id: "none", labelKey: "editor.frame.none", padding: 0, bg: "transparent" },
+  { id: "polaroid", labelKey: "editor.frame.polaroid", padding: 40, bg: "#f5f5f5", paddingBottom: 60 },
+  { id: "film", labelKey: "editor.frame.film", padding: 16, bg: "#111" },
+  { id: "white", labelKey: "editor.frame.white", padding: 20, bg: "#fff" },
+  { id: "rounded", labelKey: "editor.frame.rounded", padding: 0, bg: "transparent", borderRadius: 24 },
+  { id: "magazine", labelKey: "editor.frame.magazine", padding: 8, bg: "#fafafa" },
+  { id: "golden", labelKey: "editor.frame.golden", padding: 0, bg: "#1a1a1a" },
 ];
 
 const STICKERS = ["❤", "⭐", "🌟", "✨", "🌸", "🌺", "🦋", "🎀", "👑", "💫", "🌈", "🎵", "🔥", "💯", "🎉", "📸", "🎬", "🎞"];
@@ -99,6 +99,8 @@ const TOOLS: Record<BeautyCategory, { key: BeautyTool; icon: string; labelKey: s
     { key: "saturation", icon: "🎭", labelKey: "editor.saturation" },
     { key: "contrast", icon: "🌗", labelKey: "editor.contrast" },
     { key: "brightness", icon: "☀", labelKey: "editor.brightness" },
+    { key: "vignette", icon: "🌑", labelKey: "editor.vignette" },
+    { key: "grain", icon: "🎞", labelKey: "editor.grain" },
   ],
   filter: [],
   tools: [
@@ -122,6 +124,7 @@ export default function PhotoEditorPage() {
   const historyIdxRef = useRef(0);
   const rafRef = useRef(0);
   const blemishCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const faceApiRef = useRef<any>(null);
 
   const [loading, setLoading] = useState(false);
   const [detecting, setDetecting] = useState(false);
@@ -150,11 +153,14 @@ export default function PhotoEditorPage() {
   const [newTextColor, setNewTextColor] = useState("#ffffff");
   const [blemishMode, setBlemishMode] = useState(false);
   const [brushSize, setBrushSize] = useState(20);
+  const [selectedOverlay, setSelectedOverlay] = useState<string | null>(null);
+  const draggingRef = useRef<{ id: string; offsetX: number; offsetY: number } | null>(null);
 
   // Load models
   useEffect(() => {
     let m = true;
     import("face-api.js").then(async api => {
+      faceApiRef.current = api;
       try {
         await Promise.all([
           api.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
@@ -605,6 +611,15 @@ export default function PhotoEditorPage() {
         ctx.strokeStyle = "rgba(0,0,0,0.5)";
         ctx.lineWidth = 3;
         ctx.textAlign = "center";
+        if (selectedOverlay === txt.id) {
+          ctx.save();
+          ctx.strokeStyle = "#F5A891";
+          ctx.lineWidth = 2;
+          const metrics = ctx.measureText(txt.text);
+          const tw = metrics.width;
+          ctx.strokeRect(txt.x - tw / 2 - 4, txt.y - txt.size - 4, tw + 8, txt.size + 8);
+          ctx.restore();
+        }
         ctx.strokeText(txt.text, txt.x, txt.y);
         ctx.fillText(txt.text, txt.x, txt.y);
       }
@@ -613,6 +628,13 @@ export default function PhotoEditorPage() {
       for (const sticker of stickers) {
         ctx.font = `${sticker.size}px serif`;
         ctx.textAlign = "center";
+        if (selectedOverlay === sticker.id) {
+          ctx.save();
+          ctx.strokeStyle = "#F5A891";
+          ctx.lineWidth = 2;
+          ctx.strokeRect(sticker.x - sticker.size / 2 - 4, sticker.y - sticker.size - 4, sticker.size + 8, sticker.size + 8);
+          ctx.restore();
+        }
         ctx.fillText(sticker.emoji, sticker.x, sticker.y);
       }
 
@@ -627,7 +649,7 @@ export default function PhotoEditorPage() {
         }
       }
     });
-  }, [frameId, texts, stickers, showMesh]);
+  }, [frameId, texts, stickers, showMesh, selectedOverlay]);
 
   // Background blur algorithm
   const applyBackgroundBlur = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number) => {
@@ -677,14 +699,17 @@ export default function PhotoEditorPage() {
 
   // Blemish removal on click
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!blemishMode || !canvasRef.current) return;
+    if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
+    const rawX = (e.clientX - rect.left) * scaleX;
+    const rawY = (e.clientY - rect.top) * scaleY;
+    const x = Math.max(0, Math.min(canvas.width - 1, rawX));
+    const y = Math.max(0, Math.min(canvas.height - 1, rawY));
 
+    if (!blemishMode) return;
     const ctx = canvas.getContext("2d")!;
     const r = brushSize;
 
@@ -745,15 +770,23 @@ export default function PhotoEditorPage() {
 
           // Detect face
           setDetecting(true);
-          const api = await import("face-api.js");
-          const det = await api.default
-            .detectSingleFace(canvas, new api.default.TinyFaceDetectorOptions())
-            .withFaceLandmarks();
-          setDetecting(false);
-          if (det) {
-            setFaceOk(true);
-            landmarksRef.current = det.landmarks.positions;
-          } else {
+          try {
+            const api = faceApiRef.current || await import("face-api.js");
+            faceApiRef.current = api;
+            const det = await api.default
+              .detectSingleFace(canvas, new api.default.TinyFaceDetectorOptions())
+              .withFaceLandmarks();
+            setDetecting(false);
+            if (det) {
+              setFaceOk(true);
+              landmarksRef.current = det.landmarks.positions;
+            } else {
+              setFaceOk(false);
+              landmarksRef.current = null;
+            }
+          } catch (err) {
+            console.error("Face detection failed:", err);
+            setDetecting(false);
             setFaceOk(false);
             landmarksRef.current = null;
           }
@@ -837,6 +870,78 @@ export default function PhotoEditorPage() {
     render(settings);
   }, [render, settings]);
 
+  const deleteOverlay = useCallback((id: string) => {
+    setTexts(prev => prev.filter(t => t.id !== id));
+    setStickers(prev => prev.filter(s => s.id !== id));
+    setSelectedOverlay(null);
+    setTimeout(() => render(settings), 0);
+  }, [render, settings]);
+
+  const getOverlayAt = useCallback((rawX: number, rawY: number): string | null => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (rawX - rect.left) * scaleX;
+    const y = (rawY - rect.top) * scaleY;
+
+    for (const s of stickers) {
+      if (Math.abs(x - s.x) < s.size / 2 + 10 && Math.abs(y - s.y) < s.size / 2 + 10) return s.id;
+    }
+    for (const txt of texts) {
+      const approxW = txt.text.length * txt.size * 0.5;
+      const approxH = txt.size;
+      if (x > txt.x - approxW / 2 && x < txt.x + approxW / 2 && y > txt.y - approxH && y < txt.y + 10) return txt.id;
+    }
+    return null;
+  }, [texts, stickers]);
+
+  const onOverlayMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const id = getOverlayAt(e.clientX, e.clientY);
+    if (id) {
+      e.preventDefault();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      const overlay = [...texts, ...stickers].find(o => o.id === id);
+      if (overlay) {
+        draggingRef.current = { id, offsetX: x - overlay.x, offsetY: y - overlay.y };
+      }
+      setSelectedOverlay(id);
+    } else {
+      setSelectedOverlay(null);
+    }
+  }, [texts, stickers, getOverlayAt]);
+
+  const onOverlayMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!draggingRef.current || !canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX - draggingRef.current.offsetX;
+    const y = (e.clientY - rect.top) * scaleY - draggingRef.current.offsetY;
+    const { id } = draggingRef.current;
+    setTexts(prev => prev.map(t => t.id === id ? { ...t, x, y } : t));
+    setStickers(prev => prev.map(s => s.id === id ? { ...s, x, y } : s));
+    render(settings);
+  }, [render, settings]);
+
+  const onOverlayMouseUp = useCallback(() => {
+    draggingRef.current = null;
+  }, []);
+
+  const onOverlayContextMenu = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const id = getOverlayAt(e.clientX, e.clientY);
+    if (id) deleteOverlay(id);
+  }, [getOverlayAt, deleteOverlay]);
+
   const onCompareMove = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (!compareDrag) return;
     const canvas = canvasRef.current;
@@ -861,8 +966,8 @@ export default function PhotoEditorPage() {
           <button type="button" className="editor-btn editor-btn--primary" onClick={handleUpload}>{t("editor.upload")}</button>
           {originalRef.current && (
             <>
-              <button type="button" className="editor-btn" disabled={historyIdx <= 0} onClick={undo}>↩</button>
-              <button type="button" className="editor-btn" disabled={historyIdx >= historyRef.current.length - 1} onClick={redo}>↪</button>
+              <button type="button" className="editor-btn" disabled={historyIdx <= 0} onClick={undo} aria-label={t("editor.undo")}>↩</button>
+              <button type="button" className="editor-btn" disabled={historyIdx >= historyRef.current.length - 1} onClick={redo} aria-label={t("editor.redo")}>↪</button>
               <button type="button" className="editor-btn" onClick={handleAutoEnhance}>⚡</button>
               <button type="button" className={`editor-btn ${showMesh ? "active" : ""}`} onClick={() => setShowMesh(!showMesh)}>🗺</button>
               <button type="button" className="editor-btn" onClick={() => setShowCompare(!showCompare)}>⇔</button>
@@ -900,7 +1005,7 @@ export default function PhotoEditorPage() {
           <div className="editor-popup-panel editor-frame-panel">
             {FRAMES.map(f => (
               <button key={f.id} type="button" className={`editor-frame-btn ${frameId === f.id ? "active" : ""}`} onClick={() => { setFrameId(f.id); render(settings); }}>
-                {f.label}
+                {t(f.labelKey as any)}
               </button>
             ))}
           </div>
@@ -912,7 +1017,13 @@ export default function PhotoEditorPage() {
               ref={canvasRef}
               className="editor-canvas"
               style={showCompare ? { clipPath: `inset(0 ${100 - comparePos}% 0 0)` } : undefined}
-              onClick={handleCanvasClick}
+              onClick={blemishMode ? handleCanvasClick : undefined}
+              onMouseDown={onOverlayMouseDown}
+              onMouseMove={onOverlayMouseMove}
+              onMouseUp={onOverlayMouseUp}
+              onContextMenu={onOverlayContextMenu}
+              role="img"
+              aria-label={t("editor.canvasLabel")}
             />
             {showCompare && originalRef.current && (
               <>
@@ -1033,14 +1144,39 @@ function applyFrame(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, fr
   const frame = FRAMES.find(f => f.id === frameId);
   if (!frame || frameId === "none") return;
   const w = canvas.width, h = canvas.height;
-  ctx.strokeStyle = frame.border.split(" ").slice(0, 3).join(" ");
-  ctx.lineWidth = parseInt(frame.border) || 0;
+  const pad = frame.padding || 0;
+  const padBottom = (frame as { paddingBottom?: number }).paddingBottom ?? pad;
+
+  // Resize canvas to fit frame
+  const newW = w + pad * 2;
+  const newH = h + pad + padBottom;
+  const tmpCanvas = document.createElement("canvas");
+  tmpCanvas.width = newW;
+  tmpCanvas.height = newH;
+  const tmpCtx = tmpCanvas.getContext("2d")!;
+  if (!tmpCtx) return;
+
+  // Fill background
+  tmpCtx.fillStyle = frame.bg || "transparent";
+  tmpCtx.fillRect(0, 0, newW, newH);
+
+  // Rounded rect clip
   if (frame.borderRadius) {
-    const r = frame.borderRadius;
-    ctx.beginPath();
-    ctx.roundRect(0, 0, w, h, r);
-    ctx.clip();
+    tmpCtx.beginPath();
+    tmpCtx.roundRect(0, 0, newW, newH, frame.borderRadius);
+    tmpCtx.clip();
+    // Re-fill after clip
+    tmpCtx.fillStyle = frame.bg || "transparent";
+    tmpCtx.fillRect(0, 0, newW, newH);
   }
+
+  // Draw the original canvas content inside the frame
+  tmpCtx.drawImage(canvas, pad, pad);
+
+  // Resize the main canvas
+  canvas.width = newW;
+  canvas.height = newH;
+  ctx.drawImage(tmpCanvas, 0, 0);
 }
 
 // Helper: Smart auto-enhance based on face analysis

@@ -556,26 +556,6 @@
     "loading": "Loading...",
     "socialXiaohongshu": "Xiaohongshu"
   },
-  "chat": {
-    "ariaLabel": "Naihuangbao Photography Assistant",
-    "brandName": "Naihuangbao Photography",
-    "title": "Booking Assistant",
-    "closeLabel": "Close chat",
-    "welcome": "Hi! I'm the Naihuangbao Photography assistant. Ask me about packages, styles, booking process, and shooting boundaries.",
-    "emptyReply": "The assistant didn't respond. Please try again.",
-    "unavailable": "The assistant is temporarily unavailable. Please try again later.",
-    "placeholder": "Ask about packages, styles, booking...",
-    "inputLabel": "Type your question, Enter to send, Shift+Enter for new line",
-    "sendLabel": "Send message",
-    "avatarLabel": "Me",
-    "promptsLabel": "Quick questions",
-    "prompts": [
-      "What packages are available?",
-      "What style suits me?",
-      "What's the booking process?",
-      "Can guys take photos?"
-    ]
-  },
   "admin": {
     "tabs": {
       "bookings": "Bookings",
@@ -758,7 +738,8 @@
       "beauty": "Beauty",
       "reshape": "Reshape",
       "color": "Color",
-      "filter": "Filter"
+      "filter": "Filter",
+      "tools": "Tools"
     },
     "smooth": "Smooth",
     "slim": "Slim",
@@ -820,7 +801,17 @@
     "blur_bg": "Background Blur",
     "brushSize": "Brush Size",
     "textPlaceholder": "Enter text...",
-    "addText": "Add Text"
+    "addText": "Add Text",
+    "canvasLabel": "Portrait editor canvas",
+    "frame": {
+      "none": "None",
+      "polaroid": "Polaroid",
+      "film": "Film",
+      "white": "White Border",
+      "rounded": "Rounded",
+      "magazine": "Magazine",
+      "golden": "Golden"
+    }
   },
   "filmstrip": {
     "title": "Our Story",

@@ -555,26 +555,6 @@
     "loading": "加载中...",
     "socialXiaohongshu": "小红书"
   },
-  "chat": {
-    "ariaLabel": "奶黄包摄影咨询助手",
-    "brandName": "奶黄包摄影",
-    "title": "预约咨询助手",
-    "closeLabel": "关闭咨询窗口",
-    "welcome": "你好，我是奶黄包摄影的咨询助手。可以问我套餐、风格、预约流程和拍摄边界。",
-    "emptyReply": "聊天助手暂时没有返回内容，请再试一次。",
-    "unavailable": "聊天助手暂时不可用，请稍后再试。",
-    "placeholder": "问问套餐、风格、预约流程...",
-    "inputLabel": "输入问题，Enter 发送，Shift+Enter 换行",
-    "sendLabel": "发送咨询",
-    "avatarLabel": "我",
-    "promptsLabel": "快捷问题",
-    "prompts": [
-      "套餐有哪些？",
-      "我适合拍什么风格？",
-      "预约流程是什么？",
-      "我是男生可以拍吗？"
-    ]
-  },
   "admin": {
     "tabs": {
       "bookings": "预约",
@@ -757,7 +737,8 @@
       "beauty": "美颜",
       "reshape": "重塑",
       "color": "调色",
-      "filter": "滤镜"
+      "filter": "滤镜",
+      "tools": "工具"
     },
     "smooth": "磨皮",
     "slim": "瘦脸",
@@ -819,7 +800,17 @@
     "blur_bg": "背景虚化",
     "brushSize": "画笔大小",
     "textPlaceholder": "输入文字...",
-    "addText": "添加文字"
+    "addText": "添加文字",
+    "canvasLabel": "人像修图画布",
+    "frame": {
+      "none": "无边框",
+      "polaroid": "宝丽来",
+      "film": "胶片",
+      "white": "白边框",
+      "rounded": "圆角",
+      "magazine": "杂志",
+      "golden": "金色"
+    }
   },
   "filmstrip": {
     "title": "我们的故事",

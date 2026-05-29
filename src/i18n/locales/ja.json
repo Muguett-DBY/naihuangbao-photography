@@ -555,26 +555,6 @@
     "loading": "読み込み中...",
     "socialXiaohongshu": "小红书"
   },
-  "chat": {
-    "ariaLabel": "奶黄んぼ写真撮影アシスタント",
-    "brandName": "奶黄んぼ写真撮影",
-    "title": "予約カウンセリングアシスタント",
-    "closeLabel": "チャットを閉じる",
-    "welcome": "こんにちは！奶黄んぼ写真撮影のアシスタントです。パッケージ、スタイル、予約プロセス、撮影範囲について質問してください。",
-    "emptyReply": "アシスタントが応答しませんでした。もう一度お試しください。",
-    "unavailable": "アシスタントは一時的に利用できません。後でもう一度お試しください。",
-    "placeholder": "パッケージ、スタイル、予約について質問...",
-    "inputLabel": "質問を入力。Enterで送信、Shift+Enterで改行",
-    "sendLabel": "メッセージ送信",
-    "avatarLabel": "私",
-    "promptsLabel": "クイック質問",
-    "prompts": [
-      "どんなパッケージがありますか？",
-      "どんなスタイルが似合いますか？",
-      "予約プロセスは？",
-      "男性も撮影できますか？"
-    ]
-  },
   "admin": {
     "tabs": {
       "bookings": "予約",
@@ -757,7 +737,8 @@
       "beauty": "ビューティー",
       "reshape": "reshape",
       "color": "カラー",
-      "filter": "フィルター"
+      "filter": "フィルター",
+      "tools": "ツール"
     },
     "smooth": "肌補正",
     "slim": "小顔",
@@ -819,7 +800,17 @@
     "blur_bg": "背景ブラー",
     "brushSize": "ブラシサイズ",
     "textPlaceholder": "テキストを入力...",
-    "addText": "テキスト追加"
+    "addText": "テキスト追加",
+    "canvasLabel": "ポートレートスタジオキャンバス",
+    "frame": {
+      "none": "なし",
+      "polaroid": "ポラロイド",
+      "film": "フィルム",
+      "white": "白枠",
+      "rounded": "角丸",
+      "magazine": "マガジン",
+      "golden": "ゴールド"
+    }
   },
   "filmstrip": {
     "title": "私たちの物語",
