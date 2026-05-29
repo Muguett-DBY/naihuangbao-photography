@@ -2552,7 +2552,7 @@
 /* ── Photo Editor page ── */
 .editor-root {
   position: relative;
-  z-index: 10000;
+  z-index: 1;
   min-height: 100vh;
   padding-top: var(--nav-h, 64px);
   background: var(--custard-bg);
@@ -2561,8 +2561,6 @@
 .editor-header {
   text-align: center;
   padding: clamp(20px, 4vw, 40px) clamp(16px, 4vw, 48px) 16px;
-  position: relative;
-  z-index: 10001;
 }
 
 .editor-header h1 {

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
 
 const GRAIN_SIZE = 128;
 
@@ -14,10 +13,14 @@ export function FilmGrain() {
   const [capable, setCapable] = useState(true);
   const grainRef = useRef<HTMLCanvasElement>(null);
   const leakRef = useRef<HTMLCanvasElement>(null);
-  const location = useLocation();
 
   // Hide FilmGrain on editor page to avoid visual interference
-  if (location.pathname === "/editor") return null;
+  // Check both path and data-page attribute for robustness
+  const isEditor = typeof window !== "undefined" && (
+    window.location.pathname === "/editor" ||
+    document.documentElement.getAttribute("data-page") === "editor"
+  );
+  if (isEditor) return null;
 
   useEffect(() => {
     const capability = getDeviceCapability();

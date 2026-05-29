@@ -218,6 +218,12 @@ export default function PhotoEditorPage() {
     return () => window.removeEventListener("keydown", h);
   }, [showExport]);
 
+  // Hide FilmGrain and CustomCursor on editor page
+  useEffect(() => {
+    document.documentElement.setAttribute("data-page", "editor");
+    return () => document.documentElement.removeAttribute("data-page");
+  }, []);
+
   // Feature 5: Double Exposure
   const [doubleExposureImage, setDoubleExposureImage] = useState<HTMLImageElement | null>(null);
   const [blendMode, setBlendMode] = useState<"overlay" | "screen" | "soft-light">("overlay");
