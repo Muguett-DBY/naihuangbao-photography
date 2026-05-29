@@ -345,6 +345,14 @@
     "error": "전송 실패. 잠시 후 다시 시도하거나 샤오홍슈로 문의해 주세요.",
     "submitError": "전송 실패, 잠시 후 다시 시도해 주세요"
   },
+  "calendar": {
+    "title": "날짜 선택",
+    "available": "예약 가능",
+    "booked": "마감",
+    "partial": "일부 가능",
+    "prevMonth": "이전 달",
+    "nextMonth": "다음 달"
+  },
   "floatingBookingCta": {
     "ariaLabel": "세션 예약",
     "text": "예약"
@@ -451,6 +459,11 @@
     "ctaTitle": "더 배우고 싶으신가요?",
     "ctaDesc": "1:1 개인 지도를 예약하세요",
     "ctaBtn": "상담 예약"
+  },
+  "compare": {
+    "before": "원본",
+    "after": "수정본",
+    "dragHint": "드래그하여 비교"
   },
   "presetDetail": {
     "backToList": "프리셋 목록으로",
@@ -619,6 +632,25 @@
     "placeholder": "질문을 입력하세요...",
     "inputLabel": "채팅 메시지",
     "sendLabel": "메시지 보내기"
+  },
+  "dashboard": {
+    "title": "내 대시보드",
+    "bookings": "내 예약",
+    "purchases": "내 구매",
+    "courses": "내 강좌",
+    "workshops": "내 워크숍",
+    "noBookings": "예약 내역이 없습니다",
+    "noPurchases": "구매 내역이 없습니다",
+    "noCourses": "수강 중인 강좌가 없습니다",
+    "noWorkshops": "워크숍 등록 내역이 없습니다",
+    "profile": "프로필",
+    "status": {
+      "pending": "대기 중",
+      "contacted": "연락 완료",
+      "done": "완료",
+      "cancelled": "취소됨",
+      "confirmed": "확인됨"
+    }
   },
   "seo": {
     "homeTitle": "나이황바오 사진촬영 | 난징 촬영 예약",

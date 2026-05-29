@@ -345,6 +345,14 @@
     "error": "发送失败，请稍后重试或直接私信小红书。",
     "submitError": "提交失败，请稍后重试"
   },
+  "calendar": {
+    "title": "选择日期",
+    "available": "可预约",
+    "booked": "已满",
+    "partial": "部分时段",
+    "prevMonth": "上一月",
+    "nextMonth": "下一月"
+  },
   "floatingBookingCta": {
     "ariaLabel": "预约拍摄",
     "text": "预约"
@@ -452,6 +460,11 @@
     "ctaTitle": "想学习更多？",
     "ctaDesc": "预约一对一指导，获得个性化学习体验",
     "ctaBtn": "预约咨询"
+  },
+  "compare": {
+    "before": "原图",
+    "after": "修图",
+    "dragHint": "拖拽对比"
   },
   "presetDetail": {
     "backToList": "返回预设列表",
@@ -620,6 +633,25 @@
     "placeholder": "输入你的问题...",
     "inputLabel": "聊天消息",
     "sendLabel": "发送消息"
+  },
+  "dashboard": {
+    "title": "个人中心",
+    "bookings": "我的预约",
+    "purchases": "我的购买",
+    "courses": "我的课程",
+    "workshops": "我的活动",
+    "noBookings": "暂无预约",
+    "noPurchases": "暂无购买",
+    "noCourses": "暂无课程",
+    "noWorkshops": "暂无活动",
+    "profile": "个人信息",
+    "status": {
+      "pending": "待处理",
+      "contacted": "已联系",
+      "done": "已完成",
+      "cancelled": "已取消",
+      "confirmed": "已确认"
+    }
   },
   "seo": {
     "homeTitle": "奶黄包摄影 | 南京约拍",

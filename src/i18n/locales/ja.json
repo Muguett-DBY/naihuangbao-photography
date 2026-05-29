@@ -345,6 +345,14 @@
     "error": "送信に失敗しました。再試行するか、小红书まで直接お問い合わせください。",
     "submitError": "送信に失敗しました。再試行してください"
   },
+  "calendar": {
+    "title": "日付を選択",
+    "available": "予約可能",
+    "booked": "満席",
+    "partial": "一部空き",
+    "prevMonth": "前月",
+    "nextMonth": "翌月"
+  },
   "floatingBookingCta": {
     "ariaLabel": "撮影予約",
     "text": "予約"
@@ -451,6 +459,11 @@
     "ctaTitle": "もっと学びたいですか？",
     "ctaDesc": "1対1の個人レッスンを予約しましょう",
     "ctaBtn": "カウンセリング予約"
+  },
+  "compare": {
+    "before": "元画像",
+    "after": "加工後",
+    "dragHint": "ドラッグで比較"
   },
   "presetDetail": {
     "backToList": "プリセット一覧に戻る",
@@ -619,6 +632,25 @@
     "placeholder": "質問を入力...",
     "inputLabel": "チャットメッセージ",
     "sendLabel": "送信"
+  },
+  "dashboard": {
+    "title": "マイダッシュボード",
+    "bookings": "予約一覧",
+    "purchases": "購入一覧",
+    "courses": "受講コース",
+    "workshops": "ワークショップ",
+    "noBookings": "予約はまだありません",
+    "noPurchases": "購入履歴はまだありません",
+    "noCourses": "受講中のコースはありません",
+    "noWorkshops": "ワークショップの登録はありません",
+    "profile": "プロフィール",
+    "status": {
+      "pending": "保留中",
+      "contacted": "連絡済み",
+      "done": "完了",
+      "cancelled": "キャンセル済み",
+      "confirmed": "確認済み"
+    }
   },
   "seo": {
     "homeTitle": "奶黄んぼ写真撮影 | 南京撮影予約",

@@ -1,4 +1,4 @@
-import { CalendarCheck, Camera, Languages, Menu, X, User, LogOut, LogIn } from "lucide-react";
+import { CalendarCheck, Camera, Languages, Menu, X, User, LogOut, LogIn, LayoutDashboard } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
 import { MoodToggle } from "../MoodToggle";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -169,6 +169,27 @@ export function Header() {
                 <div style={{ padding: "8px 12px", fontSize: "0.85rem", color: "var(--caramel-muted)", borderBottom: "1px solid var(--border-subtle)", marginBottom: 4 }}>
                   {user.email}
                 </div>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setUserMenuOpen(false)}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "8px 12px",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: "0.9rem",
+                    color: "var(--caramel-muted)",
+                    borderRadius: 4,
+                    textDecoration: "none",
+                  }}
+                >
+                  <LayoutDashboard size={14} />
+                  {t("dashboard.title", "个人中心")}
+                </Link>
                 <button
                   onClick={() => { logout(); setUserMenuOpen(false); }}
                   style={{

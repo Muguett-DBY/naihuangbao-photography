@@ -8,6 +8,7 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
+import { CompareSlider } from "../components/CompareSlider";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import type { Preset } from "../types/content";
 
@@ -17,7 +18,6 @@ export function PresetDetailPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [preset, setPreset] = useState<Preset | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sliderPos, setSliderPos] = useState(50);
   const [allPresets, setAllPresets] = useState<Preset[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,20 +79,12 @@ export function PresetDetailPage() {
       <section className="section-shell is-visible">
         <div className="preset-detail-section">
           {preset.preview_images && preset.preview_images.length > 0 && (
-            <div className="preset-detail-compare">
-              <img src={preset.preview_images[0]} alt={getName(preset, lang)} width={800} height={450} loading="lazy" className="preset-detail-compare-base" />
-              <div className="preset-detail-compare-overlay" style={{ width: `${sliderPos}%` }}>
-                <img src={preset.preview_images[0]} alt="" width={800} height={450} style={{ width: `${100 / (sliderPos / 100)}%` }} />
-              </div>
-              <input
-                type="range" min={0} max={100} value={sliderPos}
-                onChange={(e) => setSliderPos(Number(e.target.value))}
-                className="preset-detail-compare-slider"
-              />
-              <div className="preset-detail-compare-line" style={{ left: `${sliderPos}%` }} />
-              <div className="preset-detail-compare-label preset-detail-compare-label--before">{t("presetDetail.before")}</div>
-              <div className="preset-detail-compare-label preset-detail-compare-label--after">{t("presetDetail.after")}</div>
-            </div>
+            <CompareSlider
+              beforeSrc={preset.preview_images[0]}
+              afterSrc={preset.preview_images[preset.preview_images.length > 1 ? 1 : 0]}
+              beforeAlt={`${getName(preset, lang)} — ${t("compare.before")}`}
+              afterAlt={`${getName(preset, lang)} — ${t("compare.after")}`}
+            />
           )}
         </div>
       </section>

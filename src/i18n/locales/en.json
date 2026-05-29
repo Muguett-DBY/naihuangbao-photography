@@ -345,6 +345,14 @@
     "error": "Failed to send. Please try again or DM me on Xiaohongshu.",
     "submitError": "Submission failed, please try again"
   },
+  "calendar": {
+    "title": "Select Date",
+    "available": "Available",
+    "booked": "Fully Booked",
+    "partial": "Partially Available",
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month"
+  },
   "floatingBookingCta": {
     "ariaLabel": "Book a session",
     "text": "Book"
@@ -452,6 +460,11 @@
     "ctaTitle": "Want to learn more?",
     "ctaDesc": "Book a 1-on-1 session for personalized learning",
     "ctaBtn": "Book Consultation"
+  },
+  "compare": {
+    "before": "Before",
+    "after": "After",
+    "dragHint": "Drag to compare"
   },
   "presetDetail": {
     "backToList": "Back to Presets",
@@ -620,6 +633,25 @@
     "placeholder": "Type your question...",
     "inputLabel": "Chat message",
     "sendLabel": "Send message"
+  },
+  "dashboard": {
+    "title": "My Dashboard",
+    "bookings": "My Bookings",
+    "purchases": "My Purchases",
+    "courses": "My Courses",
+    "workshops": "My Workshops",
+    "noBookings": "No bookings yet",
+    "noPurchases": "No purchases yet",
+    "noCourses": "No courses enrolled",
+    "noWorkshops": "No workshop registrations",
+    "profile": "Profile",
+    "status": {
+      "pending": "Pending",
+      "contacted": "Contacted",
+      "done": "Completed",
+      "cancelled": "Cancelled",
+      "confirmed": "Confirmed"
+    }
   },
   "seo": {
     "homeTitle": "Naihuangbao Photography | Nanjing Portrait",

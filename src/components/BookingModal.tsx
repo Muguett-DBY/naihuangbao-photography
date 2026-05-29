@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useNotification } from "../hooks/useNotification";
 import { PaymentForm } from "./PaymentForm";
+import { BookingCalendar } from "./BookingCalendar";
 
 type BookingModalProps = {
   initialPackage?: string;
@@ -139,11 +140,15 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           </select>
         </div>
 
+        <div className="booking-field">
+          <label>{t("bookingModal.date")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
+          <BookingCalendar
+            selectedDate={date}
+            onSelectDate={setDate}
+            minDate={new Date().toISOString().split("T")[0]}
+          />
+        </div>
         <div className="booking-row">
-          <div className="booking-field">
-            <label htmlFor="booking-date">{t("bookingModal.date")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
-            <Input id="booking-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} min={new Date().toISOString().split("T")[0]} />
-          </div>
           <div className="booking-field">
             <label htmlFor="booking-time">{t("bookingModal.time")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
             <select id="booking-time" value={time} onChange={(e) => setTime(e.target.value)}>
