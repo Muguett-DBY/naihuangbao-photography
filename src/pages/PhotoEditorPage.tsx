@@ -1,48 +1,42 @@
-import { useCallback, useRef, useState } from "react";
-import ImageEditor from "@toast-ui/react-image-editor";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
-
-const editorTheme = {
-  "common.bi.image": "",
-  "common.bisize.width": "0",
-  "common.bisize.height": "0",
-  "common.backgroundImage": "none",
-  "common.backgroundColor": "#fef3dd",
-  "common.border": "1px solid rgba(139, 94, 74, 0.15)",
-  "common.borderRadius": "16px",
-  "common.buttonColor": "#8B5E4A",
-  "common.buttonBackgroundColor": "#FFB8A1",
-  "common.buttonBorderColor": "rgba(139, 94, 74, 0.2)",
-  "common.buttonBorderRadius": "999px",
-  "common.buttonFontSize": "13px",
-  "common.buttonFontWeight": "600",
-  "common.buttonFontFamily": "var(--font-ui)",
-  "_submenu.backgroundColor": "#FFFDF7",
-  "submenu.borderColor": "rgba(139, 94, 74, 0.1)",
-  "submenu.fontSize": "12px",
-  "submenu.fontColor": "#8B5E4A",
-  "submenu.label.color": "#8B5E4A",
-  "submenu.activeLabel.color": "#FFB8A1",
-  "range.pointer.color": "#FFB8A1",
-  "range.pointer.borderColor": "#8B5E4A",
-  "range.bar.color": "rgba(139, 94, 74, 0.15)",
-  "range.subbar.color": "#FFB8A1",
-  "range.input.color": "#8B5E4A",
-  "range.input.borderColor": "rgba(139, 94, 74, 0.2)",
-  "range.input.borderRadius": "8px",
-  "colorpicker.button.color": "#8B5E4A",
-  "colorpicker.input.color": "#8B5E4A",
-};
 
 export default function PhotoEditorPage() {
   const { t } = useTranslation();
   useSEO({ titleKey: "editor.title", descKey: "editor.desc", path: "/editor" });
 
-  const editorRef = useRef<InstanceType<typeof ImageEditor>>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const editorRef = useRef<any>(null);
   const [hasImage, setHasImage] = useState(false);
   const [fileName, setFileName] = useState("");
+  const [editorReady, setEditorReady] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    import("tui-image-editor").then((mod) => {
+      if (!mounted || !containerRef.current) return;
+      const ImageEditor = mod.default;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const opts: any = {
+        includeUI: {
+          loadImage: { path: "", name: "" },
+          menu: ["crop", "flip", "rotate", "draw", "shape", "icon", "text", "filter"],
+          initMenu: "filter",
+          uiSize: { width: "100%", height: "calc(100vh - 200px)" },
+          menuBarPosition: "bottom",
+        },
+        cssMaxHeight: window.innerHeight - 200,
+        cssMaxWidth: window.innerWidth - 40,
+        usageStatistics: false,
+      };
+      editorRef.current = new ImageEditor(containerRef.current, opts);
+      setEditorReady(true);
+    });
+    return () => { mounted = false; };
+  }, []);
 
   const handleFileUpload = useCallback(() => {
     const input = document.createElement("input");
@@ -54,11 +48,8 @@ export default function PhotoEditorPage() {
       setFileName(file.name);
       const reader = new FileReader();
       reader.onload = () => {
-        const editor = editorRef.current?.getInstance();
-        if (editor) {
-          editor.loadImageFromURL(reader.result as string, file.name);
-          setHasImage(true);
-        }
+        editorRef.current?.loadImageFromURL(reader.result as string, file.name);
+        setHasImage(true);
       };
       reader.readAsDataURL(file);
     };
@@ -66,26 +57,13 @@ export default function PhotoEditorPage() {
   }, []);
 
   const handleDownload = useCallback(() => {
-    const editor = editorRef.current?.getInstance();
-    if (!editor) return;
-    const dataURL = editor.toDataURL();
+    if (!editorRef.current) return;
+    const dataURL = editorRef.current.toDataURL();
     const link = document.createElement("a");
     link.download = fileName ? `edited-${fileName}` : "edited-photo.png";
     link.href = dataURL;
     link.click();
   }, [fileName]);
-
-  const handleUndo = useCallback(() => {
-    editorRef.current?.getInstance().undo();
-  }, []);
-
-  const handleRedo = useCallback(() => {
-    editorRef.current?.getInstance().redo();
-  }, []);
-
-  const handleReset = useCallback(() => {
-    editorRef.current?.getInstance().reset();
-  }, []);
 
   return (
     <PageTransition>
@@ -100,53 +78,19 @@ export default function PhotoEditorPage() {
             {t("editor.upload")}
           </button>
           {hasImage && (
-            <>
-              <button type="button" className="editor-btn" onClick={handleUndo} title={t("editor.undo")}>
-                ↩
-              </button>
-              <button type="button" className="editor-btn" onClick={handleRedo} title={t("editor.redo")}>
-                ↪
-              </button>
-              <button type="button" className="editor-btn" onClick={handleReset} title={t("editor.reset")}>
-                ⟲
-              </button>
-              <button type="button" className="editor-btn editor-btn--primary" onClick={handleDownload}>
-                {t("editor.download")}
-              </button>
-            </>
+            <button type="button" className="editor-btn editor-btn--primary" onClick={handleDownload}>
+              {t("editor.download")}
+            </button>
           )}
         </div>
 
         <div className="editor-canvas-wrap">
-          <ImageEditor
-            ref={editorRef}
-            includeUI={{
-              loadImage: {
-                path: "",
-                name: "",
-              },
-              theme: editorTheme,
-              menu: [
-                "crop",
-                "flip",
-                "rotate",
-                "draw",
-                "shape",
-                "icon",
-                "text",
-                "filter",
-              ],
-              initMenu: "filter",
-              uiSize: {
-                width: "100%",
-                height: "calc(100vh - 200px)",
-              },
-              menuBarPosition: "bottom",
-            }}
-            cssMaxHeight={typeof window !== "undefined" ? window.innerHeight - 200 : 600}
-            cssMaxWidth={typeof window !== "undefined" ? window.innerWidth - 40 : 800}
-            usageStatistics={false}
-          />
+          {editorReady ? null : (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", color: "var(--caramel-muted)" }}>
+              {t("common.loading")}
+            </div>
+          )}
+          <div ref={containerRef} style={{ display: editorReady ? "block" : "none" }} />
         </div>
       </div>
     </PageTransition>
