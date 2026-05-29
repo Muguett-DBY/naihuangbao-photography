@@ -52,33 +52,42 @@ export function FilmGrain() {
     let leakOpacity = 0;
     let leakRaf = 0;
 
-    const updateLeak = () => {
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const leakFps = isMobile ? 20 : 30;
+    const leakFrameInterval = 1000 / leakFps;
+    let lastLeakFrameTime = 0;
+
+    const updateLeak = (currentTime: number) => {
       if (!document.hidden) {
-        lCtx.clearRect(0, 0, w, h);
+        const elapsed = currentTime - lastLeakFrameTime;
+        if (elapsed >= leakFrameInterval) {
+          lastLeakFrameTime = currentTime - (elapsed % leakFrameInterval);
+          lCtx.clearRect(0, 0, w, h);
 
-        leakTimer++;
-        if (!leakActive && leakTimer > 300 + Math.random() * 500) {
-          leakActive = true;
-          leakTimer = 0;
-          leakX = Math.random() * w;
-          leakOpacity = 0;
-        }
-
-        if (leakActive) {
-          leakOpacity += 0.005;
-          if (leakOpacity > 0.08) leakOpacity = 0.08;
-
-          const gradient = lCtx.createRadialGradient(leakX, 0, 0, leakX, 0, h * 0.6);
-          gradient.addColorStop(0, `rgba(255, 180, 120, ${leakOpacity})`);
-          gradient.addColorStop(0.3, `rgba(255, 150, 100, ${leakOpacity * 0.5})`);
-          gradient.addColorStop(1, "rgba(255, 150, 100, 0)");
-          lCtx.fillStyle = gradient;
-          lCtx.fillRect(0, 0, w, h);
-
-          leakX += 1.5;
-          if (leakX > w + 200) {
-            leakActive = false;
+          leakTimer++;
+          if (!leakActive && leakTimer > 300 + Math.random() * 500) {
+            leakActive = true;
             leakTimer = 0;
+            leakX = Math.random() * w;
+            leakOpacity = 0;
+          }
+
+          if (leakActive) {
+            leakOpacity += 0.005;
+            if (leakOpacity > 0.08) leakOpacity = 0.08;
+
+            const gradient = lCtx.createRadialGradient(leakX, 0, 0, leakX, 0, h * 0.6);
+            gradient.addColorStop(0, `rgba(255, 180, 120, ${leakOpacity})`);
+            gradient.addColorStop(0.3, `rgba(255, 150, 100, ${leakOpacity * 0.5})`);
+            gradient.addColorStop(1, "rgba(255, 150, 100, 0)");
+            lCtx.fillStyle = gradient;
+            lCtx.fillRect(0, 0, w, h);
+
+            leakX += 1.5;
+            if (leakX > w + 200) {
+              leakActive = false;
+              leakTimer = 0;
+            }
           }
         }
       }

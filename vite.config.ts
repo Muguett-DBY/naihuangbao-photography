@@ -14,6 +14,18 @@ export default defineConfig({
           if (id.includes("node_modules/lucide-react")) {
             return "icon-vendor";
           }
+          if (id.includes("node_modules/three") || id.includes("node_modules/@react-three")) {
+            return "three-vendor";
+          }
+          if (id.includes("node_modules/gsap")) {
+            return "animation-vendor";
+          }
+          if (id.includes("node_modules/swiper")) {
+            return "swiper-vendor";
+          }
+          if (id.includes("node_modules/leaflet") || id.includes("node_modules/react-leaflet")) {
+            return "map-vendor";
+          }
           return undefined;
         },
       },
