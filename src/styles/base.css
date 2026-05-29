@@ -556,8 +556,8 @@ button:active {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  min-width: 44px;
+  min-height: 44px;
   border: 1px solid var(--warm-border);
   border-radius: 8px;
   background: transparent;

@@ -447,6 +447,7 @@
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   padding-bottom: 8px;
+  touch-action: pan-x;
 }
 .process-scroll-wrap::-webkit-scrollbar {
   display: none;
@@ -927,6 +928,14 @@
   letter-spacing: 0.06em;
 }
 
+.footer-links a,
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 4px;
+  min-height: 44px;
+}
+
 .footer-social {
   display: flex;
   justify-content: flex-end;
@@ -950,7 +959,7 @@
   position: fixed;
   bottom: 28px;
   right: 28px;
-  z-index: 20;
+  z-index: 1300;
   width: 46px;
   height: 46px;
   border: 0;
@@ -1274,6 +1283,7 @@
   .hero-trust-tag {
     font-size: 11px;
     padding: 6px 10px;
+    min-height: 36px;
   }
 
   .hero-scroll-indicator {
@@ -1475,7 +1485,7 @@
   }
 
   .gallery-masonry-btn:hover .gallery-masonry-overlay {
-    opacity: 0;
+    opacity: 0.7;
   }
 
   .gallery-masonry-btn:hover img {
@@ -1572,7 +1582,7 @@
   border-radius: 50%;
   border: 1px solid var(--warm-border);
   background: transparent;
-  padding: 0;
+  padding: 10px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
@@ -1629,6 +1639,7 @@
 .booking-field textarea {
   resize: vertical;
   line-height: 1.6;
+  min-height: 100px;
 }
 
 .booking-row {
@@ -1783,7 +1794,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 260px;
+  width: min(260px, 80vw);
   height: 340px;
   cursor: pointer;
   transform-style: preserve-3d;
@@ -1940,6 +1951,43 @@
 /* Stacked hover lift */
 .polaroid-card:not(.is-fanned):hover {
   filter: brightness(1.04);
+}
+
+/* ══════════════════════════════════════════════
+   Newsletter Form
+   ══════════════════════════════════════════════ */
+.newsletter-form {
+  display: flex;
+  gap: 8px;
+  max-width: 400px;
+}
+.newsletter-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid rgba(139, 94, 74, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.5);
+  font-size: 0.9rem;
+  color: var(--caramel-ink);
+}
+.newsletter-button {
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--peach-accent);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+}
+.newsletter-success { color: #4ade80; font-size: 0.85rem; }
+.newsletter-error { color: #ef4444; font-size: 0.85rem; }
+
+@media (max-width: 640px) {
+  .newsletter-form {
+    flex-direction: column;
+    max-width: 100%;
+  }
 }
 
 /* ══════════════════════════════════════════════

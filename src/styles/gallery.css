@@ -474,7 +474,7 @@
   margin: 0;
   color: var(--caramel-muted);
   font-family: var(--font-display-cn);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.03em;
 }
@@ -540,6 +540,10 @@
 
 .gallery-auto-scroll:hover .gallery-filmstrip-item {
   opacity: 0.85;
+}
+
+@media (hover: none) {
+  .gallery-auto-scroll { animation-play-state: paused; }
 }
 
 

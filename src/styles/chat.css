@@ -126,8 +126,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border: 0;
   border-radius: 50%;
   color: var(--caramel-text);
@@ -258,6 +258,7 @@
 
 .public-chat-prompts button {
   flex: 0 0 auto;
+  min-width: 44px;
   border: 1px solid rgba(255, 184, 161, 0.32);
   border-radius: 999px;
   padding: 8px 11px;
