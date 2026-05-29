@@ -664,7 +664,15 @@ export default function PhotoEditorPage() {
   }, [render, pushHistory]);
 
   const handleAutoEnhance = useCallback(() => {
-    const next = { ...INITIAL, smooth: 55, slim: 18, bigeye: 12, whiten: 25, nose: 10, lip: 15, sharpen: 10, contrast: 8 };
+    const canvas = canvasRef.current;
+    const lm = landmarksRef.current;
+    if (!canvas || !lm) {
+      // Fallback if no face data
+      const next = { ...INITIAL, smooth: 50, slim: 15, bigeye: 10, whiten: 20, sharpen: 10 };
+      setSettings(next); render(next); pushHistory(next);
+      return;
+    }
+    const next = analyzeFaceAndCalcParams(canvas, lm);
     setSettings(next);
     render(next);
     pushHistory(next);
@@ -829,6 +837,68 @@ export default function PhotoEditorPage() {
       </div>
     </PageTransition>
   );
+}
+
+function analyzeFaceAndCalcParams(canvas: HTMLCanvasElement, lm: Landmarks): BeautySettings {
+  const ctx = canvas.getContext("2d")!;
+  const w = canvas.width, h = canvas.height;
+  const jaw = lm.slice(0, 17);
+  const lEye = lm.slice(36, 42), rEye = lm.slice(42, 48);
+  const nose = lm.slice(27, 36), mouth = lm.slice(48, 68);
+
+  // Face dimensions
+  const fL = Math.min(...lm.map(p => p.x)), fR = Math.max(...lm.map(p => p.x));
+  const fT = Math.min(...lm.map(p => p.y)), fB = Math.max(...lm.map(p => p.y));
+  const faceW = fR - fL, faceH = fB - fT;
+  const aspectRatio = faceW / faceH;
+
+  // Eye dimensions
+  const eyeW = Math.max(...rEye.map(p => p.x)) - Math.min(...lEye.map(p => p.x));
+  const eyeRatio = eyeW / faceW;
+
+  // Nose dimensions
+  const noseW = Math.max(...nose.map(p => p.x)) - Math.min(...nose.map(p => p.x));
+  const noseRatio = noseW / faceW;
+
+  // Skin brightness analysis
+  const cx = (fL + fR) / 2, cy = (fT + fB) / 2;
+  const sampleR = Math.min(faceW, faceH) * 0.2;
+  const imgData = ctx.getImageData(0, 0, w, h);
+  const px = imgData.data;
+  const brightnesses: number[] = [];
+
+  for (let y = cy - sampleR; y < cy + sampleR; y += 3) {
+    for (let x = cx - sampleR; x < cx + sampleR; x += 3) {
+      const ppx = Math.round(x), ppy = Math.round(y);
+      if (ppx < 0 || ppx >= w || ppy < 0 || ppy >= h) continue;
+      const idx = (ppy * w + ppx) * 4;
+      brightnesses.push(0.299 * px[idx] + 0.587 * px[idx + 1] + 0.114 * px[idx + 2]);
+    }
+  }
+
+  const avgBrightness = brightnesses.length > 0 ? brightnesses.reduce((a, b) => a + b, 0) / brightnesses.length : 128;
+  const variance = brightnesses.length > 1
+    ? brightnesses.reduce((s, v) => s + (v - avgBrightness) ** 2, 0) / brightnesses.length
+    : 400;
+
+  // Calculate parameters based on analysis
+  return {
+    ...INITIAL,
+    smooth: variance > 800 ? 65 : variance > 400 ? 55 : 45,
+    whiten: avgBrightness < 100 ? 40 : avgBrightness < 140 ? 25 : 15,
+    slim: aspectRatio > 0.75 ? 25 : aspectRatio > 0.6 ? 15 : 8,
+    bigeye: eyeRatio < 0.2 ? 18 : eyeRatio < 0.3 ? 12 : 5,
+    nose: noseRatio > 0.35 ? 15 : 8,
+    lip: 15,
+    sharpen: 12,
+    contrast: 8,
+    temperature: 5,
+    facelift: 10,
+    jawline: aspectRatio > 0.7 ? 12 : 5,
+    forehead: 30,
+    eyebag: 25,
+    darkcircle: 20,
+  };
 }
 
 function isSkin(x: number, y: number, lEye: Landmarks, rEye: Landmarks, mouth: Landmarks, jaw: Landmarks): boolean {
