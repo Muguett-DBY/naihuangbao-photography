@@ -675,6 +675,39 @@
       "matte": "マット"
     }
   },
+  "quiz": {
+    "start": "テストを始める",
+    "step1.title": "どんな場面？",
+    "step2.title": "どんなスタイルが好き？",
+    "step3.title": "どの季節？",
+    "step4.title": "何人？",
+    "result.title": "おすすめプラン",
+    "result.desc": "あなたの選択に基づき、おすすめプランをご紹介します",
+    "options.birthday": "誕生日記念",
+    "options.couple": "カップル撮影",
+    "options.family": "家族写真",
+    "options.personal": "個人写真",
+    "options.friends": "友達撮影",
+    "options.natural": "自然でフレッシュ",
+    "options.artistic": "アーティスティック",
+    "options.vintage": "ヴィンテージフィルム",
+    "options.modern": "モダン",
+    "options.cute": "キュート",
+    "options.spring": "春",
+    "options.summer": "夏",
+    "options.autumn": "秋",
+    "options.winter": "冬",
+    "options.solo": "一人",
+    "options.couplePeople": "二人",
+    "options.familyPeople": "家族",
+    "options.group": "グループ",
+    "back": "戻る",
+    "next": "次へ",
+    "restart": "やり直す",
+    "share": "結果を共有",
+    "bookNow": "予約する",
+    "progress": "ステップ {{current}} / {{total}}"
+  },
   "seo": {
     "homeTitle": "奶黄んぼ写真撮影 | 南京撮影予約",
     "homeDesc": "柔らかくフィルムライクなポートレート撮影 — 南京の女性写真とカップル写真を専門としています。",
@@ -696,5 +729,16 @@
     "shopDetailDesc": "商品詳細 — 仕様、ご注文方法、関連商品。",
     "mapTitle": "サービスエリアマップ | 奶黄んぼ写真撮影",
     "mapDesc": "南京でのポートレート撮影サービスエリアを確認 — 公園、ストリート、観光地。"
+  },
+  "countdown": {
+    "days": "日",
+    "hours": "時",
+    "minutes": "分",
+    "seconds": "秒"
+  },
+  "capacity": {
+    "spots": "枠",
+    "full": "満席",
+    "available": "申込可"
   }
 }

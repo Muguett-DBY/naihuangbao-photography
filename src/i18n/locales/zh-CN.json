@@ -676,6 +676,39 @@
       "matte": "哑光"
     }
   },
+  "quiz": {
+    "start": "开始测试",
+    "step1.title": "什么场合？",
+    "step2.title": "喜欢什么风格？",
+    "step3.title": "哪个季节？",
+    "step4.title": "几个人？",
+    "result.title": "推荐套餐",
+    "result.desc": "根据你的选择，我们为你推荐以下套餐",
+    "options.birthday": "生日纪念",
+    "options.couple": "情侣约拍",
+    "options.family": "家庭合影",
+    "options.personal": "个人写真",
+    "options.friends": "闺蜜合拍",
+    "options.natural": "自然清新",
+    "options.artistic": "艺术创意",
+    "options.vintage": "复古胶片",
+    "options.modern": "都市时尚",
+    "options.cute": "可爱甜美",
+    "options.spring": "春",
+    "options.summer": "夏",
+    "options.autumn": "秋",
+    "options.winter": "冬",
+    "options.solo": "一个人",
+    "options.couplePeople": "两个人",
+    "options.familyPeople": "一家人",
+    "options.group": "三五好友",
+    "back": "上一步",
+    "next": "下一步",
+    "restart": "重新测试",
+    "share": "分享结果",
+    "bookNow": "立即预约",
+    "progress": "第{{current}}步，共{{total}}步"
+  },
   "seo": {
     "homeTitle": "奶黄包摄影 | 南京约拍",
     "homeDesc": "偏柔雾胶片感的自然约拍，适合日常记录、江南感写真、情侣纪念和轻松陪拍。南京女生写真与情侣约拍首选。",
@@ -697,5 +730,16 @@
     "shopDetailDesc": "商品详情——规格参数、购买指南和相关推荐。",
     "mapTitle": "服务范围地图 | 奶黄包摄影",
     "mapDesc": "查看奶黄包摄影在南京的约拍服务范围——公园、街拍和风景名胜。"
+  },
+  "countdown": {
+    "days": "天",
+    "hours": "时",
+    "minutes": "分",
+    "seconds": "秒"
+  },
+  "capacity": {
+    "spots": "名额",
+    "full": "已满",
+    "available": "可报名"
   }
 }

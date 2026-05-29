@@ -7,6 +7,7 @@ import { PageTransition } from "../components/shared/PageTransition";
 const Packages = lazy(() => import("../components/Packages").then((m) => ({ default: m.Packages })));
 const ServiceDetails = lazy(() => import("../components/ServiceDetails").then((m) => ({ default: m.ServiceDetails })));
 const ProcessAndFaq = lazy(() => import("../components/ProcessAndFaq").then((m) => ({ default: m.ProcessAndFaq })));
+const StyleQuiz = lazy(() => import("../components/StyleQuiz").then((m) => ({ default: m.StyleQuiz })));
 
 export function BookingPage() {
   const { t } = useTranslation();
@@ -24,6 +25,10 @@ export function BookingPage() {
           <span>{t("aboutBooking.desc")}</span>
         </div>
       </section>
+
+      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
+        <StyleQuiz />
+      </Suspense>
 
       <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
         <Packages />

@@ -629,6 +629,131 @@ body.nav-lock .site-nav {
 }
 
 /* ══════════════════════════════════════════════
+   Hero Photo Collage — Subtle Parallax Background
+   ══════════════════════════════════════════════ */
+.hero-photo-collage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-collage-photo {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow:
+    0 4px 24px rgba(68, 43, 36, 0.25),
+    0 1px 6px rgba(68, 43, 36, 0.15);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.hero-collage-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Scattered layout positions — 6 photos */
+.hero-collage-photo:nth-child(1) {
+  width: clamp(120px, 14vw, 200px);
+  height: clamp(150px, 18vw, 260px);
+  top: 8%;
+  left: 5%;
+  opacity: 0.18;
+  transform: rotate(-4deg);
+}
+
+.hero-collage-photo:nth-child(2) {
+  width: clamp(100px, 12vw, 170px);
+  height: clamp(130px, 16vw, 220px);
+  top: 12%;
+  right: 8%;
+  opacity: 0.15;
+  transform: rotate(3deg);
+}
+
+.hero-collage-photo:nth-child(3) {
+  width: clamp(140px, 16vw, 230px);
+  height: clamp(100px, 12vw, 170px);
+  top: 38%;
+  right: 18%;
+  opacity: 0.2;
+  transform: rotate(-2deg);
+}
+
+.hero-collage-photo:nth-child(4) {
+  width: clamp(110px, 13vw, 180px);
+  height: clamp(140px, 17vw, 240px);
+  bottom: 22%;
+  left: 12%;
+  opacity: 0.17;
+  transform: rotate(5deg);
+}
+
+.hero-collage-photo:nth-child(5) {
+  width: clamp(90px, 10vw, 150px);
+  height: clamp(90px, 10vw, 150px);
+  bottom: 14%;
+  right: 6%;
+  opacity: 0.16;
+  transform: rotate(-6deg);
+}
+
+.hero-collage-photo:nth-child(6) {
+  width: clamp(130px, 15vw, 210px);
+  height: clamp(95px, 11vw, 160px);
+  top: 56%;
+  left: 28%;
+  opacity: 0.19;
+  transform: rotate(2deg);
+}
+
+/* Responsive — hide 3 photos on tablet, 4 on mobile */
+@media (max-width: 1024px) {
+  .hero-collage-photo:nth-child(5),
+  .hero-collage-photo:nth-child(6) {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-collage-photo:nth-child(3),
+  .hero-collage-photo:nth-child(4),
+  .hero-collage-photo:nth-child(5),
+  .hero-collage-photo:nth-child(6) {
+    display: none;
+  }
+
+  .hero-collage-photo:nth-child(1) {
+    width: 100px;
+    height: 130px;
+    top: 6%;
+    left: 3%;
+    opacity: 0.12;
+  }
+
+  .hero-collage-photo:nth-child(2) {
+    width: 85px;
+    height: 110px;
+    top: 10%;
+    right: 4%;
+    opacity: 0.1;
+  }
+}
+
+/* Respect reduced motion — disable parallax, keep photos static */
+@media (prefers-reduced-motion: reduce) {
+  .hero-collage-photo {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════════
    Cute Theme Overrides — Nav & Hero
    ══════════════════════════════════════════════ */
 :root[data-mood="cute"] .site-nav.is-scrolled {

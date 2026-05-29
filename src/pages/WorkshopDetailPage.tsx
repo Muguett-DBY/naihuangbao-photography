@@ -9,6 +9,8 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
+import { WorkshopCountdown } from "../components/WorkshopCountdown";
+import { CapacityBar } from "../components/CapacityBar";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import { PaymentForm } from "../components/PaymentForm";
 import type { Workshop } from "../types/content";
@@ -116,6 +118,10 @@ export function WorkshopDetailPage() {
               <Users size={14} /> {isFull ? t("workshops.full") : `${t("workshops.spotsLeft")}: ${spotsLeft}`}
             </span>
           </div>
+          <WorkshopCountdown eventDate={workshop.event_date} eventTime={workshop.event_time} />
+          {workshop.max_participants != null && workshop.max_participants > 0 && (
+            <CapacityBar current={workshop.current_participants} max={workshop.max_participants} />
+          )}
         </div>
       </section>
 

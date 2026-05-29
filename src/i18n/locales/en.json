@@ -676,6 +676,39 @@
       "matte": "Matte"
     }
   },
+  "quiz": {
+    "start": "Take the Quiz",
+    "step1.title": "What's the occasion?",
+    "step2.title": "What style do you like?",
+    "step3.title": "Which season?",
+    "step4.title": "How many people?",
+    "result.title": "Recommended Package",
+    "result.desc": "Based on your choices, we recommend the following",
+    "options.birthday": "Birthday",
+    "options.couple": "Couple Session",
+    "options.family": "Family Portrait",
+    "options.personal": "Personal Portrait",
+    "options.friends": "Friends Shoot",
+    "options.natural": "Natural & Fresh",
+    "options.artistic": "Artistic & Creative",
+    "options.vintage": "Vintage Film",
+    "options.modern": "Urban Modern",
+    "options.cute": "Sweet & Cute",
+    "options.spring": "Spring",
+    "options.summer": "Summer",
+    "options.autumn": "Autumn",
+    "options.winter": "Winter",
+    "options.solo": "Solo",
+    "options.couplePeople": "Couple",
+    "options.familyPeople": "Family",
+    "options.group": "Group",
+    "back": "Back",
+    "next": "Next",
+    "restart": "Retake Quiz",
+    "share": "Share Result",
+    "bookNow": "Book Now",
+    "progress": "Step {{current}} of {{total}}"
+  },
   "seo": {
     "homeTitle": "Naihuangbao Photography | Nanjing Portrait",
     "homeDesc": "Soft, film-like portrait photography in Nanjing. Natural everyday portraits for individuals and couples — Xianlin, Xuanwu Lake, Yihe Road and beyond.",
@@ -697,5 +730,16 @@
     "shopDetailDesc": "Product details — specifications, ordering guide, and related items.",
     "mapTitle": "Service Area Map | Naihuangbao Photography",
     "mapDesc": "View our portrait photography service area across Nanjing — parks, streets, and scenic locations."
+  },
+  "countdown": {
+    "days": "days",
+    "hours": "hrs",
+    "minutes": "min",
+    "seconds": "sec"
+  },
+  "capacity": {
+    "spots": "spots",
+    "full": "Full",
+    "available": "Available"
   }
 }

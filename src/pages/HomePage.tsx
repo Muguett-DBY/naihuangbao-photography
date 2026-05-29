@@ -1,14 +1,19 @@
-import { Suspense, lazy, useRef } from "react";
+import { Suspense, lazy, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ArrowDown, ArrowRight, CalendarCheck, BookOpen, Download, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { Button, Divider, Icon } from "animal-island-ui";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useBookingModal } from "../hooks/useBookingModal";
 import { useSiteContent } from "../hooks/useSiteContent";
+import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
 const WhyChooseUs = lazy(() => import("../components/WhyChooseUs").then((m) => ({ default: m.WhyChooseUs })));
@@ -16,15 +21,51 @@ const Reviews = lazy(() => import("../components/Reviews").then((m) => ({ defaul
 const FilmStripStory = lazy(() =>
   import("../components/FilmStripStory").then((m) => ({ default: m.FilmStripStory }))
 );
+const StyleQuiz = lazy(() => import("../components/StyleQuiz").then((m) => ({ default: m.StyleQuiz })));
 
 export function HomePage() {
   const { t } = useTranslation();
   const { siteConfig } = useSiteContent();
   const { openBookingModal } = useBookingModal();
   const rootRef = useRef<HTMLDivElement>(null);
+  const collageRef = useRef<HTMLDivElement>(null);
+
+  const { photos } = usePublicPhotos();
+
+  const collagePhotos = useMemo(
+    () => photos.filter((p) => p.visibility === "public").slice(0, 6),
+    [photos],
+  );
 
   useSEO({ titleKey: "seo.homeTitle", descKey: "seo.homeDesc", path: "/" });
   useGsapPageEffects(rootRef);
+
+  useEffect(() => {
+    if (!collageRef.current) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const imgs = collageRef.current.querySelectorAll<HTMLElement>(".hero-collage-photo");
+    imgs.forEach((img, i) => {
+      const speed = [0.15, -0.1, 0.2, -0.18, 0.12, -0.08][i] ?? 0.1;
+      gsap.to(img, {
+        y: () => speed * ScrollTrigger.maxScroll(window) * 0.3,
+        ease: "none",
+        scrollTrigger: {
+          trigger: collageRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1,
+        },
+      });
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach((t) => {
+        if (t.vars?.trigger === collageRef.current) t.kill();
+      });
+    };
+  }, [collagePhotos]);
 
   return (
     <PageTransition ref={rootRef}>
@@ -33,6 +74,13 @@ export function HomePage() {
       {/* ── Hero ── */}
       <section className="hero" id="top">
         <div className="hero-cover-design" />
+        <div className="hero-photo-collage" ref={collageRef} aria-hidden="true">
+          {collagePhotos.map((photo) => (
+            <div key={photo.id} className="hero-collage-photo">
+              <img src={photo.imageUrl} alt="" loading="lazy" />
+            </div>
+          ))}
+        </div>
         <div className="hero-glow-orb hero-glow-orb--1" aria-hidden="true" />
         <div className="hero-glow-orb hero-glow-orb--2" aria-hidden="true" />
         <div className="float-element float-element--1" aria-hidden="true" />
@@ -149,6 +197,20 @@ export function HomePage() {
       </ErrorBoundary>
 
       <Divider type="wave-yellow" />
+
+      {/* ── 风格测试 ── */}
+      <section className="section-shell is-visible" style={{ padding: "60px 0" }}>
+        <div className="section-heading" style={{ textAlign: "center", maxWidth: "100%", marginBottom: 32, paddingBottom: 0 }}>
+          <p className="section-eyebrow">Style Quiz</p>
+          <h2 style={{ clipPath: "inset(0 0 0 0)" }}>{t("quiz.step1.title")}</h2>
+          <span>{t("quiz.result.desc")}</span>
+        </div>
+        <ErrorBoundary>
+          <Suspense fallback={<div style={{ minHeight: 300 }} />}>
+            <StyleQuiz />
+          </Suspense>
+        </ErrorBoundary>
+      </section>
 
       {/* ── CTA ── */}
       <section className="section-shell is-visible" style={{ textAlign: "center", padding: "60px 16px" }}>

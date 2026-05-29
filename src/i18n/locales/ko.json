@@ -675,6 +675,39 @@
       "matte": "매트"
     }
   },
+  "quiz": {
+    "start": "테스트 시작",
+    "step1.title": "어떤 상황?",
+    "step2.title": "어떤 스타일이좋아?",
+    "step3.title": "어느 계절?",
+    "step4.title": "몇 명?",
+    "result.title": "추천 패키지",
+    "result.desc": "귀하의 선택에 따라 추천 패키지를 소개합니다",
+    "options.birthday": "생일 기념",
+    "options.couple": "커플 촬영",
+    "options.family": "가족 사진",
+    "options.personal": "개인 사진",
+    "options.friends": "친구 촬영",
+    "options.natural": "자연스럽고 상큼",
+    "options.artistic": "아티스틱",
+    "options.vintage": "빈티지 필름",
+    "options.modern": "모던",
+    "options.cute": "귀여운",
+    "options.spring": "봄",
+    "options.summer": "여름",
+    "options.autumn": "가을",
+    "options.winter": "겨울",
+    "options.solo": "혼자",
+    "options.couplePeople": "둘",
+    "options.familyPeople": "가족",
+    "options.group": "그룹",
+    "back": "뒤로",
+    "next": "다음",
+    "restart": "다시 하기",
+    "share": "결과 공유",
+    "bookNow": "예약하기",
+    "progress": "단계 {{current}} / {{total}}"
+  },
   "seo": {
     "homeTitle": "나이황바오 사진촬영 | 난징 촬영 예약",
     "homeDesc": "부드럽고 필름 감성의 자연스러운 포트레트 촬영 — 난징에서 여성 사진과 커플 사진을 전문으로 합니다.",
@@ -696,5 +729,16 @@
     "shopDetailDesc": "상품 상세 정보 — 사양, 구매 가이드, 관련 상품.",
     "mapTitle": "서비스 지역 지도 | 나이황바오 사진촬영",
     "mapDesc": "난징 포트레트 촬영 서비스 지역을 확인하세요 — 공원, 거리, 관광지."
+  },
+  "countdown": {
+    "days": "일",
+    "hours": "시",
+    "minutes": "분",
+    "seconds": "초"
+  },
+  "capacity": {
+    "spots": "명",
+    "full": "마감",
+    "available": "신청 가능"
   }
 }

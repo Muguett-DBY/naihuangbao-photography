@@ -7,6 +7,8 @@ import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useNotification } from "../hooks/useNotification";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
+import { WorkshopCountdown } from "../components/WorkshopCountdown";
+import { CapacityBar } from "../components/CapacityBar";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import type { Workshop } from "../types/content";
 
@@ -109,6 +111,10 @@ export function WorkshopsPage() {
                   <div className="workshop-info">
                     <h3>{getTitle(ws, i18n.language)}</h3>
                     <p>{getDesc(ws, i18n.language)}</p>
+                    <WorkshopCountdown eventDate={ws.event_date} eventTime={ws.event_time} />
+                    {ws.max_participants != null && ws.max_participants > 0 && (
+                      <CapacityBar current={ws.current_participants} max={ws.max_participants} />
+                    )}
                     <div className="workshop-meta">
                       <span><Calendar size={14} /> {ws.event_date} {ws.event_time}</span>
                       {ws.location && <span><MapPin size={14} /> {ws.location}</span>}
