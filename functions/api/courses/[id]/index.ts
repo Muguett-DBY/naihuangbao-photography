@@ -1,4 +1,4 @@
-import { jsonResponse } from "../../_responses";
+import { jsonResponse } from "../../../_responses";
 
 // ── Public: GET /api/courses/:id ──
 export const onRequestGet: PagesFunction<Env> = async (context) => {

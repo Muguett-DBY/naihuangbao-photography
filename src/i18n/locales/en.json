@@ -210,11 +210,26 @@
   "process": {
     "eyebrow": "How It Works",
     "steps": [
-      { "title": "Consultation", "text": "Contact me via Xiaohongshu or WeChat — tell me your preferred style and ideas." },
-      { "title": "Book & Deposit", "text": "Confirm the date, location and package. Pay a deposit to lock your slot." },
-      { "title": "Shoot Day", "text": "Arrive at the location. Full posing guidance throughout. Relax and enjoy!" },
-      { "title": "Select & Retouch", "text": "Receive a gallery link within 2 days. Pick your favorites for retouching." },
-      { "title": "Delivery", "text": "Final retouched photos delivered via cloud. Your smile is the best feedback." }
+      {
+        "title": "Consultation",
+        "text": "Contact me via Xiaohongshu or WeChat — tell me your preferred style and ideas."
+      },
+      {
+        "title": "Book & Deposit",
+        "text": "Confirm the date, location and package. Pay a deposit to lock your slot."
+      },
+      {
+        "title": "Shoot Day",
+        "text": "Arrive at the location. Full posing guidance throughout. Relax and enjoy!"
+      },
+      {
+        "title": "Select & Retouch",
+        "text": "Receive a gallery link within 2 days. Pick your favorites for retouching."
+      },
+      {
+        "title": "Delivery",
+        "text": "Final retouched photos delivered via cloud. Your smile is the best feedback."
+      }
     ]
   },
   "faq": {
@@ -377,48 +392,6 @@
     "empty": "Presets coming soon, stay tuned"
   },
   "workshops": {
-    "title": "Workshops & Events",
-    "intro": "Offline photography experience events",
-    "register": "Register Now",
-    "spotsLeft": "Spots Left",
-    "full": "Full",
-    "date": "Event Date",
-    "location": "Location",
-    "price": "Price",
-    "status": {
-      "upcoming": "Upcoming",
-      "ongoing": "Ongoing",
-      "completed": "Completed",
-      "cancelled": "Cancelled"
-    },
-    "empty": "No upcoming events, stay tuned",
-    "form": {
-      "name": "Your Name",
-      "contact": "Contact (WeChat/Phone)",
-      "submit": "Submit Registration",
-      "submitting": "Submitting...",
-      "cancel": "Cancel",
-      "success": "Registration successful! We'll contact you soon.",
-      "error": "Registration failed, please try again",
-      "nameRequired": "Please enter your name",
-      "contactRequired": "Please enter your contact"
-    }
-  },
-  "merchandise": {
-    "title": "Custom Merchandise",
-    "intro": "Turn beautiful memories into physical products",
-    "categories": {
-      "album": "Custom Album",
-      "postcard": "Postcard",
-      "frame": "Frame",
-      "print": "Print",
-      "other": "Other"
-    },
-    "inquire": "Inquire to Purchase",
-    "contactUs": "Contact Us",
-    "empty": "Merchandise coming soon, stay tuned"
-  },
-  "workshops": {
     "viewDetail": "View Details",
     "title": "Workshops & Experiences",
     "intro": "Offline photography experiences",
@@ -446,6 +419,20 @@
       "nameRequired": "Please enter your name",
       "contactRequired": "Please enter your contact"
     }
+  },
+  "merchandise": {
+    "title": "Custom Merchandise",
+    "intro": "Turn beautiful memories into physical products",
+    "categories": {
+      "album": "Custom Album",
+      "postcard": "Postcard",
+      "frame": "Frame",
+      "print": "Print",
+      "other": "Other"
+    },
+    "inquire": "Inquire to Purchase",
+    "contactUs": "Contact Us",
+    "empty": "Merchandise coming soon, stay tuned"
   },
   "courseDetail": {
     "backToList": "Back to Courses",
@@ -511,5 +498,15 @@
     "step2": "Confirm order & complete payment",
     "step3": "Carefully crafted & shipped on time",
     "step4": "7-day return policy"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "Please refresh the page. If the problem persists, contact us.",
+    "reload": "Reload"
+  },
+  "common": {
+    "learnMore": "Learn more",
+    "loading": "Loading...",
+    "socialXiaohongshu": "Xiaohongshu"
   }
 }

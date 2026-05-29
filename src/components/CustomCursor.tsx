@@ -11,7 +11,6 @@ export function CustomCursor() {
   const onMove = useCallback((e: MouseEvent) => {
     pos.current = { x: e.clientX, y: e.clientY };
 
-    // Detect interactive elements
     const target = e.target as HTMLElement;
     const isClickable = target.closest("a, button, [role='button'], input, select, textarea, label, .gallery-card, .package-card, .why-card");
     const isImage = target.closest("img, .img-blur-wrap, .gallery-image-placeholder");
@@ -32,11 +31,13 @@ export function CustomCursor() {
     document.addEventListener("mousemove", onMove, { passive: true });
 
     const loop = () => {
-      ringPos.current.x += (pos.current.x - ringPos.current.x) * 0.12;
-      ringPos.current.y += (pos.current.y - ringPos.current.y) * 0.12;
+      if (!document.hidden) {
+        ringPos.current.x += (pos.current.x - ringPos.current.x) * 0.12;
+        ringPos.current.y += (pos.current.y - ringPos.current.y) * 0.12;
 
-      dot.style.transform = `translate(${pos.current.x - 3}px, ${pos.current.y - 3}px)`;
-      ring.style.transform = `translate(${ringPos.current.x - 16}px, ${ringPos.current.y - 16}px)`;
+        dot.style.transform = `translate(${pos.current.x - 3}px, ${pos.current.y - 3}px)`;
+        ring.style.transform = `translate(${ringPos.current.x - 16}px, ${ringPos.current.y - 16}px)`;
+      }
       rafId.current = requestAnimationFrame(loop);
     };
     rafId.current = requestAnimationFrame(loop);

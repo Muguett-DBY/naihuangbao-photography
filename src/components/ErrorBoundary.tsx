@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import i18n from "i18next";
 
 type Props = {
   children: ReactNode;
@@ -28,10 +29,10 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         this.props.fallback ?? (
           <div className="error-boundary">
-            <h2>页面出了点问题</h2>
-            <p>刷新试试，如果问题持续请联系站长。</p>
+            <h2>{i18n.t("error.title")}</h2>
+            <p>{i18n.t("error.description")}</p>
             <button type="button" onClick={() => this.setState({ hasError: false })}>
-              重新加载
+              {i18n.t("error.reload")}
             </button>
           </div>
         )

@@ -57,39 +57,6 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     }
 
     /* ══════════════════════════════════════════
-       EFFECT 2: 浮动飘浮元素 (Floating decor)
-       ══════════════════════════════════════════ */
-    const floatEls = $<HTMLElement>(".float-element");
-    floatEls.forEach((el, i) => {
-      gsap.to(el, {
-        y: i % 2 === 0 ? -18 : 16,
-        x: i % 3 === 0 ? 10 : -8,
-        duration: 4 + i * 0.5,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true,
-        delay: i * 0.3,
-      });
-    });
-
-    /* ══════════════════════════════════════════
-       EFFECT 3: Hero 浮动光晕 (existing)
-       ══════════════════════════════════════════ */
-    const glowOrbs = $<HTMLElement>(".hero-glow-orb");
-    if (glowOrbs.length) {
-      glowOrbs.forEach((orb, i) => {
-        gsap.to(orb, {
-          x: i === 0 ? 24 : -18,
-          y: i === 0 ? -16 : 14,
-          duration: 6 + i * 0.7,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-      });
-    }
-
-    /* ══════════════════════════════════════════
        EFFECT 4: Hero title clip reveal (existing)
        ══════════════════════════════════════════ */
     const title = $1<HTMLElement>(".hero-magazine-title");
@@ -350,24 +317,6 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     });
 
     /* ══════════════════════════════════════════
-       EFFECT 12: 滚动文字变色 (Text Color Shift)
-       ══════════════════════════════════════════ */
-    const colorShiftEls = $<HTMLElement>(".section-heading h2, .hero-magazine-title");
-    colorShiftEls.forEach((el) => {
-      gsap.to(el, {
-        color: "#F5A891",
-        duration: 0.35,
-        ease: "power1.inOut",
-        scrollTrigger: {
-          trigger: el,
-          start: "top 40%",
-          end: "bottom top",
-          toggleActions: "play reverse play reverse",
-        },
-      });
-    });
-
-    /* ══════════════════════════════════════════
        EFFECT 13: 页面转场动画 (Page Transition)
        ══════════════════════════════════════════ */
     $<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
@@ -468,69 +417,6 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
           );
         });
       }
-    });
-
-    /* ══════════════════════════════════════════
-       EFFECT 16: Magnetic Buttons (existing)
-       ══════════════════════════════════════════ */
-    const magneticBtns = $<HTMLElement>(
-      ".hero-cover-primary-btn, .hero-cover-secondary-btn, .nav-cta, .booking-cta, .package-cta",
-    );
-
-    magneticBtns.forEach((btn) => {
-      btn.addEventListener("mousemove", (e: MouseEvent) => {
-        const rect = btn.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        gsap.to(btn, {
-          x: x * 0.25,
-          y: y * 0.25,
-          duration: 0.35,
-          ease: "power2.out",
-          overwrite: "auto",
-        });
-      });
-
-      btn.addEventListener("mouseleave", () => {
-        gsap.to(btn, {
-          x: 0,
-          y: 0,
-          duration: 0.45,
-          ease: "elastic.out(1, 0.35)",
-        });
-      });
-    });
-
-    /* ══════════════════════════════════════════
-       EFFECT 20: 3D Card Tilt (existing)
-       ══════════════════════════════════════════ */
-    const tiltCards = $<HTMLElement>(
-      ".package-card, .why-card, .service-detail-card",
-    );
-
-    tiltCards.forEach((card) => {
-      card.addEventListener("mousemove", (e: MouseEvent) => {
-        const rect = card.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width - 0.5;
-        const y = (e.clientY - rect.top) / rect.height - 0.5;
-        gsap.to(card, {
-          rotateY: x * 8,
-          rotateX: y * -6,
-          transformPerspective: 800,
-          duration: 0.5,
-          ease: "power2.out",
-          overwrite: "auto",
-        });
-      });
-
-      card.addEventListener("mouseleave", () => {
-        gsap.to(card, {
-          rotateY: 0,
-          rotateX: 0,
-          duration: 0.6,
-          ease: "elastic.out(1, 0.4)",
-        });
-      });
     });
 
     /* ══════════════════════════════════════════

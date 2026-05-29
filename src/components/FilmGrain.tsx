@@ -7,7 +7,6 @@ export function FilmGrain() {
   const leakRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    // ── Grain: small canvas, low FPS ──
     const grain = grainRef.current;
     if (!grain) return;
     const gCtx = grain.getContext("2d");
@@ -17,26 +16,26 @@ export function FilmGrain() {
     let rafId = 0;
 
     const updateGrain = () => {
-      frame++;
-      // Only update grain every 6 frames (~10fps)
-      if (frame % 6 === 0) {
-        gCtx.clearRect(0, 0, GRAIN_SIZE, GRAIN_SIZE);
-        const imageData = gCtx.createImageData(GRAIN_SIZE, GRAIN_SIZE);
-        const data = imageData.data;
-        for (let i = 0; i < data.length; i += 4) {
-          const noise = (Math.random() - 0.5) * 40;
-          data[i] = 255 + noise;
-          data[i + 1] = 245 + noise;
-          data[i + 2] = 230 + noise;
-          data[i + 3] = 10;
+      if (!document.hidden) {
+        frame++;
+        if (frame % 6 === 0) {
+          gCtx.clearRect(0, 0, GRAIN_SIZE, GRAIN_SIZE);
+          const imageData = gCtx.createImageData(GRAIN_SIZE, GRAIN_SIZE);
+          const data = imageData.data;
+          for (let i = 0; i < data.length; i += 4) {
+            const noise = (Math.random() - 0.5) * 40;
+            data[i] = 255 + noise;
+            data[i + 1] = 245 + noise;
+            data[i + 2] = 230 + noise;
+            data[i + 3] = 10;
+          }
+          gCtx.putImageData(imageData, 0, 0);
         }
-        gCtx.putImageData(imageData, 0, 0);
       }
       rafId = requestAnimationFrame(updateGrain);
     };
     rafId = requestAnimationFrame(updateGrain);
 
-    // ── Light leak ──
     const leak = leakRef.current;
     if (!leak) return;
     const lCtx = leak.getContext("2d");
@@ -54,34 +53,35 @@ export function FilmGrain() {
     let leakRaf = 0;
 
     const updateLeak = () => {
-      lCtx.clearRect(0, 0, w, h);
+      if (!document.hidden) {
+        lCtx.clearRect(0, 0, w, h);
 
-      leakTimer++;
-      if (!leakActive && leakTimer > 300 + Math.random() * 500) {
-        leakActive = true;
-        leakTimer = 0;
-        leakX = Math.random() * w;
-        leakOpacity = 0;
-      }
-
-      if (leakActive) {
-        leakOpacity += 0.005;
-        if (leakOpacity > 0.08) leakOpacity = 0.08;
-
-        const gradient = lCtx.createRadialGradient(leakX, 0, 0, leakX, 0, h * 0.6);
-        gradient.addColorStop(0, `rgba(255, 180, 120, ${leakOpacity})`);
-        gradient.addColorStop(0.3, `rgba(255, 150, 100, ${leakOpacity * 0.5})`);
-        gradient.addColorStop(1, "rgba(255, 150, 100, 0)");
-        lCtx.fillStyle = gradient;
-        lCtx.fillRect(0, 0, w, h);
-
-        leakX += 1.5;
-        if (leakX > w + 200) {
-          leakActive = false;
+        leakTimer++;
+        if (!leakActive && leakTimer > 300 + Math.random() * 500) {
+          leakActive = true;
           leakTimer = 0;
+          leakX = Math.random() * w;
+          leakOpacity = 0;
+        }
+
+        if (leakActive) {
+          leakOpacity += 0.005;
+          if (leakOpacity > 0.08) leakOpacity = 0.08;
+
+          const gradient = lCtx.createRadialGradient(leakX, 0, 0, leakX, 0, h * 0.6);
+          gradient.addColorStop(0, `rgba(255, 180, 120, ${leakOpacity})`);
+          gradient.addColorStop(0.3, `rgba(255, 150, 100, ${leakOpacity * 0.5})`);
+          gradient.addColorStop(1, "rgba(255, 150, 100, 0)");
+          lCtx.fillStyle = gradient;
+          lCtx.fillRect(0, 0, w, h);
+
+          leakX += 1.5;
+          if (leakX > w + 200) {
+            leakActive = false;
+            leakTimer = 0;
+          }
         }
       }
-
       leakRaf = requestAnimationFrame(updateLeak);
     };
     leakRaf = requestAnimationFrame(updateLeak);
@@ -103,7 +103,6 @@ export function FilmGrain() {
 
   return (
     <>
-      {/* Grain — small canvas scaled up */}
       <canvas
         ref={grainRef}
         width={GRAIN_SIZE}
@@ -120,7 +119,6 @@ export function FilmGrain() {
           imageRendering: "pixelated",
         }}
       />
-      {/* Light leak — full canvas, rare updates */}
       <canvas
         ref={leakRef}
         style={{

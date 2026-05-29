@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Calendar, MapPin, Users, Clock, CheckCircle } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, CheckCircle } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { PageTransition } from "../components/shared/PageTransition";
+import { DetailLoading } from "../components/shared/DetailLoading";
+import { DetailNotFound } from "../components/shared/DetailNotFound";
+import { DetailBackLink } from "../components/shared/DetailBackLink";
+import { getTitle, getDesc } from "../lib/i18n-helpers";
 import type { Workshop } from "../types/content";
 
 export function WorkshopDetailPage() {
@@ -13,6 +17,7 @@ export function WorkshopDetailPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [workshop, setWorkshop] = useState<Workshop | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [formName, setFormName] = useState("");
   const [formContact, setFormContact] = useState("");
   const [formMsg, setFormMsg] = useState("");
@@ -20,15 +25,21 @@ export function WorkshopDetailPage() {
 
   useGsapPageEffects(rootRef);
 
-  const lang = i18n.language.split("-")[0];
+  const lang = i18n.language;
 
   useEffect(() => {
     if (!id) return;
     const ctrl = new AbortController();
+    setLoading(true);
     fetch(`/api/workshops/${id}`, { signal: ctrl.signal })
       .then((r) => r.json())
-      .then((d: { workshop: Workshop }) => { if (!ctrl.signal.aborted) setWorkshop(d.workshop || null); })
-      .catch(() => {})
+      .then((d: { workshop: Workshop }) => {
+        if (!ctrl.signal.aborted) {
+          if (!d.workshop) setError("not found");
+          else setWorkshop(d.workshop);
+        }
+      })
+      .catch(() => { if (!ctrl.signal.aborted) setError(t("common.loading")); })
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
   }, [id]);
@@ -60,38 +71,8 @@ export function WorkshopDetailPage() {
     }
   };
 
-  const getTitle = (w: Workshop) => {
-    if (lang === "en" && w.title_en) return w.title_en;
-    if (lang === "ko" && w.title_ko) return w.title_ko;
-    if (lang === "ja" && w.title_ja) return w.title_ja;
-    return w.title;
-  };
-
-  const getDesc = (w: Workshop) => {
-    if (lang === "en" && w.description_en) return w.description_en;
-    if (lang === "ko" && w.description_ko) return w.description_ko;
-    if (lang === "ja" && w.description_ja) return w.description_ja;
-    return w.description;
-  };
-
-  if (loading) {
-    return (
-      <PageTransition ref={rootRef}>
-        <div style={{ textAlign: "center", padding: 120 }}>{t("loading")}</div>
-      </PageTransition>
-    );
-  }
-
-  if (!workshop) {
-    return (
-      <PageTransition ref={rootRef}>
-        <div style={{ textAlign: "center", padding: 120 }}>
-          <h2>{t("workshopDetail.notFound")}</h2>
-          <Link to="/workshops" style={{ color: "var(--accent)" }}>{t("workshopDetail.backToList")}</Link>
-        </div>
-      </PageTransition>
-    );
-  }
+  if (loading) return <DetailLoading label={t("loading")} />;
+  if (error || !workshop) return <DetailNotFound message={t("workshopDetail.notFound")} backTo="/workshops" backLabel={t("workshopDetail.backToList")} />;
 
   const spotsLeft = (workshop.max_participants || 0) - workshop.current_participants;
   const isFull = spotsLeft <= 0;
@@ -100,10 +81,8 @@ export function WorkshopDetailPage() {
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <Link to="/workshops" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--accent)", marginBottom: 16, fontSize: "0.9rem" }}>
-            <ArrowLeft size={16} /> {t("workshopDetail.backToList")}
-          </Link>
-          <h1>{getTitle(workshop)}</h1>
+          <DetailBackLink to="/workshops" label={t("workshopDetail.backToList")} />
+          <h1>{getTitle(workshop, lang)}</h1>
           <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
             <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
               <Calendar size={14} /> {workshop.event_date} {workshop.event_time}
@@ -122,18 +101,14 @@ export function WorkshopDetailPage() {
 
       {workshop.cover_image_url && (
         <section className="section-shell is-visible" style={{ paddingTop: 0 }}>
-          <img
-            src={workshop.cover_image_url}
-            alt={getTitle(workshop)}
-            style={{ width: "100%", maxHeight: 400, objectFit: "cover", borderRadius: 16 }}
-          />
+          <img src={workshop.cover_image_url} alt={getTitle(workshop, lang)} style={{ width: "100%", maxHeight: 400, objectFit: "cover", borderRadius: 16 }} />
         </section>
       )}
 
       <section className="section-shell is-visible">
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <h2 style={{ marginBottom: 16 }}>{t("workshopDetail.about")}</h2>
-          <p style={{ lineHeight: 1.8, color: "var(--text-secondary)" }}>{getDesc(workshop)}</p>
+          <p style={{ lineHeight: 1.8, color: "var(--text-secondary)" }}>{getDesc(workshop, lang)}</p>
         </div>
       </section>
 
@@ -150,26 +125,9 @@ export function WorkshopDetailPage() {
               { time: "16:45", label: t("workshopDetail.step5") },
             ].map((step, i) => (
               <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 16, padding: "12px 0", position: "relative" }}>
-                <div style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: "50%",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "0.75rem",
-                  fontWeight: 700,
-                  flexShrink: 0,
-                  zIndex: 1,
-                }}>
-                  {i + 1}
-                </div>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem", fontWeight: 700, flexShrink: 0, zIndex: 1 }}>{i + 1}</div>
                 <div>
-                  <span style={{ fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}>
-                    <Clock size={12} style={{ verticalAlign: -1 }} /> {step.time}
-                  </span>
+                  <span style={{ fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}><Clock size={12} style={{ verticalAlign: -1 }} /> {step.time}</span>
                   <p style={{ margin: "4px 0 0", fontSize: "0.95rem" }}>{step.label}</p>
                 </div>
               </div>
@@ -210,14 +168,7 @@ export function WorkshopDetailPage() {
               <MapPin size={20} style={{ color: "var(--accent)" }} />
               <div>
                 <p style={{ margin: 0, fontWeight: 500 }}>{workshop.location}</p>
-                <a
-                  href={`https://uri.amap.com/marker?position=&name=${encodeURIComponent(workshop.location)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ fontSize: "0.85rem", color: "var(--accent)" }}
-                >
-                  {t("workshopDetail.openInMap")}
-                </a>
+                <a href={`https://uri.amap.com/marker?position=&name=${encodeURIComponent(workshop.location)}`} target="_blank" rel="noreferrer" style={{ fontSize: "0.85rem", color: "var(--accent)" }}>{t("workshopDetail.openInMap")}</a>
               </div>
             </div>
           </div>
@@ -228,28 +179,22 @@ export function WorkshopDetailPage() {
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <h2 style={{ marginBottom: 16 }}>{t("workshopDetail.register")}</h2>
           <div style={{ background: "var(--card-bg)", border: "1px solid var(--border-subtle)", borderRadius: 16, padding: 24 }}>
-            {workshop.price_display && (
-              <div style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: 16 }}>{workshop.price_display}</div>
-            )}
+            {workshop.price_display && <div style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: 16 }}>{workshop.price_display}</div>}
             {isFull ? (
               <p style={{ color: "#ef4444" }}>{t("workshopDetail.fullMessage")}</p>
             ) : (
               <>
                 <input
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
+                  value={formName} onChange={(e) => setFormName(e.target.value)}
                   placeholder={t("workshops.form.name")}
                   style={{ width: "100%", padding: "10px 14px", border: "1px solid var(--border-subtle)", borderRadius: 8, fontSize: "0.9rem", marginBottom: 8, boxSizing: "border-box" }}
                 />
                 <input
-                  value={formContact}
-                  onChange={(e) => setFormContact(e.target.value)}
+                  value={formContact} onChange={(e) => setFormContact(e.target.value)}
                   placeholder={t("workshops.form.contact")}
                   style={{ width: "100%", padding: "10px 14px", border: "1px solid var(--border-subtle)", borderRadius: 8, fontSize: "0.9rem", marginBottom: 12, boxSizing: "border-box" }}
                 />
-                {formMsg && (
-                  <p style={{ fontSize: 13, color: formMsg.includes("成功") ? "#22c55e" : "#ef4444", margin: "0 0 12px" }}>{formMsg}</p>
-                )}
+                {formMsg && <p style={{ fontSize: 13, color: formMsg === t("workshops.form.success") ? "#22c55e" : "#ef4444", margin: "0 0 12px" }}>{formMsg}</p>}
                 <Button type="primary" onClick={handleRegister} disabled={submitting}>
                   {submitting ? t("workshops.form.submitting") : t("workshops.register")}
                 </Button>

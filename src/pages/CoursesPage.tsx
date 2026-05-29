@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { PageTransition } from "../components/shared/PageTransition";
+import { getTitle, getDesc } from "../lib/i18n-helpers";
 import type { Course } from "../types/content";
 
 export function CoursesPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,12 +51,12 @@ export function CoursesPage() {
                 style={{ textDecoration: "none", color: "inherit", display: "block" }}
               >
                 {course.cover_image_url && (
-                  <img src={course.cover_image_url} alt={course.title} className="course-cover" loading="lazy" />
+                  <img src={course.cover_image_url} alt={getTitle(course, i18n.language)} className="course-cover" loading="lazy" />
                 )}
                 <div className="course-info">
                   <span className="course-category">{t(`courses.categories.${course.category}` as any)}</span>
-                  <h3>{course.title}</h3>
-                  <p>{course.description}</p>
+                  <h3>{getTitle(course, i18n.language)}</h3>
+                  <p>{getDesc(course, i18n.language)}</p>
                   <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                     <span className="course-difficulty">{t(`courses.difficulty.${course.difficulty}` as any)}</span>
                     {course.duration_minutes && (

@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useBookingModal } from "../hooks/useBookingModal";
 import { PageTransition } from "../components/shared/PageTransition";
+import { getName, getDesc } from "../lib/i18n-helpers";
 import type { Merchandise } from "../types/content";
 
 export function ShopPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { openBookingModal } = useBookingModal();
   const rootRef = useRef<HTMLDivElement>(null);
   const [items, setItems] = useState<Merchandise[]>([]);
@@ -45,30 +47,30 @@ export function ShopPage() {
         ) : (
           <div className="merchandise-grid">
             {items.map((item) => (
-              <Link
+              <div
                 key={item.id}
-                to={`/shop/${item.id}`}
                 className="merchandise-card"
-                style={{ textDecoration: "none", color: "inherit", display: "block" }}
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(`/shop/${item.id}`)}
               >
                 {item.images && item.images[0] && (
-                  <img src={item.images[0]} alt={item.name} className="merchandise-cover" loading="lazy" />
+                  <img src={item.images[0]} alt={getName(item, i18n.language)} className="merchandise-cover" loading="lazy" />
                 )}
                 <div className="merchandise-info">
                   <span className="merchandise-category">{t(`merchandise.categories.${item.category}` as any)}</span>
-                  <h3>{item.name}</h3>
-                  <p>{item.description}</p>
+                  <h3>{getName(item, i18n.language)}</h3>
+                  <p>{getDesc(item, i18n.language)}</p>
                   <div className="merchandise-actions">
                     <span className="merchandise-price">{item.price_display}</span>
                     <button
                       className="merchandise-inquire-btn"
-                      onClick={() => openBookingModal()}
+                      onClick={(e) => { e.stopPropagation(); openBookingModal(); }}
                     >
                       {t("merchandise.inquire")}
                     </button>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}

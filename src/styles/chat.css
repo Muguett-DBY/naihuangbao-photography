@@ -496,38 +496,3 @@ a:focus-visible,
   font-family: "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
   font-weight: 800;
 }
-
-@media (prefers-reduced-motion: reduce) {
-  body.is-loaded .site-nav,
-  body.is-loaded .kicker,
-  body.is-loaded .hero h1,
-  body.is-loaded .hero-intro,
-  body.is-loaded .hero-actions > *,
-  body.is-loaded .hero-card,
-  body.is-loaded .hero-scroll-cue {
-    animation: none !important;
-    opacity: 1 !important;
-  }
-
-  .hero-card,
-  .hero-card-large,
-  .hero-card:hover,
-  .hero-card-large:hover,
-  .hero-scroll-cue,
-  .gallery-card:hover,
-  .nav-cta:hover,
-  .primary-button:hover,
-  .text-button:hover,
-  .filter-row button:hover,
-  .booking-cta:hover,
-  .mid-cta-card a:hover,
-  .scroll-top:hover,
-  .public-chat-launcher:hover,
-  .public-chat-prompts button:hover:not(:disabled),
-  .public-chat-form button:hover:not(:disabled) {
-    transform: none !important;
-    translate: none !important;
-    rotate: none !important;
-    scale: none !important;
-  }
-}

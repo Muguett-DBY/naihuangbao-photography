@@ -94,25 +94,25 @@ export function HomePage() {
             <BookOpen size={32} />
             <h3>{t("nav.courses")}</h3>
             <p>{t("courses.intro")}</p>
-            <span className="home-service-link">了解更多 <ArrowRight size={14} /></span>
+            <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
           </Link>
           <Link to="/products" className="home-service-card">
             <Download size={32} />
             <h3>{t("nav.presets")}</h3>
             <p>{t("presets.intro")}</p>
-            <span className="home-service-link">了解更多 <ArrowRight size={14} /></span>
+            <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
           </Link>
           <Link to="/workshops" className="home-service-card">
             <MapPin size={32} />
             <h3>{t("nav.workshops")}</h3>
             <p>{t("workshops.intro")}</p>
-            <span className="home-service-link">了解更多 <ArrowRight size={14} /></span>
+            <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
           </Link>
           <Link to="/shop" className="home-service-card">
             <Camera size={32} />
             <h3>{t("nav.shop")}</h3>
             <p>{t("merchandise.intro")}</p>
-            <span className="home-service-link">了解更多 <ArrowRight size={14} /></span>
+            <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
           </Link>
         </div>
       </section>

@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { getResponsiveImageAttrs } from "../lib/responsive-image";
 import { getResponsivePictureAttrs } from "../lib/responsive-picture";
 import { FilmPlaceholder } from "./FilmPlaceholder";
 
-export function ImageWithFallback({
+export const ImageWithFallback = memo(function ImageWithFallback({
   src,
   alt,
   title,
@@ -27,15 +27,12 @@ export function ImageWithFallback({
   const [loaded, setLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Use <picture> with AVIF for gallery images, regular <img> otherwise
   const usePicture = sizes && src.startsWith("/images/gallery/") && !useDirectImg;
   const pictureAttrs = usePicture ? getResponsivePictureAttrs(src, sizes) : null;
   const imageAttrs = !usePicture ? getResponsiveImageAttrs(src, sizes) : null;
 
-  // When picture sources fail, fall back to direct <img>
   const handleError = () => {
     if (usePicture) {
-      // Don't give up yet — fall back to direct <img> first
       setUseDirectImg(true);
     } else {
       setFailed(true);
@@ -119,4 +116,4 @@ export function ImageWithFallback({
       )}
     </div>
   );
-}
+});

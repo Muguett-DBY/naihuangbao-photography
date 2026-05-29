@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
@@ -31,14 +31,6 @@ export function Gallery() {
   const distortRef = useDistortionHover();
 
   const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
-
-  const handlePrev = useCallback(() => {
-    setLightboxIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : photos.length - 1));
-  }, [photos.length]);
-
-  const handleNext = useCallback(() => {
-    setLightboxIndex((prev) => (prev !== null && prev < photos.length - 1 ? prev + 1 : 0));
-  }, [photos.length]);
 
   useEffect(() => {
     const target = masonryRef.current;
@@ -171,8 +163,6 @@ export function Gallery() {
             photos={photos}
             currentIndex={lightboxIndex}
             onClose={() => setLightboxIndex(null)}
-            onPrev={handlePrev}
-            onNext={handleNext}
           />
         </Suspense>
       )}

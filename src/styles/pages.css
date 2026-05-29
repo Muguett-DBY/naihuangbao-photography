@@ -418,6 +418,20 @@
 }
 
 /* ── Detail pages ── */
+.shop-detail-grid {
+  max-width: 800px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .shop-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .detail-section {
   max-width: 800px;
   margin: 0 auto;

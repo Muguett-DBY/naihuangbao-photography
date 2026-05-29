@@ -20,6 +20,11 @@
 }
 
 :root {
+  --accent: var(--peach-accent);
+  --text-secondary: var(--caramel-muted);
+  --border-subtle: var(--warm-border);
+  --card-bg: var(--paper-white);
+  --text-secondary-contrast: #666;
   --font-body:
     "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -634,19 +639,6 @@ a {
   }
 }
 
-@keyframes heroTitleIn {
-  from {
-    opacity: 0;
-    transform: translateY(34px);
-    letter-spacing: 0.2em;
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    letter-spacing: 0;
-  }
-}
-
 /* ── Stagger text reveal lines ── */
 .text-reveal-line {
   overflow: hidden;
@@ -662,3 +654,26 @@ a {
 .text-reveal-line:nth-child(1) span { animation-delay: 0.3s; }
 .text-reveal-line:nth-child(2) span { animation-delay: 0.5s; }
 .text-reveal-line:nth-child(3) span { animation-delay: 0.7s; }
+
+/* ── Skip-to-content link ── */
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 50%;
+  z-index: 10000;
+  transform: translateX(-50%);
+  padding: 8px 20px;
+  background: var(--peach-accent);
+  color: #fff;
+  font-size: 14px;
+  border-radius: 0 0 8px 8px;
+  text-decoration: none;
+  transition: top 0.2s ease;
+  outline: none;
+}
+.skip-link:focus {
+  top: 0;
+}
+.skip-link:hover {
+  background: var(--caramel-deep);
+}

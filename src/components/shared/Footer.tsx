@@ -36,7 +36,7 @@ export function Footer() {
       </div>
       <div className="footer-social">
         <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">
-          小红书<ExternalLink size={12} />
+          {t("common.socialXiaohongshu")}<ExternalLink size={12} />
         </a>
       </div>
       <p className="footer-tagline">{sectionCopy.footer.tagline}</p>

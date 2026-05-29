@@ -48,23 +48,24 @@ export function CanvasParticles() {
 
     const rafRef = { id: 0 };
     const draw = () => {
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < -20) p.x = window.innerWidth + 20;
-        if (p.x > window.innerWidth + 20) p.x = -20;
-        if (p.y < -20) p.y = window.innerHeight + 20;
-        if (p.y > window.innerHeight + 20) p.y = -20;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 210, 184, ${p.alpha})`;
-        ctx.fill();
+      if (!document.hidden) {
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < -20) p.x = window.innerWidth + 20;
+          if (p.x > window.innerWidth + 20) p.x = -20;
+          if (p.y < -20) p.y = window.innerHeight + 20;
+          if (p.y > window.innerHeight + 20) p.y = -20;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 210, 184, ${p.alpha})`;
+          ctx.fill();
+        }
       }
       rafRef.id = requestAnimationFrame(draw);
     };
 
-    // Delay start to avoid scroll jank
     const startDelay = setTimeout(() => {
       rafRef.id = requestAnimationFrame(draw);
     }, 600);

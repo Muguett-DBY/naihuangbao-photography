@@ -1,5 +1,6 @@
-import { Suspense, lazy, useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useGsapGlobalEffects } from "../hooks/useGsapGlobalEffects";
 import { CustomCursor } from "../components/CustomCursor";
 import { FilmGrain } from "../components/FilmGrain";
@@ -12,19 +13,36 @@ import { Header } from "../components/shared/Header";
 import { Footer } from "../components/shared/Footer";
 
 export function RootLayout() {
+  const { t } = useTranslation();
   const location = useLocation();
   const [chatOpen, setChatOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useGsapGlobalEffects(rootRef);
 
-  // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  const handleSkipClick = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    const main = document.getElementById("main-content");
+    if (main) {
+      main.setAttribute("tabindex", "-1");
+      main.focus();
+      main.removeAttribute("tabindex");
+    }
+  }, []);
+
   return (
     <div ref={rootRef}>
+      <a
+        href="#main-content"
+        className="skip-link"
+        onClick={handleSkipClick}
+      >
+        {t("common.skipToContent", "跳转到内容")}
+      </a>
       <LoadingScreen />
       <FilmGrain />
       <CustomCursor />
@@ -44,7 +62,7 @@ export function RootLayout() {
                 <Suspense
                   fallback={
                     <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
-                      加载中...
+                      {t("common.loading")}
                     </div>
                   }
                 >

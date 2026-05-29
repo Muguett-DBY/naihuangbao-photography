@@ -19,6 +19,7 @@ const allCss = [
 const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
 const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
 const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
+const routerSource = readFileSync(resolve(root, "src/router.tsx"), "utf8");
 const navSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
 const html = readFileSync(resolve(root, "index.html"), "utf8");
 const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
@@ -65,7 +66,7 @@ describe("performance budgets", () => {
     expect(gallerySource).toContain('loading="lazy"');
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
     expect(rootLayoutSource).toContain('lazy(() => import("../components/PublicChatWidget")');
-    expect(appSource).toContain('import("./styles/admin.css")');
+    expect(routerSource).toContain('import("./styles/admin.css")');
   });
 
   it("renders default homepage data first and defers remote enhancement until idle", () => {

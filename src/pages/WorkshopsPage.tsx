@@ -5,10 +5,11 @@ import { Calendar, MapPin, Users } from "lucide-react";
 import { Button, Input } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { PageTransition } from "../components/shared/PageTransition";
+import { getTitle, getDesc } from "../lib/i18n-helpers";
 import type { Workshop } from "../types/content";
 
 export function WorkshopsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
@@ -88,11 +89,11 @@ export function WorkshopsPage() {
               return (
                 <div key={ws.id} className="workshop-card">
                   {ws.cover_image_url && (
-                    <img src={ws.cover_image_url} alt={ws.title} className="workshop-cover" loading="lazy" />
+                    <img src={ws.cover_image_url} alt={getTitle(ws, i18n.language)} className="workshop-cover" loading="lazy" />
                   )}
                   <div className="workshop-info">
-                    <h3>{ws.title}</h3>
-                    <p>{ws.description}</p>
+                    <h3>{getTitle(ws, i18n.language)}</h3>
+                    <p>{getDesc(ws, i18n.language)}</p>
                     <div className="workshop-meta">
                       <span><Calendar size={14} /> {ws.event_date} {ws.event_time}</span>
                       {ws.location && <span><MapPin size={14} /> {ws.location}</span>}
@@ -111,7 +112,7 @@ export function WorkshopsPage() {
                           onChange={(e) => setFormContact(e.target.value)}
                           placeholder={t("workshops.form.contact")}
                         />
-                        {formMsg && <p style={{ fontSize: 13, color: formMsg.includes("成功") ? "#22c55e" : "#ef4444", margin: "4px 0" }}>{formMsg}</p>}
+                        {formMsg && <p style={{ fontSize: 13, color: formMsg === t("workshops.form.success") ? "#22c55e" : "#ef4444", margin: "4px 0" }}>{formMsg}</p>}
                         <div style={{ display: "flex", gap: 8 }}>
                           <Button type="primary" onClick={() => handleRegister(ws.id)} disabled={registeringId === ws.id}>
                             {registeringId === ws.id ? t("workshops.form.submitting") : t("workshops.form.submit")}

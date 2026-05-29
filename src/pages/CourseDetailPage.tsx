@@ -1,78 +1,70 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Clock, BarChart3, Lock, Unlock, Play, FileText, Images } from "lucide-react";
+import { Clock, BarChart3, Lock, Unlock, Play, FileText, Images } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { PageTransition } from "../components/shared/PageTransition";
+import { DetailLoading } from "../components/shared/DetailLoading";
+import { DetailNotFound } from "../components/shared/DetailNotFound";
+import { DetailBackLink } from "../components/shared/DetailBackLink";
+import { getTitle, getDesc, getLocalizedField } from "../lib/i18n-helpers";
+import { useFetch } from "../hooks/useFetch";
 import type { Course, CourseModule } from "../types/content";
 
 export function CourseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [course, setCourse] = useState<Course | null>(null);
-  const [modules, setModules] = useState<CourseModule[]>([]);
-  const [loading, setLoading] = useState(true);
   const [unlocked, setUnlocked] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [activeModule, setActiveModule] = useState<string | null>(null);
+  const [verifying, setVerifying] = useState(false);
+
+  const { data, loading, error } = useFetch<{ course: Course; modules: CourseModule[] }>(
+    id ? `/api/courses/${id}` : null,
+  );
 
   useGsapPageEffects(rootRef);
 
-  const lang = i18n.language.split("-")[0];
-
   useEffect(() => {
-    if (!id) return;
-    const ctrl = new AbortController();
-    fetch(`/api/courses/${id}`, { signal: ctrl.signal })
-      .then((r) => r.json())
-      .then((d: { course: Course; modules: CourseModule[] }) => {
-        if (!ctrl.signal.aborted) {
-          setCourse(d.course || null);
-          setModules(d.modules || []);
-        }
-      })
-      .catch(() => {})
-      .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
-    return () => ctrl.abort();
+    const stored = localStorage.getItem(`course-unlocked-${id}`);
+    if (stored === "1") setUnlocked(true);
   }, [id]);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(`course-pw-${id}`);
-    if (stored === "lwj5201314") setUnlocked(true);
-  }, [id]);
-
-  const handleUnlock = () => {
-    if (passwordInput === "lwj5201314") {
-      setUnlocked(true);
-      localStorage.setItem(`course-pw-${id}`, "lwj5201314");
-      setPasswordError("");
-    } else {
+  const handleUnlock = async () => {
+    if (!passwordInput.trim()) { setPasswordError(t("courseDetail.wrongPassword")); return; }
+    setVerifying(true);
+    setPasswordError("");
+    try {
+      const r = await fetch(`/api/courses/${id}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: passwordInput.trim() }),
+      });
+      const d = await r.json();
+      if (d.verified) {
+        setUnlocked(true);
+        localStorage.setItem(`course-unlocked-${id}`, "1");
+      } else {
+        setPasswordError(t("courseDetail.wrongPassword"));
+      }
+    } catch {
       setPasswordError(t("courseDetail.wrongPassword"));
+    } finally {
+      setVerifying(false);
     }
   };
 
-  const getTitle = (c: Course) => {
-    if (lang === "en" && c.title_en) return c.title_en;
-    if (lang === "ko" && c.title_ko) return c.title_ko;
-    if (lang === "ja" && c.title_ja) return c.title_ja;
-    return c.title;
-  };
+  const lang = i18n.language;
 
-  const getDesc = (c: Course) => {
-    if (lang === "en" && c.description_en) return c.description_en;
-    if (lang === "ko" && c.description_ko) return c.description_ko;
-    if (lang === "ja" && c.description_ja) return c.description_ja;
-    return c.description;
-  };
+  if (loading) return <DetailLoading label={t("loading")} />;
+  if (error || !data?.course) return <DetailNotFound message={t("courseDetail.notFound")} backTo="/courses" backLabel={t("courseDetail.backToList")} />;
 
-  const getModuleTitle = (m: CourseModule) => {
-    if (lang === "en" && m.title_en) return m.title_en;
-    if (lang === "ko" && m.title_ko) return m.title_ko;
-    if (lang === "ja" && m.title_ja) return m.title_ja;
-    return m.title;
-  };
+  const course = data.course;
+  const modules = data.modules || [];
+
+  const getModuleTitle = (m: CourseModule) => getLocalizedField(m, lang, "title");
 
   const moduleIcon = (type: string) => {
     if (type === "video") return <Play size={16} />;
@@ -80,34 +72,13 @@ export function CourseDetailPage() {
     return <FileText size={16} />;
   };
 
-  if (loading) {
-    return (
-      <PageTransition ref={rootRef}>
-        <div style={{ textAlign: "center", padding: 120 }}>{t("loading")}</div>
-      </PageTransition>
-    );
-  }
-
-  if (!course) {
-    return (
-      <PageTransition ref={rootRef}>
-        <div style={{ textAlign: "center", padding: 120 }}>
-          <h2>{t("courseDetail.notFound")}</h2>
-          <Link to="/courses" style={{ color: "var(--accent)" }}>{t("courseDetail.backToList")}</Link>
-        </div>
-      </PageTransition>
-    );
-  }
-
   return (
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <Link to="/courses" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--accent)", marginBottom: 16, fontSize: "0.9rem" }}>
-            <ArrowLeft size={16} /> {t("courseDetail.backToList")}
-          </Link>
+          <DetailBackLink to="/courses" label={t("courseDetail.backToList")} />
           <p className="section-eyebrow">{t(`courses.categories.${course.category}` as any)}</p>
-          <h1>{getTitle(course)}</h1>
+          <h1>{getTitle(course, lang)}</h1>
           <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
             <span className="course-difficulty">{t(`courses.difficulty.${course.difficulty}` as any)}</span>
             {course.duration_minutes && (
@@ -126,7 +97,7 @@ export function CourseDetailPage() {
         <section className="section-shell is-visible" style={{ paddingTop: 0 }}>
           <img
             src={course.cover_image_url}
-            alt={getTitle(course)}
+            alt={getTitle(course, lang)}
             style={{ width: "100%", maxHeight: 400, objectFit: "cover", borderRadius: 16 }}
           />
         </section>
@@ -135,7 +106,7 @@ export function CourseDetailPage() {
       <section className="section-shell is-visible">
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <h2 style={{ marginBottom: 16 }}>{t("courseDetail.about")}</h2>
-          <p style={{ lineHeight: 1.8, color: "var(--text-secondary)" }}>{getDesc(course)}</p>
+          <p style={{ lineHeight: 1.8, color: "var(--text-secondary)" }}>{getDesc(course, lang)}</p>
         </div>
       </section>
 
@@ -190,6 +161,7 @@ export function CourseDetailPage() {
                 />
                 <button
                   onClick={handleUnlock}
+                  disabled={verifying}
                   style={{
                     padding: "10px 20px",
                     background: "var(--accent)",
@@ -200,7 +172,7 @@ export function CourseDetailPage() {
                     fontWeight: 600,
                   }}
                 >
-                  <Unlock size={14} />
+                  {verifying ? "..." : <Unlock size={14} />}
                 </button>
               </div>
               {passwordError && <p style={{ color: "#ef4444", fontSize: "0.85rem", marginTop: 8 }}>{passwordError}</p>}
@@ -240,17 +212,9 @@ export function CourseDetailPage() {
                     }}
                   >
                     <span style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: "50%",
-                      background: "var(--accent)",
-                      color: "#fff",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "0.8rem",
-                      fontWeight: 700,
-                      flexShrink: 0,
+                      width: 28, height: 28, borderRadius: "50%", background: "var(--accent)",
+                      color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: "0.8rem", fontWeight: 700, flexShrink: 0,
                     }}>
                       {i + 1}
                     </span>
@@ -260,11 +224,8 @@ export function CourseDetailPage() {
                   </button>
                   {activeModule === mod.id && mod.content && (
                     <div style={{
-                      padding: "0 18px 18px",
-                      fontSize: "0.9rem",
-                      lineHeight: 1.7,
-                      color: "var(--text-secondary)",
-                      whiteSpace: "pre-wrap",
+                      padding: "0 18px 18px", fontSize: "0.9rem", lineHeight: 1.7,
+                      color: "var(--text-secondary)", whiteSpace: "pre-wrap",
                     }}>
                       {mod.content}
                     </div>
@@ -284,15 +245,9 @@ export function CourseDetailPage() {
         <Link
           to="/booking"
           style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "12px 32px",
-            background: "var(--accent)",
-            color: "#fff",
-            borderRadius: 999,
-            textDecoration: "none",
-            fontWeight: 600,
+            display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 32px",
+            background: "var(--accent)", color: "#fff", borderRadius: 999,
+            textDecoration: "none", fontWeight: 600,
           }}
         >
           {t("courseDetail.ctaBtn")}

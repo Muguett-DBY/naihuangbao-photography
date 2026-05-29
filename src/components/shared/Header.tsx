@@ -94,6 +94,7 @@ export function Header() {
             to={item.to}
             key={item.to}
             className={location.pathname === item.to ? "is-active" : ""}
+            aria-current={location.pathname === item.to ? "page" : undefined}
             onClick={() => setOpen(false)}
           >
             {item.label}

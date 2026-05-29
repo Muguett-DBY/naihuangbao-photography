@@ -7,8 +7,6 @@ type LightboxProps = {
   photos: PhotoItem[];
   currentIndex: number;
   onClose: () => void;
-  onPrev: () => void;
-  onNext: () => void;
 };
 
 export default function Lightbox({ photos, currentIndex, onClose }: LightboxProps) {
