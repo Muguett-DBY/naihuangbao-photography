@@ -1,24 +1,39 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const GRAIN_SIZE = 128;
 
+function getDeviceCapability(): "high" | "medium" | "low" {
+  const cores = navigator.hardwareConcurrency || 4;
+  if (cores <= 2) return "low";
+  if (cores <= 4) return "medium";
+  return "high";
+}
+
 export function FilmGrain() {
+  const [capable, setCapable] = useState(true);
   const grainRef = useRef<HTMLCanvasElement>(null);
   const leakRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    const capability = getDeviceCapability();
+    if (capability === "low") {
+      setCapable(false);
+      return;
+    }
+
     const grain = grainRef.current;
     if (!grain) return;
     const gCtx = grain.getContext("2d");
     if (!gCtx) return;
 
+    const grainSkip = capability === "medium" ? 12 : 6;
     let frame = 0;
     let rafId = 0;
 
     const updateGrain = () => {
       if (!document.hidden) {
         frame++;
-        if (frame % 6 === 0) {
+        if (frame % grainSkip === 0) {
           gCtx.clearRect(0, 0, GRAIN_SIZE, GRAIN_SIZE);
           const imageData = gCtx.createImageData(GRAIN_SIZE, GRAIN_SIZE);
           const data = imageData.data;
@@ -53,7 +68,7 @@ export function FilmGrain() {
     let leakRaf = 0;
 
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const leakFps = isMobile ? 20 : 30;
+    const leakFps = capability === "medium" ? 15 : isMobile ? 20 : 30;
     const leakFrameInterval = 1000 / leakFps;
     let lastLeakFrameTime = 0;
 
@@ -109,6 +124,8 @@ export function FilmGrain() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  if (!capable) return null;
 
   return (
     <>
