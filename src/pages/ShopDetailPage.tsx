@@ -53,11 +53,11 @@ export function ShopDetailPage() {
   return (
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
+        <div className="section-heading shop-detail-hero-heading">
           <DetailBackLink to="/shop" label={t("shopDetail.backToList")} />
           <p className="section-eyebrow">{t(`merchandise.categories.${item.category}` as any)}</p>
           <h1>{getName(item, lang)}</h1>
-          {item.price_display && <div style={{ fontSize: "1.3rem", fontWeight: 700, marginTop: 8 }}>{item.price_display}</div>}
+          {item.price_display && <div className="shop-detail-price">{item.price_display}</div>}
         </div>
       </section>
 
@@ -65,18 +65,18 @@ export function ShopDetailPage() {
         <div className="shop-detail-grid">
           <div>
             {images.length > 0 && (
-              <div style={{ position: "relative", borderRadius: 16, overflow: "hidden" }}>
-                <img src={images[activeImage]} alt={getName(item, lang)} width={800} height={800} loading="lazy" style={{ width: "100%", aspectRatio: "1", objectFit: "cover" }} />
+              <div className="shop-detail-image-stage">
+                <img src={images[activeImage]} alt={getName(item, lang)} width={800} height={800} loading="lazy" className="shop-detail-main-image" />
                 {images.length > 1 && (
                   <>
                     <button onClick={() => setActiveImage((activeImage - 1 + images.length) % images.length)}
                       aria-label="Previous image"
-                      style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.8)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      className="shop-detail-nav-btn shop-detail-nav-btn--prev">
                       <ChevronLeft size={16} />
                     </button>
                     <button onClick={() => setActiveImage((activeImage + 1) % images.length)}
                       aria-label="Next image"
-                      style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.8)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      className="shop-detail-nav-btn shop-detail-nav-btn--next">
                       <ChevronRight size={16} />
                     </button>
                   </>
@@ -84,40 +84,40 @@ export function ShopDetailPage() {
               </div>
             )}
             {images.length > 1 && (
-              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+              <div className="shop-detail-thumbnails">
                 {images.map((img, i) => (
                   <button key={i} onClick={() => setActiveImage(i)}
                     aria-label={`View image ${i + 1}`}
                     aria-current={activeImage === i ? "true" : undefined}
-                    style={{ flex: 1, border: activeImage === i ? "2px solid var(--accent)" : "2px solid transparent", borderRadius: 8, overflow: "hidden", cursor: "pointer", padding: 0, background: "none" }}>
-                    <img src={img} alt="" width={120} height={120} loading="lazy" style={{ width: "100%", aspectRatio: "1", objectFit: "cover", display: "block" }} />
+                    className={`shop-detail-thumb${activeImage === i ? " shop-detail-thumb--active" : ""}`}>
+                    <img src={img} alt="" width={120} height={120} loading="lazy" />
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          <div>
-            <h2 style={{ marginBottom: 16 }}>{t("shopDetail.about")}</h2>
-            <p style={{ lineHeight: 1.8, color: "var(--caramel-muted)", marginBottom: 24 }}>{getDesc(item, lang)}</p>
+          <div className="shop-detail-about">
+            <h2>{t("shopDetail.about")}</h2>
+            <p className="shop-detail-description">{getDesc(item, lang)}</p>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+            <div className="shop-detail-specs">
               <h3>{t("shopDetail.specs")}</h3>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <div className="shop-detail-specs-grid">
                 {[
                   { label: t("shopDetail.specCategory"), value: t(`merchandise.categories.${item.category}` as any) },
                   { label: t("shopDetail.specPrice"), value: item.price_display },
                   { label: t("shopDetail.specAvailability"), value: item.available ? t("shopDetail.inStock") : t("shopDetail.outOfStock") },
                 ].map((spec) => (
-                  <div key={spec.label} style={{ padding: "8px 12px", background: "var(--card-bg)", borderRadius: 8 }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--caramel-muted)", display: "block" }}>{spec.label}</span>
-                    <span style={{ fontSize: "0.9rem", fontWeight: 500 }}>{spec.value}</span>
+                  <div key={spec.label} className="shop-detail-spec-item">
+                    <span className="shop-detail-spec-label">{spec.label}</span>
+                    <span className="shop-detail-spec-value">{spec.value}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
+            <div className="shop-detail-guide">
               <h3>{t("shopDetail.guide")}</h3>
               {[
                 { icon: <MessageCircle size={16} />, text: t("shopDetail.step1") },
@@ -125,14 +125,14 @@ export function ShopDetailPage() {
                 { icon: <Truck size={16} />, text: t("shopDetail.step3") },
                 { icon: <RotateCcw size={16} />, text: t("shopDetail.step4") },
               ].map((step, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: "0.9rem" }}>
-                  <span style={{ color: "var(--accent)" }}>{step.icon}</span> {step.text}
+                <div key={i} className="shop-detail-guide-step">
+                  <span>{step.icon}</span> {step.text}
                 </div>
               ))}
             </div>
 
             <button onClick={() => openBookingModal()}
-              style={{ width: "100%", padding: "12px 24px", background: "var(--accent)", color: "#fff", border: "none", borderRadius: 999, fontSize: "1rem", fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              className="shop-detail-inquire-btn">
               <MessageCircle size={16} /> {t("merchandise.inquire")}
             </button>
           </div>
@@ -141,16 +141,16 @@ export function ShopDetailPage() {
 
       {allItems.length > 0 && (
         <section className="section-shell is-visible">
-          <div style={{ maxWidth: 800, margin: "0 auto" }}>
-            <h2 style={{ marginBottom: 16 }}>{t("shopDetail.related")}</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 16 }}>
+          <div className="shop-detail-related">
+            <h2>{t("shopDetail.related")}</h2>
+            <div className="shop-detail-related-grid">
               {allItems.slice(0, 4).map((m) => (
                 <Link key={m.id} to={`/shop/${m.id}`}
-                  style={{ display: "block", background: "var(--card-bg)", border: "1px solid var(--border-subtle)", borderRadius: 12, overflow: "hidden", textDecoration: "none", color: "inherit" }}>
-                  {m.images?.[0] && <img src={m.images[0]} alt={getName(m, lang)} style={{ width: "100%", aspectRatio: "1", objectFit: "cover" }} />}
-                  <div style={{ padding: 10 }}>
-                    <h4 style={{ margin: "0 0 4px", fontSize: "0.85rem" }}>{getName(m, lang)}</h4>
-                    <span style={{ fontSize: "0.8rem", fontWeight: 600 }}>{m.price_display}</span>
+                  className="shop-detail-related-card">
+                  {m.images?.[0] && <img src={m.images[0]} alt={getName(m, lang)} />}
+                  <div className="shop-detail-related-card-info">
+                    <h4>{getName(m, lang)}</h4>
+                    <span>{m.price_display}</span>
                   </div>
                 </Link>
               ))}

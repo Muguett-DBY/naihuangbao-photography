@@ -53,46 +53,34 @@ export function LoginPage() {
       </section>
 
       <section className="section-shell is-visible">
-        <div style={{ maxWidth: 400, margin: "0 auto" }}>
-          <div style={{
-            background: "var(--card-bg, rgba(255,255,255,0.7))",
-            border: "1px solid var(--border-subtle)",
-            borderRadius: 16,
-            padding: 32,
-          }}>
+        <div className="login-box">
+          <div className="login-card">
             <form onSubmit={handleSubmit}>
               {mode === "register" && (
-                <div style={{ marginBottom: 16 }}>
-                  <label htmlFor="displayName" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem", fontWeight: 500 }}>
+                <div className="login-field">
+                  <label htmlFor="displayName" className="login-label">
                     {t("auth.displayName", "显示名称")}
                   </label>
-                  <div style={{ position: "relative" }}>
-                    <User size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--caramel-muted)" }} />
+                  <div className="login-input-wrap">
+                    <User size={16} className="login-input-icon" />
                     <input
                       id="displayName"
                       type="text"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       placeholder={t("auth.displayNamePlaceholder", "可选")}
-                      style={{
-                        width: "100%",
-                        padding: "10px 14px 10px 36px",
-                        border: "1px solid var(--border-subtle)",
-                        borderRadius: 8,
-                        fontSize: "0.9rem",
-                        background: "transparent",
-                      }}
+                      className="login-input"
                     />
                   </div>
                 </div>
               )}
 
-              <div style={{ marginBottom: 16 }}>
-                <label htmlFor="email" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem", fontWeight: 500 }}>
+              <div className="login-field">
+                <label htmlFor="email" className="login-label">
                   {t("auth.email", "邮箱")}
                 </label>
-                <div style={{ position: "relative" }}>
-                  <Mail size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--caramel-muted)" }} />
+                <div className="login-input-wrap">
+                  <Mail size={16} className="login-input-icon" />
                   <input
                     id="email"
                     type="email"
@@ -100,24 +88,17 @@ export function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder={t("auth.emailPlaceholder", "your@email.com")}
-                    style={{
-                      width: "100%",
-                      padding: "10px 14px 10px 36px",
-                      border: "1px solid var(--border-subtle)",
-                      borderRadius: 8,
-                      fontSize: "0.9rem",
-                      background: "transparent",
-                    }}
+                    className="login-input"
                   />
                 </div>
               </div>
 
-              <div style={{ marginBottom: 24 }}>
-                <label htmlFor="password" style={{ display: "block", marginBottom: 6, fontSize: "0.9rem", fontWeight: 500 }}>
+              <div className="login-field login-field--last">
+                <label htmlFor="password" className="login-label">
                   {t("auth.password", "密码")}
                 </label>
-                <div style={{ position: "relative" }}>
-                  <Lock size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "var(--caramel-muted)" }} />
+                <div className="login-input-wrap">
+                  <Lock size={16} className="login-input-icon" />
                   <input
                     id="password"
                     type="password"
@@ -126,51 +107,31 @@ export function LoginPage() {
                     required
                     minLength={6}
                     placeholder={t("auth.passwordPlaceholder", "至少6个字符")}
-                    style={{
-                      width: "100%",
-                      padding: "10px 14px 10px 36px",
-                      border: "1px solid var(--border-subtle)",
-                      borderRadius: 8,
-                      fontSize: "0.9rem",
-                      background: "transparent",
-                    }}
+                    className="login-input"
                   />
                 </div>
               </div>
 
               {error && (
-                <p style={{ color: "#ef4444", fontSize: "0.85rem", marginBottom: 16 }}>{error}</p>
+                <p className="login-error">{error}</p>
               )}
 
               <button
                 type="submit"
                 disabled={loading}
-                style={{
-                  width: "100%",
-                  padding: "12px 20px",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 8,
-                  cursor: "pointer",
-                  fontWeight: 600,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                }}
+                className="login-button"
               >
                 {loading ? "..." : mode === "login" ? <><LogIn size={16} /> {t("auth.loginButton", "登录")}</> : <><UserPlus size={16} /> {t("auth.registerButton", "注册")}</>}
               </button>
             </form>
 
-            <div style={{ marginTop: 24, textAlign: "center", fontSize: "0.9rem", color: "var(--caramel-muted)" }}>
+            <div className="login-footer">
               {mode === "login" ? (
                 <>
                   {t("auth.noAccount", "还没有账户？")}{" "}
                   <button
                     onClick={() => { setMode("register"); setError(""); }}
-                    style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", textDecoration: "underline" }}
+                    className="login-toggle"
                   >
                     {t("auth.registerLink", "注册")}
                   </button>
@@ -180,7 +141,7 @@ export function LoginPage() {
                   {t("auth.hasAccount", "已有账户？")}{" "}
                   <button
                     onClick={() => { setMode("login"); setError(""); }}
-                    style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", textDecoration: "underline" }}
+                    className="login-toggle"
                   >
                     {t("auth.loginLink", "登录")}
                   </button>
@@ -188,8 +149,8 @@ export function LoginPage() {
               )}
             </div>
 
-            <div style={{ marginTop: 16, textAlign: "center" }}>
-              <Link to="/" style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
+            <div className="login-back">
+              <Link to="/">
                 {t("auth.backToHome", "返回首页")}
               </Link>
             </div>

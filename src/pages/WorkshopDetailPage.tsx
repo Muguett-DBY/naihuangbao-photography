@@ -92,19 +92,19 @@ export function WorkshopDetailPage() {
   return (
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
+        <div className="section-heading workshop-detail-hero-heading">
           <DetailBackLink to="/workshops" label={t("workshopDetail.backToList")} />
           <h1>{getTitle(workshop, lang)}</h1>
-          <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
-            <span style={{ fontSize: "0.85rem", color: "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
+          <div className="workshop-detail-meta">
+            <span>
               <Calendar size={14} /> {workshop.event_date} {workshop.event_time}
             </span>
             {workshop.location && (
-              <span style={{ fontSize: "0.85rem", color: "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
+              <span>
                 <MapPin size={14} /> {workshop.location}
               </span>
             )}
-            <span style={{ fontSize: "0.85rem", color: isFull ? "#ef4444" : "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
+            <span style={{ color: isFull ? "#ef4444" : undefined }}>
               <Users size={14} /> {isFull ? t("workshops.full") : `${t("workshops.spotsLeft")}: ${spotsLeft}`}
             </span>
           </div>
@@ -113,22 +113,21 @@ export function WorkshopDetailPage() {
 
       {workshop.cover_image_url && (
         <section className="section-shell is-visible" style={{ paddingTop: 0 }}>
-          <img src={workshop.cover_image_url} alt={getTitle(workshop, lang)} width={800} height={400} loading="lazy" style={{ width: "100%", maxHeight: 400, objectFit: "cover", borderRadius: 16 }} />
+          <img src={workshop.cover_image_url} alt={getTitle(workshop, lang)} width={800} height={400} loading="lazy" className="workshop-detail-cover" />
         </section>
       )}
 
       <section className="section-shell is-visible">
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <h2 style={{ marginBottom: 16 }}>{t("workshopDetail.about")}</h2>
-          <p style={{ lineHeight: 1.8, color: "var(--caramel-muted)" }}>{getDesc(workshop, lang)}</p>
+        <div className="workshop-detail-section">
+          <h2>{t("workshopDetail.about")}</h2>
+          <p className="workshop-detail-description">{getDesc(workshop, lang)}</p>
         </div>
       </section>
 
       <section className="section-shell is-visible">
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <h2 style={{ marginBottom: 16 }}>{t("workshopDetail.schedule")}</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: 0, position: "relative" }}>
-            <div style={{ position: "absolute", left: 15, top: 8, bottom: 8, width: 2, background: "var(--border-subtle)" }} />
+        <div className="workshop-detail-section">
+          <h2>{t("workshopDetail.schedule")}</h2>
+          <div className="workshop-detail-timeline">
             {[
               { time: "14:00", label: t("workshopDetail.step1") },
               { time: "14:15", label: t("workshopDetail.step2") },
@@ -136,11 +135,11 @@ export function WorkshopDetailPage() {
               { time: "16:00", label: t("workshopDetail.step4") },
               { time: "16:45", label: t("workshopDetail.step5") },
             ].map((step, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 16, padding: "12px 0", position: "relative" }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--accent)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem", fontWeight: 700, flexShrink: 0, zIndex: 1 }}>{i + 1}</div>
+              <div key={i} className="workshop-detail-timeline-step">
+                <div className="workshop-detail-timeline-dot">{i + 1}</div>
                 <div>
-                  <span style={{ fontSize: "0.8rem", color: "var(--accent)", fontWeight: 600 }}><Clock size={12} style={{ verticalAlign: -1 }} /> {step.time}</span>
-                  <p style={{ margin: "4px 0 0", fontSize: "0.95rem" }}>{step.label}</p>
+                  <span className="workshop-detail-timeline-time"><Clock size={12} style={{ verticalAlign: -1 }} /> {step.time}</span>
+                  <p className="workshop-detail-timeline-label">{step.label}</p>
                 </div>
               </div>
             ))}
@@ -149,20 +148,20 @@ export function WorkshopDetailPage() {
       </section>
 
       <section className="section-shell is-visible">
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <h2 style={{ marginBottom: 16 }}>{t("workshopDetail.guide")}</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
+        <div className="workshop-detail-section">
+          <h2>{t("workshopDetail.guide")}</h2>
+          <div className="workshop-detail-guide-grid">
             {[
               { title: t("workshopDetail.gearTitle"), items: ["相机+镜头", "备用电池", "存储卡", "三脚架（可选）"] },
               { title: t("workshopDetail.clothingTitle"), items: ["舒适运动鞋", "防晒帽", "深色衣物为佳", "备一件外套"] },
               { title: t("workshopDetail.tipsTitle"), items: ["提前到场", "手机充电", "保持开放心态", "享受拍摄过程"] },
             ].map((section, i) => (
-              <div key={i} style={{ background: "var(--card-bg)", border: "1px solid var(--border-subtle)", borderRadius: 12, padding: 16 }}>
-                <h4 style={{ margin: "0 0 8px", fontSize: "0.95rem" }}>{section.title}</h4>
-                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+              <div key={i} className="workshop-detail-guide-card">
+                <h4>{section.title}</h4>
+                <ul>
                   {section.items.map((item) => (
-                    <li key={item} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
-                      <CheckCircle size={14} style={{ color: "var(--accent)", flexShrink: 0 }} /> {item}
+                    <li key={item}>
+                      <CheckCircle size={14} /> {item}
                     </li>
                   ))}
                 </ul>
@@ -174,13 +173,13 @@ export function WorkshopDetailPage() {
 
       {workshop.location && (
         <section className="section-shell is-visible">
-          <div style={{ maxWidth: 800, margin: "0 auto" }}>
-            <h2 style={{ marginBottom: 16 }}>{t("workshopDetail.location")}</h2>
-            <div style={{ background: "var(--card-bg)", border: "1px solid var(--border-subtle)", borderRadius: 12, padding: 16, display: "flex", alignItems: "center", gap: 12 }}>
-              <MapPin size={20} style={{ color: "var(--accent)" }} />
+          <div className="workshop-detail-section">
+            <h2>{t("workshopDetail.location")}</h2>
+            <div className="workshop-detail-location-card">
+              <MapPin size={20} />
               <div>
-                <p style={{ margin: 0, fontWeight: 500 }}>{workshop.location}</p>
-                <a href={`https://uri.amap.com/marker?position=&name=${encodeURIComponent(workshop.location)}`} target="_blank" rel="noreferrer" style={{ fontSize: "0.85rem", color: "var(--accent)" }}>{t("workshopDetail.openInMap")}</a>
+                <p>{workshop.location}</p>
+                <a href={`https://uri.amap.com/marker?position=&name=${encodeURIComponent(workshop.location)}`} target="_blank" rel="noreferrer">{t("workshopDetail.openInMap")}</a>
               </div>
             </div>
           </div>
@@ -188,12 +187,12 @@ export function WorkshopDetailPage() {
       )}
 
       <section className="section-shell is-visible">
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <h2 style={{ marginBottom: 16 }}>{t("workshopDetail.register")}</h2>
-          <div style={{ background: "var(--card-bg)", border: "1px solid var(--border-subtle)", borderRadius: 16, padding: 24 }}>
-            {workshop.price_display && <div style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: 16 }}>{workshop.price_display}</div>}
+        <div className="workshop-detail-section">
+          <h2>{t("workshopDetail.register")}</h2>
+          <div className="workshop-detail-register-card">
+            {workshop.price_display && <div className="workshop-detail-register-price">{workshop.price_display}</div>}
             {isFull ? (
-              <p style={{ color: "#ef4444" }}>{t("workshopDetail.fullMessage")}</p>
+              <p className="workshop-detail-register-full">{t("workshopDetail.fullMessage")}</p>
             ) : showPayment && registrationId && workshop?.price_cents ? (
               <PaymentForm
                 purpose="workshop_registration"
@@ -216,14 +215,14 @@ export function WorkshopDetailPage() {
                 <input
                   value={formName} onChange={(e) => setFormName(e.target.value)}
                   placeholder={t("workshops.form.name")}
-                  style={{ width: "100%", padding: "10px 14px", border: "1px solid var(--border-subtle)", borderRadius: 8, fontSize: "0.9rem", marginBottom: 8, boxSizing: "border-box" }}
+                  className="workshop-detail-register-input"
                 />
                 <input
                   value={formContact} onChange={(e) => setFormContact(e.target.value)}
                   placeholder={t("workshops.form.contact")}
-                  style={{ width: "100%", padding: "10px 14px", border: "1px solid var(--border-subtle)", borderRadius: 8, fontSize: "0.9rem", marginBottom: 12, boxSizing: "border-box" }}
+                  className="workshop-detail-register-input"
                 />
-                {formMsg && <p style={{ fontSize: 13, color: formMsg === t("workshops.form.success") ? "#22c55e" : "#ef4444", margin: "0 0 12px" }}>{formMsg}</p>}
+                {formMsg && <p className={`workshop-detail-form-msg${formMsg === t("workshops.form.success") ? " workshop-detail-form-msg--success" : " workshop-detail-form-msg--error"}`}>{formMsg}</p>}
                 <Button type="primary" onClick={handleRegister} disabled={submitting}>
                   {submitting ? t("workshops.form.submitting") : t("workshops.register")}
                 </Button>
