@@ -527,5 +527,51 @@
       "予約プロセスは？",
       "男性も撮影できますか？"
     ]
+  },
+  "admin": {
+    "tabs": {
+      "bookings": "予約",
+      "photos": "写真",
+      "stats": "統計",
+      "courses": "講座",
+      "presets": "プリセット",
+      "workshops": "ワークショップ",
+      "merchandise": "グッズ",
+      "packages": "プラン & 料金",
+      "services": "サービス規則",
+      "faq": "FAQ / 流れ",
+      "copy": "トップページコピー"
+    },
+    "login": {
+      "loggingIn": "ログイン中...",
+      "wrongPassword": "パスワードが正しくありません",
+      "error": "ログインに失敗しました。後でもう一度お試しください。",
+      "title": "ポートフォリオ & コンテンツ管理",
+      "subtitle": "管理者パスワードを入力してログイン",
+      "placeholder": "パスワードを入力",
+      "submit": "ログイン",
+      "backToSite": "← サイトに戻る"
+    },
+    "header": {
+      "brand": "{{name}} · 管理画面",
+      "logout": "ログアウト",
+      "backToSite": "← サイト"
+    },
+    "logout": {
+      "error": "ログアウトリクエストに失敗しました。ローカルのログイン状態が削除されました。"
+    },
+    "loading": "ログイン状態を確認中...",
+    "stats": {
+      "title": "データ概要",
+      "noData": "データを読み込めません",
+      "metric": "項目",
+      "value": "値",
+      "detail": "詳細",
+      "photosTotal": "写真総数",
+      "public": "公開",
+      "hidden": "非公開",
+      "bookingsTotal": "予約総数",
+      "pending": "件待ち"
+    }
   }
 }

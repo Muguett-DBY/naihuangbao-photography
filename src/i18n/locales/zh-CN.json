@@ -528,5 +528,51 @@
       "预约流程是什么？",
       "我是男生可以拍吗？"
     ]
+  },
+  "admin": {
+    "tabs": {
+      "bookings": "预约",
+      "photos": "照片",
+      "stats": "数据",
+      "courses": "课程",
+      "presets": "预设",
+      "workshops": "活动",
+      "merchandise": "周边",
+      "packages": "套餐价格",
+      "services": "服务规则",
+      "faq": "FAQ/流程",
+      "copy": "主页文案"
+    },
+    "login": {
+      "loggingIn": "正在登录...",
+      "wrongPassword": "密码不正确",
+      "error": "登录失败，请稍后重试",
+      "title": "作品与内容管理",
+      "subtitle": "输入后台密码登录",
+      "placeholder": "输入密码",
+      "submit": "登录",
+      "backToSite": "← 返回官网"
+    },
+    "header": {
+      "brand": "{{name}} · 后台管理",
+      "logout": "退出",
+      "backToSite": "← 官网"
+    },
+    "logout": {
+      "error": "退出请求失败，本地登录状态已清除。"
+    },
+    "loading": "检查登录状态...",
+    "stats": {
+      "title": "数据概览",
+      "noData": "暂时无法加载数据",
+      "metric": "指标",
+      "value": "数值",
+      "detail": "详情",
+      "photosTotal": "照片总数",
+      "public": "公开",
+      "hidden": "隐藏",
+      "bookingsTotal": "预约总数",
+      "pending": "个待处理"
+    }
   }
 }

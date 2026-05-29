@@ -527,5 +527,51 @@
       "예약 과정은 어떻게 되나요?",
       "남성도 촬영할 수 있나요?"
     ]
+  },
+  "admin": {
+    "tabs": {
+      "bookings": "예약",
+      "photos": "사진",
+      "stats": "통계",
+      "courses": "강좌",
+      "presets": "프리셋",
+      "workshops": "워크숍",
+      "merchandise": "상품",
+      "packages": "패키지 & 가격",
+      "services": "서비스 규칙",
+      "faq": "FAQ / 과정",
+      "copy": "홈페이지 문구"
+    },
+    "login": {
+      "loggingIn": "로그인 중...",
+      "wrongPassword": "비밀번호가 올바르지 않습니다",
+      "error": "로그인 실패. 나중에 다시 시도해 주세요.",
+      "title": "포트폴리오 & 콘텐츠 관리",
+      "subtitle": "관리자 비밀번호를 입력하여 로그인",
+      "placeholder": "비밀번호 입력",
+      "submit": "로그인",
+      "backToSite": "← 사이트로 돌아가기"
+    },
+    "header": {
+      "brand": "{{name}} · 관리자",
+      "logout": "로그아웃",
+      "backToSite": "← 사이트"
+    },
+    "logout": {
+      "error": "로그아웃 요청 실패. 로컬 로그인 상태가 삭제되었습니다."
+    },
+    "loading": "로그인 상태 확인 중...",
+    "stats": {
+      "title": "데이터 개요",
+      "noData": "데이터를 불러올 수 없습니다",
+      "metric": "항목",
+      "value": "값",
+      "detail": "상세",
+      "photosTotal": "전체 사진",
+      "public": "공개",
+      "hidden": "비공개",
+      "bookingsTotal": "전체 예약",
+      "pending": "건 대기"
+    }
   }
 }

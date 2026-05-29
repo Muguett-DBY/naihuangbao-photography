@@ -528,5 +528,51 @@
       "What's the booking process?",
       "Can guys take photos?"
     ]
+  },
+  "admin": {
+    "tabs": {
+      "bookings": "Bookings",
+      "photos": "Photos",
+      "stats": "Stats",
+      "courses": "Courses",
+      "presets": "Presets",
+      "workshops": "Workshops",
+      "merchandise": "Merchandise",
+      "packages": "Packages & Pricing",
+      "services": "Service Rules",
+      "faq": "FAQ / Process",
+      "copy": "Homepage Copy"
+    },
+    "login": {
+      "loggingIn": "Logging in...",
+      "wrongPassword": "Incorrect password",
+      "error": "Login failed. Please try again later.",
+      "title": "Portfolio & Content Management",
+      "subtitle": "Enter admin password to log in",
+      "placeholder": "Enter password",
+      "submit": "Log In",
+      "backToSite": "← Back to site"
+    },
+    "header": {
+      "brand": "{{name}} · Admin",
+      "logout": "Logout",
+      "backToSite": "← Site"
+    },
+    "logout": {
+      "error": "Logout request failed. Local login state has been cleared."
+    },
+    "loading": "Checking login status...",
+    "stats": {
+      "title": "Overview",
+      "noData": "Unable to load data",
+      "metric": "Metric",
+      "value": "Value",
+      "detail": "Detail",
+      "photosTotal": "Total Photos",
+      "public": "Public",
+      "hidden": "Hidden",
+      "bookingsTotal": "Total Bookings",
+      "pending": " pending"
+    }
   }
 }
