@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Clock, BarChart3, Lock, Unlock, Play, FileText, Images, LogIn, ShoppingCart } from "lucide-react";
+import { Clock, BarChart3, Lock, Play, FileText, Images, LogIn, ShoppingCart } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useNotification } from "../hooks/useNotification";
@@ -17,23 +17,29 @@ import { VideoPlayer } from "../components/VideoPlayer";
 import { PaymentForm } from "../components/PaymentForm";
 import type { Course, CourseModule } from "../types/content";
 
+const fetchWithCredentials: RequestInit = { credentials: "include" };
+
 export function CourseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const { sendPaymentReceipt } = useNotification();
-  const [unlocked, setUnlocked] = useState(false);
-  const [passwordInput, setPasswordInput] = useState("");
-  const [passwordError, setPasswordError] = useState("");
   const [activeModule, setActiveModule] = useState<string | null>(null);
-  const [verifying, setVerifying] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const { user } = useAuth();
   const lang = i18n.language;
 
   const { data, loading, error } = useFetch<{ course: Course; modules: CourseModule[] }>(
     id ? `/api/courses/${id}` : null,
+    fetchWithCredentials,
   );
+
+  const { data: accessData } = useFetch<{ hasAccess: boolean }>(
+    user && id ? `/api/courses/${id}/access` : null,
+    fetchWithCredentials,
+  );
+
+  const unlocked = accessData?.hasAccess ?? false;
 
   const courseTitle = data?.course ? getTitle(data.course, lang) : "";
   useSEO({
@@ -43,39 +49,6 @@ export function CourseDetailPage() {
   });
 
   useGsapPageEffects(rootRef);
-
-  useEffect(() => {
-    if (user) {
-      setUnlocked(true);
-    } else {
-      const stored = localStorage.getItem(`course-unlocked-${id}`);
-      if (stored === "1") setUnlocked(true);
-    }
-  }, [id, user]);
-
-  const handleUnlock = async () => {
-    if (!passwordInput.trim()) { setPasswordError(t("courseDetail.wrongPassword")); return; }
-    setVerifying(true);
-    setPasswordError("");
-    try {
-      const r = await fetch(`/api/courses/${id}/verify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: passwordInput.trim() }),
-      });
-      const d = await r.json();
-      if (d.verified) {
-        setUnlocked(true);
-        localStorage.setItem(`course-unlocked-${id}`, "1");
-      } else {
-        setPasswordError(t("courseDetail.wrongPassword"));
-      }
-    } catch {
-      setPasswordError(t("courseDetail.wrongPassword"));
-    } finally {
-      setVerifying(false);
-    }
-  };
 
   if (loading) return <DetailLoading label={t("loading")} />;
   if (error || !data?.course) return <DetailNotFound message={t("courseDetail.notFound")} backTo="/courses" backLabel={t("courseDetail.backToList")} />;
@@ -90,6 +63,8 @@ export function CourseDetailPage() {
     if (type === "gallery") return <Images size={16} />;
     return <FileText size={16} />;
   };
+
+  const isPaidCourse = !!course.price_cents && course.price_cents > 0;
 
   return (
     <PageTransition ref={rootRef}>
@@ -145,7 +120,7 @@ export function CourseDetailPage() {
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
           <h2 style={{ marginBottom: 16 }}>{t("courseDetail.syllabus")}</h2>
 
-          {!unlocked && !user && (
+          {!user && (
             <div style={{
               background: "var(--card-bg, rgba(255,255,255,0.7))",
               border: "1px solid var(--border-subtle)",
@@ -181,7 +156,7 @@ export function CourseDetailPage() {
             </div>
           )}
 
-          {!unlocked && user && (
+          {user && !unlocked && (
             <div style={{
               background: "var(--card-bg, rgba(255,255,255,0.7))",
               border: "1px solid var(--border-subtle)",
@@ -191,42 +166,16 @@ export function CourseDetailPage() {
               textAlign: "center",
             }}>
               <Lock size={32} style={{ color: "var(--accent)", marginBottom: 12 }} />
-              <h3 style={{ marginBottom: 8 }}>{t("courseDetail.lockedTitle")}</h3>
+              <h3 style={{ marginBottom: 8 }}>{t("courseDetail.purchaseRequired", "购买课程以解锁全部内容")}</h3>
               <p style={{ fontSize: "0.9rem", color: "var(--caramel-muted)", marginBottom: 16 }}>
-                {t("courseDetail.lockedDesc")}
+                {t("courseDetail.purchaseRequiredDesc", "购买此课程后即可查看所有模块内容")}
               </p>
-              <div style={{ display: "flex", gap: 8, justifyContent: "center", maxWidth: 320, margin: "0 auto" }}>
-                <input
-                  type="password"
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleUnlock()}
-                  placeholder={t("courseDetail.passwordPlaceholder")}
-                  style={{
-                    flex: 1,
-                    padding: "10px 14px",
-                    border: "1px solid var(--border-subtle)",
-                    borderRadius: 8,
-                    fontSize: "0.9rem",
-                  }}
-                />
-                <button
-                  onClick={handleUnlock}
-                  disabled={verifying}
-                  style={{
-                    padding: "10px 20px",
-                    background: "var(--accent)",
-                    color: "#fff",
-                    border: "none",
-                    borderRadius: 8,
-                    cursor: "pointer",
-                    fontWeight: 600,
-                  }}
-                >
-                  {verifying ? "..." : <Unlock size={14} />}
-                </button>
-              </div>
-              {passwordError && <p style={{ color: "#ef4444", fontSize: "0.85rem", marginTop: 8 }}>{passwordError}</p>}
+              {isPaidCourse && (
+                <Button type="primary" onClick={() => setShowPayment(true)}>
+                  <ShoppingCart size={14} />
+                  {t("courseDetail.buyNow", "Buy Course")}
+                </Button>
+              )}
             </div>
           )}
 
@@ -290,26 +239,25 @@ export function CourseDetailPage() {
         </div>
       </section>
 
-      {course.price_cents && course.price_cents > 0 && (
+      {isPaidCourse && !unlocked && (
         <section className="section-shell is-visible">
           <div style={{ maxWidth: 800, margin: "0 auto" }}>
             <h2 style={{ marginBottom: 16 }}>{t("courseDetail.purchase", "Purchase Course")}</h2>
             {showPayment ? (
               <PaymentForm
                 purpose="course_purchase"
-                amountCents={course.price_cents}
+                amountCents={course.price_cents!}
                 currency={course.currency || "usd"}
                 referenceId={course.id}
                 metadata={{ title: getTitle(course, lang) }}
                 onSuccess={async (paymentIntentId) => {
-                  localStorage.setItem(`course-unlocked-${id}`, "1");
-                  setUnlocked(true);
+                  setShowPayment(false);
 
                   if (user?.email) {
                     await sendPaymentReceipt(user.email, {
                       paymentIntentId,
                       purpose: "Course Purchase",
-                      amountCents: course.price_cents,
+                      amountCents: course.price_cents!,
                       currency: course.currency || "usd",
                       name: user.displayName || user.email,
                     });

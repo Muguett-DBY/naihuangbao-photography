@@ -6,7 +6,7 @@ export type FetchState<T> = {
   error: string | null;
 };
 
-export function useFetch<T>(url: string | null): FetchState<T> & { retry: () => void } {
+export function useFetch<T>(url: string | null, fetchOptions?: RequestInit): FetchState<T> & { retry: () => void } {
   const [state, setState] = useState<FetchState<T>>({ data: null, loading: !!url, error: null });
   const retryCount = useRef(0);
 
@@ -19,7 +19,7 @@ export function useFetch<T>(url: string | null): FetchState<T> & { retry: () => 
     const ctrl = new AbortController();
     setState((s) => ({ ...s, loading: true, error: null }));
 
-    fetch(url, { signal: ctrl.signal })
+    fetch(url, { signal: ctrl.signal, ...fetchOptions })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();

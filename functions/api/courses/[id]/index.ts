@@ -1,7 +1,12 @@
 import { jsonResponse } from "../../../_responses";
+import { getUserFromRequest } from "../../../_auth";
+
+type AuthEnv = Env & { AUTH_SECRET?: string };
 
 // ── Public: GET /api/courses/:id ──
-export const onRequestGet: PagesFunction<Env> = async (context) => {
+// Course metadata is always public. Module content is only returned for
+// courses that are free or for which the authenticated user has purchased access.
+export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
   if (!context.env.DB) {
     return jsonResponse({ error: "服务不可用" }, 503);
   }
@@ -21,7 +26,31 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       `select * from course_modules where course_id = ? order by sort_order asc`,
     ).bind(id).all();
 
-    return jsonResponse({ course, modules: modules.results }, 200);
+    const courseRecord = course as { price_cents?: number };
+    const isPaid = courseRecord.price_cents && courseRecord.price_cents > 0;
+
+    let hasAccess = !isPaid;
+
+    if (isPaid) {
+      const secret = (context.env as AuthEnv).AUTH_SECRET || "default-auth-secret";
+      const user = await getUserFromRequest(context.request, secret);
+
+      if (user) {
+        const purchase = await context.env.DB.prepare(
+          `SELECT id FROM course_purchases WHERE course_id = ? AND user_id = ?`,
+        ).bind(id, user.userId).first();
+        hasAccess = !!purchase;
+      }
+    }
+
+    const sanitizedModules = hasAccess
+      ? modules.results
+      : modules.results.map((m) => {
+          const mod = m as Record<string, unknown>;
+          return { ...mod, content: undefined };
+        });
+
+    return jsonResponse({ course, modules: sanitizedModules }, 200);
   } catch {
     return jsonResponse({ error: "加载失败" }, 500);
   }
