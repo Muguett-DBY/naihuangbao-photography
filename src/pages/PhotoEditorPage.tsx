@@ -6,18 +6,7 @@ import { PageTransition } from "../components/shared/PageTransition";
 const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 const MAX_HISTORY = 20;
 
-function browserHasWebGL() {
-  if (typeof document === "undefined") return true;
-  try {
-    const canvas = document.createElement("canvas");
-    return Boolean(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
-  } catch {
-    return false;
-  }
-}
-
 async function prepareFaceApiBackend(api: any) {
-  if (browserHasWebGL()) return;
   try {
     await api.tf?.setBackend?.("cpu");
     await api.tf?.ready?.();

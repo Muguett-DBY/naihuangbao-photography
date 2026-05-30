@@ -20,6 +20,7 @@ describe("editor regression contracts", () => {
 
     expect(editor).toContain("waitForFaceModels");
     expect(editor).toContain("prepareFaceApiBackend");
+    expect(editor).toContain('setBackend?.("cpu")');
     expect(editor).toContain("editor.noFaceDetected");
     expect(pagesCss).toContain("max-height: min(72dvh, 760px)");
     expect(pagesCss).toContain("max-height: 58dvh");
@@ -46,5 +47,13 @@ describe("editor regression contracts", () => {
     expect(contentHook).toContain('response.headers.get("content-type")');
     expect(photosHook).toContain('contentType.includes("application/json")');
     expect(contentHook).toContain('contentType.includes("application/json")');
+  });
+
+  it("uses the same map tile provider family for light and dark themes", () => {
+    const photoMap = read("src/components/PhotoMap.tsx");
+
+    expect(photoMap).toContain("basemaps.cartocdn.com/dark_all");
+    expect(photoMap).toContain("basemaps.cartocdn.com/light_all");
+    expect(photoMap).not.toContain("tile.openstreetmap.org");
   });
 });
