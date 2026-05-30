@@ -1105,6 +1105,15 @@
 }
 
 /* ══════════════════════════════════════════════
+   Mobile Nav Overlay — hidden on desktop
+   ══════════════════════════════════════════════ */
+@media (min-width: 761px) {
+  .nav-menu--overlay {
+    display: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════════
    Mobile Layout (<760px)
    ══════════════════════════════════════════════ */
 @media (max-width: 760px) {
@@ -1582,6 +1591,10 @@
   }
 
   .nav-cta {
+    display: none;
+  }
+
+  .nav-menu--inline {
     display: none;
   }
 

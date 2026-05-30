@@ -105,6 +105,19 @@ export function Header() {
         <Camera size={18} />
         <span>{siteConfig.brandName}</span>
       </Link>
+      <nav className="nav-menu nav-menu--inline" aria-label={t("nav.mainNavigation")}>
+        {navItems.map((item) => (
+          <Link
+            to={item.to}
+            key={item.to}
+            className={location.pathname === item.to ? "is-active" : ""}
+            aria-current={location.pathname === item.to ? "page" : undefined}
+            onClick={() => setOpen(false)}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
       <button
         className="hamburger"
         type="button"
@@ -218,7 +231,7 @@ export function Header() {
       </Link>
     </header>
     {createPortal(
-      <nav id="site-navigation-menu" className={`nav-menu${open ? " is-open" : ""}`} aria-label={t("nav.mainNavigation")}>
+      <nav id="site-navigation-menu" className={`nav-menu nav-menu--overlay${open ? " is-open" : ""}`} aria-label={t("nav.mainNavigation")}>
         {navItems.map((item) => (
           <Link
             to={item.to}
