@@ -156,6 +156,7 @@ export default function PhotoEditorPage() {
   const blemishCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const faceApiRef = useRef<any>(null);
   const originalSizeRef = useRef<{ w: number; h: number } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
   const [detecting, setDetecting] = useState(false);
@@ -1305,79 +1306,77 @@ export default function PhotoEditorPage() {
   }, [blemishMode, brushSize, render, settings]);
 
   const handleUpload = useCallback(() => {
-    const inp = document.createElement("input");
-    inp.type = "file"; inp.accept = "image/*";
-    inp.style.display = "none";
-    inp.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      document.body.removeChild(inp);
-      if (!file) return;
-      setLoading(true);
-      const reader = new FileReader();
-      reader.onload = () => {
-        const img = new Image();
-        img.onload = async () => {
-          const MAX_DIM = 2000;
-          let w = img.width, h = img.height;
-          if (w > MAX_DIM || h > MAX_DIM) {
-            const ratio = Math.min(MAX_DIM / w, MAX_DIM / h);
-            w = Math.round(w * ratio);
-            h = Math.round(h * ratio);
-          }
-          originalRef.current = img;
-          const canvas = canvasRef.current;
-          if (!canvas) return;
-          canvas.width = w; canvas.height = h;
-          originalSizeRef.current = { w, h };
-          const ctx = canvas.getContext("2d");
-          if (!ctx) return;
-          ctx.drawImage(img, 0, 0, w, h);
-          setLoading(false);
+    fileInputRef.current?.click();
+  }, []);
 
-          // Reset blemish canvas
-          blemishCanvasRef.current = null;
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLoading(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = async () => {
+        const MAX_DIM = 2000;
+        let w = img.width, h = img.height;
+        if (w > MAX_DIM || h > MAX_DIM) {
+          const ratio = Math.min(MAX_DIM / w, MAX_DIM / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        originalRef.current = img;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        canvas.width = w; canvas.height = h;
+        originalSizeRef.current = { w, h };
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, w, h);
+        setLoading(false);
 
-          // Detect face
-          setDetecting(true);
-          setFaceError(false);
-          try {
-            const api = faceApiRef.current || await import("face-api.js");
-            faceApiRef.current = api;
-            const det = await api
-              .detectSingleFace(canvas, new api.TinyFaceDetectorOptions())
-              .withFaceLandmarks();
-            setDetecting(false);
-            if (det) {
-              setFaceOk(true);
-              landmarksRef.current = det.landmarks.positions;
-            } else {
-              setFaceOk(false);
-              setFaceError(true);
-              landmarksRef.current = null;
-            }
-          } catch (err) {
-            console.error("Face detection failed:", err);
-            setDetecting(false);
+        // Reset blemish canvas
+        blemishCanvasRef.current = null;
+
+        // Detect face
+        setDetecting(true);
+        setFaceError(false);
+        try {
+          const api = faceApiRef.current || await import("face-api.js");
+          faceApiRef.current = api;
+          const det = await api
+            .detectSingleFace(canvas, new api.TinyFaceDetectorOptions())
+            .withFaceLandmarks();
+          setDetecting(false);
+          if (det) {
+            setFaceOk(true);
+            landmarksRef.current = det.landmarks.positions;
+          } else {
             setFaceOk(false);
             setFaceError(true);
             landmarksRef.current = null;
           }
-          historyRef.current = [{ ...INITIAL }];
-          historyIdxRef.current = 0;
-          setHistoryIdx(0);
-          setSettings({ ...INITIAL });
-          setTexts([]); setStickers([]); setFrameId("none");
-        };
-        img.src = reader.result as string;
+        } catch (err) {
+          console.error("Face detection failed:", err);
+          setDetecting(false);
+          setFaceOk(false);
+          setFaceError(true);
+          landmarksRef.current = null;
+        }
+        historyRef.current = [{ ...INITIAL }];
+        historyIdxRef.current = 0;
+        setHistoryIdx(0);
+        setSettings({ ...INITIAL });
+        setTexts([]); setStickers([]); setFrameId("none");
       };
-      reader.onerror = () => {
-        setLoading(false);
-        console.error("FileReader error:", reader.error);
-      };
-      reader.readAsDataURL(file);
+      img.src = reader.result as string;
     };
-    document.body.appendChild(inp);
-    inp.click();
+    reader.onerror = () => {
+      setLoading(false);
+      console.error("FileReader error:", reader.error);
+    };
+    reader.readAsDataURL(file);
+    // Reset so same file can be re-selected
+    e.target.value = "";
   }, []);
 
   // Feature 3: Local brush painting
@@ -1597,6 +1596,7 @@ export default function PhotoEditorPage() {
 
         <div className="editor-toolbar">
           <button type="button" className="editor-btn editor-btn--primary" onClick={handleUpload} aria-label={t("editor.upload")} title={t("editor.upload")}>{t("editor.upload")}</button>
+          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
           {originalRef.current && (
             <>
               <button type="button" className="editor-btn" disabled={historyIdx <= 0} onClick={undo} aria-label={t("editor.undo")} title={t("editor.undo")}>↩</button>
