@@ -37,12 +37,15 @@ export function WorkshopDetailPage() {
     if (!id) return;
     const ctrl = new AbortController();
     setLoading(true);
-    fetch(`/api/workshops/${id}`, { signal: ctrl.signal })
-      .then((r) => r.json())
-      .then((d: { workshop: Workshop }) => {
+    setError(null);
+
+    fetch("/api/workshops", { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : { workshops: [] }))
+      .then((d: { workshops: Workshop[] }) => {
         if (!ctrl.signal.aborted) {
-          if (!d.workshop) setError("not found");
-          else setWorkshop(d.workshop);
+          const nextWorkshop = (d.workshops || []).find((candidate) => candidate.id === id);
+          if (!nextWorkshop) setError("not found");
+          else setWorkshop(nextWorkshop);
         }
       })
       .catch(() => { if (!ctrl.signal.aborted) setError(t("common.loading")); })

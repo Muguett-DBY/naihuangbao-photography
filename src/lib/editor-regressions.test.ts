@@ -66,4 +66,16 @@ describe("editor regression contracts", () => {
     expect(pagesCss).toContain(".photo-detail-hero");
     expect(pagesCss).toContain("calc(var(--nav-h, 64px) + 16px)");
   });
+
+  it("avoids direct 404 detail fetches for empty future catalog routes", () => {
+    const presetDetail = read("src/pages/PresetDetailPage.tsx");
+    const workshopDetail = read("src/pages/WorkshopDetailPage.tsx");
+    const shopDetail = read("src/pages/ShopDetailPage.tsx");
+
+    expect(presetDetail.indexOf('fetch("/api/presets"')).toBeLessThan(presetDetail.indexOf("fetch(`/api/presets/${id}`"));
+    expect(workshopDetail).toContain('fetch("/api/workshops"');
+    expect(workshopDetail).not.toContain("fetch(`/api/workshops/${id}`");
+    expect(shopDetail).toContain('fetch("/api/merchandise"');
+    expect(shopDetail).not.toContain("fetch(`/api/merchandise/${id}`");
+  });
 });

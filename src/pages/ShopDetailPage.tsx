@@ -31,14 +31,20 @@ export function ShopDetailPage() {
     if (!id) return;
     const ctrl = new AbortController();
     setLoading(true);
-    Promise.all([
-      fetch(`/api/merchandise/${id}`, { signal: ctrl.signal }).then((r) => r.json()),
-      fetch("/api/merchandise", { signal: ctrl.signal }).then((r) => r.json()),
-    ])
-      .then(([detail, list]) => {
+    setError(null);
+
+    fetch("/api/merchandise", { signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : { merchandise: [] }))
+      .then((list: { merchandise: Merchandise[] }) => {
         if (!ctrl.signal.aborted) {
-          if (!detail.merchandise) { setError("not found"); }
-          else { setItem(detail.merchandise); setAllItems((list.merchandise || []).filter((m: Merchandise) => m.id !== id)); }
+          const items = list.merchandise || [];
+          const nextItem = items.find((candidate) => candidate.id === id);
+          if (!nextItem) {
+            setError("not found");
+          } else {
+            setItem(nextItem);
+            setAllItems(items.filter((m) => m.id !== id));
+          }
         }
       })
       .catch(() => { if (!ctrl.signal.aborted) setError(t("common.loading")); })

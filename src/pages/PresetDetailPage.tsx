@@ -30,14 +30,32 @@ export function PresetDetailPage() {
     if (!id) return;
     const ctrl = new AbortController();
     setLoading(true);
-    Promise.all([
-      fetch(`/api/presets/${id}`, { signal: ctrl.signal }).then((r) => r.json()),
-      fetch("/api/presets", { signal: ctrl.signal }).then((r) => r.json()),
-    ])
-      .then(([detail, list]) => {
+    setError(null);
+
+    async function loadPreset() {
+      const listResponse = await fetch("/api/presets", { signal: ctrl.signal });
+      const list = listResponse.ok ? await listResponse.json() : { presets: [] };
+      const presets = (list.presets || []) as Preset[];
+      const listPreset = presets.find((p) => p.id === id);
+
+      if (!listPreset) {
+        return { preset: null, presets };
+      }
+
+      const detailResponse = await fetch(`/api/presets/${id}`, { signal: ctrl.signal });
+      const detail = detailResponse.ok ? await detailResponse.json() : { preset: listPreset };
+      return { preset: (detail.preset || listPreset) as Preset, presets };
+    }
+
+    loadPreset()
+      .then(({ preset, presets }) => {
         if (!ctrl.signal.aborted) {
-          if (!detail.preset) { setError("not found"); }
-          else { setPreset(detail.preset); setAllPresets((list.presets || []).filter((p: Preset) => p.id !== id)); }
+          if (!preset) {
+            setError("not found");
+          } else {
+            setPreset(preset);
+            setAllPresets(presets.filter((p) => p.id !== id));
+          }
         }
       })
       .catch(() => { if (!ctrl.signal.aborted) setError(t("common.loading")); })
