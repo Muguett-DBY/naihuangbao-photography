@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 
-const MODEL_URL = "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights";
+const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 const MAX_HISTORY = 20;
 
 type BeautyCategory = "beauty" | "reshape" | "color" | "filter" | "tools" | "bg" | "makeup";
