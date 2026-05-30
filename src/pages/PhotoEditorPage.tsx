@@ -1307,8 +1307,10 @@ export default function PhotoEditorPage() {
   const handleUpload = useCallback(() => {
     const inp = document.createElement("input");
     inp.type = "file"; inp.accept = "image/*";
+    inp.style.display = "none";
     inp.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
+      document.body.removeChild(inp);
       if (!file) return;
       setLoading(true);
       const reader = new FileReader();
@@ -1374,6 +1376,7 @@ export default function PhotoEditorPage() {
       };
       reader.readAsDataURL(file);
     };
+    document.body.appendChild(inp);
     inp.click();
   }, []);
 
