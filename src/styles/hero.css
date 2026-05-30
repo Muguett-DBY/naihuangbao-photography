@@ -13,10 +13,10 @@
   align-items: center;
   gap: 18px;
   padding: 18px clamp(20px, 4vw, 56px);
-  background: rgba(95, 60, 49, 0.18);
-  backdrop-filter: blur(8px);
-  border-bottom: none;
-  box-shadow: none;
+  background: rgba(68, 43, 36, 0.45);
+  backdrop-filter: blur(12px) saturate(1.1);
+  border-bottom: 1px solid rgba(255, 249, 236, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   isolation: isolate;
   transition: background 0.45s ease,
               padding 0.45s cubic-bezier(0.22, 1, 0.36, 1),
@@ -52,6 +52,14 @@
     0 12px 34px rgba(255, 184, 161, 0.1);
 }
 
+.site-nav.is-scrolled .nav-menu,
+.site-nav.is-scrolled .nav-menu a {
+  color: var(--caramel-muted);
+}
+.site-nav.is-scrolled .nav-menu a:hover {
+  color: var(--caramel-deep);
+}
+
 .site-nav.is-scrolled::after {
   opacity: 0.62;
   transform: scaleX(var(--scroll-progress));
@@ -74,12 +82,19 @@ body.nav-lock .site-nav {
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: var(--caramel-ink);
+  color: #fff;
   transition: color 0.3s ease, transform 0.25s var(--ease-out);
 }
 .brand-mark:hover {
-  color: var(--caramel-text);
+  color: rgba(255, 253, 247, 0.9);
   transform: translate3d(0, -1px, 0);
+}
+
+.site-nav.is-scrolled .brand-mark {
+  color: var(--caramel-ink);
+}
+.site-nav.is-scrolled .brand-mark:hover {
+  color: var(--caramel-text);
 }
 
 .brand-mark svg {
@@ -91,7 +106,7 @@ body.nav-lock .site-nav {
   display: flex;
   justify-content: center;
   gap: clamp(20px, 2.5vw, 32px);
-  color: var(--caramel-muted);
+  color: rgba(255, 253, 247, 0.88);
   font-size: 13px;
 }
 
@@ -101,6 +116,7 @@ body.nav-lock .site-nav {
   font-family: var(--font-ui);
   font-weight: 620;
   letter-spacing: 0.06em;
+  color: rgba(255, 253, 247, 0.88);
   transition: color 0.3s ease;
 }
 .nav-menu a::after {
@@ -116,7 +132,7 @@ body.nav-lock .site-nav {
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .nav-menu a:hover {
-  color: var(--caramel-deep);
+  color: #fff;
 }
 .nav-menu a:hover::after {
   transform: translateX(-50%) scaleX(1);
@@ -162,11 +178,15 @@ body.nav-lock .site-nav {
 
 /* Active nav link */
 .nav-menu a.is-active {
-  color: var(--caramel-deep);
+  color: #fff;
   font-weight: 600;
 }
 .nav-menu a.is-active::after {
   transform: translateX(-50%) scaleX(1);
+}
+
+.site-nav.is-scrolled .nav-menu a.is-active {
+  color: var(--caramel-deep);
 }
 
 /* Hide mood/theme toggles on mobile */
