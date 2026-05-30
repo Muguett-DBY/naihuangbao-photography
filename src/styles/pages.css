@@ -778,6 +778,14 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.login-button:hover {
+  opacity: 0.9;
+  transform: translate3d(0, -1px, 0);
+}
+.login-button:active {
+  transform: scale(0.98);
 }
 
 .login-footer {

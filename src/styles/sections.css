@@ -330,7 +330,7 @@
 }
 
 .service-detail-card:hover {
-  transform: translate3d(0, -3px, 0);
+  transform: translate3d(0, -4px, 0);
   box-shadow: var(--paper-inset), var(--warm-shadow-strong);
 }
 
@@ -482,9 +482,8 @@
 
 .process-timeline {
   display: grid;
-  grid-template-columns: repeat(5, minmax(200px, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 0;
-  min-width: 940px;
 }
 
 .process-step {
@@ -863,7 +862,7 @@
    ══════════════════════════════════════════════ */
 .site-footer {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr minmax(200px, auto) 1fr;
   gap: 20px;
   padding: 48px clamp(22px, 5vw, 72px) 30px;
   color: var(--caramel-muted);
@@ -1514,6 +1513,8 @@
 .reviews-shell {
   text-align: center;
   padding-block: 60px;
+  max-width: 1220px;
+  margin: 0 auto;
 }
 
 .reviews-track {
@@ -1979,6 +1980,14 @@
   font-weight: 600;
   cursor: pointer;
   min-height: 44px;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.newsletter-button:hover {
+  opacity: 0.9;
+  transform: translate3d(0, -1px, 0);
+}
+.newsletter-button:active {
+  transform: scale(0.97);
 }
 .newsletter-success { color: #4ade80; font-size: 0.85rem; }
 .newsletter-error { color: #ef4444; font-size: 0.85rem; }

@@ -92,7 +92,7 @@ body.nav-lock .site-nav {
   justify-content: center;
   gap: clamp(20px, 2.5vw, 32px);
   color: var(--caramel-muted);
-  font-size: 12.5px;
+  font-size: 13px;
 }
 
 .nav-menu a {
@@ -156,7 +156,7 @@ body.nav-lock .site-nav {
 }
 .site-nav.is-scrolled .nav-cta {
   background: var(--caramel-deep);
-  color: var(--cream);
+  color: var(--custard-cream);
   box-shadow: 0 2px 8px rgba(139, 94, 74, 0.18);
 }
 

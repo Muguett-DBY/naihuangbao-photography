@@ -138,7 +138,7 @@
 .booking-section h2 {
   margin: 0;
   font-family: var(--font-display-cn);
-  font-size: clamp(38px, 5.5vw, 70px);
+  font-size: clamp(38px, 5.5vw, 80px);
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: 0;
@@ -378,6 +378,19 @@
     0 48px 104px rgba(255, 210, 184, 0.16);
 }
 
+.gallery-masonry-item:focus-within {
+  --tilt: 0deg;
+  transform: rotate(0deg) translate3d(0, -6px, 0);
+  box-shadow:
+    var(--paper-inset),
+    0 4px 10px rgba(95, 60, 49, 0.1),
+    0 16px 42px rgba(139, 94, 74, 0.1),
+    0 28px 76px rgba(255, 184, 161, 0.2),
+    0 48px 104px rgba(255, 210, 184, 0.16);
+  outline: 2px solid var(--peach-accent);
+  outline-offset: 2px;
+}
+
 .gallery-masonry-item.featured-item {
   --tilt: -0.5deg;
   background:
@@ -447,7 +460,7 @@
 
 .gallery-masonry-overlay-style {
   font-family: var(--font-display-cn);
-  font-size: 10px;
+  font-size: clamp(10px, 0.8vw, 12px);
   font-weight: 700;
   letter-spacing: 0.045em;
   color: rgba(255, 249, 236, 0.76);
