@@ -91,18 +91,20 @@ function ShareButton({ photo }: { photo: PhotoItem }) {
   }, [photo, t]);
 
   return (
-    <button
-      type="button"
+    <span
+      role="button"
+      tabIndex={0}
       className="gallery-share-btn"
       onClick={(e) => {
         e.stopPropagation();
         void handleShare();
       }}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); void handleShare(); } }}
       aria-label={t("gallery.share")}
       title={t("gallery.share")}
     >
       <Share2 size={16} />
-    </button>
+    </span>
   );
 }
 

@@ -63,7 +63,10 @@ export function LoadingScreen() {
       aria-label="Loading"
       style={{
         position: "fixed",
-        inset: 0,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
         zIndex: 9999,
         display: "flex",
         flexDirection: "column",
@@ -72,6 +75,7 @@ export function LoadingScreen() {
         gap: 16,
         background: "#FEF3DD",
         fontFamily: '"Naihuangbao WenKai", "Kaiti SC", "KaiTi", serif',
+        overflow: "hidden",
       }}
     >
       <div

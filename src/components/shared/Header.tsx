@@ -130,7 +130,7 @@ export function Header() {
       <MoodToggle />
       <ThemeToggle />
       <button
-        className="mood-toggle"
+        className="lang-toggle"
         onClick={toggleLang}
         title={t("langToggle.label")}
         aria-label={t("langToggle.label")}
@@ -216,7 +216,7 @@ export function Header() {
         ) : (
           <Link
             to="/login"
-            className="mood-toggle"
+            className="nav-login"
             style={{ fontSize: 13, width: "auto", paddingInline: 8, display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}
           >
             <LogIn size={14} />
