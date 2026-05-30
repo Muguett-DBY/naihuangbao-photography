@@ -156,6 +156,7 @@ export default function PhotoEditorPage() {
   const blemishCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const faceApiRef = useRef<any>(null);
   const originalSizeRef = useRef<{ w: number; h: number } | null>(null);
+  const uploadRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
   const [detecting, setDetecting] = useState(false);
@@ -1304,6 +1305,10 @@ export default function PhotoEditorPage() {
     render(settings);
   }, [blemishMode, brushSize, render, settings]);
 
+  const handleUploadClick = useCallback(() => {
+    uploadRef.current?.click();
+  }, []);
+
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -1590,18 +1595,8 @@ export default function PhotoEditorPage() {
         </header>
 
         <div className="editor-toolbar">
-          <div style={{ position: "relative", display: "inline-flex" }}>
-            <span className="editor-btn editor-btn--primary" style={{ pointerEvents: "none" }}>{t("editor.upload")}</span>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              style={{
-                position: "absolute", inset: 0, opacity: 0, width: "100%", height: "100%",
-                cursor: "pointer", fontSize: 0, zIndex: 1,
-              }}
-            />
-          </div>
+          <button type="button" className="editor-btn editor-btn--primary" onClick={handleUploadClick} aria-label={t("editor.upload")} title={t("editor.upload")}>{t("editor.upload")}</button>
+          <input ref={uploadRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
           {originalRef.current && (
             <>
               <button type="button" className="editor-btn" disabled={historyIdx <= 0} onClick={undo} aria-label={t("editor.undo")} title={t("editor.undo")}>↩</button>
