@@ -17,7 +17,6 @@
   backdrop-filter: blur(12px) saturate(1.1);
   border-bottom: 1px solid rgba(255, 249, 236, 0.08);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  isolation: isolate;
   transition: background 0.45s ease,
               padding 0.45s cubic-bezier(0.22, 1, 0.36, 1),
               border-color 0.45s ease,
