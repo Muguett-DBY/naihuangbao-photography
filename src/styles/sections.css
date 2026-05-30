@@ -1165,18 +1165,16 @@
     color: var(--caramel-muted) !important;
   }
 
-  .hamburger {
-    grid-column: 4;
-    grid-row: 1;
-  }
-
   .nav-cta {
     display: none;
   }
 
   .brand-mark {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
     color: #fff;
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .site-nav.is-scrolled .brand-mark {
@@ -1186,22 +1184,6 @@
   body.nav-lock .site-nav {
     background: transparent;
     box-shadow: none;
-  }
-
-  .brand-mark {
-    grid-column: 1;
-    grid-row: 1;
-    min-width: 0;
-  }
-
-  .hamburger {
-    grid-column: 3;
-    grid-row: 1;
-  }
-
-  .nav-cta {
-    grid-column: 5;
-    grid-row: 1;
   }
 
   .lang-toggle {
@@ -1219,12 +1201,16 @@
     cursor: pointer;
     position: relative;
     z-index: 2;
-    font-size: 13px;
+    font-size: 12px;
     gap: 2px;
   }
 
+  .site-nav.is-scrolled .lang-toggle {
+    color: var(--caramel-muted);
+  }
+
   .nav-login {
-    grid-column: 4;
+    grid-column: 3;
     grid-row: 1;
     display: flex !important;
     align-items: center;
@@ -1241,7 +1227,13 @@
     font-size: 13px;
   }
 
+  .site-nav.is-scrolled .nav-login {
+    color: var(--caramel-muted) !important;
+  }
+
   .hamburger {
+    grid-column: 4;
+    grid-row: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1256,10 +1248,30 @@
     z-index: 2;
   }
 
-  .brand-mark,
-  .nav-cta {
+  .nav-login {
+    grid-column: 3;
+    grid-row: 1;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff !important;
+    cursor: pointer;
     position: relative;
     z-index: 2;
+    font-size: 13px;
+  }
+
+  .site-nav.is-scrolled .nav-login {
+    color: var(--caramel-muted) !important;
+  }
+
+  .nav-cta {
+    display: none;
   }
 
   .nav-menu {
@@ -1275,9 +1287,7 @@
     justify-content: flex-start;
     gap: 8px;
     padding: 40px 16px max(24px, env(safe-area-inset-bottom, 16px));
-    background: rgba(68, 43, 36, 0.85);
-    backdrop-filter: blur(16px) saturate(1.1);
-    -webkit-backdrop-filter: blur(16px) saturate(1.1);
+    background: rgba(68, 43, 36, 0.92);
     color: #fff;
     font-size: 18px;
     font-weight: 700;
@@ -1309,6 +1319,7 @@
   }
 
   .nav-menu a {
+    position: relative;
     z-index: 1;
     width: min(100%, 320px);
     min-height: 48px;
@@ -1344,8 +1355,10 @@
     opacity: 1;
     pointer-events: auto;
     transform: translate3d(0, 0, 0);
-    max-height: min(72vh, 460px);
+    max-height: min(72dvh, 460px);
     overflow-y: auto;
+    touch-action: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .nav-menu.is-open a {
