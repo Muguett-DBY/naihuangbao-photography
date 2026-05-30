@@ -2,6 +2,7 @@ import { CalendarCheck, Camera, Languages, Menu, X, User, LogOut, LogIn, LayoutD
 import { ThemeToggle } from "../ThemeToggle";
 import { MoodToggle } from "../MoodToggle";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
 import { useSiteContent } from "../../hooks/useSiteContent";
@@ -98,25 +99,12 @@ export function Header() {
     setOpen(false);
   }, [location.pathname]);
 
-  return (
+  return (<>
     <header ref={navRef} className={`site-nav${scrolled ? " is-scrolled" : ""}`}>
       <Link className="brand-mark" to="/" aria-label={t("nav.backToHome")}>
         <Camera size={18} />
         <span>{siteConfig.brandName}</span>
       </Link>
-      <nav id="site-navigation-menu" className={`nav-menu${open ? " is-open" : ""}`} aria-label={t("nav.mainNavigation")}>
-        {navItems.map((item) => (
-          <Link
-            to={item.to}
-            key={item.to}
-            className={location.pathname === item.to ? "is-active" : ""}
-            aria-current={location.pathname === item.to ? "page" : undefined}
-            onClick={() => setOpen(false)}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
       <button
         className="hamburger"
         type="button"
@@ -229,5 +217,21 @@ export function Header() {
         {t("nav.booking")}
       </Link>
     </header>
-  );
+    {createPortal(
+      <nav id="site-navigation-menu" className={`nav-menu${open ? " is-open" : ""}`} aria-label={t("nav.mainNavigation")}>
+        {navItems.map((item) => (
+          <Link
+            to={item.to}
+            key={item.to}
+            className={location.pathname === item.to ? "is-active" : ""}
+            aria-current={location.pathname === item.to ? "page" : undefined}
+            onClick={() => setOpen(false)}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>,
+      document.body,
+    )}
+  </>);
 }
