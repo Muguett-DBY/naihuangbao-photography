@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 
-const MODEL_URL = "https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model";
+const MODEL_URL = "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights";
 const MAX_HISTORY = 20;
 
 type BeautyCategory = "beauty" | "reshape" | "color" | "filter" | "tools" | "bg" | "makeup";
@@ -170,8 +170,8 @@ export default function PhotoEditorPage() {
   const [comparePos, setComparePos] = useState(50);
   const [historyIdx, setHistoryIdx] = useState(0);
   const [showExport, setShowExport] = useState(false);
-  const [exportQuality, setExportQuality] = useState(90);
-  const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("png");
+  const [exportQuality, setExportQuality] = useState(92);
+  const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("jpeg");
   const [compareDrag, setCompareDrag] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
 
@@ -307,10 +307,13 @@ export default function PhotoEditorPage() {
       // Draw original
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
+      // Get image data for pixel manipulation
+      const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = id.data;
+      const w2 = canvas.width, h2 = canvas.height;
+
       // Apply face effects if landmarks available
       if (lm) {
-        const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const d = id.data;
         const w = canvas.width, h = canvas.height;
         const jaw = lm.slice(0, 17), lEye = lm.slice(36, 42), rEye = lm.slice(42, 48);
         const nose = lm.slice(27, 36), mouth = lm.slice(48, 68);
@@ -617,98 +620,220 @@ export default function PhotoEditorPage() {
           for (let i = 0; i < d.length; i++) d[i] = tmp[i];
         }
 
-        // Color adjustments
-        if (s.temperature !== 0 || s.saturation !== 0 || s.contrast !== 0 || s.brightness !== 0) {
-          const temp = s.temperature / 100 * 30, sat = s.saturation / 100, con = s.contrast / 100, bri = s.brightness / 100 * 50;
-          for (let i = 0; i < d.length; i += 4) {
-            let r = d[i], g = d[i + 1], b = d[i + 2];
-            r = Math.min(255, r + temp); b = Math.max(0, b - temp);
-            const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-            r = gray + (1 + sat) * (r - gray); g = gray + (1 + sat) * (g - gray); b = gray + (1 + sat) * (b - gray);
-            r = ((r / 255 - 0.5) * (1 + con) + 0.5) * 255;
-            g = ((g / 255 - 0.5) * (1 + con) + 0.5) * 255;
-            b = ((b / 255 - 0.5) * (1 + con) + 0.5) * 255;
-            r += bri; g += bri; b += bri;
-            d[i] = Math.max(0, Math.min(255, r));
-            d[i + 1] = Math.max(0, Math.min(255, g));
-            d[i + 2] = Math.max(0, Math.min(255, b));
-          }
-        }
-
-        ctx.putImageData(id, 0, 0);
-
-        // Vignette
-        if (s.vignette > 0) {
-          const grad = ctx.createRadialGradient(w / 2, h / 2, w * 0.3, w / 2, h / 2, w * 0.7);
-          grad.addColorStop(0, "rgba(0,0,0,0)");
-          grad.addColorStop(1, `rgba(0,0,0,${s.vignette / 100 * 0.6})`);
-          ctx.fillStyle = grad;
-          ctx.fillRect(0, 0, w, h);
-        }
-
-        // Grain
-        if (s.grain > 0) {
-          const gd = ctx.getImageData(0, 0, w, h);
-          const intensity = s.grain / 100 * 40;
-          for (let i = 0; i < gd.data.length; i += 4) {
-            const n = (Math.random() - 0.5) * intensity;
-            gd.data[i] += n; gd.data[i + 1] += n; gd.data[i + 2] += n;
-          }
-          ctx.putImageData(gd, 0, 0);
-        }
-
-        // Sharpen
-        if (s.sharpen > 0) {
-          const gd = ctx.getImageData(0, 0, w, h);
-          const amount = s.sharpen / 100 * 1.5;
-          const orig = new Uint8ClampedArray(gd.data);
-          for (let y = 1; y < h - 1; y++) {
-            for (let x = 1; x < w - 1; x++) {
-              const idx = (y * w + x) * 4;
-              for (let c = 0; c < 3; c++) {
-                const sharp = orig[idx + c] * 5 - orig[((y - 1) * w + x) * 4 + c] - orig[((y + 1) * w + x) * 4 + c] - orig[(y * w + x - 1) * 4 + c] - orig[(y * w + x + 1) * 4 + c];
-                gd.data[idx + c] = Math.max(0, Math.min(255, orig[idx + c] + sharp * amount));
+        // 10. Dark circles
+        if (s.darkcircle > 0) {
+          const lEY = lEye.reduce((a, p) => a + p.y, 0) / 6;
+          const rEY = rEye.reduce((a, p) => a + p.y, 0) / 6;
+          const st = s.darkcircle / 100 * 25;
+          for (const ey of [lEY, rEY]) {
+            for (let y = ey; y < ey + 15; y++) {
+              for (let x = fL; x < fR; x++) {
+                if (y >= 0 && y < h) {
+                  const idx = (y * w + x) * 4;
+                  d[idx] = Math.min(255, d[idx] + st);
+                  d[idx + 1] = Math.min(255, d[idx + 1] + st * 0.8);
+                  d[idx + 2] = Math.min(255, d[idx + 2] + st * 0.6);
+                }
               }
             }
           }
-          ctx.putImageData(gd, 0, 0);
         }
 
-        // Feature 2: Virtual Makeup
+        // 11. Whitening
+        if (s.whiten > 0) {
+          const st = s.whiten / 100 * 40;
+          for (let y = fT; y < fB; y++) {
+            for (let x = fL; x < fR; x++) {
+              if (!isSkin(x, y, lEye, rEye, mouth, jaw)) continue;
+              const idx = (y * w + x) * 4;
+              d[idx] = Math.min(255, d[idx] + st);
+              d[idx + 1] = Math.min(255, d[idx + 1] + st);
+              d[idx + 2] = Math.min(255, d[idx + 2] + st * 0.8);
+            }
+          }
+        }
+
+        // 12. Face lift
+        if (s.facelift > 0) { applyWarp(d, w, h, fCX, fCY, fL, fR, fT, fB, s.facelift / 100 * 0.1, "vertical"); }
+
+        // 13. Jawline
+        if (s.jawline > 0) {
+          const st = s.jawline / 100 * 0.12;
+          const tmp = new Uint8ClampedArray(d);
+          for (let y = fT; y < fB; y++) {
+            for (let x = fL; x < fR; x++) {
+              const dist = Math.abs(x - fCX) / ((fR - fL) / 2);
+              if (dist > 0.6) {
+                const warp = 1 - st * (dist - 0.6);
+                const sx = Math.round(fCX + (x - fCX) * warp);
+                if (sx >= 0 && sx < w) {
+                  const di = (y * w + x) * 4, si = (y * w + sx) * 4;
+                  tmp[di] = d[si]; tmp[di + 1] = d[si + 1]; tmp[di + 2] = d[si + 2];
+                }
+              }
+            }
+          }
+          for (let i = 0; i < d.length; i++) d[i] = tmp[i];
+        }
+
+        // 14. Cheekbone
+        if (s.cheekbone !== 0) {
+          const lCX = (lEye[0].x + jaw[0].x) / 2, rCX = (rEye[3].x + jaw[16].x) / 2;
+          const cY = (lEye[0].y + jaw[8].y) / 2;
+          const st = s.cheekbone / 100 * 0.1, r = 25;
+          const tmp = new Uint8ClampedArray(d);
+          for (const cx of [lCX, rCX]) {
+            for (let y = cY - r; y < cY + r; y++) {
+              for (let x = cx - r; x < cx + r; x++) {
+                if (x < 0 || x >= w || y < 0 || y >= h) continue;
+                const dx = x - cx, dy = y - cY, dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < r) {
+                  const f = 1 + st * Math.max(0, 1 - dist / r);
+                  const sx = Math.round(cx + dx / f);
+                  if (sx >= 0 && sx < w) {
+                    const di = (y * w + x) * 4, si = (y * w + sx) * 4;
+                    tmp[di] = d[si]; tmp[di + 1] = d[si + 1]; tmp[di + 2] = d[si + 2];
+                  }
+                }
+              }
+            }
+          }
+          for (let i = 0; i < d.length; i++) d[i] = tmp[i];
+        }
+
+        // 15. Chin
+        if (s.chin !== 0) {
+          const chinY = jaw[8].y, st = s.chin / 100 * 0.15, r = 20;
+          const tmp = new Uint8ClampedArray(d);
+          for (let y = chinY - r; y < chinY + r; y++) {
+            for (let x = fL; x < fR; x++) {
+              if (y < 0 || y >= h || x < 0 || x >= w) continue;
+              const dy = y - chinY;
+              const f = 1 + st * Math.max(0, 1 - Math.abs(dy) / r);
+              const sy = Math.round(chinY + dy / f);
+              if (sy >= 0 && sy < h) {
+                const di = (y * w + x) * 4, si = (sy * w + x) * 4;
+                tmp[di] = d[si]; tmp[di + 1] = d[si + 1]; tmp[di + 2] = d[si + 2];
+              }
+            }
+          }
+          for (let i = 0; i < d.length; i++) d[i] = tmp[i];
+        }
+
+        // 16. Philtrum
+        if (s.philtrum !== 0) {
+          const pTop = nose[6].y, pBot = mouth[0].y, pCY = (pTop + pBot) / 2;
+          const st = s.philtrum / 100 * 0.12;
+          const tmp = new Uint8ClampedArray(d);
+          for (let y = pTop; y < pBot; y++) {
+            for (let x = fL; x < fR; x++) {
+              const dy = y - pCY;
+              const f = 1 + st * Math.max(0, 1 - Math.abs(dy) / ((pBot - pTop) / 2));
+              const sy = Math.round(pCY + dy / f);
+              if (sy >= 0 && sy < h) {
+                const di = (y * w + x) * 4, si = (sy * w + x) * 4;
+                tmp[di] = d[si]; tmp[di + 1] = d[si + 1]; tmp[di + 2] = d[si + 2];
+              }
+            }
+          }
+          for (let i = 0; i < d.length; i++) d[i] = tmp[i];
+        }
+      } // end if(lm) for face-specific effects
+
+      // Color adjustments — work without face detection too
+      if (s.temperature !== 0 || s.saturation !== 0 || s.contrast !== 0 || s.brightness !== 0) {
+        const w = w2, h = h2;
+        const temp = s.temperature / 100 * 30, sat = s.saturation / 100, con = s.contrast / 100, bri = s.brightness / 100 * 50;
+        for (let i = 0; i < d.length; i += 4) {
+          let r = d[i], g = d[i + 1], b = d[i + 2];
+          r = Math.min(255, r + temp); b = Math.max(0, b - temp);
+          const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+          r = gray + (1 + sat) * (r - gray); g = gray + (1 + sat) * (g - gray); b = gray + (1 + sat) * (b - gray);
+          r = ((r / 255 - 0.5) * (1 + con) + 0.5) * 255;
+          g = ((g / 255 - 0.5) * (1 + con) + 0.5) * 255;
+          b = ((b / 255 - 0.5) * (1 + con) + 0.5) * 255;
+          r += bri; g += bri; b += bri;
+          d[i] = Math.max(0, Math.min(255, r));
+          d[i + 1] = Math.max(0, Math.min(255, g));
+          d[i + 2] = Math.max(0, Math.min(255, b));
+        }
+      }
+
+      ctx.putImageData(id, 0, 0);
+
+      // Vignette — works without face detection
+      if (s.vignette > 0) {
+        const w = w2, h = h2;
+        const grad = ctx.createRadialGradient(w / 2, h / 2, w * 0.3, w / 2, h / 2, w * 0.7);
+        grad.addColorStop(0, "rgba(0,0,0,0)");
+        grad.addColorStop(1, `rgba(0,0,0,${s.vignette / 100 * 0.6})`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      // Grain — works without face detection
+      if (s.grain > 0) {
+        const w = w2, h = h2;
+        const gd = ctx.getImageData(0, 0, w, h);
+        const intensity = s.grain / 100 * 40;
+        for (let i = 0; i < gd.data.length; i += 4) {
+          const n = (Math.random() - 0.5) * intensity;
+          gd.data[i] += n; gd.data[i + 1] += n; gd.data[i + 2] += n;
+        }
+        ctx.putImageData(gd, 0, 0);
+      }
+
+      // Sharpen — works without face detection
+      if (s.sharpen > 0) {
+        const w = w2, h = h2;
+        const gd = ctx.getImageData(0, 0, w, h);
+        const amount = s.sharpen / 100 * 1.5;
+        const orig = new Uint8ClampedArray(gd.data);
+        for (let y = 1; y < h - 1; y++) {
+          for (let x = 1; x < w - 1; x++) {
+            const idx = (y * w + x) * 4;
+            for (let c = 0; c < 3; c++) {
+              const sharp = orig[idx + c] * 5 - orig[((y - 1) * w + x) * 4 + c] - orig[((y + 1) * w + x) * 4 + c] - orig[(y * w + x - 1) * 4 + c] - orig[(y * w + x + 1) * 4 + c];
+              gd.data[idx + c] = Math.max(0, Math.min(255, orig[idx + c] + sharp * amount));
+            }
+          }
+        }
+        ctx.putImageData(gd, 0, 0);
+      }
+
+      // Face-dependent features (makeup, brush, color splash, DE, bg, blemish)
+      if (lm) {
+        const w = w2, h = h2;
+
         if (s.lipstick > 0 || s.blush > 0 || s.eyeshadow > 0 || s.eyeliner > 0) {
           applyMakeup(ctx, w, h, lm, s, lipstickColor, blushColor, eyeshadowColor);
         }
 
-        // Feature 3: Local Adjustment Brush
         if (localBrushMaskRef.current && (s.local_bright !== 0 || s.local_warm !== 0 || s.local_sat !== 0)) {
           applyLocalAdjustment(ctx, w, h, localBrushMaskRef.current, s);
         }
 
-        // Feature 4: Color Splash
         if (s.color_splash > 0) {
           applyColorSplash(ctx, w, h, colorSplashHue, colorSplashRange, s.color_splash / 100);
         }
 
-        // Feature 5: Double Exposure
         if (s.double_exposure > 0 && doubleExposureImage) {
           applyDoubleExposure(ctx, canvas, doubleExposureImage, blendMode, s.double_exposure / 100, doubleExposureOpacity / 100);
         }
 
-        // 17. Background effects
-        if (s.blur_bg > 0 && lm) {
+        if (s.blur_bg > 0) {
           applyBackgroundBlur(ctx, canvas, lm, s.blur_bg / 100);
         }
-        if (s.bg_remove > 0 && lm) {
+        if (s.bg_remove > 0) {
           applyBackgroundRemove(ctx, canvas, lm, s.bg_remove / 100);
         }
-        if (s.bg_solid > 0 && lm) {
+        if (s.bg_solid > 0) {
           applyBackgroundSolid(ctx, canvas, lm, s.bg_solid / 100, bgSolidColor);
         }
-        if (s.bg_gradient > 0 && lm) {
+        if (s.bg_gradient > 0) {
           applyBackgroundGradient(ctx, canvas, lm, s.bg_gradient / 100, bgGradientStart, bgGradientEnd);
         }
 
-        // 18. Apply blemish patches
         if (blemishCanvasRef.current) {
           ctx.drawImage(blemishCanvasRef.current, 0, 0);
         }
@@ -1183,14 +1308,21 @@ export default function PhotoEditorPage() {
       reader.onload = () => {
         const img = new Image();
         img.onload = async () => {
+          const MAX_DIM = 2000;
+          let w = img.width, h = img.height;
+          if (w > MAX_DIM || h > MAX_DIM) {
+            const ratio = Math.min(MAX_DIM / w, MAX_DIM / h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
+          }
           originalRef.current = img;
           const canvas = canvasRef.current;
           if (!canvas) return;
-          canvas.width = img.width; canvas.height = img.height;
-          originalSizeRef.current = { w: img.width, h: img.height };
+          canvas.width = w; canvas.height = h;
+          originalSizeRef.current = { w, h };
           const ctx = canvas.getContext("2d");
           if (!ctx) return;
-          ctx.drawImage(img, 0, 0);
+          ctx.drawImage(img, 0, 0, w, h);
           setLoading(false);
 
           // Reset blemish canvas
