@@ -100,11 +100,11 @@ export function Header() {
 
   return (
     <header ref={navRef} className={`site-nav${scrolled ? " is-scrolled" : ""}`}>
-      <Link className="brand-mark" to="/" aria-label="回到首页">
+      <Link className="brand-mark" to="/" aria-label={t("nav.backToHome")}>
         <Camera size={18} />
         <span>{siteConfig.brandName}</span>
       </Link>
-      <nav id="site-navigation-menu" className={`nav-menu${open ? " is-open" : ""}`} aria-label="主导航">
+      <nav id="site-navigation-menu" className={`nav-menu${open ? " is-open" : ""}`} aria-label={t("nav.mainNavigation")}>
         {navItems.map((item) => (
           <Link
             to={item.to}

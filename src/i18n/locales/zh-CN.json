@@ -14,7 +14,10 @@
     "close": "关闭菜单",
     "details": "详情",
     "reviews": "评价",
-    "faq": "常见问题"
+    "faq": "常见问题",
+    "packages": "套餐",
+    "backToHome": "回到首页",
+    "mainNavigation": "主导航"
   },
   "hero": {
     "volBadge": "✦ Vol.1",

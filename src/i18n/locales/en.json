@@ -15,7 +15,9 @@
     "workshops": "Workshops",
     "shop": "Shop",
     "map": "Map",
-    "editor": "Editor"
+    "editor": "Editor",
+    "backToHome": "Back to homepage",
+    "mainNavigation": "Main navigation"
   },
   "hero": {
     "volBadge": "✦ Vol.1",

@@ -2561,7 +2561,7 @@
 .editor-root {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
+  min-height: 100dvh;
   padding-top: var(--nav-h, 64px);
   background: var(--custard-bg);
 }

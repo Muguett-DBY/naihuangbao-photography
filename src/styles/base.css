@@ -372,7 +372,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100dvh;
   color: var(--caramel-text);
   font-family: var(--font-body);
   letter-spacing: 0.005em;
@@ -472,17 +472,6 @@ main::after {
   bottom: 14rem;
   transform: rotate(8deg);
   animation: breatheGlow 12s ease-in-out 5s infinite;
-}
-
-/* ── Particles canvas ── */
-.canvas-particles {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
-  pointer-events: none;
 }
 
 /* ── Button press micro-interaction ── */

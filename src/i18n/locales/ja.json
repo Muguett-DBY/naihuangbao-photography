@@ -15,7 +15,9 @@
     "workshops": "ワークショップ",
     "shop": "ショップ",
     "map": "地図",
-    "editor": "編集"
+    "editor": "編集",
+    "backToHome": "トップページに戻る",
+    "mainNavigation": "メインナビゲーション"
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -464,7 +466,8 @@
       "other": "その他"
     },
     "inquire": "購入のお問い合わせ",
-    "contactUs": "お問い合わせ"
+    "contactUs": "お問い合わせ",
+    "empty": "準備中です。お楽しみに"
   },
   "courseDetail": {
     "backToList": "講座一覧に戻る",

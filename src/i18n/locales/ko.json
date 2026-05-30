@@ -15,7 +15,9 @@
     "workshops": "워크숍",
     "shop": "상품",
     "map": "지도",
-    "editor": "편집기"
+    "editor": "편집기",
+    "backToHome": "홈페이지로 돌아가기",
+    "mainNavigation": "주 내비게이션"
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -464,7 +466,8 @@
       "other": "기타"
     },
     "inquire": "구매 문의",
-    "contactUs": "문의하기"
+    "contactUs": "문의하기",
+    "empty": "준비 중입니다, 기대해 주세요"
   },
   "courseDetail": {
     "backToList": "강좌 목록으로",

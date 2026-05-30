@@ -1,11 +1,11 @@
 .adm-root {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: #f4ece6;
 }
 
 .adm-loading {
   display: flex; align-items: center; justify-content: center;
-  min-height: 100vh; color: #88756f; font-size: 14px;
+  min-height: 100dvh; color: #88756f; font-size: 14px;
 }
 
 .adm-login-box {
