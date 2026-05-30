@@ -38,6 +38,9 @@
     "otherAlbum": "Other",
     "viewLargeImage": "View large image: ",
     "placeholder": "Authorized works pending upload",
+    "share": "Share",
+    "linkCopied": "Link copied to clipboard",
+    "loading": "Loading more...",
     "filters": {
       "all": "All",
       "jiangnan": "Jiangnan",
@@ -352,7 +355,16 @@
     "booked": "Fully Booked",
     "partial": "Partially Available",
     "prevMonth": "Previous month",
-    "nextMonth": "Next month"
+    "nextMonth": "Next month",
+    "weekdays": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    }
   },
   "floatingBookingCta": {
     "ariaLabel": "Book a session",
@@ -634,11 +646,32 @@
     "purchases": "My Purchases",
     "courses": "My Courses",
     "workshops": "My Workshops",
+    "myPhotos": "My Photos",
     "noBookings": "No bookings yet",
     "noPurchases": "No purchases yet",
     "noCourses": "No courses enrolled",
     "noWorkshops": "No workshop registrations",
+    "noPhotos": "No delivered photos yet",
     "profile": "Profile",
+    "editProfile": "Edit Profile",
+    "displayName": "Display Name",
+    "saveProfile": "Save Profile",
+    "profileSaved": "Profile updated successfully",
+    "profileError": "Failed to update profile",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "updatePassword": "Update Password",
+    "passwordChanged": "Password changed successfully",
+    "passwordError": "Failed to change password",
+    "download": "Download",
+    "cancelBooking": "Cancel",
+    "rescheduleBooking": "Reschedule",
+    "confirmCancel": "Are you sure you want to cancel this booking?",
+    "yesCancel": "Yes, Cancel",
+    "noKeep": "No, Keep It",
+    "selectNewDate": "Select new date",
+    "confirmReschedule": "Confirm",
     "status": {
       "pending": "Pending",
       "contacted": "Contacted",
@@ -713,7 +746,8 @@
     "workshopDetailDesc": "Workshop details — schedule, location, registration, and what to bring.",
     "shopDetailDesc": "Product details — specifications, ordering guide, and related items.",
     "mapTitle": "Service Area Map | Naihuangbao Photography",
-    "mapDesc": "View our portrait photography service area across Nanjing — parks, streets, and scenic locations."
+    "mapDesc": "View our portrait photography service area across Nanjing — parks, streets, and scenic locations.",
+    "photoDetailDesc": "View this portrait photo — details, related photos, and book a similar session."
   },
   "countdown": {
     "days": "days",
@@ -857,5 +891,15 @@
     "caption6": "Capturing fleeting moments of beauty",
     "caption7": "Your smile is the best scenery",
     "caption8": "Freeze this moment, bloom forever"
+  },
+  "photoDetail": {
+    "backToGallery": "Back to Gallery",
+    "notFound": "Photo not found",
+    "about": "About This Photo",
+    "aboutDesc": "This photo was taken in {{style}} style. It captures the unique atmosphere and beauty of the location.",
+    "ctaTitle": "Love this style?",
+    "ctaDesc": "Book a similar session to get photos just like this one",
+    "bookSimilar": "Book a Similar Session",
+    "related": "Related Photos"
   }
 }

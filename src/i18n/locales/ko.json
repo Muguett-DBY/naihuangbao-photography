@@ -38,6 +38,9 @@
     "otherAlbum": "기타",
     "viewLargeImage": "큰 이미지 보기: ",
     "placeholder": "인가된 작품 업로드 대기",
+    "share": "공유",
+    "linkCopied": "링크가 클립보드에 복사되었습니다",
+    "loading": "더 불러오는 중…",
     "filters": {
       "all": "전체",
       "jiangnan": "장난",
@@ -352,7 +355,16 @@
     "booked": "마감",
     "partial": "일부 가능",
     "prevMonth": "이전 달",
-    "nextMonth": "다음 달"
+    "nextMonth": "다음 달",
+    "weekdays": {
+      "sun": "일",
+      "mon": "월",
+      "tue": "화",
+      "wed": "수",
+      "thu": "목",
+      "fri": "금",
+      "sat": "토"
+    }
   },
   "floatingBookingCta": {
     "ariaLabel": "세션 예약",
@@ -633,11 +645,32 @@
     "purchases": "내 구매",
     "courses": "내 강좌",
     "workshops": "내 워크숍",
+    "myPhotos": "내 사진",
     "noBookings": "예약 내역이 없습니다",
     "noPurchases": "구매 내역이 없습니다",
     "noCourses": "수강 중인 강좌가 없습니다",
     "noWorkshops": "워크숍 등록 내역이 없습니다",
+    "noPhotos": "아직 납품된 사진이 없습니다",
     "profile": "프로필",
+    "editProfile": "프로필 편집",
+    "displayName": "표시 이름",
+    "saveProfile": "프로필 저장",
+    "profileSaved": "프로필이 업데이트되었습니다",
+    "profileError": "프로필 업데이트 실패",
+    "changePassword": "비밀번호 변경",
+    "currentPassword": "현재 비밀번호",
+    "newPassword": "새 비밀번호",
+    "updatePassword": "비밀번호 업데이트",
+    "passwordChanged": "비밀번호가 변경되었습니다",
+    "passwordError": "비밀번호 변경 실패",
+    "download": "다운로드",
+    "cancelBooking": "취소",
+    "rescheduleBooking": "일정 변경",
+    "confirmCancel": "이 예약을 취소하시겠습니까?",
+    "yesCancel": "예, 취소",
+    "noKeep": "아니요, 유지",
+    "selectNewDate": "새 날짜 선택",
+    "confirmReschedule": "확인",
     "status": {
       "pending": "대기 중",
       "contacted": "연락 완료",
@@ -712,7 +745,8 @@
     "workshopDetailDesc": "워크숍 상세 정보 — 일정, 장소, 등록, 준비물.",
     "shopDetailDesc": "상품 상세 정보 — 사양, 구매 가이드, 관련 상품.",
     "mapTitle": "서비스 지역 지도 | 나이황바오 사진촬영",
-    "mapDesc": "난징 포트레트 촬영 서비스 지역을 확인하세요 — 공원, 거리, 관광지."
+    "mapDesc": "난징 포트레트 촬영 서비스 지역을 확인하세요 — 공원, 거리, 관광지.",
+    "photoDetailDesc": "이 사진 보기 — 상세 정보, 관련 사진, 유사 세션 예약."
   },
   "countdown": {
     "days": "일",
@@ -856,5 +890,15 @@
     "caption6": "스쳐지나가는 아름다움을 포착합니다",
     "caption7": "당신의 미소가 최고의 풍경입니다",
     "caption8": "이 순간을 영원히, 꽃피우다"
+  },
+  "photoDetail": {
+    "backToGallery": "갤러리로 돌아가기",
+    "notFound": "사진을 찾을 수 없습니다",
+    "about": "이 사진에 대해",
+    "aboutDesc": "이 사진은 {{style}} 스타일로 촬영되었습니다. 로케션의 독특한 분위기와 아름다움을 담고 있습니다.",
+    "ctaTitle": "이 스타일이 마음에 드시나요?",
+    "ctaDesc": "유사한 세션을 예약하여 같은 스타일의 사진을 받아보세요",
+    "bookSimilar": "유사 세션 예약",
+    "related": "관련 사진"
   }
 }

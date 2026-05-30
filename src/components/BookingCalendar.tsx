@@ -17,7 +17,7 @@ type BookingCalendarProps = {
   minDate?: string;
 };
 
-const WEEKDAY_LABELS = ["日", "一", "二", "三", "四", "五", "六"];
+const WEEKDAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
 function getDaysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
@@ -36,7 +36,7 @@ function formatDateKey(year: number, month: number, day: number): string {
 }
 
 export function BookingCalendar({ selectedDate, onSelectDate, minDate }: BookingCalendarProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const today = useMemo(() => new Date(), []);
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
@@ -90,7 +90,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [goPrev, goNext]);
 
-  const monthLabel = `${year}年${month + 1}月`;
+  const monthLabel = new Intl.DateTimeFormat(i18n.language, { year: "numeric", month: "long" }).format(new Date(year, month, 1));
 
   const cells: Array<{ day: number; key: string } | null> = [];
   for (let i = 0; i < firstDay; i++) cells.push(null);
@@ -123,8 +123,8 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
       </div>
 
       <div className="calendar-weekdays">
-        {WEEKDAY_LABELS.map((label) => (
-          <span key={label} className="calendar-weekday">{label}</span>
+        {WEEKDAY_KEYS.map((key) => (
+          <span key={key} className="calendar-weekday">{t(`calendar.weekdays.${key}` as any)}</span>
         ))}
       </div>
 

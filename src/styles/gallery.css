@@ -655,3 +655,214 @@
 :root[data-mood="cute"] .gallery-teaser-grid img {
   border-radius: 18px;
 }
+
+/* ══════════════════════════════════════════════
+   Video Support
+   ══════════════════════════════════════════════ */
+.gallery-video-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.gallery-video-wrap .img-blur-wrap,
+.gallery-video-wrap img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.gallery-video-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.gallery-video-preview.is-playing {
+  opacity: 1;
+}
+
+.gallery-video-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.gallery-play-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--caramel-ink, #442b24);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.gallery-masonry-btn:hover .gallery-play-overlay {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.gallery-play-overlay svg {
+  margin-left: 3px;
+}
+
+/* ══════════════════════════════════════════════
+   Share Button
+   ══════════════════════════════════════════════ */
+.gallery-share-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 249, 236, 0.85);
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 0.2s ease, transform 0.2s ease;
+  z-index: 3;
+}
+
+.gallery-share-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.1);
+}
+
+.gallery-share-btn:active {
+  transform: scale(0.95);
+}
+
+/* ══════════════════════════════════════════════
+   Infinite Scroll Loading Indicator
+   ══════════════════════════════════════════════ */
+.gallery-loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 0;
+  color: var(--caramel-muted, #8c7b6f);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.gallery-loading-spinner {
+  animation: gallery-spin 1s linear infinite;
+  color: var(--peach-accent, #db9797);
+}
+
+@keyframes gallery-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ══════════════════════════════════════════════
+   Video Item in Masonry
+   ══════════════════════════════════════════════ */
+.gallery-masonry-item.is-video .gallery-masonry-btn::after {
+  content: "";
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ══════════════════════════════════════════════
+   PhotoSwipe Video Slide
+   ══════════════════════════════════════════════ */
+.pswp-video-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.pswp-video-slide video {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 8px;
+}
+
+/* ══════════════════════════════════════════════
+   Keyboard Navigation Hints (Lightbox)
+   ══════════════════════════════════════════════ */
+.pswp__custom-keyboard-hints {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.pswp--has MOUSE .pswp__custom-keyboard-hints {
+  opacity: 0;
+}
+
+.pswp__custom-keyboard-hints kbd {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  font-family: inherit;
+  font-size: 10px;
+  line-height: 1.4;
+}

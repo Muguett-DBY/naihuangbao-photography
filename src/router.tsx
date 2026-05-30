@@ -18,6 +18,7 @@ const BookingPage = lazy(() => import("./pages/BookingPage").then((m) => ({ defa
 const MapPage = lazy(() => import("./pages/MapPage").then((m) => ({ default: m.MapPage })));
 const LoginPage = lazy(() => import("./pages/LoginPage").then((m) => ({ default: m.LoginPage })));
 const DashboardPage = lazy(() => import("./pages/DashboardPage").then((m) => ({ default: m.DashboardPage })));
+const PhotoDetailPage = lazy(() => import("./pages/PhotoDetailPage").then((m) => ({ default: m.PhotoDetailPage })));
 const PhotoEditorPage = lazy(() => import("./pages/PhotoEditorPage"));
 
 const AdminDashboard = lazy(async () => {
@@ -71,6 +72,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <PageSuspense><HomePage /></PageSuspense> },
       { path: "gallery", element: <PageSuspense><GalleryPage /></PageSuspense> },
+      { path: "gallery/:id", element: <PageSuspense><PhotoDetailPage /></PageSuspense> },
       { path: "courses", element: <PageSuspense><CoursesPage /></PageSuspense> },
       { path: "courses/:id", element: <PageSuspense><CourseDetailPage /></PageSuspense> },
       { path: "products", element: <PageSuspense><ProductsPage /></PageSuspense> },

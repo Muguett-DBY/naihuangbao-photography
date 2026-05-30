@@ -38,6 +38,9 @@
     "otherAlbum": "その他",
     "viewLargeImage": "大きな画像を見る：",
     "placeholder": "許可済み作品のアップロード待ち",
+    "share": "共有",
+    "linkCopied": "リンクをクリップボードにコピーしました",
+    "loading": "読み込み中…",
     "filters": {
       "all": "すべて",
       "jiangnan": "江南",
@@ -352,7 +355,16 @@
     "booked": "満席",
     "partial": "一部空き",
     "prevMonth": "前月",
-    "nextMonth": "翌月"
+    "nextMonth": "翌月",
+    "weekdays": {
+      "sun": "日",
+      "mon": "月",
+      "tue": "火",
+      "wed": "水",
+      "thu": "木",
+      "fri": "金",
+      "sat": "土"
+    }
   },
   "floatingBookingCta": {
     "ariaLabel": "撮影予約",
@@ -633,11 +645,32 @@
     "purchases": "購入一覧",
     "courses": "受講コース",
     "workshops": "ワークショップ",
+    "myPhotos": "マイ写真",
     "noBookings": "予約はまだありません",
     "noPurchases": "購入履歴はまだありません",
     "noCourses": "受講中のコースはありません",
     "noWorkshops": "ワークショップの登録はありません",
+    "noPhotos": "納品済みの写真はまだありません",
     "profile": "プロフィール",
+    "editProfile": "プロフィール編集",
+    "displayName": "表示名",
+    "saveProfile": "プロフィール保存",
+    "profileSaved": "プロフィールが更新されました",
+    "profileError": "プロフィールの更新に失敗しました",
+    "changePassword": "パスワード変更",
+    "currentPassword": "現在のパスワード",
+    "newPassword": "新しいパスワード",
+    "updatePassword": "パスワード更新",
+    "passwordChanged": "パスワードが変更されました",
+    "passwordError": "パスワードの変更に失敗しました",
+    "download": "ダウンロード",
+    "cancelBooking": "キャンセル",
+    "rescheduleBooking": "日程変更",
+    "confirmCancel": "この予約をキャンセルしますか？",
+    "yesCancel": "はい、キャンセル",
+    "noKeep": "いいえ、維持",
+    "selectNewDate": "新しい日付を選択",
+    "confirmReschedule": "確認",
     "status": {
       "pending": "保留中",
       "contacted": "連絡済み",
@@ -712,7 +745,8 @@
     "workshopDetailDesc": "ワークショップ詳細 — スケジュール、会場、申込み、持ち物。",
     "shopDetailDesc": "商品詳細 — 仕様、ご注文方法、関連商品。",
     "mapTitle": "サービスエリアマップ | 奶黄んぼ写真撮影",
-    "mapDesc": "南京でのポートレート撮影サービスエリアを確認 — 公園、ストリート、観光地。"
+    "mapDesc": "南京でのポートレート撮影サービスエリアを確認 — 公園、ストリート、観光地。",
+    "photoDetailDesc": "この写真の詳細 — 詳細情報、関連写真、類似セッションの予約。"
   },
   "countdown": {
     "days": "日",
@@ -856,5 +890,15 @@
     "caption6": "過ぎ去っていく美しさを捉えます",
     "caption7": "あなたの笑顔が最高の景色です",
     "caption8": "この瞬間を永遠に、花開かせましょう"
+  },
+  "photoDetail": {
+    "backToGallery": "ギャラリーに戻る",
+    "notFound": "写真が見つかりません",
+    "about": "この写真について",
+    "aboutDesc": "この写真は{{style}}スタイルで撮影されました。ロケーションの独特な雰囲気と美しさを捉えています。",
+    "ctaTitle": "このスタイルがお気に入りですか？",
+    "ctaDesc": "類似のセッションを予約して、同じような写真を手に入れましょう",
+    "bookSimilar": "類似セッションを予約",
+    "related": "関連写真"
   }
 }

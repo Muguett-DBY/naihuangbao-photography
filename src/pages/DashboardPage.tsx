@@ -1,8 +1,8 @@
-import { useRef } from "react";
-import { Navigate } from "react-router-dom";
+import { useRef, useState, useCallback } from "react";
+import { Navigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Tabs } from "animal-island-ui";
-import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin } from "lucide-react";
+import { Tabs, Button } from "animal-island-ui";
+import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin, Image, Download, Settings, X, RefreshCw } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useAuth } from "../hooks/useAuth";
@@ -48,6 +48,19 @@ type Workshop = {
   created_at: string;
 };
 
+type UserPhoto = {
+  id: string;
+  title: string;
+  imageUrl: string;
+  style: string;
+  delivered_at: string;
+};
+
+type UserProfile = {
+  displayName: string;
+  email: string;
+};
+
 function StatusBadge({ status }: { status: string }) {
   const { t } = useTranslation();
   return (
@@ -59,7 +72,49 @@ function StatusBadge({ status }: { status: string }) {
 
 function BookingsTab() {
   const { t } = useTranslation();
-  const { data, loading } = useFetch<{ bookings: Booking[] }>("/api/user/bookings");
+  const { data, loading, retry } = useFetch<{ bookings: Booking[] }>("/api/user/bookings");
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [rescheduleId, setRescheduleId] = useState<string | null>(null);
+  const [newDate, setNewDate] = useState("");
+  const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
+  const [rescheduleLoading, setRescheduleLoading] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
+
+  const handleCancel = useCallback(async (bookingId: string) => {
+    setCancelLoading(true);
+    try {
+      const response = await fetch(`/api/user/bookings/${bookingId}/cancel`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (response.ok) {
+        setConfirmCancelId(null);
+        retry();
+      }
+    } finally {
+      setCancelLoading(false);
+    }
+  }, [retry]);
+
+  const handleReschedule = useCallback(async (bookingId: string) => {
+    if (!newDate) return;
+    setRescheduleLoading(true);
+    try {
+      const response = await fetch(`/api/user/bookings/${bookingId}/reschedule`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ preferred_date: newDate }),
+      });
+      if (response.ok) {
+        setRescheduleId(null);
+        setNewDate("");
+        retry();
+      }
+    } finally {
+      setRescheduleLoading(false);
+    }
+  }, [newDate, retry]);
 
   if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
 
@@ -76,19 +131,202 @@ function BookingsTab() {
 
   return (
     <div className="dashboard-list">
-      {bookings.map((b) => (
-        <div key={b.id} className="dashboard-card">
-          <div className="dashboard-card-header">
-            <h4>{b.package_name}</h4>
-            <StatusBadge status={b.status} />
+      {bookings.map((b) => {
+        const canManage = b.status === "pending" || b.status === "confirmed";
+        return (
+          <div key={b.id} className="dashboard-card">
+            <div className="dashboard-card-header">
+              <h4>{b.package_name}</h4>
+              <StatusBadge status={b.status} />
+            </div>
+            <div className="dashboard-card-meta">
+              {b.preferred_date && <span>{b.preferred_date}</span>}
+              {b.preferred_time && <span>{b.preferred_time}</span>}
+            </div>
+            <p className="dashboard-card-date">
+              {new Date(b.created_at).toLocaleDateString()}
+            </p>
+            {canManage && (
+              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                <button
+                  type="button"
+                  onClick={() => setConfirmCancelId(b.id)}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                    padding: "6px 12px",
+                    background: "transparent",
+                    border: "1px solid #e74c3c",
+                    borderRadius: 6,
+                    color: "#e74c3c",
+                    fontSize: "0.8rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  <X size={12} />
+                  {t("dashboard.cancelBooking")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRescheduleId(rescheduleId === b.id ? null : b.id)}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                    padding: "6px 12px",
+                    background: "transparent",
+                    border: "1px solid var(--accent)",
+                    borderRadius: 6,
+                    color: "var(--accent)",
+                    fontSize: "0.8rem",
+                    cursor: "pointer",
+                  }}
+                >
+                  <RefreshCw size={12} />
+                  {t("dashboard.rescheduleBooking")}
+                </button>
+              </div>
+            )}
+            {confirmCancelId === b.id && (
+              <div style={{
+                marginTop: 12,
+                padding: 12,
+                background: "rgba(231, 76, 60, 0.1)",
+                borderRadius: 8,
+                border: "1px solid rgba(231, 76, 60, 0.2)",
+              }}>
+                <p style={{ margin: 0, fontSize: "0.85rem", marginBottom: 8 }}>
+                  {t("dashboard.confirmCancel")}
+                </p>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <Button
+                    type="primary"
+                    onClick={() => handleCancel(b.id)}
+                    disabled={cancelLoading}
+                    style={{ fontSize: "0.8rem", padding: "4px 12px" }}
+                  >
+                    {cancelLoading ? t("common.loading") : t("dashboard.yesCancel")}
+                  </Button>
+                  <Button
+                    type="default"
+                    onClick={() => setConfirmCancelId(null)}
+                    style={{ fontSize: "0.8rem", padding: "4px 12px" }}
+                  >
+                    {t("dashboard.noKeep")}
+                  </Button>
+                </div>
+              </div>
+            )}
+            {rescheduleId === b.id && (
+              <div style={{
+                marginTop: 12,
+                padding: 12,
+                background: "var(--card-bg, rgba(255,255,255,0.7))",
+                borderRadius: 8,
+                border: "1px solid var(--border-subtle)",
+              }}>
+                <label style={{ display: "block", fontSize: "0.85rem", marginBottom: 6 }}>
+                  {t("dashboard.selectNewDate")}
+                </label>
+                <input
+                  type="date"
+                  value={newDate}
+                  onChange={(e) => setNewDate(e.target.value)}
+                  style={{
+                    padding: "6px 10px",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: 6,
+                    fontSize: "0.85rem",
+                    marginRight: 8,
+                  }}
+                />
+                <Button
+                  type="primary"
+                  onClick={() => handleReschedule(b.id)}
+                  disabled={!newDate || rescheduleLoading}
+                  style={{ fontSize: "0.8rem", padding: "6px 12px" }}
+                >
+                  {rescheduleLoading ? t("common.loading") : t("dashboard.confirmReschedule")}
+                </Button>
+              </div>
+            )}
           </div>
-          <div className="dashboard-card-meta">
-            {b.preferred_date && <span>{b.preferred_date}</span>}
-            {b.preferred_time && <span>{b.preferred_time}</span>}
+        );
+      })}
+    </div>
+  );
+}
+
+function MyPhotosTab() {
+  const { t } = useTranslation();
+  const { data, loading } = useFetch<{ photos: UserPhoto[] }>("/api/user/photos");
+
+  if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
+
+  const photos = data?.photos ?? [];
+
+  if (photos.length === 0) {
+    return (
+      <div className="dashboard-empty">
+        <Image size={40} strokeWidth={1.2} />
+        <p>{t("dashboard.noPhotos")}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+      gap: 16,
+    }}>
+      {photos.map((photo) => (
+        <div
+          key={photo.id}
+          style={{
+            borderRadius: 12,
+            overflow: "hidden",
+            background: "var(--card-bg, rgba(255,255,255,0.7))",
+            border: "1px solid var(--border-subtle)",
+          }}
+        >
+          <Link to={`/gallery/${photo.id}`} style={{ textDecoration: "none" }}>
+            <div style={{ aspectRatio: "1", overflow: "hidden" }}>
+              <img
+                src={photo.imageUrl}
+                alt={photo.title}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                loading="lazy"
+              />
+            </div>
+            <div style={{ padding: "10px 12px" }}>
+              <h4 style={{ margin: 0, fontSize: "0.85rem" }}>{photo.title}</h4>
+              <span style={{ fontSize: "0.75rem", color: "var(--caramel-muted)" }}>
+                {photo.delivered_at ? new Date(photo.delivered_at).toLocaleDateString() : ""}
+              </span>
+            </div>
+          </Link>
+          <div style={{ padding: "0 12px 10px" }}>
+            <a
+              href={photo.imageUrl}
+              download
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+                padding: "4px 10px",
+                background: "var(--accent)",
+                color: "#fff",
+                borderRadius: 6,
+                fontSize: "0.75rem",
+                textDecoration: "none",
+              }}
+            >
+              <Download size={12} />
+              {t("dashboard.download")}
+            </a>
           </div>
-          <p className="dashboard-card-date">
-            {new Date(b.created_at).toLocaleDateString()}
-          </p>
         </div>
       ))}
     </div>
@@ -204,6 +442,157 @@ function WorkshopsTab() {
   );
 }
 
+function ProfileTab({ user }: { user: { displayName: string; email: string } }) {
+  const { t } = useTranslation();
+  const [displayName, setDisplayName] = useState(user.displayName);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [profileMessage, setProfileMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [passwordMessage, setPasswordMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const handleSaveProfile = useCallback(async () => {
+    setProfileLoading(true);
+    setProfileMessage(null);
+    try {
+      const response = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ displayName }),
+      });
+      if (response.ok) {
+        setProfileMessage({ type: "success", text: t("dashboard.profileSaved") });
+      } else {
+        const data = await response.json();
+        setProfileMessage({ type: "error", text: data.error || t("dashboard.profileError") });
+      }
+    } catch {
+      setProfileMessage({ type: "error", text: t("dashboard.profileError") });
+    } finally {
+      setProfileLoading(false);
+    }
+  }, [displayName, t]);
+
+  const handleChangePassword = useCallback(async () => {
+    setPasswordLoading(true);
+    setPasswordMessage(null);
+    try {
+      const response = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      if (response.ok) {
+        setPasswordMessage({ type: "success", text: t("dashboard.passwordChanged") });
+        setCurrentPassword("");
+        setNewPassword("");
+      } else {
+        const data = await response.json();
+        setPasswordMessage({ type: "error", text: data.error || t("dashboard.passwordError") });
+      }
+    } catch {
+      setPasswordMessage({ type: "error", text: t("dashboard.passwordError") });
+    } finally {
+      setPasswordLoading(false);
+    }
+  }, [currentPassword, newPassword, t]);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+      <div>
+        <h3 style={{ marginBottom: 16 }}>{t("dashboard.editProfile")}</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 400 }}>
+          <label style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
+            {t("dashboard.displayName")}
+          </label>
+          <input
+            type="text"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            style={{
+              padding: "8px 12px",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: 8,
+              fontSize: "0.9rem",
+            }}
+          />
+          {profileMessage && (
+            <p style={{
+              margin: 0,
+              fontSize: "0.85rem",
+              color: profileMessage.type === "success" ? "#27ae60" : "#e74c3c",
+            }}>
+              {profileMessage.text}
+            </p>
+          )}
+          <Button
+            type="primary"
+            onClick={handleSaveProfile}
+            disabled={profileLoading || !displayName.trim()}
+            style={{ alignSelf: "flex-start" }}
+          >
+            {profileLoading ? t("common.loading") : t("dashboard.saveProfile")}
+          </Button>
+        </div>
+      </div>
+
+      <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: 32 }}>
+        <h3 style={{ marginBottom: 16 }}>{t("dashboard.changePassword")}</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 400 }}>
+          <label style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
+            {t("dashboard.currentPassword")}
+          </label>
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            style={{
+              padding: "8px 12px",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: 8,
+              fontSize: "0.9rem",
+            }}
+          />
+          <label style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
+            {t("dashboard.newPassword")}
+          </label>
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            style={{
+              padding: "8px 12px",
+              border: "1px solid var(--border-subtle)",
+              borderRadius: 8,
+              fontSize: "0.9rem",
+            }}
+          />
+          {passwordMessage && (
+            <p style={{
+              margin: 0,
+              fontSize: "0.85rem",
+              color: passwordMessage.type === "success" ? "#27ae60" : "#e74c3c",
+            }}>
+              {passwordMessage.text}
+            </p>
+          )}
+          <Button
+            type="primary"
+            onClick={handleChangePassword}
+            disabled={passwordLoading || !currentPassword || !newPassword}
+            style={{ alignSelf: "flex-start" }}
+          >
+            {passwordLoading ? t("common.loading") : t("dashboard.updatePassword")}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function DashboardPage() {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -243,6 +632,16 @@ export function DashboardPage() {
       children: <BookingsTab />,
     },
     {
+      key: "photos",
+      label: (
+        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <Image size={16} />
+          {t("dashboard.myPhotos")}
+        </span>
+      ),
+      children: <MyPhotosTab />,
+    },
+    {
       key: "purchases",
       label: (
         <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -271,6 +670,16 @@ export function DashboardPage() {
         </span>
       ),
       children: <WorkshopsTab />,
+    },
+    {
+      key: "profile",
+      label: (
+        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <Settings size={16} />
+          {t("dashboard.profile")}
+        </span>
+      ),
+      children: <ProfileTab user={user} />,
     },
   ];
 

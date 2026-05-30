@@ -37,6 +37,9 @@
     "otherAlbum": "其他",
     "viewLargeImage": "查看大图：",
     "placeholder": "授权作品待上传",
+    "share": "分享",
+    "linkCopied": "链接已复制到剪贴板",
+    "loading": "加载更多…",
     "filters": {
       "all": "全部",
       "jiangnan": "江南感",
@@ -351,7 +354,16 @@
     "booked": "已满",
     "partial": "部分时段",
     "prevMonth": "上一月",
-    "nextMonth": "下一月"
+    "nextMonth": "下一月",
+    "weekdays": {
+      "sun": "日",
+      "mon": "一",
+      "tue": "二",
+      "wed": "三",
+      "thu": "四",
+      "fri": "五",
+      "sat": "六"
+    }
   },
   "floatingBookingCta": {
     "ariaLabel": "预约拍摄",
@@ -633,11 +645,32 @@
     "purchases": "我的购买",
     "courses": "我的课程",
     "workshops": "我的活动",
+    "myPhotos": "我的照片",
     "noBookings": "暂无预约",
     "noPurchases": "暂无购买",
     "noCourses": "暂无课程",
     "noWorkshops": "暂无活动",
+    "noPhotos": "暂无已交付照片",
     "profile": "个人信息",
+    "editProfile": "编辑资料",
+    "displayName": "显示名称",
+    "saveProfile": "保存资料",
+    "profileSaved": "资料已更新",
+    "profileError": "更新失败",
+    "changePassword": "修改密码",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "updatePassword": "更新密码",
+    "passwordChanged": "密码已修改",
+    "passwordError": "修改密码失败",
+    "download": "下载",
+    "cancelBooking": "取消预约",
+    "rescheduleBooking": "改期",
+    "confirmCancel": "确定要取消这个预约吗？",
+    "yesCancel": "确定取消",
+    "noKeep": "不取消",
+    "selectNewDate": "选择新日期",
+    "confirmReschedule": "确认改期",
     "status": {
       "pending": "待处理",
       "contacted": "已联系",
@@ -712,7 +745,8 @@
     "workshopDetailDesc": "活动详情——日程安排、地点导航、报名方式和行前准备。",
     "shopDetailDesc": "商品详情——规格参数、购买指南和相关推荐。",
     "mapTitle": "服务范围地图 | 奶黄包摄影",
-    "mapDesc": "查看奶黄包摄影在南京的约拍服务范围——公园、街拍和风景名胜。"
+    "mapDesc": "查看奶黄包摄影在南京的约拍服务范围——公园、街拍和风景名胜。",
+    "photoDetailDesc": "查看这张写真作品——详情、相关照片和预约类似拍摄。"
   },
   "countdown": {
     "days": "天",
@@ -856,5 +890,15 @@
     "caption6": "捕捉那些稍纵即逝的美好",
     "caption7": "你的笑容是最好的风景",
     "caption8": "定格此刻，永恒绽放"
+  },
+  "photoDetail": {
+    "backToGallery": "返回作品集",
+    "notFound": "照片不存在",
+    "about": "关于这张照片",
+    "aboutDesc": "这张照片采用{{style}}风格拍摄，捕捉了拍摄地点独特的氛围与美感。",
+    "ctaTitle": "喜欢这种风格？",
+    "ctaDesc": "预约类似拍摄，获取同款风格的照片",
+    "bookSimilar": "预约类似拍摄",
+    "related": "相关照片"
   }
 }

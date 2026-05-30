@@ -18,13 +18,32 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
   }, [currentIndex]);
 
   useEffect(() => {
-    const dataSource = photos.map((p) => ({
-      src: p.imageUrl,
-      alt: p.alt || p.title,
-      width: 1600,
-      height: 1200,
-      title: p.title,
-    }));
+    const dataSource = photos.map((p) => {
+      if (p.videoUrl) {
+        return {
+          html: `<div class="pswp-video-slide">
+            <video
+              src="${p.videoUrl}"
+              poster="${p.imageUrl || ""}"
+              controls
+              autoplay
+              playsinline
+              style="max-width:100%;max-height:80vh;border-radius:8px;outline:none;"
+              aria-label="${p.title}"
+            />
+          </div>`,
+          width: 1600,
+          height: 900,
+        };
+      }
+      return {
+        src: p.imageUrl,
+        alt: p.alt || p.title,
+        width: 1600,
+        height: 1200,
+        title: p.title,
+      };
+    });
 
     const pswp = new PhotoSwipe({
       dataSource,
@@ -42,14 +61,20 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
     const win = window as any;
     if (win.lenis) win.lenis.stop();
 
+    // Pause any playing videos on slide change
+    const onSlideChange = () => {
+      const pswpEl = pswp.element;
+      if (!pswpEl) return;
+      const playingVideos = pswpEl.querySelectorAll("video:not([paused])");
+      playingVideos.forEach((v) => (v as HTMLVideoElement).pause());
+    };
+
     pswp.on("close", () => {
       if (win.lenis) win.lenis.start();
       onClose();
     });
 
-    pswp.on("change", () => {
-      // Sync with our state if needed
-    });
+    pswp.on("change", onSlideChange);
 
     pswp.init();
     pswpRef.current = pswp;
