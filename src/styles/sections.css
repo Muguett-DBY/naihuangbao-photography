@@ -1122,6 +1122,11 @@
     color: var(--caramel-ink);
   }
 
+  body.nav-lock .site-nav {
+    background: transparent;
+    box-shadow: none;
+  }
+
   .brand-mark {
     grid-column: 1;
     grid-row: 1;
@@ -1213,7 +1218,7 @@
     border-radius: 14px;
     padding: 0 16px;
     background: rgba(255, 253, 247, 0.12);
-    color: #fff;
+    color: var(--caramel-ink);
     box-shadow:
       var(--paper-inset),
       0 10px 26px rgba(0, 0, 0, 0.1);
@@ -1226,7 +1231,7 @@
   }
 
   .nav-menu a:hover {
-    background: rgba(255, 253, 247, 0.22);
+    background: rgba(255, 253, 247, 0.35);
   }
 
   .nav-menu a::after {
