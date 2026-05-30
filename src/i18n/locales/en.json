@@ -772,6 +772,7 @@
     "loadingModels": "Loading AI models...",
     "detecting": "Detecting face...",
     "faceDetected": "Face detected",
+    "noFaceDetected": "No clear face was detected. Color, filters, text and export still work; try a clearer front-facing portrait for beauty or reshape tools.",
     "loadingImage": "Loading image...",
     "cat": {
       "beauty": "Beauty",

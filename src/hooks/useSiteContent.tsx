@@ -30,6 +30,8 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
       try {
         const response = await fetch("/api/content", { signal: abortController.signal });
         if (!response.ok) return;
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) return;
         const data = (await response.json()) as { content?: PartialSiteContent };
         if (!ignore && data.content) {
           setRemoteContent(data.content);

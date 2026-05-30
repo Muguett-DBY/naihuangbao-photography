@@ -140,7 +140,7 @@ export function Header() {
         <Languages size={14} />
         <span style={{ marginLeft: 3 }}>{t(`langToggle.languages.${i18n.language}` as any)}</span>
       </button>
-      <div ref={userMenuRef} style={{ position: "relative" }}>
+      <div ref={userMenuRef} className="nav-user-menu">
         {user ? (
           <>
             <button

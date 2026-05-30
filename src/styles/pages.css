@@ -2644,6 +2644,15 @@
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+.editor-status-warning {
+  flex: 0 1 520px;
+  color: #9f5d45;
+  font-size: 0.85rem;
+  font-weight: 650;
+  line-height: 1.45;
+  text-align: left;
+}
+
 .editor-face-ok {
   color: #4ade80;
   font-size: 0.85rem;
@@ -2656,22 +2665,31 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 16px 40px;
+  align-items: flex-start;
 }
 
 .editor-canvas-container {
   flex: 1;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--paper-inset), var(--warm-shadow);
   background: var(--paper-white);
   min-height: 400px;
+  max-height: min(72dvh, 760px);
 }
 
 .editor-canvas {
-  width: 100%;
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: min(72dvh, 760px);
+  object-fit: contain;
   display: block;
+  margin: auto;
 }
 
 
@@ -2784,6 +2802,10 @@
 
 /* ── Mobile Responsive ── */
 @media (max-width: 768px) {
+  .editor-root {
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+
   .editor-header {
     padding: 16px 16px 12px;
   }
@@ -2815,6 +2837,12 @@
     min-height: 44px;
   }
 
+  .editor-status-warning {
+    flex: 0 0 100%;
+    padding-inline: 4px;
+    font-size: 0.78rem;
+  }
+
   /* Workspace: stacked layout */
   .editor-workspace {
     flex-direction: column;
@@ -2825,7 +2853,14 @@
   /* Canvas: full width */
   .editor-canvas-container {
     min-height: 280px;
+    max-height: 58dvh;
     border-radius: 12px;
+  }
+
+  .editor-canvas {
+    width: auto;
+    max-width: 100%;
+    max-height: 58dvh;
   }
 
   /* Beauty panel: bottom sheet style */

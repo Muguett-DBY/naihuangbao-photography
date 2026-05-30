@@ -772,6 +772,7 @@
     "loadingModels": "AI 모델 로딩 중...",
     "detecting": "얼굴 감지 중...",
     "faceDetected": "얼굴 감지됨",
+    "noFaceDetected": "선명한 얼굴을 감지하지 못했습니다. 색감, 필터, 텍스트, 내보내기는 계속 사용할 수 있습니다. 뷰티/리쉐입 도구는 정면에 가까운 사진으로 다시 시도해 주세요.",
     "loadingImage": "이미지 로딩 중...",
     "cat": {
       "beauty": "뷰티",

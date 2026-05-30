@@ -27,6 +27,8 @@ export function PublicPhotosProvider({ children }: { children: ReactNode }) {
       try {
         const response = await fetch("/api/photos", { signal: abortController.signal });
         if (!response.ok) return;
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) return;
         const data = (await response.json()) as { photos?: PhotoItem[] };
         if (!ignore && Array.isArray(data.photos)) {
           setRemotePhotos(data.photos);

@@ -6,6 +6,26 @@ import { PageTransition } from "../components/shared/PageTransition";
 const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 const MAX_HISTORY = 20;
 
+function browserHasWebGL() {
+  if (typeof document === "undefined") return true;
+  try {
+    const canvas = document.createElement("canvas");
+    return Boolean(canvas.getContext("webgl") || canvas.getContext("experimental-webgl"));
+  } catch {
+    return false;
+  }
+}
+
+async function prepareFaceApiBackend(api: any) {
+  if (browserHasWebGL()) return;
+  try {
+    await api.tf?.setBackend?.("cpu");
+    await api.tf?.ready?.();
+  } catch {
+    // Some older face-api bundles do not expose a switchable CPU backend.
+  }
+}
+
 type BeautyCategory = "beauty" | "reshape" | "color" | "filter" | "tools" | "bg" | "makeup";
 type BeautyTool =
   | "smooth" | "slim" | "bigeye" | "whiten" | "sharpen"
@@ -157,6 +177,8 @@ export default function PhotoEditorPage() {
   const faceApiRef = useRef<any>(null);
   const originalSizeRef = useRef<{ w: number; h: number } | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
+  const modelsReadyRef = useRef(false);
+  const modelErrorRef = useRef(false);
 
   const [loading, setLoading] = useState(false);
   const [detecting, setDetecting] = useState(false);
@@ -175,6 +197,14 @@ export default function PhotoEditorPage() {
   const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("jpeg");
   const [compareDrag, setCompareDrag] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
+
+  useEffect(() => {
+    modelsReadyRef.current = modelsReady;
+  }, [modelsReady]);
+
+  useEffect(() => {
+    modelErrorRef.current = modelError;
+  }, [modelError]);
 
   // New feature states
   const [frameId, setFrameId] = useState("none");
@@ -235,6 +265,7 @@ export default function PhotoEditorPage() {
     import("face-api.js").then(async api => {
       faceApiRef.current = api;
       try {
+        await prepareFaceApiBackend(api);
         await Promise.race([
           Promise.all([
             api.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
@@ -242,16 +273,31 @@ export default function PhotoEditorPage() {
           ]),
           timeout,
         ]);
-        if (m) setModelsReady(true);
+        if (m) {
+          modelsReadyRef.current = true;
+          setModelsReady(true);
+        }
       } catch (e) {
         console.error("Model load failed:", e);
-        if (m) setModelError(true);
+        if (m) {
+          modelErrorRef.current = true;
+          setModelError(true);
+        }
       }
     }).catch(e => {
       console.error("face-api.js import failed:", e);
       if (m) setModelError(true);
     });
     return () => { m = false; };
+  }, []);
+
+  const waitForFaceModels = useCallback(async (timeoutMs = 8000) => {
+    const startedAt = Date.now();
+    while (!modelsReadyRef.current && !modelErrorRef.current) {
+      if (Date.now() - startedAt >= timeoutMs) return false;
+      await new Promise((resolve) => window.setTimeout(resolve, 120));
+    }
+    return modelsReadyRef.current;
   }, []);
 
   // Keyboard shortcuts
@@ -1341,15 +1387,22 @@ export default function PhotoEditorPage() {
         setDetecting(true);
         setFaceError(false);
         try {
-          const api = faceApiRef.current || await import("face-api.js");
-          faceApiRef.current = api;
-          const det = await api
-            .detectSingleFace(canvas, new api.TinyFaceDetectorOptions())
-            .withFaceLandmarks();
-          setDetecting(false);
-          if (det) {
-            setFaceOk(true);
-            landmarksRef.current = det.landmarks.positions;
+          const ready = await waitForFaceModels();
+          if (ready) {
+            const api = faceApiRef.current || await import("face-api.js");
+            await prepareFaceApiBackend(api);
+            faceApiRef.current = api;
+            const det = await api
+              .detectSingleFace(canvas, new api.TinyFaceDetectorOptions())
+              .withFaceLandmarks();
+            if (det) {
+              setFaceOk(true);
+              landmarksRef.current = det.landmarks.positions;
+            } else {
+              setFaceOk(false);
+              setFaceError(true);
+              landmarksRef.current = null;
+            }
           } else {
             setFaceOk(false);
             setFaceError(true);
@@ -1357,10 +1410,11 @@ export default function PhotoEditorPage() {
           }
         } catch (err) {
           console.error("Face detection failed:", err);
-          setDetecting(false);
           setFaceOk(false);
           setFaceError(true);
           landmarksRef.current = null;
+        } finally {
+          setDetecting(false);
         }
         historyRef.current = [{ ...INITIAL }];
         historyIdxRef.current = 0;
@@ -1377,7 +1431,7 @@ export default function PhotoEditorPage() {
     reader.readAsDataURL(file);
     // Reset so same file can be re-selected
     e.target.value = "";
-  }, []);
+  }, [waitForFaceModels]);
 
   // Feature 3: Local brush painting
   const handleBrushPaint = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -1613,7 +1667,7 @@ export default function PhotoEditorPage() {
           )}
           {detecting && <span className="editor-detecting" aria-live="polite">{t("editor.detecting")}</span>}
           {faceOk && <span className="editor-face-ok" role="status" aria-label={t("editor.faceDetected")}>✓</span>}
-          {faceError && !detecting && <span className="editor-detecting" role="status" aria-live="polite">{t("editor.subtitle")}</span>}
+          {faceError && !detecting && <span className="editor-status-warning" role="status" aria-live="polite">{t("editor.noFaceDetected")}</span>}
         </div>
 
         {/* Text input panel */}

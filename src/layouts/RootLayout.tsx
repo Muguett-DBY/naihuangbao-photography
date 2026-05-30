@@ -37,6 +37,7 @@ export function RootLayout() {
   }, []);
 
   const isEditor = location.pathname === "/editor";
+  const showPublicChat = !isEditor;
 
   return (
     <div ref={rootRef} className={isEditor ? "is-editor" : undefined}>
@@ -71,20 +72,22 @@ export function RootLayout() {
                 </ErrorBoundary>
               </main>
               <Footer />
-              <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
-                <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
-                {chatOpen ? (
-                  <Suspense
-                    fallback={
-                      <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
-                        {t("common.loading")}
-                      </div>
-                    }
-                  >
-                    <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
-                  </Suspense>
-                ) : null}
-              </div>
+              {showPublicChat && (
+                <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
+                  <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
+                  {chatOpen ? (
+                    <Suspense
+                      fallback={
+                        <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
+                          {t("common.loading")}
+                        </div>
+                      }
+                    >
+                      <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
+                    </Suspense>
+                  ) : null}
+                </div>
+              )}
             </PublicPhotosProvider>
           </SiteContentProvider>
         </BookingProvider>

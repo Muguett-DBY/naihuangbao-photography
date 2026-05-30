@@ -772,6 +772,7 @@
     "loadingModels": "AI 模型加载中...",
     "detecting": "人脸检测中...",
     "faceDetected": "已检测到人脸",
+    "noFaceDetected": "未检测到清晰人脸，基础调色、滤镜、文字和导出仍可使用。请换一张正脸照片再试美颜/重塑。",
     "loadingImage": "加载图片中...",
     "cat": {
       "beauty": "美颜",
