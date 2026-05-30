@@ -75,16 +75,13 @@ export function PhotoDetailPage() {
 
   return (
     <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
+      <section className="photo-detail-hero" id="top">
+        <div className="photo-detail-heading">
           <DetailBackLink to="/gallery" label={t("photoDetail.backToGallery")} />
           <h1>{photo.title}</h1>
         </div>
-      </section>
-
-      <section className="section-shell is-visible" style={{ paddingTop: 0 }}>
-        <div style={{ maxWidth: 960, margin: "0 auto" }}>
-          <div style={{ position: "relative", borderRadius: 16, overflow: "hidden" }}>
+        <div className="photo-detail-cover-shell">
+          <div className="photo-detail-cover-frame">
             <ImageWithFallback
               src={galleryThumb(photo.imageUrl)}
               alt={photo.alt}

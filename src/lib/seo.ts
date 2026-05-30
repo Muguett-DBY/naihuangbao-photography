@@ -113,7 +113,6 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     `<meta itemprop="image" content="${metadata.shareImage}" />`,
     `<link rel="canonical" href="${metadata.origin}/" />`,
     '<link rel="manifest" href="/manifest.webmanifest" />',
-    '<link rel="preload" as="image" href="/images/gallery/gallery-jiangnan-01.webp?v=20260427-2" imagesizes="(max-width: 900px) 86vw, 38vw" />',
     '<link rel="icon" href="/icons/pwa-icon.svg" />',
     '<script type="application/ld+json">',
     JSON.stringify(mainEntity, null, 6),

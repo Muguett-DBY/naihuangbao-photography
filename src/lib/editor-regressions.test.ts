@@ -56,4 +56,14 @@ describe("editor regression contracts", () => {
     expect(photoMap).toContain("basemaps.cartocdn.com/light_all");
     expect(photoMap).not.toContain("tile.openstreetmap.org");
   });
+
+  it("keeps photo detail pages out of the full-height home hero layout", () => {
+    const detailPage = read("src/pages/PhotoDetailPage.tsx");
+    const pagesCss = read("src/styles/pages.css");
+
+    expect(detailPage).toContain('className="photo-detail-hero"');
+    expect(detailPage).not.toContain('className="hero"');
+    expect(pagesCss).toContain(".photo-detail-hero");
+    expect(pagesCss).toContain("calc(var(--nav-h, 64px) + 16px)");
+  });
 });

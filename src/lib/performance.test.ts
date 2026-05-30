@@ -26,12 +26,13 @@ const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
 
 describe("performance budgets", () => {
-  it("preloads the featured portfolio image used in the hero", () => {
+  it("prefetches featured portfolio images without global render-blocking image preloads", () => {
     expect(mainSource).toContain('"prefetch"');
     expect(mainSource).toContain('"image"');
     expect(mainSource).toContain("gallery-urban-01");
     expect(mainSource).toContain("gallery-garden-01");
     expect(mainSource).toContain("gallery-jiangnan-01");
+    expect(html).not.toContain('rel="preload" as="image" href="/images/gallery/');
   });
 
   it("builds responsive variants for static gallery images but not remote R2 images", () => {

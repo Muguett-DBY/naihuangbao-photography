@@ -558,6 +558,79 @@
 }
 
 /* ── Detail pages ── */
+.photo-detail-hero {
+  position: relative;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: calc(var(--nav-h, 64px) + 32px) 24px 24px;
+}
+
+.photo-detail-heading {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto 24px;
+}
+
+.photo-detail-heading h1 {
+  margin: 14px 0 0;
+  color: var(--caramel-ink);
+  font-family: var(--font-display-cn);
+  font-size: clamp(2.25rem, 6vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.photo-detail-cover-shell {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.photo-detail-cover-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(139, 94, 74, 0.12);
+  border-radius: 22px;
+  background: var(--paper-white);
+  box-shadow: var(--paper-inset), 0 18px 44px rgba(95, 60, 49, 0.12);
+}
+
+.photo-detail-cover-frame .img-blur-wrap,
+.photo-detail-cover-frame picture,
+.photo-detail-cover-frame img {
+  display: block;
+  width: 100%;
+}
+
+.photo-detail-cover-frame .img-blur-wrap {
+  aspect-ratio: 4 / 5;
+}
+
+.photo-detail-cover-frame img {
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .photo-detail-hero {
+    padding: calc(var(--nav-h, 64px) + 16px) 16px 18px;
+  }
+
+  .photo-detail-heading {
+    margin-bottom: 14px;
+  }
+
+  .photo-detail-heading h1 {
+    margin-top: 10px;
+    font-size: clamp(2rem, 11vw, 3.1rem);
+  }
+
+  .photo-detail-cover-frame {
+    border-radius: 18px;
+    box-shadow: var(--paper-inset), 0 12px 28px rgba(95, 60, 49, 0.1);
+  }
+}
+
 .shop-detail-grid {
   max-width: 800px;
   margin: 0 auto;
