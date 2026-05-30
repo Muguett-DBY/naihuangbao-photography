@@ -273,19 +273,26 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
        EFFECT 10: 图片悬停视差 (Hover Image Parallax)
        ══════════════════════════════════════════ */
     const galleryItems = $<HTMLElement>(".gallery-masonry-item");
+    const hoverCleanups: Array<() => void> = [];
     galleryItems.forEach((item) => {
       const img = item.querySelector<HTMLElement>("img");
       if (!img) return;
-      item.addEventListener("mousemove", (e: MouseEvent) => {
+      const onMove = (e: MouseEvent) => {
         const rect = item.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
         const y = ((e.clientY - rect.top) / rect.height - 0.5) * 8;
         gsap.to(img, {
           x, y, duration: 0.6, ease: "power2.out", overwrite: "auto",
         });
-      });
-      item.addEventListener("mouseleave", () => {
+      };
+      const onLeave = () => {
         gsap.to(img, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.35)" });
+      };
+      item.addEventListener("mousemove", onMove);
+      item.addEventListener("mouseleave", onLeave);
+      hoverCleanups.push(() => {
+        item.removeEventListener("mousemove", onMove);
+        item.removeEventListener("mouseleave", onLeave);
       });
     });
 
@@ -314,8 +321,9 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     /* ══════════════════════════════════════════
        EFFECT 13: 页面转场动画 (Page Transition)
        ══════════════════════════════════════════ */
+    const anchorCleanups: Array<() => void> = [];
     $<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
-      anchor.addEventListener("click", (e: MouseEvent) => {
+      const onClick = (e: MouseEvent) => {
         const href = anchor.getAttribute("href");
         if (!href || href === "#") return;
         const target = document.querySelector(href);
@@ -360,7 +368,9 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
             });
           },
         });
-      });
+      };
+      anchor.addEventListener("click", onClick);
+      anchorCleanups.push(() => anchor.removeEventListener("click", onClick));
     });
 
     /* ══════════════════════════════════════════
@@ -543,6 +553,12 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         if (rafId) cancelAnimationFrame(rafId);
         (el as any)._autoScrollIO?.disconnect();
       });
+
+      // Cleanup hover parallax listeners
+      hoverCleanups.forEach((fn) => fn());
+
+      // Cleanup anchor click listeners
+      anchorCleanups.forEach((fn) => fn());
 
       // Reset guard so effect can re-init on StrictMode double-render
       guardRef.current = false;

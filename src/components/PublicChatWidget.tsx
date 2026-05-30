@@ -33,6 +33,8 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
     role: "assistant",
     content: t("chat.welcome"),
   }]);
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -200,7 +202,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
       content: question,
     };
     const nextMessages = [
-      ...messages.filter((message) => message.id !== "assistant-welcome"),
+      ...messagesRef.current.filter((message) => message.id !== "assistant-welcome"),
       userMessage,
     ].slice(-6);
 

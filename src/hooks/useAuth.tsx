@@ -58,13 +58,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
 
       if (!response.ok) {
-        return { error: data.error || "登录失败" };
+        return { error: data.error || "Login failed" };
       }
 
       setUser(data.user);
       return {};
     } catch {
-      return { error: "网络错误，请稍后重试" };
+      return { error: "Network error, please try again" };
     }
   }, []);
 
@@ -80,13 +80,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await response.json();
 
       if (!response.ok) {
-        return { error: data.error || "注册失败" };
+        return { error: data.error || "Registration failed" };
       }
 
       setUser(data.user);
       return {};
     } catch {
-      return { error: "网络错误，请稍后重试" };
+      return { error: "Network error, please try again" };
     }
   }, []);
 

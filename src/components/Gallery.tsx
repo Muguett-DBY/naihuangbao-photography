@@ -204,8 +204,8 @@ export function Gallery() {
       {/* Filmstrip: auto-scrolling photo strip */}
       <div className="gallery-filmstrip-wrap" aria-hidden="true">
         <div className="gallery-auto-scroll" data-scroll-speed="0.25">
-          {[...photos.slice(0, 6), ...photos.slice(0, 6)].map((photo, i) => (
-            <div className="gallery-filmstrip-item" key={`${photo.id}-${i}`}>
+          {photos.slice(0, 6).map((photo) => (
+            <div className="gallery-filmstrip-item" key={photo.id}>
               <img
                 src={galleryThumb(photo.imageUrl || "")}
                 alt=""

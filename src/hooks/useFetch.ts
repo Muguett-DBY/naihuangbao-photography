@@ -9,7 +9,8 @@ export type FetchState<T> = {
 export function useFetch<T>(url: string | null, fetchOptions?: RequestInit): FetchState<T> & { retry: () => void } {
   const [state, setState] = useState<FetchState<T>>({ data: null, loading: !!url, error: null });
   const [retryCount, setRetryCount] = useState(0);
-  const retryCountRef = useRef(0);
+  const optionsRef = useRef(fetchOptions);
+  optionsRef.current = fetchOptions;
 
   useEffect(() => {
     if (!url) {
@@ -20,7 +21,7 @@ export function useFetch<T>(url: string | null, fetchOptions?: RequestInit): Fet
     const ctrl = new AbortController();
     setState((s) => ({ ...s, loading: true, error: null }));
 
-    fetch(url, { signal: ctrl.signal, ...fetchOptions })
+    fetch(url, { signal: ctrl.signal, ...optionsRef.current })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();
@@ -34,11 +35,10 @@ export function useFetch<T>(url: string | null, fetchOptions?: RequestInit): Fet
       });
 
     return () => ctrl.abort();
-  }, [url, retryCount, fetchOptions]);
+  }, [url, retryCount]);
 
   const retry = useCallback(() => {
-    retryCountRef.current += 1;
-    setRetryCount(retryCountRef.current);
+    setRetryCount((c) => c + 1);
   }, []);
 
   return { ...state, retry };
