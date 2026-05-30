@@ -1341,8 +1341,8 @@ export default function PhotoEditorPage() {
           try {
             const api = faceApiRef.current || await import("face-api.js");
             faceApiRef.current = api;
-            const det = await api.default
-              .detectSingleFace(canvas, new api.default.TinyFaceDetectorOptions())
+            const det = await api
+              .detectSingleFace(canvas, new api.TinyFaceDetectorOptions())
               .withFaceLandmarks();
             setDetecting(false);
             if (det) {
