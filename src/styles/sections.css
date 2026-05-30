@@ -1316,7 +1316,7 @@
     border-radius: 14px;
     padding: 0 16px;
     background: rgba(255, 253, 247, 0.12);
-    color: var(--caramel-ink);
+    color: #442B24;
     box-shadow:
       var(--paper-inset),
       0 10px 26px rgba(0, 0, 0, 0.1);
@@ -1330,6 +1330,10 @@
 
   .nav-menu a:hover {
     background: rgba(255, 253, 247, 0.35);
+  }
+
+  .site-nav.is-scrolled .nav-menu a {
+    color: #442B24;
   }
 
   .nav-menu a::after {
