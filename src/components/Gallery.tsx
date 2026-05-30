@@ -172,6 +172,30 @@ export function Gallery() {
     return () => observer.disconnect();
   }, [hasMore]);
 
+  // Haptic touch feedback with proper cleanup
+  const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleTouchStart = useCallback(() => {
+    touchTimerRef.current = setTimeout(() => navigator.vibrate?.(12), 400);
+    const clear = () => {
+      if (touchTimerRef.current) {
+        clearTimeout(touchTimerRef.current);
+        touchTimerRef.current = null;
+      }
+    };
+    document.addEventListener("touchend", clear, { once: true });
+    document.addEventListener("touchmove", clear, { once: true });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (touchTimerRef.current) {
+        clearTimeout(touchTimerRef.current);
+        touchTimerRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <Section
       id="gallery"
@@ -246,12 +270,7 @@ export function Gallery() {
                         type="button"
                         data-distort
                         onClick={() => setLightboxIndex(photoIndexMap.get(item.id) ?? 0)}
-                        onTouchStart={() => {
-                          const timer = setTimeout(() => navigator.vibrate?.(12), 400);
-                          const clear = () => { clearTimeout(timer); };
-                          document.addEventListener("touchend", clear, { once: true });
-                          document.addEventListener("touchmove", clear, { once: true });
-                        }}
+                        onTouchStart={handleTouchStart}
                         aria-label={`${t("gallery.viewLargeImage")}${item.title}`}
                       >
                         {isVideo && item.videoUrl ? (

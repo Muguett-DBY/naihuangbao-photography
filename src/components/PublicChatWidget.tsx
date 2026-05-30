@@ -288,7 +288,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
           </div>
 
           <div className="public-chat-prompts" aria-label={t("chat.promptsLabel")}>
-            {t("chat.prompts", { returnObjects: true }).map((prompt: string) => (
+            {(t("chat.prompts", { returnObjects: true }) as string[]).map((prompt) => (
               <button
                 type="button"
                 key={prompt}

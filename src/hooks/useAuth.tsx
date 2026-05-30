@@ -23,6 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const controller = new AbortController();
 
+    const timeout = setTimeout(() => controller.abort(), 10000);
     fetch("/api/auth/session", { credentials: "include", signal: controller.signal })
       .then((response) => response.json())
       .then((data) => {
@@ -43,7 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       });
 
-    return () => controller.abort();
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {

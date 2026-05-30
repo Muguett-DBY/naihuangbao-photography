@@ -866,7 +866,7 @@
   transition: opacity 0.3s ease;
 }
 
-.pswp--has MOUSE .pswp__custom-keyboard-hints {
+.pswp--has-mouse .pswp__custom-keyboard-hints {
   opacity: 0;
 }
 

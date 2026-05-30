@@ -22,7 +22,7 @@ export function GalleryPage() {
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <p className="section-eyebrow">Portfolio</p>
+          <p className="section-eyebrow">{t("gallery.eyebrow")}</p>
           <h1>{t("gallery.title")}</h1>
           <span>{t("gallery.description")}</span>
         </div>

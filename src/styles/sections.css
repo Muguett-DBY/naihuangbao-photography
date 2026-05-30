@@ -1492,8 +1492,7 @@
   .why-card:hover,
   .service-detail-card:hover,
   .booking-card:hover,
-  .mid-cta-card a:hover,
-  .filter-row button:hover {
+  .mid-cta-card a:hover {
     transform: none !important;
   }
 

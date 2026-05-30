@@ -9,13 +9,33 @@ type LightboxProps = {
   onClose: () => void;
 };
 
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function escapeAttr(s: string): string {
+  return s.replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+const LENIS = (w: Window) => (w as unknown as { lenis?: { stop(): void; start(): void } }).lenis;
+
 export default function Lightbox({ photos, currentIndex, onClose }: LightboxProps) {
   const pswpRef = useRef<PhotoSwipe | null>(null);
   const indexRef = useRef(currentIndex);
+  const onCloseRef = useRef(onClose);
+  const photosRef = useRef(photos);
 
   useEffect(() => {
     indexRef.current = currentIndex;
   }, [currentIndex]);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    photosRef.current = photos;
+  }, [photos]);
 
   useEffect(() => {
     const dataSource = photos.map((p) => {
@@ -23,13 +43,13 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
         return {
           html: `<div class="pswp-video-slide">
             <video
-              src="${p.videoUrl}"
-              poster="${p.imageUrl || ""}"
+              src="${escapeAttr(p.videoUrl)}"
+              poster="${escapeAttr(p.imageUrl || "")}"
               controls
               autoplay
               playsinline
               style="max-width:100%;max-height:80vh;border-radius:8px;outline:none;"
-              aria-label="${p.title}"
+              aria-label="${escapeAttr(p.title)}"
             />
           </div>`,
           width: 1600,
@@ -57,21 +77,19 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
       padding: { top: 48, bottom: 64, left: 0, right: 0 },
     });
 
-    // Stop Lenis while open
-    const win = window as any;
-    if (win.lenis) win.lenis.stop();
+    const lenis = LENIS(window);
+    if (lenis) lenis.stop();
 
-    // Pause any playing videos on slide change
     const onSlideChange = () => {
       const pswpEl = pswp.element;
       if (!pswpEl) return;
-      const playingVideos = pswpEl.querySelectorAll("video:not([paused])");
-      playingVideos.forEach((v) => (v as HTMLVideoElement).pause());
+      pswpEl.querySelectorAll("video:not([paused])").forEach((v) => (v as HTMLVideoElement).pause());
     };
 
     pswp.on("close", () => {
-      if (win.lenis) win.lenis.start();
-      onClose();
+      const l = LENIS(window);
+      if (l) l.start();
+      onCloseRef.current();
     });
 
     pswp.on("change", onSlideChange);
@@ -84,9 +102,10 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
         pswpRef.current.destroy();
         pswpRef.current = null;
       }
-      if (win.lenis) win.lenis.start();
+      const l = LENIS(window);
+      if (l) l.start();
     };
-  }, []); // Only run once on mount — PhotoSwipe manages its own lifecycle
+  }, []);
 
-  return null; // PhotoSwipe renders its own DOM via portal
+  return null;
 }

@@ -84,9 +84,12 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const cal = document.querySelector(".booking-calendar");
+      if (!cal || !cal.contains(e.target as Node)) return;
       if (e.key === "ArrowLeft") goPrev();
       if (e.key === "ArrowRight") goNext();
     };
+    window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [goPrev, goNext]);
 
@@ -124,7 +127,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
 
       <div className="calendar-weekdays">
         {WEEKDAY_KEYS.map((key) => (
-          <span key={key} className="calendar-weekday">{t(`calendar.weekdays.${key}` as any)}</span>
+          <span key={key} className="calendar-weekday">{t(`calendar.weekdays.${key}` as unknown as never)}</span>
         ))}
       </div>
 

@@ -21,7 +21,7 @@ export function useFetch<T>(url: string | null, fetchOptions?: RequestInit): Fet
     const ctrl = new AbortController();
     setState((s) => ({ ...s, loading: true, error: null }));
 
-    fetch(url, { signal: ctrl.signal, ...optionsRef.current })
+    fetch(url, { ...optionsRef.current, signal: ctrl.signal })
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();

@@ -65,7 +65,7 @@ function StatusBadge({ status }: { status: string }) {
   const { t } = useTranslation();
   return (
     <span className={`dashboard-status dashboard-status--${status}`}>
-      {t(`dashboard.status.${status}` as any) || status}
+      {t(`dashboard.status.${status}` as unknown as never) || status}
     </span>
   );
 }
@@ -390,7 +390,7 @@ function CoursesTab() {
         <div key={c.id} className="dashboard-card">
           <div className="dashboard-card-header">
             <h4>{c.title}</h4>
-            <span className="dashboard-card-type">{t(`courses.difficulty.${c.difficulty}` as any)}</span>
+            <span className="dashboard-card-type">{t(`courses.difficulty.${c.difficulty}` as unknown as never)}</span>
           </div>
           <div className="dashboard-progress">
             <div className="dashboard-progress-bar">
