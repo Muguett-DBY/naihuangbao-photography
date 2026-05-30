@@ -227,12 +227,19 @@ export default function PhotoEditorPage() {
   // Load models
   useEffect(() => {
     let m = true;
+    const TIMEOUT_MS = 15000;
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Model loading timed out")), TIMEOUT_MS)
+    );
     import("face-api.js").then(async api => {
       faceApiRef.current = api;
       try {
-        await Promise.all([
-          api.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-          api.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+        await Promise.race([
+          Promise.all([
+            api.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+            api.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+          ]),
+          timeout,
         ]);
         if (m) setModelsReady(true);
       } catch (e) {
