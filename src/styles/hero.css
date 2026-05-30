@@ -136,7 +136,7 @@ body.nav-lock .site-nav {
 
 /* Nav CTA - hidden in minimal mode, shown on scroll */
 .nav-cta {
-  min-height: 42px;
+  min-height: 44px;
   padding: 10px 17px;
   border-radius: 999px;
   font-family: var(--font-display-cn);

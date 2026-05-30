@@ -269,7 +269,7 @@
 
 .filter-row button {
   position: relative;
-  min-height: 42px;
+  min-height: 44px;
   border: 0;
   border-radius: 0;
   padding: 10px 16px;
@@ -747,8 +747,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border: 0;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.18);
@@ -865,4 +865,29 @@
   font-family: inherit;
   font-size: 10px;
   line-height: 1.4;
+}
+
+/* ══════════════════════════════════════════════
+   Mobile Adjustments
+   ══════════════════════════════════════════════ */
+@media (max-width: 760px) {
+  .film-placeholder span {
+    font-size: 14px;
+  }
+
+  .gallery-masonry-overlay-style {
+    font-size: 11px;
+  }
+
+  .gallery-masonry-overlay-location {
+    font-size: 13px;
+  }
+
+  .gallery-masonry-caption p {
+    font-size: 13px;
+  }
+
+  .gallery-skeleton-title {
+    font-size: 14px;
+  }
 }

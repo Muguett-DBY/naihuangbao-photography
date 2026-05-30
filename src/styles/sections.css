@@ -1281,9 +1281,9 @@
   }
 
   .hero-trust-tag {
-    font-size: 11px;
-    padding: 6px 10px;
-    min-height: 36px;
+    font-size: 12px;
+    padding: 8px 12px;
+    min-height: 44px;
   }
 
   .hero-scroll-indicator {
@@ -2350,4 +2350,31 @@
 }
 :root[data-mood="cute"] .travel-zone-item {
   border-radius: 16px;
+}
+
+/* ══════════════════════════════════════════════
+   Mobile Touch Target & Layout Fixes
+   ══════════════════════════════════════════════ */
+@media (max-width: 760px) {
+  .filter-row button {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  .reviews-nav {
+    padding: 12px 8px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-row {
+    grid-template-columns: 1fr;
+  }
+
+  .polaroid-deck {
+    width: 240px;
+    height: 320px;
+  }
 }

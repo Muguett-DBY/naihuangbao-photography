@@ -631,7 +631,7 @@
   padding: 10px 14px;
   border: 1px solid rgba(139, 94, 74, 0.12);
   border-radius: 12px;
-  font-size: 0.9rem;
+  font-size: 16px;
   margin-bottom: 8px;
   box-sizing: border-box;
   background: var(--paper-white);
@@ -755,7 +755,7 @@
   padding: 10px 14px 10px 36px;
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 16px;
   background: transparent;
 }
 
@@ -1178,7 +1178,7 @@
   padding: 10px 14px;
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: 16px;
   box-sizing: border-box;
 }
 
@@ -1456,8 +1456,8 @@
 }
 
 .calendar-nav-btn {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--warm-border);
   border-radius: 10px;
   background: var(--paper-white);
@@ -2804,7 +2804,7 @@
     padding: 8px 14px;
     font-size: 0.8rem;
     flex-shrink: 0;
-    min-height: 36px;
+    min-height: 44px;
   }
 
   /* Workspace: stacked layout */
@@ -2866,7 +2866,7 @@
   }
 
   .editor-tool-label {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     line-height: 1.1;
   }
 
@@ -3219,8 +3219,8 @@
 }
 
 .editor-sticker-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border: 1px solid rgba(139, 94, 74, 0.08);
   border-radius: 8px;
   background: var(--custard-bg);
