@@ -1590,10 +1590,18 @@ export default function PhotoEditorPage() {
         </header>
 
         <div className="editor-toolbar">
-          <label className="editor-btn editor-btn--primary" style={{ cursor: "pointer" }} aria-label={t("editor.upload")} title={t("editor.upload")}>
-            {t("editor.upload")}
-            <input type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
-          </label>
+          <div style={{ position: "relative", display: "inline-flex" }}>
+            <span className="editor-btn editor-btn--primary" style={{ pointerEvents: "none" }}>{t("editor.upload")}</span>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              style={{
+                position: "absolute", inset: 0, opacity: 0, width: "100%", height: "100%",
+                cursor: "pointer", fontSize: 0, zIndex: 1,
+              }}
+            />
+          </div>
           {originalRef.current && (
             <>
               <button type="button" className="editor-btn" disabled={historyIdx <= 0} onClick={undo} aria-label={t("editor.undo")} title={t("editor.undo")}>↩</button>
