@@ -44,6 +44,7 @@ const photoDownloadApiSource = readFileSync(resolve(root, "functions/api/photos/
 const photoImageApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/image.ts"), "utf8");
 const sitemapSource = readFileSync(resolve(root, "public/sitemap.xml"), "utf8");
 const adminCssSource = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
+const editorCssSource = readFileSync(resolve(root, "src/styles/pages.css"), "utf8");
 const dashboardSource = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
 const viteConfigSource = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const businessMigrationSource = readFileSync(resolve(root, "db/migrations/005_create_business_tables.sql"), "utf8");
@@ -364,6 +365,12 @@ describe("audit regression coverage", () => {
     expect(filmGrainSource).toContain("setCapability");
     expect(filmGrainSource).toContain("addEventListener(\"resize\"");
     expect(filmGrainSource).toContain("[capability]");
+  });
+
+  it("keeps editor controls below the fixed navigation while scrolling", () => {
+    expect(editorCssSource).toMatch(/\.editor-toolbar\s*\{[\s\S]*position:\s*sticky/s);
+    expect(editorCssSource).toMatch(/\.editor-toolbar\s*\{[\s\S]*top:\s*calc\(var\(--nav-h,\s*64px\)/s);
+    expect(editorCssSource).toMatch(/\.editor-toolbar\s+\.editor-btn\s*\{[\s\S]*scroll-margin-top:\s*calc\(var\(--nav-h,\s*64px\)/s);
   });
 
   it("keeps small build and CSS cleanup items from regressing", () => {

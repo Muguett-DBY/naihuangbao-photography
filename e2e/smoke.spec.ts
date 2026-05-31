@@ -1,3 +1,4 @@
+import { writeFileSync } from "node:fs";
 import { test, expect, type Page } from "@playwright/test";
 
 // Playwright config is at e2e/playwright.config.ts - run with: npx playwright test --config=e2e/playwright.config.ts
@@ -92,6 +93,25 @@ test.describe("shoot.custard.top", () => {
     await page.goto("/editor");
     await expect(page.locator(".editor-root")).toBeVisible();
     await expect(page.locator('.editor-toolbar input[type="file"]')).toBeAttached();
+  });
+
+  test("修图页上传后导出按钮可点击", async ({ page }, testInfo) => {
+    const testImage = testInfo.outputPath("editor-test-image.png");
+    writeFileSync(
+      testImage,
+      Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAIAAAAiOjnJAAABpElEQVR4nO3TwQkAIBDAMHX/nc8hYVAQUqSPfTOz1wFgr+4OAPwTSAhSAhSClAAlQCFICVACEoKUACVAk7sD9Ow0fGdmjMxsY4/uACwhSAhSAhSClAAlQCFICVACEoKUACVAk7uDq3t5dvZr9f3MGJnZxh7dAVhCkBCkBCgEKSFKgEKQEqAEKAQpAUqAJncHc+3s7OzX6vuZMTKzjT26A7CEICFICVAIUgKUAIUgJUAhSAhSApQATe4O5trZ2dmv1fczY2RmG3t0B2AJQUKQEqAQpAQoBQpBSoBCkBKgBGhydzC3tbXtv2fHzIyRmW3s0R2AJQQJQUqAQpASoAQoBCkBSoBCkBKgyd3BXFtbO/s1+35mjMxsY4/uACwhSAhSAhSClAAlQCFICVACEoKUACVAk7uDuba2dvZr9f3MGJnZxh7dAVhCkBCkBCgEKSFKgEKQEqAEKAQpAUqAJncHc21t7ezX6vuZMTKzjT26A7CEICFICVAIUgKUAIUgJUAhSAhSApQATe4O5tra2tmv1fczY2RmG3t0B2AJQUKQEqAQpAQoBQpBSoBCkBKgBGhydzDX1tbOfq2+nxkjM9vYozsASwgSgpQAhSAlQAlQCFIClACFICVACf8BMdwWg+HLzh4AAAAASUVORK5CYII=",
+        "base64",
+      ),
+    );
+
+    await page.goto("/editor");
+    await page.locator('.editor-toolbar input[type="file"]').setInputFiles(testImage);
+    await expect(page.locator(".editor-canvas")).toBeVisible({ timeout: 15000 });
+    const exportButton = page.locator('.editor-toolbar button[aria-label="导出"], .editor-toolbar button[aria-label="Export"]');
+    await exportButton.evaluate((element) => element.scrollIntoView({ block: "start", inline: "nearest" }));
+    await exportButton.click();
+    await expect(page.locator(".editor-modal")).toBeVisible();
   });
 
   test("移动端首页没有横向溢出", async ({ page }) => {
