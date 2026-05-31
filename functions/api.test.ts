@@ -20,6 +20,8 @@ function formRequest(fields: Record<string, string | File>) {
   });
 }
 
+const adminEnv = { ADMIN_PASSWORD: "secret", CF_ACCESS_ADMIN_EMAILS: "admin@example.com" };
+
 function createDb(overrides: {
   all?: () => Promise<{ results: unknown[] }>;
   run?: () => Promise<unknown>;
@@ -72,7 +74,7 @@ describe("Cloudflare Pages API behavior", () => {
       },
     });
     const bucket = createBucket();
-    const file = new File(["image-bytes"], "photo.webp", { type: "image/webp" });
+    const file = new File([new Uint8Array([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50])], "photo.webp", { type: "image/webp" });
 
     const response = await uploadPhoto({
       request: formRequest({
@@ -83,7 +85,7 @@ describe("Cloudflare Pages API behavior", () => {
         featured: "true",
         clientAuthorized: "true",
       }),
-      env: { DB: db, PHOTO_BUCKET: bucket, ADMIN_PASSWORD: "secret" },
+      env: { DB: db, PHOTO_BUCKET: bucket, ...adminEnv },
     } as never);
     const body = (await response.json()) as { error?: string };
 
@@ -105,7 +107,7 @@ describe("Cloudflare Pages API behavior", () => {
         method: "DELETE",
         headers: { "cf-access-authenticated-user-email": "admin@example.com", "x-nhb-admin-action": "1" },
       }),
-      env: { DB: db, PHOTO_BUCKET: bucket, ADMIN_PASSWORD: "secret" },
+      env: { DB: db, PHOTO_BUCKET: bucket, ...adminEnv },
       params: { id: "photo-id" },
     } as never);
     const body = (await response.json()) as { error?: string };

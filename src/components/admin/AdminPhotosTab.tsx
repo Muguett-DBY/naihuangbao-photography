@@ -4,12 +4,10 @@ import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
 import { getStyleLabels } from "../../data/site";
 import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
-import type { ToastType } from "../../lib/admin-helpers";
+import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 
 const maxPhotoUploadSize = 10 * 1024 * 1024;
 const allowedPhotoTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
-const adminMutationHeaders = { "x-nhb-admin-action": "1" };
-
 export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: ToastType) => void }) {
   const { t } = useTranslation();
   const styleLabels = getStyleLabels(t);

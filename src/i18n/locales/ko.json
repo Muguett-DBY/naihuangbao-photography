@@ -733,7 +733,20 @@
     "restart": "다시 하기",
     "share": "결과 공유",
     "bookNow": "예약하기",
+    "recommendations.couple": "커플 촬영은 자연광 아래 공원이나 거리에서 함께 걷는 모습을 편안하게 담기에 좋습니다.",
+    "recommendations.family": "가족 사진은 야외의 자연스러운 환경에서 더 따뜻하고 편안한 분위기를 만들기 쉽습니다.",
+    "recommendations.group": "친구들과의 촬영은 야외에서 움직임과 웃음이 자연스럽게 살아납니다.",
+    "recommendations.studio": "아트 감성이나 도시적인 스타일은 조명과 배경을 조절하기 쉬운 실내 촬영이 잘 맞습니다.",
+    "recommendations.birthday": "생일 기념 촬영은 실내에서 테마를 잡으면 날씨에 덜 영향을 받고 분위기를 만들기 좋습니다.",
+    "recommendations.weather": "너무 덥거나 추운 날에는 실내가 더 편안하고, 빈티지나 자연스러운 스타일 모두 잘 어울립니다.",
+    "recommendations.spring": "봄의 난징 야외는 자연스러운 스튜디오처럼 부드러운 필름 감성에 잘 어울립니다.",
+    "recommendations.autumn": "가을의 난징 야외는 자연스러운 스튜디오처럼 따뜻한 필름 감성에 잘 어울립니다.",
     "progress": "단계 {{current}} / {{total}}"
+  },
+  "errorBoundary": {
+    "title": "이 섹션을 불러오지 못했습니다",
+    "message": "다시 시도하거나 잠시 후 확인해 주세요.",
+    "retry": "다시 시도"
   },
   "seo": {
     "homeTitle": "나이황바오 사진촬영 | 난징 촬영 예약",

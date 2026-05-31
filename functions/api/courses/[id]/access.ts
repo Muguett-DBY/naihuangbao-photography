@@ -1,5 +1,6 @@
 import { jsonResponse } from "../../../_responses";
 import { getUserFromRequest } from "../../../_auth";
+import { getRequiredAuthSecret } from "../../../_security";
 
 type AuthEnv = Env & { AUTH_SECRET?: string };
 
@@ -22,7 +23,11 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
     return jsonResponse({ hasAccess: true });
   }
 
-  const secret = context.env.AUTH_SECRET || "default-auth-secret";
+  const secret = getRequiredAuthSecret(context.env);
+  if (!secret) {
+    return jsonResponse({ hasAccess: false });
+  }
+
   const user = await getUserFromRequest(context.request, secret);
 
   if (!user) {

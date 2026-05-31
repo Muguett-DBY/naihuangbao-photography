@@ -1,11 +1,15 @@
 import { jsonResponse, badRequest } from "../../_responses";
 import { hashPassword, generateSalt, createUserSession, userSessionCookie } from "../../_auth";
+import { authSecretUnavailable, enforceRateLimit, getRequiredAuthSecret, isValidEmail, rateLimited } from "../../_security";
 
 type AuthEnv = Env & {
   AUTH_SECRET?: string;
 };
 
 export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
+  const limit = await enforceRateLimit(context.request, context.env, "auth-register", 5, 60 * 60);
+  if (!limit.ok) return rateLimited(limit.retryAfter);
+
   const body = (await context.request.json().catch(() => ({}))) as {
     email?: string;
     password?: string;
@@ -24,7 +28,7 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     return badRequest("密码至少需要6个字符");
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!isValidEmail(email)) {
     return badRequest("邮箱格式不正确");
   }
 
@@ -33,9 +37,12 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     return jsonResponse({ error: "数据库未配置" }, 500);
   }
 
+  const secret = getRequiredAuthSecret(context.env);
+  if (!secret) return authSecretUnavailable();
+
   const existing = await db.prepare("select id from users where email = ?").bind(email).first();
   if (existing) {
-    return jsonResponse({ error: "该邮箱已被注册" }, 409);
+    return jsonResponse({ error: "注册失败，请检查邮箱或稍后再试" }, 409);
   }
 
   const id = crypto.randomUUID();
@@ -48,7 +55,6 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     .bind(id, email, passwordHash, salt, displayName, now, now)
     .run();
 
-  const secret = context.env.AUTH_SECRET || "default-auth-secret";
   const session = await createUserSession(id, secret);
 
   return jsonResponse(

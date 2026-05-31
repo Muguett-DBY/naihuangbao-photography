@@ -1,5 +1,6 @@
 import { jsonResponse, unauthorized, unavailable } from "../../_responses";
 import { getUserFromRequest } from "../../_auth";
+import { getRequiredAuthSecret } from "../../_security";
 
 type AuthEnv = Env & { AUTH_SECRET?: string };
 
@@ -16,7 +17,9 @@ type BookingRow = {
 };
 
 export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
-  const secret = context.env.AUTH_SECRET || "default-auth-secret";
+  const secret = getRequiredAuthSecret(context.env);
+  if (!secret) return unauthorized("请先登录");
+
   const user = await getUserFromRequest(context.request, secret);
   if (!user) return unauthorized("请先登录");
 
@@ -28,7 +31,7 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
     const result = await context.env.DB.prepare(
       `select id, package_name, preferred_date, preferred_time, name, contact, notes, status, created_at
        from booking_requests
-       where contact = ?
+       where contact = (select email from users where id = ?)
        order by created_at desc`,
     )
       .bind(user.userId)

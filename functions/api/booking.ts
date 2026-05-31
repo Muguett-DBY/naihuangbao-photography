@@ -1,4 +1,5 @@
 import { badRequest, jsonResponse, unavailable } from "../_responses";
+import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../_security";
 
 type BookingBody = {
   packageName?: string;
@@ -10,6 +11,12 @@ type BookingBody = {
 };
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
+  const publicActionError = requirePublicMutationRequest(context.request);
+  if (publicActionError) return publicActionError;
+
+  const limit = await enforceRateLimit(context.request, context.env, "booking-submit", 6, 60 * 60);
+  if (!limit.ok) return rateLimited(limit.retryAfter);
+
   if (!context.env.DB) {
     return jsonResponse({ error: "预约功能暂时不可用" }, 503);
   }

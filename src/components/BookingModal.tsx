@@ -5,6 +5,7 @@ import { useSiteContent } from "../hooks/useSiteContent";
 import { useNotification } from "../hooks/useNotification";
 import { PaymentForm } from "./PaymentForm";
 import { BookingCalendar } from "./BookingCalendar";
+import { publicMutationHeaders } from "../lib/admin-helpers";
 
 type BookingModalProps = {
   initialPackage?: string;
@@ -39,7 +40,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     try {
       const r = await fetch("/api/booking", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", ...publicMutationHeaders },
         body: JSON.stringify({
           packageName: selectedPkg,
           preferredDate: date,

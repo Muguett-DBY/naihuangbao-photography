@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { publicMutationHeaders } from "../lib/admin-helpers";
 
 type NotificationType = "booking_confirmation" | "workshop_registration" | "payment_receipt";
 
@@ -26,7 +27,7 @@ export function useNotification() {
     try {
       const response = await fetch("/api/notifications/send", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         body: JSON.stringify({
           type,
           to: notificationData.to,

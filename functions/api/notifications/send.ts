@@ -1,4 +1,5 @@
 import { jsonResponse, badRequest, unavailable } from "../../_responses";
+import { enforceRateLimit, isValidEmail, rateLimited, requirePublicMutationRequest } from "../../_security";
 
 type NotificationType = "booking_confirmation" | "workshop_registration" | "payment_receipt";
 
@@ -55,10 +56,20 @@ const notificationTemplates: Record<NotificationType, (data: Record<string, unkn
 };
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
+  const publicActionError = requirePublicMutationRequest(context.request);
+  if (publicActionError) return publicActionError;
+
+  const limit = await enforceRateLimit(context.request, context.env, "notification-send", 10, 60 * 60);
+  if (!limit.ok) return rateLimited(limit.retryAfter);
+
   const body = (await context.request.json().catch(() => ({}))) as NotificationBody;
 
   if (!body.type || !body.to) {
     return badRequest("Missing required fields: type, to");
+  }
+
+  if (!isValidEmail(body.to.trim())) {
+    return badRequest("Invalid recipient email");
   }
 
   if (!notificationTemplates[body.type]) {

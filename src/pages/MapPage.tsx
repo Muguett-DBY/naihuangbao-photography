@@ -17,7 +17,7 @@ export function MapPage() {
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)", minHeight: "auto", paddingBottom: 40 }}>
         <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <p className="section-eyebrow">Service Area</p>
+          <p className="section-eyebrow">{t("photoMap.eyebrow")}</p>
           <h1>{t("photoMap.title")}</h1>
           <span>{t("photoMap.intro")}</span>
         </div>

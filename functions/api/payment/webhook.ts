@@ -16,7 +16,24 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
     return jsonResponse({ error: "Service unavailable" }, 503);
   }
 
-  const body = (await context.request.json().catch(() => ({}))) as WebhookBody;
+  const webhookSecret = context.env.STRIPE_WEBHOOK_SECRET?.trim();
+  if (!webhookSecret) {
+    return jsonResponse({ error: "Webhook signing secret is not configured" }, 503);
+  }
+
+  const rawBody = await context.request.text();
+  const signatureHeader = context.request.headers.get("stripe-signature") ?? "";
+  const verified = await verifyStripeSignature(rawBody, signatureHeader, webhookSecret);
+  if (!verified) {
+    return jsonResponse({ error: "Invalid webhook signature" }, 400);
+  }
+
+  let body: WebhookBody;
+  try {
+    body = JSON.parse(rawBody || "{}") as WebhookBody;
+  } catch {
+    return badRequest("Invalid webhook payload");
+  }
 
   if (!body.type || !body.data?.object?.id) {
     return badRequest("Invalid webhook payload");
@@ -92,3 +109,40 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
     return unavailable("Webhook processing failed", error, { route: "/api/payment/webhook", method: "POST" });
   }
 };
+
+async function verifyStripeSignature(rawBody: string, header: string, secret: string) {
+  const timestamp = header.match(/(?:^|,)t=(\d+)/)?.[1];
+  const signatures = [...header.matchAll(/(?:^|,)v1=([0-9a-f]+)/g)].map((match) => match[1]);
+  if (!timestamp || signatures.length === 0) return false;
+
+  const now = Math.floor(Date.now() / 1000);
+  if (Math.abs(now - Number(timestamp)) > 300) return false;
+
+  const expected = await hmacSha256Hex(`${timestamp}.${rawBody}`, secret);
+  return signatures.some((signature) => timingSafeEqualHex(signature, expected));
+}
+
+async function hmacSha256Hex(payload: string, secret: string) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(payload));
+  return Array.from(new Uint8Array(signature))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function timingSafeEqualHex(a: string, b: string) {
+  if (!/^[0-9a-f]+$/i.test(a) || !/^[0-9a-f]+$/i.test(b)) return false;
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
+}

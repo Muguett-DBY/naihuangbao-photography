@@ -1,11 +1,15 @@
 import { createAdminSession, sessionCookie } from "../../_auth";
 import { badRequest, jsonResponse } from "../../_responses";
+import { enforceRateLimit, rateLimited } from "../../_security";
 
 type AdminLoginEnv = Env & {
   ADMIN_PASSWORD?: string;
 };
 
 export const onRequestPost: PagesFunction<AdminLoginEnv> = async (context) => {
+  const limit = await enforceRateLimit(context.request, context.env, "admin-login", 8, 60 * 15);
+  if (!limit.ok) return rateLimited(limit.retryAfter);
+
   const body = (await context.request.json().catch(() => ({}))) as {
     password?: string;
   };

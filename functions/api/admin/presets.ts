@@ -1,5 +1,5 @@
-import { isAdminRequest } from "../../_auth";
-import { jsonResponse, badRequest, unauthorized, unavailable } from "../../_responses";
+import { isAdminMutationRequest, isAdminRequest } from "../../_auth";
+import { jsonResponse, badRequest, forbidden, unauthorized, unavailable } from "../../_responses";
 
 type AdminEnv = Env & { ADMIN_PASSWORD?: string };
 
@@ -25,6 +25,9 @@ export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
 export const onRequestPost: PagesFunction<AdminEnv> = async (context) => {
   if (!(await isAdminRequest(context.request, context.env))) {
     return unauthorized();
+  }
+  if (!isAdminMutationRequest(context.request)) {
+    return forbidden("缺少后台操作校验头");
   }
 
   const body = (await context.request.json().catch(() => ({}))) as Record<string, unknown>;

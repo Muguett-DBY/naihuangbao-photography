@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Upload, Download, Eye } from "lucide-react";
 
@@ -48,6 +48,7 @@ export function PresetPreview({ presetId }: { presetId?: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
 
   const [selectedFilter, setSelectedFilter] = useState<string>(
     presetId && PRESET_FILTERS[presetId] ? presetId : "film-look",
@@ -81,17 +82,35 @@ export function PresetPreview({ presetId }: { presetId?: string }) {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
       const url = URL.createObjectURL(file);
+      objectUrlRef.current = url;
       const img = new Image();
       img.onload = () => {
         imgRef.current = img;
         setHasImage(true);
+        URL.revokeObjectURL(url);
+        if (objectUrlRef.current === url) objectUrlRef.current = null;
         drawCanvas();
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        if (objectUrlRef.current === url) objectUrlRef.current = null;
       };
       img.src = url;
     },
     [drawCanvas],
   );
+
+  useEffect(() => () => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+  }, []);
 
   const handleFilterChange = useCallback(
     (filter: string) => {

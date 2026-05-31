@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { publicMutationHeaders } from "../lib/admin-helpers";
 
 type Status = "idle" | "loading" | "success" | "error" | "duplicate";
 
@@ -23,7 +24,7 @@ export function NewsletterForm() {
     try {
       const res = await fetch("/api/subscribe", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         body: JSON.stringify({ email: trimmed }),
       });
 

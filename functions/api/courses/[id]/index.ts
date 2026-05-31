@@ -1,5 +1,6 @@
 import { jsonResponse } from "../../../_responses";
 import { getUserFromRequest } from "../../../_auth";
+import { getRequiredAuthSecret } from "../../../_security";
 
 type AuthEnv = Env & { AUTH_SECRET?: string };
 
@@ -32,8 +33,8 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
     let hasAccess = !isPaid;
 
     if (isPaid) {
-      const secret = (context.env as AuthEnv).AUTH_SECRET || "default-auth-secret";
-      const user = await getUserFromRequest(context.request, secret);
+      const secret = getRequiredAuthSecret(context.env as AuthEnv);
+      const user = secret ? await getUserFromRequest(context.request, secret) : null;
 
       if (user) {
         const purchase = await context.env.DB.prepare(

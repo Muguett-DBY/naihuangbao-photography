@@ -1,7 +1,7 @@
 import { CalendarCheck, CheckCircle, Clock, MessageCircle, XCircle } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useEffect, useState } from "react";
-import type { ToastType } from "../../lib/admin-helpers";
+import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 
 type BookingItem = {
   id: string;
@@ -41,7 +41,7 @@ export function AdminBookingsTab({ showToast }: { showToast: (text: string, type
     try {
       const r = await fetch("/api/admin/bookings", {
         method: "PATCH", credentials: "include",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", ...adminMutationHeaders },
         body: JSON.stringify({ id, status }),
       });
       if (!r.ok) { showToast("更新失败", "error"); return; }

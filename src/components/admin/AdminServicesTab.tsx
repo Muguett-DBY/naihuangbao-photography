@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { defaultSiteContent } from "../../data/content";
 import type { ServicePolicy, SiteContent } from "../../types/content";
-import { linesFromText, PanelHeader, type ToastType } from "../../lib/admin-helpers";
+import { adminMutationHeaders, linesFromText, PanelHeader, type ToastType } from "../../lib/admin-helpers";
 import { isAbortError } from "../../lib/errors";
 
 const emptyPolicy: ServicePolicy = { title: "新规则", detail: "填写规则说明" };
@@ -30,7 +30,7 @@ export function AdminServicesTab({ showToast }: { showToast: (text: string, type
       for (const key of keys) {
         const r = await fetch("/api/admin/content", {
           method: "PATCH", credentials: "include",
-          headers: { "content-type": "application/json" },
+          headers: { "content-type": "application/json", ...adminMutationHeaders },
           body: JSON.stringify({ key, value: content[key] }),
         });
         if (!r.ok) { showToast(`${label} 保存失败`, "error"); return; }

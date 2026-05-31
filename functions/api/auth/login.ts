@@ -1,11 +1,15 @@
 import { jsonResponse, badRequest } from "../../_responses";
 import { hashPassword, createUserSession, userSessionCookie } from "../../_auth";
+import { authSecretUnavailable, enforceRateLimit, getRequiredAuthSecret, rateLimited } from "../../_security";
 
 type AuthEnv = Env & {
   AUTH_SECRET?: string;
 };
 
 export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
+  const limit = await enforceRateLimit(context.request, context.env, "auth-login", 10, 60 * 15);
+  if (!limit.ok) return rateLimited(limit.retryAfter);
+
   const body = (await context.request.json().catch(() => ({}))) as {
     email?: string;
     password?: string;
@@ -37,7 +41,9 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     return jsonResponse({ error: "邮箱或密码不正确" }, 401);
   }
 
-  const secret = context.env.AUTH_SECRET || "default-auth-secret";
+  const secret = getRequiredAuthSecret(context.env);
+  if (!secret) return authSecretUnavailable();
+
   const session = await createUserSession(user.id, secret);
 
   return jsonResponse(

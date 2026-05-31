@@ -733,7 +733,20 @@
     "restart": "Retake Quiz",
     "share": "Share Result",
     "bookNow": "Book Now",
+    "recommendations.couple": "A couple session works best in natural light, walking through a park or quiet street while capturing relaxed moments together.",
+    "recommendations.family": "Family portraits feel warmer outdoors, where everyone can interact naturally in an easy setting.",
+    "recommendations.group": "Friends sessions are easier and more joyful outdoors, with room to move, laugh, and interact.",
+    "recommendations.studio": "Creative or urban fashion styles are better indoors, where light and scene control are more precise.",
+    "recommendations.birthday": "A birthday session works well indoors with a focused setup and less weather uncertainty.",
+    "recommendations.weather": "A comfortable indoor space keeps the shoot easy in very hot or cold weather, while still supporting vintage or natural looks.",
+    "recommendations.spring": "Springtime Nanjing outdoors is a natural studio, perfect for fresh or soft film-like portraits.",
+    "recommendations.autumn": "Autumn Nanjing outdoors is a natural studio, perfect for warm, fresh or soft film-like portraits.",
     "progress": "Step {{current}} of {{total}}"
+  },
+  "errorBoundary": {
+    "title": "This section did not load",
+    "message": "Please try again, or come back a little later.",
+    "retry": "Retry"
   },
   "seo": {
     "homeTitle": "Naihuangbao Photography | Nanjing Portrait",

@@ -1,15 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-const LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="80" height="80">
-  <rect width="512" height="512" rx="96" fill="#F5E6D3" />
-  <circle cx="256" cy="270" r="126" fill="#fff8ed" stroke="#7B5C43" stroke-width="22" />
-  <circle cx="256" cy="270" r="58" fill="#7B5C43" />
-  <circle cx="338" cy="202" r="21" fill="#7B5C43" />
-  <path d="M146 146h66l28-36h92l28 36h38c36 0 65 29 65 65v146c0 36-29 65-65 65H114c-36 0-65-29-65-65V211c0-36 29-65 65-65h32Z" fill="none" stroke="#7B5C43" stroke-width="24" stroke-linejoin="round" />
-  <path d="M132 177h65" stroke="#7B5C43" stroke-width="20" stroke-linecap="round" />
-</svg>`;
-
 export function LoadingScreen() {
   const { t } = useTranslation();
   const [show, setShow] = useState(true);
@@ -81,8 +72,16 @@ export function LoadingScreen() {
       <div
         ref={logoRef}
         style={{ width: 80, height: 80, filter: "blur(18px)", opacity: 0 }}
-        dangerouslySetInnerHTML={{ __html: LOGO_SVG }}
-      />
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="80" height="80" aria-hidden="true">
+          <rect width="512" height="512" rx="96" fill="#F5E6D3" />
+          <circle cx="256" cy="270" r="126" fill="#fff8ed" stroke="#7B5C43" strokeWidth="22" />
+          <circle cx="256" cy="270" r="58" fill="#7B5C43" />
+          <circle cx="338" cy="202" r="21" fill="#7B5C43" />
+          <path d="M146 146h66l28-36h92l28 36h38c36 0 65 29 65 65v146c0 36-29 65-65 65H114c-36 0-65-29-65-65V211c0-36 29-65 65-65h32Z" fill="none" stroke="#7B5C43" strokeWidth="24" strokeLinejoin="round" />
+          <path d="M132 177h65" stroke="#7B5C43" strokeWidth="20" strokeLinecap="round" />
+        </svg>
+      </div>
       <div
         ref={textRef}
         style={{

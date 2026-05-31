@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import { Button, Collapse } from "animal-island-ui";
 import { defaultSiteContent } from "../../data/content";
 import type { FaqItem, SiteContent } from "../../types/content";
-import { linesFromText, PanelHeader, type ToastType } from "../../lib/admin-helpers";
+import { adminMutationHeaders, linesFromText, PanelHeader, type ToastType } from "../../lib/admin-helpers";
 import { isAbortError } from "../../lib/errors";
 
 const emptyFaq: FaqItem = { question: "新问题", answer: "填写回答" };
@@ -30,7 +30,7 @@ export function AdminFaqTab({ showToast }: { showToast: (text: string, type: Toa
       for (const key of keys) {
         const r = await fetch("/api/admin/content", {
           method: "PATCH", credentials: "include",
-          headers: { "content-type": "application/json" },
+          headers: { "content-type": "application/json", ...adminMutationHeaders },
           body: JSON.stringify({ key, value: content[key] }),
         });
         if (!r.ok) { showToast(`${label} 保存失败`, "error"); return; }

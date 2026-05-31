@@ -1,5 +1,6 @@
 type AuthEnv = {
   ADMIN_PASSWORD?: string;
+  CF_ACCESS_ADMIN_EMAILS?: string;
 };
 
 const adminCookieName = "nhb_admin_session";
@@ -20,7 +21,8 @@ export async function createAdminSession(env: AuthEnv) {
 
 export async function isAdminRequest(request: Request, env: AuthEnv) {
   const accessEmail = request.headers.get("cf-access-authenticated-user-email");
-  if (accessEmail) {
+  const allowedAccessEmails = parseEmailList(env.CF_ACCESS_ADMIN_EMAILS);
+  if (accessEmail && allowedAccessEmails.has(accessEmail.trim().toLowerCase())) {
     return true;
   }
 
@@ -41,6 +43,15 @@ export async function isAdminRequest(request: Request, env: AuthEnv) {
   }
 
   return false;
+}
+
+function parseEmailList(value?: string) {
+  return new Set(
+    (value ?? "")
+      .split(",")
+      .map((email) => email.trim().toLowerCase())
+      .filter(Boolean),
+  );
 }
 
 export function isAdminMutationRequest(request: Request) {

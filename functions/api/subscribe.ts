@@ -1,4 +1,5 @@
 import { badRequest, jsonResponse, unavailable } from "../_responses";
+import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../_security";
 
 type SubscribeBody = {
   email?: string;
@@ -9,6 +10,12 @@ function isValidEmail(email: string): boolean {
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
+  const publicActionError = requirePublicMutationRequest(context.request);
+  if (publicActionError) return publicActionError;
+
+  const limit = await enforceRateLimit(context.request, context.env, "newsletter-subscribe", 8, 60 * 60);
+  if (!limit.ok) return rateLimited(limit.retryAfter);
+
   if (!context.env.DB) {
     return jsonResponse({ error: "订阅功能暂时不可用" }, 503);
   }

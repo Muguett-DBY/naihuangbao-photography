@@ -66,7 +66,7 @@ const STEPS: QuizStep[] = [
   },
 ];
 
-function recommendPackage(answers: Answers) {
+function recommendPackage(answers: Answers, t: (key: string, fallback: string) => string) {
   const { occasion, style, season, people } = answers;
 
   let pkgName: string;
@@ -74,26 +74,27 @@ function recommendPackage(answers: Answers) {
 
   if (people === "couplePeople" || occasion === "couple") {
     pkgName = "室外约拍";
-    reason = "情侣约拍适合在自然光下的公园或街区漫步，捕捉两人最放松的状态。";
+    reason = t("quiz.recommendations.couple", "情侣约拍适合在自然光下的公园或街区漫步，捕捉两人最放松的状态。");
   } else if (people === "familyPeople" || occasion === "family") {
     pkgName = "室外约拍";
-    reason = "家庭合影在户外自然环境中更能展现温馨氛围，适合全家一起互动。";
+    reason = t("quiz.recommendations.family", "家庭合影在户外自然环境中更能展现温馨氛围，适合全家一起互动。");
   } else if (people === "group" || occasion === "friends") {
     pkgName = "室外约拍";
-    reason = "闺蜜或好友合拍在户外场景中更容易拍出自然欢快的氛围。";
+    reason = t("quiz.recommendations.group", "闺蜜或好友合拍在户外场景中更容易拍出自然欢快的氛围。");
   } else if (style === "artistic" || style === "modern") {
     pkgName = "室内写真";
-    reason = "艺术创意和都市时尚风格更适合在室内棚拍，光线和场景更可控。";
+    reason = t("quiz.recommendations.studio", "艺术创意和都市时尚风格更适合在室内棚拍，光线和场景更可控。");
   } else if (occasion === "birthday") {
     pkgName = "室内写真";
-    reason = "生日纪念在室内布置主题场景，氛围感更强，不受天气影响。";
+    reason = t("quiz.recommendations.birthday", "生日纪念在室内布置主题场景，氛围感更强，不受天气影响。");
   } else if (season === "winter" || season === "summer") {
     pkgName = "室内写真";
-    reason = `冬暖夏凉的室内环境让拍摄更舒适，${style === "vintage" ? "复古" : "自然"}风格同样出彩。`;
+    reason = t("quiz.recommendations.weather", "冬暖夏凉的室内环境让拍摄更舒适，复古或自然风格同样出彩。");
   } else {
     pkgName = "室外约拍";
-    const seasonHint = season === "spring" ? "春花烂漫" : "秋叶金黄";
-    reason = `${seasonHint}的南京户外是最美的天然影棚，${style === "vintage" ? "复古胶片" : "自然清新"}风格会非常好看。`;
+    reason = season === "spring"
+      ? t("quiz.recommendations.spring", "春花烂漫的南京户外是最美的天然影棚，自然清新或复古胶片风格都很好看。")
+      : t("quiz.recommendations.autumn", "秋叶金黄的南京户外是最美的天然影棚，自然清新或复古胶片风格都很好看。");
   }
 
   const matched = packages.find((p) => p.name === pkgName) ?? packages[1];
@@ -134,9 +135,9 @@ export function StyleQuiz() {
 
   useEffect(() => {
     if (isComplete && !result) {
-      setResult(recommendPackage(answers));
+      setResult(recommendPackage(answers, t));
     }
-  }, [isComplete, answers, result]);
+  }, [isComplete, answers, result, t]);
 
   useEffect(() => {
     if (containerRef.current && result) {

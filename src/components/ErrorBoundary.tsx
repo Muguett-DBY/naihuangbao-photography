@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import i18n from "../i18n";
 
 type ErrorBoundaryProps = {
   children: ReactNode;
@@ -43,7 +44,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           }}
         >
           <h2 style={{ marginBottom: 12, fontSize: "1.25rem" }}>
-            Something went wrong
+            {i18n.t("errorBoundary.title", "页面暂时没有加载成功")}
           </h2>
           <p
             style={{
@@ -54,7 +55,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               lineHeight: 1.6,
             }}
           >
-            {this.state.error?.message || "An unexpected error occurred."}
+            {i18n.t("errorBoundary.message", "请重试一次，或稍后再回来查看。")}
           </p>
           <button
             onClick={this.handleRetry}
@@ -69,7 +70,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               fontSize: "0.95rem",
             }}
           >
-            Retry
+            {i18n.t("errorBoundary.retry", "重试")}
           </button>
         </div>
       );

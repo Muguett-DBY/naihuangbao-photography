@@ -733,7 +733,20 @@
     "restart": "重新测试",
     "share": "分享结果",
     "bookNow": "立即预约",
+    "recommendations.couple": "情侣约拍适合在自然光下的公园或街区漫步，捕捉两人最放松的状态。",
+    "recommendations.family": "家庭合影在户外自然环境中更能展现温馨氛围，适合全家一起互动。",
+    "recommendations.group": "闺蜜或好友合拍在户外场景中更容易拍出自然欢快的氛围。",
+    "recommendations.studio": "艺术创意和都市时尚风格更适合在室内棚拍，光线和场景更可控。",
+    "recommendations.birthday": "生日纪念在室内布置主题场景，氛围感更强，不受天气影响。",
+    "recommendations.weather": "冬暖夏凉的室内环境让拍摄更舒适，复古或自然风格同样出彩。",
+    "recommendations.spring": "春花烂漫的南京户外是最美的天然影棚，自然清新或复古胶片风格都很好看。",
+    "recommendations.autumn": "秋叶金黄的南京户外是最美的天然影棚，自然清新或复古胶片风格都很好看。",
     "progress": "第{{current}}步，共{{total}}步"
+  },
+  "errorBoundary": {
+    "title": "页面暂时没有加载成功",
+    "message": "请重试一次，或稍后再回来查看。",
+    "retry": "重试"
   },
   "seo": {
     "homeTitle": "奶黄包摄影 | 南京约拍",

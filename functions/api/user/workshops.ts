@@ -1,5 +1,6 @@
 import { jsonResponse, unauthorized, unavailable } from "../../_responses";
 import { getUserFromRequest } from "../../_auth";
+import { getRequiredAuthSecret } from "../../_security";
 
 type AuthEnv = Env & { AUTH_SECRET?: string };
 
@@ -15,7 +16,9 @@ type WorkshopRow = {
 };
 
 export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
-  const secret = context.env.AUTH_SECRET || "default-auth-secret";
+  const secret = getRequiredAuthSecret(context.env);
+  if (!secret) return unauthorized("请先登录");
+
   const user = await getUserFromRequest(context.request, secret);
   if (!user) return unauthorized("请先登录");
 
@@ -29,7 +32,7 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
               wr.participants, wr.status, wr.created_at
        from workshop_registrations wr
        join workshops w on w.id = wr.workshop_id
-       where wr.contact = ?
+       where wr.contact = (select email from users where id = ?)
        order by wr.created_at desc`,
     )
       .bind(user.userId)

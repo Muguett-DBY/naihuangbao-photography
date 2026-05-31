@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetch } from "../hooks/useFetch";
 
@@ -37,6 +37,7 @@ function formatDateKey(year: number, month: number, day: number): string {
 
 export function BookingCalendar({ selectedDate, onSelectDate, minDate }: BookingCalendarProps) {
   const { t, i18n } = useTranslation();
+  const calendarRef = useRef<HTMLDivElement>(null);
   const today = useMemo(() => new Date(), []);
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
@@ -84,7 +85,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const cal = document.querySelector(".booking-calendar");
+      const cal = calendarRef.current;
       if (!cal || !cal.contains(e.target as Node)) return;
       if (e.key === "ArrowLeft") goPrev();
       if (e.key === "ArrowRight") goNext();
@@ -103,7 +104,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
   }
 
   return (
-    <div className="booking-calendar">
+    <div className="booking-calendar" ref={calendarRef}>
       <div className="calendar-nav">
         <button
           type="button"

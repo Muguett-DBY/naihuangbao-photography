@@ -182,24 +182,37 @@ function MapClickHandler() {
 
       L.popup()
         .setLatLng(e.latlng)
-        .setContent(`
-          <div style="min-width:140px;font-family:sans-serif;">
-            <strong style="font-size:13px;color:#5F3C31;">${zoneTitle}</strong>
-            <br/>
-            <span style="font-size:12px;color:#8B7A6A;">
-              ${distance.toFixed(1)} km
-            </span>
-            <br/>
-            <span style="font-size:11px;font-weight:600;color:${zoneColors[zone]};">
-              ${zoneLabels[zone]}
-            </span>
-          </div>
-        `)
+        .setContent(buildClickPopupContent(zoneTitle, `${distance.toFixed(1)} km`, zoneLabels[zone], zoneColors[zone]))
         .openOn(map);
     },
   });
 
   return null;
+}
+
+function buildClickPopupContent(title: string, distance: string, zoneText: string, zoneColor: string) {
+  const wrapper = document.createElement("div");
+  wrapper.style.minWidth = "140px";
+  wrapper.style.fontFamily = "sans-serif";
+
+  const titleEl = document.createElement("strong");
+  titleEl.style.fontSize = "13px";
+  titleEl.style.color = "#5F3C31";
+  titleEl.textContent = title;
+
+  const distanceEl = document.createElement("span");
+  distanceEl.style.fontSize = "12px";
+  distanceEl.style.color = "#8B7A6A";
+  distanceEl.textContent = distance;
+
+  const zoneEl = document.createElement("span");
+  zoneEl.style.fontSize = "11px";
+  zoneEl.style.fontWeight = "600";
+  zoneEl.style.color = zoneColor;
+  zoneEl.textContent = zoneText;
+
+  wrapper.append(titleEl, document.createElement("br"), distanceEl, document.createElement("br"), zoneEl);
+  return wrapper;
 }
 
 /* ══════════════════════════════════════════════

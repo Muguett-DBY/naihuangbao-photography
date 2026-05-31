@@ -1,4 +1,4 @@
-import { isAdminRequest } from "../../_auth";
+import { isAdminMutationRequest, isAdminRequest } from "../../_auth";
 import {
   contentKeys,
   defaultSiteContent,
@@ -6,7 +6,7 @@ import {
   validateContentPatch,
 } from "../../../src/data/content";
 import type { PartialSiteContent } from "../../../src/types/content";
-import { badRequest, jsonResponse, unauthorized, unavailable } from "../../_responses";
+import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../_responses";
 
 type AdminContentEnv = Env & {
   ADMIN_PASSWORD?: string;
@@ -42,6 +42,9 @@ export const onRequestPatch: PagesFunction<AdminContentEnv> = async (context) =>
   const isAdmin = await isAdminRequest(context.request, context.env);
   if (!isAdmin) {
     return unauthorized();
+  }
+  if (!isAdminMutationRequest(context.request)) {
+    return forbidden("缺少后台操作校验头");
   }
 
   const body = (await context.request.json().catch(() => ({}))) as {

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 const GRAIN_SIZE = 128;
 
 function getDeviceCapability(): "high" | "medium" | "low" {
+  if (window.matchMedia("(max-width: 768px), (pointer: coarse)").matches) return "low";
   const cores = navigator.hardwareConcurrency || 4;
   if (cores <= 2) return "low";
   if (cores <= 4) return "medium";

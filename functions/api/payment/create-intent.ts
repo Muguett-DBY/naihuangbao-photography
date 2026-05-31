@@ -1,4 +1,5 @@
 import { badRequest, jsonResponse, unavailable } from "../../_responses";
+import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../_security";
 
 type CreateIntentBody = {
   purpose?: string;
@@ -12,6 +13,12 @@ const VALID_PURPOSES = ["booking_deposit", "course_purchase", "workshop_registra
 const VALID_CURRENCIES = ["usd", "eur", "gbp", "cny", "jpy"];
 
 export const onRequestPost: PagesFunction<Env & { STRIPE_SECRET_KEY?: string }> = async (context) => {
+  const publicActionError = requirePublicMutationRequest(context.request);
+  if (publicActionError) return publicActionError;
+
+  const limit = await enforceRateLimit(context.request, context.env, "payment-create-intent", 12, 60 * 60);
+  if (!limit.ok) return rateLimited(limit.retryAfter);
+
   if (!context.env.DB) {
     return jsonResponse({ error: "Payment service temporarily unavailable" }, 503);
   }

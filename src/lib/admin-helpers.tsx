@@ -29,6 +29,9 @@ export function linesFromText(value: string) {
     .filter(Boolean);
 }
 
+export const adminMutationHeaders = { "x-nhb-admin-action": "1" };
+export const publicMutationHeaders = { "x-nhb-public-action": "1" };
+
 export { isAbortError } from "./errors";
 
 export type AdminTab = "photos" | "bookings" | "packages" | "services" | "faq" | "copy" | "stats" | "courses" | "presets" | "workshops" | "merchandise";

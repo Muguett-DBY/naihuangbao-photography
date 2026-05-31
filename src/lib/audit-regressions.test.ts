@@ -8,6 +8,7 @@ const adminSource = [
   "src/components/admin/AdminShell.tsx",
   "src/components/admin/AdminPhotosTab.tsx",
 ].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
+const adminHelpersSource = readFileSync(resolve(root, "src/lib/admin-helpers.tsx"), "utf8");
 const cssSource = [
   "src/styles/global.css",
   "src/styles/base.css",
@@ -32,6 +33,19 @@ const photosMapperSource = readFileSync(resolve(root, "functions/_photos.ts"), "
 const publicPhotosApiSource = readFileSync(resolve(root, "functions/api/photos.ts"), "utf8");
 const adminPhotosApiSource = readFileSync(resolve(root, "functions/api/admin/photos.ts"), "utf8");
 const adminPhotoApiSource = readFileSync(resolve(root, "functions/api/admin/photos/[id].ts"), "utf8");
+const authSource = readFileSync(resolve(root, "functions/_auth.ts"), "utf8");
+const securitySource = readFileSync(resolve(root, "functions/_security.ts"), "utf8");
+const paymentWebhookSource = readFileSync(resolve(root, "functions/api/payment/webhook.ts"), "utf8");
+const paymentConfirmSource = readFileSync(resolve(root, "functions/api/payment/confirm.ts"), "utf8");
+const videoPlayerSource = readFileSync(resolve(root, "src/components/VideoPlayer.tsx"), "utf8");
+const photoMapSource = readFileSync(resolve(root, "src/components/PhotoMap.tsx"), "utf8");
+const presetPreviewSource = readFileSync(resolve(root, "src/components/PresetPreview.tsx"), "utf8");
+const customCursorSource = readFileSync(resolve(root, "src/components/CustomCursor.tsx"), "utf8");
+const bookingCalendarSource = readFileSync(resolve(root, "src/components/BookingCalendar.tsx"), "utf8");
+const loadingScreenSource = readFileSync(resolve(root, "src/components/LoadingScreen.tsx"), "utf8");
+const errorBoundarySource = readFileSync(resolve(root, "src/components/ErrorBoundary.tsx"), "utf8");
+const mapPageSource = readFileSync(resolve(root, "src/pages/MapPage.tsx"), "utf8");
+const styleQuizSource = readFileSync(resolve(root, "src/components/StyleQuiz.tsx"), "utf8");
 const seoSource = readFileSync(resolve(root, "src/lib/seo.ts"), "utf8");
 const i18nSource = readFileSync(resolve(root, "src/i18n/index.ts"), "utf8");
 const packageSource = readFileSync(resolve(root, "package.json"), "utf8");
@@ -187,9 +201,55 @@ describe("audit regression coverage", () => {
   it("keeps admin photo mutations protected from simple cross-site form posts", () => {
     expect(adminPhotosApiSource).toContain("isAdminMutationRequest");
     expect(adminPhotoApiSource).toContain("isAdminMutationRequest");
-    expect(adminSource).toContain('"x-nhb-admin-action": "1"');
+    expect(adminSource).toContain("adminMutationHeaders");
+    expect(adminHelpersSource).toContain('"x-nhb-admin-action": "1"');
     expect(adminSource).toContain("allowedPhotoTypes");
     expect(adminSource).toContain("maxPhotoUploadSize");
+  });
+
+  it("fails closed for user auth secrets and Cloudflare Access admin headers", () => {
+    const allFunctionSource = readFileSync(resolve(root, "functions/api/auth/login.ts"), "utf8")
+      + readFileSync(resolve(root, "functions/api/auth/register.ts"), "utf8")
+      + readFileSync(resolve(root, "functions/api/auth/session.ts"), "utf8")
+      + readFileSync(resolve(root, "functions/api/user/bookings.ts"), "utf8")
+      + readFileSync(resolve(root, "functions/api/user/workshops.ts"), "utf8");
+    expect(allFunctionSource).not.toContain("default-auth-secret");
+    expect(securitySource).toContain("getRequiredAuthSecret");
+    expect(securitySource).toContain("secret.length >= 32");
+    expect(authSource).toContain("CF_ACCESS_ADMIN_EMAILS");
+    expect(authSource).toContain("allowedAccessEmails.has");
+  });
+
+  it("protects payment placeholders from forged webhook and status lookup abuse", () => {
+    expect(paymentWebhookSource).toContain("STRIPE_WEBHOOK_SECRET");
+    expect(paymentWebhookSource).toContain("verifyStripeSignature");
+    expect(paymentWebhookSource).toContain("stripe-signature");
+    expect(paymentConfirmSource).toContain("client_secret");
+    expect(paymentConfirmSource).toContain("body.clientSecret");
+    expect(securitySource).toContain("requirePublicMutationRequest");
+    expect(securitySource).toContain("enforceRateLimit");
+  });
+
+  it("keeps high-risk UI injection and object URL fixes in place", () => {
+    expect(videoPlayerSource).toContain("parseSafeUrl");
+    expect(videoPlayerSource).not.toContain("return match ? `https://www.youtube.com/embed/${match[1]}` : url");
+    expect(photoMapSource).toContain("buildClickPopupContent");
+    expect(photoMapSource).toContain("textContent");
+    expect(presetPreviewSource).toContain("URL.revokeObjectURL");
+    expect(customCursorSource).not.toContain("cursor: none");
+    expect(bookingCalendarSource).toContain("calendarRef");
+    expect(loadingScreenSource).not.toContain("dangerouslySetInnerHTML");
+  });
+
+  it("keeps small i18n regressions fixed", () => {
+    expect(errorBoundarySource).toContain("errorBoundary.title");
+    expect(errorBoundarySource).not.toContain("this.state.error?.message");
+    expect(mapPageSource).toContain('t("photoMap.eyebrow")');
+    expect(styleQuizSource).toContain("quiz.recommendations.couple");
+    expect(zhLocaleSource).toContain("recommendations.couple");
+    expect(enLocaleSource).toContain("errorBoundary");
+    expect(jaLocaleSource).toContain("recommendations.couple");
+    expect(koLocaleSource).toContain("recommendations.couple");
   });
 
   it("pauses expensive visual loops and touch listeners when they are not useful", () => {

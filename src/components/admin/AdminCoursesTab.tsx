@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Input, Loading, Table, Tabs } from "animal-island-ui";
 import type { TableColumn } from "animal-island-ui";
 import type { Course } from "../../types/content";
-import type { ToastType } from "../../lib/admin-helpers";
+import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 
 interface Props {
   showToast: (text: string, type: ToastType) => void;
@@ -34,7 +34,7 @@ export function AdminCoursesTab({ showToast }: Props) {
       const r = await fetch(url, {
         method,
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...adminMutationHeaders },
         body: JSON.stringify(editing),
       });
       if (r.ok) {
@@ -57,6 +57,7 @@ export function AdminCoursesTab({ showToast }: Props) {
       const r = await fetch(`/api/admin/courses/${id}`, {
         method: "DELETE",
         credentials: "include",
+        headers: adminMutationHeaders,
       });
       if (r.ok) {
         showToast("删除成功", "success");

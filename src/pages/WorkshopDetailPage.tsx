@@ -12,6 +12,7 @@ import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { WorkshopCountdown } from "../components/WorkshopCountdown";
 import { CapacityBar } from "../components/CapacityBar";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
+import { publicMutationHeaders } from "../lib/admin-helpers";
 import { PaymentForm } from "../components/PaymentForm";
 import type { Workshop } from "../types/content";
 
@@ -68,7 +69,7 @@ export function WorkshopDetailPage() {
     try {
       const r = await fetch(`/api/workshops/${id}/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         body: JSON.stringify({ name: formName.trim(), contact: formContact.trim(), participants: 1 }),
       });
       if (r.ok) {

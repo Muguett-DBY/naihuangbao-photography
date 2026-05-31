@@ -733,7 +733,20 @@
     "restart": "やり直す",
     "share": "結果を共有",
     "bookNow": "予約する",
+    "recommendations.couple": "カップル撮影は自然光の公園や街歩きで、ふたりのリラックスした空気を残すのに向いています。",
+    "recommendations.family": "家族写真は屋外の自然な環境で、あたたかい雰囲気と自然なやりとりを写しやすくなります。",
+    "recommendations.group": "友達同士の撮影は屋外のほうが動きやすく、明るく自然な雰囲気になります。",
+    "recommendations.studio": "アート寄りや都会的なスタイルは、光と背景を整えやすい室内撮影がおすすめです。",
+    "recommendations.birthday": "誕生日の記念は室内でテーマを作ると、天候に左右されず雰囲気を出しやすいです。",
+    "recommendations.weather": "暑い日や寒い日は室内のほうが快適で、レトロにもナチュラルにも仕上げやすいです。",
+    "recommendations.spring": "春の南京の屋外は自然なスタジオのようで、柔らかいフィルム感の写真に向いています。",
+    "recommendations.autumn": "秋の南京の屋外は自然なスタジオのようで、あたたかいフィルム感の写真に向いています。",
     "progress": "ステップ {{current}} / {{total}}"
+  },
+  "errorBoundary": {
+    "title": "このセクションを読み込めませんでした",
+    "message": "もう一度お試しください。時間をおいて再度確認してください。",
+    "retry": "再試行"
   },
   "seo": {
     "homeTitle": "奶黄んぼ写真撮影 | 南京撮影予約",

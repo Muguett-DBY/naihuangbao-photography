@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Input, Loading, Table } from "animal-island-ui";
 import type { TableColumn } from "animal-island-ui";
 import type { Merchandise } from "../../types/content";
-import type { ToastType } from "../../lib/admin-helpers";
+import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 
 interface Props {
   showToast: (text: string, type: ToastType) => void;
@@ -34,7 +34,7 @@ export function AdminMerchandiseTab({ showToast }: Props) {
       const r = await fetch(url, {
         method,
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...adminMutationHeaders },
         body: JSON.stringify(editing),
       });
       if (r.ok) { showToast("保存成功", "success"); setEditing(null); load(); }
@@ -46,7 +46,7 @@ export function AdminMerchandiseTab({ showToast }: Props) {
   const handleDelete = async (id: string) => {
     if (!confirm("确认删除此产品？")) return;
     try {
-      const r = await fetch(`/api/admin/merchandise/${id}`, { method: "DELETE", credentials: "include" });
+      const r = await fetch(`/api/admin/merchandise/${id}`, { method: "DELETE", credentials: "include", headers: adminMutationHeaders });
       if (r.ok) { showToast("删除成功", "success"); load(); }
     } catch { showToast("删除失败", "error"); }
   };

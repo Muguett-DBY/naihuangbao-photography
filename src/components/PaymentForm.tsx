@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Input } from "animal-island-ui";
 import { CreditCard, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import type { PaymentFormProps, PaymentIntentStatus } from "../types/payment";
+import { publicMutationHeaders } from "../lib/admin-helpers";
 
 type InternalStatus = "idle" | "creating" | "confirming" | "succeeded" | "failed" | "cancelled";
 
@@ -43,7 +44,7 @@ export function PaymentForm({
     try {
       const r = await fetch("/api/payment/create-intent", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         body: JSON.stringify({
           purpose,
           amountCents,
@@ -65,7 +66,7 @@ export function PaymentForm({
 
       setPaymentIntentId(data.paymentIntentId);
       setStatus("confirming");
-      await simulateConfirmation(data.paymentIntentId);
+      await simulateConfirmation(data.paymentIntentId, data.clientSecret);
     } catch (err) {
       const msg = err instanceof Error ? err.message : t("payment.error", "Payment failed");
       setError(msg);
@@ -74,14 +75,14 @@ export function PaymentForm({
     }
   };
 
-  const simulateConfirmation = async (intentId: string) => {
+  const simulateConfirmation = async (intentId: string, clientSecret: string) => {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     try {
       const r = await fetch("/api/payment/confirm", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentIntentId: intentId }),
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
+        body: JSON.stringify({ paymentIntentId: intentId, clientSecret }),
       });
 
       if (!r.ok) {

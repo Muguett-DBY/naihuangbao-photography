@@ -92,9 +92,6 @@ export function CustomCursor() {
       />
       <style>{`
         @media (hover: hover) and (pointer: fine) {
-          body { cursor: none !important; }
-          body * { cursor: none !important; }
-          a, button, [role="button"] { cursor: none !important; }
           .booking-modal input,
           .booking-modal textarea,
           .booking-modal select,

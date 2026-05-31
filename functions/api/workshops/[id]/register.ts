@@ -1,9 +1,16 @@
 import { jsonResponse, badRequest, unavailable } from "../../../_responses";
+import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../../_security";
 
 type ApiEnv = Env;
 
 // ── POST /api/workshops/:id/register ──
 export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
+  const publicActionError = requirePublicMutationRequest(context.request);
+  if (publicActionError) return publicActionError;
+
+  const limit = await enforceRateLimit(context.request, context.env, "workshop-register", 8, 60 * 60);
+  if (!limit.ok) return rateLimited(limit.retryAfter);
+
   if (!context.env.DB) {
     return jsonResponse({ error: "服务不可用" }, 503);
   }
