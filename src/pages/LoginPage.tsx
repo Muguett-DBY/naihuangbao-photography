@@ -110,8 +110,8 @@ export function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      minLength={6}
-                      placeholder={t("auth.passwordPlaceholder", "至少6个字符")}
+                      minLength={mode === "register" ? 8 : undefined}
+                      placeholder={mode === "register" ? t("auth.passwordPlaceholder", "至少8个字符") : t("auth.password", "密码")}
                       className="login-input"
                       aria-invalid={!!error || undefined}
                       aria-describedby={error ? errorId : undefined}

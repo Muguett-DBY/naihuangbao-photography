@@ -583,6 +583,7 @@
     "learnMore": "Learn more",
     "loading": "Loading...",
     "loadError": "Unable to load. Please try again later.",
+    "skipToContent": "Skip to content",
     "socialXiaohongshu": "Xiaohongshu"
   },
   "admin": {
@@ -922,7 +923,8 @@
     "email": "Email",
     "emailPlaceholder": "your@email.com",
     "password": "Password",
-    "passwordPlaceholder": "At least 6 characters",
+    "passwordPlaceholder": "At least 8 characters",
+    "userMenu": "User menu",
     "loginButton": "Log in",
     "registerButton": "Register",
     "noAccount": "No account yet?",

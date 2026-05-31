@@ -583,6 +583,7 @@
     "learnMore": "もっと見る",
     "loading": "読み込み中...",
     "loadError": "読み込めませんでした。しばらくしてから再度お試しください。",
+    "skipToContent": "本文へスキップ",
     "socialXiaohongshu": "小红书"
   },
   "admin": {
@@ -922,7 +923,8 @@
     "email": "メールアドレス",
     "emailPlaceholder": "your@email.com",
     "password": "パスワード",
-    "passwordPlaceholder": "6文字以上",
+    "passwordPlaceholder": "8文字以上",
+    "userMenu": "ユーザーメニュー",
     "loginButton": "ログイン",
     "registerButton": "登録",
     "noAccount": "アカウントをお持ちでないですか？",

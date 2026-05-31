@@ -24,8 +24,8 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
   const password = body.password.trim();
   const displayName = (body.displayName || email.split("@")[0]).trim();
 
-  if (password.length < 6) {
-    return badRequest("密码至少需要6个字符");
+  if (password.length < 8) {
+    return badRequest("密码至少需要8个字符");
   }
 
   if (!isValidEmail(email)) {

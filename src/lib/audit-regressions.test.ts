@@ -55,10 +55,18 @@ const styleQuizSource = readFileSync(resolve(root, "src/components/StyleQuiz.tsx
 const seoSource = readFileSync(resolve(root, "src/lib/seo.ts"), "utf8");
 const i18nSource = readFileSync(resolve(root, "src/i18n/index.ts"), "utf8");
 const packageSource = readFileSync(resolve(root, "package.json"), "utf8");
+const loginPageSource = readFileSync(resolve(root, "src/pages/LoginPage.tsx"), "utf8");
+const registerApiSource = readFileSync(resolve(root, "functions/api/auth/register.ts"), "utf8");
 const jaLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ja.json"), "utf8");
 const zhLocaleSource = readFileSync(resolve(root, "src/i18n/locales/zh-CN.json"), "utf8");
 const enLocaleSource = readFileSync(resolve(root, "src/i18n/locales/en.json"), "utf8");
 const koLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ko.json"), "utf8");
+const locales = {
+  zh: JSON.parse(zhLocaleSource),
+  en: JSON.parse(enLocaleSource),
+  ja: JSON.parse(jaLocaleSource),
+  ko: JSON.parse(koLocaleSource),
+} as const;
 
 function countOccurrences(source: string, token: string) {
   return source.split(token).length - 1;
@@ -178,6 +186,8 @@ describe("audit regression coverage", () => {
     expect(e2eConfigSource).toContain("webServer");
     expect(e2eConfigSource).toContain("127.0.0.1:4174");
     expect(e2eSmokeSource).toContain('page.goto("/")');
+    expect(e2eSmokeSource).toContain("openGalleryFromNav");
+    expect(e2eSmokeSource).toContain("#site-navigation-menu");
     expect(e2eSmokeSource).toContain('a[href="/gallery"]');
     expect(e2eSmokeSource).toContain('toHaveAttribute("data-theme"');
     expect(e2eSmokeSource).not.toContain("https://shoot.custard.top/");
@@ -258,6 +268,19 @@ describe("audit regression coverage", () => {
     expect(enLocaleSource).toContain("errorBoundary");
     expect(jaLocaleSource).toContain("recommendations.couple");
     expect(koLocaleSource).toContain("recommendations.couple");
+    for (const locale of Object.values(locales)) {
+      expect(locale.common.skipToContent).toBeTruthy();
+      expect(locale.auth.userMenu).toBeTruthy();
+    }
+  });
+
+  it("keeps public account registration on the stronger minimum password policy", () => {
+    expect(loginPageSource).toContain('minLength={mode === "register" ? 8 : undefined}');
+    expect(registerApiSource).toContain("password.length < 8");
+    expect(registerApiSource).toContain("密码至少需要8个字符");
+    for (const locale of Object.values(locales)) {
+      expect(locale.auth.passwordPlaceholder).toMatch(/8|八|８/);
+    }
   });
 
   it("pauses expensive visual loops and touch listeners when they are not useful", () => {
@@ -321,6 +344,8 @@ describe("audit regression coverage", () => {
 
   it("keeps the admin shell usable in dark mode and by keyboard", () => {
     expect(adminCssSource).toContain(":focus-visible");
+    expect(adminCssSource).toContain("outline: 3px solid #f1c2ae");
+    expect(adminCssSource).toContain("@media (prefers-reduced-motion: reduce)");
     expect(adminCssSource).toContain(':root[data-theme="dark"] .adm-root');
     expect(dashboardSource).toContain('htmlFor="dashboard-display-name"');
     expect(dashboardSource).toContain('id="dashboard-display-name"');
@@ -334,5 +359,6 @@ describe("audit regression coverage", () => {
     expect(viteConfigSource).toContain('cacheName: "api-content"');
     expect(viteConfigSource).toContain('cacheName: "editor-models"');
     expect(viteConfigSource).toContain('cacheName: "font-assets"');
+    expect(viteConfigSource).not.toContain("backgroundSync");
   });
 });

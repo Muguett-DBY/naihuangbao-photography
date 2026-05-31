@@ -76,9 +76,6 @@ export default defineConfig({
               cacheableResponse: {
                 statuses: [0, 200],
               },
-              backgroundSync: {
-                name: "gallery-images-queue",
-              },
             },
           },
           {

@@ -1,6 +1,19 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 // Playwright config is at e2e/playwright.config.ts - run with: npx playwright test --config=e2e/playwright.config.ts
+
+async function openGalleryFromNav(page: Page) {
+  const inlineGalleryLink = page.locator('.nav-menu--inline a[href="/gallery"]').first();
+  if (await inlineGalleryLink.isVisible()) {
+    await inlineGalleryLink.click();
+    return;
+  }
+
+  await page.locator(".hamburger").click();
+  const overlayGalleryLink = page.locator('#site-navigation-menu a[href="/gallery"]').first();
+  await expect(overlayGalleryLink).toBeVisible();
+  await overlayGalleryLink.click();
+}
 
 test.describe("shoot.custard.top", () => {
   test.beforeEach(async ({ page }) => {
@@ -18,7 +31,7 @@ test.describe("shoot.custard.top", () => {
 
   test("导航链接可点击跳转", async ({ page }) => {
     await page.goto("/");
-    await page.locator('.nav-menu--inline a[href="/gallery"]').click();
+    await openGalleryFromNav(page);
     await expect(page).toHaveURL(/\/gallery$/);
     await expect(page.locator("#gallery")).toBeVisible();
   });
@@ -90,5 +103,13 @@ test.describe("shoot.custard.top", () => {
     }));
     expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
     await expect(page.locator(".hamburger")).toBeVisible();
+  });
+
+  test("移动端导航可打开作品页", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await openGalleryFromNav(page);
+    await expect(page).toHaveURL(/\/gallery$/);
+    await expect(page.locator("#gallery")).toBeVisible();
   });
 });

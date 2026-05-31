@@ -583,6 +583,7 @@
     "learnMore": "了解更多",
     "loading": "加载中...",
     "loadError": "加载失败，请稍后重试",
+    "skipToContent": "跳转到内容",
     "socialXiaohongshu": "小红书"
   },
   "admin": {
@@ -922,7 +923,8 @@
     "email": "邮箱",
     "emailPlaceholder": "your@email.com",
     "password": "密码",
-    "passwordPlaceholder": "至少 6 个字符",
+    "passwordPlaceholder": "至少 8 个字符",
+    "userMenu": "用户菜单",
     "loginButton": "登录",
     "registerButton": "注册",
     "noAccount": "还没有账户？",

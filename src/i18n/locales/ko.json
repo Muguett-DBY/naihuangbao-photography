@@ -583,6 +583,7 @@
     "learnMore": "더 알아보기",
     "loading": "로딩 중...",
     "loadError": "불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "skipToContent": "본문으로 건너뛰기",
     "socialXiaohongshu": "샤오홍슈"
   },
   "admin": {
@@ -922,7 +923,8 @@
     "email": "이메일",
     "emailPlaceholder": "your@email.com",
     "password": "비밀번호",
-    "passwordPlaceholder": "6자 이상",
+    "passwordPlaceholder": "8자 이상",
+    "userMenu": "사용자 메뉴",
     "loginButton": "로그인",
     "registerButton": "가입",
     "noAccount": "계정이 없으신가요?",

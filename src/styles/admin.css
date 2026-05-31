@@ -528,6 +528,10 @@
   outline-offset: 3px;
 }
 
+:root[data-theme="dark"] .adm-root :where(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid #f1c2ae;
+}
+
 :root[data-theme="dark"] .adm-root {
   color: #eadbd3;
   background: #241a18;
@@ -604,4 +608,15 @@
   color: #fff4ed;
   border-color: rgba(234, 219, 211, 0.2);
   background: rgba(255, 244, 237, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adm-root *,
+  .adm-root *::before,
+  .adm-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
