@@ -30,23 +30,41 @@ export function CustomCursor() {
     const ring = ringRef.current;
     if (!dot || !ring) return;
 
-    document.addEventListener("mousemove", onMove, { passive: true });
+    let running = false;
 
     const loop = () => {
-      idleTimer.current++;
-      if (!document.hidden && idleTimer.current < 300) {
-        ringPos.current.x += (pos.current.x - ringPos.current.x) * 0.12;
-        ringPos.current.y += (pos.current.y - ringPos.current.y) * 0.12;
-
-        dot.style.transform = `translate(${pos.current.x - 3}px, ${pos.current.y - 3}px)`;
-        ring.style.transform = `translate(${ringPos.current.x - 16}px, ${ringPos.current.y - 16}px)`;
+      if (document.hidden || idleTimer.current >= 300) {
+        running = false;
+        rafId.current = 0;
+        return;
       }
+
+      idleTimer.current++;
+      ringPos.current.x += (pos.current.x - ringPos.current.x) * 0.12;
+      ringPos.current.y += (pos.current.y - ringPos.current.y) * 0.12;
+
+      dot.style.transform = `translate(${pos.current.x - 3}px, ${pos.current.y - 3}px)`;
+      ring.style.transform = `translate(${ringPos.current.x - 16}px, ${ringPos.current.y - 16}px)`;
+
       rafId.current = requestAnimationFrame(loop);
     };
-    rafId.current = requestAnimationFrame(loop);
+
+    const startLoop = () => {
+      if (running) return;
+      running = true;
+      rafId.current = requestAnimationFrame(loop);
+    };
+
+    const handleMove = (event: MouseEvent) => {
+      onMove(event);
+      startLoop();
+    };
+
+    document.addEventListener("mousemove", handleMove, { passive: true });
+    startLoop();
 
     return () => {
-      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mousemove", handleMove);
       cancelAnimationFrame(rafId.current);
     };
   }, [onMove]);

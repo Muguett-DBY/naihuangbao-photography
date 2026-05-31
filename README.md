@@ -96,7 +96,18 @@ npx wrangler d1 execute naihuangbao-photography --file=./db/schema.sql --remote
 
 ```bash
 npx wrangler pages secret put ADMIN_PASSWORD --project-name naihuangbao-photography
+npx wrangler pages secret put AUTH_SECRET --project-name naihuangbao-photography
+npx wrangler pages secret put RATE_LIMIT_SECRET --project-name naihuangbao-photography
 ```
+
+必需和可选的 Cloudflare Pages 环境项：
+
+- `ADMIN_PASSWORD`：后台登录密码，必须通过 Pages secret 配置。
+- `AUTH_SECRET`：站内用户登录 session 签名密钥，至少 32 字符，必须通过 Pages secret 配置。
+- `RATE_LIMIT_SECRET`：公开接口限流 key 哈希密钥，建议通过 Pages secret 配置；如不配置会回退到聊天 API key 等已有密钥。
+- `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET`：支付功能启用时需要配置。
+- `OPENCODE_GO_API_KEY`：公开 AI 咨询启用时需要配置。
+- `COURSE_PASSWORDS`：课程密码锁启用时可配置。
 
 上传接口也兼容 Cloudflare Access：如果请求带有 `cf-access-authenticated-user-email`，也会被视为已登录。
 

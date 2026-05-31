@@ -322,6 +322,24 @@
           if (theme === 'dark' || theme === 'light') {
             document.documentElement.setAttribute('data-theme', theme);
           }
+          var supportedLang = { 'zh-CN': true, en: true, ko: true, ja: true };
+          var lang = new URLSearchParams(window.location.search).get('lang');
+          if (!supportedLang[lang]) {
+            lang = localStorage.getItem('lang');
+          }
+          if (!supportedLang[lang]) {
+            var browserLang = navigator.language || '';
+            lang = browserLang.indexOf('zh') === 0
+              ? 'zh-CN'
+              : browserLang.indexOf('ko') === 0
+                ? 'ko'
+                : browserLang.indexOf('ja') === 0
+                  ? 'ja'
+                  : 'en';
+          }
+          if (supportedLang[lang]) {
+            document.documentElement.lang = lang;
+          }
         } catch(e) {}
       })();
     </script>

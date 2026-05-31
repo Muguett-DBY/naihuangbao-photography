@@ -129,7 +129,7 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
       "url": `${metadata.origin}/#gallery`,
       "image": galleryItems.slice(0, 9).map((photo) => ({
         "@type": "ImageObject",
-        "contentUrl": `${siteOrigin}${photo.imageUrl.replace(/\?.*$/, "")}`,
+        "contentUrl": `${metadata.origin}${photo.imageUrl.replace(/\?.*$/, "")}`,
         "name": photo.title,
         "caption": photo.alt,
       })),
@@ -150,11 +150,11 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     // Google Search Console verification (replace with your own ID)
     // '<meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />',
     // hreflang alternates for the client-side language switcher
-    '<link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/" />',
-    '<link rel="alternate" hreflang="en" href="https://shoot.custard.top/?lang=en" />',
-    '<link rel="alternate" hreflang="ja" href="https://shoot.custard.top/?lang=ja" />',
-    '<link rel="alternate" hreflang="ko" href="https://shoot.custard.top/?lang=ko" />',
-    '<link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/" />',
+    `<link rel="alternate" hreflang="zh-CN" href="${metadata.origin}/" />`,
+    `<link rel="alternate" hreflang="en" href="${metadata.origin}/?lang=en" />`,
+    `<link rel="alternate" hreflang="ja" href="${metadata.origin}/?lang=ja" />`,
+    `<link rel="alternate" hreflang="ko" href="${metadata.origin}/?lang=ko" />`,
+    `<link rel="alternate" hreflang="x-default" href="${metadata.origin}/" />`,
     // To enable Cloudflare Web Analytics, add your beacon script here
     `<title>${escapeHtml(metadata.title)}</title>`,
   ].join("\n    ");

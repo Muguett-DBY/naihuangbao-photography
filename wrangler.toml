@@ -3,6 +3,9 @@ pages_build_output_dir = "dist"
 compatibility_date = "2026-05-17"
 compatibility_flags = ["nodejs_compat"]
 
+# Required Pages secrets are documented in README.md.
+# Do not put secret values in [vars].
+
 [[r2_buckets]]
 binding = "PHOTO_BUCKET"
 bucket_name = "naihuangbao-photography"

@@ -20,7 +20,6 @@ const supportedLanguages = new Set(["zh-CN", "en", "ko", "ja"]);
 function getInitialLang() {
   const queryLang = new URLSearchParams(window.location.search).get("lang");
   if (queryLang && supportedLanguages.has(queryLang)) {
-    localStorage.setItem("lang", queryLang);
     return queryLang;
   }
   return localStorage.getItem("lang") || detectBrowserLang();

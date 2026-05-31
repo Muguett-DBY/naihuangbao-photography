@@ -1,4 +1,4 @@
-import type { PhotoItem } from "../../../../src/types/photo";
+import { withSecurityHeaders } from "../../../_responses";
 
 type PhotoRow = {
   id: string;
@@ -17,7 +17,7 @@ type PhotoRow = {
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const id = context.params.id;
   if (typeof id !== "string") {
-    return new Response("Not found", { status: 404 });
+    return notFound();
   }
 
   const row = await context.env.DB.prepare(
@@ -29,18 +29,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     .first<PhotoRow>();
 
   if (!row) {
-    return new Response("Not found", { status: 404 });
+    return notFound();
   }
 
   const object = await context.env.PHOTO_BUCKET.get(row.object_key);
   if (!object) {
-    return new Response("Not found", { status: 404 });
+    return notFound();
   }
 
   const safeName = row.title.replace(/[^a-zA-Z0-9\u4e00-\u9fff_-]/g, "_");
   const ext = row.object_key.split(".").pop() || "jpg";
 
-  const headers = new Headers();
+  const headers = withSecurityHeaders();
   object.writeHttpMetadata(headers);
   headers.set("etag", object.httpEtag);
   headers.set("cache-control", "public, max-age=31536000, immutable");
@@ -48,3 +48,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   return new Response(object.body, { headers });
 };
+
+function notFound() {
+  return new Response("Not found", {
+    status: 404,
+    headers: withSecurityHeaders({
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "no-store",
+    }),
+  });
+}

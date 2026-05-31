@@ -38,6 +38,10 @@ const authSource = readFileSync(resolve(root, "functions/_auth.ts"), "utf8");
 const securitySource = readFileSync(resolve(root, "functions/_security.ts"), "utf8");
 const paymentWebhookSource = readFileSync(resolve(root, "functions/api/payment/webhook.ts"), "utf8");
 const paymentConfirmSource = readFileSync(resolve(root, "functions/api/payment/confirm.ts"), "utf8");
+const responsesSource = readFileSync(resolve(root, "functions/_responses.ts"), "utf8");
+const publicChatApiSource = readFileSync(resolve(root, "functions/api/chat.ts"), "utf8");
+const photoDownloadApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/download.ts"), "utf8");
+const photoImageApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/image.ts"), "utf8");
 const sitemapSource = readFileSync(resolve(root, "public/sitemap.xml"), "utf8");
 const adminCssSource = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
 const dashboardSource = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
@@ -47,6 +51,7 @@ const videoPlayerSource = readFileSync(resolve(root, "src/components/VideoPlayer
 const photoMapSource = readFileSync(resolve(root, "src/components/PhotoMap.tsx"), "utf8");
 const presetPreviewSource = readFileSync(resolve(root, "src/components/PresetPreview.tsx"), "utf8");
 const customCursorSource = readFileSync(resolve(root, "src/components/CustomCursor.tsx"), "utf8");
+const filmGrainSource = readFileSync(resolve(root, "src/components/FilmGrain.tsx"), "utf8");
 const bookingCalendarSource = readFileSync(resolve(root, "src/components/BookingCalendar.tsx"), "utf8");
 const loadingScreenSource = readFileSync(resolve(root, "src/components/LoadingScreen.tsx"), "utf8");
 const errorBoundarySource = readFileSync(resolve(root, "src/components/ErrorBoundary.tsx"), "utf8");
@@ -55,6 +60,9 @@ const styleQuizSource = readFileSync(resolve(root, "src/components/StyleQuiz.tsx
 const seoSource = readFileSync(resolve(root, "src/lib/seo.ts"), "utf8");
 const i18nSource = readFileSync(resolve(root, "src/i18n/index.ts"), "utf8");
 const packageSource = readFileSync(resolve(root, "package.json"), "utf8");
+const readmeSource = readFileSync(resolve(root, "README.md"), "utf8");
+const wranglerSource = readFileSync(resolve(root, "wrangler.toml"), "utf8");
+const htmlSource = readFileSync(resolve(root, "index.html"), "utf8");
 const loginPageSource = readFileSync(resolve(root, "src/pages/LoginPage.tsx"), "utf8");
 const registerApiSource = readFileSync(resolve(root, "functions/api/auth/register.ts"), "utf8");
 const jaLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ja.json"), "utf8");
@@ -248,6 +256,34 @@ describe("audit regression coverage", () => {
     expect(securitySource).toContain("enforceRateLimit");
   });
 
+  it("documents required Cloudflare secrets without committing secret values", () => {
+    expect(wranglerSource).toContain("Required Pages secrets");
+    expect(readmeSource).toContain("AUTH_SECRET");
+    expect(readmeSource).toContain("RATE_LIMIT_SECRET");
+    expect(readmeSource).toContain("wrangler pages secret put AUTH_SECRET");
+    expect(readmeSource).toContain("wrangler pages secret put ADMIN_PASSWORD");
+    expect(wranglerSource).not.toMatch(/\[vars\][\s\S]*AUTH_SECRET/);
+    expect(readmeSource).not.toMatch(/AUTH_SECRET\s*=\s*['"][^'"]+['"]/);
+  });
+
+  it("applies shared security headers to API JSON and photo object responses", () => {
+    for (const header of [
+      "x-content-type-options",
+      "x-frame-options",
+      "strict-transport-security",
+      "referrer-policy",
+      "permissions-policy",
+      "content-security-policy",
+    ]) {
+      expect(responsesSource).toContain(header);
+    }
+    expect(responsesSource).toContain("withSecurityHeaders");
+    expect(photoDownloadApiSource).toContain("withSecurityHeaders");
+    expect(photoImageApiSource).toContain("withSecurityHeaders");
+    expect(publicChatApiSource).toContain("jsonResponse");
+    expect(publicChatApiSource).not.toContain("function json(");
+  });
+
   it("keeps high-risk UI injection and object URL fixes in place", () => {
     expect(videoPlayerSource).toContain("parseSafeUrl");
     expect(videoPlayerSource).not.toContain("return match ? `https://www.youtube.com/embed/${match[1]}` : url");
@@ -257,6 +293,12 @@ describe("audit regression coverage", () => {
     expect(customCursorSource).not.toContain("cursor: none");
     expect(bookingCalendarSource).toContain("calendarRef");
     expect(loadingScreenSource).not.toContain("dangerouslySetInnerHTML");
+  });
+
+  it("does not keep unused admin context architecture around", () => {
+    expect(existsSync(resolve(root, "src/components/admin/AdminContext.tsx"))).toBe(false);
+    expect(adminSource).not.toContain("AdminCtx");
+    expect(adminSource).not.toContain("useAdmin");
   });
 
   it("keeps small i18n regressions fixed", () => {
@@ -302,8 +344,26 @@ describe("audit regression coverage", () => {
     expect(seoSource).toContain('hreflang="en"');
     expect(seoSource).toContain('hreflang="ja"');
     expect(seoSource).toContain('hreflang="ko"');
+    expect(seoSource).toContain("${metadata.origin}/?lang=en");
+    expect(seoSource).not.toContain("https://shoot.custard.top/?lang=en");
     expect(i18nSource).toContain('new URLSearchParams(window.location.search).get("lang")');
     expect(i18nSource).toContain("supportedLanguages");
+    expect(i18nSource).not.toContain('localStorage.setItem("lang", queryLang)');
+  });
+
+  it("sets the document language before React hydrates", () => {
+    expect(htmlSource).toContain("supportedLang");
+    expect(htmlSource).toContain("document.documentElement.lang");
+    expect(htmlSource).toContain("localStorage.getItem('lang')");
+  });
+
+  it("pauses decorative loops when idle or after viewport capability changes", () => {
+    expect(customCursorSource).toContain("startLoop");
+    expect(customCursorSource).toContain("idleTimer.current >= 300");
+    expect(customCursorSource).toContain("running = false");
+    expect(filmGrainSource).toContain("setCapability");
+    expect(filmGrainSource).toContain("addEventListener(\"resize\"");
+    expect(filmGrainSource).toContain("[capability]");
   });
 
   it("keeps small build and CSS cleanup items from regressing", () => {

@@ -11,14 +11,15 @@ function getDeviceCapability(): "high" | "medium" | "low" {
 }
 
 export function FilmGrain() {
-  const [capable, setCapable] = useState(true);
+  const [capability, setCapability] = useState<"high" | "medium" | "low">(() => {
+    if (typeof window === "undefined") return "high";
+    return getDeviceCapability();
+  });
   const grainRef = useRef<HTMLCanvasElement>(null);
   const leakRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const capability = getDeviceCapability();
     if (capability === "low") {
-      setCapable(false);
       return;
     }
 
@@ -126,9 +127,28 @@ export function FilmGrain() {
       cancelAnimationFrame(leakRaf);
       window.removeEventListener("resize", handleResize);
     };
+  }, [capability]);
+
+  useEffect(() => {
+    let resizeTimer = 0;
+    const pointerQuery = window.matchMedia("(pointer: coarse)");
+    const syncCapability = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        setCapability(getDeviceCapability());
+      }, 120);
+    };
+
+    window.addEventListener("resize", syncCapability, { passive: true });
+    pointerQuery.addEventListener?.("change", syncCapability);
+    return () => {
+      window.clearTimeout(resizeTimer);
+      window.removeEventListener("resize", syncCapability);
+      pointerQuery.removeEventListener?.("change", syncCapability);
+    };
   }, []);
 
-  if (!capable) return null;
+  if (capability === "low") return null;
 
   return (
     <>
