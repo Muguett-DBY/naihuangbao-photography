@@ -1,5 +1,6 @@
 import { contentKeys, defaultSiteContent, mergeSiteContent } from "../src/data/content";
 import type { PartialSiteContent, SiteContent } from "../src/types/content";
+import { hashRateLimitKey } from "./_security";
 
 type D1DatabaseLike = {
   prepare(query: string): {
@@ -312,8 +313,11 @@ export async function enforcePublicChatRateLimit(request: Request, env: ChatEnv)
 
   const nowSeconds = Math.floor(Date.now() / 1000);
   const windowStart = nowSeconds - (nowSeconds % publicChatWindowSeconds);
+  const previousWindowStart = windowStart - publicChatWindowSeconds;
+  const elapsedSeconds = nowSeconds - windowStart;
+  const previousWeight = Math.max(0, 1 - elapsedSeconds / publicChatWindowSeconds);
   const retryAfter = Math.max(1, windowStart + publicChatWindowSeconds - nowSeconds);
-  const ipHash = await hashClientIp(readClientIp(request), env.CHAT_RATE_LIMIT_SECRET ?? env.OPENCODE_GO_API_KEY ?? "public-chat");
+  const ipHash = await hashRateLimitKey(`public-chat:${readClientIp(request)}`, env.CHAT_RATE_LIMIT_SECRET ?? env.OPENCODE_GO_API_KEY);
   const updatedAt = new Date(nowSeconds * 1000).toISOString();
 
   await env.DB.prepare(
@@ -325,15 +329,19 @@ export async function enforcePublicChatRateLimit(request: Request, env: ChatEnv)
     .bind(ipHash, windowStart, updatedAt)
     .run();
 
-  const row = await env.DB.prepare(
-    `select count
+  const rows = await env.DB.prepare(
+    `select window_start, count
      from chat_rate_limits
-     where ip_hash = ? and window_start = ?`,
+     where ip_hash = ? and window_start in (?, ?)`,
   )
-    .bind(ipHash, windowStart)
-    .first<{ count: number }>();
+    .bind(ipHash, windowStart, previousWindowStart)
+    .all<{ window_start: number; count: number }>();
 
-  return Number(row?.count ?? 1) <= maxPublicChatMessagesPerHour
+  const currentCount = Number(rows.results.find((row) => row.window_start === windowStart)?.count ?? 1);
+  const previousCount = Number(rows.results.find((row) => row.window_start === previousWindowStart)?.count ?? 0);
+  const weightedCount = currentCount + previousCount * previousWeight;
+
+  return weightedCount <= maxPublicChatMessagesPerHour
     ? { ok: true }
     : { ok: false, retryAfter };
 }
@@ -342,15 +350,6 @@ function readClientIp(request: Request) {
   return request.headers.get("cf-connecting-ip")
     ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
     ?? "unknown";
-}
-
-async function hashClientIp(ip: string, secret: string) {
-  const encoder = new TextEncoder();
-  const bytes = encoder.encode(`${secret}:${ip}`);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(digest))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
 }
 
 export const __test_buildPublicSystemPrompt = buildPublicSystemPrompt;

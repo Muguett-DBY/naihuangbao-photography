@@ -7,6 +7,7 @@ import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import type { Merchandise } from "../types/content";
+import { isAbortError } from "../lib/errors";
 
 export function ShopPage() {
   const { t, i18n } = useTranslation();
@@ -15,6 +16,7 @@ export function ShopPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [items, setItems] = useState<Merchandise[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useSEO({ titleKey: "seo.shopTitle", descKey: "seo.shopDesc", path: "/shop" });
   useGsapPageEffects(rootRef);
@@ -24,7 +26,12 @@ export function ShopPage() {
     fetch("/api/merchandise", { signal: ctrl.signal })
       .then((r) => r.json())
       .then((d: { merchandise: Merchandise[] }) => { if (!ctrl.signal.aborted) setItems(d.merchandise || []); })
-      .catch(() => {})
+      .catch((error) => {
+        if (!isAbortError(error)) {
+          console.warn("[shop] failed to load", error);
+          setLoadError(true);
+        }
+      })
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
   }, []);
@@ -42,6 +49,8 @@ export function ShopPage() {
       <section className="section-shell is-visible">
         {loading ? (
           <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
+        ) : loadError ? (
+          <div style={{ textAlign: "center", padding: 60 }}>{t("common.loadError")}</div>
         ) : items.length === 0 ? (
           <div style={{ textAlign: "center", padding: 60 }}>
             <p>{t("merchandise.empty")}</p>

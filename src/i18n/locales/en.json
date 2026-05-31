@@ -488,6 +488,13 @@
     "passwordPlaceholder": "Enter course password",
     "wrongPassword": "Incorrect password, please try again",
     "noModules": "Course content coming soon",
+    "loginRequired": "Log in to access course content",
+    "loginRequiredDesc": "Log in to your account to view the complete course.",
+    "purchaseRequired": "Purchase the course to unlock all content",
+    "purchaseRequiredDesc": "Purchase this course to access every module.",
+    "purchase": "Purchase Course",
+    "purchaseDesc": "Get full access to all course modules and materials.",
+    "buyNow": "Buy Course",
     "ctaTitle": "Want to learn more?",
     "ctaDesc": "Book a 1-on-1 session for personalized learning",
     "ctaBtn": "Book Consultation"
@@ -575,6 +582,7 @@
   "common": {
     "learnMore": "Learn more",
     "loading": "Loading...",
+    "loadError": "Unable to load. Please try again later.",
     "socialXiaohongshu": "Xiaohongshu"
   },
   "admin": {
@@ -903,6 +911,51 @@
       "magazine": "Magazine",
       "golden": "Golden"
     }
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "loginTitle": "Log in",
+    "registerTitle": "Create account",
+    "displayName": "Display name",
+    "displayNamePlaceholder": "Optional",
+    "email": "Email",
+    "emailPlaceholder": "your@email.com",
+    "password": "Password",
+    "passwordPlaceholder": "At least 6 characters",
+    "loginButton": "Log in",
+    "registerButton": "Register",
+    "noAccount": "No account yet?",
+    "registerLink": "Register",
+    "hasAccount": "Already have an account?",
+    "loginLink": "Log in",
+    "backToHome": "Back to homepage"
+  },
+  "payment": {
+    "purpose": {
+      "deposit": "Booking deposit",
+      "course": "Course purchase",
+      "workshop": "Workshop registration",
+      "preset": "Preset purchase",
+      "merchandise": "Merchandise"
+    },
+    "createFailed": "Failed to initialize payment",
+    "error": "Payment failed",
+    "confirmFailed": "Could not verify payment",
+    "notCompleted": "Payment was not completed",
+    "success": "Payment successful",
+    "successDesc": "Your payment status has been processed successfully.",
+    "failed": "Payment failed",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "title": "Payment",
+    "cardLabel": "Card number",
+    "expiryLabel": "Expiry",
+    "cvcLabel": "CVC",
+    "placeholderNotice": "Payment processing is in placeholder mode. No real charges will be made.",
+    "initializing": "Initializing...",
+    "processing": "Processing...",
+    "pay": "Pay {{amount}}"
   },
   "filmstrip": {
     "title": "Our Story",

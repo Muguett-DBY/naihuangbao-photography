@@ -505,10 +505,11 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
       <div>
         <h3 style={{ marginBottom: 16 }}>{t("dashboard.editProfile")}</h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 400 }}>
-          <label style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
+          <label htmlFor="dashboard-display-name" style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
             {t("dashboard.displayName")}
           </label>
           <input
+            id="dashboard-display-name"
             type="text"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
@@ -542,10 +543,11 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
       <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: 32 }}>
         <h3 style={{ marginBottom: 16 }}>{t("dashboard.changePassword")}</h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 400 }}>
-          <label style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
+          <label htmlFor="dashboard-current-password" style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
             {t("dashboard.currentPassword")}
           </label>
           <input
+            id="dashboard-current-password"
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
@@ -556,10 +558,11 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
               fontSize: "0.9rem",
             }}
           />
-          <label style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
+          <label htmlFor="dashboard-new-password" style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
             {t("dashboard.newPassword")}
           </label>
           <input
+            id="dashboard-new-password"
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}

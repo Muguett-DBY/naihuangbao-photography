@@ -1,14 +1,7 @@
-/* ── Cute theme fonts (Nunito + Noto Sans SC) ── */
-/* Unconditionally imported; only used when data-mood="cute" references them */
+/* ── Cute theme Latin font ── */
 @import "@fontsource/nunito/latin-500.css";
 @import "@fontsource/nunito/latin-700.css";
 @import "@fontsource/nunito/latin-900.css";
-@import "@fontsource/noto-sans-sc/latin-500.css";
-@import "@fontsource/noto-sans-sc/latin-700.css";
-@import "@fontsource/noto-sans-sc/latin-900.css";
-@import "@fontsource/noto-sans-sc/chinese-simplified-500.css";
-@import "@fontsource/noto-sans-sc/chinese-simplified-700.css";
-@import "@fontsource/noto-sans-sc/chinese-simplified-900.css";
 
 /* No Tailwind — custom CSS only */
 @font-face {
@@ -135,11 +128,10 @@
    Cute / Animal Island Theme
    ══════════════════════════════════════════════ */
 :root[data-mood="cute"] {
-  /* Fonts — Nunito (English) + Noto Sans SC (Chinese) */
-  --font-body: 'Nunito', 'Noto Sans SC',
+  /* Fonts — Nunito for Latin text, system fonts for CJK text */
+  --font-body: 'Nunito',
     "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
-  --font-display-cn: 'Noto Sans SC',
-    "Kaiti SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-display-cn: "PingFang SC", "Microsoft YaHei", sans-serif;
   --font-heading-cn: var(--font-display-cn);
   --font-heading: 'Nunito', var(--font-heading-cn);
   --font-ui: var(--font-body);
@@ -332,21 +324,9 @@ html {
 }
 
 /* ── Magazine Ambient Animations ── */
-@keyframes floatOrb {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  33% { transform: translate(12px, -8px) rotate(2deg); }
-  66% { transform: translate(-6px, 6px) rotate(-1deg); }
-}
-
 @keyframes breatheGlow {
   0%, 100% { opacity: 0.32; }
   50% { opacity: 0.48; }
-}
-
-@keyframes driftLine {
-  0% { transform: translateX(-10px); opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { transform: translateX(10px); opacity: 0.6; }
 }
 
 @keyframes textReveal {
@@ -355,17 +335,6 @@ html {
   }
   to {
     clip-path: inset(0 0 0 0);
-  }
-}
-
-@keyframes cardTiltIn {
-  from {
-    opacity: 0;
-    transform: perspective(800px) rotateY(-12deg) rotateX(6deg) translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: perspective(800px) rotateY(0) rotateX(0) translateY(0);
   }
 }
 
@@ -620,19 +589,6 @@ a {
 .ripple:active::after {
   opacity: 1;
   transition: opacity 0s;
-}
-
-/* ── Enhanced Magazine Cover Animation ── */
-@keyframes heroMagazineReveal {
-  0% {
-    clip-path: inset(0 0 100% 0);
-  }
-  30% {
-    clip-path: inset(0 0 0 0);
-  }
-  100% {
-    clip-path: inset(0 0 0 0);
-  }
 }
 
 /* ── Stagger text reveal lines ── */

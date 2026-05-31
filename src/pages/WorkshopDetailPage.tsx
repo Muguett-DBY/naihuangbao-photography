@@ -15,6 +15,7 @@ import { getTitle, getDesc } from "../lib/i18n-helpers";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { PaymentForm } from "../components/PaymentForm";
 import type { Workshop } from "../types/content";
+import { getApiError, readJsonResponse } from "../lib/http";
 
 export function WorkshopDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -73,7 +74,8 @@ export function WorkshopDetailPage() {
         body: JSON.stringify({ name: formName.trim(), contact: formContact.trim(), participants: 1 }),
       });
       if (r.ok) {
-        const data = await r.json() as { id: string };
+        const data = await readJsonResponse<{ id?: string }>(r);
+        if (!data?.id) throw new Error(t("workshops.form.error"));
         setRegistrationId(data.id);
 
         if (workshop?.price_cents && workshop.price_cents > 0) {
@@ -87,8 +89,8 @@ export function WorkshopDetailPage() {
         setFormContact("");
         if (workshop) setWorkshop({ ...workshop, current_participants: workshop.current_participants + 1 });
       } else {
-        const d = await r.json().catch(() => ({}));
-        setFormMsg(d.error || t("workshops.form.error"));
+        const data = await readJsonResponse(r);
+        setFormMsg(getApiError(data, t("workshops.form.error")));
       }
     } catch {
       setFormMsg(t("workshops.form.error"));

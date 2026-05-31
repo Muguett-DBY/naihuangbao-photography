@@ -671,32 +671,6 @@ body.nav-lock .site-nav {
   }
 }
 
-@keyframes heroTextIn {
-  from { opacity: 0; transform: translate3d(0, 22px, 0); }
-  to { opacity: 1; transform: translate3d(0, 0, 0); }
-}
-
-@keyframes heroButtonPop {
-  0% { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.9); }
-  65% { opacity: 1; transform: translate3d(0, -3px, 0) scale(1.04); }
-  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-}
-
-@keyframes heroTitleIn {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-    letter-spacing: 0.08em;
-    filter: blur(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    letter-spacing: -0.015em;
-    filter: blur(0);
-  }
-}
-
 /* ══════════════════════════════════════════════
    Hero Photo Collage — Subtle Parallax Background
    ══════════════════════════════════════════════ */

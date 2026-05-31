@@ -6,6 +6,7 @@ import { useNotification } from "../hooks/useNotification";
 import { PaymentForm } from "./PaymentForm";
 import { BookingCalendar } from "./BookingCalendar";
 import { publicMutationHeaders } from "../lib/admin-helpers";
+import { getApiError, readJsonResponse } from "../lib/http";
 
 type BookingModalProps = {
   initialPackage?: string;
@@ -52,11 +53,12 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       });
 
       if (!r.ok) {
-        const data = await r.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error || t("bookingModal.submitError"));
+        const data = await readJsonResponse(r);
+        throw new Error(getApiError(data, t("bookingModal.submitError")));
       }
 
-      const data = await r.json() as { id: string };
+      const data = await readJsonResponse<{ id?: string }>(r);
+      if (!data?.id) throw new Error(t("bookingModal.submitError"));
       setBookingId(data.id);
       setShowPayment(true);
 

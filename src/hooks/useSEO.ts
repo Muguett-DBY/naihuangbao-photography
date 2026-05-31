@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { defaultShareImage, siteOrigin } from "../lib/site-origin";
 
-const siteOrigin = "https://shoot.custard.top";
-const defaultImage = `${siteOrigin}/wechat-share.jpg`;
 
 interface SEOOptions {
   title?: string;
@@ -37,7 +36,7 @@ export function useSEO({
   useEffect(() => {
     const resolvedTitle = title || (titleKey ? t(titleKey as any) : "");
     const description = t(descKey as any, descParams as any);
-    const shareImage = image || defaultImage;
+    const shareImage = image || defaultShareImage;
     const url = path ? `${siteOrigin}${path}` : siteOrigin;
 
     document.title = `${resolvedTitle} | 奶黄包摄影`;

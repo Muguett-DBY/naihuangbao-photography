@@ -2,9 +2,8 @@ import { defaultSiteContent } from "../data/content";
 import { faqs } from "../data/faq";
 import { galleryItems } from "../data/gallery";
 import type { SiteContent } from "../types/content";
+import { defaultShareImage, siteOrigin } from "./site-origin";
 
-const siteOrigin = "https://shoot.custard.top";
-const shareImage = `${siteOrigin}/wechat-share.jpg`;
 
 export function buildSeoMetadata(content: SiteContent = defaultSiteContent) {
   const title = `${content.siteConfig.brandName}｜${content.siteConfig.tagline}`;
@@ -30,7 +29,7 @@ export function buildSeoMetadata(content: SiteContent = defaultSiteContent) {
     description,
     keywords,
     origin: siteOrigin,
-    shareImage,
+    shareImage: defaultShareImage,
     themeColor: "#F5E6D3",
     featuredImages,
     priceRange: content.packages.map((item) => item.price).join("-"),

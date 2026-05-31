@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { publicMutationHeaders } from "../lib/admin-helpers";
+import { getApiError, readJsonResponse } from "../lib/http";
 
 type NotificationType = "booking_confirmation" | "workshop_registration" | "payment_receipt";
 
@@ -36,8 +37,8 @@ export function useNotification() {
       });
 
       if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error || "Failed to send notification");
+        const data = await readJsonResponse(response);
+        throw new Error(getApiError(data, "Failed to send notification"));
       }
 
       setState({ sending: false, error: null, success: true });

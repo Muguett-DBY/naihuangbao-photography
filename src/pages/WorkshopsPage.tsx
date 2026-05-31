@@ -12,6 +12,8 @@ import { CapacityBar } from "../components/CapacityBar";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import type { Workshop } from "../types/content";
+import { isAbortError } from "../lib/errors";
+import { getApiError, readJsonResponse } from "../lib/http";
 
 export function WorkshopsPage() {
   const { t, i18n } = useTranslation();
@@ -19,6 +21,7 @@ export function WorkshopsPage() {
   const { sendWorkshopRegistration } = useNotification();
   const [workshops, setWorkshops] = useState<Workshop[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [registeringId, setRegisteringId] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState<string | null>(null);
   const [formName, setFormName] = useState("");
@@ -33,7 +36,12 @@ export function WorkshopsPage() {
     fetch("/api/workshops", { signal: ctrl.signal })
       .then((r) => r.json())
       .then((d: { workshops: Workshop[] }) => { if (!ctrl.signal.aborted) setWorkshops(d.workshops || []); })
-      .catch(() => {})
+      .catch((error) => {
+        if (!isAbortError(error)) {
+          console.warn("[workshops] failed to load", error);
+          setLoadError(true);
+        }
+      })
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
   }, []);
@@ -56,14 +64,14 @@ export function WorkshopsPage() {
         body: JSON.stringify({ name: formName.trim(), contact: formContact.trim(), participants: 1 }),
       });
       if (r.ok) {
-        const data = await r.json().catch(() => ({}));
+        const data = await readJsonResponse<{ id?: string }>(r);
         setFormMsg(t("workshops.form.success"));
         setFormName("");
         setFormContact("");
 
         const workshop = workshops.find((w) => w.id === workshopId);
         await sendWorkshopRegistration(formContact.trim(), {
-          registrationId: data.id,
+          registrationId: data?.id,
           workshopTitle: workshop ? getTitle(workshop, i18n.language) : "Workshop",
           eventDate: workshop?.event_date,
           location: workshop?.location,
@@ -72,8 +80,8 @@ export function WorkshopsPage() {
 
         setTimeout(() => { setFormOpen(null); setFormMsg(""); }, 2000);
       } else {
-        const d = await r.json().catch(() => ({}));
-        setFormMsg(d.error || t("workshops.form.error"));
+        const data = await readJsonResponse(r);
+        setFormMsg(getApiError(data, t("workshops.form.error")));
       }
     } catch {
       setFormMsg(t("workshops.form.error"));
@@ -95,6 +103,8 @@ export function WorkshopsPage() {
       <section className="section-shell is-visible">
         {loading ? (
           <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
+        ) : loadError ? (
+          <div style={{ textAlign: "center", padding: 60 }}>{t("common.loadError")}</div>
         ) : workshops.length === 0 ? (
           <div style={{ textAlign: "center", padding: 60 }}>
             <p>{t("workshops.empty")}</p>

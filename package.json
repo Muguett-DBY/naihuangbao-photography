@@ -20,7 +20,6 @@
     "assets:crop": "node scripts/crop-gallery-assets.mjs"
   },
   "dependencies": {
-    "@fontsource/noto-sans-sc": "^5.2.9",
     "@fontsource/nunito": "^5.2.7",
     "animal-island-ui": "^0.9.4",
     "face-api.js": "^0.22.2",
@@ -40,6 +39,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260529.1",
+    "@playwright/test": "^1.52.0",
     "@types/leaflet": "^1.9.21",
     "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",
@@ -52,7 +52,6 @@
     "vite": "^8.0.14",
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "^4.1.7",
-    "wrangler": "^4.95.0",
-    "@playwright/test": "^1.52.0"
+    "wrangler": "^4.95.0"
   }
 }

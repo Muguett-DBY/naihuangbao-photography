@@ -1,3 +1,5 @@
+import { timingSafeEqual } from "./_security";
+
 type AuthEnv = {
   ADMIN_PASSWORD?: string;
   CF_ACCESS_ADMIN_EMAILS?: string;
@@ -101,7 +103,7 @@ async function validateUserSession(session: string, secret: string): Promise<str
   if (Number(expiresAt) <= Math.floor(Date.now() / 1000)) return null;
 
   const expected = await sign(`${userId}.${expiresAt}`, secret);
-  if (signature !== expected) return null;
+  if (!timingSafeEqual(signature, expected)) return null;
 
   return userId;
 }
@@ -123,7 +125,7 @@ async function isValidSession(session: string, password: string) {
   }
 
   const expected = await sign(expiresAt, password);
-  return signature === expected;
+  return timingSafeEqual(signature, expected);
 }
 
 export function sessionCookie(session: string) {

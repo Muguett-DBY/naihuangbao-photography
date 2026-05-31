@@ -1,57 +1,3 @@
-create table if not exists photos (
-  id text primary key,
-  title text not null,
-  style text not null,
-  location text not null,
-  object_key text not null,
-  image_url text not null,
-  alt text not null,
-  featured integer not null default 0,
-  client_authorized integer not null default 0,
-  visibility text not null default 'hidden',
-  album text,
-  video_url text,
-  note_url text,
-  created_at text not null
-);
-
-create index if not exists idx_photos_public
-  on photos (visibility, client_authorized, featured, created_at);
-
-create table if not exists cms_content (
-  key text primary key,
-  value_json text not null,
-  updated_at text not null
-);
-
-create table if not exists chat_rate_limits (
-  ip_hash text not null,
-  window_start integer not null,
-  count integer not null default 0,
-  updated_at text not null,
-  primary key (ip_hash, window_start)
-);
-
-create index if not exists idx_chat_rate_limits_updated
-  on chat_rate_limits (updated_at);
-
-create table if not exists booking_requests (
-  id text primary key,
-  package_name text not null,
-  preferred_date text,
-  preferred_time text,
-  name text not null,
-  contact text not null,
-  notes text not null default '',
-  status text not null default 'pending',
-  created_at text not null
-);
-
-create index if not exists idx_booking_status
-  on booking_requests (status, created_at);
-
--- ── New business line tables ──
-
 create table if not exists courses (
   id text primary key,
   title text not null,
@@ -68,14 +14,15 @@ create table if not exists courses (
   category text not null default 'beginner',
   difficulty text not null default 'beginner',
   duration_minutes integer,
-  price_cents integer default 0,
-  price_display text,
-  currency text default 'cny',
   sort_order integer default 0,
   published integer default 0,
   created_at text not null,
   updated_at text not null
 );
+
+alter table courses add column price_cents integer default 0;
+alter table courses add column price_display text;
+alter table courses add column currency text default 'cny';
 
 create index if not exists idx_courses_published
   on courses (published, sort_order, created_at);
@@ -135,14 +82,15 @@ create table if not exists workshops (
   location text,
   max_participants integer,
   current_participants integer default 0,
-  price_cents integer default 0,
   price_display text,
-  currency text default 'cny',
   status text default 'upcoming',
   registration_form_url text,
   created_at text not null,
   updated_at text not null
 );
+
+alter table workshops add column price_cents integer default 0;
+alter table workshops add column currency text default 'cny';
 
 create index if not exists idx_workshops_status
   on workshops (status, event_date);
@@ -182,31 +130,6 @@ create table if not exists merchandise (
 
 create index if not exists idx_merchandise_category
   on merchandise (category, available, created_at);
-
--- ── Auth tables ──
-
-create table if not exists users (
-  id text primary key,
-  email text not null unique,
-  password_hash text not null,
-  salt text not null,
-  display_name text not null,
-  created_at text not null,
-  updated_at text not null
-);
-
-create index if not exists idx_users_email
-  on users (email);
-
-create table if not exists subscribers (
-  id text primary key,
-  email text not null unique,
-  subscribed_at text not null,
-  active integer not null default 1
-);
-
-create index if not exists idx_subscribers_email
-  on subscribers (email);
 
 create table if not exists payment_intents (
   id text primary key,

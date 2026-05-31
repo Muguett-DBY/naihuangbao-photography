@@ -4,6 +4,7 @@ import { Button, Input } from "animal-island-ui";
 import { CreditCard, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import type { PaymentFormProps, PaymentIntentStatus } from "../types/payment";
 import { publicMutationHeaders } from "../lib/admin-helpers";
+import { getApiError, readJsonResponse } from "../lib/http";
 
 type InternalStatus = "idle" | "creating" | "confirming" | "succeeded" | "failed" | "cancelled";
 
@@ -55,14 +56,14 @@ export function PaymentForm({
       });
 
       if (!r.ok) {
-        const data = await r.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error || t("payment.createFailed", "Failed to initialize payment"));
+        const data = await readJsonResponse(r);
+        throw new Error(getApiError(data, t("payment.createFailed", "Failed to initialize payment")));
       }
 
-      const data = await r.json() as {
-        paymentIntentId: string;
-        clientSecret: string;
-      };
+      const data = await readJsonResponse<{ paymentIntentId?: string; clientSecret?: string }>(r);
+      if (!data?.paymentIntentId || !data.clientSecret) {
+        throw new Error(t("payment.createFailed", "Failed to initialize payment"));
+      }
 
       setPaymentIntentId(data.paymentIntentId);
       setStatus("confirming");
@@ -89,9 +90,9 @@ export function PaymentForm({
         throw new Error(t("payment.confirmFailed", "Could not verify payment"));
       }
 
-      const data = await r.json() as { status: PaymentIntentStatus };
+      const data = await readJsonResponse<{ status?: PaymentIntentStatus }>(r);
 
-      if (data.status === "succeeded") {
+      if (data?.status === "succeeded") {
         setStatus("succeeded");
         onSuccess?.(intentId);
       } else {

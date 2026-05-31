@@ -8,7 +8,19 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {
+          if (id.includes("node_modules/face-api.js")) {
+            return "face-api-vendor";
+          }
+          if (id.includes("node_modules/framer-motion")) {
+            return "motion-vendor";
+          }
+          if (id.includes("node_modules/photoswipe")) {
+            return "lightbox-vendor";
+          }
+          if (id.includes("node_modules/i18next") || id.includes("node_modules/react-i18next")) {
+            return "i18n-vendor";
+          }
+          if (/node_modules\/(?:react|react-dom|scheduler)\//.test(id)) {
             return "react-vendor";
           }
           if (id.includes("node_modules/lucide-react")) {
@@ -79,6 +91,46 @@ export default defineConfig({
               expiration: {
                 maxEntries: 1,
                 maxAgeSeconds: 60 * 5,
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => {
+              return url.pathname === "/api/content";
+            },
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-content",
+              expiration: {
+                maxEntries: 1,
+                maxAgeSeconds: 60 * 5,
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => {
+              return url.pathname.startsWith("/models/");
+            },
+            handler: "CacheFirst",
+            options: {
+              cacheName: "editor-models",
+              expiration: {
+                maxEntries: 12,
+                maxAgeSeconds: 60 * 60 * 24 * 180,
+              },
+            },
+          },
+          {
+            urlPattern: ({ request, url }) => {
+              const assetRequest = request as unknown as { destination?: string };
+              return assetRequest.destination === "font" || url.pathname.startsWith("/fonts/");
+            },
+            handler: "CacheFirst",
+            options: {
+              cacheName: "font-assets",
+              expiration: {
+                maxEntries: 16,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
             },
           },

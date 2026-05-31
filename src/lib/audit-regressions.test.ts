@@ -37,6 +37,11 @@ const authSource = readFileSync(resolve(root, "functions/_auth.ts"), "utf8");
 const securitySource = readFileSync(resolve(root, "functions/_security.ts"), "utf8");
 const paymentWebhookSource = readFileSync(resolve(root, "functions/api/payment/webhook.ts"), "utf8");
 const paymentConfirmSource = readFileSync(resolve(root, "functions/api/payment/confirm.ts"), "utf8");
+const sitemapSource = readFileSync(resolve(root, "public/sitemap.xml"), "utf8");
+const adminCssSource = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
+const dashboardSource = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
+const viteConfigSource = readFileSync(resolve(root, "vite.config.ts"), "utf8");
+const businessMigrationSource = readFileSync(resolve(root, "db/migrations/005_create_business_tables.sql"), "utf8");
 const videoPlayerSource = readFileSync(resolve(root, "src/components/VideoPlayer.tsx"), "utf8");
 const photoMapSource = readFileSync(resolve(root, "src/components/PhotoMap.tsx"), "utf8");
 const presetPreviewSource = readFileSync(resolve(root, "src/components/PresetPreview.tsx"), "utf8");
@@ -279,5 +284,52 @@ describe("audit regression coverage", () => {
     expect(packageSource).toContain('"assets:crop": "node scripts/crop-gallery-assets.mjs"');
     expect(packageSource).not.toContain('"assets:crop": "node --import tsx/esm scripts/crop-gallery-assets.mjs"');
     expect(cssSource).not.toContain("height: 100dvh;\n  height: 100dvh;");
+  });
+
+  it("lists indexable public routes without exposing account pages in the sitemap", () => {
+    for (const route of ["/gallery", "/booking", "/courses", "/products", "/workshops", "/shop", "/map"]) {
+      expect(sitemapSource).toContain(`<loc>https://shoot.custard.top${route}</loc>`);
+    }
+    expect(sitemapSource).not.toContain("<loc>https://shoot.custard.top/login</loc>");
+    expect(sitemapSource).not.toContain("<loc>https://shoot.custard.top/dashboard</loc>");
+    expect(sitemapSource).not.toContain("<loc>https://shoot.custard.top/admin</loc>");
+  });
+
+  it("uses shared constant-time comparisons and weighted adjacent rate-limit windows", () => {
+    expect(securitySource).toContain("export function timingSafeEqual");
+    expect(securitySource).toContain("previousWindowStart");
+    expect(securitySource).toContain("previousWeight");
+    expect(securitySource).not.toContain('"nhb-rate-limit"');
+    expect(authSource).toContain("timingSafeEqual");
+    expect(authSource).not.toContain("signature !== expected");
+    expect(authSource).not.toContain("signature === expected");
+    expect(paymentWebhookSource).toContain("timingSafeEqual");
+    expect(paymentWebhookSource).not.toContain("timingSafeEqualHex");
+  });
+
+  it("creates missing business tables and keeps course purchases idempotent", () => {
+    for (const table of ["courses", "course_modules", "presets", "workshops", "workshop_registrations", "merchandise", "payment_intents", "course_purchases", "purchases"]) {
+      expect(businessMigrationSource).toContain(`create table if not exists ${table}`);
+    }
+    expect(businessMigrationSource).toContain("unique (course_id, user_id)");
+    expect(paymentWebhookSource).not.toContain("INSERT OR REPLACE");
+    expect(paymentWebhookSource).toContain("ON CONFLICT(course_id, user_id)");
+  });
+
+  it("keeps the admin shell usable in dark mode and by keyboard", () => {
+    expect(adminCssSource).toContain(":focus-visible");
+    expect(adminCssSource).toContain(':root[data-theme="dark"] .adm-root');
+    expect(dashboardSource).toContain('htmlFor="dashboard-display-name"');
+    expect(dashboardSource).toContain('id="dashboard-display-name"');
+    expect(dashboardSource).toContain('htmlFor="dashboard-current-password"');
+    expect(dashboardSource).toContain('id="dashboard-current-password"');
+    expect(dashboardSource).toContain('htmlFor="dashboard-new-password"');
+    expect(dashboardSource).toContain('id="dashboard-new-password"');
+  });
+
+  it("caches stable content, editor models, and font assets at runtime", () => {
+    expect(viteConfigSource).toContain('cacheName: "api-content"');
+    expect(viteConfigSource).toContain('cacheName: "editor-models"');
+    expect(viteConfigSource).toContain('cacheName: "font-assets"');
   });
 });

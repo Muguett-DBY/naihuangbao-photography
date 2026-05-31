@@ -52,4 +52,43 @@ test.describe("shoot.custard.top", () => {
     await page.locator(".theme-toggle").click();
     await expect(page.locator("html")).not.toHaveAttribute("data-theme", "dark");
   });
+
+  test("首页预约 CTA 打开可填写表单", async ({ page }) => {
+    await page.goto("/");
+    await page.locator(".hero-cover-secondary-btn").click();
+    await expect(page.locator("#booking-name")).toBeVisible();
+    await expect(page.locator("#booking-contact")).toBeVisible();
+    await expect(page.locator("#booking-package")).toBeVisible();
+  });
+
+  test("登录与注册表单可切换且标签关联正确", async ({ page }) => {
+    await page.goto("/login");
+    await expect(page.locator('label[for="email"]')).toBeVisible();
+    await expect(page.locator('label[for="password"]')).toBeVisible();
+    await page.locator(".login-toggle").click();
+    await expect(page.locator('label[for="displayName"]')).toBeVisible();
+  });
+
+  test("后台登录入口可访问", async ({ page }) => {
+    await page.goto("/admin");
+    await expect(page.locator(".adm-login-box")).toBeVisible();
+    await expect(page.locator(".adm-login-box input")).toBeVisible();
+  });
+
+  test("修图页保留上传入口", async ({ page }) => {
+    await page.goto("/editor");
+    await expect(page.locator(".editor-root")).toBeVisible();
+    await expect(page.locator('.editor-toolbar input[type="file"]')).toBeAttached();
+  });
+
+  test("移动端首页没有横向溢出", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const widths = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth,
+    }));
+    expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
+    await expect(page.locator(".hamburger")).toBeVisible();
+  });
 });

@@ -522,3 +522,86 @@
   .adm-panel-head { align-items: flex-start; flex-direction: column; }
   .adm-form-grid { grid-template-columns: 1fr; }
 }
+
+.adm-root :where(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid #7e9bcf;
+  outline-offset: 3px;
+}
+
+:root[data-theme="dark"] .adm-root {
+  color: #eadbd3;
+  background: #241a18;
+}
+
+:root[data-theme="dark"] .adm-login-box,
+:root[data-theme="dark"] .adm-content-panel,
+:root[data-theme="dark"] .adm-stat-card {
+  color: #eadbd3;
+  border-color: rgba(234, 219, 211, 0.14);
+  background: #302320;
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.18);
+}
+
+:root[data-theme="dark"] .adm-bar {
+  border-color: rgba(234, 219, 211, 0.12);
+  background: rgba(36, 26, 24, 0.95);
+}
+
+:root[data-theme="dark"] .adm-login-box h1,
+:root[data-theme="dark"] .adm-bar-brand,
+:root[data-theme="dark"] .adm-panel-head h2,
+:root[data-theme="dark"] .adm-cms-item h3,
+:root[data-theme="dark"] .adm-cms-item-head strong,
+:root[data-theme="dark"] .adm-stat-number {
+  color: #fff4ed;
+}
+
+:root[data-theme="dark"] .adm-login-box > p,
+:root[data-theme="dark"] .adm-login-box > a,
+:root[data-theme="dark"] .adm-stat,
+:root[data-theme="dark"] .adm-stat-label,
+:root[data-theme="dark"] .adm-stat-sub,
+:root[data-theme="dark"] .adm-booking-time {
+  color: #c8ada1;
+}
+
+:root[data-theme="dark"] .adm-tabs button,
+:root[data-theme="dark"] .adm-cms-item-head button,
+:root[data-theme="dark"] .adm-add,
+:root[data-theme="dark"] .adm-bar-actions a,
+:root[data-theme="dark"] .adm-bar-actions button {
+  color: #eadbd3;
+  border-color: rgba(234, 219, 211, 0.14);
+  background: rgba(255, 244, 237, 0.08);
+}
+
+:root[data-theme="dark"] .adm-tabs button.is-active {
+  color: #2d201d;
+  border-color: #f1c2ae;
+  background: #f1c2ae;
+}
+
+:root[data-theme="dark"] .adm-cms-item,
+:root[data-theme="dark"] .adm-booking-notes {
+  color: #eadbd3;
+  border-color: rgba(234, 219, 211, 0.12);
+  background: rgba(255, 244, 237, 0.055);
+}
+
+:root[data-theme="dark"] .adm-content-panel label,
+:root[data-theme="dark"] .adm-cms-item label,
+:root[data-theme="dark"] .adm-booking-meta {
+  color: #d8beb3;
+}
+
+:root[data-theme="dark"] .adm-login-box input,
+:root[data-theme="dark"] .adm-content-panel input,
+:root[data-theme="dark"] .adm-content-panel select,
+:root[data-theme="dark"] .adm-content-panel textarea,
+:root[data-theme="dark"] .adm-cms-item input,
+:root[data-theme="dark"] .adm-cms-item select,
+:root[data-theme="dark"] .adm-cms-item textarea {
+  color: #fff4ed;
+  border-color: rgba(234, 219, 211, 0.2);
+  background: rgba(255, 244, 237, 0.08);
+}

@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { publicMutationHeaders } from "../lib/admin-helpers";
+import { getApiError, readJsonResponse } from "../lib/http";
 
 type Status = "idle" | "loading" | "success" | "error" | "duplicate";
 
@@ -34,9 +35,9 @@ export function NewsletterForm() {
         return;
       }
 
-      const data = await res.json().catch(() => ({}));
+      const data = await readJsonResponse(res);
 
-      if (res.status === 409 || (data as { error?: string }).error === "duplicate") {
+      if (res.status === 409 || getApiError(data, "") === "duplicate") {
         setStatus("duplicate");
       } else {
         setStatus("error");

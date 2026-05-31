@@ -488,6 +488,13 @@
     "passwordPlaceholder": "강좌 비밀번호 입력",
     "wrongPassword": "비밀번호가 올바르지 않습니다",
     "noModules": "강좌 콘텐츠가 곧 업데이트됩니다",
+    "loginRequired": "강좌 콘텐츠를 보려면 로그인하세요",
+    "loginRequiredDesc": "전체 강좌를 보려면 계정에 로그인하세요.",
+    "purchaseRequired": "강좌를 구매하여 전체 콘텐츠를 잠금 해제하세요",
+    "purchaseRequiredDesc": "이 강좌를 구매하면 모든 모듈을 볼 수 있습니다.",
+    "purchase": "강좌 구매",
+    "purchaseDesc": "모든 강좌 모듈과 학습 자료에 액세스할 수 있습니다.",
+    "buyNow": "지금 구매",
     "ctaTitle": "더 배우고 싶으신가요?",
     "ctaDesc": "1:1 개인 지도를 예약하세요",
     "ctaBtn": "상담 예약"
@@ -575,6 +582,7 @@
   "common": {
     "learnMore": "더 알아보기",
     "loading": "로딩 중...",
+    "loadError": "불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
     "socialXiaohongshu": "샤오홍슈"
   },
   "admin": {
@@ -903,6 +911,51 @@
       "magazine": "매거진",
       "golden": "골드"
     }
+  },
+  "auth": {
+    "login": "로그인",
+    "logout": "로그아웃",
+    "loginTitle": "로그인",
+    "registerTitle": "회원가입",
+    "displayName": "표시 이름",
+    "displayNamePlaceholder": "선택 사항",
+    "email": "이메일",
+    "emailPlaceholder": "your@email.com",
+    "password": "비밀번호",
+    "passwordPlaceholder": "6자 이상",
+    "loginButton": "로그인",
+    "registerButton": "가입",
+    "noAccount": "계정이 없으신가요?",
+    "registerLink": "가입",
+    "hasAccount": "이미 계정이 있으신가요?",
+    "loginLink": "로그인",
+    "backToHome": "홈으로 돌아가기"
+  },
+  "payment": {
+    "purpose": {
+      "deposit": "예약금",
+      "course": "강좌 구매",
+      "workshop": "워크숍 등록",
+      "preset": "프리셋 구매",
+      "merchandise": "상품 구매"
+    },
+    "createFailed": "결제를 초기화하지 못했습니다",
+    "error": "결제에 실패했습니다",
+    "confirmFailed": "결제 상태를 확인하지 못했습니다",
+    "notCompleted": "결제가 완료되지 않았습니다",
+    "success": "결제 성공",
+    "successDesc": "결제 상태가 성공적으로 처리되었습니다.",
+    "failed": "결제 실패",
+    "cancel": "취소",
+    "retry": "다시 시도",
+    "title": "결제",
+    "cardLabel": "카드 번호",
+    "expiryLabel": "유효 기간",
+    "cvcLabel": "CVC",
+    "placeholderNotice": "결제 기능은 데모 모드입니다. 실제 청구는 발생하지 않습니다.",
+    "initializing": "초기화 중...",
+    "processing": "처리 중...",
+    "pay": "{{amount}} 결제"
   },
   "filmstrip": {
     "title": "우리의 이야기",

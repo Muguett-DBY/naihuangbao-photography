@@ -6,12 +6,14 @@ import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import type { Course } from "../types/content";
+import { isAbortError } from "../lib/errors";
 
 export function CoursesPage() {
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useSEO({ titleKey: "seo.coursesTitle", descKey: "seo.coursesDesc", path: "/courses" });
   useGsapPageEffects(rootRef);
@@ -21,7 +23,12 @@ export function CoursesPage() {
     fetch("/api/courses", { signal: ctrl.signal })
       .then((r) => r.json())
       .then((d: { courses: Course[] }) => { if (!ctrl.signal.aborted) setCourses(d.courses || []); })
-      .catch(() => {})
+      .catch((error) => {
+        if (!isAbortError(error)) {
+          console.warn("[courses] failed to load", error);
+          setLoadError(true);
+        }
+      })
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
   }, []);
@@ -39,6 +46,8 @@ export function CoursesPage() {
       <section className="section-shell is-visible">
         {loading ? (
           <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
+        ) : loadError ? (
+          <div style={{ textAlign: "center", padding: 60 }}>{t("common.loadError")}</div>
         ) : courses.length === 0 ? (
           <div style={{ textAlign: "center", padding: 60 }}>
             <p>{t("courses.empty")}</p>

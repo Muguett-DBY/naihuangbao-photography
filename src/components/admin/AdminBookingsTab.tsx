@@ -2,6 +2,7 @@ import { CalendarCheck, CheckCircle, Clock, MessageCircle, XCircle } from "lucid
 import { Button } from "animal-island-ui";
 import { useEffect, useState } from "react";
 import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
+import { isAbortError } from "../../lib/errors";
 
 type BookingItem = {
   id: string;
@@ -32,7 +33,12 @@ export function AdminBookingsTab({ showToast }: { showToast: (text: string, type
       .then((d: { bookings?: BookingItem[] }) => {
         if (d.bookings && !ctrl.signal.aborted) setBookings(d.bookings);
       })
-      .catch(() => {})
+      .catch((error) => {
+        if (!isAbortError(error)) {
+          console.warn("[admin bookings] failed to load", error);
+          showToast("预约请求加载失败", "error");
+        }
+      })
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
   }, []);

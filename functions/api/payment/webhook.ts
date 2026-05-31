@@ -1,4 +1,5 @@
 import { badRequest, jsonResponse, unavailable } from "../../_responses";
+import { timingSafeEqual } from "../../_security";
 
 type WebhookBody = {
   type?: string;
@@ -79,8 +80,10 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
 
     if (type === "payment_intent.succeeded" && existing.purpose === "course_purchase") {
       await context.env.DB.prepare(
-        `INSERT OR REPLACE INTO course_purchases (id, course_id, user_id, payment_intent_id, created_at)
-         VALUES (?, ?, ?, ?, ?)`,
+        `INSERT INTO course_purchases (id, course_id, user_id, payment_intent_id, created_at)
+         VALUES (?, ?, ?, ?, ?)
+         ON CONFLICT(course_id, user_id)
+         DO UPDATE SET payment_intent_id = excluded.payment_intent_id`,
       )
         .bind(
           crypto.randomUUID(),
@@ -119,7 +122,7 @@ async function verifyStripeSignature(rawBody: string, header: string, secret: st
   if (Math.abs(now - Number(timestamp)) > 300) return false;
 
   const expected = await hmacSha256Hex(`${timestamp}.${rawBody}`, secret);
-  return signatures.some((signature) => timingSafeEqualHex(signature, expected));
+  return signatures.some((signature) => /^[0-9a-f]+$/i.test(signature) && timingSafeEqual(signature, expected));
 }
 
 async function hmacSha256Hex(payload: string, secret: string) {
@@ -135,14 +138,4 @@ async function hmacSha256Hex(payload: string, secret: string) {
   return Array.from(new Uint8Array(signature))
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
-}
-
-function timingSafeEqualHex(a: string, b: string) {
-  if (!/^[0-9a-f]+$/i.test(a) || !/^[0-9a-f]+$/i.test(b)) return false;
-  if (a.length !== b.length) return false;
-  let diff = 0;
-  for (let i = 0; i < a.length; i++) {
-    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return diff === 0;
 }

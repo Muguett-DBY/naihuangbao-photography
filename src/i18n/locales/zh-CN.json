@@ -488,6 +488,13 @@
     "passwordPlaceholder": "请输入课程密码",
     "wrongPassword": "密码错误，请重试",
     "noModules": "课程内容即将更新",
+    "loginRequired": "登录以访问课程内容",
+    "loginRequiredDesc": "请登录您的账户以查看完整课程内容",
+    "purchaseRequired": "购买课程以解锁全部内容",
+    "purchaseRequiredDesc": "购买此课程后即可查看所有模块内容",
+    "purchase": "购买课程",
+    "purchaseDesc": "购买后可访问全部课程模块和学习资料。",
+    "buyNow": "立即购买",
     "ctaTitle": "想学习更多？",
     "ctaDesc": "预约一对一指导，获得个性化学习体验",
     "ctaBtn": "预约咨询"
@@ -575,6 +582,7 @@
   "common": {
     "learnMore": "了解更多",
     "loading": "加载中...",
+    "loadError": "加载失败，请稍后重试",
     "socialXiaohongshu": "小红书"
   },
   "admin": {
@@ -903,6 +911,51 @@
       "magazine": "杂志",
       "golden": "金色"
     }
+  },
+  "auth": {
+    "login": "登录",
+    "logout": "退出登录",
+    "loginTitle": "登录",
+    "registerTitle": "注册",
+    "displayName": "显示名称",
+    "displayNamePlaceholder": "可选",
+    "email": "邮箱",
+    "emailPlaceholder": "your@email.com",
+    "password": "密码",
+    "passwordPlaceholder": "至少 6 个字符",
+    "loginButton": "登录",
+    "registerButton": "注册",
+    "noAccount": "还没有账户？",
+    "registerLink": "注册",
+    "hasAccount": "已有账户？",
+    "loginLink": "登录",
+    "backToHome": "返回首页"
+  },
+  "payment": {
+    "purpose": {
+      "deposit": "预约定金",
+      "course": "课程购买",
+      "workshop": "活动报名",
+      "preset": "预设购买",
+      "merchandise": "周边购买"
+    },
+    "createFailed": "支付初始化失败",
+    "error": "支付失败",
+    "confirmFailed": "无法确认支付状态",
+    "notCompleted": "支付尚未完成",
+    "success": "支付成功",
+    "successDesc": "支付状态已成功处理。",
+    "failed": "支付失败",
+    "cancel": "取消",
+    "retry": "重试",
+    "title": "支付",
+    "cardLabel": "银行卡号",
+    "expiryLabel": "有效期",
+    "cvcLabel": "安全码",
+    "placeholderNotice": "支付功能当前为占位演示模式，不会产生真实扣款。",
+    "initializing": "初始化中...",
+    "processing": "处理中...",
+    "pay": "支付 {{amount}}"
   },
   "filmstrip": {
     "title": "我们的故事",

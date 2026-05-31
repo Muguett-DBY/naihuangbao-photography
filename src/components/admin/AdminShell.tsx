@@ -168,7 +168,9 @@ function AdminStats() {
     fetch("/api/admin/stats", { credentials: "include", signal: ctrl.signal })
       .then((r) => r.json())
       .then((d: StatsData) => { if (!ctrl.signal.aborted) setData(d); })
-      .catch(() => {})
+      .catch((error) => {
+        if (!isAbortError(error)) console.warn("[admin stats] failed to load", error);
+      })
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
   }, []);

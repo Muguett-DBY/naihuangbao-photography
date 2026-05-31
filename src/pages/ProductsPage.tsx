@@ -7,6 +7,7 @@ import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import type { Preset } from "../types/content";
+import { isAbortError } from "../lib/errors";
 
 export function ProductsPage() {
   const { t, i18n } = useTranslation();
@@ -14,6 +15,7 @@ export function ProductsPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [presets, setPresets] = useState<Preset[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useSEO({ titleKey: "seo.presetsTitle", descKey: "seo.presetsDesc", path: "/products" });
   useGsapPageEffects(rootRef);
@@ -23,7 +25,12 @@ export function ProductsPage() {
     fetch("/api/presets", { signal: ctrl.signal })
       .then((r) => r.json())
       .then((d: { presets: Preset[] }) => { if (!ctrl.signal.aborted) setPresets(d.presets || []); })
-      .catch(() => {})
+      .catch((error) => {
+        if (!isAbortError(error)) {
+          console.warn("[products] failed to load", error);
+          setLoadError(true);
+        }
+      })
       .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
     return () => ctrl.abort();
   }, []);
@@ -45,6 +52,8 @@ export function ProductsPage() {
       <section className="section-shell is-visible">
         {loading ? (
           <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
+        ) : loadError ? (
+          <div style={{ textAlign: "center", padding: 60 }}>{t("common.loadError")}</div>
         ) : presets.length === 0 ? (
           <div style={{ textAlign: "center", padding: 60 }}>
             <p>{t("presets.empty")}</p>
