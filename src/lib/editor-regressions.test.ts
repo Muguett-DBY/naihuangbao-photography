@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -77,5 +77,27 @@ describe("editor regression contracts", () => {
     expect(workshopDetail).not.toContain("fetch(`/api/workshops/${id}`");
     expect(shopDetail).toContain('fetch("/api/merchandise"');
     expect(shopDetail).not.toContain("fetch(`/api/merchandise/${id}`");
+  });
+
+  it("self-hosts complete face-api models and keeps model loading separate from no-face results", () => {
+    const editor = read("src/pages/PhotoEditorPage.tsx");
+
+    expect(editor).toContain('const MODEL_URL = "/models"');
+    expect(editor).not.toContain("justadudewhohacks.github.io");
+    expect(editor).not.toContain('new Error("Model loading timed out")');
+    expect(editor).toContain("faceModelsPromiseRef");
+    expect(editor).toContain("detectFaceLandmarks");
+    expect(existsSync(resolve(root, "public/models/tiny_face_detector_model-shard1"))).toBe(true);
+    expect(existsSync(resolve(root, "public/models/face_landmark_68_model-shard1"))).toBe(true);
+  });
+
+  it("normalizes face landmark bounds before writing canvas pixels", () => {
+    const editor = read("src/pages/PhotoEditorPage.tsx");
+
+    expect(editor).toContain("Math.floor(Math.min(...lm.map(p => p.x)))");
+    expect(editor).toContain("Math.floor(Math.max(0, eCY - eR * 2))");
+    expect(editor).toContain("Math.floor(Math.max(0, nCY - nR))");
+    expect(editor).toContain("Math.floor(Math.max(0, lipCY - 15))");
+    expect(editor.match(/\/\/ 10\. Dark circles/g) ?? []).toHaveLength(1);
   });
 });

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 
-const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
+const MODEL_URL = "/models";
 const MAX_HISTORY = 20;
 
 async function prepareFaceApiBackend(api: any) {
@@ -149,6 +149,23 @@ const TOOLS: Record<BeautyCategory, { key: BeautyTool; icon: string; labelKey: s
 
 type Landmarks = { x: number; y: number }[];
 
+async function detectFaceLandmarks(api: any, canvas: HTMLCanvasElement): Promise<Landmarks | null> {
+  const attempts = [
+    { inputSize: 416, scoreThreshold: 0.35 },
+    { inputSize: 608, scoreThreshold: 0.25 },
+  ];
+
+  for (const options of attempts) {
+    const detection = await api
+      .detectSingleFace(canvas, new api.TinyFaceDetectorOptions(options))
+      .withFaceLandmarks();
+
+    if (detection) return detection.landmarks.positions;
+  }
+
+  return null;
+}
+
 interface TextOverlay { id: string; text: string; x: number; y: number; size: number; color: string; }
 interface StickerOverlay { id: string; emoji: string; x: number; y: number; size: number; }
 
@@ -168,6 +185,7 @@ export default function PhotoEditorPage() {
   const uploadRef = useRef<HTMLInputElement>(null);
   const modelsReadyRef = useRef(false);
   const modelErrorRef = useRef(false);
+  const faceModelsPromiseRef = useRef<Promise<boolean> | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [detecting, setDetecting] = useState(false);
@@ -247,46 +265,37 @@ export default function PhotoEditorPage() {
   // Load models
   useEffect(() => {
     let m = true;
-    const TIMEOUT_MS = 15000;
-    const timeout = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("Model loading timed out")), TIMEOUT_MS)
-    );
-    import("face-api.js").then(async api => {
-      faceApiRef.current = api;
-      try {
+    const loadPromise = import("face-api.js")
+      .then(async api => {
+        faceApiRef.current = api;
         await prepareFaceApiBackend(api);
-        await Promise.race([
-          Promise.all([
-            api.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-            api.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-          ]),
-          timeout,
+        await Promise.all([
+          api.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+          api.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
         ]);
         if (m) {
           modelsReadyRef.current = true;
+          modelErrorRef.current = false;
           setModelsReady(true);
+          setModelError(false);
         }
-      } catch (e) {
+        return true;
+      })
+      .catch(e => {
         console.error("Model load failed:", e);
         if (m) {
           modelErrorRef.current = true;
           setModelError(true);
         }
-      }
-    }).catch(e => {
-      console.error("face-api.js import failed:", e);
-      if (m) setModelError(true);
-    });
+        return false;
+      });
+    faceModelsPromiseRef.current = loadPromise;
     return () => { m = false; };
   }, []);
 
-  const waitForFaceModels = useCallback(async (timeoutMs = 8000) => {
-    const startedAt = Date.now();
-    while (!modelsReadyRef.current && !modelErrorRef.current) {
-      if (Date.now() - startedAt >= timeoutMs) return false;
-      await new Promise((resolve) => window.setTimeout(resolve, 120));
-    }
-    return modelsReadyRef.current;
+  const waitForFaceModels = useCallback(async () => {
+    if (modelsReadyRef.current) return true;
+    return (await faceModelsPromiseRef.current) ?? false;
   }, []);
 
   // Keyboard shortcuts
@@ -361,8 +370,10 @@ export default function PhotoEditorPage() {
         const jaw = lm.slice(0, 17), lEye = lm.slice(36, 42), rEye = lm.slice(42, 48);
         const nose = lm.slice(27, 36), mouth = lm.slice(48, 68);
         const lBrow = lm.slice(17, 22), rBrow = lm.slice(22, 27);
-        const fL = Math.min(...lm.map(p => p.x)), fR = Math.max(...lm.map(p => p.x));
-        const fT = Math.min(...lm.map(p => p.y)), fB = Math.max(...lm.map(p => p.y));
+        const fL = Math.max(0, Math.floor(Math.min(...lm.map(p => p.x))));
+        const fR = Math.min(w, Math.ceil(Math.max(...lm.map(p => p.x))));
+        const fT = Math.max(0, Math.floor(Math.min(...lm.map(p => p.y))));
+        const fB = Math.min(h, Math.ceil(Math.max(...lm.map(p => p.y))));
         const fCX = (fL + fR) / 2, fCY = (fT + fB) / 2;
 
         // 1. Skin smoothing
@@ -403,8 +414,8 @@ export default function PhotoEditorPage() {
           const eR = Math.max(Math.max(...lEye.map(p => p.x)) - Math.min(...lEye.map(p => p.x)), Math.max(...rEye.map(p => p.x)) - Math.min(...rEye.map(p => p.x))) / 2;
           const st = s.bigeye / 100 * 0.3;
           const tmp = new Uint8ClampedArray(d);
-          for (let y = Math.max(0, eCY - eR * 2); y < Math.min(h, eCY + eR * 2); y++) {
-            for (let x = Math.max(0, eCX - eR * 2); x < Math.min(w, eCX + eR * 2); x++) {
+          for (let y = Math.floor(Math.max(0, eCY - eR * 2)); y < Math.ceil(Math.min(h, eCY + eR * 2)); y++) {
+            for (let x = Math.floor(Math.max(0, eCX - eR * 2)); x < Math.ceil(Math.min(w, eCX + eR * 2)); x++) {
               const dx = x - eCX, dy = y - eCY, dist = Math.sqrt(dx * dx + dy * dy);
               if (dist < eR * 1.5) {
                 const f = 1 + st * Math.max(0, 1 - dist / (eR * 1.5));
@@ -444,8 +455,8 @@ export default function PhotoEditorPage() {
           const nCY = nose.reduce((a, p) => a + p.y, 0) / nose.length;
           const nR = 30, st = s.nose / 100 * 0.2;
           const tmp = new Uint8ClampedArray(d);
-          for (let y = Math.max(0, nCY - nR); y < Math.min(h, nCY + nR); y++) {
-            for (let x = Math.max(0, nCX - nR); x < Math.min(w, nCX + nR); x++) {
+          for (let y = Math.floor(Math.max(0, nCY - nR)); y < Math.ceil(Math.min(h, nCY + nR)); y++) {
+            for (let x = Math.floor(Math.max(0, nCX - nR)); x < Math.ceil(Math.min(w, nCX + nR)); x++) {
               const dx = x - nCX, dy = y - nCY, dist = Math.sqrt(dx * dx + dy * dy);
               if (dist < nR) {
                 const f = 1 + st * Math.max(0, 1 - dist / nR);
@@ -465,8 +476,8 @@ export default function PhotoEditorPage() {
           const lipCY = mouth.reduce((a, p) => a + p.y, 0) / mouth.length;
           const lipL = Math.min(...mouth.map(p => p.x)), lipR = Math.max(...mouth.map(p => p.x));
           const st = s.lip / 100 * 30;
-          for (let y = Math.max(0, lipCY - 15); y < Math.min(h, lipCY + 15); y++) {
-            for (let x = lipL; x < lipR; x++) {
+          for (let y = Math.floor(Math.max(0, lipCY - 15)); y < Math.ceil(Math.min(h, lipCY + 15)); y++) {
+            for (let x = Math.floor(lipL); x < Math.ceil(lipR); x++) {
               const idx = (y * w + x) * 4;
               d[idx] = Math.min(255, d[idx] + st * 1.2);
               d[idx + 1] = Math.max(0, d[idx + 1] - st * 0.3);
@@ -483,8 +494,8 @@ export default function PhotoEditorPage() {
           const mouthR = Math.max(...mouth.map(p => p.x));
           const teethCY = (mouthTop + mouthBot) / 2;
           const st = s.teeth / 100 * 50;
-          for (let y = teethCY; y < mouthBot; y++) {
-            for (let x = mouthL + 5; x < mouthR - 5; x++) {
+          for (let y = Math.floor(teethCY); y < Math.ceil(mouthBot); y++) {
+            for (let x = Math.floor(mouthL + 5); x < Math.ceil(mouthR - 5); x++) {
               if (x < 0 || x >= w || y < 0 || y >= h) continue;
               const idx = (y * w + x) * 4;
               const r = d[idx], g = d[idx + 1], b = d[idx + 2];
@@ -502,7 +513,7 @@ export default function PhotoEditorPage() {
         if (s.forehead > 0) {
           const bCY = Math.min(...lBrow.map(p => p.y), ...rBrow.map(p => p.y));
           const r = Math.floor(s.forehead / 8) + 1;
-          for (let y = Math.max(0, bCY - 40); y < bCY; y++) {
+          for (let y = Math.floor(Math.max(0, bCY - 40)); y < Math.ceil(bCY); y++) {
             for (let x = fL; x < fR; x++) {
               const idx = (y * w + x) * 4;
               let sr = 0, sg = 0, sb = 0, c = 0;
@@ -526,7 +537,7 @@ export default function PhotoEditorPage() {
           const rEY = rEye.reduce((a, p) => a + p.y, 0) / 6 + 10;
           const r = Math.floor(s.eyebag / 8) + 1;
           for (const ey of [lEY, rEY]) {
-            for (let y = ey - 12; y < ey + 12; y++) {
+            for (let y = Math.floor(ey - 12); y < Math.ceil(ey + 12); y++) {
               for (let x = fL; x < fR; x++) {
                 if (y < 0 || y >= h) continue;
                 const idx = (y * w + x) * 4;
@@ -550,7 +561,7 @@ export default function PhotoEditorPage() {
           const rEY = rEye.reduce((a, p) => a + p.y, 0) / 6;
           const st = s.darkcircle / 100 * 25;
           for (const ey of [lEY, rEY]) {
-            for (let y = ey; y < ey + 15; y++) {
+            for (let y = Math.floor(ey); y < Math.ceil(ey + 15); y++) {
               for (let x = fL; x < fR; x++) {
                 if (y >= 0 && y < h) {
                   const idx = (y * w + x) * 4;
@@ -607,8 +618,8 @@ export default function PhotoEditorPage() {
           const st = s.cheekbone / 100 * 0.1, r = 25;
           const tmp = new Uint8ClampedArray(d);
           for (const cx of [lCX, rCX]) {
-            for (let y = cY - r; y < cY + r; y++) {
-              for (let x = cx - r; x < cx + r; x++) {
+            for (let y = Math.floor(cY - r); y < Math.ceil(cY + r); y++) {
+              for (let x = Math.floor(cx - r); x < Math.ceil(cx + r); x++) {
                 if (x < 0 || x >= w || y < 0 || y >= h) continue;
                 const dx = x - cx, dy = y - cY, dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < r) {
@@ -629,7 +640,7 @@ export default function PhotoEditorPage() {
         if (s.chin !== 0) {
           const chinY = jaw[8].y, st = s.chin / 100 * 0.15, r = 20;
           const tmp = new Uint8ClampedArray(d);
-          for (let y = chinY - r; y < chinY + r; y++) {
+          for (let y = Math.floor(chinY - r); y < Math.ceil(chinY + r); y++) {
             for (let x = fL; x < fR; x++) {
               if (y < 0 || y >= h || x < 0 || x >= w) continue;
               const dy = y - chinY;
@@ -649,7 +660,7 @@ export default function PhotoEditorPage() {
           const pTop = nose[6].y, pBot = mouth[0].y, pCY = (pTop + pBot) / 2;
           const st = s.philtrum / 100 * 0.12;
           const tmp = new Uint8ClampedArray(d);
-          for (let y = pTop; y < pBot; y++) {
+          for (let y = Math.floor(pTop); y < Math.ceil(pBot); y++) {
             for (let x = fL; x < fR; x++) {
               const dy = y - pCY;
               const f = 1 + st * Math.max(0, 1 - Math.abs(dy) / ((pBot - pTop) / 2));
@@ -663,124 +674,6 @@ export default function PhotoEditorPage() {
           for (let i = 0; i < d.length; i++) d[i] = tmp[i];
         }
 
-        // 10. Dark circles
-        if (s.darkcircle > 0) {
-          const lEY = lEye.reduce((a, p) => a + p.y, 0) / 6;
-          const rEY = rEye.reduce((a, p) => a + p.y, 0) / 6;
-          const st = s.darkcircle / 100 * 25;
-          for (const ey of [lEY, rEY]) {
-            for (let y = ey; y < ey + 15; y++) {
-              for (let x = fL; x < fR; x++) {
-                if (y >= 0 && y < h) {
-                  const idx = (y * w + x) * 4;
-                  d[idx] = Math.min(255, d[idx] + st);
-                  d[idx + 1] = Math.min(255, d[idx + 1] + st * 0.8);
-                  d[idx + 2] = Math.min(255, d[idx + 2] + st * 0.6);
-                }
-              }
-            }
-          }
-        }
-
-        // 11. Whitening
-        if (s.whiten > 0) {
-          const st = s.whiten / 100 * 40;
-          for (let y = fT; y < fB; y++) {
-            for (let x = fL; x < fR; x++) {
-              if (!isSkin(x, y, lEye, rEye, mouth, jaw)) continue;
-              const idx = (y * w + x) * 4;
-              d[idx] = Math.min(255, d[idx] + st);
-              d[idx + 1] = Math.min(255, d[idx + 1] + st);
-              d[idx + 2] = Math.min(255, d[idx + 2] + st * 0.8);
-            }
-          }
-        }
-
-        // 12. Face lift
-        if (s.facelift > 0) { applyWarp(d, w, h, fCX, fCY, fL, fR, fT, fB, s.facelift / 100 * 0.1, "vertical"); }
-
-        // 13. Jawline
-        if (s.jawline > 0) {
-          const st = s.jawline / 100 * 0.12;
-          const tmp = new Uint8ClampedArray(d);
-          for (let y = fT; y < fB; y++) {
-            for (let x = fL; x < fR; x++) {
-              const dist = Math.abs(x - fCX) / ((fR - fL) / 2);
-              if (dist > 0.6) {
-                const warp = 1 - st * (dist - 0.6);
-                const sx = Math.round(fCX + (x - fCX) * warp);
-                if (sx >= 0 && sx < w) {
-                  const di = (y * w + x) * 4, si = (y * w + sx) * 4;
-                  tmp[di] = d[si]; tmp[di + 1] = d[si + 1]; tmp[di + 2] = d[si + 2];
-                }
-              }
-            }
-          }
-          for (let i = 0; i < d.length; i++) d[i] = tmp[i];
-        }
-
-        // 14. Cheekbone
-        if (s.cheekbone !== 0) {
-          const lCX = (lEye[0].x + jaw[0].x) / 2, rCX = (rEye[3].x + jaw[16].x) / 2;
-          const cY = (lEye[0].y + jaw[8].y) / 2;
-          const st = s.cheekbone / 100 * 0.1, r = 25;
-          const tmp = new Uint8ClampedArray(d);
-          for (const cx of [lCX, rCX]) {
-            for (let y = cY - r; y < cY + r; y++) {
-              for (let x = cx - r; x < cx + r; x++) {
-                if (x < 0 || x >= w || y < 0 || y >= h) continue;
-                const dx = x - cx, dy = y - cY, dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < r) {
-                  const f = 1 + st * Math.max(0, 1 - dist / r);
-                  const sx = Math.round(cx + dx / f);
-                  if (sx >= 0 && sx < w) {
-                    const di = (y * w + x) * 4, si = (y * w + sx) * 4;
-                    tmp[di] = d[si]; tmp[di + 1] = d[si + 1]; tmp[di + 2] = d[si + 2];
-                  }
-                }
-              }
-            }
-          }
-          for (let i = 0; i < d.length; i++) d[i] = tmp[i];
-        }
-
-        // 15. Chin
-        if (s.chin !== 0) {
-          const chinY = jaw[8].y, st = s.chin / 100 * 0.15, r = 20;
-          const tmp = new Uint8ClampedArray(d);
-          for (let y = chinY - r; y < chinY + r; y++) {
-            for (let x = fL; x < fR; x++) {
-              if (y < 0 || y >= h || x < 0 || x >= w) continue;
-              const dy = y - chinY;
-              const f = 1 + st * Math.max(0, 1 - Math.abs(dy) / r);
-              const sy = Math.round(chinY + dy / f);
-              if (sy >= 0 && sy < h) {
-                const di = (y * w + x) * 4, si = (sy * w + x) * 4;
-                tmp[di] = d[si]; tmp[di + 1] = d[si + 1]; tmp[di + 2] = d[si + 2];
-              }
-            }
-          }
-          for (let i = 0; i < d.length; i++) d[i] = tmp[i];
-        }
-
-        // 16. Philtrum
-        if (s.philtrum !== 0) {
-          const pTop = nose[6].y, pBot = mouth[0].y, pCY = (pTop + pBot) / 2;
-          const st = s.philtrum / 100 * 0.12;
-          const tmp = new Uint8ClampedArray(d);
-          for (let y = pTop; y < pBot; y++) {
-            for (let x = fL; x < fR; x++) {
-              const dy = y - pCY;
-              const f = 1 + st * Math.max(0, 1 - Math.abs(dy) / ((pBot - pTop) / 2));
-              const sy = Math.round(pCY + dy / f);
-              if (sy >= 0 && sy < h) {
-                const di = (y * w + x) * 4, si = (sy * w + x) * 4;
-                tmp[di] = d[si]; tmp[di + 1] = d[si + 1]; tmp[di + 2] = d[si + 2];
-              }
-            }
-          }
-          for (let i = 0; i < d.length; i++) d[i] = tmp[i];
-        }
       } // end if(lm) for face-specific effects
 
       // Color adjustments — work without face detection too
@@ -1375,32 +1268,30 @@ export default function PhotoEditorPage() {
         // Detect face
         setDetecting(true);
         setFaceError(false);
+        setFaceOk(false);
         try {
           const ready = await waitForFaceModels();
           if (ready) {
             const api = faceApiRef.current || await import("face-api.js");
             await prepareFaceApiBackend(api);
             faceApiRef.current = api;
-            const det = await api
-              .detectSingleFace(canvas, new api.TinyFaceDetectorOptions())
-              .withFaceLandmarks();
-            if (det) {
+            const landmarks = await detectFaceLandmarks(api, canvas);
+            if (landmarks) {
               setFaceOk(true);
-              landmarksRef.current = det.landmarks.positions;
+              landmarksRef.current = landmarks;
             } else {
-              setFaceOk(false);
               setFaceError(true);
               landmarksRef.current = null;
             }
           } else {
-            setFaceOk(false);
-            setFaceError(true);
+            setFaceError(false);
             landmarksRef.current = null;
           }
         } catch (err) {
           console.error("Face detection failed:", err);
-          setFaceOk(false);
-          setFaceError(true);
+          modelErrorRef.current = true;
+          setModelError(true);
+          setFaceError(false);
           landmarksRef.current = null;
         } finally {
           setDetecting(false);
