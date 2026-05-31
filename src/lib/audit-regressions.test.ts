@@ -130,6 +130,7 @@ describe("audit regression coverage", () => {
 
   it("keeps security headers and local e2e targets in place", () => {
     expect(headersSource).toContain("Content-Security-Policy");
+    expect(headersSource).toContain("https://static.cloudflareinsights.com");
     expect(headersSource).toContain("frame-ancestors 'none'");
     expect(headersSource).toContain("object-src 'none'");
     expect(e2eConfigSource).toContain('testDir: "."');
