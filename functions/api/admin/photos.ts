@@ -1,6 +1,6 @@
-import { isAdminRequest } from "../../_auth";
-import { createPhotoWithCompensation, mapPublicPhoto, type PhotoRow } from "../../_photos";
-import { badRequest, jsonResponse, unauthorized, unavailable } from "../../_responses";
+import { isAdminMutationRequest, isAdminRequest } from "../../_auth";
+import { buildPhotoSelectList, createPhotoWithCompensation, mapPublicPhoto, type PhotoRow } from "../../_photos";
+import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../_responses";
 import type { PhotoStyle } from "../../../src/types/photo";
 
 type AdminPhotosEnv = Env & {
@@ -17,8 +17,20 @@ export const onRequestGet: PagesFunction<AdminPhotosEnv> = async (context) => {
   }
 
   try {
+    const columns = await buildPhotoSelectList(context.env, [
+      "id",
+      "title",
+      "style",
+      "location",
+      "image_url",
+      "alt",
+      "featured",
+      "client_authorized",
+      "visibility",
+      "created_at",
+    ]);
     const result = await context.env.DB.prepare(
-      `select id, title, style, location, image_url, alt, featured, client_authorized, visibility, created_at
+      `select ${columns}
        from photos
        order by created_at desc`,
     ).all<PhotoRow>();
@@ -38,6 +50,9 @@ export const onRequestPost: PagesFunction<AdminPhotosEnv> = async (context) => {
   const isAdmin = await isAdminRequest(context.request, context.env);
   if (!isAdmin) {
     return unauthorized();
+  }
+  if (!isAdminMutationRequest(context.request)) {
+    return forbidden("缺少后台操作校验头");
   }
 
   const formData = await context.request.formData();

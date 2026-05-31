@@ -11,6 +11,9 @@ export type PhotoRow = {
   featured: number;
   client_authorized?: number;
   visibility?: PhotoVisibility;
+  album?: string | null;
+  video_url?: string | null;
+  note_url?: string | null;
   created_at?: string;
 };
 
@@ -36,11 +39,27 @@ export function mapPublicPhoto(row: PhotoRow): PhotoItem {
     featured: row.featured === 1,
     clientAuthorized: row.client_authorized === undefined ? true : row.client_authorized === 1,
     visibility: row.visibility ?? "public",
+    album: row.album ?? undefined,
+    videoUrl: row.video_url ?? undefined,
+    noteUrl: row.note_url ?? undefined,
   };
 }
 
 export function publicPhotosFallback() {
   return galleryItems.map((photo) => ({ ...photo }));
+}
+
+const optionalPhotoColumns = ["album", "video_url", "note_url"] as const;
+
+export async function buildPhotoSelectList(env: Env, baseColumns: readonly string[]) {
+  try {
+    const result = await env.DB.prepare("pragma table_info(photos)").all<{ name: string }>();
+    const availableColumns = new Set(result.results.map((column) => column.name));
+    const optionalColumns = optionalPhotoColumns.filter((column) => availableColumns.has(column));
+    return [...baseColumns, ...optionalColumns].join(", ");
+  } catch {
+    return baseColumns.join(", ");
+  }
 }
 
 export async function createPhotoWithCompensation(env: Env, input: PhotoCreateInput) {

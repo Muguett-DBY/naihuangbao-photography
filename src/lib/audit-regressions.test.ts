@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -20,11 +20,25 @@ const cssSource = [
 const imageSource = readFileSync(resolve(root, "src/components/ImageWithFallback.tsx"), "utf8");
 const lightboxSource = readFileSync(resolve(root, "src/components/Lightbox.tsx"), "utf8");
 const widgetSource = readFileSync(resolve(root, "src/components/PublicChatWidget.tsx"), "utf8");
+const photoWallSource = readFileSync(resolve(root, "src/components/PhotoWall3DCss.tsx"), "utf8");
+const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
+const reviewsSource = readFileSync(resolve(root, "src/components/Reviews.tsx"), "utf8");
 const headersSource = readFileSync(resolve(root, "public/_headers"), "utf8");
 const useInViewSource = readFileSync(resolve(root, "src/hooks/useInView.ts"), "utf8");
 const gsapAnimationsSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
 const e2eConfigSource = readFileSync(resolve(root, "e2e/playwright.config.ts"), "utf8");
 const e2eSmokeSource = readFileSync(resolve(root, "e2e/smoke.spec.ts"), "utf8");
+const photosMapperSource = readFileSync(resolve(root, "functions/_photos.ts"), "utf8");
+const publicPhotosApiSource = readFileSync(resolve(root, "functions/api/photos.ts"), "utf8");
+const adminPhotosApiSource = readFileSync(resolve(root, "functions/api/admin/photos.ts"), "utf8");
+const adminPhotoApiSource = readFileSync(resolve(root, "functions/api/admin/photos/[id].ts"), "utf8");
+const seoSource = readFileSync(resolve(root, "src/lib/seo.ts"), "utf8");
+const i18nSource = readFileSync(resolve(root, "src/i18n/index.ts"), "utf8");
+const packageSource = readFileSync(resolve(root, "package.json"), "utf8");
+const jaLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ja.json"), "utf8");
+const zhLocaleSource = readFileSync(resolve(root, "src/i18n/locales/zh-CN.json"), "utf8");
+const enLocaleSource = readFileSync(resolve(root, "src/i18n/locales/en.json"), "utf8");
+const koLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ko.json"), "utf8");
 
 function countOccurrences(source: string, token: string) {
   return source.split(token).length - 1;
@@ -98,6 +112,7 @@ describe("audit regression coverage", () => {
   it("continues non-stream chat reveal ticks until the reply is complete", () => {
     expect(widgetSource).toContain("normalizeAssistantReplyText");
     expect(widgetSource).toContain("Array.from(reply)");
+    expect(widgetSource).toContain("const chatRevealBatchSize = 4");
     expect(widgetSource).toMatch(/await\s+revealAssistantReply\(assistantId,\s*data\.reply\)/);
     expect(widgetSource).toMatch(/revealTimerRef\.current\s*=\s*window\.setTimeout\(revealNextCharacter,\s*chatRevealDelayMs\)/);
   });
@@ -105,6 +120,9 @@ describe("audit regression coverage", () => {
   it("uses a visible chat typing cadence and indicator for streamed and JSON replies", () => {
     const delayUses = widgetSource.match(/setTimeout\([^,]+,\s*chatRevealDelayMs\)/g) ?? [];
     expect(widgetSource).toContain("const chatRevealDelayMs = 40");
+    expect(widgetSource).toContain("loadingRef.current");
+    expect(widgetSource).toContain("typingRef.current");
+    expect(widgetSource).toContain("cancelReveal");
     expect(delayUses.length).toBeGreaterThanOrEqual(3);
     expect(widgetSource).not.toMatch(/setTimeout\([^,]+,\s*28\)/);
     expect(widgetSource).not.toMatch(/if\s*\(\s*prefersReducedMotion\(\)\s*\)/);
@@ -151,5 +169,54 @@ describe("audit regression coverage", () => {
     expect(gsapAnimationsSource).toContain("!document.hidden");
     expect(gsapAnimationsSource).not.toContain("_autoScrollIO");
     expect(gsapAnimationsSource).not.toContain("_autoScrollRaf");
+  });
+
+  it("keeps remote photo metadata compatible with old and new database schemas", () => {
+    expect(existsSync(resolve(root, "db/migrations/001_initial_schema.sql"))).toBe(true);
+    expect(existsSync(resolve(root, "db/migrations/002_add_photo_metadata.sql"))).toBe(true);
+    expect(photosMapperSource).toContain("buildPhotoSelectList");
+    expect(photosMapperSource).toContain("pragma table_info(photos)");
+    expect(photosMapperSource).toContain("album: row.album ?? undefined");
+    expect(photosMapperSource).toContain("videoUrl: row.video_url ?? undefined");
+    expect(photosMapperSource).toContain("noteUrl: row.note_url ?? undefined");
+    expect(publicPhotosApiSource).toContain("buildPhotoSelectList");
+    expect(adminPhotosApiSource).toContain("buildPhotoSelectList");
+  });
+
+  it("keeps admin photo mutations protected from simple cross-site form posts", () => {
+    expect(adminPhotosApiSource).toContain("isAdminMutationRequest");
+    expect(adminPhotoApiSource).toContain("isAdminMutationRequest");
+    expect(adminSource).toContain('"x-nhb-admin-action": "1"');
+    expect(adminSource).toContain("allowedPhotoTypes");
+    expect(adminSource).toContain("maxPhotoUploadSize");
+  });
+
+  it("pauses expensive visual loops and touch listeners when they are not useful", () => {
+    expect(photoWallSource).toContain("IntersectionObserver");
+    expect(photoWallSource).toContain("document.hidden");
+    expect(photoWallSource).toContain("visibilitychange");
+    expect(gallerySource).toContain("touchCleanupRef");
+    expect(gallerySource).toContain('document.removeEventListener("touchend", clear)');
+    expect(gallerySource).toContain('document.removeEventListener("touchmove", clear)');
+  });
+
+  it("keeps visible review content and SEO alternates localized", () => {
+    expect(reviewsSource).toContain('t("reviews.items"');
+    expect(zhLocaleSource).toContain('"items"');
+    expect(enLocaleSource).toContain('"items"');
+    expect(jaLocaleSource).toContain('"輪郭補正"');
+    expect(jaLocaleSource).toContain('"items"');
+    expect(koLocaleSource).toContain('"items"');
+    expect(seoSource).toContain('hreflang="en"');
+    expect(seoSource).toContain('hreflang="ja"');
+    expect(seoSource).toContain('hreflang="ko"');
+    expect(i18nSource).toContain('new URLSearchParams(window.location.search).get("lang")');
+    expect(i18nSource).toContain("supportedLanguages");
+  });
+
+  it("keeps small build and CSS cleanup items from regressing", () => {
+    expect(packageSource).toContain('"assets:crop": "node scripts/crop-gallery-assets.mjs"');
+    expect(packageSource).not.toContain('"assets:crop": "node --import tsx/esm scripts/crop-gallery-assets.mjs"');
+    expect(cssSource).not.toContain("height: 100dvh;\n  height: 100dvh;");
   });
 });

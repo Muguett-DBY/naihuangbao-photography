@@ -9,9 +9,6 @@ create table if not exists photos (
   featured integer not null default 0,
   client_authorized integer not null default 0,
   visibility text not null default 'hidden',
-  album text,
-  video_url text,
-  note_url text,
   created_at text not null
 );
 

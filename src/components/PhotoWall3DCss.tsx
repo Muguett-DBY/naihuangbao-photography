@@ -233,6 +233,7 @@ export const PhotoWall3DCss = memo(function PhotoWall3DCss() {
   const lastX = useRef(0);
   const rafId = useRef(0);
   const stageRef = useRef<HTMLDivElement>(null);
+  const isVisibleRef = useRef(false);
 
   const count = useMemo(() => Math.min(photos.length || 6, 16), [photos.length]);
 
@@ -262,9 +263,25 @@ export const PhotoWall3DCss = memo(function PhotoWall3DCss() {
 
   /* ── Animation loop ── */
   useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
     let lastTime = performance.now();
+    let running = false;
+
+    const stopLoop = () => {
+      if (running) {
+        cancelAnimationFrame(rafId.current);
+        running = false;
+      }
+    };
 
     const tick = (now: number) => {
+      if (document.hidden || !isVisibleRef.current) {
+        running = false;
+        return;
+      }
+
       const delta = (now - lastTime) / 1000;
       lastTime = now;
 
@@ -282,8 +299,42 @@ export const PhotoWall3DCss = memo(function PhotoWall3DCss() {
       rafId.current = requestAnimationFrame(tick);
     };
 
-    rafId.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId.current);
+    const startLoop = () => {
+      if (running || document.hidden || !isVisibleRef.current) return;
+      running = true;
+      lastTime = performance.now();
+      rafId.current = requestAnimationFrame(tick);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleRef.current = entry.isIntersecting;
+        if (entry.isIntersecting) startLoop();
+        else stopLoop();
+      },
+      { threshold: 0.12 },
+    );
+    observer.observe(stage);
+    const rect = stage.getBoundingClientRect();
+    isVisibleRef.current = !document.hidden && rect.bottom > 0 && rect.top < window.innerHeight;
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        isVisibleRef.current = false;
+        stopLoop();
+        return;
+      }
+      const rect = stage.getBoundingClientRect();
+      isVisibleRef.current = rect.bottom > 0 && rect.top < window.innerHeight;
+      if (isVisibleRef.current) startLoop();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    startLoop();
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      stopLoop();
+    };
   }, [focusedIndex, count]);
 
   /* ── Pointer handlers ── */

@@ -17,6 +17,10 @@ export function unauthorized(message = "请先登录后台") {
   return jsonResponse({ error: message }, 401);
 }
 
+export function forbidden(message = "请求被拒绝") {
+  return jsonResponse({ error: message }, 403);
+}
+
 export function unavailable(message: string, error: unknown, context: Record<string, string> = {}) {
   logWorkerError(message, error, context);
   return jsonResponse({ error: message }, 503);

@@ -150,8 +150,11 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     "</script>",
     // Google Search Console verification (replace with your own ID)
     // '<meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" />',
-    // hreflang for Chinese locale
+    // hreflang alternates for the client-side language switcher
     '<link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/" />',
+    '<link rel="alternate" hreflang="en" href="https://shoot.custard.top/?lang=en" />',
+    '<link rel="alternate" hreflang="ja" href="https://shoot.custard.top/?lang=ja" />',
+    '<link rel="alternate" hreflang="ko" href="https://shoot.custard.top/?lang=ko" />',
     '<link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/" />',
     // To enable Cloudflare Web Analytics, add your beacon script here
     `<title>${escapeHtml(metadata.title)}</title>`,

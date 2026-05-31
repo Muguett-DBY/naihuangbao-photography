@@ -16,7 +16,7 @@ function formRequest(fields: Record<string, string | File>) {
   return new Request("https://shoot.custard.top/api/admin/photos", {
     method: "POST",
     body: form,
-    headers: { "cf-access-authenticated-user-email": "admin@example.com" },
+    headers: { "cf-access-authenticated-user-email": "admin@example.com", "x-nhb-admin-action": "1" },
   });
 }
 
@@ -103,7 +103,7 @@ describe("Cloudflare Pages API behavior", () => {
     const response = await deletePhoto({
       request: jsonRequest("https://shoot.custard.top/api/admin/photos/photo-id", {
         method: "DELETE",
-        headers: { "cf-access-authenticated-user-email": "admin@example.com" },
+        headers: { "cf-access-authenticated-user-email": "admin@example.com", "x-nhb-admin-action": "1" },
       }),
       env: { DB: db, PHOTO_BUCKET: bucket, ADMIN_PASSWORD: "secret" },
       params: { id: "photo-id" },

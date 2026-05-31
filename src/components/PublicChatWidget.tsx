@@ -25,6 +25,7 @@ type PublicChatWidgetProps = {
 
 const chatRequestTimeoutMs = 16_000;
 const chatRevealDelayMs = 40;
+const chatRevealBatchSize = 4;
 
 export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProps) {
   const { t } = useTranslation();
@@ -42,8 +43,20 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const revealTimerRef = useRef<number | null>(null);
+  const revealCancelRef = useRef<(() => void) | null>(null);
+  const mountedRef = useRef(true);
   const composingRef = useRef(false);
   const sendingRef = useRef(false);
+  const loadingRef = useRef(false);
+  const typingRef = useRef(false);
+
+  useEffect(() => {
+    loadingRef.current = loading;
+  }, [loading]);
+
+  useEffect(() => {
+    typingRef.current = typing;
+  }, [typing]);
 
   useEffect(() => {
     if (!open) return;
@@ -62,14 +75,20 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
   }, [open, onClose]);
 
   useEffect(() => {
+    if (open) return;
+    cancelReveal();
+    sendingRef.current = false;
+    setLoading(false);
+  }, [open]);
+
+  useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
   }, [messages, loading, typing, open]);
 
   useEffect(() => {
     return () => {
-      if (revealTimerRef.current !== null) {
-        window.clearTimeout(revealTimerRef.current);
-      }
+      mountedRef.current = false;
+      cancelReveal();
     };
   }, []);
 
@@ -78,11 +97,24 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
       window.clearTimeout(revealTimerRef.current);
       revealTimerRef.current = null;
     }
-    setTyping(false);
+    if (mountedRef.current) setTyping(false);
+  }
+
+  function cancelReveal() {
+    clearRevealTimer();
+    revealCancelRef.current?.();
+    revealCancelRef.current = null;
+  }
+
+  function updateAssistantMessage(messageId: string, content: string) {
+    if (!mountedRef.current) return;
+    setMessages((prev) => prev.map((message) => (
+      message.id === messageId ? { ...message, content } : message
+    )));
   }
 
   function revealAssistantReply(messageId: string, rawReply: unknown) {
-    clearRevealTimer();
+    cancelReveal();
     const reply = normalizeAssistantReplyText(rawReply, t("chat.emptyReply"));
     const characters = Array.from(reply);
 
@@ -93,17 +125,24 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
     let index = 0;
 
     return new Promise<void>((resolve) => {
+      let settled = false;
+      const complete = () => {
+        if (settled) return;
+        settled = true;
+        revealCancelRef.current = null;
+        resolve();
+      };
+      revealCancelRef.current = complete;
+
       function finishReveal() {
         clearRevealTimer();
-        resolve();
+        complete();
       }
 
       function revealNextCharacter() {
-        index = Math.min(characters.length, index + 1);
+        index = Math.min(characters.length, index + chatRevealBatchSize);
         const visibleReply = characters.slice(0, index).join("");
-        setMessages((prev) => prev.map((message) => (
-          message.id === messageId ? { ...message, content: visibleReply } : message
-        )));
+        updateAssistantMessage(messageId, visibleReply);
 
         if (index < characters.length) {
           revealTimerRef.current = window.setTimeout(revealNextCharacter, chatRevealDelayMs);
@@ -118,7 +157,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
   }
 
   async function revealAssistantStream(messageId: string, body: ReadableStream<Uint8Array>) {
-    clearRevealTimer();
+    cancelReveal();
 
     const reader = body.getReader();
     const decoder = new TextDecoder();
@@ -131,23 +170,31 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
     let fallbackQueued = false;
 
     const revealDone = new Promise<void>((resolve, reject) => {
+      let settled = false;
+      const complete = (error?: unknown) => {
+        if (settled) return;
+        settled = true;
+        revealCancelRef.current = null;
+        if (error) reject(error);
+        else resolve();
+      };
+      revealCancelRef.current = () => complete();
+
       function finishReveal() {
         revealTimerRef.current = window.setTimeout(() => {
           clearRevealTimer();
           if (streamError) {
-            reject(streamError);
+            complete(streamError);
           } else {
-            resolve();
+            complete();
           }
         }, chatRevealDelayMs);
       }
 
       function tick() {
         if (pendingCharacters.length > 0) {
-          displayed += pendingCharacters.shift() ?? "";
-          setMessages((prev) => prev.map((message) => (
-            message.id === messageId ? { ...message, content: displayed } : message
-          )));
+          displayed += pendingCharacters.splice(0, chatRevealBatchSize).join("");
+          updateAssistantMessage(messageId, displayed);
           revealTimerRef.current = window.setTimeout(tick, chatRevealDelayMs);
           return;
         }
@@ -193,7 +240,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
 
   async function sendMessage(rawText = input) {
     const question = rawText.trim();
-    if (!question || loading || typing || sendingRef.current) return;
+    if (!question || loadingRef.current || typingRef.current || sendingRef.current) return;
     sendingRef.current = true;
 
     const userMessage: ChatMessage = {
@@ -215,6 +262,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
       const response = await fetchChatResponse(nextMessages);
 
       const assistantId = `assistant-${Date.now()}`;
+      if (!mountedRef.current) return;
       setLoading(false);
       setMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: "" }]);
       const contentType = response.headers.get("content-type") ?? "";
@@ -225,8 +273,10 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
         await revealAssistantReply(assistantId, data.reply);
       }
     } catch (err) {
-      setError(err instanceof Error && err.message !== "unavailable" ? err.message : t("chat.unavailable"));
-      setLoading(false);
+      if (mountedRef.current) {
+        setError(err instanceof Error && err.message !== "unavailable" ? err.message : t("chat.unavailable"));
+        setLoading(false);
+      }
     } finally {
       sendingRef.current = false;
     }

@@ -5,6 +5,7 @@ type AuthEnv = {
 const adminCookieName = "nhb_admin_session";
 const userCookieName = "nhb_user_session";
 const maxAgeSeconds = 60 * 60 * 24 * 30;
+const adminMutationHeaderName = "x-nhb-admin-action";
 
 export async function createAdminSession(env: AuthEnv) {
   if (!env.ADMIN_PASSWORD) {
@@ -40,6 +41,10 @@ export async function isAdminRequest(request: Request, env: AuthEnv) {
   }
 
   return false;
+}
+
+export function isAdminMutationRequest(request: Request) {
+  return request.headers.get(adminMutationHeaderName) === "1";
 }
 
 export function adminSessionCookie(session: string) {

@@ -1,6 +1,6 @@
-import { isAdminRequest } from "../../../_auth";
+import { isAdminMutationRequest, isAdminRequest } from "../../../_auth";
 import { deletePhotoWithConsistency } from "../../../_photos";
-import { badRequest, jsonResponse, unauthorized, unavailable } from "../../../_responses";
+import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../../_responses";
 import type { PhotoStyle } from "../../../../src/types/photo";
 
 type AdminPhotoEnv = Env & {
@@ -13,6 +13,9 @@ export const onRequestPatch: PagesFunction<AdminPhotoEnv> = async (context) => {
   const isAdmin = await isAdminRequest(context.request, context.env);
   if (!isAdmin) {
     return unauthorized();
+  }
+  if (!isAdminMutationRequest(context.request)) {
+    return forbidden("缺少后台操作校验头");
   }
 
   const id = context.params.id;
@@ -75,6 +78,9 @@ export const onRequestDelete: PagesFunction<AdminPhotoEnv> = async (context) => 
   const isAdmin = await isAdminRequest(context.request, context.env);
   if (!isAdmin) {
     return unauthorized();
+  }
+  if (!isAdminMutationRequest(context.request)) {
+    return forbidden("缺少后台操作校验头");
   }
 
   const id = context.params.id;

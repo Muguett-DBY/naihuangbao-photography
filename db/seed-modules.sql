@@ -307,7 +307,7 @@ INSERT OR REPLACE INTO course_modules (id, course_id, title, title_en, title_ko,
    • 开启人眼识别
    • 对焦点跟踪人物', 4),
 
-('mod-015-02', 'course-002', '南京四季拍摄指南', 'Nanjing Seasonal Guide', '남징 계절 촬영 가이ド', '南京の四季ガイド', 'text',
+('mod-015-02', 'course-002', '南京四季拍摄指南', 'Nanjing Seasonal Guide', '남징 계절 촬영 가이드', '南京の四季ガイド', 'text',
 '【不同季节的南京拍摄攻略】
 
 1. 春天（3-4月）
@@ -598,7 +598,7 @@ INSERT OR REPLACE INTO course_modules (id, course_id, title, title_en, title_ko,
    • 石墩坐姿
    • 草地坐姿', 2),
 
-('mod-029-04', 'course-004', '双人互动引导', 'Couple Interaction Guide', '커플 상호작용 가이ド', 'カップルガイド', 'text',
+('mod-029-04', 'course-004', '双人互动引导', 'Couple Interaction Guide', '커플 상호작용 가이드', 'カップルガイド', 'text',
 '【让情侣照片充满爱意】
 
 1. 基础互动

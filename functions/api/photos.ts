@@ -1,4 +1,4 @@
-import { mapPublicPhoto, publicPhotosFallback, type PhotoRow } from "../_photos";
+import { buildPhotoSelectList, mapPublicPhoto, publicPhotosFallback, type PhotoRow } from "../_photos";
 import { jsonResponse, logWorkerError } from "../_responses";
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
@@ -20,8 +20,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   try {
+    const columns = await buildPhotoSelectList(context.env, [
+      "id",
+      "title",
+      "style",
+      "location",
+      "image_url",
+      "alt",
+      "featured",
+    ]);
     const result = await context.env.DB.prepare(
-      `select id, title, style, location, image_url, alt, featured
+      `select ${columns}
        from photos
        where client_authorized = 1 and visibility = 'public'
        order by featured desc, created_at desc`,

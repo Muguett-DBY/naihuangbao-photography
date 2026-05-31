@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { reviews } from "../data/reviews";
+import { reviews as fallbackReviews } from "../data/reviews";
 
 export function Reviews() {
   const { t } = useTranslation();
+  const translatedReviews = t("reviews.items", { returnObjects: true }) as typeof fallbackReviews;
+  const reviews = Array.isArray(translatedReviews) && translatedReviews.length > 0
+    ? translatedReviews
+    : fallbackReviews;
   const [index, setIndex] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
@@ -20,7 +24,11 @@ export function Reviews() {
   useEffect(() => {
     startAuto();
     return stopAuto;
-  }, []);
+  }, [reviews.length]);
+
+  useEffect(() => {
+    setIndex((value) => Math.min(value, reviews.length - 1));
+  }, [reviews.length]);
 
   return (
     <section id="reviews" className="reviews-shell">

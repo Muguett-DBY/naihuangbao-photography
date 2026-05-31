@@ -277,7 +277,14 @@
     "title": "What Clients Say",
     "prev": "Previous review",
     "next": "Next review",
-    "dot": "Review {{index}}"
+    "dot": "Review {{index}}",
+    "items": [
+      { "text": "The photos felt so natural. Even if you don't know how to pose, she guides you the whole time and is incredibly patient.", "author": "Xiaohongshu user @Little Orange", "source": "Xiaohongshu" },
+      { "text": "This was my second session. Every time exceeded expectations, and the warm film tone is exactly what I wanted.", "author": "Xiaohongshu user @A Ning", "source": "Xiaohongshu" },
+      { "text": "I found such a good photographer in Nanjing. Communication, shooting, and delivery all felt smooth, and the price is fair.", "author": "Xiaohongshu user @Mia", "source": "Xiaohongshu" },
+      { "text": "I was nervous for my first portrait session, but the whole shoot felt relaxed and conversational. The final photos were such a happy surprise.", "author": "Xiaohongshu user @Xixi", "source": "Xiaohongshu" },
+      { "text": "A lovely choice for couple photos. Neither of us knew how to pose, but the guidance made the photos feel natural and full of warmth.", "author": "Xiaohongshu user @Chen and partner", "source": "Xiaohongshu" }
+    ]
   },
   "aboutBooking": {
     "eyebrow": "Booking Info",

@@ -17,7 +17,7 @@
     "cf:types": "wrangler types worker-configuration.d.ts",
     "seo:sync": "node --import tsx/esm scripts/sync-seo-shell.mjs",
     "perf:budget": "node scripts/check-performance-budget.mjs",
-    "assets:crop": "node --import tsx/esm scripts/crop-gallery-assets.mjs"
+    "assets:crop": "node scripts/crop-gallery-assets.mjs"
   },
   "dependencies": {
     "@fontsource/noto-sans-sc": "^5.2.9",

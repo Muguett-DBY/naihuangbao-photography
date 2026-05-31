@@ -15,7 +15,18 @@ function detectBrowserLang(): string {
   return "en";
 }
 
-const savedLang = localStorage.getItem("lang") || detectBrowserLang();
+const supportedLanguages = new Set(["zh-CN", "en", "ko", "ja"]);
+
+function getInitialLang() {
+  const queryLang = new URLSearchParams(window.location.search).get("lang");
+  if (queryLang && supportedLanguages.has(queryLang)) {
+    localStorage.setItem("lang", queryLang);
+    return queryLang;
+  }
+  return localStorage.getItem("lang") || detectBrowserLang();
+}
+
+const savedLang = getInitialLang();
 
 void i18n.use(initReactI18next).init({
   resources: {

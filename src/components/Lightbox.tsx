@@ -19,22 +19,13 @@ function escapeAttr(s: string): string {
 
 export default function Lightbox({ photos, currentIndex, onClose }: LightboxProps) {
   const pswpRef = useRef<PhotoSwipe | null>(null);
-  const indexRef = useRef(currentIndex);
   const onCloseRef = useRef(onClose);
-  const photosRef = useRef(photos);
   const closeHandledRef = useRef(false);
-
-  useEffect(() => {
-    indexRef.current = currentIndex;
-  }, [currentIndex]);
+  const closeFallbackTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
-
-  useEffect(() => {
-    photosRef.current = photos;
-  }, [photos]);
 
   useEffect(() => {
     closeHandledRef.current = false;
@@ -108,7 +99,8 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
       if (!instance) return;
       instance.options.showHideAnimationType = "none";
       instance.close();
-      window.setTimeout(() => {
+      closeFallbackTimerRef.current = window.setTimeout(() => {
+        closeFallbackTimerRef.current = null;
         if (instance.element?.isConnected) {
           instance.destroy();
           instance.element?.remove();
@@ -134,6 +126,10 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
     document.addEventListener("keydown", onFallbackKeydown, true);
 
     return () => {
+      if (closeFallbackTimerRef.current !== null) {
+        window.clearTimeout(closeFallbackTimerRef.current);
+        closeFallbackTimerRef.current = null;
+      }
       document.removeEventListener("click", onFallbackClick, true);
       document.removeEventListener("keydown", onFallbackKeydown, true);
       if (pswpRef.current) {
@@ -143,7 +139,7 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
       const l = window.__nhbLenis;
       if (l) l.start();
     };
-  }, []);
+  }, [photos, currentIndex]);
 
   return null;
 }

@@ -13,6 +13,8 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const overlayNavRef = useRef<HTMLElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { t, i18n } = useTranslation();
   const { siteConfig } = useSiteContent();
@@ -78,9 +80,26 @@ export function Header() {
   useEffect(() => {
     if (!open) return;
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") {
+        setOpen(false);
+        hamburgerRef.current?.focus();
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const focusable = overlayNavRef.current?.querySelectorAll<HTMLElement>("a[href], button:not([disabled])");
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
     window.addEventListener("keydown", onKeyDown);
+    window.setTimeout(() => overlayNavRef.current?.querySelector<HTMLElement>("a[href]")?.focus(), 0);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
@@ -93,6 +112,31 @@ export function Header() {
     }
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
+  }, [userMenuOpen]);
+
+  useEffect(() => {
+    if (!userMenuOpen) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (!userMenuRef.current) return;
+      if (event.key === "Escape") {
+        setUserMenuOpen(false);
+        userMenuRef.current.querySelector<HTMLElement>("button")?.focus();
+        return;
+      }
+      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+      const items = Array.from(userMenuRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'));
+      const menuItems = items.slice(1);
+      if (!menuItems.length) return;
+      event.preventDefault();
+      const currentIndex = menuItems.indexOf(document.activeElement as HTMLElement);
+      const direction = event.key === "ArrowDown" ? 1 : -1;
+      const nextIndex = currentIndex < 0
+        ? 0
+        : (currentIndex + direction + menuItems.length) % menuItems.length;
+      menuItems[nextIndex].focus();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [userMenuOpen]);
 
   useEffect(() => {
@@ -119,6 +163,7 @@ export function Header() {
         ))}
       </nav>
       <button
+        ref={hamburgerRef}
         className="hamburger"
         type="button"
         onClick={() => setOpen(!open)}
@@ -231,7 +276,7 @@ export function Header() {
       </Link>
     </header>
     {createPortal(
-      <nav id="site-navigation-menu" className={`nav-menu nav-menu--overlay${open ? " is-open" : ""}`} aria-label={t("nav.mainNavigation")}>
+      <nav ref={overlayNavRef} id="site-navigation-menu" className={`nav-menu nav-menu--overlay${open ? " is-open" : ""}`} aria-label={t("nav.mainNavigation")} aria-hidden={!open}>
         {navItems.map((item) => (
           <Link
             to={item.to}

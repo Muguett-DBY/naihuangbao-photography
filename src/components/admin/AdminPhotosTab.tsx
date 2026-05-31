@@ -6,6 +6,10 @@ import { getStyleLabels } from "../../data/site";
 import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
 import type { ToastType } from "../../lib/admin-helpers";
 
+const maxPhotoUploadSize = 10 * 1024 * 1024;
+const allowedPhotoTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+const adminMutationHeaders = { "x-nhb-admin-action": "1" };
+
 export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: ToastType) => void }) {
   const { t } = useTranslation();
   const styleLabels = getStyleLabels(t);
@@ -43,10 +47,23 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
   const handleUpload = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
+    const photo = fileRef.current?.files?.[0];
+    if (!photo) {
+      showToast("请选择照片文件", "error");
+      return;
+    }
+    if (!allowedPhotoTypes.has(photo.type)) {
+      showToast("只支持 JPEG、PNG 或 WebP 图片", "error");
+      return;
+    }
+    if (photo.size > maxPhotoUploadSize) {
+      showToast("图片过大，请上传小于 10MB 的文件", "error");
+      return;
+    }
     setUploading(true);
     try {
       const fd = new FormData(form);
-      const r = await fetch("/api/admin/photos", { method: "POST", credentials: "include", body: fd });
+      const r = await fetch("/api/admin/photos", { method: "POST", credentials: "include", headers: adminMutationHeaders, body: fd });
       if (!r.ok) { showToast("上传失败", "error"); return; }
       showToast("上传成功", "success");
       form.reset();
@@ -62,7 +79,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     if (!deletingPhoto) return;
     setDeleting(true);
     try {
-      const r = await fetch(`/api/admin/photos/${deletingPhoto.id}`, { method: "DELETE", credentials: "include" });
+      const r = await fetch(`/api/admin/photos/${deletingPhoto.id}`, { method: "DELETE", credentials: "include", headers: adminMutationHeaders });
       if (!r.ok) { showToast("删除失败", "error"); return; }
       showToast("删除成功", "success");
       setPhotos((p) => p.filter((x) => x.id !== deletingPhoto.id));
@@ -78,7 +95,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     try {
       const r = await fetch(`/api/admin/photos/${editingPhoto.id}`, {
         method: "PATCH", credentials: "include",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", ...adminMutationHeaders },
         body: JSON.stringify(editForm),
       });
       if (!r.ok) { showToast("保存失败", "error"); return; }
@@ -134,8 +151,17 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
                 <Upload size={28} />
                 <span>点击选择照片</span>
                 <input ref={fileRef} name="photo" type="file" accept="image/jpeg,image/png,image/webp" required onChange={() => {
-                  const file = fileRef.current?.files?.[0];
-                  if (file) { revokePreview(); const url = URL.createObjectURL(file); previewObjectUrlRef.current = url; setPreviewUrl(url); }
+                  const input = fileRef.current;
+                  const file = input?.files?.[0];
+                  if (!file) return;
+                  if (!allowedPhotoTypes.has(file.type) || file.size > maxPhotoUploadSize) {
+                    showToast(file.size > maxPhotoUploadSize ? "图片过大，请上传小于 10MB 的文件" : "只支持 JPEG、PNG 或 WebP 图片", "error");
+                    input.value = "";
+                    revokePreview();
+                    setPreviewUrl(null);
+                    return;
+                  }
+                  revokePreview(); const url = URL.createObjectURL(file); previewObjectUrlRef.current = url; setPreviewUrl(url);
                 }} hidden />
               </label>
             )}

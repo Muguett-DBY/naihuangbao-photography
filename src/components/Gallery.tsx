@@ -176,21 +176,28 @@ export function Gallery() {
 
   // Haptic touch feedback with proper cleanup
   const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touchCleanupRef = useRef<(() => void) | null>(null);
 
   const handleTouchStart = useCallback(() => {
+    touchCleanupRef.current?.();
     touchTimerRef.current = setTimeout(() => navigator.vibrate?.(12), 400);
     const clear = () => {
       if (touchTimerRef.current) {
         clearTimeout(touchTimerRef.current);
         touchTimerRef.current = null;
       }
+      document.removeEventListener("touchend", clear);
+      document.removeEventListener("touchmove", clear);
+      touchCleanupRef.current = null;
     };
-    document.addEventListener("touchend", clear, { once: true });
-    document.addEventListener("touchmove", clear, { once: true });
+    touchCleanupRef.current = clear;
+    document.addEventListener("touchend", clear, { passive: true });
+    document.addEventListener("touchmove", clear, { passive: true });
   }, []);
 
   useEffect(() => {
     return () => {
+      touchCleanupRef.current?.();
       if (touchTimerRef.current) {
         clearTimeout(touchTimerRef.current);
         touchTimerRef.current = null;
