@@ -17,13 +17,12 @@ function escapeAttr(s: string): string {
   return s.replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-const LENIS = (w: Window) => (w as unknown as { lenis?: { stop(): void; start(): void } }).lenis;
-
 export default function Lightbox({ photos, currentIndex, onClose }: LightboxProps) {
   const pswpRef = useRef<PhotoSwipe | null>(null);
   const indexRef = useRef(currentIndex);
   const onCloseRef = useRef(onClose);
   const photosRef = useRef(photos);
+  const closeHandledRef = useRef(false);
 
   useEffect(() => {
     indexRef.current = currentIndex;
@@ -38,6 +37,7 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
   }, [photos]);
 
   useEffect(() => {
+    closeHandledRef.current = false;
     const dataSource = photos.map((p) => {
       if (p.videoUrl) {
         return {
@@ -77,8 +77,16 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
       padding: { top: 48, bottom: 64, left: 0, right: 0 },
     });
 
-    const lenis = LENIS(window);
+    const lenis = window.__nhbLenis;
     if (lenis) lenis.stop();
+
+    const finishClose = () => {
+      if (closeHandledRef.current) return;
+      closeHandledRef.current = true;
+      const l = window.__nhbLenis;
+      if (l) l.start();
+      onCloseRef.current();
+    };
 
     const onSlideChange = () => {
       const pswpEl = pswp.element;
@@ -87,9 +95,7 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
     };
 
     pswp.on("close", () => {
-      const l = LENIS(window);
-      if (l) l.start();
-      onCloseRef.current();
+      finishClose();
     });
 
     pswp.on("change", onSlideChange);
@@ -97,12 +103,44 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
     pswp.init();
     pswpRef.current = pswp;
 
+    const closeLightbox = () => {
+      const instance = pswpRef.current;
+      if (!instance) return;
+      instance.options.showHideAnimationType = "none";
+      instance.close();
+      window.setTimeout(() => {
+        if (instance.element?.isConnected) {
+          instance.destroy();
+          instance.element?.remove();
+          pswpRef.current = null;
+        }
+        if (!closeHandledRef.current) {
+          finishClose();
+        }
+      }, 0);
+    };
+    const onFallbackClick = (event: MouseEvent) => {
+      if ((event.target as Element | null)?.closest(".pswp__button--close")) {
+        closeLightbox();
+      }
+    };
+    const onFallbackKeydown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeLightbox();
+      }
+    };
+
+    document.addEventListener("click", onFallbackClick, true);
+    document.addEventListener("keydown", onFallbackKeydown, true);
+
     return () => {
+      document.removeEventListener("click", onFallbackClick, true);
+      document.removeEventListener("keydown", onFallbackKeydown, true);
       if (pswpRef.current) {
         pswpRef.current.destroy();
         pswpRef.current = null;
       }
-      const l = LENIS(window);
+      const l = window.__nhbLenis;
       if (l) l.start();
     };
   }, []);

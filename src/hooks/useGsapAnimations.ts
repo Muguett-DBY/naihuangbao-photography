@@ -5,6 +5,9 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
+const autoScrollObservers = new WeakMap<HTMLElement, IntersectionObserver>();
+const autoScrollFrames = new WeakMap<HTMLElement, number>();
+
 /* ── Text morph phrases ── */
 const morphPhrases = [
   "南京女生写真与情侣约拍",
@@ -225,10 +228,10 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
         isVisible = entry.isIntersecting;
       });
       io.observe(track);
-      (track as any)._autoScrollIO = io;
+      autoScrollObservers.set(track, io);
 
       const scrollFn = () => {
-        if (isVisible && !track.matches(":hover")) {
+        if (isVisible && !document.hidden && !track.matches(":hover")) {
           xPos -= speed;
           track.style.transform = `translateX(${xPos}px)`;
 
@@ -239,10 +242,11 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
           }
         }
         rafId = requestAnimationFrame(scrollFn);
+        autoScrollFrames.set(track, rafId);
       };
 
       rafId = requestAnimationFrame(scrollFn);
-      (track as any)._autoScrollRaf = rafId;
+      autoScrollFrames.set(track, rafId);
     });
 
     /* ══════════════════════════════════════════
@@ -549,9 +553,11 @@ export function useGsapAnimations(rootRef?: RefObject<HTMLElement | null>) {
     return () => {
       // Cleanup RAFs
       $<HTMLElement>(".gallery-auto-scroll").forEach((el) => {
-        const rafId = (el as any)._autoScrollRaf;
+        const rafId = autoScrollFrames.get(el);
         if (rafId) cancelAnimationFrame(rafId);
-        (el as any)._autoScrollIO?.disconnect();
+        autoScrollFrames.delete(el);
+        autoScrollObservers.get(el)?.disconnect();
+        autoScrollObservers.delete(el);
       });
 
       // Cleanup hover parallax listeners

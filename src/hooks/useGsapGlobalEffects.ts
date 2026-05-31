@@ -7,6 +7,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 let _globalInitialized = false;
 
+declare global {
+  interface Window {
+    __nhbLenis?: Pick<Lenis, "start" | "stop">;
+  }
+}
+
 export function useGsapGlobalEffects(rootRef?: RefObject<HTMLElement | null>) {
   const guardRef = useRef(false);
   const lenisRef = useRef<Lenis | null>(null);
@@ -30,7 +36,7 @@ export function useGsapGlobalEffects(rootRef?: RefObject<HTMLElement | null>) {
     });
 
     lenisRef.current = lenis;
-    (window as any).lenis = lenis;
+    window.__nhbLenis = lenis;
     lenis.on("scroll", () => ScrollTrigger.update());
     gsap.ticker.add((time) => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
@@ -41,6 +47,9 @@ export function useGsapGlobalEffects(rootRef?: RefObject<HTMLElement | null>) {
     return () => {
       lenisRef.current?.destroy();
       lenisRef.current = null;
+      if (window.__nhbLenis === lenis) {
+        delete window.__nhbLenis;
+      }
       _globalInitialized = false;
       guardRef.current = false;
     };

@@ -20,6 +20,11 @@ const cssSource = [
 const imageSource = readFileSync(resolve(root, "src/components/ImageWithFallback.tsx"), "utf8");
 const lightboxSource = readFileSync(resolve(root, "src/components/Lightbox.tsx"), "utf8");
 const widgetSource = readFileSync(resolve(root, "src/components/PublicChatWidget.tsx"), "utf8");
+const headersSource = readFileSync(resolve(root, "public/_headers"), "utf8");
+const useInViewSource = readFileSync(resolve(root, "src/hooks/useInView.ts"), "utf8");
+const gsapAnimationsSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
+const e2eConfigSource = readFileSync(resolve(root, "e2e/playwright.config.ts"), "utf8");
+const e2eSmokeSource = readFileSync(resolve(root, "e2e/smoke.spec.ts"), "utf8");
 
 function countOccurrences(source: string, token: string) {
   return source.split(token).length - 1;
@@ -50,6 +55,8 @@ describe("audit regression coverage", () => {
     expect(lightboxSource).toContain('from "photoswipe"');
     expect(lightboxSource).toContain("new PhotoSwipe");
     expect(lightboxSource).toContain('pswp.on("close"');
+    expect(lightboxSource).toContain("onFallbackKeydown");
+    expect(lightboxSource).toContain("onFallbackClick");
     expect(lightboxSource).toContain("tapAction");
     expect(lightboxSource).toContain("wheelToZoom");
     expect(lightboxSource).not.toContain("dialogRef");
@@ -119,5 +126,29 @@ describe("audit regression coverage", () => {
   it("does not keep duplicated global accessibility blocks", () => {
     expect(countOccurrences(cssSource, "Focus Styles")).toBe(1);
     expect(countOccurrences(cssSource, "Reduced Motion")).toBe(1);
+  });
+
+  it("keeps security headers and local e2e targets in place", () => {
+    expect(headersSource).toContain("Content-Security-Policy");
+    expect(headersSource).toContain("frame-ancestors 'none'");
+    expect(headersSource).toContain("object-src 'none'");
+    expect(e2eConfigSource).toContain('testDir: "."');
+    expect(e2eConfigSource).toContain("webServer");
+    expect(e2eConfigSource).toContain("127.0.0.1:4174");
+    expect(e2eSmokeSource).toContain('page.goto("/")');
+    expect(e2eSmokeSource).toContain('a[href="/gallery"]');
+    expect(e2eSmokeSource).toContain('toHaveAttribute("data-theme"');
+    expect(e2eSmokeSource).not.toContain("https://shoot.custard.top/");
+    expect(e2eSmokeSource).not.toContain("waitForTimeout");
+    expect(e2eSmokeSource).not.toContain('a[href="#gallery"]');
+  });
+
+  it("avoids stale intersection state and hidden-tab gallery RAF work", () => {
+    expect(useInViewSource).toContain("[threshold, once, inView]");
+    expect(gsapAnimationsSource).toContain("WeakMap<HTMLElement, IntersectionObserver>");
+    expect(gsapAnimationsSource).toContain("WeakMap<HTMLElement, number>");
+    expect(gsapAnimationsSource).toContain("!document.hidden");
+    expect(gsapAnimationsSource).not.toContain("_autoScrollIO");
+    expect(gsapAnimationsSource).not.toContain("_autoScrollRaf");
   });
 });

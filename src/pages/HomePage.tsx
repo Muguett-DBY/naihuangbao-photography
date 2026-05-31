@@ -23,6 +23,11 @@ const FilmStripStory = lazy(() =>
 );
 const StyleQuiz = lazy(() => import("../components/StyleQuiz").then((m) => ({ default: m.StyleQuiz })));
 
+function scrollToSection(id: string) {
+  const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+  document.getElementById(id)?.scrollIntoView({ behavior });
+}
+
 export function HomePage() {
   const { t } = useTranslation();
   const { siteConfig } = useSiteContent();
@@ -109,7 +114,7 @@ export function HomePage() {
               <span className="hero-trust-tag">{t("hero.trustTags.styles")}</span>
             </div>
             <div className="hero-cover-cta-group">
-              <Button type="primary" size="large" className="hero-cover-primary-btn" onClick={() => document.getElementById("featured")?.scrollIntoView({ behavior: "smooth" })}>
+              <Button type="primary" size="large" className="hero-cover-primary-btn" onClick={() => scrollToSection("featured")}>
                 {t("hero.ctaView")} <ArrowDown size={16} />
               </Button>
               <Button type="primary" size="large" className="hero-cover-secondary-btn" onClick={() => openBookingModal()}>
