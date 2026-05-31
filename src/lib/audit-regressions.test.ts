@@ -25,6 +25,7 @@ const photoWallSource = readFileSync(resolve(root, "src/components/PhotoWall3DCs
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
 const reviewsSource = readFileSync(resolve(root, "src/components/Reviews.tsx"), "utf8");
 const headersSource = readFileSync(resolve(root, "public/_headers"), "utf8");
+const redirectsSource = readFileSync(resolve(root, "public/_redirects"), "utf8");
 const useInViewSource = readFileSync(resolve(root, "src/hooks/useInView.ts"), "utf8");
 const gsapAnimationsSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
 const e2eConfigSource = readFileSync(resolve(root, "e2e/playwright.config.ts"), "utf8");
@@ -171,6 +172,8 @@ describe("audit regression coverage", () => {
     expect(headersSource).toContain("https://cloudflareinsights.com");
     expect(headersSource).toContain("frame-ancestors 'none'");
     expect(headersSource).toContain("object-src 'none'");
+    expect(redirectsSource).toContain("/admin /admin/ 301");
+    expect(redirectsSource).toContain("/admin/ /index.html 200");
     expect(e2eConfigSource).toContain('testDir: "."');
     expect(e2eConfigSource).toContain("webServer");
     expect(e2eConfigSource).toContain("127.0.0.1:4174");
