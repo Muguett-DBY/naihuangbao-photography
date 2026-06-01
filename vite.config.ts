@@ -56,6 +56,7 @@ export default defineConfig({
         "icons/pwa-maskable-512.png",
       ],
       workbox: {
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         globPatterns: ["**/*.{js,css,html}"],
         globIgnores: [
           "**/images/gallery/**/*",
