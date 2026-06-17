@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { MapPin, Calendar, Users } from "lucide-react";
+import { MapPin, Calendar, Users, Clock } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
@@ -25,7 +25,6 @@ export function WorkshopsPage() {
   useSEO({ titleKey: "seo.workshopsTitle", descKey: "seo.workshopsDesc", path: "/workshops" });
   useGsapPageEffects(rootRef);
 
-  // We need to find the workshop to pass to the registration hook
   const activeWorkshop = workshops.find((w) => w.id === formOpen);
   const registration = useWorkshopRegistration(activeWorkshop ?? null);
 
@@ -62,8 +61,17 @@ export function WorkshopsPage() {
               const isFull = spotsLeft <= 0;
               return (
                 <div key={ws.id} className="workshop-card">
-                  {ws.cover_image_url && (
-                    <img src={ws.cover_image_url} alt={getTitle(ws, i18n.language)} className="workshop-cover" loading="lazy" />
+                  {ws.cover_image_url ? (
+                    <div className="workshop-cover-wrap">
+                      <img src={ws.cover_image_url} alt={getTitle(ws, i18n.language)} className="workshop-cover" loading="lazy" />
+                      <span className={`workshop-cover-badge ${isFull ? "is-full" : ""}`}>
+                        {isFull ? t("workshops.full") : `${spotsLeft} ${t("workshops.spotsLeft")}`}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="workshop-cover-placeholder">
+                      <MapPin size={32} />
+                    </div>
                   )}
                   <div className="workshop-info">
                     <h3>{getTitle(ws, i18n.language)}</h3>

@@ -400,6 +400,7 @@
   object-fit: contain;
   background: var(--custard-bg);
   position: relative;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .course-cover::after {
@@ -408,6 +409,57 @@
   inset: 0;
   background: radial-gradient(ellipse at center, transparent 60%, rgba(139, 94, 74, 0.06));
   pointer-events: none;
+}
+
+.course-cover-wrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--custard-bg);
+}
+
+.course-card:hover .course-cover {
+  transform: scale(1.05);
+}
+
+.course-cover-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.course-cover-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--custard-bg);
+  color: var(--caramel-muted);
+  opacity: 0.4;
+}
+
+.course-meta-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.course-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  color: var(--caramel-muted);
 }
 
 .course-info {
@@ -646,6 +698,46 @@
   object-fit: contain;
   background: var(--peach-light);
   position: relative;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.workshop-cover-wrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--peach-light);
+}
+
+.workshop-card:hover .workshop-cover {
+  transform: scale(1.05);
+}
+
+.workshop-cover-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.workshop-cover-badge.is-full {
+  background: rgba(239, 68, 68, 0.8);
+}
+
+.workshop-cover-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--peach-light);
+  color: var(--peach-accent);
+  opacity: 0.4;
 }
 
 .workshop-cover::after {
@@ -776,6 +868,42 @@
   aspect-ratio: 1;
   object-fit: contain;
   background: var(--peach-light);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.merchandise-cover-wrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--peach-light);
+}
+
+.merchandise-card:hover .merchandise-cover {
+  transform: scale(1.05);
+}
+
+.merchandise-cover-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.merchandise-cover-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--peach-light);
+  color: var(--peach-accent);
+  opacity: 0.4;
 }
 
 .merchandise-info {
