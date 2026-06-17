@@ -363,6 +363,9 @@
     "success": "Booking sent! I'll get back to you soon.",
     "successHint": "I'll confirm the date via your contact info.",
     "gotIt": "Got it",
+    "viewDashboard": "View My Bookings",
+    "reference": "Reference",
+    "nextStep": "I'll review your booking and confirm via your contact info within 24 hours. You can also check the status in your dashboard.",
     "error": "Failed to send. Please try again or DM me on Xiaohongshu.",
     "submitError": "Submission failed, please try again"
   },
