@@ -3843,6 +3843,26 @@
   color: var(--peach-accent);
   font-size: 0.85rem;
   margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.editor-loading-bar {
+  width: 120px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(139, 94, 74, 0.1);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.editor-loading-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--peach-accent), var(--accent));
+  transition: width 0.3s ease;
 }
 
 .editor-toolbar {
