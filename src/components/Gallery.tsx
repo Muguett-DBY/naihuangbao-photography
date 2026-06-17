@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Play, Share2, Loader2, Search, X } from "lucide-react";
+import { Play, Share2, Loader2, Search, X, LayoutGrid, Columns } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { getPhotosByStyle, searchPhotos } from "../lib/gallery";
@@ -11,6 +11,7 @@ import { HighlightText } from "./shared/HighlightText";
 import { useDistortionHover } from "../hooks/useDistortionHover";
 
 type StyleFilter = PhotoStyle | "all";
+type ViewMode = "masonry" | "compact";
 
 const STYLE_FILTERS: StyleFilter[] = ["all", "jiangnan", "street", "park", "sweet", "couple", "indoor"];
 const tones = ["rose", "sage", "cream", "ink"] as const;
@@ -115,11 +116,15 @@ export function Gallery() {
   const { photos: sourcePhotos } = usePublicPhotos();
   const [filter, setFilter] = useState<StyleFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [viewMode, setViewMode] = useState<ViewMode>("masonry");
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const masonryRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Distortion hover on gallery cards
   const distortRef = useDistortionHover();
@@ -144,12 +149,32 @@ export function Gallery() {
   }, [sourcePhotos]);
 
   const styleFiltered = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
-  const photos = useMemo<PhotoItem[]>(() => searchPhotos(styleFiltered, searchQuery), [styleFiltered, searchQuery]);
+  const photos = useMemo<PhotoItem[]>(() => searchPhotos(styleFiltered, debouncedSearch), [styleFiltered, debouncedSearch]);
 
-  // Reset visible count when filter or search changes
+  // Debounce search input to avoid filtering on every keystroke
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 200);
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+    };
+  }, [searchQuery]);
+
+  // Trigger transition animation when filter or search changes
+  useEffect(() => {
+    setIsTransitioning(true);
+    const timer = setTimeout(() => setIsTransitioning(false), 400);
+    return () => clearTimeout(timer);
+  }, [filter, debouncedSearch]);
+
+  // Reset visible count when filter or debounced search changes
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [filter, searchQuery]);
+  }, [filter, debouncedSearch]);
 
   const visiblePhotos = useMemo(() => photos.slice(0, visibleCount), [photos, visibleCount]);
   const hasMore = visibleCount < photos.length;
@@ -259,12 +284,32 @@ export function Gallery() {
             <button
               type="button"
               className="gallery-search-clear"
-              onClick={() => { setSearchQuery(""); searchInputRef.current?.focus(); }}
+              onClick={() => { setSearchQuery(""); setDebouncedSearch(""); searchInputRef.current?.focus(); }}
               aria-label={t("gallery.clearSearch", "Clear search")}
             >
               <X size={14} />
             </button>
           )}
+        </div>
+        <div className="gallery-view-toggle">
+          <button
+            type="button"
+            className={`gallery-view-btn ${viewMode === "masonry" ? "is-active" : ""}`}
+            onClick={() => setViewMode("masonry")}
+            aria-label={t("gallery.viewMasonry", "Masonry view")}
+            title={t("gallery.viewMasonry", "Masonry view")}
+          >
+            <LayoutGrid size={16} />
+          </button>
+          <button
+            type="button"
+            className={`gallery-view-btn ${viewMode === "compact" ? "is-active" : ""}`}
+            onClick={() => setViewMode("compact")}
+            aria-label={t("gallery.viewCompact", "Compact view")}
+            title={t("gallery.viewCompact", "Compact view")}
+          >
+            <Columns size={16} />
+          </button>
         </div>
         {photos.length === 0 && !searchQuery && (
           <span className="gallery-search-count">{t("gallery.noResults", "No results")}</span>
@@ -330,7 +375,7 @@ export function Gallery() {
                 <h3 className="gallery-album-title">{albumName}</h3>
                 <span className="gallery-album-count">{albumPhotos.length} {t("gallery.photos", "photos")}</span>
               </div>
-              <div className="gallery-masonry">
+              <div className={`gallery-masonry ${viewMode === "compact" ? "gallery-masonry--compact" : ""} ${isTransitioning ? "gallery-masonry--transitioning" : ""}`}>
                 {albumPhotos.map((item, index) => {
                   const isVideo = Boolean(item.videoUrl);
                   return (
