@@ -43,6 +43,10 @@
     "share": "共有",
     "linkCopied": "リンクをクリップボードにコピーしました",
     "loading": "読み込み中…",
+    "searchPlaceholder": "タイトル、場所、スタイルで検索…",
+    "clearSearch": "検索をクリア",
+    "resultCount": "写真 {{count}}枚",
+    "noResults": "該当する結果が見つかりません",
     "filters": {
       "all": "すべて",
       "jiangnan": "江南",
@@ -124,9 +128,13 @@
   },
   "midCTA": {
     "eyebrow": "今すぐ予約",
-    "title": "日常を詩に変えて",
-    "desc": "一人でも、カップルでも、友達とでも — すべてのシャッターがあなたの南京ストーリーを切り取ります。",
-    "cta": "予約する →"
+    "title": "あなたの日を詩に変えましょう",
+    "desc": "一人で、カップルで、または親友と一緒に — すべてのシャッター切りがあなたの南京の物語を捉えます。",
+    "cta": "セッションを予約 →"
+  },
+  "home": {
+    "servicesTitle": "サービス",
+    "styleQuizTitle": "スタイルクイズ"
   },
   "whyChooseUs": {
     "eyebrow": "選ばれる理由",
@@ -580,11 +588,12 @@
     "reload": "再読み込み"
   },
   "common": {
-    "learnMore": "もっと見る",
+    "learnMore": "詳しく見る",
     "loading": "読み込み中...",
-    "loadError": "読み込めませんでした。しばらくしてから再度お試しください。",
-    "skipToContent": "本文へスキップ",
-    "socialXiaohongshu": "小红书"
+    "loadError": "読み込めませんでした。後でもう一度お試しください。",
+    "retry": "再試行",
+    "skipToContent": "コンテンツにスキップ",
+    "socialXiaohongshu": "小紅書"
   },
   "admin": {
     "tabs": {
@@ -758,6 +767,8 @@
     "retry": "再試行"
   },
   "seo": {
+    "siteName": "奶黄んぼ写真撮影",
+    "siteTagline": "奶黄んぼ写真撮影 | 南京撮影予約",
     "homeTitle": "奶黄んぼ写真撮影 | 南京撮影予約",
     "homeDesc": "柔らかくフィルムライクなポートレート撮影 — 南京の女性写真とカップル写真を専門としています。",
     "galleryTitle": "ギャラリー | 奶黄んぼ写真撮影",

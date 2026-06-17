@@ -28,6 +28,14 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     return badRequest("密码至少需要8个字符");
   }
 
+  if (password.length > 128) {
+    return badRequest("密码不能超过128个字符");
+  }
+
+  if (displayName.length > 50) {
+    return badRequest("显示名称不能超过50个字符");
+  }
+
   if (!isValidEmail(email)) {
     return badRequest("邮箱格式不正确");
   }

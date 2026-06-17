@@ -11,7 +11,7 @@ type Props = {
 export const DetailNotFound = memo(function DetailNotFound({ message, backTo, backLabel }: Props) {
   return (
     <PageTransition>
-      <div style={{ textAlign: "center", padding: 120 }}>
+      <div className="detail-not-found">
         <h2>{message}</h2>
         <DetailBackLink to={backTo} label={backLabel} />
       </div>

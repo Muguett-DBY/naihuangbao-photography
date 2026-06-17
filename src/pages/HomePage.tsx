@@ -156,8 +156,8 @@ export function HomePage() {
       {/* ── 服务入口 ── */}
       <section className="section-shell is-visible" id="services-preview" style={{ padding: "60px 0" }}>
         <div className="section-heading" style={{ textAlign: "center", maxWidth: "100%", marginBottom: 32, paddingBottom: 0 }}>
-          <p className="section-eyebrow">Services</p>
-          <h2 style={{ clipPath: "inset(0 0 0 0)" }}>{t("nav.home")}</h2>
+          <p className="section-eyebrow">{t("home.servicesTitle")}</p>
+          <h2 style={{ clipPath: "inset(0 0 0 0)" }}>{t("home.servicesTitle")}</h2>
         </div>
         <div className="home-services-grid">
           <Link to="/courses" className="home-service-card">
@@ -206,7 +206,7 @@ export function HomePage() {
       {/* ── 风格测试 ── */}
       <section className="section-shell is-visible" style={{ padding: "60px 0" }}>
         <div className="section-heading" style={{ textAlign: "center", maxWidth: "100%", marginBottom: 32, paddingBottom: 0 }}>
-          <p className="section-eyebrow">Style Quiz</p>
+          <p className="section-eyebrow">{t("home.styleQuizTitle")}</p>
           <h2 style={{ clipPath: "inset(0 0 0 0)" }}>{t("quiz.step1.title")}</h2>
           <span>{t("quiz.result.desc")}</span>
         </div>

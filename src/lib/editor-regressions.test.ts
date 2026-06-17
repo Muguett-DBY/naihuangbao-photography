@@ -72,11 +72,13 @@ describe("editor regression contracts", () => {
     const workshopDetail = read("src/pages/WorkshopDetailPage.tsx");
     const shopDetail = read("src/pages/ShopDetailPage.tsx");
 
-    expect(presetDetail.indexOf('fetch("/api/presets"')).toBeLessThan(presetDetail.indexOf("fetch(`/api/presets/${id}`"));
-    expect(workshopDetail).toContain('fetch("/api/workshops"');
-    expect(workshopDetail).not.toContain("fetch(`/api/workshops/${id}`");
-    expect(shopDetail).toContain('fetch("/api/merchandise"');
-    expect(shopDetail).not.toContain("fetch(`/api/merchandise/${id}`");
+    // Detail pages now use useApiItem hook with direct detail endpoints
+    // and useRelatedItems hook for related items (which internally fetches the list)
+    expect(presetDetail).toContain("/api/presets/${id}");
+    expect(presetDetail).toContain("useRelatedItems");
+    expect(workshopDetail).toContain("/api/workshops/${id}");
+    expect(shopDetail).toContain("/api/merchandise/${id}");
+    expect(shopDetail).toContain("useRelatedItems");
   });
 
   it("self-hosts complete face-api models and keeps model loading separate from no-face results", () => {

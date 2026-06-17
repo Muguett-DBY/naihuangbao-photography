@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Download, Star, Check } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
+import { useApiItem } from "../hooks/useApiItem";
+import { useRelatedItems } from "../hooks/useRelatedItems";
 import { PageTransition } from "../components/shared/PageTransition";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -17,51 +19,12 @@ export function PresetDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [preset, setPreset] = useState<Preset | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [allPresets, setAllPresets] = useState<Preset[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { item: preset, loading, error } = useApiItem<Preset>(id ? `/api/presets/${id}` : null);
+  const { related: allPresets } = useRelatedItems<Preset>("/api/presets", "presets", id);
 
   useGsapPageEffects(rootRef);
 
   const lang = i18n.language;
-
-  useEffect(() => {
-    if (!id) return;
-    const ctrl = new AbortController();
-    setLoading(true);
-    setError(null);
-
-    async function loadPreset() {
-      const listResponse = await fetch("/api/presets", { signal: ctrl.signal });
-      const list = listResponse.ok ? await listResponse.json() : { presets: [] };
-      const presets = (list.presets || []) as Preset[];
-      const listPreset = presets.find((p) => p.id === id);
-
-      if (!listPreset) {
-        return { preset: null, presets };
-      }
-
-      const detailResponse = await fetch(`/api/presets/${id}`, { signal: ctrl.signal });
-      const detail = detailResponse.ok ? await detailResponse.json() : { preset: listPreset };
-      return { preset: (detail.preset || listPreset) as Preset, presets };
-    }
-
-    loadPreset()
-      .then(({ preset, presets }) => {
-        if (!ctrl.signal.aborted) {
-          if (!preset) {
-            setError("not found");
-          } else {
-            setPreset(preset);
-            setAllPresets(presets.filter((p) => p.id !== id));
-          }
-        }
-      })
-      .catch(() => { if (!ctrl.signal.aborted) setError(t("common.loading")); })
-      .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
-    return () => ctrl.abort();
-  }, [id]);
 
   const presetTitle = preset ? getName(preset, lang) : "";
   useSEO({

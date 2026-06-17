@@ -1,112 +1,64 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, Users } from "lucide-react";
-import { Button, Input } from "animal-island-ui";
+import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
-import { useNotification } from "../hooks/useNotification";
 import { useSEO } from "../hooks/useSEO";
+import { useApiList } from "../hooks/useApiList";
+import { useWorkshopRegistration } from "../hooks/useWorkshopRegistration";
 import { PageTransition } from "../components/shared/PageTransition";
+import { PageHero } from "../components/shared/PageHero";
 import { WorkshopCountdown } from "../components/WorkshopCountdown";
 import { CapacityBar } from "../components/CapacityBar";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
-import { publicMutationHeaders } from "../lib/admin-helpers";
 import type { Workshop } from "../types/content";
-import { isAbortError } from "../lib/errors";
-import { getApiError, readJsonResponse } from "../lib/http";
 
 export function WorkshopsPage() {
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
-  const { sendWorkshopRegistration } = useNotification();
-  const [workshops, setWorkshops] = useState<Workshop[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
+  const { items: workshops, loading, error, retry, empty } = useApiList<Workshop>("/api/workshops", "workshops");
   const [registeringId, setRegisteringId] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState<string | null>(null);
-  const [formName, setFormName] = useState("");
-  const [formContact, setFormContact] = useState("");
-  const [formMsg, setFormMsg] = useState("");
 
   useSEO({ titleKey: "seo.workshopsTitle", descKey: "seo.workshopsDesc", path: "/workshops" });
   useGsapPageEffects(rootRef);
 
-  useEffect(() => {
-    const ctrl = new AbortController();
-    fetch("/api/workshops", { signal: ctrl.signal })
-      .then((r) => r.json())
-      .then((d: { workshops: Workshop[] }) => { if (!ctrl.signal.aborted) setWorkshops(d.workshops || []); })
-      .catch((error) => {
-        if (!isAbortError(error)) {
-          console.warn("[workshops] failed to load", error);
-          setLoadError(true);
-        }
-      })
-      .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
-    return () => ctrl.abort();
-  }, []);
+  // We need to find the workshop to pass to the registration hook
+  const activeWorkshop = workshops.find((w) => w.id === formOpen);
+  const registration = useWorkshopRegistration(activeWorkshop ?? null);
 
   const handleRegister = async (workshopId: string) => {
-    if (!formName.trim()) {
-      setFormMsg(t("workshops.form.nameRequired"));
-      return;
-    }
-    if (!formContact.trim()) {
-      setFormMsg(t("workshops.form.contactRequired"));
-      return;
-    }
     setRegisteringId(workshopId);
-    setFormMsg("");
-    try {
-      const r = await fetch(`/api/workshops/${workshopId}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
-        body: JSON.stringify({ name: formName.trim(), contact: formContact.trim(), participants: 1 }),
-      });
-      if (r.ok) {
-        const data = await readJsonResponse<{ id?: string }>(r);
-        setFormMsg(t("workshops.form.success"));
-        setFormName("");
-        setFormContact("");
+    const result = await registration.register(workshopId);
+    setRegisteringId(null);
 
-        const workshop = workshops.find((w) => w.id === workshopId);
-        await sendWorkshopRegistration(formContact.trim(), {
-          registrationId: data?.id,
-          workshopTitle: workshop ? getTitle(workshop, i18n.language) : "Workshop",
-          eventDate: workshop?.event_date,
-          location: workshop?.location,
-          name: formName.trim(),
-        });
-
-        setTimeout(() => { setFormOpen(null); setFormMsg(""); }, 2000);
-      } else {
-        const data = await readJsonResponse(r);
-        setFormMsg(getApiError(data, t("workshops.form.error")));
-      }
-    } catch {
-      setFormMsg(t("workshops.form.error"));
-    } finally {
-      setRegisteringId(null);
+    if (result && !result.requiresPayment) {
+      setTimeout(() => { setFormOpen(null); registration.resetForm(); }, 2000);
     }
   };
 
   return (
     <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <p className="section-eyebrow">Workshops</p>
-          <h1>{t("workshops.title")}</h1>
-          <span>{t("workshops.intro")}</span>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Workshops"
+        title={t("workshops.title")}
+        subtitle={t("workshops.intro")}
+      />
 
       <section className="section-shell is-visible">
         {loading ? (
-          <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
-        ) : loadError ? (
-          <div style={{ textAlign: "center", padding: 60 }}>{t("common.loadError")}</div>
-        ) : workshops.length === 0 ? (
-          <div style={{ textAlign: "center", padding: 60 }}>
+          <div className="data-state-loading">{t("common.loading")}</div>
+        ) : error ? (
+          <div className="data-state-error">
+            <p>{t("common.loadError")}</p>
+            <button type="button" className="data-state-retry" onClick={retry}>
+              {t("common.retry", "Retry")}
+            </button>
+          </div>
+        ) : empty ? (
+          <div className="data-state-empty">
+            <MapPin size={40} strokeWidth={1.2} />
             <p>{t("workshops.empty")}</p>
           </div>
         ) : (
@@ -139,8 +91,8 @@ export function WorkshopsPage() {
                         </label>
                         <input
                           id={`workshop-name-${ws.id}`}
-                          value={formName}
-                          onChange={(e) => setFormName(e.target.value)}
+                          value={registration.formName}
+                          onChange={(e) => registration.setFormName(e.target.value)}
                           placeholder={t("workshops.form.name")}
                           aria-label={t("workshops.form.name")}
                         />
@@ -149,17 +101,21 @@ export function WorkshopsPage() {
                         </label>
                         <input
                           id={`workshop-contact-${ws.id}`}
-                          value={formContact}
-                          onChange={(e) => setFormContact(e.target.value)}
+                          value={registration.formContact}
+                          onChange={(e) => registration.setFormContact(e.target.value)}
                           placeholder={t("workshops.form.contact")}
                           aria-label={t("workshops.form.contact")}
                         />
-                        {formMsg && <p style={{ fontSize: 13, color: formMsg === t("workshops.form.success") ? "#22c55e" : "#ef4444", margin: "4px 0" }}>{formMsg}</p>}
-                        <div style={{ display: "flex", gap: 8 }}>
+                        {registration.formMsg && (
+                          <p className={registration.formMsg === t("workshops.form.success") ? "dashboard-form-message dashboard-form-message--success" : "dashboard-form-message dashboard-form-message--error"}>
+                            {registration.formMsg}
+                          </p>
+                        )}
+                        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                           <Button type="primary" onClick={() => handleRegister(ws.id)} disabled={registeringId === ws.id}>
                             {registeringId === ws.id ? t("workshops.form.submitting") : t("workshops.form.submit")}
                           </Button>
-                          <Button type="text" onClick={() => { setFormOpen(null); setFormMsg(""); }}>
+                          <Button type="text" onClick={() => { setFormOpen(null); registration.resetForm(); }}>
                             {t("workshops.form.cancel")}
                           </Button>
                         </div>
@@ -169,7 +125,7 @@ export function WorkshopsPage() {
                         <Button
                           type="primary"
                           disabled={isFull}
-                          onClick={() => { setFormOpen(ws.id); setFormMsg(""); }}
+                          onClick={() => { setFormOpen(ws.id); registration.resetForm(); }}
                         >
                           {t("workshops.register")}
                         </Button>

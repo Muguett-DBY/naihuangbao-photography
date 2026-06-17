@@ -1,7 +1,7 @@
 import { useMemo, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Calendar, MapPin, Camera, Share2 } from "lucide-react";
+import { MapPin, Camera, Share2 } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
@@ -9,7 +9,6 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { ImageWithFallback } from "../components/ImageWithFallback";
-import { Section } from "../components/Section";
 import type { PhotoItem } from "../types/photo";
 
 const galleryThumb = (src: string) => {
@@ -95,30 +94,14 @@ export function PhotoDetailPage() {
       </section>
 
       <section className="section-shell is-visible">
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
-            <span style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "6px 14px",
-              background: "var(--accent)",
-              color: "#fff",
-              borderRadius: 999,
-              fontSize: "0.85rem",
-              fontWeight: 600,
-            }}>
+        <div className="photo-detail-content">
+          <div className="photo-detail-meta">
+            <span className="photo-detail-style-badge">
               <Camera size={14} />
               {t(`gallery.filters.${photo.style}`, photo.style)}
             </span>
             {photo.location && (
-              <span style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: "0.9rem",
-                color: "var(--caramel-muted)",
-              }}>
+              <span className="photo-detail-location">
                 <MapPin size={14} />
                 {photo.location}
               </span>
@@ -126,18 +109,7 @@ export function PhotoDetailPage() {
             <button
               type="button"
               onClick={handleShare}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "6px 14px",
-                background: "var(--card-bg, rgba(255,255,255,0.7))",
-                border: "1px solid var(--border-subtle)",
-                borderRadius: 999,
-                fontSize: "0.85rem",
-                color: "var(--caramel-muted)",
-                cursor: "pointer",
-              }}
+              className="photo-detail-share-btn"
               aria-label={t("gallery.share")}
             >
               <Share2 size={14} />
@@ -145,31 +117,18 @@ export function PhotoDetailPage() {
             </button>
           </div>
 
-          <h2 style={{ marginBottom: 16 }}>{t("photoDetail.about")}</h2>
-          <p style={{ lineHeight: 1.8, color: "var(--caramel-muted)" }}>
+          <h2>{t("photoDetail.about")}</h2>
+          <p>
             {t("photoDetail.aboutDesc", { title: photo.title, style: t(`gallery.filters.${photo.style}`, photo.style) })}
           </p>
         </div>
       </section>
 
-      <section className="section-shell is-visible" style={{ textAlign: "center" }}>
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <h2 style={{ marginBottom: 16 }}>{t("photoDetail.ctaTitle")}</h2>
-          <p style={{ color: "var(--caramel-muted)", marginBottom: 24 }}>{t("photoDetail.ctaDesc")}</p>
-          <Link
-            to="/booking"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "12px 32px",
-              background: "var(--accent)",
-              color: "#fff",
-              borderRadius: 999,
-              textDecoration: "none",
-              fontWeight: 600,
-            }}
-          >
+      <section className="section-shell is-visible photo-detail-cta">
+        <div className="photo-detail-cta-inner">
+          <h2>{t("photoDetail.ctaTitle")}</h2>
+          <p>{t("photoDetail.ctaDesc")}</p>
+          <Link to="/booking" className="photo-detail-cta-link">
             {t("photoDetail.bookSimilar")}
           </Link>
         </div>
@@ -177,27 +136,16 @@ export function PhotoDetailPage() {
 
       {relatedPhotos.length > 0 && (
         <section className="section-shell is-visible">
-          <div style={{ maxWidth: 960, margin: "0 auto" }}>
-            <h2 style={{ marginBottom: 24 }}>{t("photoDetail.related")}</h2>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-              gap: 16,
-            }}>
+          <div className="photo-detail-related">
+            <h2>{t("photoDetail.related")}</h2>
+            <div className="photo-detail-related-grid">
               {relatedPhotos.map((rp) => (
                 <Link
                   key={rp.id}
                   to={`/gallery/${rp.id}`}
-                  style={{
-                    textDecoration: "none",
-                    borderRadius: 12,
-                    overflow: "hidden",
-                    background: "var(--card-bg, rgba(255,255,255,0.7))",
-                    border: "1px solid var(--border-subtle)",
-                    transition: "transform 0.2s",
-                  }}
+                  className="photo-detail-related-card"
                 >
-                  <div style={{ aspectRatio: "4/5", overflow: "hidden" }}>
+                  <div className="photo-detail-related-thumb">
                     <ImageWithFallback
                       src={relatedThumb(rp.imageUrl)}
                       alt={rp.alt}
@@ -206,9 +154,9 @@ export function PhotoDetailPage() {
                       sizes="(max-width: 600px) 50vw, 240px"
                     />
                   </div>
-                  <div style={{ padding: "12px 14px" }}>
-                    <h4 style={{ margin: 0, fontSize: "0.9rem" }}>{rp.title}</h4>
-                    <span style={{ fontSize: "0.8rem", color: "var(--caramel-muted)" }}>{rp.location}</span>
+                  <div className="photo-detail-related-info">
+                    <h4>{rp.title}</h4>
+                    <span>{rp.location}</span>
                   </div>
                 </Link>
               ))}

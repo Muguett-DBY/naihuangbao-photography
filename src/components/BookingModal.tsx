@@ -80,13 +80,27 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     <option key={p.name} value={p.name}>{p.name} — {p.price}</option>
   ));
 
+  // Calculate deposit based on selected package (30% of minimum price, min 2000 cents)
+  const calculateDepositCents = (): number => {
+    if (!selectedPkg) return 2000; // Default 20 CNY deposit
+    const pkg = packages.find((p) => p.name === selectedPkg);
+    if (!pkg) return 2000;
+    const match = pkg.price.match(/(\d+(?:\.\d+)?)/);
+    if (!match) return 2000;
+    const hourlyRate = parseFloat(match[1]);
+    const minimumHours = 2;
+    const depositPercent = 0.3;
+    const deposit = Math.round(hourlyRate * minimumHours * depositPercent * 100);
+    return Math.max(deposit, 2000); // Minimum 20 CNY deposit
+  };
+
   // ── Payment step ──
   if (showPayment && bookingId) {
     return (
       <Modal open onClose={onClose} footer={null} typewriter={false}>
         <PaymentForm
           purpose="booking_deposit"
-          amountCents={5000}
+          amountCents={calculateDepositCents()}
           currency="cny"
           referenceId={bookingId}
           metadata={{ packageName: selectedPkg, name: name.trim() }}

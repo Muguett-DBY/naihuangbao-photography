@@ -2,64 +2,13 @@ import { useRef, useState, useCallback } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Tabs, Button } from "animal-island-ui";
-import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin, Image, Download, Settings, X, RefreshCw } from "lucide-react";
+import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin, Image, Download, Settings, X, RefreshCw, AlertCircle } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useAuth } from "../hooks/useAuth";
 import { useFetch } from "../hooks/useFetch";
 import { PageTransition } from "../components/shared/PageTransition";
-
-type Booking = {
-  id: string;
-  package_name: string;
-  preferred_date: string;
-  preferred_time: string;
-  name: string;
-  status: string;
-  created_at: string;
-};
-
-type Purchase = {
-  id: string;
-  item_type: string;
-  item_name: string;
-  price_cents: number;
-  created_at: string;
-};
-
-type Course = {
-  id: string;
-  title: string;
-  category: string;
-  difficulty: string;
-  cover_image_url: string | null;
-  progress: number;
-  purchased_at: string;
-};
-
-type Workshop = {
-  id: string;
-  workshop_id: string;
-  title: string;
-  event_date: string;
-  location: string;
-  participants: number;
-  status: string;
-  created_at: string;
-};
-
-type UserPhoto = {
-  id: string;
-  title: string;
-  imageUrl: string;
-  style: string;
-  delivered_at: string;
-};
-
-type UserProfile = {
-  displayName: string;
-  email: string;
-};
+import type { Booking, Purchase, Course, Workshop, UserPhoto } from "../types/dashboard";
 
 function StatusBadge({ status }: { status: string }) {
   const { t } = useTranslation();
@@ -70,9 +19,31 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <div className="dashboard-error">
+      <AlertCircle size={32} className="dashboard-error-icon" />
+      <p>{message}</p>
+      <button type="button" className="dashboard-error-retry" onClick={onRetry}>
+        <RefreshCw size={14} />
+        {t("common.retry", "重试")}
+      </button>
+    </div>
+  );
+}
+
+function getTodayString(): string {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 function BookingsTab() {
   const { t } = useTranslation();
-  const { data, loading, retry } = useFetch<{ bookings: Booking[] }>("/api/user/bookings");
+  const { data, loading, error, retry } = useFetch<{ bookings: Booking[] }>("/api/user/bookings");
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [rescheduleId, setRescheduleId] = useState<string | null>(null);
   const [newDate, setNewDate] = useState("");
@@ -117,6 +88,7 @@ function BookingsTab() {
   }, [newDate, retry]);
 
   if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
+  if (error) return <ErrorState message={t("common.loadError", "加载失败，请重试")} onRetry={retry} />;
 
   const bookings = data?.bookings ?? [];
 
@@ -147,41 +119,19 @@ function BookingsTab() {
               {new Date(b.created_at).toLocaleDateString()}
             </p>
             {canManage && (
-              <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+              <div className="dashboard-actions">
                 <button
                   type="button"
+                  className="dashboard-action-btn dashboard-action-btn--cancel"
                   onClick={() => setConfirmCancelId(b.id)}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 4,
-                    padding: "6px 12px",
-                    background: "transparent",
-                    border: "1px solid #e74c3c",
-                    borderRadius: 6,
-                    color: "#e74c3c",
-                    fontSize: "0.8rem",
-                    cursor: "pointer",
-                  }}
                 >
                   <X size={12} />
                   {t("dashboard.cancelBooking")}
                 </button>
                 <button
                   type="button"
+                  className="dashboard-action-btn dashboard-action-btn--reschedule"
                   onClick={() => setRescheduleId(rescheduleId === b.id ? null : b.id)}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 4,
-                    padding: "6px 12px",
-                    background: "transparent",
-                    border: "1px solid var(--accent)",
-                    borderRadius: 6,
-                    color: "var(--accent)",
-                    fontSize: "0.8rem",
-                    cursor: "pointer",
-                  }}
                 >
                   <RefreshCw size={12} />
                   {t("dashboard.rescheduleBooking")}
@@ -189,17 +139,11 @@ function BookingsTab() {
               </div>
             )}
             {confirmCancelId === b.id && (
-              <div style={{
-                marginTop: 12,
-                padding: 12,
-                background: "rgba(231, 76, 60, 0.1)",
-                borderRadius: 8,
-                border: "1px solid rgba(231, 76, 60, 0.2)",
-              }}>
-                <p style={{ margin: 0, fontSize: "0.85rem", marginBottom: 8 }}>
+              <div className="dashboard-confirm-panel dashboard-confirm-panel--danger">
+                <p className="dashboard-confirm-text">
                   {t("dashboard.confirmCancel")}
                 </p>
-                <div style={{ display: "flex", gap: 8 }}>
+                <div className="dashboard-confirm-actions">
                   <Button
                     type="primary"
                     onClick={() => handleCancel(b.id)}
@@ -219,27 +163,16 @@ function BookingsTab() {
               </div>
             )}
             {rescheduleId === b.id && (
-              <div style={{
-                marginTop: 12,
-                padding: 12,
-                background: "var(--card-bg, rgba(255,255,255,0.7))",
-                borderRadius: 8,
-                border: "1px solid var(--border-subtle)",
-              }}>
-                <label style={{ display: "block", fontSize: "0.85rem", marginBottom: 6 }}>
+              <div className="dashboard-confirm-panel dashboard-confirm-panel--default">
+                <label className="dashboard-reschedule-label">
                   {t("dashboard.selectNewDate")}
                 </label>
                 <input
                   type="date"
                   value={newDate}
+                  min={getTodayString()}
                   onChange={(e) => setNewDate(e.target.value)}
-                  style={{
-                    padding: "6px 10px",
-                    border: "1px solid var(--border-subtle)",
-                    borderRadius: 6,
-                    fontSize: "0.85rem",
-                    marginRight: 8,
-                  }}
+                  className="dashboard-reschedule-date"
                 />
                 <Button
                   type="primary"
@@ -260,9 +193,10 @@ function BookingsTab() {
 
 function MyPhotosTab() {
   const { t } = useTranslation();
-  const { data, loading } = useFetch<{ photos: UserPhoto[] }>("/api/user/photos");
+  const { data, loading, error, retry } = useFetch<{ photos: UserPhoto[] }>("/api/user/photos");
 
   if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
+  if (error) return <ErrorState message={t("common.loadError", "加载失败，请重试")} onRetry={retry} />;
 
   const photos = data?.photos ?? [];
 
@@ -276,52 +210,29 @@ function MyPhotosTab() {
   }
 
   return (
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-      gap: 16,
-    }}>
+    <div className="dashboard-photo-grid">
       {photos.map((photo) => (
-        <div
-          key={photo.id}
-          style={{
-            borderRadius: 12,
-            overflow: "hidden",
-            background: "var(--card-bg, rgba(255,255,255,0.7))",
-            border: "1px solid var(--border-subtle)",
-          }}
-        >
-          <Link to={`/gallery/${photo.id}`} style={{ textDecoration: "none" }}>
-            <div style={{ aspectRatio: "1", overflow: "hidden" }}>
+        <div key={photo.id} className="dashboard-photo-card">
+          <Link to={`/gallery/${photo.id}`} className="dashboard-photo-link">
+            <div className="dashboard-photo-thumb">
               <img
                 src={photo.imageUrl}
                 alt={photo.title}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 loading="lazy"
               />
             </div>
-            <div style={{ padding: "10px 12px" }}>
-              <h4 style={{ margin: 0, fontSize: "0.85rem" }}>{photo.title}</h4>
-              <span style={{ fontSize: "0.75rem", color: "var(--caramel-muted)" }}>
+            <div className="dashboard-photo-info">
+              <h4>{photo.title}</h4>
+              <span className="dashboard-photo-date">
                 {photo.delivered_at ? new Date(photo.delivered_at).toLocaleDateString() : ""}
               </span>
             </div>
           </Link>
-          <div style={{ padding: "0 12px 10px" }}>
+          <div className="dashboard-photo-actions">
             <a
               href={photo.imageUrl}
               download
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 4,
-                padding: "4px 10px",
-                background: "var(--accent)",
-                color: "#fff",
-                borderRadius: 6,
-                fontSize: "0.75rem",
-                textDecoration: "none",
-              }}
+              className="dashboard-photo-download"
             >
               <Download size={12} />
               {t("dashboard.download")}
@@ -335,9 +246,10 @@ function MyPhotosTab() {
 
 function PurchasesTab() {
   const { t } = useTranslation();
-  const { data, loading } = useFetch<{ purchases: Purchase[] }>("/api/user/purchases");
+  const { data, loading, error, retry } = useFetch<{ purchases: Purchase[] }>("/api/user/purchases");
 
   if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
+  if (error) return <ErrorState message={t("common.loadError", "加载失败，请重试")} onRetry={retry} />;
 
   const purchases = data?.purchases ?? [];
 
@@ -369,9 +281,10 @@ function PurchasesTab() {
 
 function CoursesTab() {
   const { t } = useTranslation();
-  const { data, loading } = useFetch<{ courses: Course[] }>("/api/user/courses");
+  const { data, loading, error, retry } = useFetch<{ courses: Course[] }>("/api/user/courses");
 
   if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
+  if (error) return <ErrorState message={t("common.loadError", "加载失败，请重试")} onRetry={retry} />;
 
   const courses = data?.courses ?? [];
 
@@ -406,9 +319,10 @@ function CoursesTab() {
 
 function WorkshopsTab() {
   const { t } = useTranslation();
-  const { data, loading } = useFetch<{ workshops: Workshop[] }>("/api/user/workshops");
+  const { data, loading, error, retry } = useFetch<{ workshops: Workshop[] }>("/api/user/workshops");
 
   if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
+  if (error) return <ErrorState message={t("common.loadError", "加载失败，请重试")} onRetry={retry} />;
 
   const workshops = data?.workshops ?? [];
 
@@ -468,7 +382,8 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
         const data = await response.json();
         setProfileMessage({ type: "error", text: data.error || t("dashboard.profileError") });
       }
-    } catch {
+    } catch (e) {
+      console.error("[Dashboard] profile update failed", e);
       setProfileMessage({ type: "error", text: t("dashboard.profileError") });
     } finally {
       setProfileLoading(false);
@@ -493,7 +408,8 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
         const data = await response.json();
         setPasswordMessage({ type: "error", text: data.error || t("dashboard.passwordError") });
       }
-    } catch {
+    } catch (e) {
+      console.error("[Dashboard] password change failed", e);
       setPasswordMessage({ type: "error", text: t("dashboard.passwordError") });
     } finally {
       setPasswordLoading(false);
@@ -504,8 +420,8 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
     <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
       <div>
         <h3 style={{ marginBottom: 16 }}>{t("dashboard.editProfile")}</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 400 }}>
-          <label htmlFor="dashboard-display-name" style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
+        <div className="dashboard-form-group">
+          <label htmlFor="dashboard-display-name" className="dashboard-form-label">
             {t("dashboard.displayName")}
           </label>
           <input
@@ -513,19 +429,10 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
             type="text"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            style={{
-              padding: "8px 12px",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: 8,
-              fontSize: "0.9rem",
-            }}
+            className="dashboard-form-input"
           />
           {profileMessage && (
-            <p style={{
-              margin: 0,
-              fontSize: "0.85rem",
-              color: profileMessage.type === "success" ? "#27ae60" : "#e74c3c",
-            }}>
+            <p className={`dashboard-form-message dashboard-form-message--${profileMessage.type}`}>
               {profileMessage.text}
             </p>
           )}
@@ -540,10 +447,10 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
         </div>
       </div>
 
-      <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: 32 }}>
+      <div className="dashboard-section-divider">
         <h3 style={{ marginBottom: 16 }}>{t("dashboard.changePassword")}</h3>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 400 }}>
-          <label htmlFor="dashboard-current-password" style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
+        <div className="dashboard-form-group">
+          <label htmlFor="dashboard-current-password" className="dashboard-form-label">
             {t("dashboard.currentPassword")}
           </label>
           <input
@@ -551,14 +458,9 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            style={{
-              padding: "8px 12px",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: 8,
-              fontSize: "0.9rem",
-            }}
+            className="dashboard-form-input"
           />
-          <label htmlFor="dashboard-new-password" style={{ fontSize: "0.85rem", color: "var(--caramel-muted)" }}>
+          <label htmlFor="dashboard-new-password" className="dashboard-form-label">
             {t("dashboard.newPassword")}
           </label>
           <input
@@ -566,19 +468,10 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            style={{
-              padding: "8px 12px",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: 8,
-              fontSize: "0.9rem",
-            }}
+            className="dashboard-form-input"
           />
           {passwordMessage && (
-            <p style={{
-              margin: 0,
-              fontSize: "0.85rem",
-              color: passwordMessage.type === "success" ? "#27ae60" : "#e74c3c",
-            }}>
+            <p className={`dashboard-form-message dashboard-form-message--${passwordMessage.type}`}>
               {passwordMessage.text}
             </p>
           )}
@@ -627,7 +520,7 @@ export function DashboardPage() {
     {
       key: "bookings",
       label: (
-        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span className="dashboard-tab-label">
           <CalendarCheck size={16} />
           {t("dashboard.bookings")}
         </span>
@@ -637,7 +530,7 @@ export function DashboardPage() {
     {
       key: "photos",
       label: (
-        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span className="dashboard-tab-label">
           <Image size={16} />
           {t("dashboard.myPhotos")}
         </span>
@@ -647,7 +540,7 @@ export function DashboardPage() {
     {
       key: "purchases",
       label: (
-        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span className="dashboard-tab-label">
           <ShoppingCart size={16} />
           {t("dashboard.purchases")}
         </span>
@@ -657,7 +550,7 @@ export function DashboardPage() {
     {
       key: "courses",
       label: (
-        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span className="dashboard-tab-label">
           <BookOpen size={16} />
           {t("dashboard.courses")}
         </span>
@@ -667,7 +560,7 @@ export function DashboardPage() {
     {
       key: "workshops",
       label: (
-        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span className="dashboard-tab-label">
           <MapPin size={16} />
           {t("dashboard.workshops")}
         </span>
@@ -677,7 +570,7 @@ export function DashboardPage() {
     {
       key: "profile",
       label: (
-        <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span className="dashboard-tab-label">
           <Settings size={16} />
           {t("dashboard.profile")}
         </span>

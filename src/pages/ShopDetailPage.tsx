@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, Package, Truck, RotateCcw, MessageCircle } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useBookingModal } from "../hooks/useBookingModal";
 import { useSEO } from "../hooks/useSEO";
+import { useApiItem } from "../hooks/useApiItem";
+import { useRelatedItems } from "../hooks/useRelatedItems";
 import { PageTransition } from "../components/shared/PageTransition";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -17,40 +19,13 @@ export function ShopDetailPage() {
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const { openBookingModal } = useBookingModal();
-  const [item, setItem] = useState<Merchandise | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { item, loading, error } = useApiItem<Merchandise>(id ? `/api/merchandise/${id}` : null);
+  const { related: allItems } = useRelatedItems<Merchandise>("/api/merchandise", "merchandise", id);
   const [activeImage, setActiveImage] = useState(0);
-  const [allItems, setAllItems] = useState<Merchandise[]>([]);
 
   useGsapPageEffects(rootRef);
 
   const lang = i18n.language;
-
-  useEffect(() => {
-    if (!id) return;
-    const ctrl = new AbortController();
-    setLoading(true);
-    setError(null);
-
-    fetch("/api/merchandise", { signal: ctrl.signal })
-      .then((r) => (r.ok ? r.json() : { merchandise: [] }))
-      .then((list: { merchandise: Merchandise[] }) => {
-        if (!ctrl.signal.aborted) {
-          const items = list.merchandise || [];
-          const nextItem = items.find((candidate) => candidate.id === id);
-          if (!nextItem) {
-            setError("not found");
-          } else {
-            setItem(nextItem);
-            setAllItems(items.filter((m) => m.id !== id));
-          }
-        }
-      })
-      .catch(() => { if (!ctrl.signal.aborted) setError(t("common.loading")); })
-      .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
-    return () => ctrl.abort();
-  }, [id]);
 
   const itemTitle = item ? getName(item, lang) : "";
   useSEO({

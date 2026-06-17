@@ -1,58 +1,47 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ShoppingCart } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useBookingModal } from "../hooks/useBookingModal";
 import { useSEO } from "../hooks/useSEO";
+import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
+import { PageHero } from "../components/shared/PageHero";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import type { Merchandise } from "../types/content";
-import { isAbortError } from "../lib/errors";
 
 export function ShopPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { openBookingModal } = useBookingModal();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [items, setItems] = useState<Merchandise[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
+  const { items, loading, error, retry, empty } = useApiList<Merchandise>("/api/merchandise", "merchandise");
 
   useSEO({ titleKey: "seo.shopTitle", descKey: "seo.shopDesc", path: "/shop" });
   useGsapPageEffects(rootRef);
 
-  useEffect(() => {
-    const ctrl = new AbortController();
-    fetch("/api/merchandise", { signal: ctrl.signal })
-      .then((r) => r.json())
-      .then((d: { merchandise: Merchandise[] }) => { if (!ctrl.signal.aborted) setItems(d.merchandise || []); })
-      .catch((error) => {
-        if (!isAbortError(error)) {
-          console.warn("[shop] failed to load", error);
-          setLoadError(true);
-        }
-      })
-      .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
-    return () => ctrl.abort();
-  }, []);
-
   return (
     <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <p className="section-eyebrow">Shop</p>
-          <h1>{t("merchandise.title")}</h1>
-          <span>{t("merchandise.intro")}</span>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Shop"
+        title={t("merchandise.title")}
+        subtitle={t("merchandise.intro")}
+      />
 
       <section className="section-shell is-visible">
         {loading ? (
-          <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
-        ) : loadError ? (
-          <div style={{ textAlign: "center", padding: 60 }}>{t("common.loadError")}</div>
-        ) : items.length === 0 ? (
-          <div style={{ textAlign: "center", padding: 60 }}>
+          <div className="data-state-loading">{t("common.loading")}</div>
+        ) : error ? (
+          <div className="data-state-error">
+            <p>{t("common.loadError")}</p>
+            <button type="button" className="data-state-retry" onClick={retry}>
+              {t("common.retry", "Retry")}
+            </button>
+          </div>
+        ) : empty ? (
+          <div className="data-state-empty">
+            <ShoppingCart size={40} strokeWidth={1.2} />
             <p>{t("merchandise.empty")}</p>
           </div>
         ) : (

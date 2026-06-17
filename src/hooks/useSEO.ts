@@ -39,7 +39,7 @@ export function useSEO({
     const shareImage = image || defaultShareImage;
     const url = path ? `${siteOrigin}${path}` : siteOrigin;
 
-    document.title = `${resolvedTitle} | 奶黄包摄影`;
+    document.title = `${resolvedTitle} | ${t("seo.siteName")}`;
 
     setMeta("description", description, true);
     setMeta("og:title", resolvedTitle);
@@ -51,7 +51,7 @@ export function useSEO({
     setMeta("twitter:image", shareImage);
 
     return () => {
-      document.title = "奶黄包摄影 | 南京约拍";
+      document.title = t("seo.siteTagline");
     };
   }, [i18n.language, title, titleKey, descKey, descParams, image, path, t]);
 }

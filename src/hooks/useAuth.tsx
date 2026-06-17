@@ -39,9 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       })
       .finally(() => {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
+        setLoading(false);
       });
 
     return () => {
@@ -67,7 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(data.user);
       return {};
-    } catch {
+    } catch (e) {
+      console.error("[Auth] login failed", e);
       return { error: "Network error, please try again" };
     }
   }, []);
@@ -89,7 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(data.user);
       return {};
-    } catch {
+    } catch (e) {
+      console.error("[Auth] register failed", e);
       return { error: "Network error, please try again" };
     }
   }, []);

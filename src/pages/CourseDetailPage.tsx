@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Clock, BarChart3, Lock, Play, FileText, Images, LogIn, ShoppingCart } from "lucide-react";
@@ -73,16 +73,12 @@ export function CourseDetailPage() {
           <DetailBackLink to="/courses" label={t("courseDetail.backToList")} />
           <p className="section-eyebrow">{t(`courses.categories.${course.category}` as any)}</p>
           <h1>{getTitle(course, lang)}</h1>
-          <div style={{ display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap", marginTop: 12 }}>
+          <div className="course-detail-meta">
             <span className="course-difficulty">{t(`courses.difficulty.${course.difficulty}` as any)}</span>
             {course.duration_minutes && (
-              <span style={{ fontSize: "0.85rem", color: "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
-                <Clock size={14} /> {t("courses.duration", { minutes: course.duration_minutes })}
-              </span>
+              <span><Clock size={14} /> {t("courses.duration", { minutes: course.duration_minutes })}</span>
             )}
-            <span style={{ fontSize: "0.85rem", color: "var(--caramel-muted)", display: "flex", alignItems: "center", gap: 4 }}>
-              <BarChart3 size={14} /> {modules.length} {t("courseDetail.modules")}
-            </span>
+            <span><BarChart3 size={14} /> {modules.length} {t("courseDetail.modules")}</span>
           </div>
         </div>
       </section>
@@ -92,64 +88,40 @@ export function CourseDetailPage() {
           <img
             src={course.cover_image_url}
             alt={getTitle(course, lang)}
+            className="course-detail-cover"
             width={800}
             height={400}
             loading="lazy"
-            style={{ width: "100%", maxHeight: 400, objectFit: "cover", borderRadius: 16 }}
           />
         </section>
       )}
 
       <section className="section-shell is-visible">
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <h2 style={{ marginBottom: 16 }}>{t("courseDetail.about")}</h2>
-          <p style={{ lineHeight: 1.8, color: "var(--caramel-muted)" }}>{getDesc(course, lang)}</p>
+        <div className="course-detail-content">
+          <h2>{t("courseDetail.about")}</h2>
+          <p>{getDesc(course, lang)}</p>
         </div>
       </section>
 
       {course.video_url && (
         <section className="section-shell is-visible">
-          <div style={{ maxWidth: 800, margin: "0 auto" }}>
-            <h2 style={{ marginBottom: 16 }}>{t("courseDetail.preview")}</h2>
+          <div className="course-detail-content">
+            <h2>{t("courseDetail.preview")}</h2>
             <VideoPlayer src={course.video_url} title={getTitle(course, lang)} />
           </div>
         </section>
       )}
 
       <section className="section-shell is-visible">
-        <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <h2 style={{ marginBottom: 16 }}>{t("courseDetail.syllabus")}</h2>
+        <div className="course-detail-content">
+          <h2>{t("courseDetail.syllabus")}</h2>
 
           {!user && (
-            <div style={{
-              background: "var(--card-bg, rgba(255,255,255,0.7))",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: 16,
-              padding: 24,
-              marginBottom: 24,
-              textAlign: "center",
-            }}>
-              <Lock size={32} style={{ color: "var(--accent)", marginBottom: 12 }} />
-              <h3 style={{ marginBottom: 8 }}>{t("courseDetail.loginRequired", "登录以访问课程内容")}</h3>
-              <p style={{ fontSize: "0.9rem", color: "var(--caramel-muted)", marginBottom: 16 }}>
-                {t("courseDetail.loginRequiredDesc", "请登录您的账户以查看完整课程内容")}
-              </p>
-              <Link
-                to="/login"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  padding: "10px 20px",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 8,
-                  cursor: "pointer",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                }}
-              >
+            <div className="course-detail-lock-gate">
+              <Lock size={32} />
+              <h3>{t("courseDetail.loginRequired", "登录以访问课程内容")}</h3>
+              <p>{t("courseDetail.loginRequiredDesc", "请登录您的账户以查看完整课程内容")}</p>
+              <Link to="/login" className="course-detail-login-btn">
                 <LogIn size={14} />
                 {t("auth.login", "登录")}
               </Link>
@@ -157,19 +129,10 @@ export function CourseDetailPage() {
           )}
 
           {user && !unlocked && (
-            <div style={{
-              background: "var(--card-bg, rgba(255,255,255,0.7))",
-              border: "1px solid var(--border-subtle)",
-              borderRadius: 16,
-              padding: 24,
-              marginBottom: 24,
-              textAlign: "center",
-            }}>
-              <Lock size={32} style={{ color: "var(--accent)", marginBottom: 12 }} />
-              <h3 style={{ marginBottom: 8 }}>{t("courseDetail.purchaseRequired", "购买课程以解锁全部内容")}</h3>
-              <p style={{ fontSize: "0.9rem", color: "var(--caramel-muted)", marginBottom: 16 }}>
-                {t("courseDetail.purchaseRequiredDesc", "购买此课程后即可查看所有模块内容")}
-              </p>
+            <div className="course-detail-lock-gate">
+              <Lock size={32} />
+              <h3>{t("courseDetail.purchaseRequired", "购买课程以解锁全部内容")}</h3>
+              <p>{t("courseDetail.purchaseRequiredDesc", "购买此课程后即可查看所有模块内容")}</p>
               {isPaidCourse && (
                 <Button type="primary" onClick={() => setShowPayment(true)}>
                   <ShoppingCart size={14} />
@@ -180,17 +143,11 @@ export function CourseDetailPage() {
           )}
 
           {modules.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className="course-detail-modules">
               {modules.map((mod, i) => (
                 <div
                   key={mod.id}
-                  style={{
-                    background: activeModule === mod.id ? "var(--card-bg)" : "transparent",
-                    border: "1px solid var(--border-subtle)",
-                    borderRadius: 12,
-                    overflow: "hidden",
-                    opacity: unlocked || mod.type === "text" ? 1 : 0.5,
-                  }}
+                  className={`course-detail-module ${activeModule === mod.id ? "is-active" : ""} ${!unlocked && mod.type !== "text" ? "is-locked" : ""}`}
                 >
                   <button
                     onClick={() => {
@@ -198,35 +155,16 @@ export function CourseDetailPage() {
                         setActiveModule(activeModule === mod.id ? null : mod.id);
                       }
                     }}
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 12,
-                      padding: "14px 18px",
-                      background: "none",
-                      border: "none",
-                      cursor: unlocked || mod.type === "text" ? "pointer" : "default",
-                      textAlign: "left",
-                      fontSize: "0.95rem",
-                    }}
+                    className="course-detail-module-btn"
+                    style={{ cursor: unlocked || mod.type === "text" ? "pointer" : "default" }}
                   >
-                    <span style={{
-                      width: 28, height: 28, borderRadius: "50%", background: "var(--accent)",
-                      color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: "0.8rem", fontWeight: 700, flexShrink: 0,
-                    }}>
-                      {i + 1}
-                    </span>
-                    <span style={{ flex: 1, fontWeight: 500 }}>{getModuleTitle(mod)}</span>
+                    <span className="course-detail-module-num">{i + 1}</span>
+                    <span className="course-detail-module-title">{getModuleTitle(mod)}</span>
                     {moduleIcon(mod.type)}
                     {!unlocked && mod.type !== "text" && <Lock size={14} style={{ opacity: 0.5 }} />}
                   </button>
                   {activeModule === mod.id && mod.content && (
-                    <div style={{
-                      padding: "0 18px 18px", fontSize: "0.9rem", lineHeight: 1.7,
-                      color: "var(--caramel-muted)", whiteSpace: "pre-wrap",
-                    }}>
+                    <div className="course-detail-module-content">
                       {mod.content}
                     </div>
                   )}
@@ -241,8 +179,8 @@ export function CourseDetailPage() {
 
       {isPaidCourse && !unlocked && (
         <section className="section-shell is-visible">
-          <div style={{ maxWidth: 800, margin: "0 auto" }}>
-            <h2 style={{ marginBottom: 16 }}>{t("courseDetail.purchase", "Purchase Course")}</h2>
+          <div className="course-detail-content">
+            <h2>{t("courseDetail.purchase", "Purchase Course")}</h2>
             {showPayment ? (
               <PaymentForm
                 purpose="course_purchase"
@@ -267,19 +205,11 @@ export function CourseDetailPage() {
                 onCancel={() => setShowPayment(false)}
               />
             ) : (
-              <div style={{
-                background: "var(--card-bg, rgba(255,255,255,0.7))",
-                border: "1px solid var(--border-subtle)",
-                borderRadius: 16,
-                padding: 24,
-                textAlign: "center",
-              }}>
+              <div className="course-detail-purchase-box">
                 {course.price_display && (
-                  <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--accent)", marginBottom: 12 }}>
-                    {course.price_display}
-                  </div>
+                  <div className="course-detail-price">{course.price_display}</div>
                 )}
-                <p style={{ color: "var(--caramel-muted)", fontSize: "0.9rem", marginBottom: 16 }}>
+                <p className="course-detail-purchase-desc">
                   {t("courseDetail.purchaseDesc", "Get full access to all course modules and materials.")}
                 </p>
                 <Button type="primary" onClick={() => setShowPayment(true)}>
@@ -292,19 +222,14 @@ export function CourseDetailPage() {
         </section>
       )}
 
-      <section className="section-shell is-visible" style={{ textAlign: "center" }}>
-        <h2 style={{ marginBottom: 16 }}>{t("courseDetail.ctaTitle")}</h2>
-        <p style={{ color: "var(--caramel-muted)", marginBottom: 24 }}>{t("courseDetail.ctaDesc")}</p>
-        <Link
-          to="/booking"
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 32px",
-            background: "var(--accent)", color: "#fff", borderRadius: 999,
-            textDecoration: "none", fontWeight: 600,
-          }}
-        >
-          {t("courseDetail.ctaBtn")}
-        </Link>
+      <section className="section-shell is-visible course-detail-cta">
+        <div className="course-detail-content">
+          <h2>{t("courseDetail.ctaTitle")}</h2>
+          <p>{t("courseDetail.ctaDesc")}</p>
+          <Link to="/booking" className="course-detail-cta-link">
+            {t("courseDetail.ctaBtn")}
+          </Link>
+        </div>
       </section>
     </PageTransition>
   );

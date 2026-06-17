@@ -43,6 +43,10 @@
     "share": "공유",
     "linkCopied": "링크가 클립보드에 복사되었습니다",
     "loading": "더 불러오는 중…",
+    "searchPlaceholder": "제목, 장소, 스타일로 검색…",
+    "clearSearch": "검색 지우기",
+    "resultCount": "사진 {{count}}장",
+    "noResults": "검색 결과가 없습니다",
     "filters": {
       "all": "전체",
       "jiangnan": "장난",
@@ -123,10 +127,14 @@
     "mapLabelFee": "10km — 도달 가능"
   },
   "midCTA": {
-    "eyebrow": "지금 예약",
-    "title": "하루를 시로 만드세요",
-    "desc": "혼자, 커플, 또는 친구와 함께 — 모든 셔터가 당신의 난징 이야기를 담습니다.",
-    "cta": "예약하기 →"
+    "eyebrow": "지금 예약하세요",
+    "title": "당신의 날을 시로 만드세요",
+    "desc": "혼자, 커플, 또는 가장 친한 친구와 함께 — 모든 셔터 누름이 당신의 난징 이야기를 담습니다.",
+    "cta": "세션 예약 →"
+  },
+  "home": {
+    "servicesTitle": "서비스",
+    "styleQuizTitle": "스타일 퀴즈"
   },
   "whyChooseUs": {
     "eyebrow": "선택 이유",
@@ -582,9 +590,10 @@
   "common": {
     "learnMore": "더 알아보기",
     "loading": "로딩 중...",
-    "loadError": "불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
-    "skipToContent": "본문으로 건너뛰기",
-    "socialXiaohongshu": "샤오홍슈"
+    "loadError": "로드할 수 없습니다. 나중에 다시 시도해 주세요.",
+    "retry": "재시도",
+    "skipToContent": "콘텐츠로 건너뛰기",
+    "socialXiaohongshu": "시아오홍수"
   },
   "admin": {
     "tabs": {
@@ -758,6 +767,8 @@
     "retry": "다시 시도"
   },
   "seo": {
+    "siteName": "나이황바오 사진촬영",
+    "siteTagline": "나이황바오 사진촬영 | 난징 촬영 예약",
     "homeTitle": "나이황바오 사진촬영 | 난징 촬영 예약",
     "homeDesc": "부드럽고 필름 감성의 자연스러운 포트레트 촬영 — 난징에서 여성 사진과 커플 사진을 전문으로 합니다.",
     "galleryTitle": "갤러리 | 나이황바오 사진촬영",

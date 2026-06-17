@@ -17,7 +17,6 @@ const allCss = [
   "src/styles/chat.css",
 ].map((p) => readFileSync(resolve(root, p), "utf8")).join("\n");
 const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
-const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
 const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
 const routerSource = readFileSync(resolve(root, "src/router.tsx"), "utf8");
 const navSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");

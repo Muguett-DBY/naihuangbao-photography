@@ -1,39 +1,23 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Download } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
+import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
+import { PageHero } from "../components/shared/PageHero";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import type { Preset } from "../types/content";
-import { isAbortError } from "../lib/errors";
 
 export function ProductsPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [presets, setPresets] = useState<Preset[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
+  const { items: presets, loading, error, retry, empty } = useApiList<Preset>("/api/presets", "presets");
 
   useSEO({ titleKey: "seo.presetsTitle", descKey: "seo.presetsDesc", path: "/products" });
   useGsapPageEffects(rootRef);
-
-  useEffect(() => {
-    const ctrl = new AbortController();
-    fetch("/api/presets", { signal: ctrl.signal })
-      .then((r) => r.json())
-      .then((d: { presets: Preset[] }) => { if (!ctrl.signal.aborted) setPresets(d.presets || []); })
-      .catch((error) => {
-        if (!isAbortError(error)) {
-          console.warn("[products] failed to load", error);
-          setLoadError(true);
-        }
-      })
-      .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
-    return () => ctrl.abort();
-  }, []);
 
   const handleDownload = async (id: string) => {
     await fetch(`/api/presets/${id}/download`, { method: "POST" });
@@ -41,21 +25,25 @@ export function ProductsPage() {
 
   return (
     <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <p className="section-eyebrow">Presets</p>
-          <h1>{t("presets.title")}</h1>
-          <span>{t("presets.intro")}</span>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Presets"
+        title={t("presets.title")}
+        subtitle={t("presets.intro")}
+      />
 
       <section className="section-shell is-visible">
         {loading ? (
-          <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
-        ) : loadError ? (
-          <div style={{ textAlign: "center", padding: 60 }}>{t("common.loadError")}</div>
-        ) : presets.length === 0 ? (
-          <div style={{ textAlign: "center", padding: 60 }}>
+          <div className="data-state-loading">{t("common.loading")}</div>
+        ) : error ? (
+          <div className="data-state-error">
+            <p>{t("common.loadError")}</p>
+            <button type="button" className="data-state-retry" onClick={retry}>
+              {t("common.retry", "Retry")}
+            </button>
+          </div>
+        ) : empty ? (
+          <div className="data-state-empty">
+            <Download size={40} strokeWidth={1.2} />
             <p>{t("presets.empty")}</p>
           </div>
         ) : (

@@ -1,6 +1,6 @@
 import { jsonResponse, badRequest } from "../../_responses";
 import { hashPassword, createUserSession, userSessionCookie } from "../../_auth";
-import { authSecretUnavailable, enforceRateLimit, getRequiredAuthSecret, rateLimited } from "../../_security";
+import { authSecretUnavailable, enforceRateLimit, getRequiredAuthSecret, rateLimited, timingSafeEqual } from "../../_security";
 
 type AuthEnv = Env & {
   AUTH_SECRET?: string;
@@ -37,7 +37,7 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
   }
 
   const passwordHash = await hashPassword(password, user.salt);
-  if (passwordHash !== user.password_hash) {
+  if (!timingSafeEqual(passwordHash, user.password_hash)) {
     return jsonResponse({ error: "邮箱或密码不正确" }, 401);
   }
 

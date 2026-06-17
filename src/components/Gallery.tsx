@@ -1,9 +1,9 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Play, Share2, Loader2 } from "lucide-react";
+import { Play, Share2, Loader2, Search, X } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
-import { getPhotosByStyle } from "../lib/gallery";
+import { getPhotosByStyle, searchPhotos } from "../lib/gallery";
 import type { PhotoItem, PhotoStyle } from "../types/photo";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { Section } from "./Section";
@@ -113,20 +113,23 @@ export function Gallery() {
   const { sectionCopy } = useSiteContent();
   const { photos: sourcePhotos } = usePublicPhotos();
   const [filter, setFilter] = useState<StyleFilter>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const masonryRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Distortion hover on gallery cards
   const distortRef = useDistortionHover();
 
-  const photos = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
+  const styleFiltered = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
+  const photos = useMemo<PhotoItem[]>(() => searchPhotos(styleFiltered, searchQuery), [styleFiltered, searchQuery]);
 
-  // Reset visible count when filter changes
+  // Reset visible count when filter or search changes
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [filter]);
+  }, [filter, searchQuery]);
 
   const visiblePhotos = useMemo(() => photos.slice(0, visibleCount), [photos, visibleCount]);
   const hasMore = visibleCount < photos.length;
@@ -218,6 +221,39 @@ export function Gallery() {
           <strong>{t("gallery.intro")}</strong>
         </div>
         <p>{t("gallery.description")}</p>
+      </div>
+
+      <div className="gallery-search-row">
+        <div className="gallery-search-wrap">
+          <Search size={16} className="gallery-search-icon" />
+          <input
+            ref={searchInputRef}
+            type="search"
+            className="gallery-search-input"
+            placeholder={t("gallery.searchPlaceholder", "Search by title, location, style...")}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label={t("gallery.searchPlaceholder", "Search photos")}
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              className="gallery-search-clear"
+              onClick={() => { setSearchQuery(""); searchInputRef.current?.focus(); }}
+              aria-label={t("gallery.clearSearch", "Clear search")}
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+        {photos.length === 0 && !searchQuery && (
+          <span className="gallery-search-count">{t("gallery.noResults", "No results")}</span>
+        )}
+        {searchQuery && (
+          <span className="gallery-search-count">
+            {t("gallery.resultCount", { count: photos.length, defaultValue: `${photos.length} photos` })}
+          </span>
+        )}
       </div>
 
       <div className="filter-row" role="group" aria-label={t("gallery.intro")}>

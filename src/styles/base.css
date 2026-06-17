@@ -566,6 +566,62 @@ a {
   backface-visibility: hidden;
 }
 
+/* ── Nav User Menu ── */
+.nav-user-menu {
+  position: relative;
+}
+
+.nav-user-btn {
+  font-size: 13px;
+  width: auto;
+  padding-inline: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 8px;
+  min-width: 160px;
+  z-index: 100;
+  box-shadow: var(--warm-shadow);
+}
+
+.nav-user-email {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  color: var(--caramel-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 4px;
+}
+
+.nav-user-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--caramel-muted);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.nav-user-link:hover {
+  background: rgba(255, 210, 184, 0.1);
+}
+
 /* ── 3D Card Tilt Effect (micro-interaction) ── */
 [data-tilt] {
   transition: transform 0.1s ease-out;

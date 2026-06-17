@@ -64,7 +64,7 @@ export function LoadingScreen() {
         alignItems: "center",
         justifyContent: "center",
         gap: 16,
-        background: "#FEF3DD",
+        background: "var(--custard-bg, #FEF3DD)",
         fontFamily: '"Naihuangbao WenKai", "Kaiti SC", "KaiTi", serif',
         overflow: "hidden",
       }}
@@ -74,12 +74,12 @@ export function LoadingScreen() {
         style={{ width: 80, height: 80, filter: "blur(18px)", opacity: 0 }}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="80" height="80" aria-hidden="true">
-          <rect width="512" height="512" rx="96" fill="#F5E6D3" />
-          <circle cx="256" cy="270" r="126" fill="#fff8ed" stroke="#7B5C43" strokeWidth="22" />
-          <circle cx="256" cy="270" r="58" fill="#7B5C43" />
-          <circle cx="338" cy="202" r="21" fill="#7B5C43" />
-          <path d="M146 146h66l28-36h92l28 36h38c36 0 65 29 65 65v146c0 36-29 65-65 65H114c-36 0-65-29-65-65V211c0-36 29-65 65-65h32Z" fill="none" stroke="#7B5C43" strokeWidth="24" strokeLinejoin="round" />
-          <path d="M132 177h65" stroke="#7B5C43" strokeWidth="20" strokeLinecap="round" />
+          <rect width="512" height="512" rx="96" fill="var(--custard-cream, #F5E6D3)" />
+          <circle cx="256" cy="270" r="126" fill="var(--paper-white, #fff8ed)" stroke="var(--caramel-deep, #7B5C43)" strokeWidth="22" />
+          <circle cx="256" cy="270" r="58" fill="var(--caramel-deep, #7B5C43)" />
+          <circle cx="338" cy="202" r="21" fill="var(--caramel-deep, #7B5C43)" />
+          <path d="M146 146h66l28-36h92l28 36h38c36 0 65 29 65 65v146c0 36-29 65-65 65H114c-36 0-65-29-65-65V211c0-36 29-65 65-65h32Z" fill="none" stroke="var(--caramel-deep, #7B5C43)" strokeWidth="24" strokeLinejoin="round" />
+          <path d="M132 177h65" stroke="var(--caramel-deep, #7B5C43)" strokeWidth="20" strokeLinecap="round" />
         </svg>
       </div>
       <div
@@ -87,14 +87,14 @@ export function LoadingScreen() {
         style={{
           opacity: 0,
           fontSize: 22,
-          color: "#8B5E4A",
+          color: "var(--caramel-text, #8B5E4A)",
           fontWeight: 700,
           letterSpacing: "0.08em",
         }}
       >
         {t("loadingScreen.brandName")}
       </div>
-      <div style={{ fontSize: 13, color: "#9C7664", marginTop: 4 }}>
+      <div style={{ fontSize: 13, color: "var(--caramel-muted, #9C7664)", marginTop: 4 }}>
         {t("loadingScreen.subtitle")}
       </div>
     </div>

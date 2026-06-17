@@ -14,3 +14,15 @@ export function getPhotosByStyle(photos: PhotoItem[], style: PhotoStyle | "all")
   }
   return publicPhotos.filter((photo) => photo.style === style);
 }
+
+export function searchPhotos(photos: PhotoItem[], query: string): PhotoItem[] {
+  if (!query.trim()) return photos;
+  const q = query.trim().toLowerCase();
+  return photos.filter(
+    (photo) =>
+      photo.title.toLowerCase().includes(q) ||
+      photo.location.toLowerCase().includes(q) ||
+      photo.style.toLowerCase().includes(q) ||
+      (photo.album && photo.album.toLowerCase().includes(q)),
+  );
+}

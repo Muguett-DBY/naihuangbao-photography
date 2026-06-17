@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, Users, Clock, CheckCircle } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
+import { useApiItem } from "../hooks/useApiItem";
+import { useWorkshopRegistration } from "../hooks/useWorkshopRegistration";
 import { PageTransition } from "../components/shared/PageTransition";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -12,48 +14,21 @@ import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { WorkshopCountdown } from "../components/WorkshopCountdown";
 import { CapacityBar } from "../components/CapacityBar";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
-import { publicMutationHeaders } from "../lib/admin-helpers";
 import { PaymentForm } from "../components/PaymentForm";
 import type { Workshop } from "../types/content";
-import { getApiError, readJsonResponse } from "../lib/http";
 
 export function WorkshopDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [workshop, setWorkshop] = useState<Workshop | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [formName, setFormName] = useState("");
-  const [formContact, setFormContact] = useState("");
-  const [formMsg, setFormMsg] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  const { item: workshop, loading, error } = useApiItem<Workshop>(id ? `/api/workshops/${id}` : null);
+  const registration = useWorkshopRegistration(workshop);
   const [showPayment, setShowPayment] = useState(false);
   const [registrationId, setRegistrationId] = useState<string | null>(null);
 
   useGsapPageEffects(rootRef);
 
   const lang = i18n.language;
-
-  useEffect(() => {
-    if (!id) return;
-    const ctrl = new AbortController();
-    setLoading(true);
-    setError(null);
-
-    fetch("/api/workshops", { signal: ctrl.signal })
-      .then((r) => (r.ok ? r.json() : { workshops: [] }))
-      .then((d: { workshops: Workshop[] }) => {
-        if (!ctrl.signal.aborted) {
-          const nextWorkshop = (d.workshops || []).find((candidate) => candidate.id === id);
-          if (!nextWorkshop) setError("not found");
-          else setWorkshop(nextWorkshop);
-        }
-      })
-      .catch(() => { if (!ctrl.signal.aborted) setError(t("common.loading")); })
-      .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
-    return () => ctrl.abort();
-  }, [id]);
 
   const workshopTitle = workshop ? getTitle(workshop, lang) : "";
   useSEO({
@@ -63,39 +38,13 @@ export function WorkshopDetailPage() {
   });
 
   const handleRegister = async () => {
-    if (!formName.trim()) { setFormMsg(t("workshops.form.nameRequired")); return; }
-    if (!formContact.trim()) { setFormMsg(t("workshops.form.contactRequired")); return; }
-    setSubmitting(true);
-    setFormMsg("");
-    try {
-      const r = await fetch(`/api/workshops/${id}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
-        body: JSON.stringify({ name: formName.trim(), contact: formContact.trim(), participants: 1 }),
-      });
-      if (r.ok) {
-        const data = await readJsonResponse<{ id?: string }>(r);
-        if (!data?.id) throw new Error(t("workshops.form.error"));
-        setRegistrationId(data.id);
-
-        if (workshop?.price_cents && workshop.price_cents > 0) {
-          setShowPayment(true);
-          setSubmitting(false);
-          return;
-        }
-
-        setFormMsg(t("workshops.form.success"));
-        setFormName("");
-        setFormContact("");
-        if (workshop) setWorkshop({ ...workshop, current_participants: workshop.current_participants + 1 });
-      } else {
-        const data = await readJsonResponse(r);
-        setFormMsg(getApiError(data, t("workshops.form.error")));
+    if (!id) return;
+    const result = await registration.register(id);
+    if (result) {
+      setRegistrationId(result.registrationId ?? null);
+      if (result.requiresPayment) {
+        setShowPayment(true);
       }
-    } catch {
-      setFormMsg(t("workshops.form.error"));
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -219,13 +168,11 @@ export function WorkshopDetailPage() {
                 amountCents={workshop.price_cents}
                 currency={workshop.currency || "usd"}
                 referenceId={registrationId}
-                metadata={{ workshopTitle: getTitle(workshop, lang), name: formName.trim() }}
+                metadata={{ workshopTitle: getTitle(workshop, lang), name: registration.formName.trim() }}
                 onSuccess={() => {
-                  setFormMsg(t("workshops.form.success"));
+                  registration.setFormMsg(t("workshops.form.success"));
                   setShowPayment(false);
-                  setFormName("");
-                  setFormContact("");
-                  if (workshop) setWorkshop({ ...workshop, current_participants: workshop.current_participants + 1 });
+                  registration.resetForm();
                 }}
                 onError={() => {}}
                 onCancel={() => setShowPayment(false)}
@@ -237,7 +184,8 @@ export function WorkshopDetailPage() {
                 </label>
                 <input
                   id="workshop-detail-name"
-                  value={formName} onChange={(e) => setFormName(e.target.value)}
+                  value={registration.formName}
+                  onChange={(e) => registration.setFormName(e.target.value)}
                   placeholder={t("workshops.form.name")}
                   className="workshop-detail-register-input"
                   aria-label={t("workshops.form.name")}
@@ -247,14 +195,15 @@ export function WorkshopDetailPage() {
                 </label>
                 <input
                   id="workshop-detail-contact"
-                  value={formContact} onChange={(e) => setFormContact(e.target.value)}
+                  value={registration.formContact}
+                  onChange={(e) => registration.setFormContact(e.target.value)}
                   placeholder={t("workshops.form.contact")}
                   className="workshop-detail-register-input"
                   aria-label={t("workshops.form.contact")}
                 />
-                {formMsg && <p className={`workshop-detail-form-msg${formMsg === t("workshops.form.success") ? " workshop-detail-form-msg--success" : " workshop-detail-form-msg--error"}`}>{formMsg}</p>}
-                <Button type="primary" onClick={handleRegister} disabled={submitting}>
-                  {submitting ? t("workshops.form.submitting") : t("workshops.register")}
+                {registration.formMsg && <p className={`workshop-detail-form-msg${registration.formMsg === t("workshops.form.success") ? " workshop-detail-form-msg--success" : " workshop-detail-form-msg--error"}`}>{registration.formMsg}</p>}
+                <Button type="primary" onClick={handleRegister} disabled={registration.submitting}>
+                  {registration.submitting ? t("workshops.form.submitting") : t("workshops.register")}
                 </Button>
               </>
             )}

@@ -1,55 +1,44 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { BookOpen } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
+import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
+import { PageHero } from "../components/shared/PageHero";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import type { Course } from "../types/content";
-import { isAbortError } from "../lib/errors";
 
 export function CoursesPage() {
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
+  const { items: courses, loading, error, retry, empty } = useApiList<Course>("/api/courses", "courses");
 
   useSEO({ titleKey: "seo.coursesTitle", descKey: "seo.coursesDesc", path: "/courses" });
   useGsapPageEffects(rootRef);
 
-  useEffect(() => {
-    const ctrl = new AbortController();
-    fetch("/api/courses", { signal: ctrl.signal })
-      .then((r) => r.json())
-      .then((d: { courses: Course[] }) => { if (!ctrl.signal.aborted) setCourses(d.courses || []); })
-      .catch((error) => {
-        if (!isAbortError(error)) {
-          console.warn("[courses] failed to load", error);
-          setLoadError(true);
-        }
-      })
-      .finally(() => { if (!ctrl.signal.aborted) setLoading(false); });
-    return () => ctrl.abort();
-  }, []);
-
   return (
     <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <p className="section-eyebrow">Courses</p>
-          <h1>{t("courses.title")}</h1>
-          <span>{t("courses.intro")}</span>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Courses"
+        title={t("courses.title")}
+        subtitle={t("courses.intro")}
+      />
 
       <section className="section-shell is-visible">
         {loading ? (
-          <div style={{ textAlign: "center", padding: 60 }}>{t("loading")}</div>
-        ) : loadError ? (
-          <div style={{ textAlign: "center", padding: 60 }}>{t("common.loadError")}</div>
-        ) : courses.length === 0 ? (
-          <div style={{ textAlign: "center", padding: 60 }}>
+          <div className="data-state-loading">{t("common.loading")}</div>
+        ) : error ? (
+          <div className="data-state-error">
+            <p>{t("common.loadError")}</p>
+            <button type="button" className="data-state-retry" onClick={retry}>
+              {t("common.retry", "Retry")}
+            </button>
+          </div>
+        ) : empty ? (
+          <div className="data-state-empty">
+            <BookOpen size={40} strokeWidth={1.2} />
             <p>{t("courses.empty")}</p>
           </div>
         ) : (

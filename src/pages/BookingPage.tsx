@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 
 const Packages = lazy(() => import("../components/Packages").then((m) => ({ default: m.Packages })));
 const ServiceDetails = lazy(() => import("../components/ServiceDetails").then((m) => ({ default: m.ServiceDetails })));
@@ -26,21 +27,29 @@ export function BookingPage() {
         </div>
       </section>
 
-      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
-        <StyleQuiz />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
+          <StyleQuiz />
+        </Suspense>
+      </ErrorBoundary>
 
-      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
-        <Packages />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
+          <Packages />
+        </Suspense>
+      </ErrorBoundary>
 
-      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
-        <ServiceDetails />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
+          <ServiceDetails />
+        </Suspense>
+      </ErrorBoundary>
 
-      <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
-        <ProcessAndFaq />
-      </Suspense>
+      <ErrorBoundary>
+        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
+          <ProcessAndFaq />
+        </Suspense>
+      </ErrorBoundary>
     </PageTransition>
   );
 }

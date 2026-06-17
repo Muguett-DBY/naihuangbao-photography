@@ -43,6 +43,10 @@
     "share": "分享",
     "linkCopied": "链接已复制到剪贴板",
     "loading": "加载更多…",
+    "searchPlaceholder": "按标题、地点、风格搜索…",
+    "clearSearch": "清除搜索",
+    "resultCount": "{{count}} 张照片",
+    "noResults": "未找到匹配结果",
     "filters": {
       "all": "全部",
       "jiangnan": "江南感",
@@ -123,10 +127,14 @@
     "mapLabelFee": "10km — 有偿可达"
   },
   "midCTA": {
-    "eyebrow": "即刻预约",
-    "title": "把日常拍成诗",
-    "desc": "无论是一个人、两个人，还是和闺蜜一起——每一次快门，都是属于你们的南京记忆。",
+    "eyebrow": "立即预约",
+    "title": "把你的日子写成诗",
+    "desc": "一个人、两个人、或带上闺蜜——每一次快门都是你的南京故事。",
     "cta": "预约拍摄 →"
+  },
+  "home": {
+    "servicesTitle": "服务",
+    "styleQuizTitle": "风格测试"
   },
   "whyChooseUs": {
     "eyebrow": "为什么选择我们",
@@ -583,6 +591,7 @@
     "learnMore": "了解更多",
     "loading": "加载中...",
     "loadError": "加载失败，请稍后重试",
+    "retry": "重试",
     "skipToContent": "跳转到内容",
     "socialXiaohongshu": "小红书"
   },
@@ -758,6 +767,8 @@
     "retry": "重试"
   },
   "seo": {
+    "siteName": "奶黄包摄影",
+    "siteTagline": "奶黄包摄影 | 南京约拍",
     "homeTitle": "奶黄包摄影 | 南京约拍",
     "homeDesc": "偏柔雾胶片感的自然约拍，适合日常记录、江南感写真、情侣纪念和轻松陪拍。南京女生写真与情侣约拍首选。",
     "galleryTitle": "作品集 | 奶黄包摄影",

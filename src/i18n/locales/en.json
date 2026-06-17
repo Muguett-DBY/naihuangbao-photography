@@ -43,6 +43,10 @@
     "share": "Share",
     "linkCopied": "Link copied to clipboard",
     "loading": "Loading more...",
+    "searchPlaceholder": "Search by title, location, style...",
+    "clearSearch": "Clear search",
+    "resultCount": "{{count}} photos",
+    "noResults": "No results found",
     "filters": {
       "all": "All",
       "jiangnan": "Jiangnan",
@@ -127,6 +131,10 @@
     "title": "Turn Your Day Into Poetry",
     "desc": "Alone, as a couple, or with your best friend — every shutter release captures your Nanjing story.",
     "cta": "Book a Session →"
+  },
+  "home": {
+    "servicesTitle": "Services",
+    "styleQuizTitle": "Style Quiz"
   },
   "whyChooseUs": {
     "eyebrow": "Why Choose Us",
@@ -583,6 +591,7 @@
     "learnMore": "Learn more",
     "loading": "Loading...",
     "loadError": "Unable to load. Please try again later.",
+    "retry": "Retry",
     "skipToContent": "Skip to content",
     "socialXiaohongshu": "Xiaohongshu"
   },
@@ -758,6 +767,8 @@
     "retry": "Retry"
   },
   "seo": {
+    "siteName": "Naihuangbao Photography",
+    "siteTagline": "Naihuangbao Photography | Nanjing Portrait",
     "homeTitle": "Naihuangbao Photography | Nanjing Portrait",
     "homeDesc": "Soft, film-like portrait photography in Nanjing. Natural everyday portraits for individuals and couples — Xianlin, Xuanwu Lake, Yihe Road and beyond.",
     "galleryTitle": "Portfolio | Naihuangbao Photography",

@@ -1,4 +1,5 @@
 import { jsonResponse, badRequest, unavailable } from "../../../_responses";
+import { enforceRateLimit, rateLimited } from "../../../_security";
 
 type ApiEnv = Env;
 
@@ -7,6 +8,9 @@ export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
   if (!context.env.DB) {
     return jsonResponse({ error: "服务不可用" }, 503);
   }
+
+  const limit = await enforceRateLimit(context.request, context.env, "preset-download", 10, 60);
+  if (!limit.ok) return rateLimited(limit.retryAfter);
 
   const id = (context.params as Record<string, string>).id;
 

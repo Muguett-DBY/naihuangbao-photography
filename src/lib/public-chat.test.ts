@@ -9,7 +9,6 @@ const chatHelperPath = resolve(root, "functions/_chat.ts");
 const adminChatApiPath = resolve(root, "functions/api/admin/chat.ts");
 const widgetPath = resolve(root, "src/components/PublicChatWidget.tsx");
 const launcherPath = resolve(root, "src/components/PublicChatLauncher.tsx");
-const appSource = readFileSync(resolve(root, "src/App.tsx"), "utf8");
 const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
 const adminSource = readFileSync(resolve(root, "src/components/AdminDashboard.tsx"), "utf8");
 const adminCss = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");

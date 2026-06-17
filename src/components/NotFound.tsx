@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Camera } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
@@ -11,6 +11,11 @@ export function NotFound() {
   return (
     <PageTransition>
       <div className="not-found">
+        <div className="not-found-decoration" aria-hidden="true">
+          <span>✿</span>
+          <span>✦</span>
+          <span>♡</span>
+        </div>
         <h1>404</h1>
         <p>{t("notFound.desc")}</p>
         <Link to="/">

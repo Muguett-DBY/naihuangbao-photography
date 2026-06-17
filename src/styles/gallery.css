@@ -258,6 +258,101 @@
 /* ══════════════════════════════════════════════
    Filter Row - Magazine Tab Style
    ══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   Gallery Search
+   ══════════════════════════════════════════════ */
+.gallery-search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: clamp(16px, 2vw, 24px);
+  flex-wrap: wrap;
+}
+
+.gallery-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+}
+
+.gallery-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--caramel-muted);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.gallery-search-input {
+  width: 100%;
+  padding: 10px 36px 10px 36px;
+  border: 1px solid var(--warm-border);
+  border-radius: 999px;
+  background: var(--card-bg, rgba(255,255,255,0.7));
+  color: var(--caramel-ink);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.gallery-search-input::placeholder {
+  color: var(--caramel-muted);
+  opacity: 0.6;
+}
+
+.gallery-search-input:focus {
+  border-color: var(--peach-accent);
+  box-shadow: 0 0 0 3px rgba(255, 184, 161, 0.15);
+}
+
+.gallery-search-input::-webkit-search-cancel-button,
+.gallery-search-input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.gallery-search-clear {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(139, 94, 74, 0.1);
+  color: var(--caramel-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.gallery-search-clear:hover {
+  background: rgba(139, 94, 74, 0.2);
+}
+
+.gallery-search-count {
+  font-size: 0.82rem;
+  color: var(--caramel-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .gallery-search-wrap {
+    max-width: 100%;
+    min-width: 100%;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   Filter Row
+   ══════════════════════════════════════════════ */
 .filter-row {
   display: flex;
   flex-wrap: wrap;

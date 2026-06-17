@@ -183,75 +183,36 @@ export function Header() {
         style={{ fontSize: 13, width: "auto", paddingInline: 8 }}
       >
         <Languages size={14} />
-        <span style={{ marginLeft: 3 }}>{t(`langToggle.languages.${i18n.language}` as any)}</span>
+        <span style={{ marginLeft: 3 }}>{t(`langToggle.languages.${i18n.language}` as never)}</span>
       </button>
       <div ref={userMenuRef} className="nav-user-menu">
         {user ? (
           <>
             <button
-              className="mood-toggle"
+              className="mood-toggle nav-user-btn"
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              style={{ fontSize: 13, width: "auto", paddingInline: 8, display: "flex", alignItems: "center", gap: 4 }}
               aria-label={t("auth.userMenu", "用户菜单")}
               aria-expanded={userMenuOpen}
             >
               <User size={14} />
-              <span style={{ marginLeft: 3 }}>{user.displayName}</span>
+              <span>{user.displayName}</span>
             </button>
             {userMenuOpen && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "100%",
-                  right: 0,
-                  marginTop: 8,
-                  background: "var(--card-bg)",
-                  border: "1px solid var(--border-subtle)",
-                  borderRadius: 8,
-                  padding: 8,
-                  minWidth: 160,
-                  zIndex: 100,
-                }}
-              >
-                <div style={{ padding: "8px 12px", fontSize: "0.85rem", color: "var(--caramel-muted)", borderBottom: "1px solid var(--border-subtle)", marginBottom: 4 }}>
+              <div className="nav-user-dropdown">
+                <div className="nav-user-email">
                   {user.email}
                 </div>
                 <Link
                   to="/dashboard"
                   onClick={() => setUserMenuOpen(false)}
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    padding: "8px 12px",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                    color: "var(--caramel-muted)",
-                    borderRadius: 4,
-                    textDecoration: "none",
-                  }}
+                  className="nav-user-link"
                 >
                   <LayoutDashboard size={14} />
                   {t("dashboard.title", "个人中心")}
                 </Link>
                 <button
                   onClick={() => { logout(); setUserMenuOpen(false); }}
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    padding: "8px 12px",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                    color: "var(--caramel-muted)",
-                    borderRadius: 4,
-                  }}
+                  className="nav-user-link"
                 >
                   <LogOut size={14} />
                   {t("auth.logout", "退出登录")}
@@ -262,11 +223,10 @@ export function Header() {
         ) : (
           <Link
             to="/login"
-            className="nav-login"
-            style={{ fontSize: 13, width: "auto", paddingInline: 8, display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}
+            className="nav-login nav-user-btn"
           >
             <LogIn size={14} />
-            <span style={{ marginLeft: 3 }}>{t("auth.login", "登录")}</span>
+            <span>{t("auth.login", "登录")}</span>
           </Link>
         )}
       </div>
