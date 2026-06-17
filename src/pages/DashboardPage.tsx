@@ -8,13 +8,15 @@ import { useSEO } from "../hooks/useSEO";
 import { useAuth } from "../hooks/useAuth";
 import { useFetch } from "../hooks/useFetch";
 import { PageTransition } from "../components/shared/PageTransition";
+import { tWorkshopStatus, tCourseDifficulty } from "../lib/i18n-typed";
+import { publicMutationHeaders } from "../lib/admin-helpers";
 import type { Booking, Purchase, Course, Workshop, UserPhoto } from "../types/dashboard";
 
 function StatusBadge({ status }: { status: string }) {
   const { t } = useTranslation();
   return (
     <span className={`dashboard-status dashboard-status--${status}`}>
-      {t(`dashboard.status.${status}` as unknown as never) || status}
+      {tWorkshopStatus(t, status) || status}
     </span>
   );
 }
@@ -56,6 +58,7 @@ function BookingsTab() {
     try {
       const response = await fetch(`/api/user/bookings/${bookingId}/cancel`, {
         method: "POST",
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         credentials: "include",
       });
       if (response.ok) {
@@ -73,7 +76,7 @@ function BookingsTab() {
     try {
       const response = await fetch(`/api/user/bookings/${bookingId}/reschedule`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         credentials: "include",
         body: JSON.stringify({ preferred_date: newDate }),
       });
@@ -303,7 +306,7 @@ function CoursesTab() {
         <div key={c.id} className="dashboard-card">
           <div className="dashboard-card-header">
             <h4>{c.title}</h4>
-            <span className="dashboard-card-type">{t(`courses.difficulty.${c.difficulty}` as unknown as never)}</span>
+            <span className="dashboard-card-type">{tCourseDifficulty(t, c.difficulty)}</span>
           </div>
           <div className="dashboard-progress">
             <div className="dashboard-progress-bar">
@@ -372,7 +375,7 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
     try {
       const response = await fetch("/api/user/profile", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         credentials: "include",
         body: JSON.stringify({ displayName }),
       });
@@ -396,7 +399,7 @@ function ProfileTab({ user }: { user: { displayName: string; email: string } }) 
     try {
       const response = await fetch("/api/user/profile", {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         credentials: "include",
         body: JSON.stringify({ currentPassword, newPassword }),
       });

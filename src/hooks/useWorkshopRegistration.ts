@@ -81,7 +81,7 @@ export function useWorkshopRegistration(workshop?: Workshop | null) {
     } finally {
       setSubmitting(false);
     }
-  }, [formName, formContact, workshop, t, i18n.language, sendWorkshopRegistration, resetForm]);
+  }, [formName, formContact, workshop, t, sendWorkshopRegistration, resetForm]);
 
   return {
     formName,

@@ -11,6 +11,7 @@ import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { getTitle, getDesc, getLocalizedField } from "../lib/i18n-helpers";
+import { tCourseCategory, tCourseDifficulty } from "../lib/i18n-typed";
 import { useFetch } from "../hooks/useFetch";
 import { useAuth } from "../hooks/useAuth";
 import { VideoPlayer } from "../components/VideoPlayer";
@@ -71,10 +72,10 @@ export function CourseDetailPage() {
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
           <DetailBackLink to="/courses" label={t("courseDetail.backToList")} />
-          <p className="section-eyebrow">{t(`courses.categories.${course.category}` as any)}</p>
+          <p className="section-eyebrow">{tCourseCategory(t, course.category)}</p>
           <h1>{getTitle(course, lang)}</h1>
           <div className="course-detail-meta">
-            <span className="course-difficulty">{t(`courses.difficulty.${course.difficulty}` as any)}</span>
+            <span className="course-difficulty">{tCourseDifficulty(t, course.difficulty)}</span>
             {course.duration_minutes && (
               <span><Clock size={14} /> {t("courses.duration", { minutes: course.duration_minutes })}</span>
             )}

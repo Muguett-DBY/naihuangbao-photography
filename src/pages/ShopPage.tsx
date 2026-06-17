@@ -8,7 +8,9 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { DataState } from "../components/shared/DataState";
 import { getName, getDesc } from "../lib/i18n-helpers";
+import { tMerchandiseCategory } from "../lib/i18n-typed";
 import type { Merchandise } from "../types/content";
 
 export function ShopPage() {
@@ -30,21 +32,14 @@ export function ShopPage() {
       />
 
       <section className="section-shell is-visible">
-        {loading ? (
-          <div className="data-state-loading">{t("common.loading")}</div>
-        ) : error ? (
-          <div className="data-state-error">
-            <p>{t("common.loadError")}</p>
-            <button type="button" className="data-state-retry" onClick={retry}>
-              {t("common.retry", "Retry")}
-            </button>
-          </div>
-        ) : empty ? (
-          <div className="data-state-empty">
-            <ShoppingCart size={40} strokeWidth={1.2} />
-            <p>{t("merchandise.empty")}</p>
-          </div>
-        ) : (
+        <DataState
+          loading={loading}
+          error={error}
+          empty={empty}
+          retry={retry}
+          icon={<ShoppingCart size={40} strokeWidth={1.2} />}
+          emptyText={t("merchandise.empty")}
+        >
           <div className="merchandise-grid">
             {items.map((item) => (
               <div
@@ -57,7 +52,7 @@ export function ShopPage() {
                   <img src={item.images[0]} alt={getName(item, i18n.language)} className="merchandise-cover" loading="lazy" />
                 )}
                 <div className="merchandise-info">
-                  <span className="merchandise-category">{t(`merchandise.categories.${item.category}` as any)}</span>
+                  <span className="merchandise-category">{tMerchandiseCategory(t, item.category)}</span>
                   <h3>{getName(item, i18n.language)}</h3>
                   <p>{getDesc(item, i18n.language)}</p>
                   <div className="merchandise-actions">
@@ -73,7 +68,7 @@ export function ShopPage() {
               </div>
             ))}
           </div>
-        )}
+        </DataState>
       </section>
     </PageTransition>
   );

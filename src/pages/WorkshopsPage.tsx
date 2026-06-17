@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { MapPin, Calendar, Users } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
@@ -9,6 +9,7 @@ import { useApiList } from "../hooks/useApiList";
 import { useWorkshopRegistration } from "../hooks/useWorkshopRegistration";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { DataState } from "../components/shared/DataState";
 import { WorkshopCountdown } from "../components/WorkshopCountdown";
 import { CapacityBar } from "../components/CapacityBar";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
@@ -47,21 +48,14 @@ export function WorkshopsPage() {
       />
 
       <section className="section-shell is-visible">
-        {loading ? (
-          <div className="data-state-loading">{t("common.loading")}</div>
-        ) : error ? (
-          <div className="data-state-error">
-            <p>{t("common.loadError")}</p>
-            <button type="button" className="data-state-retry" onClick={retry}>
-              {t("common.retry", "Retry")}
-            </button>
-          </div>
-        ) : empty ? (
-          <div className="data-state-empty">
-            <MapPin size={40} strokeWidth={1.2} />
-            <p>{t("workshops.empty")}</p>
-          </div>
-        ) : (
+        <DataState
+          loading={loading}
+          error={error}
+          empty={empty}
+          retry={retry}
+          icon={<MapPin size={40} strokeWidth={1.2} />}
+          emptyText={t("workshops.empty")}
+        >
           <div className="workshops-grid">
             {workshops.map((ws) => {
               const spotsLeft = (ws.max_participants || 0) - ws.current_participants;
@@ -142,7 +136,7 @@ export function WorkshopsPage() {
               );
             })}
           </div>
-        )}
+        </DataState>
       </section>
     </PageTransition>
   );

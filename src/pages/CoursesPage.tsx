@@ -7,7 +7,9 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { DataState } from "../components/shared/DataState";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
+import { tCourseCategory, tCourseDifficulty } from "../lib/i18n-typed";
 import type { Course } from "../types/content";
 
 export function CoursesPage() {
@@ -27,21 +29,14 @@ export function CoursesPage() {
       />
 
       <section className="section-shell is-visible">
-        {loading ? (
-          <div className="data-state-loading">{t("common.loading")}</div>
-        ) : error ? (
-          <div className="data-state-error">
-            <p>{t("common.loadError")}</p>
-            <button type="button" className="data-state-retry" onClick={retry}>
-              {t("common.retry", "Retry")}
-            </button>
-          </div>
-        ) : empty ? (
-          <div className="data-state-empty">
-            <BookOpen size={40} strokeWidth={1.2} />
-            <p>{t("courses.empty")}</p>
-          </div>
-        ) : (
+        <DataState
+          loading={loading}
+          error={error}
+          empty={empty}
+          retry={retry}
+          icon={<BookOpen size={40} strokeWidth={1.2} />}
+          emptyText={t("courses.empty")}
+        >
           <div className="courses-grid">
             {courses.map((course) => (
               <Link
@@ -54,11 +49,11 @@ export function CoursesPage() {
                   <img src={course.cover_image_url} alt={getTitle(course, i18n.language)} className="course-cover" loading="lazy" />
                 )}
                 <div className="course-info">
-                  <span className="course-category">{t(`courses.categories.${course.category}` as any)}</span>
+                  <span className="course-category">{tCourseCategory(t, course.category)}</span>
                   <h3>{getTitle(course, i18n.language)}</h3>
                   <p>{getDesc(course, i18n.language)}</p>
                   <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                    <span className="course-difficulty">{t(`courses.difficulty.${course.difficulty}` as any)}</span>
+                    <span className="course-difficulty">{tCourseDifficulty(t, course.difficulty)}</span>
                     {course.duration_minutes && (
                       <span style={{ fontSize: "0.8rem", color: "var(--caramel-muted)" }}>
                         {t("courses.duration", { minutes: course.duration_minutes })}
@@ -69,7 +64,7 @@ export function CoursesPage() {
               </Link>
             ))}
           </div>
-        )}
+        </DataState>
       </section>
     </PageTransition>
   );

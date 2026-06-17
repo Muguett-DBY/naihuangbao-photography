@@ -4474,4 +4474,35 @@
   .dashboard-form-group {
     max-width: 100%;
   }
+
+  /* Grid layouts: single column on mobile */
+  .courses-grid,
+  .presets-grid,
+  .workshops-grid,
+  .merchandise-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Button touch targets: minimum 44px height */
+  .data-state-retry,
+  .workshop-register-form button,
+  .dashboard-action-btn,
+  .course-detail-module-btn,
+  .course-detail-login-btn {
+    min-height: 44px;
+  }
+
+  /* Login form: better mobile spacing */
+  .login-card {
+    padding: 24px 20px;
+  }
+
+  .login-field {
+    margin-bottom: 14px;
+  }
+
+  .login-input {
+    padding: 12px 14px 12px 36px;
+    font-size: 16px;
+  }
 }

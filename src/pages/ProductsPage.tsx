@@ -7,7 +7,9 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { DataState } from "../components/shared/DataState";
 import { getName, getDesc } from "../lib/i18n-helpers";
+import { tPresetCategory } from "../lib/i18n-typed";
 import type { Preset } from "../types/content";
 
 export function ProductsPage() {
@@ -32,21 +34,14 @@ export function ProductsPage() {
       />
 
       <section className="section-shell is-visible">
-        {loading ? (
-          <div className="data-state-loading">{t("common.loading")}</div>
-        ) : error ? (
-          <div className="data-state-error">
-            <p>{t("common.loadError")}</p>
-            <button type="button" className="data-state-retry" onClick={retry}>
-              {t("common.retry", "Retry")}
-            </button>
-          </div>
-        ) : empty ? (
-          <div className="data-state-empty">
-            <Download size={40} strokeWidth={1.2} />
-            <p>{t("presets.empty")}</p>
-          </div>
-        ) : (
+        <DataState
+          loading={loading}
+          error={error}
+          empty={empty}
+          retry={retry}
+          icon={<Download size={40} strokeWidth={1.2} />}
+          emptyText={t("presets.empty")}
+        >
           <div className="presets-grid">
             {presets.map((preset) => (
               <div
@@ -59,7 +54,7 @@ export function ProductsPage() {
                   <img src={preset.preview_images[0]} alt={getName(preset, i18n.language)} className="preset-cover" loading="lazy" />
                 )}
                 <div className="preset-info">
-                  <span className="preset-category">{t(`presets.categories.${preset.category}` as any)}</span>
+                  <span className="preset-category">{tPresetCategory(t, preset.category)}</span>
                   <h3>{getName(preset, i18n.language)}</h3>
                   <p>{getDesc(preset, i18n.language)}</p>
                   <div className="preset-actions">
@@ -78,7 +73,7 @@ export function ProductsPage() {
               </div>
             ))}
           </div>
-        )}
+        </DataState>
       </section>
     </PageTransition>
   );

@@ -13,6 +13,7 @@ import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { CompareSlider } from "../components/CompareSlider";
 import { PresetPreview } from "../components/PresetPreview";
 import { getName, getDesc } from "../lib/i18n-helpers";
+import { tPresetCategory } from "../lib/i18n-typed";
 import type { Preset } from "../types/content";
 
 export function PresetDetailPage() {
@@ -47,7 +48,7 @@ export function PresetDetailPage() {
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading preset-detail-hero-heading">
           <DetailBackLink to="/products" label={t("presetDetail.backToList")} />
-          <p className="section-eyebrow">{t(`presets.categories.${preset.category}` as any)}</p>
+          <p className="section-eyebrow">{tPresetCategory(t, preset.category)}</p>
           <h1>{getName(preset, lang)}</h1>
           <div className="preset-detail-hero-meta">
             {preset.price_display && <span className="preset-detail-hero-price">{preset.price_display}</span>}

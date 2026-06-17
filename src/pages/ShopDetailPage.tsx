@@ -12,6 +12,7 @@ import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { getName, getDesc } from "../lib/i18n-helpers";
+import { tMerchandiseCategory } from "../lib/i18n-typed";
 import type { Merchandise } from "../types/content";
 
 export function ShopDetailPage() {
@@ -44,7 +45,7 @@ export function ShopDetailPage() {
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading shop-detail-hero-heading">
           <DetailBackLink to="/shop" label={t("shopDetail.backToList")} />
-          <p className="section-eyebrow">{t(`merchandise.categories.${item.category}` as any)}</p>
+          <p className="section-eyebrow">{tMerchandiseCategory(t, item.category)}</p>
           <h1>{getName(item, lang)}</h1>
           {item.price_display && <div className="shop-detail-price">{item.price_display}</div>}
         </div>
@@ -94,7 +95,7 @@ export function ShopDetailPage() {
               <h3>{t("shopDetail.specs")}</h3>
               <div className="shop-detail-specs-grid">
                 {[
-                  { label: t("shopDetail.specCategory"), value: t(`merchandise.categories.${item.category}` as any) },
+                  { label: t("shopDetail.specCategory"), value: tMerchandiseCategory(t, item.category) },
                   { label: t("shopDetail.specPrice"), value: item.price_display },
                   { label: t("shopDetail.specAvailability"), value: item.available ? t("shopDetail.inStock") : t("shopDetail.outOfStock") },
                 ].map((spec) => (

@@ -1,4 +1,4 @@
-import { CalendarCheck, Camera, Languages, Menu, X, User, LogOut, LogIn, LayoutDashboard, Paintbrush } from "lucide-react";
+import { CalendarCheck, Camera, Languages, Menu, X, User, LogOut, LogIn, LayoutDashboard } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
 import { MoodToggle } from "../MoodToggle";
 import { useEffect, useMemo, useRef, useState } from "react";
