@@ -6,17 +6,9 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { logError } from "../lib/error-logger";
 import type { BeautySettings, BeautyCategory, BeautyTool } from "../types/photo-editor";
 import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, MAX_HISTORY } from "../data/editor-constants";
+import { prepareFaceApiBackend, loadFaceApiModels } from "../lib/photo-processing";
 
 const MODEL_URL = "/models";
-
-async function prepareFaceApiBackend(api: any) {
-  try {
-    await api.tf?.setBackend?.("cpu");
-    await api.tf?.ready?.();
-  } catch {
-    // Some older face-api bundles do not expose a switchable CPU backend.
-  }
-}
 
 export default function PhotoEditorPage() {
   const { t } = useTranslation();
@@ -37,6 +29,7 @@ export default function PhotoEditorPage() {
   const faceModelsPromiseRef = useRef<Promise<boolean> | null>(null);
 
   const [loading, setLoading] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
   const [detecting, setDetecting] = useState(false);
   const [cat, setCat] = useState<BeautyCategory>("beauty");
   const [tool, setTool] = useState<BeautyTool>("smooth");
@@ -114,30 +107,19 @@ export default function PhotoEditorPage() {
   // Load models
   useEffect(() => {
     let m = true;
-    const loadPromise = import("face-api.js")
-      .then(async api => {
-        faceApiRef.current = api;
-        await prepareFaceApiBackend(api);
-        await Promise.all([
-          api.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-          api.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-        ]);
+    setLoadProgress(0);
+    const loadPromise = loadFaceApiModels((progress) => {
+      if (m) setLoadProgress(progress);
+    })
+      .then(success => {
         if (m) {
-          modelsReadyRef.current = true;
-          modelErrorRef.current = false;
-          setModelsReady(true);
-          setModelError(false);
+          modelsReadyRef.current = success;
+          modelErrorRef.current = !success;
+          setModelsReady(success);
+          setModelError(!success);
+          setLoadProgress(success ? 100 : 0);
         }
-        return true;
-      })
-      .catch(e => {
-        console.error("Model load failed:", e);
-        logError("EditorModelLoad", e);
-        if (m) {
-          modelErrorRef.current = true;
-          setModelError(true);
-        }
-        return false;
+        return success;
       });
     faceModelsPromiseRef.current = loadPromise;
     return () => { m = false; };
@@ -1374,7 +1356,14 @@ export default function PhotoEditorPage() {
         <header className="editor-header">
           <h1>{t("editor.title")}</h1>
           <p>{t("editor.subtitle")}</p>
-          {!modelsReady && !modelError && <p className="editor-loading-models">{t("editor.loadingModels")}</p>}
+          {!modelsReady && !modelError && (
+            <div className="editor-loading-models">
+              <div className="editor-loading-bar">
+                <div className="editor-loading-bar-fill" style={{ width: `${Math.max(loadProgress, 5)}%` }} />
+              </div>
+              <span>{t("editor.loadingModels")}{loadProgress > 0 ? ` ${Math.round(loadProgress)}%` : ""}</span>
+            </div>
+          )}
           {modelError && <p className="editor-loading-models" role="alert">{t("editor.loadingModels")} — <button type="button" className="editor-btn" style={{fontSize: "0.8rem", padding: "4px 12px"}} onClick={() => window.location.reload()}>{t("editor.reset")}</button></p>}
         </header>
 
