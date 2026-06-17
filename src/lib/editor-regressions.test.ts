@@ -15,12 +15,13 @@ describe("editor regression contracts", () => {
 
   it("keeps editor image previews bounded and face failures explicit", () => {
     const editor = read("src/pages/PhotoEditorPage.tsx");
+    const photoProcessing = read("src/lib/photo-processing.ts");
     const pagesCss = read("src/styles/pages.css");
     const zhCN = read("src/i18n/locales/zh-CN.json");
 
     expect(editor).toContain("waitForFaceModels");
-    expect(editor).toContain("prepareFaceApiBackend");
-    expect(editor).toContain('setBackend?.("cpu")');
+    expect(photoProcessing).toContain("prepareFaceApiBackend");
+    expect(photoProcessing).toContain('setBackend?.("cpu")');
     expect(editor).toContain("editor.noFaceDetected");
     expect(pagesCss).toContain("max-height: min(72dvh, 760px)");
     expect(pagesCss).toContain("max-height: 58dvh");
