@@ -494,6 +494,49 @@
   aspect-ratio: 16 / 10;
   object-fit: contain;
   background: var(--custard-bg);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.preset-cover-wrap {
+  position: relative;
+  overflow: hidden;
+  background: var(--custard-bg);
+}
+
+.preset-card:hover .preset-cover {
+  transform: scale(1.05);
+}
+
+.preset-cover-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.preset-download-count {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
 }
 
 .preset-info {

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Download } from "lucide-react";
@@ -12,14 +12,30 @@ import { getName, getDesc } from "../lib/i18n-helpers";
 import { tPresetCategory } from "../lib/i18n-typed";
 import type { Preset } from "../types/content";
 
+type CategoryFilter = string | "all";
+
 export function ProductsPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const rootRef = useRef<HTMLDivElement>(null);
   const { items: presets, loading, error, retry, empty } = useApiList<Preset>("/api/presets", "presets");
+  const [filter, setFilter] = useState<CategoryFilter>("all");
 
   useSEO({ titleKey: "seo.presetsTitle", descKey: "seo.presetsDesc", path: "/products" });
   useGsapPageEffects(rootRef);
+
+  // Extract unique categories
+  const categories = useMemo(() => {
+    const cats = new Set<string>();
+    presets.forEach((p) => cats.add(p.category));
+    return Array.from(cats);
+  }, [presets]);
+
+  // Filter presets by category
+  const filteredPresets = useMemo(() => {
+    if (filter === "all") return presets;
+    return presets.filter((p) => p.category === filter);
+  }, [presets, filter]);
 
   const handleDownload = async (id: string) => {
     await fetch(`/api/presets/${id}/download`, { method: "POST" });
@@ -42,8 +58,32 @@ export function ProductsPage() {
           icon={<Download size={40} strokeWidth={1.2} />}
           emptyText={t("presets.empty")}
         >
+          {categories.length > 1 && (
+            <div className="filter-row" role="group" aria-label={t("presets.title")}>
+              <button
+                type="button"
+                aria-pressed={filter === "all"}
+                className={filter === "all" ? "is-active" : ""}
+                onClick={() => setFilter("all")}
+              >
+                {t("gallery.filters.all")}
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  aria-pressed={filter === cat}
+                  className={filter === cat ? "is-active" : ""}
+                  onClick={() => setFilter(cat)}
+                >
+                  {tPresetCategory(t, cat)}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="presets-grid">
-            {presets.map((preset) => (
+            {filteredPresets.map((preset) => (
               <div
                 key={preset.id}
                 className="preset-card"
@@ -51,10 +91,17 @@ export function ProductsPage() {
                 onClick={() => navigate(`/presets/${preset.id}`)}
               >
                 {preset.preview_images && preset.preview_images[0] && (
-                  <img src={preset.preview_images[0]} alt={getName(preset, i18n.language)} className="preset-cover" loading="lazy" />
+                  <div className="preset-cover-wrap">
+                    <img src={preset.preview_images[0]} alt={getName(preset, i18n.language)} className="preset-cover" loading="lazy" />
+                    <span className="preset-cover-badge">{tPresetCategory(t, preset.category)}</span>
+                    {preset.download_count != null && (
+                      <span className="preset-download-count">
+                        <Download size={11} /> {preset.download_count}
+                      </span>
+                    )}
+                  </div>
                 )}
                 <div className="preset-info">
-                  <span className="preset-category">{tPresetCategory(t, preset.category)}</span>
                   <h3>{getName(preset, i18n.language)}</h3>
                   <p>{getDesc(preset, i18n.language)}</p>
                   <div className="preset-actions">
