@@ -53,6 +53,16 @@ export const CATEGORIES: CategoryDef[] = [
   { key: "makeup", icon: "💄", labelKey: "editor.cat.makeup" },
 ];
 
+export const CATEGORY_DESCRIPTIONS: Record<BeautyCategory, string> = {
+  beauty: "editor.catDesc.beauty",
+  reshape: "editor.catDesc.reshape",
+  color: "editor.catDesc.color",
+  filter: "editor.catDesc.filter",
+  tools: "editor.catDesc.tools",
+  bg: "editor.catDesc.bg",
+  makeup: "editor.catDesc.makeup",
+};
+
 export const TOOLS: Record<BeautyCategory, ToolDef[]> = {
   beauty: [
     { key: "smooth", icon: "✨", labelKey: "editor.smooth" },
