@@ -5,7 +5,7 @@ import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { logError } from "../lib/error-logger";
 import type { BeautySettings, BeautyCategory, BeautyTool } from "../types/photo-editor";
-import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, MAX_HISTORY } from "../data/editor-constants";
+import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
 import { prepareFaceApiBackend, loadFaceApiModels } from "../lib/photo-processing";
 
 const MODEL_URL = "/models";
@@ -1545,6 +1545,7 @@ export default function PhotoEditorPage() {
                   </button>
                 ))}
               </div>
+              <p className="editor-cat-desc">{t(CATEGORY_DESCRIPTIONS[cat] as any)}</p>
 
               {cat === "filter" ? (
                 <div className="editor-filter-grid">

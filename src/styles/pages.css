@@ -4000,6 +4000,15 @@
   margin: 0 0 16px;
 }
 
+.editor-cat-desc {
+  font-size: 0.78rem;
+  color: var(--caramel-muted);
+  opacity: 0.7;
+  margin: -8px 0 12px;
+  line-height: 1.4;
+  padding: 0 4px;
+}
+
 .editor-tools {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

@@ -828,6 +828,15 @@
       "bg": "Background",
       "makeup": "Makeup"
     },
+    "catDesc": {
+      "beauty": "Skin smoothing, whitening, blemish removal",
+      "reshape": "Face slimming, eye enlargement, nose, lips, jawline",
+      "color": "Temperature, saturation, contrast, brightness",
+      "filter": "One-click preset filters for instant effects",
+      "tools": "Background blur/remove, local adjustments, double exposure",
+      "bg": "Blur, remove, or replace the background",
+      "makeup": "Lipstick, blush, eyeshadow, eyeliner"
+    },
     "smooth": "Smooth",
     "slim": "Slim",
     "bigeye": "Big Eyes",
