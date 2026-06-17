@@ -1,34 +1,33 @@
 # 持续迭代记录
 
-## 本轮 (2ff9ffe → 当前)
+## 本轮 (73e05a9 → 当前)
 
-### 完成的旗舰级主改动
-PhotoEditor 组件类型与常量拆分 — 提取 `types/photo-editor.ts`（BeautySettings 等类型）和 `data/editor-constants.ts`（FILTERS、TOOLS 等常量），PhotoEditorPage 减少 155 行。
+### 承接的上一轮方向
+PhotoEditor 进一步拆分 — 提取 `lib/photo-processing.ts`（`prepareFaceApiBackend`、`loadFaceApiModels`），PhotoEditorPage 减少 ~30 行内联代码。
 
-### 用户可见功能增量
-- 编辑器错误监控改进：`console.error` → `logError`（生产环境上报）
-- PhotoEditorPage 添加 `// @ts-nocheck`（face-api.js 类型在 strict 模式下不兼容）
+### 旗舰级主改动
+PhotoEditor 进一步拆分 + 模型加载进度条
+
+### 新增的用户可见增量
+- 编辑器加载 face-api 模型时显示进度条和百分比
+- 进度条使用渐变配色（peach → accent），带过渡动画
 
 ### 关键代码质量提升
-- 新增 `src/types/photo-editor.ts`：BeautySettings、FilterPreset、FrameOption 等类型定义
-- 新增 `src/data/editor-constants.ts`：FILTERS、FRAMES、STICKERS、CATEGORIES、TOOLS、INITIAL
-- PhotoEditorPage 从 1896 行减少到 1741 行（-155 行）
-- 类型和常量现在可以被其他模块复用
+- 新增 `src/lib/photo-processing.ts`：`prepareFaceApiBackend`、`loadFaceApiModels`（带进度回调）
+- PhotoEditorPage 模型加载改用新函数，移除内联 `import("face-api.js")` 逻辑
+- CSS 新增 `.editor-loading-bar` / `.editor-loading-bar-fill` 样式
 
 ### 已验证的内容
 - Production build: 通过
-- 单元测试: 92/92 通过
-
-### 注意
-TypeScript 严格模式下 PhotoEditorPage 中使用 face-api.js 类型（Landmarks 等）会产生类型错误，已添加 `// @ts-nocheck`。这些是预存问题，非本轮引入。
 
 ### 本轮遗留风险
 - 支付仍然是 placeholder 模式
+- PhotoEditorPage 仍含 1700+ 行，可继续拆分
 
 ### 下一轮最值得继续优化的方向
-1. **PhotoEditor 进一步拆分** — 将 canvas 渲染、图像处理引擎等核心逻辑提取到独立文件
-2. **后端 API 输入校验推广** — 将 _validation.ts 应用到更多端点
-3. **首页性能优化** — Hero 区域图片懒加载和渲染优化
+1. **PhotoEditor 核心渲染引擎提取** — 将 `render` 函数和所有图像处理逻辑提取到独立文件
+2. **后端 API 输入校验推广** — 将 _validation.ts 应用到更多 admin 端点
+3. **Gallery 图片上传/管理增强** — 批量上传、拖拽排序
 
 ### 推荐下一轮优先执行的旗舰级主改动
-后端 API 输入校验推广 — _validation.ts 已创建但仅用于 booking 和 workshop，可推广到 presets、courses 等更多 endpoint。
+Gallery 图片上传/管理增强 — 当前 admin 后台的图片管理功能较基础，批量上传和拖拽排序能显著提升管理体验。

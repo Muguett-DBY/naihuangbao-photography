@@ -14,7 +14,7 @@ export type PhotoRow = {
   album?: string | null;
   video_url?: string | null;
   note_url?: string | null;
-  created_at?: string;
+  created_at?: string | null;
 };
 
 export type PhotoCreateInput = {
@@ -42,6 +42,7 @@ export function mapPublicPhoto(row: PhotoRow): PhotoItem {
     album: row.album ?? undefined,
     videoUrl: row.video_url ?? undefined,
     noteUrl: row.note_url ?? undefined,
+    createdAt: row.created_at ?? undefined,
   };
 }
 

@@ -415,6 +415,11 @@ export function Gallery() {
                             <Play size={32} />
                           </span>
                         )}
+                        {item.featured && (
+                          <span className="gallery-featured-badge" aria-label="Featured">
+                            ⭐
+                          </span>
+                        )}
                         <div className="gallery-masonry-overlay">
                           <span className="gallery-masonry-overlay-style">{t(`gallery.filters.${item.style}`, item.style)}</span>
                           <strong className="gallery-masonry-overlay-title">

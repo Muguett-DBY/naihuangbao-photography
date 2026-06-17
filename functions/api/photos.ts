@@ -28,6 +28,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       "image_url",
       "alt",
       "featured",
+      "created_at",
     ]);
     const result = await context.env.DB.prepare(
       `select ${columns}
