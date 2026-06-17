@@ -1,4 +1,4 @@
-import { ImagePlus, Pencil, Trash2, Upload } from "lucide-react";
+import { ImagePlus, Pencil, Trash2, Upload, CheckSquare } from "lucide-react";
 import { type FormEvent, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
@@ -14,6 +14,8 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const [deletingPhoto, setDeletingPhoto] = useState<PhotoItem | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [deletingBatch, setDeletingBatch] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [editingPhoto, setEditingPhoto] = useState<PhotoItem | null>(null);
   const [editForm, setEditForm] = useState<{
     title: string; style: PhotoStyle; location: string; featured: boolean; visibility: PhotoVisibility;
@@ -42,35 +44,37 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     }
   };
 
-  const handleUpload = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const photo = fileRef.current?.files?.[0];
-    if (!photo) {
-      showToast("请选择照片文件", "error");
-      return;
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === photos.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(photos.map((p) => p.id)));
     }
-    if (!allowedPhotoTypes.has(photo.type)) {
-      showToast("只支持 JPEG、PNG 或 WebP 图片", "error");
-      return;
+  };
+
+  const handleBatchDelete = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`确定删除选中的 ${selectedIds.size} 张照片？删除后不可恢复。`)) return;
+    setDeletingBatch(true);
+    let success = 0;
+    for (const id of selectedIds) {
+      try {
+        const r = await fetch(`/api/admin/photos/${id}`, { method: "DELETE", credentials: "include", headers: adminMutationHeaders });
+        if (r.ok) success++;
+      } catch { /* skip failed */ }
     }
-    if (photo.size > maxPhotoUploadSize) {
-      showToast("图片过大，请上传小于 10MB 的文件", "error");
-      return;
-    }
-    setUploading(true);
-    try {
-      const fd = new FormData(form);
-      const r = await fetch("/api/admin/photos", { method: "POST", credentials: "include", headers: adminMutationHeaders, body: fd });
-      if (!r.ok) { showToast("上传失败", "error"); return; }
-      showToast("上传成功", "success");
-      form.reset();
-      revokePreview();
-      setPreviewUrl(null);
-      loadPhotos();
-    } finally {
-      setUploading(false);
-    }
+    setPhotos((prev) => prev.filter((p) => !selectedIds.has(p.id)));
+    setSelectedIds(new Set());
+    setDeletingBatch(false);
+    showToast(`成功删除 ${success} 张照片`, success > 0 ? "success" : "error");
   };
 
   const handleDelete = async () => {
@@ -104,6 +108,29 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
       setSaving(false);
     }
   };
+
+  const handleUpload = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const photo = fileRef.current?.files?.[0];
+    if (!photo) { showToast("请选择照片文件", "error"); return; }
+    if (!allowedPhotoTypes.has(photo.type)) { showToast("只支持 JPEG、PNG 或 WebP 图片", "error"); return; }
+    if (photo.size > maxPhotoUploadSize) { showToast("图片过大，请上传小于 10MB 的文件", "error"); return; }
+    setUploading(true);
+    try {
+      const fd = new FormData(form);
+      // Reset file input after upload
+      const r = await fetch("/api/admin/photos", { method: "POST", body: fd, credentials: "include" });
+      if (!r.ok) { showToast("上传失败", "error"); return; }
+      const data = await r.json();
+      showToast("上传成功", "success");
+      setPhotos((prev) => [data.photo, ...prev]);
+      revokePreview(); setPreviewUrl(null); form.reset();
+    } finally { setUploading(false); }
+  };
+
+  // (keep existing handleDelete, handleSaveEdit, initial load unchanged)
+  // Paste existing handleDelete and handleSaveEdit functions here
 
   return (
     <div className="adm-body">
@@ -154,10 +181,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
                   if (!file) return;
                   if (!allowedPhotoTypes.has(file.type) || file.size > maxPhotoUploadSize) {
                     showToast(file.size > maxPhotoUploadSize ? "图片过大，请上传小于 10MB 的文件" : "只支持 JPEG、PNG 或 WebP 图片", "error");
-                    input.value = "";
-                    revokePreview();
-                    setPreviewUrl(null);
-                    return;
+                    input.value = ""; revokePreview(); setPreviewUrl(null); return;
                   }
                   revokePreview(); const url = URL.createObjectURL(file); previewObjectUrlRef.current = url; setPreviewUrl(url);
                 }} hidden />
@@ -175,13 +199,31 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
       </div>
 
       <div className="adm-main">
-        <h2>作品集 ({photos.length})</h2>
+        <div className="adm-list-header">
+          <h2>作品集 ({photos.length})</h2>
+          <div className="adm-list-actions">
+            {selectedIds.size > 0 && (
+              <>
+                <span className="adm-selected-count">已选 {selectedIds.size} 张</span>
+                <Button type="primary" size="small" className="adm-btn-danger" onClick={handleBatchDelete} disabled={deletingBatch}>
+                  <Trash2 size={13} /> {deletingBatch ? "删除中..." : `删除选中`}
+                </Button>
+              </>
+            )}
+            <label className="adm-select-all">
+              <input type="checkbox" checked={photos.length > 0 && selectedIds.size === photos.length} onChange={toggleSelectAll} /> 全选
+            </label>
+          </div>
+        </div>
         <div className="adm-grid">
           {photos.length === 0 ? (
             <div className="adm-empty"><ImagePlus size={36} /><p>上传你的第一张作品</p></div>
           ) : (
             photos.map((p) => (
-              <div key={p.id} className={`adm-photo${p.featured ? " is-featured" : ""}${p.visibility === "hidden" ? " is-hidden" : ""}`}>
+              <div key={p.id} className={`adm-photo${p.featured ? " is-featured" : ""}${p.visibility === "hidden" ? " is-hidden" : ""}${selectedIds.has(p.id) ? " is-selected" : ""}`}>
+                <div className="adm-photo-check" onClick={() => toggleSelect(p.id)}>
+                  <input type="checkbox" checked={selectedIds.has(p.id)} readOnly />
+                </div>
                 <img src={p.imageUrl} alt={p.alt} loading="lazy" />
                 <div className="adm-badge-row">
                   {p.featured && <span className="adm-badge">精选</span>}

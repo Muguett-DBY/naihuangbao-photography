@@ -21,4 +21,5 @@ export type PhotoItem = {
   noteUrl?: string;
   album?: string;
   videoUrl?: string;
+  createdAt?: string;
 };
