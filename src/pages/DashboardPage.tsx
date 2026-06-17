@@ -13,6 +13,7 @@ import { PurchasesTab } from "../components/dashboard/PurchasesTab";
 import { CoursesTab } from "../components/dashboard/CoursesTab";
 import { WorkshopsTab } from "../components/dashboard/WorkshopsTab";
 import { ProfileTab } from "../components/dashboard/ProfileTab";
+import { OverviewTab } from "../components/dashboard/OverviewTab";
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -42,6 +43,16 @@ export function DashboardPage() {
   }
 
   const tabItems = [
+    {
+      key: "overview",
+      label: (
+        <span className="dashboard-tab-label">
+          <User size={16} />
+          {t("dashboard.overview")}
+        </span>
+      ),
+      children: <OverviewTab />,
+    },
     {
       key: "bookings",
       label: (
@@ -125,7 +136,7 @@ export function DashboardPage() {
           </div>
 
           <div className="dashboard-tabs">
-            <Tabs items={tabItems} defaultActiveKey="bookings" />
+            <Tabs items={tabItems} defaultActiveKey="overview" />
           </div>
         </div>
       </section>
