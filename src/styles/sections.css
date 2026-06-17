@@ -2037,6 +2037,18 @@
   to { transform: rotate(360deg); }
 }
 
+.booking-field-extra {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2px;
+}
+
+.booking-field-count {
+  font-size: 0.72rem;
+  color: var(--caramel-muted);
+  opacity: 0.5;
+}
+
 /* Mid-CTA button restyled as button element */
 .mid-cta-btn {
   border: 0;

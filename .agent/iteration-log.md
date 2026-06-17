@@ -1,15 +1,20 @@
 # 持续迭代记录
 
-## 本轮 (8a2b572 → 当前)
+## 本轮 (4b41a78 → 当前)
 
 ### 完成的旗舰级主改动
-业务列表页系统性视觉升级 — CoursesPage、WorkshopsPage、ShopPage 三页面统一添加分类筛选按钮、卡片悬停图片缩放动效、类别/状态徽章叠加层、图片缺失占位提示。
+后端 API 输入校验 — 创建 `_validation.ts` 轻量验证工具（无外部依赖），为 booking 和 workshop registration 端点添加字段存在性、长度、格式校验。
 
 ### 用户可见功能增量
-- CoursesPage: 分类筛选按钮、课程难度角标、悬停动效、课程时长图标、封面图缺失占位
-- WorkshopsPage: 剩余名额角标（满员红色提示）、悬停动效、封面图缺失占位
-- ShopPage: 商品分类筛选按钮、类别角标、悬停动效、封面图缺失占位
-- 三个页面统一了与 Gallery/Products 相同的交互质量
+- BookingModal 输入框添加字符计数显示（name: 0/50）
+- API 返回更具体的验证错误消息（如"姓名不能超过 50 个字符"）
+- workshop registration 添加人数、备注字段验证
+
+### 关键稳定性提升
+- 新建 `functions/_validation.ts`：validateString / validateOptionalString / validateDate / validatePositiveInt
+- booking 端点：name(50) / contact(100) / notes(500) / date 格式校验
+- workshop registration：name(50) / contact(100) / notes(500) / participants(正整数) 校验
+- 全部无新依赖，纯 TypeScript 实现
 
 ### 已验证的内容
 - TypeScript lint: 通过
@@ -17,12 +22,12 @@
 - Production build: 通过
 
 ### 本轮遗留风险
-- 支付仍然是 placeholder 模式，需接入真实 Stripe
+- 支付仍然是 placeholder 模式
 
 ### 下一轮最值得继续优化的方向
-1. **后端 API 输入校验** — 使用 zod 为 booking、workshop registration 添加 schema 校验
+1. **仪表板页面增强** — 添加更多统计数据、图表
 2. **Gallery 页面性能优化** — 虚拟化 masonry 网格
-3. **仪表板页面增强** — 添加更多统计数据、图表
+3. **PhotoEditor 组件拆分** — 1800+ 行单文件拆分为独立模块
 
 ### 推荐下一轮优先执行的旗舰级主改动
-后端 API 输入校验 — 所有业务列表页已完成视觉升级，下一轮应转向 API/后端的稳定性加固。
+仪表板页面增强 — 用户仪表板已拆分为独立 tab，但缺少统计概览和数据可视化，可以添加预约统计、收入趋势等实用功能。

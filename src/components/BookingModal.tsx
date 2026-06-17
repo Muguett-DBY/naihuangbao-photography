@@ -283,9 +283,13 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
             onChange={(e) => handleChange("name", e.target.value)}
             onBlur={() => handleBlur("name", name)}
             placeholder={t("bookingModal.namePlaceholder")}
+            maxLength={50}
             required
             shadow
           />
+          <div className="booking-field-extra">
+            <span className="booking-field-count">{name.length}/50</span>
+          </div>
           {errors.name && touched.name && (
             <span className="booking-field-error">{errors.name}</span>
           )}

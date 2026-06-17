@@ -1,5 +1,6 @@
 import { badRequest, jsonResponse, unavailable } from "../_responses";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../_security";
+import { validateString, validateOptionalString, validateDate } from "../_validation";
 
 type BookingBody = {
   packageName?: string;
@@ -23,16 +24,23 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const body = (await context.request.json().catch(() => ({}))) as BookingBody;
 
-  const name = body.name?.trim();
-  const contact = body.contact?.trim();
+  // Validate inputs
+  const nameResult = validateString(body.name, "姓名", 50);
+  if (!nameResult.valid) return badRequest(nameResult.error);
 
-  if (!name || !contact) {
-    return badRequest("请填写姓名和联系方式");
+  const contactResult = validateString(body.contact, "联系方式", 100);
+  if (!contactResult.valid) return badRequest(contactResult.error);
+
+  const notesResult = validateOptionalString(body.notes, "备注", 500);
+  if (!notesResult.valid) return badRequest(notesResult.error);
+
+  if (body.preferredDate && !validateDate(body.preferredDate)) {
+    return badRequest("日期格式不正确");
   }
 
-  if (contact.length > 200) {
-    return badRequest("联系方式过长");
-  }
+  const name = body.name!.trim();
+  const contact = body.contact!.trim();
+  const notes = body.notes?.trim() ?? "";
 
   const id = crypto.randomUUID();
   const createdAt = new Date().toISOString();
@@ -49,7 +57,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         body.preferredTime ?? "",
         name,
         contact,
-        body.notes ?? "",
+        notes,
         createdAt,
       )
       .run();
