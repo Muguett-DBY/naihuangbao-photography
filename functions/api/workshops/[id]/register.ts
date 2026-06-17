@@ -1,5 +1,6 @@
 import { jsonResponse, badRequest, unavailable } from "../../../_responses";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../../_security";
+import { validateString, validateOptionalString, validatePositiveInt } from "../../../_validation";
 
 type ApiEnv = Env;
 
@@ -23,12 +24,23 @@ export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
     notes?: string;
   };
 
-  const name = body.name?.trim();
-  const contact = body.contact?.trim();
+  // Validate inputs
+  const nameResult = validateString(body.name, "姓名", 50);
+  if (!nameResult.valid) return badRequest(nameResult.error);
 
-  if (!name || !contact) {
-    return badRequest("请填写姓名和联系方式");
+  const contactResult = validateString(body.contact, "联系方式", 100);
+  if (!contactResult.valid) return badRequest(contactResult.error);
+
+  const notesResult = validateOptionalString(body.notes, "备注", 500);
+  if (!notesResult.valid) return badRequest(notesResult.error);
+
+  if (body.participants !== undefined) {
+    const participantResult = validatePositiveInt(body.participants, "参与人数");
+    if (!participantResult.valid) return badRequest(participantResult.error);
   }
+
+  const name = body.name!.trim();
+  const contact = body.contact!.trim();
 
   try {
     const workshop = await context.env.DB.prepare(
