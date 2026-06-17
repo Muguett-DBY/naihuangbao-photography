@@ -1,13 +1,10 @@
 import { badRequest, jsonResponse, unavailable } from "../_responses";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../_security";
+import { validateString, validateEmail } from "../_validation";
 
 type SubscribeBody = {
   email?: string;
 };
-
-function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const publicActionError = requirePublicMutationRequest(context.request);
@@ -21,14 +18,23 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const body = (await context.request.json().catch(() => ({}))) as SubscribeBody;
-  const email = body.email?.trim().toLowerCase();
+  const rawEmail = body.email?.trim().toLowerCase() ?? "";
 
-  if (!email || !isValidEmail(email)) {
+  if (!rawEmail) {
     return badRequest("请输入有效的邮箱地址");
   }
 
-  if (email.length > 320) {
-    return badRequest("邮箱地址过长");
+  const emailResult = validateString(rawEmail, "邮箱", 320);
+  if (!emailResult.valid) return badRequest(emailResult.error);
+
+  if (!validateEmail(rawEmail)) {
+    return badRequest("请输入有效的邮箱地址");
+  }
+
+  const email = rawEmail;
+
+  if (!validateEmail(email)) {
+    return badRequest("请输入有效的邮箱地址");
   }
 
   try {

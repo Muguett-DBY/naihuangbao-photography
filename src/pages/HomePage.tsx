@@ -45,6 +45,20 @@ export function HomePage() {
   useSEO({ titleKey: "seo.homeTitle", descKey: "seo.homeDesc", path: "/" });
   useGsapPageEffects(rootRef);
 
+  // Hero entrance animation
+  useEffect(() => {
+    const hero = rootRef.current?.querySelector(".hero-cover-content");
+    if (!hero) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const children = hero.children;
+    gsap.fromTo(children,
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out", delay: 0.2 }
+    );
+  }, []);
+
   useEffect(() => {
     if (!collageRef.current) return;
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -80,9 +94,9 @@ export function HomePage() {
       <section className="hero" id="top">
         <div className="hero-cover-design" />
         <div className="hero-photo-collage" ref={collageRef} aria-hidden="true">
-          {collagePhotos.map((photo) => (
+          {collagePhotos.map((photo, i) => (
             <div key={photo.id} className="hero-collage-photo">
-              <img src={photo.imageUrl} alt="" loading="lazy" />
+              <img src={photo.imageUrl} alt="" loading={i < 3 ? "eager" : "lazy"} fetchPriority={i < 2 ? "high" : "auto"} />
             </div>
           ))}
         </div>
