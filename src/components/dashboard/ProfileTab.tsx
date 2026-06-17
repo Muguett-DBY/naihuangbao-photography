@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
 import { publicMutationHeaders } from "../../lib/admin-helpers";
+import { logError } from "../../lib/error-logger";
 
 export function ProfileTab({ user }: { user: { displayName: string; email: string } }) {
   const { t } = useTranslation();
@@ -30,7 +31,7 @@ export function ProfileTab({ user }: { user: { displayName: string; email: strin
         setProfileMessage({ type: "error", text: data.error || t("dashboard.profileError") });
       }
     } catch (e) {
-      console.error("[Dashboard] profile update failed", e);
+      logError("DashboardProfile", e);
       setProfileMessage({ type: "error", text: t("dashboard.profileError") });
     } finally {
       setProfileLoading(false);
@@ -56,7 +57,7 @@ export function ProfileTab({ user }: { user: { displayName: string; email: strin
         setPasswordMessage({ type: "error", text: data.error || t("dashboard.passwordError") });
       }
     } catch (e) {
-      console.error("[Dashboard] password change failed", e);
+      logError("DashboardPassword", e);
       setPasswordMessage({ type: "error", text: t("dashboard.passwordError") });
     } finally {
       setPasswordLoading(false);

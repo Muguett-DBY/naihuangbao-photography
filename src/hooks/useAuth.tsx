@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
+import { logError } from "../lib/error-logger";
 
 export type AuthUser = {
   id: string;
@@ -66,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
       return {};
     } catch (e) {
-      console.error("[Auth] login failed", e);
+      logError("AuthLogin", e);
       return { error: "Network error, please try again" };
     }
   }, []);
@@ -89,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(data.user);
       return {};
     } catch (e) {
-      console.error("[Auth] register failed", e);
+      logError("AuthRegister", e);
       return { error: "Network error, please try again" };
     }
   }, []);

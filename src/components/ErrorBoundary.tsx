@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import i18n from "../i18n";
+import { logError } from "../lib/error-logger";
 
 type ErrorBoundaryProps = {
   children: ReactNode;
@@ -22,7 +23,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("[ErrorBoundary]", error, errorInfo);
+    logError("ErrorBoundary", error, { componentStack: errorInfo.componentStack });
   }
 
   handleRetry = () => {

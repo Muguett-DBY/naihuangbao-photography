@@ -1,7 +1,7 @@
-import { useMemo, useRef } from "react";
+import { lazy, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { MapPin, Camera, Share2 } from "lucide-react";
+import { MapPin, Camera, Share2, ArrowRight, Eye } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
@@ -10,6 +10,10 @@ import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import type { PhotoItem } from "../types/photo";
+
+const CompareSlider = lazy(() =>
+  import("../components/CompareSlider").then((m) => ({ default: m.CompareSlider }))
+);
 
 const galleryThumb = (src: string) => {
   const base = src.replace(/\?.*$/, "");
@@ -29,6 +33,7 @@ export function PhotoDetailPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const { photos } = usePublicPhotos();
   const lang = i18n.language;
+  const [showComparison, setShowComparison] = useState(false);
 
   const photo = useMemo(() => photos.find((p) => p.id === id), [photos, id]);
 
@@ -71,6 +76,10 @@ export function PhotoDetailPage() {
       // user cancelled share
     }
   };
+
+  const beforeSrc = photo.imageUrl;
+  const afterSrc = galleryThumb(photo.imageUrl);
+  const hasComparison = beforeSrc !== afterSrc;
 
   return (
     <PageTransition ref={rootRef}>
@@ -121,6 +130,60 @@ export function PhotoDetailPage() {
           <p>
             {t("photoDetail.aboutDesc", { title: photo.title, style: t(`gallery.filters.${photo.style}`, photo.style) })}
           </p>
+
+          {/* Photo details grid */}
+          <div className="photo-detail-info-grid">
+            <div className="photo-detail-info-item">
+              <span className="photo-detail-info-label">{t("photoDetail.style")}</span>
+              <span className="photo-detail-info-value">{t(`gallery.filters.${photo.style}`, photo.style)}</span>
+            </div>
+            {photo.location && (
+              <div className="photo-detail-info-item">
+                <span className="photo-detail-info-label">{t("photoDetail.location")}</span>
+                <span className="photo-detail-info-value">{photo.location}</span>
+              </div>
+            )}
+            {photo.album && (
+              <div className="photo-detail-info-item">
+                <span className="photo-detail-info-label">{t("photoDetail.album")}</span>
+                <span className="photo-detail-info-value">{photo.album}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Before/After comparison */}
+          {hasComparison && (
+            <div className="photo-detail-comparison">
+              <h3>{t("photoDetail.beforeAfter")}</h3>
+              <p className="photo-detail-comparison-desc">{t("photoDetail.comparisonDesc")}</p>
+              <div className="photo-detail-comparison-toggle">
+                <button
+                  type="button"
+                  className={`photo-detail-comparison-btn ${!showComparison ? "active" : ""}`}
+                  onClick={() => setShowComparison(false)}
+                >
+                  <Eye size={14} />
+                  {t("photoDetail.original")}
+                </button>
+                <button
+                  type="button"
+                  className={`photo-detail-comparison-btn ${showComparison ? "active" : ""}`}
+                  onClick={() => setShowComparison(true)}
+                >
+                  <Eye size={14} />
+                  {t("photoDetail.edited")}
+                </button>
+              </div>
+              <div className="photo-detail-comparison-container">
+                <CompareSlider
+                  beforeSrc={beforeSrc}
+                  afterSrc={afterSrc}
+                  beforeAlt={`${photo.title} — ${t("compare.before")}`}
+                  afterAlt={`${photo.title} — ${t("compare.after")}`}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -130,6 +193,7 @@ export function PhotoDetailPage() {
           <p>{t("photoDetail.ctaDesc")}</p>
           <Link to="/booking" className="photo-detail-cta-link">
             {t("photoDetail.bookSimilar")}
+            <ArrowRight size={18} />
           </Link>
         </div>
       </section>

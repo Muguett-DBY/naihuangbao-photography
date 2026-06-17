@@ -909,6 +909,96 @@
   color: var(--caramel-muted);
 }
 
+/* ── Photo Detail Info Grid ── */
+.photo-detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--card-bg, rgba(255,255,255,0.7));
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+}
+
+.photo-detail-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.photo-detail-info-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--caramel-muted);
+  opacity: 0.7;
+}
+
+.photo-detail-info-value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--caramel-ink);
+}
+
+/* ── Photo Detail Comparison Section ── */
+.photo-detail-comparison {
+  margin-top: 32px;
+  padding: 24px;
+  background: var(--card-bg, rgba(255,255,255,0.7));
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+}
+
+.photo-detail-comparison h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  color: var(--caramel-ink);
+}
+
+.photo-detail-comparison-desc {
+  font-size: 0.9rem;
+  color: var(--caramel-muted);
+  margin: 0 0 16px;
+}
+
+.photo-detail-comparison-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.photo-detail-comparison-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--caramel-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.photo-detail-comparison-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.photo-detail-comparison-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.photo-detail-comparison-container {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
 /* ── Photo Detail CTA Section ── */
 .photo-detail-cta {
   text-align: center;
@@ -4425,6 +4515,27 @@
   /* Photo detail meta */
   .photo-detail-meta {
     gap: 10px;
+  }
+
+  /* Photo detail info grid: single column on mobile */
+  .photo-detail-info-grid {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  /* Photo detail comparison: full width on mobile */
+  .photo-detail-comparison {
+    padding: 16px;
+  }
+
+  .photo-detail-comparison-toggle {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .photo-detail-comparison-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   /* Booking calendar touch targets */
