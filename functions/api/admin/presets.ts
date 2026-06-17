@@ -1,7 +1,10 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../_auth";
 import { jsonResponse, badRequest, forbidden, unauthorized, unavailable } from "../../_responses";
+import { validateString, validateOptionalString, validateOptionalEnum, validateUrl, validateBody } from "../../_validation";
 
 type AdminEnv = Env & { ADMIN_PASSWORD?: string };
+
+const presetCategories = ["lightroom", "photoshop", "capture_one", "mobile"] as const;
 
 // ── GET /api/admin/presets ──
 export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
@@ -31,11 +34,23 @@ export const onRequestPost: PagesFunction<AdminEnv> = async (context) => {
   }
 
   const body = (await context.request.json().catch(() => ({}))) as Record<string, unknown>;
-  const name = (body.name as string)?.trim();
 
-  if (!name) {
-    return badRequest("请填写预设名称");
+  const validated = validateBody(body, {
+    name: (v) => validateString(v, "预设名称"),
+    name_en: (v) => validateOptionalString(v, "英文名称"),
+    name_ko: (v) => validateOptionalString(v, "韩文名称"),
+    name_ja: (v) => validateOptionalString(v, "日文名称"),
+    description: (v) => validateOptionalString(v, "描述"),
+    category: (v) => validateOptionalEnum(v, "分类", presetCategories),
+    download_url: (v) => validateUrl(v, "下载链接"),
+    price_display: (v) => validateOptionalString(v, "价格"),
+  });
+
+  if (!validated.valid) {
+    return badRequest(validated.error);
   }
+
+  const name = (body.name as string)?.trim();
 
   const id = crypto.randomUUID();
   const now = new Date().toISOString();

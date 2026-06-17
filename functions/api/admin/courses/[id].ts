@@ -1,7 +1,30 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../../_auth";
 import { jsonResponse, badRequest, forbidden, unauthorized, unavailable } from "../../../_responses";
+import { validateOptionalString, validateOptionalInt, validateOptionalEnum, validateUrl, validateId } from "../../../_validation";
 
 type AdminEnv = Env & { ADMIN_PASSWORD?: string };
+
+const courseCategories = ["beginner", "intermediate", "advanced", "lightroom", "posing", "business"] as const;
+const courseDifficulties = ["beginner", "intermediate", "advanced"] as const;
+
+const patchFieldValidators: Record<string, (v: unknown) => ReturnType<typeof validateOptionalString>> = {
+  title: (v) => validateOptionalString(v, "课程标题", 200),
+  title_en: (v) => validateOptionalString(v, "英文标题", 200),
+  title_ko: (v) => validateOptionalString(v, "韩文标题", 200),
+  title_ja: (v) => validateOptionalString(v, "日文标题", 200),
+  description: (v) => validateOptionalString(v, "描述", 2000),
+  description_en: (v) => validateOptionalString(v, "英文描述", 2000),
+  description_ko: (v) => validateOptionalString(v, "韩文描述", 2000),
+  description_ja: (v) => validateOptionalString(v, "日文描述", 2000),
+  cover_image_url: (v) => validateUrl(v, "封面图片"),
+  video_url: (v) => validateUrl(v, "视频"),
+  content_markdown: (v) => validateOptionalString(v, "内容", 50000),
+  category: (v) => validateOptionalEnum(v, "分类", courseCategories),
+  difficulty: (v) => validateOptionalEnum(v, "难度", courseDifficulties),
+  duration_minutes: (v) => validateOptionalInt(v, "时长(分钟)", 0),
+  sort_order: (v) => validateOptionalInt(v, "排序"),
+  published: (v) => { if (v === 0 || v === 1) return { valid: true } as const; return { valid: false, error: "发布状态格式不正确" } as const; },
+};
 
 // ── PATCH /api/admin/courses/:id ──
 export const onRequestPatch: PagesFunction<AdminEnv> = async (context) => {
@@ -13,19 +36,19 @@ export const onRequestPatch: PagesFunction<AdminEnv> = async (context) => {
   }
 
   const id = (context.params as Record<string, string>).id;
+  const idCheck = validateId(id);
+  if (!idCheck.valid) return badRequest(idCheck.error);
+
   const body = (await context.request.json().catch(() => ({}))) as Record<string, unknown>;
   const now = new Date().toISOString();
 
   const fields: string[] = [];
   const values: unknown[] = [];
 
-  for (const key of [
-    "title", "title_en", "title_ko", "title_ja",
-    "description", "description_en", "description_ko", "description_ja",
-    "cover_image_url", "video_url", "content_markdown",
-    "category", "difficulty", "duration_minutes", "sort_order", "published",
-  ]) {
+  for (const key of Object.keys(patchFieldValidators)) {
     if (key in body) {
+      const check = patchFieldValidators[key](body[key]);
+      if (!check.valid) return badRequest(check.error);
       fields.push(`${key} = ?`);
       values.push(body[key]);
     }

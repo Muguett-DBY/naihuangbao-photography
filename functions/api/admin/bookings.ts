@@ -1,5 +1,6 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../_auth";
-import { forbidden, jsonResponse, unauthorized, unavailable } from "../../_responses";
+import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../_responses";
+import { validateId, validateEnum, validateBody } from "../../_validation";
 
 type AdminBookingsEnv = Env & { ADMIN_PASSWORD?: string };
 
@@ -32,6 +33,8 @@ export const onRequestGet: PagesFunction<AdminBookingsEnv> = async (context) => 
   }
 };
 
+const bookingStatuses = ["pending", "contacted", "done"] as const;
+
 export const onRequestPatch: PagesFunction<AdminBookingsEnv> = async (context) => {
   const isAdmin = await isAdminRequest(context.request, context.env);
   if (!isAdmin) return unauthorized();
@@ -39,13 +42,15 @@ export const onRequestPatch: PagesFunction<AdminBookingsEnv> = async (context) =
     return forbidden("缺少后台操作校验头");
   }
 
-  const body = (await context.request.json().catch(() => ({}))) as {
-    id?: string;
-    status?: string;
-  };
+  const body = (await context.request.json().catch(() => ({}))) as Record<string, unknown>;
 
-  if (!body.id || !body.status || !["pending", "contacted", "done"].includes(body.status)) {
-    return jsonResponse({ error: "参数不完整" }, 400);
+  const validated = validateBody(body, {
+    id: (v) => validateId(v as string, "预约 ID"),
+    status: (v) => validateEnum(v, "状态", bookingStatuses),
+  });
+
+  if (!validated.valid) {
+    return badRequest(validated.error);
   }
 
   try {

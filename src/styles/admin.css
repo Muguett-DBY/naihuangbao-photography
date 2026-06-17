@@ -610,6 +610,36 @@
   background: rgba(255, 244, 237, 0.08);
 }
 
+.adm-tab-label-with-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.adm-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d44848;
+  display: inline-block;
+  animation: adm-pulse 2s ease-in-out infinite;
+}
+
+@keyframes adm-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.adm-booking-card.is-new {
+  border-color: rgba(180, 72, 60, 0.3);
+  background: rgba(255, 244, 226, 0.6);
+}
+
+:root[data-theme="dark"] .adm-booking-card.is-new {
+  border-color: rgba(212, 72, 72, 0.4);
+  background: rgba(60, 30, 20, 0.5);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .adm-root *,
   .adm-root *::before,
