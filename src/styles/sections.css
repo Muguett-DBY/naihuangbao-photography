@@ -1876,6 +1876,23 @@
   text-align: center;
   padding: 10px 0;
 }
+.booking-success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  animation: bookingSuccessPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes bookingSuccessPop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
 .booking-modal-success h2 {
   font-family: var(--font-display-cn);
   font-size: 22px;
@@ -1891,6 +1908,52 @@
 .booking-success-hint {
   font-size: 12px !important;
   word-break: break-all;
+}
+.booking-success-actions {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Booking form improvements */
+.booking-subtitle {
+  margin: 0 0 16px;
+  color: var(--animal-text-color-secondary, var(--caramel-muted));
+  font-size: 14px;
+}
+.booking-field {
+  margin-bottom: 16px;
+}
+.booking-field.has-error .booking-input,
+.booking-field.has-error .booking-textarea {
+  border-color: #ef4444;
+}
+.booking-field-error {
+  display: block;
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.booking-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+.booking-btn-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.booking-btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: bookingSpin 0.6s linear infinite;
+}
+@keyframes bookingSpin {
+  to { transform: rotate(360deg); }
 }
 
 /* Mid-CTA button restyled as button element */

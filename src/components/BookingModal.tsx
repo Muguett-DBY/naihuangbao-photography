@@ -1,5 +1,5 @@
 import { Button, Input, Modal } from "animal-island-ui";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useNotification } from "../hooks/useNotification";
@@ -11,6 +11,12 @@ import { getApiError, readJsonResponse } from "../lib/http";
 type BookingModalProps = {
   initialPackage?: string;
   onClose: () => void;
+};
+
+type FormErrors = {
+  name?: string;
+  contact?: string;
+  date?: string;
 };
 
 export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
@@ -28,13 +34,61 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const [error, setError] = useState("");
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const validateField = useCallback((field: string, value: string): string | undefined => {
+    switch (field) {
+      case "name":
+        if (!value.trim()) return t("bookingModal.nameRequired", "Please enter your name");
+        if (value.trim().length < 2) return t("bookingModal.nameTooShort", "Name must be at least 2 characters");
+        return undefined;
+      case "contact":
+        if (!value.trim()) return t("bookingModal.contactRequired", "Please enter your contact");
+        if (value.trim().length < 5) return t("bookingModal.contactTooShort", "Contact must be at least 5 characters");
+        return undefined;
+      case "date":
+        // Date is optional, no validation needed
+        return undefined;
+      default:
+        return undefined;
+    }
+  }, [t]);
+
+  const handleBlur = useCallback((field: string, value: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    const error = validateField(field, value);
+    setErrors((prev) => ({ ...prev, [field]: error }));
+  }, [validateField]);
+
+  const handleChange = useCallback((field: string, value: string) => {
+    if (field === "name") setName(value);
+    else if (field === "contact") setContact(value);
+
+    // Only validate if field has been touched
+    if (touched[field]) {
+      const error = validateField(field, value);
+      setErrors((prev) => ({ ...prev, [field]: error }));
+    }
+  }, [touched, validateField]);
+
+  const isFormValid = name.trim().length >= 2 && contact.trim().length >= 5;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+
+    // Validate all fields
+    const nameError = validateField("name", name);
+    const contactError = validateField("contact", contact);
+    setErrors({ name: nameError, contact: contactError });
+    setTouched({ name: true, contact: true });
+
+    if (nameError || contactError) return;
+
     const trimmedName = name.trim().slice(0, 50);
     const trimmedContact = contact.trim().slice(0, 100);
     const trimmedNotes = notes.trim().slice(0, 500);
-    if (!trimmedName || !trimmedContact) return;
+
     setSending(true);
     setError("");
 
@@ -82,7 +136,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
   // Calculate deposit based on selected package (30% of minimum price, min 2000 cents)
   const calculateDepositCents = (): number => {
-    if (!selectedPkg) return 2000; // Default 20 CNY deposit
+    if (!selectedPkg) return 2000;
     const pkg = packages.find((p) => p.name === selectedPkg);
     if (!pkg) return 2000;
     const match = pkg.price.match(/(\d+(?:\.\d+)?)/);
@@ -91,7 +145,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     const minimumHours = 2;
     const depositPercent = 0.3;
     const deposit = Math.round(hourlyRate * minimumHours * depositPercent * 100);
-    return Math.max(deposit, 2000); // Minimum 20 CNY deposit
+    return Math.max(deposit, 2000);
   };
 
   // ── Payment step ──
@@ -126,10 +180,11 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     return (
       <Modal open onClose={onClose} footer={null} typewriter={false}>
         <div className="booking-modal-success">
+          <div className="booking-success-icon">✓</div>
           <h2>{t("bookingModal.successTitle")}</h2>
           <p>{t("bookingModal.successHint")}</p>
           <p className="booking-success-hint">{t("bookingModal.success")} {siteConfig.xiaohongshuProfile}</p>
-          <div style={{ marginTop: 20, textAlign: "center" }}>
+          <div className="booking-success-actions">
             <Button type="primary" onClick={onClose}>{t("bookingModal.gotIt")}</Button>
           </div>
         </div>
@@ -147,11 +202,11 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       maskClosable={false}
       footer={null}
     >
-      <p style={{ margin: "0 0 16px", color: "var(--animal-text-color-secondary)", fontSize: 14 }}>
+      <p className="booking-subtitle">
         {t("bookingModal.subtitle")}
       </p>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="booking-field">
           <label htmlFor="booking-package">{t("bookingModal.selectPackage")}</label>
           <select id="booking-package" value={selectedPkg} onChange={(e) => setSelectedPkg(e.target.value)}>
@@ -168,6 +223,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
             minDate={new Date().toISOString().split("T")[0]}
           />
         </div>
+
         <div className="booking-row">
           <div className="booking-field">
             <label htmlFor="booking-time">{t("bookingModal.time")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
@@ -180,28 +236,36 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           </div>
         </div>
 
-        <div className="booking-field">
+        <div className={`booking-field ${errors.name && touched.name ? "has-error" : ""}`}>
           <label htmlFor="booking-name">{t("bookingModal.name")} <span className="booking-required">*</span></label>
           <Input
             id="booking-name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => handleChange("name", e.target.value)}
+            onBlur={() => handleBlur("name", name)}
             placeholder={t("bookingModal.namePlaceholder")}
             required
             shadow
           />
+          {errors.name && touched.name && (
+            <span className="booking-field-error">{errors.name}</span>
+          )}
         </div>
 
-        <div className="booking-field">
+        <div className={`booking-field ${errors.contact && touched.contact ? "has-error" : ""}`}>
           <label htmlFor="booking-contact">{t("bookingModal.contact")} <span className="booking-required">*</span></label>
           <Input
             id="booking-contact"
             value={contact}
-            onChange={(e) => setContact(e.target.value)}
+            onChange={(e) => handleChange("contact", e.target.value)}
+            onBlur={() => handleBlur("contact", contact)}
             placeholder={t("bookingModal.contactPlaceholder")}
             required
             shadow
           />
+          {errors.contact && touched.contact && (
+            <span className="booking-field-error">{errors.contact}</span>
+          )}
         </div>
 
         <div className="booking-field">
@@ -216,12 +280,17 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           />
         </div>
 
-        {error ? <p className="booking-error" role="alert">{error}</p> : null}
+        {error && <p className="booking-error" role="alert">{error}</p>}
 
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
+        <div className="booking-actions">
           <Button type="default" onClick={onClose}>{t("bookingModal.cancel")}</Button>
-          <Button type="primary" htmlType="submit" disabled={sending || !name.trim() || !contact.trim()}>
-            {sending ? t("bookingModal.submitting") : t("bookingModal.submit")}
+          <Button type="primary" htmlType="submit" disabled={sending || !isFormValid}>
+            {sending ? (
+              <span className="booking-btn-loading">
+                <span className="booking-btn-spinner" />
+                {t("bookingModal.submitting")}
+              </span>
+            ) : t("bookingModal.submit")}
           </Button>
         </div>
 

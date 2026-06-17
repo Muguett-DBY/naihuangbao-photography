@@ -8,6 +8,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useAuth } from "../hooks/useAuth";
 import { useFetch } from "../hooks/useFetch";
 import { PageTransition } from "../components/shared/PageTransition";
+import { DashboardTabWrapper } from "../components/dashboard/DashboardTabWrapper";
 import { tWorkshopStatus, tCourseDifficulty } from "../lib/i18n-typed";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import type { Booking, Purchase, Course, Workshop, UserPhoto } from "../types/dashboard";
@@ -198,52 +199,49 @@ function MyPhotosTab() {
   const { t } = useTranslation();
   const { data, loading, error, retry } = useFetch<{ photos: UserPhoto[] }>("/api/user/photos");
 
-  if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
-  if (error) return <ErrorState message={t("common.loadError", "加载失败，请重试")} onRetry={retry} />;
-
   const photos = data?.photos ?? [];
 
-  if (photos.length === 0) {
-    return (
-      <div className="dashboard-empty">
-        <Image size={40} strokeWidth={1.2} />
-        <p>{t("dashboard.noPhotos")}</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="dashboard-photo-grid">
-      {photos.map((photo) => (
-        <div key={photo.id} className="dashboard-photo-card">
-          <Link to={`/gallery/${photo.id}`} className="dashboard-photo-link">
-            <div className="dashboard-photo-thumb">
-              <img
-                src={photo.imageUrl}
-                alt={photo.title}
-                loading="lazy"
-              />
+    <DashboardTabWrapper
+      loading={loading}
+      error={error}
+      empty={photos.length === 0}
+      emptyIcon={<Image size={40} strokeWidth={1.2} />}
+      emptyText={t("dashboard.noPhotos")}
+      retry={retry}
+    >
+      <div className="dashboard-photo-grid">
+        {photos.map((photo) => (
+          <div key={photo.id} className="dashboard-photo-card">
+            <Link to={`/gallery/${photo.id}`} className="dashboard-photo-link">
+              <div className="dashboard-photo-thumb">
+                <img
+                  src={photo.imageUrl}
+                  alt={photo.title}
+                  loading="lazy"
+                />
+              </div>
+              <div className="dashboard-photo-info">
+                <h4>{photo.title}</h4>
+                <span className="dashboard-photo-date">
+                  {photo.delivered_at ? new Date(photo.delivered_at).toLocaleDateString() : ""}
+                </span>
+              </div>
+            </Link>
+            <div className="dashboard-photo-actions">
+              <a
+                href={photo.imageUrl}
+                download
+                className="dashboard-photo-download"
+              >
+                <Download size={12} />
+                {t("dashboard.download")}
+              </a>
             </div>
-            <div className="dashboard-photo-info">
-              <h4>{photo.title}</h4>
-              <span className="dashboard-photo-date">
-                {photo.delivered_at ? new Date(photo.delivered_at).toLocaleDateString() : ""}
-              </span>
-            </div>
-          </Link>
-          <div className="dashboard-photo-actions">
-            <a
-              href={photo.imageUrl}
-              download
-              className="dashboard-photo-download"
-            >
-              <Download size={12} />
-              {t("dashboard.download")}
-            </a>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </DashboardTabWrapper>
   );
 }
 
@@ -251,34 +249,31 @@ function PurchasesTab() {
   const { t } = useTranslation();
   const { data, loading, error, retry } = useFetch<{ purchases: Purchase[] }>("/api/user/purchases");
 
-  if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
-  if (error) return <ErrorState message={t("common.loadError", "加载失败，请重试")} onRetry={retry} />;
-
   const purchases = data?.purchases ?? [];
 
-  if (purchases.length === 0) {
-    return (
-      <div className="dashboard-empty">
-        <ShoppingCart size={40} strokeWidth={1.2} />
-        <p>{t("dashboard.noPurchases")}</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="dashboard-list">
-      {purchases.map((p) => (
-        <div key={p.id} className="dashboard-card">
-          <div className="dashboard-card-header">
-            <h4>{p.item_name}</h4>
-            <span className="dashboard-card-type">{p.item_type}</span>
+    <DashboardTabWrapper
+      loading={loading}
+      error={error}
+      empty={purchases.length === 0}
+      emptyIcon={<ShoppingCart size={40} strokeWidth={1.2} />}
+      emptyText={t("dashboard.noPurchases")}
+      retry={retry}
+    >
+      <div className="dashboard-list">
+        {purchases.map((p) => (
+          <div key={p.id} className="dashboard-card">
+            <div className="dashboard-card-header">
+              <h4>{p.item_name}</h4>
+              <span className="dashboard-card-type">{p.item_type}</span>
+            </div>
+            <p className="dashboard-card-date">
+              {new Date(p.created_at).toLocaleDateString()}
+            </p>
           </div>
-          <p className="dashboard-card-date">
-            {new Date(p.created_at).toLocaleDateString()}
-          </p>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </DashboardTabWrapper>
   );
 }
 
@@ -286,46 +281,40 @@ function CoursesTab() {
   const { t } = useTranslation();
   const { data, loading, error, retry } = useFetch<{ courses: Course[] }>("/api/user/courses");
 
-  if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
-  if (error) return <ErrorState message={t("common.loadError", "加载失败，请重试")} onRetry={retry} />;
-
   const courses = data?.courses ?? [];
 
-  if (courses.length === 0) {
-    return (
-      <div className="dashboard-empty">
-        <BookOpen size={40} strokeWidth={1.2} />
-        <p>{t("dashboard.noCourses")}</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="dashboard-list">
-      {courses.map((c) => (
-        <div key={c.id} className="dashboard-card">
-          <div className="dashboard-card-header">
-            <h4>{c.title}</h4>
-            <span className="dashboard-card-type">{tCourseDifficulty(t, c.difficulty)}</span>
-          </div>
-          <div className="dashboard-progress">
-            <div className="dashboard-progress-bar">
-              <div className="dashboard-progress-fill" style={{ width: `${c.progress ?? 0}%` }} />
+    <DashboardTabWrapper
+      loading={loading}
+      error={error}
+      empty={courses.length === 0}
+      emptyIcon={<BookOpen size={40} strokeWidth={1.2} />}
+      emptyText={t("dashboard.noCourses")}
+      retry={retry}
+    >
+      <div className="dashboard-list">
+        {courses.map((c) => (
+          <div key={c.id} className="dashboard-card">
+            <div className="dashboard-card-header">
+              <h4>{c.title}</h4>
+              <span className="dashboard-card-type">{tCourseDifficulty(t, c.difficulty)}</span>
             </div>
-            <span className="dashboard-progress-text">{c.progress ?? 0}%</span>
+            <div className="dashboard-progress">
+              <div className="dashboard-progress-bar">
+                <div className="dashboard-progress-fill" style={{ width: `${c.progress ?? 0}%` }} />
+              </div>
+              <span className="dashboard-progress-text">{c.progress ?? 0}%</span>
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </DashboardTabWrapper>
   );
 }
 
 function WorkshopsTab() {
   const { t } = useTranslation();
   const { data, loading, error, retry } = useFetch<{ workshops: Workshop[] }>("/api/user/workshops");
-
-  if (loading) return <div className="dashboard-loading">{t("common.loading")}</div>;
-  if (error) return <ErrorState message={t("common.loadError", "加载失败，请重试")} onRetry={retry} />;
 
   const workshops = data?.workshops ?? [];
 
@@ -339,23 +328,32 @@ function WorkshopsTab() {
   }
 
   return (
-    <div className="dashboard-list">
-      {workshops.map((w) => (
-        <div key={w.id} className="dashboard-card">
-          <div className="dashboard-card-header">
-            <h4>{w.title}</h4>
-            <StatusBadge status={w.status} />
+    <DashboardTabWrapper
+      loading={loading}
+      error={error}
+      empty={workshops.length === 0}
+      emptyIcon={<MapPin size={40} strokeWidth={1.2} />}
+      emptyText={t("dashboard.noWorkshops")}
+      retry={retry}
+    >
+      <div className="dashboard-list">
+        {workshops.map((w) => (
+          <div key={w.id} className="dashboard-card">
+            <div className="dashboard-card-header">
+              <h4>{w.title}</h4>
+              <StatusBadge status={w.status} />
+            </div>
+            <div className="dashboard-card-meta">
+              {w.event_date && <span>{w.event_date}</span>}
+              {w.location && <span>{w.location}</span>}
+            </div>
+            <p className="dashboard-card-date">
+              {new Date(w.created_at).toLocaleDateString()}
+            </p>
           </div>
-          <div className="dashboard-card-meta">
-            {w.event_date && <span>{w.event_date}</span>}
-            {w.location && <span>{w.location}</span>}
-          </div>
-          <p className="dashboard-card-date">
-            {new Date(w.created_at).toLocaleDateString()}
-          </p>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </DashboardTabWrapper>
   );
 }
 

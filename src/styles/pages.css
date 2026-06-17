@@ -4505,4 +4505,68 @@
     padding: 12px 14px 12px 36px;
     font-size: 16px;
   }
+
+  /* Course detail hero: compact on mobile */
+  .course-detail-hero-heading h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Workshop detail hero: compact on mobile */
+  .workshop-detail-hero-heading h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Photo detail hero: compact on mobile */
+  .photo-detail-heading h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Preset detail hero: compact on mobile */
+  .preset-detail-hero-heading h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Shop detail hero: compact on mobile */
+  .shop-detail-hero-heading h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Booking modal: full width on mobile */
+  .booking-field select,
+  .booking-field input,
+  .booking-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .booking-actions {
+    flex-direction: column;
+  }
+
+  .booking-actions button {
+    width: 100%;
+  }
+
+  /* Gallery search: full width on mobile */
+  .gallery-search-wrap {
+    max-width: 100%;
+  }
+
+  /* Filter row: horizontal scroll on mobile */
+  .filter-row {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .filter-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-row button {
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-height: 44px;
+  }
 }
