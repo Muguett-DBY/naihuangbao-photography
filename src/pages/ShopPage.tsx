@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ShoppingCart } from "lucide-react";
@@ -13,15 +13,29 @@ import { getName, getDesc } from "../lib/i18n-helpers";
 import { tMerchandiseCategory } from "../lib/i18n-typed";
 import type { Merchandise } from "../types/content";
 
+type CategoryFilter = string | "all";
+
 export function ShopPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { openBookingModal } = useBookingModal();
   const rootRef = useRef<HTMLDivElement>(null);
   const { items, loading, error, retry, empty } = useApiList<Merchandise>("/api/merchandise", "merchandise");
+  const [filter, setFilter] = useState<CategoryFilter>("all");
 
   useSEO({ titleKey: "seo.shopTitle", descKey: "seo.shopDesc", path: "/shop" });
   useGsapPageEffects(rootRef);
+
+  const categories = useMemo(() => {
+    const cats = new Set<string>();
+    items.forEach((item) => cats.add(item.category));
+    return Array.from(cats);
+  }, [items]);
+
+  const filteredItems = useMemo(() => {
+    if (filter === "all") return items;
+    return items.filter((item) => item.category === filter);
+  }, [items, filter]);
 
   return (
     <PageTransition ref={rootRef}>
@@ -40,19 +54,49 @@ export function ShopPage() {
           icon={<ShoppingCart size={40} strokeWidth={1.2} />}
           emptyText={t("merchandise.empty")}
         >
+          {categories.length > 1 && (
+            <div className="filter-row" role="group" aria-label={t("merchandise.title")}>
+              <button
+                type="button"
+                aria-pressed={filter === "all"}
+                className={filter === "all" ? "is-active" : ""}
+                onClick={() => setFilter("all")}
+              >
+                {t("gallery.filters.all")}
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  aria-pressed={filter === cat}
+                  className={filter === cat ? "is-active" : ""}
+                  onClick={() => setFilter(cat)}
+                >
+                  {tMerchandiseCategory(t, cat)}
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="merchandise-grid">
-            {items.map((item) => (
+            {filteredItems.map((item) => (
               <div
                 key={item.id}
                 className="merchandise-card"
                 style={{ cursor: "pointer" }}
                 onClick={() => navigate(`/shop/${item.id}`)}
               >
-                {item.images && item.images[0] && (
-                  <img src={item.images[0]} alt={getName(item, i18n.language)} className="merchandise-cover" loading="lazy" />
+                {item.images && item.images[0] ? (
+                  <div className="merchandise-cover-wrap">
+                    <img src={item.images[0]} alt={getName(item, i18n.language)} className="merchandise-cover" loading="lazy" />
+                    <span className="merchandise-cover-badge">{tMerchandiseCategory(t, item.category)}</span>
+                  </div>
+                ) : (
+                  <div className="merchandise-cover-placeholder">
+                    <ShoppingCart size={32} />
+                  </div>
                 )}
                 <div className="merchandise-info">
-                  <span className="merchandise-category">{tMerchandiseCategory(t, item.category)}</span>
                   <h3>{getName(item, i18n.language)}</h3>
                   <p>{getDesc(item, i18n.language)}</p>
                   <div className="merchandise-actions">
