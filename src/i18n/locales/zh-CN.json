@@ -759,7 +759,9 @@
       "done": "已完成",
       "cancelled": "已取消",
       "confirmed": "已确认"
-    }
+    },
+    "overview": "概览",
+    "upcoming": "即将开始"
   },
   "presetPreview": {
     "upload": "上传照片预览",

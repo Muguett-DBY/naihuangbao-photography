@@ -672,6 +672,8 @@
   },
   "dashboard": {
     "title": "My Dashboard",
+    "overview": "Overview",
+    "upcoming": "upcoming",
     "bookings": "My Bookings",
     "purchases": "My Purchases",
     "courses": "My Courses",
