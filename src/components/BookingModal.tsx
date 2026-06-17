@@ -1,5 +1,6 @@
 import { Button, Input, Modal } from "animal-island-ui";
 import { type FormEvent, useState, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useNotification } from "../hooks/useNotification";
@@ -177,15 +178,53 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
   // ── Success state ──
   if (done) {
+    const selectedPackageName = packages.find((p) => p.name === selectedPkg)?.name;
+    const timeLabel: string = time ? String(t(`bookingModal.${time}` as any)) : String(t("bookingModal.any"));
     return (
       <Modal open onClose={onClose} footer={null} typewriter={false}>
         <div className="booking-modal-success">
-          <div className="booking-success-icon">✓</div>
+          <div className="booking-success-check">
+            <svg viewBox="0 0 24 24" className="booking-success-check-svg" aria-hidden="true">
+              <path d="M20 6L9 17l-5-5" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
           <h2>{t("bookingModal.successTitle")}</h2>
-          <p>{t("bookingModal.successHint")}</p>
+
+          <div className="booking-success-details">
+            <div className="booking-success-detail-item">
+              <span className="booking-success-detail-label">{t("bookingModal.reference")}</span>
+              <span className="booking-success-detail-value">#{bookingId?.slice(0, 8).toUpperCase()}</span>
+            </div>
+            {selectedPackageName && (
+              <div className="booking-success-detail-item">
+                <span className="booking-success-detail-label">{t("bookingModal.selectPackage")}</span>
+                <span className="booking-success-detail-value">{selectedPackageName}</span>
+              </div>
+            )}
+            {date && (
+              <div className="booking-success-detail-item">
+                <span className="booking-success-detail-label">{t("bookingModal.date")}</span>
+                <span className="booking-success-detail-value">{date}</span>
+              </div>
+            )}
+            <div className="booking-success-detail-item">
+              <span className="booking-success-detail-label">{t("bookingModal.time")}</span>
+              <span className="booking-success-detail-value">{timeLabel}</span>
+            </div>
+          </div>
+
+          <p className="booking-success-next">{t("bookingModal.nextStep")}</p>
           <p className="booking-success-hint">{t("bookingModal.success")} {siteConfig.xiaohongshuProfile}</p>
+
           <div className="booking-success-actions">
             <Button type="primary" onClick={onClose}>{t("bookingModal.gotIt")}</Button>
+            <Link
+              to="/dashboard"
+              className="booking-success-dashboard-btn"
+              onClick={onClose}
+            >
+              {t("bookingModal.viewDashboard")}
+            </Link>
           </div>
         </div>
       </Modal>
