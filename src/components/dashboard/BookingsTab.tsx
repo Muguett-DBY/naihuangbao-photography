@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { CalendarCheck, X, RefreshCw } from "lucide-react";
+import { CalendarCheck, X, RefreshCw, CheckCircle2, Circle, Clock } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useFetch } from "../../hooks/useFetch";
 import { DashboardTabWrapper } from "./DashboardTabWrapper";
@@ -14,6 +14,62 @@ function getTodayString(): string {
   const m = String(now.getMonth() + 1).padStart(2, "0");
   const d = String(now.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+const timelineSteps = [
+  { key: "pending", icon: Clock },
+  { key: "contacted", icon: Circle },
+  { key: "done", icon: CheckCircle2 },
+] as const;
+
+function getStepIndex(status: string): number {
+  if (status === "canceled" || status === "cancelled") return -1;
+  return timelineSteps.findIndex((s) => s.key === status);
+}
+
+function BookingTimeline({ status }: { status: string }) {
+  const { t } = useTranslation();
+  const currentStep = getStepIndex(status);
+  const isCancelled = currentStep === -1;
+
+  if (isCancelled) {
+    return (
+      <div className="booking-timeline booking-timeline--cancelled">
+        <div className="booking-timeline-step is-cancelled">
+          <X size={14} />
+          <span>{t("dashboard.status.cancelled")}</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="booking-timeline">
+      {timelineSteps.map((step, idx) => {
+        const Icon = step.icon;
+        const isCompleted = idx < currentStep;
+        const isCurrent = idx === currentStep;
+        return (
+          <div
+            key={step.key}
+            className={`booking-timeline-step${isCompleted ? " is-completed" : ""}${isCurrent ? " is-current" : ""}`}
+          >
+            <div className="booking-timeline-icon">
+              {isCompleted ? <CheckCircle2 size={16} /> : <Icon size={16} />}
+            </div>
+            <div className="booking-timeline-info">
+              <span className="booking-timeline-label">
+                {t(`dashboard.status.${step.key}`)}
+              </span>
+            </div>
+            {idx < timelineSteps.length - 1 && (
+              <div className={`booking-timeline-connector${isCompleted ? " is-completed" : ""}`} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 export function BookingsTab() {
@@ -90,6 +146,7 @@ export function BookingsTab() {
               <p className="dashboard-card-date">
                 {new Date(b.created_at).toLocaleDateString()}
               </p>
+              <BookingTimeline status={b.status} />
               {canManage && (
                 <div className="dashboard-actions">
                   <button

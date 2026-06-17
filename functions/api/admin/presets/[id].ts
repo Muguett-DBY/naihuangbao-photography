@@ -1,7 +1,25 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../../_auth";
 import { jsonResponse, badRequest, forbidden, unauthorized, unavailable } from "../../../_responses";
+import { validateOptionalString, validateOptionalEnum, validateUrl, validateId } from "../../../_validation";
 
 type AdminEnv = Env & { ADMIN_PASSWORD?: string };
+
+const presetCategories = ["lightroom", "photoshop", "capture_one", "mobile"] as const;
+
+const patchFieldValidators: Record<string, (v: unknown) => ReturnType<typeof validateOptionalString>> = {
+  name: (v) => validateOptionalString(v, "预设名称", 200),
+  name_en: (v) => validateOptionalString(v, "英文名称", 200),
+  name_ko: (v) => validateOptionalString(v, "韩文名称", 200),
+  name_ja: (v) => validateOptionalString(v, "日文名称", 200),
+  description: (v) => validateOptionalString(v, "描述", 2000),
+  description_en: (v) => validateOptionalString(v, "英文描述", 2000),
+  description_ko: (v) => validateOptionalString(v, "韩文描述", 2000),
+  description_ja: (v) => validateOptionalString(v, "日文描述", 2000),
+  category: (v) => validateOptionalEnum(v, "分类", presetCategories),
+  download_url: (v) => validateUrl(v, "下载链接"),
+  price_display: (v) => validateOptionalString(v, "价格", 100),
+  featured: (v) => { if (v === 0 || v === 1) return { valid: true } as const; return { valid: false, error: "推荐状态格式不正确" } as const; },
+};
 
 // ── PATCH /api/admin/presets/:id ──
 export const onRequestPatch: PagesFunction<AdminEnv> = async (context) => {
@@ -13,18 +31,19 @@ export const onRequestPatch: PagesFunction<AdminEnv> = async (context) => {
   }
 
   const id = (context.params as Record<string, string>).id;
+  const idCheck = validateId(id);
+  if (!idCheck.valid) return badRequest(idCheck.error);
+
   const body = (await context.request.json().catch(() => ({}))) as Record<string, unknown>;
   const now = new Date().toISOString();
 
   const fields: string[] = [];
   const values: unknown[] = [];
 
-  for (const key of [
-    "name", "name_en", "name_ko", "name_ja",
-    "description", "description_en", "description_ko", "description_ja",
-    "category", "download_url", "price_display", "featured",
-  ]) {
+  for (const key of Object.keys(patchFieldValidators)) {
     if (key in body) {
+      const check = patchFieldValidators[key](body[key]);
+      if (!check.valid) return badRequest(check.error);
       fields.push(`${key} = ?`);
       values.push(body[key]);
     }

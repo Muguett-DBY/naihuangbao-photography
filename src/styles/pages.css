@@ -2865,6 +2865,135 @@
   }
 }
 
+/* ── Booking Timeline ── */
+.booking-timeline {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  margin: 14px 0 4px;
+  padding: 10px 0;
+}
+
+.booking-timeline--cancelled {
+  margin: 14px 0 4px;
+  padding: 10px 0;
+}
+
+.booking-timeline-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  flex: 1;
+}
+
+.booking-timeline-step.is-cancelled {
+  flex: none;
+  color: #a08880;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 6px;
+}
+
+.booking-timeline-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(139, 94, 74, 0.08);
+  color: #a08880;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+
+.booking-timeline-step.is-completed .booking-timeline-icon {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.booking-timeline-step.is-current .booking-timeline-icon {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+  animation: tl-pulse 2s ease-in-out infinite;
+}
+
+@keyframes tl-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.2); }
+  50% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+}
+
+.booking-timeline-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.booking-timeline-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a08880;
+  transition: color 0.25s ease;
+}
+
+.booking-timeline-step.is-completed .booking-timeline-label {
+  color: #16a34a;
+}
+
+.booking-timeline-step.is-current .booking-timeline-label {
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.booking-timeline-connector {
+  flex: 1;
+  height: 2px;
+  background: rgba(139, 94, 74, 0.1);
+  margin: 0 8px;
+  align-self: center;
+  min-width: 20px;
+  transition: background 0.25s ease;
+}
+
+.booking-timeline-connector.is-completed {
+  background: rgba(34, 197, 94, 0.4);
+}
+
+:root[data-theme="dark"] .booking-timeline-icon {
+  background: rgba(234, 219, 211, 0.08);
+  color: #c8ada1;
+}
+
+:root[data-theme="dark"] .booking-timeline-step.is-completed .booking-timeline-icon {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+:root[data-theme="dark"] .booking-timeline-step.is-current .booking-timeline-icon {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+:root[data-theme="dark"] .booking-timeline-step.is-completed .booking-timeline-label {
+  color: #4ade80;
+}
+
+:root[data-theme="dark"] .booking-timeline-step.is-current .booking-timeline-label {
+  color: #60a5fa;
+}
+
+:root[data-theme="dark"] .booking-timeline-connector {
+  background: rgba(234, 219, 211, 0.1);
+}
+
+:root[data-theme="dark"] .booking-timeline-connector.is-completed {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+:root[data-theme="dark"] .booking-timeline-step.is-cancelled {
+  color: #c8ada1;
+}
+
 /* ── Dashboard Action Buttons ── */
 .dashboard-actions {
   display: flex;

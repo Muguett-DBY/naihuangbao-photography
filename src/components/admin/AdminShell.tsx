@@ -30,6 +30,12 @@ import { AdminPresetsTab } from "./AdminPresetsTab";
 import { AdminWorkshopsTab } from "./AdminWorkshopsTab";
 import { AdminMerchandiseTab } from "./AdminMerchandiseTab";
 
+type BookingPollItem = {
+  id: string;
+  status: string;
+  created_at: string;
+};
+
 export function AdminShell() {
   const { t } = useTranslation();
   const { siteConfig } = useSiteContent();
@@ -40,9 +46,67 @@ export function AdminShell() {
   const [loginMessage, setLoginMessage] = useState("");
   const [toast, setToast] = useState<{ text: string; type: ToastType } | null>(null);
   const toastTimerRef = useRef<number | null>(null);
+  const [hasNewBookings, setHasNewBookings] = useState(false);
+  const [newBookingIds, setNewBookingIds] = useState<Set<string>>(new Set());
+  const pollIntervalRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!authenticated) return;
+
+    let knownIds = new Set<string>();
+
+    async function pollBookings() {
+      try {
+        const r = await fetch("/api/admin/bookings", { credentials: "include" });
+        const d: { bookings?: BookingPollItem[] } = await r.json();
+        if (!d.bookings) return;
+        const pending = d.bookings.filter((b) => b.status === "pending");
+        if (knownIds.size > 0) {
+          const unseen = pending.filter((b) => !knownIds.has(b.id));
+          if (unseen.length > 0) {
+            setHasNewBookings(true);
+            setNewBookingIds((prev) => {
+              const next = new Set(prev);
+              unseen.forEach((b) => next.add(b.id));
+              return next;
+            });
+          }
+        }
+        pending.forEach((b) => knownIds.add(b.id));
+      } catch {
+        // graceful degradation
+      }
+    }
+
+    pollBookings();
+    pollIntervalRef.current = window.setInterval(pollBookings, 30000);
+
+    return () => {
+      if (pollIntervalRef.current !== null) {
+        window.clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
+    };
+  }, [authenticated]);
+
+  useEffect(() => {
+    if (activeTab === "bookings") {
+      setHasNewBookings(false);
+      setNewBookingIds(new Set());
+    }
+  }, [activeTab]);
 
   const adminTabItems: TabItem[] = useMemo(() => [
-    { key: "bookings", label: t("admin.tabs.bookings"), children: null },
+    {
+      key: "bookings",
+      label: (
+        <span className="adm-tab-label-with-badge">
+          {t("admin.tabs.bookings")}
+          {hasNewBookings && <span className="adm-badge-dot" />}
+        </span>
+      ),
+      children: null,
+    },
     { key: "photos", label: t("admin.tabs.photos"), children: null },
     { key: "stats", label: t("admin.tabs.stats"), children: null },
     { key: "courses", label: t("admin.tabs.courses"), children: null },
@@ -53,7 +117,7 @@ export function AdminShell() {
     { key: "services", label: t("admin.tabs.services"), children: null },
     { key: "faq", label: t("admin.tabs.faq"), children: null },
     { key: "copy", label: t("admin.tabs.copy"), children: null },
-  ], [t]);
+  ], [t, hasNewBookings]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -137,7 +201,7 @@ export function AdminShell() {
           shadow={false}
         />
 
-        {activeTab === "bookings" && <AdminBookingsTab showToast={showToast} />}
+        {activeTab === "bookings" && <AdminBookingsTab showToast={showToast} newBookingIds={newBookingIds} />}
         {activeTab === "photos" && <AdminPhotosTab showToast={showToast} />}
         {activeTab === "packages" && <AdminPackagesTab showToast={showToast} />}
         {activeTab === "services" && <AdminServicesTab showToast={showToast} />}

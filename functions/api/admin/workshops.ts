@@ -1,7 +1,10 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../_auth";
 import { jsonResponse, badRequest, forbidden, unauthorized, unavailable } from "../../_responses";
+import { validateString, validateOptionalString, validateOptionalInt, validateEnum, validateOptionalEnum, validateUrl, validateBody } from "../../_validation";
 
 type AdminEnv = Env & { ADMIN_PASSWORD?: string };
+
+const workshopStatuses = ["upcoming", "ongoing", "completed", "cancelled"] as const;
 
 // ── GET /api/admin/workshops ──
 export const onRequestGet: PagesFunction<AdminEnv> = async (context) => {
@@ -29,12 +32,28 @@ export const onRequestPost: PagesFunction<AdminEnv> = async (context) => {
   }
 
   const body = (await context.request.json().catch(() => ({}))) as Record<string, unknown>;
+
+  const validated = validateBody(body, {
+    title: (v) => validateString(v, "活动标题"),
+    event_date: (v) => validateString(v, "活动日期"),
+    title_en: (v) => validateOptionalString(v, "英文标题"),
+    title_ko: (v) => validateOptionalString(v, "韩文标题"),
+    title_ja: (v) => validateOptionalString(v, "日文标题"),
+    description: (v) => validateOptionalString(v, "描述"),
+    location: (v) => validateOptionalString(v, "地点"),
+    max_participants: (v) => validateOptionalInt(v, "最大参与人数", 1),
+    price_display: (v) => validateOptionalString(v, "价格"),
+    status: (v) => validateOptionalEnum(v, "状态", workshopStatuses),
+    cover_image_url: (v) => validateUrl(v, "封面图片"),
+    registration_form_url: (v) => validateUrl(v, "报名链接"),
+  });
+
+  if (!validated.valid) {
+    return badRequest(validated.error);
+  }
+
   const title = (body.title as string)?.trim();
   const eventDate = (body.event_date as string)?.trim();
-
-  if (!title || !eventDate) {
-    return badRequest("请填写活动标题和日期");
-  }
 
   const id = crypto.randomUUID();
   const now = new Date().toISOString();

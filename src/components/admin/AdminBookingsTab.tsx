@@ -22,7 +22,7 @@ const statusLabels: Record<string, { label: string; icon: typeof Clock; classNam
   done: { label: "已完成", icon: XCircle, className: "badge-done" },
 };
 
-export function AdminBookingsTab({ showToast }: { showToast: (text: string, type: ToastType) => void }) {
+export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (text: string, type: ToastType) => void; newBookingIds?: Set<string> }) {
   const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -76,7 +76,7 @@ export function AdminBookingsTab({ showToast }: { showToast: (text: string, type
             const st = statusLabels[b.status] || statusLabels.pending;
             const Icon = st.icon;
             return (
-              <div key={b.id} className={`adm-booking-card ${b.status}`}>
+              <div key={b.id} className={`adm-booking-card ${b.status}${newBookingIds?.has(b.id) ? " is-new" : ""}`}>
                 <div className="adm-booking-head">
                   <strong>{b.name}</strong>
                   <span className={`adm-booking-badge ${st.className}`}>
