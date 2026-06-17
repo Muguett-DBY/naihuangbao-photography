@@ -10,6 +10,24 @@
   z-index: 1;
 }
 
+/* Mobile hero improvements */
+@media (max-width: 480px) {
+  .page-hero-heading h1 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+
+  .page-hero-heading .section-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+
+  .page-hero-heading span {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
 /* ── Course Detail Page ── */
 .course-detail-meta {
   display: flex;
@@ -2442,6 +2460,16 @@
 .dashboard-empty p {
   margin: 0;
   font-size: 0.95rem;
+}
+
+.dashboard-profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.dashboard-profile-section-title {
+  margin-bottom: 16px;
 }
 
 .dashboard-loading {

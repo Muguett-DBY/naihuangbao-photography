@@ -1,7 +1,6 @@
 /**
  * Centralized error logging utility.
- * In development, logs to console. In production, can be extended to send to
- * Cloudflare Analytics, Sentry, or other error tracking services.
+ * In development, logs to console. In production, sends to backend for monitoring.
  */
 export function logError(context: string, error: unknown, extra?: Record<string, unknown>) {
   const message = error instanceof Error ? error.message : String(error);
@@ -11,13 +10,36 @@ export function logError(context: string, error: unknown, extra?: Record<string,
     console.error(`[${context}]`, message, stack ? "\n" + stack : "", extra ?? "");
   }
 
-  // In production, could send to analytics:
-  // if (import.meta.env.PROD) {
-  //   fetch("/api/analytics/error", {
-  //     method: "POST",
-  //     body: JSON.stringify({ context, message, stack, ...extra }),
-  //   }).catch(() => {});
-  // }
+  // In production, send to backend for monitoring
+  if (import.meta.env.PROD) {
+    try {
+      const payload = {
+        context,
+        message,
+        stack,
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        timestamp: new Date().toISOString(),
+        ...extra,
+      };
+
+      // Use sendBeacon for reliable delivery even if page is unloading
+      if (navigator.sendBeacon) {
+        const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+        navigator.sendBeacon("/api/analytics/error", blob);
+      } else {
+        // Fallback for older browsers
+        fetch("/api/analytics/error", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        }).catch(() => {});
+      }
+    } catch {
+      // Silently fail - error logging should never break the app
+    }
+  }
 }
 
 /**

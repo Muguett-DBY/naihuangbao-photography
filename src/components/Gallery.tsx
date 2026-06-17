@@ -7,6 +7,7 @@ import { getPhotosByStyle, searchPhotos } from "../lib/gallery";
 import type { PhotoItem, PhotoStyle } from "../types/photo";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { Section } from "./Section";
+import { HighlightText } from "./shared/HighlightText";
 import { useDistortionHover } from "../hooks/useDistortionHover";
 
 type StyleFilter = PhotoStyle | "all";
@@ -122,6 +123,25 @@ export function Gallery() {
 
   // Distortion hover on gallery cards
   const distortRef = useDistortionHover();
+
+  // Compute filter counts for each style
+  const filterCounts = useMemo(() => {
+    const counts: Record<StyleFilter, number> = {
+      all: sourcePhotos.length,
+      jiangnan: 0,
+      street: 0,
+      park: 0,
+      sweet: 0,
+      couple: 0,
+      indoor: 0,
+    };
+    for (const photo of sourcePhotos) {
+      if (photo.style in counts) {
+        counts[photo.style as StyleFilter]++;
+      }
+    }
+    return counts;
+  }, [sourcePhotos]);
 
   const styleFiltered = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
   const photos = useMemo<PhotoItem[]>(() => searchPhotos(styleFiltered, searchQuery), [styleFiltered, searchQuery]);
@@ -266,8 +286,15 @@ export function Gallery() {
             onClick={() => setFilter(item)}
           >
             {t(`gallery.filters.${item}`)}
+            <span className="filter-count">{filterCounts[item]}</span>
           </button>
         ))}
+      </div>
+
+      <div className="gallery-result-summary">
+        <span className="gallery-result-count">
+          {t("gallery.showing", { count: photos.length, total: sourcePhotos.length, defaultValue: `Showing ${photos.length} of ${sourcePhotos.length} photos` })}
+        </span>
       </div>
 
       {/* Filmstrip: auto-scrolling photo strip */}
@@ -299,7 +326,10 @@ export function Gallery() {
           }
           return Array.from(albums).map(([albumName, albumPhotos]) => (
             <div key={albumName} className="gallery-album">
-              <h3 className="gallery-album-title">{albumName}</h3>
+              <div className="gallery-album-header">
+                <h3 className="gallery-album-title">{albumName}</h3>
+                <span className="gallery-album-count">{albumPhotos.length} {t("gallery.photos", "photos")}</span>
+              </div>
               <div className="gallery-masonry">
                 {albumPhotos.map((item, index) => {
                   const isVideo = Boolean(item.videoUrl);
@@ -342,15 +372,19 @@ export function Gallery() {
                         )}
                         <div className="gallery-masonry-overlay">
                           <span className="gallery-masonry-overlay-style">{t(`gallery.filters.${item.style}`, item.style)}</span>
-                          <strong className="gallery-masonry-overlay-title">{item.title}</strong>
-                          <span className="gallery-masonry-overlay-location">{item.location}</span>
+                          <strong className="gallery-masonry-overlay-title">
+                            <HighlightText text={item.title} query={searchQuery} />
+                          </strong>
+                          <span className="gallery-masonry-overlay-location">
+                            <HighlightText text={item.location} query={searchQuery} />
+                          </span>
                           <ShareButton photo={item} />
                         </div>
                       </button>
                       <div className="gallery-masonry-caption">
                         <p>{t(`gallery.filters.${item.style}`, item.style)}</p>
-                        <h3>{item.title}</h3>
-                        <span>{item.location}</span>
+                        <h3><HighlightText text={item.title} query={searchQuery} /></h3>
+                        <span><HighlightText text={item.location} query={searchQuery} /></span>
                       </div>
                     </article>
                   );
