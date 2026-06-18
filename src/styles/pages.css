@@ -4470,10 +4470,24 @@
   .editor-beauty-panel {
     width: 100%;
     padding: 12px;
+    padding-top: 20px;
     border-radius: 16px 16px 0 0;
     max-height: 50vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    position: relative;
+  }
+  .editor-beauty-panel::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(139, 94, 74, 0.25);
   }
 
   /* Categories: horizontal scroll with snap */
