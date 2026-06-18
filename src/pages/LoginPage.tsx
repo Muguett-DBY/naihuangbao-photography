@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { LogIn, UserPlus, Mail, Lock, User, KeyRound, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { useAuth } from "../hooks/useAuth";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { useToast } from "../components/shared/Toast";
@@ -136,6 +137,7 @@ export function LoginPage() {
   // ── Password Reset Flow ──
   if (resetMode) {
     return (
+      <ErrorBoundary>
       <PageTransition ref={rootRef}>
         <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
           <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
@@ -271,11 +273,13 @@ export function LoginPage() {
           </div>
         </section>
       </PageTransition>
+      </ErrorBoundary>
     );
   }
 
   // ── Login / Register Flow ──
   return (
+    <ErrorBoundary>
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
         <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
@@ -405,5 +409,6 @@ export function LoginPage() {
         </div>
       </section>
     </PageTransition>
+    </ErrorBoundary>
   );
 }

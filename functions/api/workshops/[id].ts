@@ -18,7 +18,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     }
 
     return jsonResponse({ workshop }, 200);
-  } catch {
+  } catch (error) {
+    console.error("[workshops]", error);
     return jsonResponse({ error: "加载失败" }, 500);
   }
 };

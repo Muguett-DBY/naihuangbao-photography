@@ -21,7 +21,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       ...item,
       images: typeof item.images === "string" ? JSON.parse(item.images as string) : item.images,
     } }, 200);
-  } catch {
+  } catch (error) {
+    console.error("[merchandise]", error);
     return jsonResponse({ error: "加载失败" }, 500);
   }
 };

@@ -2,17 +2,11 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   BookOpen,
   CalendarCheck,
-  FileText,
-  HelpCircle,
   ImagePlus,
   Layers,
   LockKeyhole,
   LogOut,
-  MapPin,
-  Package,
-  Settings,
   ShoppingBag,
-  Users,
   TrendingUp,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";

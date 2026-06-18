@@ -1,34 +1,27 @@
 # 持续迭代记录
 
-## 本轮 (1457a6c → e855c1d) — Admin 照片批量管理 + PhotoEditor 颜色提取
+## 本轮 (e855c1d → 66cf0a9) — Admin 仪表盘升级
 
 ### 承接的上一轮方向
-上一轮推荐：**Admin 照片批量管理增强** — ✅ 本轮完成
+上一轮推荐：**邮件发送基础设施集成** — 需要配置域名和 API 密钥，本轮无法执行。
+调整方向为 **Admin 仪表盘增强** — 最高价值的用户可见改进。
 
 ### 完成的旗舰级主改动
-**Admin 照片批量可见性/精选切换** — 新增 API 端点 + 管理界面批量操作
+**Admin 仪表盘 KPI 卡片 + 预约流水线 + 活动流** — 从 2 行表格升级为专业级仪表盘
 
 ### 新增的用户可见增量
-- Admin 照片管理支持批量设为公开/隐藏（之前只能逐张编辑）
-- Admin 照片管理支持批量设为精选/取消精选
-- Admin 照片网格选中状态可视化（蓝色边框 + 复选框）
-- Admin 照片管理操作栏修复了缺失的 CSS 样式
+- 4 张 KPI 卡片（照片、预约、用户、内容）带进度条
+- 预约流水线分解（待处理/已联系/已完成）+ 完成率进度条
+- 最近活动流（最近 5 条预约 + 最近 5 张照片）
+- 卡片网格布局 + 暗色模式适配
 
 ### 关键改进
 | 改动 | 说明 |
 |------|------|
-| `functions/api/admin/photos/batch.ts` | 新建批量操作 API（支持 visibility/featured 两种操作，最多 100 张） |
-| `AdminPhotosTab.tsx` | 新增 4 个批量操作按钮 + 修复选中状态样式 |
-| `admin.css` | 补全缺失的选择 UI 样式（复选框、选中边框、操作栏） |
-| `editor-effects.ts` | 新增 `applyColorAdjustments` + `applyPostProcessing` 提取 |
-| `PhotoEditorPage.tsx` | 颜色调整 + 后处理代码替换为函数调用 |
-
-### PhotoEditor 累计提取成果
-| 文件 | 项目原始 | 当前 | 变化 |
-|------|---------|------|------|
-| PhotoEditorPage.tsx | 1748 行 | **956 行** | **-792 行 (-45%)** |
-| editor-effects.ts | 0 | 855 行 | 提取的独立模块 |
-| editor-utils.ts | 0 | 189 行 | 提取的工具函数 |
+| `functions/api/admin/stats.ts` | 从 5 个查询扩展到 14 个，新增用户/课程/预设/工坊/订阅者/活动数据 |
+| `AdminShell.tsx` | AdminStats 从 2 行表格重写为 KPI 卡片网格 + 活动流 |
+| `admin.css` | 新增活动流样式（卡片、徽章、暗色模式） |
+| 4 语言 i18n | 新增 13 个统计键（featured/contacted/done/users/subscribers/content 等） |
 
 ### 已通过的验证
 - TypeScript typecheck: 通过
@@ -39,12 +32,12 @@
 ### 仍存在的风险
 - 无邮件发送基础设施
 - 支付仍为 placeholder
-- PhotoEditorPage 仍有 956 行（可继续提取叠加层渲染）
+- Admin 仪表盘无时间趋势数据（可后续添加）
 
 ### 下一轮建议方向
 1. **邮件发送基础设施集成** — 接入 Resend 或 Cloudflare Email Workers
 2. **Admin 照片拖拽排序** — 添加 sort_order 字段实现手动排序
-3. **PhotoEditor 叠加层渲染提取** — 将文本/贴纸叠加渲染提取到独立函数
+3. **Admin 仪表盘时间趋势** — 添加每周/每月预约趋势图
 
 ### 推荐下一轮优先执行的旗舰级主改动
 邮件发送基础设施集成 — 使密码重置、预约确认、课程通知等核心业务流程从占位符升级为真实功能。
