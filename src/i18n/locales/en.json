@@ -643,9 +643,21 @@
       "detail": "Detail",
       "photosTotal": "Total Photos",
       "public": "Public",
+      "featured": "Featured",
       "hidden": "Hidden",
       "bookingsTotal": "Total Bookings",
-      "pending": " pending"
+      "pending": "Pending",
+      "contacted": "Contacted",
+      "done": "Done",
+      "users": "Users",
+      "subscribers": "Subscribers",
+      "content": "Content",
+      "courses": "Courses",
+      "presets": "Presets",
+      "workshops": "Workshops",
+      "recentActivity": "Recent Activity",
+      "recentBookings": "Recent Bookings",
+      "recentPhotos": "Recent Photos"
     }
   },
   "chat": {

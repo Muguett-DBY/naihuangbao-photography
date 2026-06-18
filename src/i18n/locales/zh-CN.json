@@ -694,9 +694,21 @@
       "detail": "详情",
       "photosTotal": "照片总数",
       "public": "公开",
+      "featured": "精选",
       "hidden": "隐藏",
       "bookingsTotal": "预约总数",
-      "pending": "个待处理"
+      "pending": "待处理",
+      "contacted": "已联系",
+      "done": "已完成",
+      "users": "用户数",
+      "subscribers": "订阅者",
+      "content": "内容",
+      "courses": "课程",
+      "presets": "预设",
+      "workshops": "工坊",
+      "recentActivity": "最近动态",
+      "recentBookings": "最近预约",
+      "recentPhotos": "最近上传"
     }
   },
   "chat": {
