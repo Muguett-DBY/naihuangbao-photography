@@ -34,3 +34,20 @@ export interface FrameOption { id: string; labelKey: string; padding: number; bg
 export interface CategoryDef { key: BeautyCategory; icon: string; labelKey: string; }
 
 export interface ToolDef { key: BeautyTool; icon: string; labelKey: string; }
+
+export interface TextOverlay {
+  id: string;
+  text: string;
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+}
+
+export interface StickerOverlay {
+  id: string;
+  emoji: string;
+  x: number;
+  y: number;
+  size: number;
+}

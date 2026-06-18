@@ -1,14 +1,13 @@
-// @ts-nocheck - PhotoEditor uses face-api.js types not fully available in strict mode
 import "../styles/pages.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
-import type { BeautySettings, BeautyCategory, BeautyTool } from "../types/photo-editor";
+import type { BeautySettings, BeautyCategory, BeautyTool, TextOverlay, StickerOverlay } from "../types/photo-editor";
 import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
 import { prepareFaceApiBackend, loadFaceApiModels } from "../lib/photo-processing";
-import { applyFrame, analyzeFaceAndCalcParams, type Landmarks } from "../lib/editor-utils";
+import { applyFrame, analyzeFaceAndCalcParams, detectFaceLandmarks, type Landmarks } from "../lib/editor-utils";
 import {
   applyBackgroundBlur as applyBackgroundBlurFn,
   applyBackgroundRemove as applyBackgroundRemoveFn,
@@ -36,7 +35,7 @@ export default function PhotoEditorPage() {
   const historyIdxRef = useRef(0);
   const rafRef = useRef(0);
   const blemishCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const faceApiRef = useRef<any>(null);
+  const faceApiRef = useRef<typeof import("face-api.js") | null>(null);
   const originalSizeRef = useRef<{ w: number; h: number } | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
   const modelsReadyRef = useRef(false);
