@@ -13,6 +13,7 @@ import { AuthProvider } from "../hooks/useAuth";
 import { Header } from "../components/shared/Header";
 import { Footer } from "../components/shared/Footer";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+import { ToastProvider } from "../components/shared/Toast";
 
 export function RootLayout() {
   const { t } = useTranslation();
@@ -63,6 +64,7 @@ export function RootLayout() {
         <BookingProvider>
           <SiteContentProvider>
             <PublicPhotosProvider>
+              <ToastProvider>
               <Header />
               <main id="main-content">
                 <ErrorBoundary>
@@ -88,6 +90,7 @@ export function RootLayout() {
                   ) : null}
                 </div>
               )}
+              </ToastProvider>
             </PublicPhotosProvider>
           </SiteContentProvider>
         </BookingProvider>

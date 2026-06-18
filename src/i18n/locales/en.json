@@ -971,7 +971,9 @@
     "resetSubmitButton": "Reset password",
     "resetSuccess": "Your password has been reset. You can now log in with your new password.",
     "resetFailed": "Failed to reset password. The token may be invalid or expired.",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "resetTokenCopied": "Token copied to clipboard",
+    "resetTokenCopyFailed": "Failed to copy token"
   },
   "payment": {
     "purpose": {
