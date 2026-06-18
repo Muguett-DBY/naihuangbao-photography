@@ -73,6 +73,8 @@
     "noResults": "該当する結果が見つかりません",
     "searchEmpty": "検索に一致する写真がありません。別のキーワードをお試しください。",
     "allLoaded": "すべての写真が読み込まれました",
+    "restoredSession": "前回の浏览状態を復元しました",
+    "dismiss": "閉じる",
     "filters": {
       "all": "すべて",
       "jiangnan": "江南",

@@ -73,6 +73,8 @@
     "noResults": "未找到匹配结果",
     "searchEmpty": "没有匹配的照片，请尝试其他关键词。",
     "allLoaded": "已加载全部照片",
+    "restoredSession": "已恢复上次浏览状态",
+    "dismiss": "关闭",
     "filters": {
       "all": "全部",
       "jiangnan": "江南感",
