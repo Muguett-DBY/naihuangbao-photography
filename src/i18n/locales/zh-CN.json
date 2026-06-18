@@ -331,6 +331,11 @@
       "social": "小红书 @奶黄包摄影"
     }
   },
+  "bookingPage": {
+    "readyTitle": "准备好开始了吗？",
+    "readyDesc": "选择适合你的拍摄套餐，立即预约你的专属拍摄时间。",
+    "startBooking": "立即预约"
+  },
   "themeToggle": {
     "light": "🌞 浅色",
     "dark": "🌙 深色",

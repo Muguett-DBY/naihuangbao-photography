@@ -832,6 +832,60 @@
   margin: 6px 0 0;
 }
 
+.booking-quick-cta {
+  padding: 48px 0;
+}
+
+.booking-quick-cta-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 40px 32px;
+  background: var(--card-gradient), rgba(255, 253, 247, 0.82);
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 22px;
+  box-shadow: var(--paper-inset), var(--warm-shadow);
+}
+
+.booking-quick-cta-inner h2 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--caramel-ink);
+}
+
+.booking-quick-cta-inner p {
+  margin: 0 0 24px;
+  font-size: 0.95rem;
+  color: var(--caramel-muted);
+  line-height: 1.6;
+}
+
+.booking-quick-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--peach-accent), var(--caramel-text));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--button-shadow);
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s var(--ease-spring);
+}
+
+.booking-quick-cta-btn:hover {
+  transform: translate3d(0, -2px, 0);
+  box-shadow: 0 8px 24px rgba(212, 165, 116, 0.3);
+}
+
+.booking-quick-cta-btn:active {
+  transform: translate3d(0, 1px, 0) scale(0.98);
+}
+
 .booking-cta {
   display: inline-flex !important;
   align-items: center;

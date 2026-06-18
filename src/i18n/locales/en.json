@@ -311,6 +311,11 @@
       "social": "Xiaohongshu @naihuangbaosy"
     }
   },
+  "bookingPage": {
+    "readyTitle": "Ready to book?",
+    "readyDesc": "Choose your preferred photography package and book your session now.",
+    "startBooking": "Book Now"
+  },
   "themeToggle": {
     "light": "☀️ Light",
     "dark": "🌙 Dark",

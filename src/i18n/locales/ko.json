@@ -311,6 +311,11 @@
       "social": "샤오홍슈 @naihuangbaosy"
     }
   },
+  "bookingPage": {
+    "readyTitle": "예약할 준비가 되셨나요?",
+    "readyDesc": "촬영 패키지를 선택하고 지금 바로 예약하세요.",
+    "startBooking": "지금 예약하기"
+  },
   "themeToggle": {
     "light": "☀️ 라이트",
     "dark": "🌙 다크",
