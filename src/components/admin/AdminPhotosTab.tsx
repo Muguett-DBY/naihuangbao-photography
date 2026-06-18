@@ -1,4 +1,4 @@
-import { ImagePlus, Pencil, Trash2, Upload, CheckSquare } from "lucide-react";
+import { ImagePlus, Pencil, Trash2, Upload, CheckSquare, Eye, EyeOff, Star } from "lucide-react";
 import { type FormEvent, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
@@ -75,6 +75,40 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     setSelectedIds(new Set());
     setDeletingBatch(false);
     showToast(`成功删除 ${success} 张照片`, success > 0 ? "success" : "error");
+  };
+
+  const handleBatchVisibility = async (vis: "public" | "hidden") => {
+    if (selectedIds.size === 0) return;
+    try {
+      const r = await fetch("/api/admin/photos/batch", {
+        method: "POST", credentials: "include",
+        headers: { "content-type": "application/json", ...adminMutationHeaders },
+        body: JSON.stringify({ ids: Array.from(selectedIds), action: "visibility", value: vis }),
+      });
+      if (!r.ok) { showToast("操作失败", "error"); return; }
+      setPhotos((prev) => prev.map((p) => selectedIds.has(p.id) ? { ...p, visibility: vis } : p));
+      showToast(`已将 ${selectedIds.size} 张照片设为${vis === "public" ? "公开" : "隐藏"}`, "success");
+      setSelectedIds(new Set());
+    } catch {
+      showToast("操作失败", "error");
+    }
+  };
+
+  const handleBatchFeatured = async (feat: boolean) => {
+    if (selectedIds.size === 0) return;
+    try {
+      const r = await fetch("/api/admin/photos/batch", {
+        method: "POST", credentials: "include",
+        headers: { "content-type": "application/json", ...adminMutationHeaders },
+        body: JSON.stringify({ ids: Array.from(selectedIds), action: "featured", value: feat }),
+      });
+      if (!r.ok) { showToast("操作失败", "error"); return; }
+      setPhotos((prev) => prev.map((p) => selectedIds.has(p.id) ? { ...p, featured: feat } : p));
+      showToast(`已将 ${selectedIds.size} 张照片${feat ? "设为精选" : "取消精选"}`, "success");
+      setSelectedIds(new Set());
+    } catch {
+      showToast("操作失败", "error");
+    }
   };
 
   const handleDelete = async () => {
@@ -205,6 +239,18 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
             {selectedIds.size > 0 && (
               <>
                 <span className="adm-selected-count">已选 {selectedIds.size} 张</span>
+                <Button type="primary" size="small" onClick={() => handleBatchVisibility("public")}>
+                  <Eye size={13} /> 设为公开
+                </Button>
+                <Button type="primary" size="small" onClick={() => handleBatchVisibility("hidden")}>
+                  <EyeOff size={13} /> 设为隐藏
+                </Button>
+                <Button type="primary" size="small" onClick={() => handleBatchFeatured(true)}>
+                  <Star size={13} /> 设为精选
+                </Button>
+                <Button type="primary" size="small" onClick={() => handleBatchFeatured(false)}>
+                  取消精选
+                </Button>
                 <Button type="primary" size="small" className="adm-btn-danger" onClick={handleBatchDelete} disabled={deletingBatch}>
                   <Trash2 size={13} /> {deletingBatch ? "删除中..." : `删除选中`}
                 </Button>

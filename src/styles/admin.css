@@ -342,6 +342,25 @@
 .adm-del { background: rgba(0,0,0,0.45); }
 .adm-del:hover { background: rgba(180,60,60,0.8); }
 
+.adm-photo.is-selected { box-shadow: 0 0 0 2px #4a90d9, 0 4px 16px rgba(74,144,217,0.15); }
+
+.adm-photo-check {
+  position: absolute; top: 6px; right: 6px; z-index: 3;
+  width: 24px; height: 24px; border-radius: 6px;
+  background: rgba(255,255,255,0.85); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; opacity: 0; transition: opacity 0.15s;
+}
+.adm-photo:hover .adm-photo-check, .adm-photo.is-selected .adm-photo-check { opacity: 1; }
+.adm-photo-check input { width: 14px; height: 14px; cursor: pointer; accent-color: #4a90d9; }
+
+.adm-list-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.adm-list-header h2 { margin: 0; font-size: 15px; font-weight: 700; color: #2d2725; }
+.adm-list-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.adm-selected-count { font-size: 13px; font-weight: 600; color: #4a90d9; }
+.adm-select-all { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; color: #5d4e49; }
+.adm-select-all input { width: 14px; height: 14px; accent-color: #4a90d9; }
+.adm-btn-danger { background: rgba(180,60,60,0.1) !important; color: #b43c3c !important; }
+
 .adm-empty { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 64px 0; color: #8f7d77; }
 .adm-empty p { margin: 0; font-size: 14px; }
 
