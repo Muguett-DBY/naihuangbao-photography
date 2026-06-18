@@ -1,6 +1,6 @@
 import { type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Loader2 } from "lucide-react";
 
 type DataStateProps = {
   loading: boolean;
@@ -25,7 +25,12 @@ export function DataState({ loading, error, empty, retry, icon, emptyText, child
   const { t } = useTranslation();
 
   if (loading) {
-    return <div className="data-state-loading">{t("common.loading")}</div>;
+    return (
+      <div className="data-state-loading">
+        <Loader2 size={24} className="data-state-spinner" />
+        <span>{t("common.loading")}</span>
+      </div>
+    );
   }
 
   if (error) {

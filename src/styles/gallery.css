@@ -577,6 +577,15 @@
   break-inside: avoid;
 }
 
+.gallery-masonry--compact .gallery-masonry-overlay {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+.gallery-masonry--compact .gallery-masonry-caption {
+  display: none;
+}
+
 /* Transition animation when filtering/searching */
 .gallery-masonry--transitioning .gallery-masonry-item {
   opacity: 0;
