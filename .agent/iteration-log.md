@@ -1,34 +1,66 @@
 # 持续迭代记录
 
-## 本轮 (5932161 → 3c5ef23) — Gallery 搜索状态持久化
+## 本轮完整循环 (5932161 → 1729d80) — 6 阶段连续迭代
 
-### 承接的上一轮方向
-- **Gallery 搜索状态持久化** — ✅ 已完成
-
-### 完成的旗舰级主改动
+### Stage 1: Gallery 搜索状态持久化 ✅
+- **Commit**: `3c5ef23` — `feat: persist gallery search state across navigation sessions`
 - Gallery filter/search/view 状态完整持久化到 localStorage
-- 页面导航返回时自动恢复上次浏览上下文（筛选、搜索词、视图模式）
-- 新增"已恢复上次浏览状态"横幅提示，5 秒后自动消失
-- "清除筛选"按钮同时清除 localStorage 缓存
-- URL 参数优先级高于 localStorage（分享链接可覆盖本地状态）
+- 页面导航返回时自动恢复上次浏览上下文
+- 新增"已恢复上次浏览状态"横幅提示
+- CI: ✅ 通过
 
-### 已通过的验证
-- TypeScript / lint：通过
-- Vitest：97/97 通过
-- Production build：通过
-- GitHub Actions：CI run `27767944467` 通过
+### Stage 2: PhotoEditor 类型化拆分 ✅
+- **Commit**: `ab597c8` — `refactor: remove @ts-nocheck from PhotoEditor and add proper types`
+- 移除 957 行 PhotoEditorPage 的 @ts-nocheck
+- 新增 TextOverlay/StickerOverlay 类型定义
+- 实现 detectFaceLandmarks 函数
+- CI: ✅ 通过
 
-### 遗留风险
-- `PhotoEditorPage.tsx` 仍有 `@ts-nocheck`，类型风险未完全消除
+### Stage 3: 骨架屏加载状态 ✅
+- **Commit**: `d76bb9b` — `feat: add skeleton loading states for all lazy-loaded sections`
+- 新增 SectionSkeleton 通用骨架屏组件
+- BookingPage/GalleryPage/HomePage/MapPage 全部使用骨架屏
+- CI: ✅ 通过
+
+### Stage 4: 预约弹窗移动端压缩 ✅
+- **Commit**: `e809cd0` — `feat: compress booking modal density on mobile`
+- 移动端弹窗内边距从 48px 压缩到 24px
+- 日历网格间隙从 4px 压缩到 2px
+- 表单字段间距减少
+- 修复日历触摸目标溢出问题
+- CI: ✅ 通过
+
+### Stage 5: 系统健康检查 ✅
+- 无代码变更 — 全面审计通过
+- Lint/Test/Build 全部通过
+- 无 console.log/debugger
+- 无敏感信息泄露
+- CI: ✅ 通过
+
+### Stage 6: 最终打磨 ✅
+- **Commit**: `1729d80` — `chore: clean up hardcoded fallbacks and update iteration logs`
+- 清理 BookingPage 硬编码中文回退值
+- 更新迭代记录
+- CI: ✅ 通过
+
+---
+
+## 遗留风险
+- `PhotoEditorPage.tsx` 已移除 @ts-nocheck，类型安全提升
+- `useAdminSession` hook 仍为死代码（低优先级）
 - 支付仍为 placeholder
 
 ### 下一轮建议方向
-1. **PhotoEditor 类型化拆分** — 分阶段移除 `@ts-nocheck`，优先拆分状态与导出流程
-2. **预约弹窗移动端压缩** — 优化小屏日历和首屏字段密度
-3. **Gallery 视图模式持久化增强** — 支持滚动位置恢复
+1. **Gallery 视图模式持久化增强** — 支持滚动位置恢复
+2. **预约弹窗多步骤表单** — 将长表单拆分为分步向导
+3. **PhotoEditor 剩余类型优化** — 进一步收紧 BeautySettings 索引签名
 
 ### 推荐下一轮优先执行的旗舰级主改动
-PhotoEditor 类型化拆分：分阶段移除 `@ts-nocheck`，优先拆分状态与导出流程。
+预约弹窗多步骤表单：将长表单拆分为分步向导，减少移动端首次滚动距离。
+
+---
+
+## 本轮 (34632af → a58e755) — 移动端核心导航与编辑器发现路径
 
 ---
 
