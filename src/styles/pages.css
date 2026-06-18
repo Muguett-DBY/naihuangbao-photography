@@ -2632,6 +2632,44 @@
   .calendar-day-num {
     font-size: 0.8rem;
   }
+
+  /* Booking modal: tighter padding on mobile */
+  [class*="animal-modalClipped"] {
+    padding: 24px 20px 20px !important;
+  }
+  [class*="animal-title"] {
+    font-size: 1.3rem !important;
+  }
+  [class*="animal-body"] {
+    font-size: 16px !important;
+    padding-bottom: 12px !important;
+  }
+
+  /* Booking form: reduce field spacing on mobile */
+  .booking-field {
+    margin-bottom: 12px;
+  }
+  .booking-field label {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  .booking-field select,
+  .booking-field textarea {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  .booking-footer {
+    margin-top: 10px;
+  }
+
+  /* Calendar: tighter grid on mobile */
+  .calendar-grid {
+    gap: 2px;
+  }
+  .calendar-weekday {
+    font-size: 0.7rem;
+    padding: 2px 0;
+  }
 }
 
 /* ── Compare Slider ── */
@@ -5269,10 +5307,10 @@
     justify-content: center;
   }
 
-  /* Booking calendar touch targets */
+  /* Booking calendar touch targets — fit within 300px container */
   .calendar-day {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 0;
+    min-height: 0;
   }
 
   /* Detail related grids: single column */
