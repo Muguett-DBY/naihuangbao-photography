@@ -1697,6 +1697,10 @@
     opacity: 0.7;
   }
 
+  .gallery-masonry-item.is-touched .gallery-masonry-overlay {
+    opacity: 1;
+  }
+
   .gallery-masonry-btn:hover img {
     transform: none;
   }

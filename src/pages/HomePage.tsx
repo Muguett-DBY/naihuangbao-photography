@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ArrowDown, ArrowRight, CalendarCheck, BookOpen, Download, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowDown, ArrowRight, CalendarCheck, BookOpen, Download, ShieldCheck, Sparkles } from "lucide-react";
 import { Button, Divider, Icon } from "animal-island-ui";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -128,11 +128,11 @@ export function HomePage() {
               <span className="hero-trust-tag">{t("hero.trustTags.styles")}</span>
             </div>
             <div className="hero-cover-cta-group">
-              <Button type="primary" size="large" className="hero-cover-primary-btn" onClick={() => scrollToSection("featured")}>
-                {t("hero.ctaView")} <ArrowDown size={16} />
+              <Button type="primary" size="large" className="hero-cover-primary-btn" onClick={() => openBookingModal()}>
+                <CalendarCheck size={16} /> {t("hero.ctaBooking")}
               </Button>
-              <Button type="primary" size="large" className="hero-cover-secondary-btn" onClick={() => openBookingModal()}>
-                <MessageCircle size={14} /> {t("hero.ctaBooking")}
+              <Button type="primary" size="large" className="hero-cover-secondary-btn" onClick={() => scrollToSection("featured")}>
+                {t("hero.ctaView")} <ArrowDown size={16} />
               </Button>
             </div>
           </div>

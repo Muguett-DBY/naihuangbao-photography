@@ -141,6 +141,7 @@ export function Gallery() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [viewMode, setViewMode] = useState<ViewMode>("masonry");
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [touchedId, setTouchedId] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const masonryRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -254,7 +255,8 @@ export function Gallery() {
   const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchCleanupRef = useRef<(() => void) | null>(null);
 
-  const handleTouchStart = useCallback(() => {
+  const handleTouchStart = useCallback((id: string) => {
+    setTouchedId(id);
     touchCleanupRef.current?.();
     touchTimerRef.current = setTimeout(() => navigator.vibrate?.(12), 400);
     const clear = () => {
@@ -280,6 +282,13 @@ export function Gallery() {
       }
     };
   }, []);
+
+  // Auto-clear touched state after 2.5 seconds
+  useEffect(() => {
+    if (!touchedId) return;
+    const timer = setTimeout(() => setTouchedId(null), 2500);
+    return () => clearTimeout(timer);
+  }, [touchedId]);
 
   return (
     <Section
@@ -413,7 +422,7 @@ export function Gallery() {
                   const isVideo = Boolean(item.videoUrl);
                   return (
                     <article
-                      className={`gallery-masonry-item ${isVideo ? "is-video" : ""}`}
+                      className={`gallery-masonry-item ${isVideo ? "is-video" : ""}${touchedId === item.id ? " is-touched" : ""}`}
                       data-gallery-photo-id={item.id}
                       key={item.id}
                       style={{ transitionDelay: `${index * 0.06}s` }}
@@ -423,7 +432,7 @@ export function Gallery() {
                         type="button"
                         data-distort
                         onClick={() => setLightboxIndex(photoIndexMap.get(item.id) ?? 0)}
-                        onTouchStart={handleTouchStart}
+                        onTouchStart={() => handleTouchStart(item.id)}
                         aria-label={`${t("gallery.viewLargeImage")}${item.title}`}
                       >
                         {isVideo && item.videoUrl ? (
