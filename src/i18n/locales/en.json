@@ -73,6 +73,8 @@
     "noResults": "No results found",
     "searchEmpty": "No photos match your search. Try a different keyword.",
     "allLoaded": "All photos loaded",
+    "restoredSession": "Restored from your last visit",
+    "dismiss": "Dismiss",
     "filters": {
       "all": "All",
       "jiangnan": "Jiangnan",

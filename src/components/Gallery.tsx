@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Play, Share2, Loader2, Search, X, LayoutGrid, Columns } from "lucide-react";
+import { Play, Share2, Loader2, Search, X, LayoutGrid, Columns, RotateCcw } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { getPhotosByStyle, searchPhotos } from "../lib/gallery";
@@ -14,9 +14,15 @@ import { useDistortionHover } from "../hooks/useDistortionHover";
 type StyleFilter = PhotoStyle | "all";
 type ViewMode = "masonry" | "compact";
 
+interface GalleryPersistedState {
+  filter: StyleFilter;
+  search: string;
+  view: ViewMode;
+}
+
 const STYLE_FILTERS: StyleFilter[] = ["all", "jiangnan", "street", "park", "sweet", "couple", "indoor"];
 const VIEW_MODES: ViewMode[] = ["masonry", "compact"];
-const GALLERY_VIEW_STORAGE_KEY = "nhb-gallery-view-mode";
+const GALLERY_STATE_KEY = "nhb-gallery-discovery-state";
 const tones = ["rose", "sage", "cream", "ink"] as const;
 const PAGE_SIZE = 12;
 const Lightbox = lazy(() => import("./Lightbox"));
@@ -34,13 +40,55 @@ function isViewMode(value: string | null): value is ViewMode {
   return Boolean(value && VIEW_MODES.includes(value as ViewMode));
 }
 
-function getInitialViewMode(searchParams: URLSearchParams): ViewMode {
-  const viewParam = searchParams.get("view");
-  if (isViewMode(viewParam)) return viewParam;
-  if (typeof window === "undefined") return "masonry";
+function loadPersistedState(): GalleryPersistedState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(GALLERY_STATE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<GalleryPersistedState>;
+    return {
+      filter: isStyleFilter(parsed.filter ?? null) ? (parsed.filter as StyleFilter) : "all",
+      search: typeof parsed.search === "string" ? parsed.search : "",
+      view: isViewMode(parsed.view ?? null) ? (parsed.view as ViewMode) : "masonry",
+    };
+  } catch {
+    return null;
+  }
+}
 
-  const storedView = window.localStorage.getItem(GALLERY_VIEW_STORAGE_KEY);
-  return isViewMode(storedView) ? storedView : "masonry";
+function persistGalleryState(state: GalleryPersistedState) {
+  try {
+    window.localStorage.setItem(GALLERY_STATE_KEY, JSON.stringify(state));
+  } catch { /* quota exceeded — ignore */ }
+}
+
+function getInitialState(searchParams: URLSearchParams): { filter: StyleFilter; search: string; view: ViewMode; restored: boolean } {
+  const urlFilter = searchParams.get("style");
+  const urlSearch = searchParams.get("q") || "";
+  const urlView = searchParams.get("view");
+
+  // URL params take priority
+  if (isStyleFilter(urlFilter) || urlSearch || isViewMode(urlView)) {
+    return {
+      filter: isStyleFilter(urlFilter) ? urlFilter : "all",
+      search: urlSearch,
+      view: isViewMode(urlView) ? urlView : "masonry",
+      restored: false,
+    };
+  }
+
+  // Fall back to persisted state
+  const persisted = loadPersistedState();
+  if (persisted && (persisted.filter !== "all" || persisted.search || persisted.view !== "masonry")) {
+    return {
+      filter: persisted.filter,
+      search: persisted.search,
+      view: persisted.view,
+      restored: true,
+    };
+  }
+
+  return { filter: "all", search: "", view: "masonry", restored: false };
 }
 
 function VideoPreview({ videoUrl, posterUrl, title }: { videoUrl: string; posterUrl: string; title: string }) {
@@ -152,17 +200,16 @@ export function Gallery() {
   const { sectionCopy } = useSiteContent();
   const { photos: sourcePhotos, remoteLoaded } = usePublicPhotos();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [filter, setFilter] = useState<StyleFilter>(() => {
-    const styleParam = searchParams.get("style");
-    return isStyleFilter(styleParam) ? styleParam : "all";
-  });
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
-  const [debouncedSearch, setDebouncedSearch] = useState(searchParams.get("q") || "");
+  const initialState = useMemo(() => getInitialState(searchParams), []);
+  const [filter, setFilter] = useState<StyleFilter>(initialState.filter);
+  const [searchQuery, setSearchQuery] = useState(initialState.search);
+  const [debouncedSearch, setDebouncedSearch] = useState(initialState.search);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [viewMode, setViewMode] = useState<ViewMode>(() => getInitialViewMode(searchParams));
+  const [viewMode, setViewMode] = useState<ViewMode>(initialState.view);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [touchedId, setTouchedId] = useState<string | null>(null);
+  const [showRestored, setShowRestored] = useState(initialState.restored);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const masonryRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -222,6 +269,13 @@ export function Gallery() {
     setVisibleCount(PAGE_SIZE);
   }, [filter, debouncedSearch, viewMode]);
 
+  // Auto-dismiss restored banner after 5 seconds
+  useEffect(() => {
+    if (!showRestored) return;
+    const timer = setTimeout(() => setShowRestored(false), 5000);
+    return () => clearTimeout(timer);
+  }, [showRestored]);
+
   // Sync filter, search, and non-default view state to URL params.
   useEffect(() => {
     const params = new URLSearchParams();
@@ -231,16 +285,18 @@ export function Gallery() {
     setSearchParams(params, { replace: true });
   }, [filter, debouncedSearch, viewMode, setSearchParams]);
 
+  // Persist all gallery discovery state to localStorage
   useEffect(() => {
-    window.localStorage.setItem(GALLERY_VIEW_STORAGE_KEY, viewMode);
-  }, [viewMode]);
+    persistGalleryState({ filter, search: debouncedSearch, view: viewMode });
+  }, [filter, debouncedSearch, viewMode]);
 
   const resetGalleryDiscovery = useCallback(() => {
     setFilter("all");
     setSearchQuery("");
     setDebouncedSearch("");
     setViewMode("masonry");
-    window.localStorage.setItem(GALLERY_VIEW_STORAGE_KEY, "masonry");
+    try { window.localStorage.removeItem(GALLERY_STATE_KEY); } catch { /* ignore */ }
+    setShowRestored(false);
     searchInputRef.current?.focus();
   }, []);
 
@@ -409,6 +465,16 @@ export function Gallery() {
             </button>
           </div>
         </div>
+
+        {showRestored && hasActiveDiscovery && (
+          <div className="gallery-restored-banner" role="status">
+            <RotateCcw size={14} />
+            <span>{t("gallery.restoredSession", "Restored from your last visit")}</span>
+            <button type="button" onClick={() => setShowRestored(false)} aria-label={t("gallery.dismiss", "Dismiss")}>
+              <X size={12} />
+            </button>
+          </div>
+        )}
 
         {hasActiveDiscovery ? (
           <div className="gallery-active-chips" aria-label={t("gallery.activeState", "Active gallery state")}>

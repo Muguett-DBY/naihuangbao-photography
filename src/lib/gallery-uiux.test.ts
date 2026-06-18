@@ -9,9 +9,10 @@ describe("gallery discovery UI/UX contracts", () => {
   it("ships a cohesive command center with persistent view state and reset recovery", () => {
     const gallerySource = read("src/components/Gallery.tsx");
 
-    expect(gallerySource).toContain("GALLERY_VIEW_STORAGE_KEY");
-    expect(gallerySource).toContain('searchParams.get("view")');
-    expect(gallerySource).toContain("window.localStorage.setItem(GALLERY_VIEW_STORAGE_KEY");
+    expect(gallerySource).toContain("GALLERY_STATE_KEY");
+    expect(gallerySource).toContain("nhb-gallery-discovery-state");
+    expect(gallerySource).toContain("loadPersistedState");
+    expect(gallerySource).toContain("persistGalleryState");
     expect(gallerySource).toContain('params.set("view", viewMode)');
     expect(gallerySource).toContain("resetGalleryDiscovery");
     expect(gallerySource).toContain('className="gallery-command-center"');
@@ -19,6 +20,7 @@ describe("gallery discovery UI/UX contracts", () => {
     expect(gallerySource).toContain('className="gallery-empty-state"');
     expect(gallerySource).toContain('role="status"');
     expect(gallerySource).toContain('aria-live="polite"');
+    expect(gallerySource).toContain("gallery-restored-banner");
   });
 
   it("localizes discovery, active-state, and empty-result copy in every public locale", () => {
