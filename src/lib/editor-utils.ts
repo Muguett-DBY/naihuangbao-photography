@@ -8,6 +8,21 @@ import type { BeautySettings } from "../types/photo-editor";
 /** 68-point face landmarks — array of {x, y} coordinates */
 export type Landmarks = { x: number; y: number }[];
 
+/**
+ * Detect face landmarks using face-api.js.
+ * Returns 68-point landmarks array, or null if no face is detected.
+ */
+export async function detectFaceLandmarks(
+  api: typeof import("face-api.js"),
+  canvas: HTMLCanvasElement,
+): Promise<Landmarks | null> {
+  const detection = await api
+    .detectSingleFace(canvas)
+    .withFaceLandmarks();
+  if (!detection) return null;
+  return detection.landmarks.positions;
+}
+
 // ── Warp Distortion ──
 
 export function applyWarp(
