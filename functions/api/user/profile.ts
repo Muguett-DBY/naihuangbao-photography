@@ -1,6 +1,6 @@
 import { jsonResponse, badRequest, unauthorized, unavailable } from "../../_responses";
 import { getUserFromRequest, hashPassword, generateSalt } from "../../_auth";
-import { getRequiredAuthSecret } from "../../_security";
+import { getRequiredAuthSecret, timingSafeEqual } from "../../_security";
 import { validateString, validateOptionalString, validateBody } from "../../_validation";
 
 type AuthEnv = Env & { AUTH_SECRET?: string };
@@ -70,7 +70,7 @@ export const onRequestPut: PagesFunction<AuthEnv> = async (context) => {
       if (!row) return unauthorized("用户不存在");
 
       const currentHash = await hashPassword(currentPassword, row.salt);
-      if (currentHash !== row.password_hash) {
+      if (!timingSafeEqual(currentHash, row.password_hash)) {
         return badRequest("当前密码不正确");
       }
 

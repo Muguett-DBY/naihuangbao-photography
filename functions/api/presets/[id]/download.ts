@@ -1,5 +1,6 @@
 import { jsonResponse, badRequest, unavailable } from "../../../_responses";
 import { enforceRateLimit, rateLimited } from "../../../_security";
+import { validateId } from "../../../_validation";
 
 type ApiEnv = Env;
 
@@ -13,6 +14,8 @@ export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
   if (!limit.ok) return rateLimited(limit.retryAfter);
 
   const id = (context.params as Record<string, string>).id;
+  const idCheck = validateId(id, "预设 ID");
+  if (!idCheck.valid) return badRequest(idCheck.error);
 
   try {
     await context.env.DB.prepare(

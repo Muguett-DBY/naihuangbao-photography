@@ -18,11 +18,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return jsonResponse({ error: "Invalid error report" }, 400);
     }
 
+    // Truncate fields to prevent log amplification
+    const ctx = String(body.context).slice(0, 500);
+    const msg = String(body.message).slice(0, 500);
+
     // Log to console for Cloudflare Workers logs
-    console.error("[FrontendError]", JSON.stringify({
-      context: body.context,
-      message: body.message,
-    }));
+    console.error("[FrontendError]", JSON.stringify({ context: ctx, message: msg }));
 
     return jsonResponse({ ok: true }, 200);
   } catch {
