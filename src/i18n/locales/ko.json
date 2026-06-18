@@ -942,7 +942,22 @@
     "registerLink": "가입",
     "hasAccount": "이미 계정이 있으신가요?",
     "loginLink": "로그인",
-    "backToHome": "홈으로 돌아가기"
+    "backToHome": "홈으로 돌아가기",
+    "forgotPassword": "비밀번호를 잊으셨나요?",
+    "resetTitle": "비밀번호 재설정",
+    "resetDesc": "이메일 주소를 입력하시면 재설정 토큰을 보내드리겠습니다.",
+    "resetRequestButton": "재설정 토큰 보내기",
+    "resetEmailSent": "해당 이메일이 등록되어 있으면 재설정 토큰이 전송되었습니다.",
+    "resetRequestFailed": "비밀번호 재설정 요청에 실패했습니다. 다시 시도해 주세요.",
+    "resetDemoToken": "재설정 토큰 (데모 모드)",
+    "resetDemoHint": "클릭하여 복사합니다. 프로덕션 환경에서는 이 토큰이 이메일로 전송됩니다.",
+    "resetTokenLabel": "재설정 토큰",
+    "resetTokenPlaceholder": "이메일에서 받은 토큰을 붙여넣으세요",
+    "newPassword": "새 비밀번호",
+    "resetSubmitButton": "비밀번호 재설정",
+    "resetSuccess": "비밀번호가 재설정되었습니다. 새 비밀번호로 로그인하세요.",
+    "resetFailed": "비밀번호 재설정에 실패했습니다. 토큰이 유효하지 않거나 만료되었을 수 있습니다.",
+    "backToLogin": "로그인으로 돌아가기"
   },
   "payment": {
     "purpose": {

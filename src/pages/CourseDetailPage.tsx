@@ -7,6 +7,7 @@ import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useNotification } from "../hooks/useNotification";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
@@ -84,6 +85,7 @@ export function CourseDetailPage() {
         </div>
       </section>
 
+      <ErrorBoundary>
       {course.cover_image_url && (
         <section className="section-shell is-visible" style={{ paddingTop: 0 }}>
           <img
@@ -232,6 +234,7 @@ export function CourseDetailPage() {
           </Link>
         </div>
       </section>
+      </ErrorBoundary>
     </PageTransition>
   );
 }

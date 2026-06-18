@@ -6,6 +6,7 @@ import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { ImageWithFallback } from "../components/ImageWithFallback";
@@ -102,6 +103,7 @@ export function PhotoDetailPage() {
         </div>
       </section>
 
+      <ErrorBoundary>
       <section className="section-shell is-visible">
         <div className="photo-detail-content">
           <div className="photo-detail-meta">
@@ -228,6 +230,7 @@ export function PhotoDetailPage() {
           </div>
         </section>
       )}
+      </ErrorBoundary>
     </PageTransition>
   );
 }

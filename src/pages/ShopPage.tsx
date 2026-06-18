@@ -8,6 +8,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DataState } from "../components/shared/DataState";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import { tMerchandiseCategory } from "../lib/i18n-typed";
@@ -46,6 +47,7 @@ export function ShopPage() {
       />
 
       <section className="section-shell is-visible">
+        <ErrorBoundary>
         <DataState
           loading={loading}
           error={error}
@@ -113,6 +115,7 @@ export function ShopPage() {
             ))}
           </div>
         </DataState>
+        </ErrorBoundary>
       </section>
     </PageTransition>
   );

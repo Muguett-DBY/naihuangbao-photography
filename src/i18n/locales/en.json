@@ -956,7 +956,22 @@
     "registerLink": "Register",
     "hasAccount": "Already have an account?",
     "loginLink": "Log in",
-    "backToHome": "Back to homepage"
+    "backToHome": "Back to homepage",
+    "forgotPassword": "Forgot password?",
+    "resetTitle": "Reset password",
+    "resetDesc": "Enter your email address and we'll send you a reset token.",
+    "resetRequestButton": "Send reset token",
+    "resetEmailSent": "If that email is registered, a reset token has been sent.",
+    "resetRequestFailed": "Failed to request password reset. Please try again.",
+    "resetDemoToken": "Your reset token (demo mode)",
+    "resetDemoHint": "Click to copy. In production this token would be sent via email.",
+    "resetTokenLabel": "Reset token",
+    "resetTokenPlaceholder": "Paste the token from your email",
+    "newPassword": "New password",
+    "resetSubmitButton": "Reset password",
+    "resetSuccess": "Your password has been reset. You can now log in with your new password.",
+    "resetFailed": "Failed to reset password. The token may be invalid or expired.",
+    "backToLogin": "Back to login"
   },
   "payment": {
     "purpose": {

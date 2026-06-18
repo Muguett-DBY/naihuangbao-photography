@@ -1007,7 +1007,22 @@
     "registerLink": "注册",
     "hasAccount": "已有账户？",
     "loginLink": "登录",
-    "backToHome": "返回首页"
+    "backToHome": "返回首页",
+    "forgotPassword": "忘记密码？",
+    "resetTitle": "重置密码",
+    "resetDesc": "输入您的邮箱地址，我们将向您发送一个重置令牌。",
+    "resetRequestButton": "发送重置令牌",
+    "resetEmailSent": "如果该邮箱已注册，重置令牌已发送。",
+    "resetRequestFailed": "请求重置密码失败，请重试。",
+    "resetDemoToken": "您的重置令牌（演示模式）",
+    "resetDemoHint": "点击复制。生产环境中此令牌将通过邮件发送。",
+    "resetTokenLabel": "重置令牌",
+    "resetTokenPlaceholder": "粘贴邮件中的令牌",
+    "newPassword": "新密码",
+    "resetSubmitButton": "重置密码",
+    "resetSuccess": "密码已重置。请使用新密码登录。",
+    "resetFailed": "密码重置失败。令牌可能无效或已过期。",
+    "backToLogin": "返回登录"
   },
   "payment": {
     "purpose": {
