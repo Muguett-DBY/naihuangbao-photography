@@ -35,11 +35,11 @@ export function BookingPage() {
       <section className="section-shell is-visible">
         <div className="booking-quick-cta">
           <div className="booking-quick-cta-inner">
-            <h2>{t("bookingPage.readyTitle", "准备好开始了吗？")}</h2>
-            <p>{t("bookingPage.readyDesc", "选择适合你的拍摄套餐，立即预约你的专属拍摄时间。")}</p>
+            <h2>{t("bookingPage.readyTitle")}</h2>
+            <p>{t("bookingPage.readyDesc")}</p>
             <button type="button" className="booking-quick-cta-btn" onClick={() => openBookingModal()}>
               <CalendarCheck size={18} />
-              {t("bookingPage.startBooking", "立即预约")}
+              {t("bookingPage.startBooking")}
             </button>
           </div>
         </div>

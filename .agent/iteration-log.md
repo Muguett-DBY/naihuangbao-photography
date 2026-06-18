@@ -1,5 +1,37 @@
 # 持续迭代记录
 
+## 本轮 (5932161 → 3c5ef23) — Gallery 搜索状态持久化
+
+### 承接的上一轮方向
+- **Gallery 搜索状态持久化** — ✅ 已完成
+
+### 完成的旗舰级主改动
+- Gallery filter/search/view 状态完整持久化到 localStorage
+- 页面导航返回时自动恢复上次浏览上下文（筛选、搜索词、视图模式）
+- 新增"已恢复上次浏览状态"横幅提示，5 秒后自动消失
+- "清除筛选"按钮同时清除 localStorage 缓存
+- URL 参数优先级高于 localStorage（分享链接可覆盖本地状态）
+
+### 已通过的验证
+- TypeScript / lint：通过
+- Vitest：97/97 通过
+- Production build：通过
+- GitHub Actions：CI run `27767944467` 通过
+
+### 遗留风险
+- `PhotoEditorPage.tsx` 仍有 `@ts-nocheck`，类型风险未完全消除
+- 支付仍为 placeholder
+
+### 下一轮建议方向
+1. **PhotoEditor 类型化拆分** — 分阶段移除 `@ts-nocheck`，优先拆分状态与导出流程
+2. **预约弹窗移动端压缩** — 优化小屏日历和首屏字段密度
+3. **Gallery 视图模式持久化增强** — 支持滚动位置恢复
+
+### 推荐下一轮优先执行的旗舰级主改动
+PhotoEditor 类型化拆分：分阶段移除 `@ts-nocheck`，优先拆分状态与导出流程。
+
+---
+
 ## 本轮 (34632af → a58e755) — 移动端核心导航与编辑器发现路径
 
 ### 承接的上一轮方向
