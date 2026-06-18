@@ -95,9 +95,9 @@ describe("editor regression contracts", () => {
   });
 
   it("normalizes face landmark bounds before writing canvas pixels", () => {
-    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const editor = read("src/lib/editor-effects.ts");
 
-    expect(editor).toContain("Math.floor(Math.min(...lm.map(p => p.x)))");
+    expect(editor).toContain("Math.floor(Math.min(...lm.map((p) => p.x)))");
     expect(editor).toContain("Math.floor(Math.max(0, eCY - eR * 2))");
     expect(editor).toContain("Math.floor(Math.max(0, nCY - nR))");
     expect(editor).toContain("Math.floor(Math.max(0, lipCY - 15))");
