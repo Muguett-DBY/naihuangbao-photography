@@ -1285,6 +1285,16 @@
   gap: 12px;
 }
 
+.data-state-spinner {
+  animation: data-state-spin 1s linear infinite;
+  color: var(--peach-accent);
+}
+
+@keyframes data-state-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .data-state-error svg {
   color: #e74c3c;
   opacity: 0.6;
@@ -1547,9 +1557,34 @@
   width: 100%;
   padding: 10px 14px 10px 36px;
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 16px;
   background: transparent;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.login-input:focus {
+  outline: none;
+  border-color: var(--peach-accent);
+  box-shadow: 0 0 0 3px rgba(255, 184, 151, 0.15);
+}
+
+.login-password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--caramel-muted);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+.login-password-toggle:hover {
+  color: var(--caramel-text);
 }
 
 .login-error {

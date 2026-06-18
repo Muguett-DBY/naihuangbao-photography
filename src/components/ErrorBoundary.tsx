@@ -41,7 +41,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           style={{
             padding: 48,
             textAlign: "center",
-            color: "var(--animal-text-color, #3a2e28)",
+            color: "var(--caramel-text)",
           }}
         >
           <h2 style={{ marginBottom: 12, fontSize: "1.25rem" }}>
@@ -49,7 +49,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           </h2>
           <p
             style={{
-              color: "var(--animal-text-color-secondary, #8b7e74)",
+              color: "var(--caramel-muted)",
               marginBottom: 24,
               maxWidth: 400,
               margin: "0 auto 24px",
@@ -64,7 +64,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               padding: "10px 24px",
               borderRadius: 8,
               border: "none",
-              background: "var(--caramel, #d4a574)",
+              background: "var(--peach-accent)",
               color: "#fff",
               fontWeight: 600,
               cursor: "pointer",
