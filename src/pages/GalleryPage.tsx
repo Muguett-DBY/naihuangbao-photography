@@ -5,6 +5,7 @@ import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+import { SectionSkeleton } from "../components/SectionSkeleton";
 
 const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
 const PhotoWall3DCss = lazy(() => import("../components/PhotoWall3DCss").then((m) => ({ default: m.PhotoWall3DCss })));
@@ -30,19 +31,19 @@ export function GalleryPage() {
       </section>
 
       <ErrorBoundary>
-        <Suspense fallback={<div style={{ height: "min(60vh, 480px)" }} />}>
+        <Suspense fallback={<SectionSkeleton hasImage />}>
           <PhotoWall3DCss />
         </Suspense>
       </ErrorBoundary>
 
       <ErrorBoundary>
-        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 200 }} />}>
+        <Suspense fallback={<SectionSkeleton lines={2} hasImage />}>
           <HorizontalGallery />
         </Suspense>
       </ErrorBoundary>
 
       <ErrorBoundary>
-        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 200 }} />}>
+        <Suspense fallback={<SectionSkeleton lines={2} hasImage />}>
           <PolaroidWall />
         </Suspense>
       </ErrorBoundary>
@@ -54,7 +55,7 @@ export function GalleryPage() {
       </section>
 
       <ErrorBoundary>
-        <Suspense fallback={<div style={{ height: "min(55vh, 440px)" }} />}>
+        <Suspense fallback={<SectionSkeleton hasImage lines={2} />}>
           <PhotoMap />
         </Suspense>
       </ErrorBoundary>

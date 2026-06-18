@@ -5,6 +5,7 @@ import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+import { SectionSkeleton } from "../components/SectionSkeleton";
 
 const PhotoMap = lazy(() => import("../components/PhotoMap").then((m) => ({ default: m.PhotoMap })));
 
@@ -27,7 +28,7 @@ export function MapPage() {
 
       <section className="section-shell" style={{ padding: "0 0 60px" }}>
         <ErrorBoundary>
-        <Suspense fallback={<div style={{ height: "min(60vh, 500px)", background: "#f0e8e0", borderRadius: 16 }} />}>
+        <Suspense fallback={<SectionSkeleton hasImage lines={2} />}>
           <PhotoMap />
         </Suspense>
         </ErrorBoundary>

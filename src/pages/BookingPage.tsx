@@ -7,6 +7,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useBookingModal } from "../hooks/useBookingModal";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+import { SectionSkeleton } from "../components/SectionSkeleton";
 
 const Packages = lazy(() => import("../components/Packages").then((m) => ({ default: m.Packages })));
 const ServiceDetails = lazy(() => import("../components/ServiceDetails").then((m) => ({ default: m.ServiceDetails })));
@@ -45,25 +46,25 @@ export function BookingPage() {
       </section>
 
       <ErrorBoundary>
-        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
+        <Suspense fallback={<SectionSkeleton lines={3} />}>
           <StyleQuiz />
         </Suspense>
       </ErrorBoundary>
 
       <ErrorBoundary>
-        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
+        <Suspense fallback={<SectionSkeleton hasCards={3} />}>
           <Packages />
         </Suspense>
       </ErrorBoundary>
 
       <ErrorBoundary>
-        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
+        <Suspense fallback={<SectionSkeleton hasCards={3} />}>
           <ServiceDetails />
         </Suspense>
       </ErrorBoundary>
 
       <ErrorBoundary>
-        <Suspense fallback={<div className="section-shell is-visible" style={{ minHeight: 300 }} />}>
+        <Suspense fallback={<SectionSkeleton lines={6} />}>
           <ProcessAndFaq />
         </Suspense>
       </ErrorBoundary>

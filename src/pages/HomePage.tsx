@@ -13,6 +13,7 @@ import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+import { SectionSkeleton } from "../components/SectionSkeleton";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -146,7 +147,7 @@ export function HomePage() {
 
       {/* ── Film Strip Story ── */}
       <ErrorBoundary>
-        <Suspense fallback={<div style={{ minHeight: 300 }} />}>
+        <Suspense fallback={<SectionSkeleton lines={3} hasImage />}>
           <FilmStripStory />
         </Suspense>
       </ErrorBoundary>
@@ -154,7 +155,7 @@ export function HomePage() {
       {/* ── Gallery（组件自带 Section 标题，无需外层再包） ── */}
       <div id="featured" style={{ scrollMarginTop: 80 }}>
         <ErrorBoundary>
-          <Suspense fallback={<div style={{ minHeight: 400 }} />}>
+          <Suspense fallback={<SectionSkeleton hasCards={3} />}>
             <Gallery />
           </Suspense>
         </ErrorBoundary>
@@ -204,14 +205,14 @@ export function HomePage() {
 
       {/* ── 为什么选择我们 ── */}
       <ErrorBoundary>
-        <Suspense fallback={null}>
+        <Suspense fallback={<SectionSkeleton hasCards={3} />}>
           <WhyChooseUs />
         </Suspense>
       </ErrorBoundary>
 
       {/* ── 评价 ── */}
       <ErrorBoundary>
-        <Suspense fallback={null}>
+        <Suspense fallback={<SectionSkeleton lines={4} />}>
           <Reviews />
         </Suspense>
       </ErrorBoundary>
@@ -226,7 +227,7 @@ export function HomePage() {
           <span>{t("quiz.result.desc")}</span>
         </div>
         <ErrorBoundary>
-          <Suspense fallback={<div style={{ minHeight: 300 }} />}>
+          <Suspense fallback={<SectionSkeleton lines={3} />}>
             <StyleQuiz />
           </Suspense>
         </ErrorBoundary>
