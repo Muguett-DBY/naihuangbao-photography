@@ -9,13 +9,14 @@ import type { PhotoItem, PhotoStyle } from "../types/photo";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { Section } from "./Section";
 import { HighlightText } from "./shared/HighlightText";
-import { Skeleton } from "./shared/Skeleton";
 import { useDistortionHover } from "../hooks/useDistortionHover";
 
 type StyleFilter = PhotoStyle | "all";
 type ViewMode = "masonry" | "compact";
 
 const STYLE_FILTERS: StyleFilter[] = ["all", "jiangnan", "street", "park", "sweet", "couple", "indoor"];
+const VIEW_MODES: ViewMode[] = ["masonry", "compact"];
+const GALLERY_VIEW_STORAGE_KEY = "nhb-gallery-view-mode";
 const tones = ["rose", "sage", "cream", "ink"] as const;
 const PAGE_SIZE = 12;
 const Lightbox = lazy(() => import("./Lightbox"));
@@ -24,6 +25,23 @@ const galleryThumb = (src: string) => {
   const fileName = base.split("/").pop();
   return fileName ? `/images/gallery/640/${fileName}` : src;
 };
+
+function isStyleFilter(value: string | null): value is StyleFilter {
+  return Boolean(value && STYLE_FILTERS.includes(value as StyleFilter));
+}
+
+function isViewMode(value: string | null): value is ViewMode {
+  return Boolean(value && VIEW_MODES.includes(value as ViewMode));
+}
+
+function getInitialViewMode(searchParams: URLSearchParams): ViewMode {
+  const viewParam = searchParams.get("view");
+  if (isViewMode(viewParam)) return viewParam;
+  if (typeof window === "undefined") return "masonry";
+
+  const storedView = window.localStorage.getItem(GALLERY_VIEW_STORAGE_KEY);
+  return isViewMode(storedView) ? storedView : "masonry";
+}
 
 function VideoPreview({ videoUrl, posterUrl, title }: { videoUrl: string; posterUrl: string; title: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -134,12 +152,15 @@ export function Gallery() {
   const { sectionCopy } = useSiteContent();
   const { photos: sourcePhotos, remoteLoaded } = usePublicPhotos();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [filter, setFilter] = useState<StyleFilter>((searchParams.get("style") as StyleFilter) || "all");
+  const [filter, setFilter] = useState<StyleFilter>(() => {
+    const styleParam = searchParams.get("style");
+    return isStyleFilter(styleParam) ? styleParam : "all";
+  });
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [debouncedSearch, setDebouncedSearch] = useState(searchParams.get("q") || "");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [viewMode, setViewMode] = useState<ViewMode>("masonry");
+  const [viewMode, setViewMode] = useState<ViewMode>(() => getInitialViewMode(searchParams));
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [touchedId, setTouchedId] = useState<string | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -171,6 +192,10 @@ export function Gallery() {
 
   const styleFiltered = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
   const photos = useMemo<PhotoItem[]>(() => searchPhotos(styleFiltered, debouncedSearch), [styleFiltered, debouncedSearch]);
+  const filterLabel = t(`gallery.filters.${filter}`, filter);
+  const viewLabel = t(viewMode === "compact" ? "gallery.viewCompact" : "gallery.viewMasonry");
+  const hasActiveDiscovery = filter !== "all" || Boolean(searchQuery.trim() || debouncedSearch.trim()) || viewMode !== "masonry";
+  const isRemoteSyncing = !remoteLoaded && sourcePhotos.length === 0;
 
   // Debounce search input to avoid filtering on every keystroke
   useEffect(() => {
@@ -195,15 +220,29 @@ export function Gallery() {
   // Reset visible count when filter or debounced search changes
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [filter, debouncedSearch]);
+  }, [filter, debouncedSearch, viewMode]);
 
-  // Sync filter and search to URL params
+  // Sync filter, search, and non-default view state to URL params.
   useEffect(() => {
     const params = new URLSearchParams();
     if (filter !== "all") params.set("style", filter);
     if (debouncedSearch) params.set("q", debouncedSearch);
+    if (viewMode !== "masonry") params.set("view", viewMode);
     setSearchParams(params, { replace: true });
-  }, [filter, debouncedSearch, setSearchParams]);
+  }, [filter, debouncedSearch, viewMode, setSearchParams]);
+
+  useEffect(() => {
+    window.localStorage.setItem(GALLERY_VIEW_STORAGE_KEY, viewMode);
+  }, [viewMode]);
+
+  const resetGalleryDiscovery = useCallback(() => {
+    setFilter("all");
+    setSearchQuery("");
+    setDebouncedSearch("");
+    setViewMode("masonry");
+    window.localStorage.setItem(GALLERY_VIEW_STORAGE_KEY, "masonry");
+    searchInputRef.current?.focus();
+  }, []);
 
   const visiblePhotos = useMemo(() => photos.slice(0, visibleCount), [photos, visibleCount]);
   const hasMore = visibleCount < photos.length;
@@ -305,106 +344,155 @@ export function Gallery() {
         <p>{t("gallery.description")}</p>
       </div>
 
-      <div className="gallery-search-row">
-        <div className="gallery-search-wrap">
-          <Search size={16} className="gallery-search-icon" />
-          <input
-            ref={searchInputRef}
-            type="search"
-            className="gallery-search-input"
-            placeholder={t("gallery.searchPlaceholder", "Search by title, location, style...")}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label={t("gallery.searchPlaceholder", "Search photos")}
-          />
-          {searchQuery && (
+      <div className="gallery-command-center" aria-label={t("gallery.discoveryTitle")}>
+        <div className="gallery-command-header">
+          <div className="gallery-command-copy">
+            <span className="gallery-command-kicker">{t("gallery.discoveryKicker")}</span>
+            <h3>{t("gallery.discoveryTitle")}</h3>
+          </div>
+          <div className="gallery-command-meta" role="status" aria-live="polite">
+            <strong>{photos.length}</strong>
+            <span>
+              {t("gallery.resultSummary", {
+                count: photos.length,
+                total: sourcePhotos.length,
+                filter: filterLabel,
+                defaultValue: `${photos.length} of ${sourcePhotos.length} photos · ${filterLabel}`,
+              })}
+            </span>
+          </div>
+        </div>
+
+        <div className="gallery-search-row">
+          <div className="gallery-search-wrap">
+            <Search size={16} className="gallery-search-icon" />
+            <input
+              ref={searchInputRef}
+              type="search"
+              className="gallery-search-input"
+              placeholder={t("gallery.searchPlaceholder", "Search by title, location, style...")}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label={t("gallery.searchPlaceholder", "Search photos")}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="gallery-search-clear"
+                onClick={() => { setSearchQuery(""); setDebouncedSearch(""); searchInputRef.current?.focus(); }}
+                aria-label={t("gallery.clearSearch", "Clear search")}
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          <div className="gallery-view-toggle" aria-label={t("gallery.viewMode", "View mode")}>
             <button
               type="button"
-              className="gallery-search-clear"
-              onClick={() => { setSearchQuery(""); setDebouncedSearch(""); searchInputRef.current?.focus(); }}
-              aria-label={t("gallery.clearSearch", "Clear search")}
+              className={`gallery-view-btn ${viewMode === "masonry" ? "is-active" : ""}`}
+              onClick={() => setViewMode("masonry")}
+              aria-label={t("gallery.viewMasonry", "Masonry view")}
+              aria-pressed={viewMode === "masonry"}
+              title={t("gallery.viewMasonry", "Masonry view")}
             >
-              <X size={14} />
+              <LayoutGrid size={16} />
             </button>
-          )}
+            <button
+              type="button"
+              className={`gallery-view-btn ${viewMode === "compact" ? "is-active" : ""}`}
+              onClick={() => setViewMode("compact")}
+              aria-label={t("gallery.viewCompact", "Compact view")}
+              aria-pressed={viewMode === "compact"}
+              title={t("gallery.viewCompact", "Compact view")}
+            >
+              <Columns size={16} />
+            </button>
+          </div>
         </div>
-        <div className="gallery-view-toggle">
-          <button
-            type="button"
-            className={`gallery-view-btn ${viewMode === "masonry" ? "is-active" : ""}`}
-            onClick={() => setViewMode("masonry")}
-            aria-label={t("gallery.viewMasonry", "Masonry view")}
-            title={t("gallery.viewMasonry", "Masonry view")}
-          >
-            <LayoutGrid size={16} />
-          </button>
-          <button
-            type="button"
-            className={`gallery-view-btn ${viewMode === "compact" ? "is-active" : ""}`}
-            onClick={() => setViewMode("compact")}
-            aria-label={t("gallery.viewCompact", "Compact view")}
-            title={t("gallery.viewCompact", "Compact view")}
-          >
-            <Columns size={16} />
-          </button>
+
+        {hasActiveDiscovery ? (
+          <div className="gallery-active-chips" aria-label={t("gallery.activeState", "Active gallery state")}>
+            {filter !== "all" && (
+              <span>{t("gallery.activeFilter", { filter: filterLabel, defaultValue: `Style: ${filterLabel}` })}</span>
+            )}
+            {debouncedSearch && (
+              <span>{t("gallery.activeSearch", { query: debouncedSearch, defaultValue: `Search: ${debouncedSearch}` })}</span>
+            )}
+            {viewMode !== "masonry" && (
+              <span>{t("gallery.activeView", { view: viewLabel, defaultValue: `View: ${viewLabel}` })}</span>
+            )}
+            <button type="button" onClick={resetGalleryDiscovery}>
+              {t("gallery.clearDiscovery")}
+            </button>
+          </div>
+        ) : (
+          <p className="gallery-active-hint">{t("gallery.discoveryHint")}</p>
+        )}
+
+        <div className="gallery-filter-scroll">
+          <div className="filter-row" role="group" aria-label={t("gallery.intro")}>
+            {STYLE_FILTERS.map((item) => {
+              const isUnavailable = item !== "all" && filterCounts[item] === 0;
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  aria-pressed={item === filter}
+                  aria-disabled={isUnavailable}
+                  className={item === filter ? "is-active" : ""}
+                  disabled={isUnavailable}
+                  onClick={() => setFilter(item)}
+                >
+                  {t(`gallery.filters.${item}`)}
+                  <span className="filter-count">{filterCounts[item]}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-        {photos.length === 0 && !searchQuery && (
-          <span className="gallery-search-count">{t("gallery.noResults", "No results")}</span>
-        )}
-        {searchQuery && photos.length === 0 && (
-          <span className="gallery-search-count gallery-search-empty">
-            {t("gallery.searchEmpty", "No photos match your search. Try a different keyword.")}
-          </span>
-        )}
-        {searchQuery && photos.length > 0 && (
-          <span className="gallery-search-count">
-            {t("gallery.resultCount", { count: photos.length, defaultValue: `${photos.length} photos` })}
-          </span>
-        )}
-      </div>
 
-      <div className="filter-row" role="group" aria-label={t("gallery.intro")}>
-        {STYLE_FILTERS.map((item) => (
-          <button
-            key={item}
-            type="button"
-            aria-pressed={item === filter}
-            className={item === filter ? "is-active" : ""}
-            onClick={() => setFilter(item)}
-          >
-            {t(`gallery.filters.${item}`)}
-            <span className="filter-count">{filterCounts[item]}</span>
-          </button>
-        ))}
-      </div>
+        {photos.length > 0 && (
+          <div className="gallery-result-summary">
+            <span className="gallery-result-count">
+              {t("gallery.showing", { count: photos.length, total: sourcePhotos.length, defaultValue: `Showing ${photos.length} of ${sourcePhotos.length} photos` })}
+            </span>
+          </div>
+        )}
 
-      <div className="gallery-result-summary">
-        <span className="gallery-result-count">
-          {t("gallery.showing", { count: photos.length, total: sourcePhotos.length, defaultValue: `Showing ${photos.length} of ${sourcePhotos.length} photos` })}
-        </span>
-      </div>
-
-      {/* Filmstrip: auto-scrolling photo strip */}
-      <div className="gallery-filmstrip-wrap" aria-hidden="true">
-        <div className="gallery-auto-scroll" data-scroll-speed="0.25">
-          {photos.slice(0, 6).map((photo) => (
-            <div className="gallery-filmstrip-item" key={photo.id}>
-              <img
-                src={galleryThumb(photo.imageUrl || "")}
-                alt=""
-                loading="lazy"
-                fetchPriority="low"
-                width={120}
-                height={90}
-              />
+        {photos.length > 0 && (
+          <div className="gallery-filmstrip-wrap" aria-hidden="true">
+            <div className="gallery-auto-scroll" data-scroll-speed="0.25">
+              {photos.slice(0, 6).map((photo) => (
+                <div className="gallery-filmstrip-item" key={photo.id}>
+                  <img
+                    src={galleryThumb(photo.imageUrl || "")}
+                    alt=""
+                    loading="lazy"
+                    fetchPriority="low"
+                    width={120}
+                    height={90}
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
 
       <div ref={masonryRef}>
+        {photos.length === 0 && (
+          <div className="gallery-empty-state" role="status" aria-live="polite">
+            <span>{isRemoteSyncing ? t("gallery.loading") : t("gallery.noResults")}</span>
+            <h3>{t("gallery.emptyTitle")}</h3>
+            <p>{t("gallery.emptyDesc")}</p>
+            <button type="button" onClick={resetGalleryDiscovery}>
+              {t("gallery.emptyReset")}
+            </button>
+          </div>
+        )}
+
         {/* Album groupings */}
-        {(() => {
+        {photos.length > 0 && (() => {
           const albums = new Map<string, typeof visiblePhotos>();
           for (const p of visiblePhotos) {
             const key = p.album || t("gallery.otherAlbum");

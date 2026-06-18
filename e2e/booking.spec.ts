@@ -28,7 +28,7 @@ test.describe("booking flow", () => {
     await page.waitForTimeout(1000);
 
     // Click the booking CTA button on the hero
-    const heroBookBtn = page.locator(".hero-cover-secondary-btn");
+    const heroBookBtn = page.locator(".hero-cover-primary-btn");
     await expect(heroBookBtn).toBeVisible();
     await heroBookBtn.click();
 
