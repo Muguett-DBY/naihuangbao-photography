@@ -767,3 +767,89 @@ export function applyFaceEffects(
     for (let i = 0; i < d.length; i++) d[i] = tmp[i];
   }
 }
+
+// ── Color Adjustments (temperature, saturation, contrast, brightness) ──
+
+export function applyColorAdjustments(
+  d: Uint8ClampedArray,
+  w: number,
+  h: number,
+  s: BeautySettings,
+) {
+  if (s.temperature === 0 && s.saturation === 0 && s.contrast === 0 && s.brightness === 0) return;
+  const temp = (s.temperature / 100) * 30;
+  const sat = s.saturation / 100;
+  const con = s.contrast / 100;
+  const bri = (s.brightness / 100) * 50;
+  for (let i = 0; i < d.length; i += 4) {
+    let r = d[i], g = d[i + 1], b = d[i + 2];
+    r = Math.min(255, r + temp);
+    b = Math.max(0, b - temp);
+    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+    r = gray + (1 + sat) * (r - gray);
+    g = gray + (1 + sat) * (g - gray);
+    b = gray + (1 + sat) * (b - gray);
+    r = ((r / 255 - 0.5) * (1 + con) + 0.5) * 255;
+    g = ((g / 255 - 0.5) * (1 + con) + 0.5) * 255;
+    b = ((b / 255 - 0.5) * (1 + con) + 0.5) * 255;
+    r += bri; g += bri; b += bri;
+    d[i] = Math.max(0, Math.min(255, r));
+    d[i + 1] = Math.max(0, Math.min(255, g));
+    d[i + 2] = Math.max(0, Math.min(255, b));
+  }
+}
+
+// ── Post-Processing (vignette, grain, sharpen) ──
+
+export function applyPostProcessing(
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  s: BeautySettings,
+) {
+  const w = canvas.width;
+  const h = canvas.height;
+
+  // Vignette
+  if (s.vignette > 0) {
+    const grad = ctx.createRadialGradient(w / 2, h / 2, w * 0.3, w / 2, h / 2, w * 0.7);
+    grad.addColorStop(0, "rgba(0,0,0,0)");
+    grad.addColorStop(1, `rgba(0,0,0,${(s.vignette / 100) * 0.6})`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  // Grain
+  if (s.grain > 0) {
+    const gd = ctx.getImageData(0, 0, w, h);
+    const intensity = (s.grain / 100) * 40;
+    for (let i = 0; i < gd.data.length; i += 4) {
+      const n = (Math.random() - 0.5) * intensity;
+      gd.data[i] += n;
+      gd.data[i + 1] += n;
+      gd.data[i + 2] += n;
+    }
+    ctx.putImageData(gd, 0, 0);
+  }
+
+  // Sharpen (unsharp mask)
+  if (s.sharpen > 0) {
+    const gd = ctx.getImageData(0, 0, w, h);
+    const amount = (s.sharpen / 100) * 1.5;
+    const orig = new Uint8ClampedArray(gd.data);
+    for (let y = 1; y < h - 1; y++) {
+      for (let x = 1; x < w - 1; x++) {
+        const idx = (y * w + x) * 4;
+        for (let c = 0; c < 3; c++) {
+          const sharp =
+            orig[idx + c] * 5 -
+            orig[((y - 1) * w + x) * 4 + c] -
+            orig[((y + 1) * w + x) * 4 + c] -
+            orig[(y * w + x - 1) * 4 + c] -
+            orig[(y * w + x + 1) * 4 + c];
+          gd.data[idx + c] = Math.max(0, Math.min(255, orig[idx + c] + sharp * amount));
+        }
+      }
+    }
+    ctx.putImageData(gd, 0, 0);
+  }
+}
