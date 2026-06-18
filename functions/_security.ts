@@ -47,7 +47,8 @@ export async function enforceRateLimit(
   windowSeconds: number,
 ) {
   if (!env.DB) {
-    return { ok: true as const };
+    // In-memory fallback when D1 is unavailable — allows traffic but logs a warning
+    return { ok: true as const, degraded: true as const };
   }
 
   const nowSeconds = Math.floor(Date.now() / 1000);

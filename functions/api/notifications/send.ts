@@ -86,13 +86,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     // Example with Resend: await resend.emails.send({ from, to: body.to, subject: template.subject, html: template.html });
     // Example with Cloudflare Email Workers: await context.env.SEND_EMAIL(from, body.to, template.subject, template.html);
 
-    console.log("Notification sent (placeholder):", {
-      from,
-      to: body.to,
-      subject: template.subject,
-      type: body.type,
-      timestamp: new Date().toISOString(),
-    });
+    // Placeholder logging — no PII in production logs
+    console.log("Notification queued:", { type: body.type });
 
     return jsonResponse({
       ok: true,
