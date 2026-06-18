@@ -1,3 +1,4 @@
+import "../styles/pages.css";
 import { Suspense, lazy, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";

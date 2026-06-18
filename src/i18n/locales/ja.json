@@ -19,6 +19,14 @@
     "backToHome": "トップページに戻る",
     "mainNavigation": "メインナビゲーション"
   },
+  "mobileNav": {
+    "label": "モバイル主要ナビゲーション",
+    "home": "ホーム",
+    "gallery": "作品",
+    "booking": "予約",
+    "editor": "編集",
+    "account": "マイページ"
+  },
   "hero": {
     "volBadge": "✦ Vol.1",
     "brandPrefix": "南京・女性写真・カップル写真",
@@ -718,6 +726,9 @@
     "noKeep": "いいえ、維持",
     "selectNewDate": "新しい日付を選択",
     "confirmReschedule": "確認",
+    "editorTitle": "ポートレート編集を開く",
+    "editorDescription": "ブラウザ内で編集し、写真はこの端末に保持されます。",
+    "openEditor": "編集を始める",
     "status": {
       "pending": "保留中",
       "contacted": "連絡済み",

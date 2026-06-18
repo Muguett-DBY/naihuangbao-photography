@@ -1161,6 +1161,10 @@
 /* ══════════════════════════════════════════════
    Mobile Nav Overlay — hidden on desktop
    ══════════════════════════════════════════════ */
+.mobile-bottom-nav {
+  display: none;
+}
+
 @media (min-width: 769px) {
   .nav-menu--overlay {
     display: none !important;
@@ -1171,6 +1175,120 @@
    Mobile Layout (<760px)
    ══════════════════════════════════════════════ */
 @media (max-width: 768px) {
+  :root {
+    --mobile-bottom-nav-offset: calc(74px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .site-shell {
+    padding-bottom: var(--mobile-bottom-nav-offset);
+  }
+
+  .site-shell.is-editor {
+    --mobile-bottom-nav-offset: 0px;
+    padding-bottom: 0;
+  }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    z-index: 900;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: end;
+    min-height: 64px;
+    padding: 7px 6px calc(7px + env(safe-area-inset-bottom, 0px));
+    border: 1px solid rgba(139, 94, 74, 0.14);
+    border-radius: 24px;
+    background:
+      linear-gradient(145deg, rgba(255, 253, 247, 0.97), rgba(255, 242, 220, 0.95)),
+      var(--paper-white);
+    box-shadow:
+      var(--paper-inset),
+      0 10px 28px rgba(95, 60, 49, 0.13),
+      0 24px 60px rgba(255, 184, 161, 0.18);
+    backdrop-filter: blur(18px) saturate(1.1);
+  }
+
+  .mobile-bottom-nav__item {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 2px 3px;
+    border: 0;
+    border-radius: 16px;
+    background: transparent;
+    color: var(--caramel-muted);
+    font-family: var(--font-ui);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.1;
+    cursor: pointer;
+    transition:
+      color 0.2s ease,
+      background 0.2s ease,
+      transform 0.2s var(--ease-spring);
+  }
+
+  .mobile-bottom-nav__item > span:last-child {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-bottom-nav__item.is-active {
+    color: var(--caramel-deep);
+    background: rgba(255, 184, 161, 0.16);
+  }
+
+  .mobile-bottom-nav__item.is-active::after {
+    position: absolute;
+    top: 3px;
+    width: 18px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--peach-accent);
+    content: "";
+  }
+
+  .mobile-bottom-nav__item:focus-visible {
+    outline: 2px solid var(--peach-accent);
+    outline-offset: 1px;
+  }
+
+  .mobile-bottom-nav__booking {
+    overflow: visible;
+    color: var(--caramel-deep);
+  }
+
+  .mobile-bottom-nav__booking-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    margin-top: -23px;
+    place-items: center;
+    border: 3px solid var(--paper-white);
+    border-radius: 50%;
+    color: #fff9ec;
+    background: linear-gradient(135deg, #8b5e4a, #c4775e);
+    box-shadow: var(--button-shadow);
+  }
+
+  .mobile-bottom-nav__booking.is-active::after {
+    display: none;
+  }
+
+  .mobile-bottom-nav__booking:active .mobile-bottom-nav__booking-icon {
+    transform: scale(0.94);
+  }
+
   .site-nav {
     padding: 12px 12px;
     grid-template-columns: minmax(0, 1fr) auto auto auto;
@@ -1671,11 +1789,14 @@
   }
 
   .floating-booking-cta {
-    left: 14px;
-    right: 72px;
-    bottom: 18px;
-    min-height: 48px;
-    padding-inline: 14px;
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-bottom-nav__item,
+  .mobile-bottom-nav__booking-icon {
+    transition: none;
   }
 }
 

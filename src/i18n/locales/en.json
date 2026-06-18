@@ -19,6 +19,14 @@
     "backToHome": "Back to homepage",
     "mainNavigation": "Main navigation"
   },
+  "mobileNav": {
+    "label": "Primary mobile navigation",
+    "home": "Home",
+    "gallery": "Gallery",
+    "booking": "Book",
+    "editor": "Edit",
+    "account": "Account"
+  },
   "hero": {
     "volBadge": "✦ Vol.1",
     "brandPrefix": "Nanjing Portrait & Couple Photography",
@@ -723,6 +731,9 @@
     "noKeep": "No, Keep It",
     "selectNewDate": "Select new date",
     "confirmReschedule": "Confirm",
+    "editorTitle": "Edit your photos",
+    "editorDescription": "Use the browser-based portrait studio. Your image stays on this device.",
+    "openEditor": "Open editor",
     "status": {
       "pending": "Pending",
       "contacted": "Contacted",

@@ -15,6 +15,7 @@ import { Footer } from "../components/shared/Footer";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { ToastProvider } from "../components/shared/Toast";
 import { ScrollToTop } from "../components/shared/ScrollToTop";
+import { MobileBottomNav } from "../components/shared/MobileBottomNav";
 
 export function RootLayout() {
   const { t } = useTranslation();
@@ -42,7 +43,7 @@ export function RootLayout() {
   const showPublicChat = !isEditor;
 
   return (
-    <div ref={rootRef} className={isEditor ? "is-editor" : undefined}>
+    <div ref={rootRef} className={isEditor ? "site-shell is-editor" : "site-shell"}>
       <a
         href="#main-content"
         className="skip-link"
@@ -75,6 +76,7 @@ export function RootLayout() {
                 </ErrorBoundary>
               </main>
               <Footer />
+              {!isEditor && <MobileBottomNav />}
               {showPublicChat && (
                 <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
                   <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />

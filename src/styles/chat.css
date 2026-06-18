@@ -391,7 +391,7 @@
 
   .public-chat-widget {
     right: 12px;
-    bottom: max(12px, env(safe-area-inset-bottom));
+    bottom: calc(var(--mobile-bottom-nav-offset, 0px) + 12px);
     left: 12px;
   }
 
@@ -404,7 +404,7 @@
     right: 0;
     bottom: 66px;
     width: 100%;
-    height: min(640px, calc(100dvh - 92px));
+    height: min(640px, calc(100dvh - var(--mobile-bottom-nav-offset, 0px) - 92px));
     border-radius: 20px;
   }
 

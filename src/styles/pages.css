@@ -2775,6 +2775,74 @@
   margin-top: 8px;
 }
 
+.dashboard-editor-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  margin: -12px 0 32px;
+  padding: 20px 22px;
+  border: 1px solid rgba(255, 184, 161, 0.34);
+  border-radius: 20px;
+  color: var(--caramel-ink);
+  background:
+    linear-gradient(135deg, rgba(255, 210, 184, 0.34), rgba(237, 244, 234, 0.46)),
+    var(--paper-white);
+  box-shadow: var(--paper-inset), var(--warm-shadow);
+  transition:
+    transform 0.24s var(--ease-spring),
+    border-color 0.24s ease,
+    box-shadow 0.24s ease;
+}
+
+.dashboard-editor-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(196, 119, 94, 0.58);
+  box-shadow: var(--paper-inset), var(--warm-shadow-strong);
+}
+
+.dashboard-editor-card:focus-visible {
+  outline: 2px solid var(--peach-accent);
+  outline-offset: 3px;
+}
+
+.dashboard-editor-card__icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 16px;
+  color: #fff9ec;
+  background: linear-gradient(135deg, #8b5e4a, #c4775e);
+  box-shadow: var(--button-shadow);
+}
+
+.dashboard-editor-card__content {
+  display: grid;
+  gap: 3px;
+}
+
+.dashboard-editor-card__content strong {
+  font-family: var(--font-heading-cn);
+  font-size: 1rem;
+}
+
+.dashboard-editor-card__content span {
+  color: var(--caramel-muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.dashboard-editor-card__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--caramel-deep);
+  font-size: 0.84rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 .dashboard-list {
   display: flex;
   flex-direction: column;
@@ -3048,6 +3116,16 @@
 }
 
 @media (max-width: 768px) {
+  .dashboard-editor-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    margin-top: -14px;
+    padding: 18px;
+  }
+
+  .dashboard-editor-card__action {
+    grid-column: 2;
+  }
+
   .dashboard-profile {
     padding: 20px;
     gap: 16px;
@@ -5388,4 +5466,10 @@
 }
 :root[data-theme="dark"] .nhb-scroll-top {
   background: #b18c83;
+}
+
+@media (max-width: 768px) {
+  .nhb-scroll-top {
+    bottom: calc(var(--mobile-bottom-nav-offset, 0px) + 14px);
+  }
 }

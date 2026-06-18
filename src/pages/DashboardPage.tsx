@@ -1,8 +1,9 @@
+import "../styles/pages.css";
 import { useRef } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Tabs } from "animal-island-ui";
-import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin, Image, Settings } from "lucide-react";
+import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin, Image, Settings, Sparkles, ArrowRight } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useAuth } from "../hooks/useAuth";
@@ -136,6 +137,20 @@ export function DashboardPage() {
               <p>{user.email}</p>
             </div>
           </div>
+
+          <Link to="/editor" className="dashboard-editor-card">
+            <span className="dashboard-editor-card__icon" aria-hidden="true">
+              <Sparkles size={25} />
+            </span>
+            <span className="dashboard-editor-card__content">
+              <strong>{t("dashboard.editorTitle")}</strong>
+              <span>{t("dashboard.editorDescription")}</span>
+            </span>
+            <span className="dashboard-editor-card__action">
+              {t("dashboard.openEditor")}
+              <ArrowRight size={17} aria-hidden="true" />
+            </span>
+          </Link>
 
           <div className="dashboard-tabs">
             <Tabs items={tabItems} defaultActiveKey="overview" />

@@ -25,6 +25,33 @@ const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
 
 describe("performance budgets", () => {
+  it("keeps route-only page styles out of the initial public shell", () => {
+    const siteCss = readFileSync(resolve(root, "src/styles/site.css"), "utf8");
+    const routedPages = [
+      "BookingPage.tsx",
+      "CourseDetailPage.tsx",
+      "CoursesPage.tsx",
+      "DashboardPage.tsx",
+      "GalleryPage.tsx",
+      "HomePage.tsx",
+      "LoginPage.tsx",
+      "MapPage.tsx",
+      "PhotoDetailPage.tsx",
+      "PhotoEditorPage.tsx",
+      "PresetDetailPage.tsx",
+      "ProductsPage.tsx",
+      "ShopDetailPage.tsx",
+      "ShopPage.tsx",
+      "WorkshopDetailPage.tsx",
+      "WorkshopsPage.tsx",
+    ];
+
+    expect(siteCss).not.toContain('@import "./pages.css"');
+    for (const page of routedPages) {
+      expect(readFileSync(resolve(root, "src/pages", page), "utf8")).toContain('import "../styles/pages.css"');
+    }
+  });
+
   it("prefetches featured portfolio images without global render-blocking image preloads", () => {
     expect(mainSource).toContain('"prefetch"');
     expect(mainSource).toContain('"image"');
