@@ -640,9 +640,21 @@
       "detail": "詳細",
       "photosTotal": "写真総数",
       "public": "公開",
+      "featured": "おすすめ",
       "hidden": "非公開",
       "bookingsTotal": "予約総数",
-      "pending": "件待ち"
+      "pending": "保留中",
+      "contacted": "連絡済み",
+      "done": "完了",
+      "users": "ユーザー",
+      "subscribers": "購読者",
+      "content": "コンテンツ",
+      "courses": "コース",
+      "presets": "プリセット",
+      "workshops": "ワークショップ",
+      "recentActivity": "最近のアクティビティ",
+      "recentBookings": "最近の予約",
+      "recentPhotos": "最近の写真"
     }
   },
   "chat": {

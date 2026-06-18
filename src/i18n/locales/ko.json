@@ -640,9 +640,21 @@
       "detail": "상세",
       "photosTotal": "전체 사진",
       "public": "공개",
+      "featured": "추천",
       "hidden": "비공개",
       "bookingsTotal": "전체 예약",
-      "pending": "건 대기"
+      "pending": "대기 중",
+      "contacted": "연락 완료",
+      "done": "완료",
+      "users": "사용자",
+      "subscribers": "구독자",
+      "content": "콘텐츠",
+      "courses": "강좌",
+      "presets": "프리셋",
+      "workshops": "워크숍",
+      "recentActivity": "최근 활동",
+      "recentBookings": "최근 예약",
+      "recentPhotos": "최근 사진"
     }
   },
   "chat": {

@@ -12,11 +12,12 @@ import {
   Package,
   Settings,
   ShoppingBag,
+  Users,
+  TrendingUp,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button, Input, Loading, Table, Tabs } from "animal-island-ui";
+import { Button, Input, Loading, Tabs } from "animal-island-ui";
 import type { TabItem } from "animal-island-ui";
-import type { TableColumn } from "animal-island-ui";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { isAbortError, type AdminTab, type ToastType } from "../../lib/admin-helpers";
 import { AdminBookingsTab } from "./AdminBookingsTab";
@@ -218,8 +219,15 @@ export function AdminShell() {
 }
 
 type StatsData = {
-  photos: { total: number; public: number; hidden: number };
-  bookings: { pending: number; total: number };
+  photos: { total: number; public: number; featured: number };
+  bookings: { pending: number; contacted: number; done: number; total: number };
+  users: { total: number };
+  courses: { total: number };
+  presets: { total: number };
+  workshops: { total: number };
+  subscribers: { total: number };
+  recentBookings: { id: string; name: string; package_name: string; status: string; created_at: string }[];
+  recentPhotos: { id: string; title: string; style: string; created_at: string }[];
 };
 
 function AdminStats() {
@@ -251,21 +259,71 @@ function AdminStats() {
     return <div className="adm-content-panel" style={{textAlign:'center',padding:'40px 20px'}}><p>{t("admin.stats.noData")}</p></div>;
   }
 
-  const columns: TableColumn[] = [
-    { title: t("admin.stats.metric"), dataIndex: "metric", width: "30%" },
-    { title: t("admin.stats.value"), dataIndex: "value", width: "20%", align: "center" },
-    { title: t("admin.stats.detail"), dataIndex: "detail" },
-  ];
-
-  const dataSource = [
-    { key: "photos", metric: t("admin.stats.photosTotal"), value: data.photos.total, detail: `${data.photos.public} ${t("admin.stats.public")} · ${data.photos.hidden} ${t("admin.stats.hidden")}` },
-    { key: "bookings", metric: t("admin.stats.bookingsTotal"), value: data.bookings.total, detail: `${data.bookings.pending} ${t("admin.stats.pending")}` },
-  ];
+  const bookingRate = data.bookings.total > 0 ? Math.round((data.bookings.done / data.bookings.total) * 100) : 0;
 
   return (
     <div className="adm-content-panel">
       <h2>{t("admin.stats.title")}</h2>
-      <Table columns={columns} dataSource={dataSource} rowKey="key" striped={false} />
+
+      <div className="adm-stats-grid">
+        <div className="adm-stat-card">
+          <div className="adm-stat-number">{data.photos.total}</div>
+          <div className="adm-stat-label">{t("admin.stats.photosTotal")}</div>
+          <div className="adm-stat-sub">{data.photos.public} {t("admin.stats.public")} · {data.photos.featured} {t("admin.stats.featured")}</div>
+          <div className="adm-stat-bar"><div className="adm-stat-bar-fill" style={{ width: `${data.photos.total > 0 ? (data.photos.public / data.photos.total) * 100 : 0}%` }} /></div>
+        </div>
+
+        <div className="adm-stat-card">
+          <div className="adm-stat-number">{data.bookings.total}</div>
+          <div className="adm-stat-label">{t("admin.stats.bookingsTotal")}</div>
+          <div className="adm-stat-sub">{data.bookings.pending} {t("admin.stats.pending")} · {data.bookings.contacted} {t("admin.stats.contacted")} · {data.bookings.done} {t("admin.stats.done")}</div>
+          <div className="adm-stat-bar"><div className="adm-stat-bar-fill" style={{ width: `${bookingRate}%` }} /></div>
+        </div>
+
+        <div className="adm-stat-card">
+          <div className="adm-stat-number">{data.users.total}</div>
+          <div className="adm-stat-label">{t("admin.stats.users")}</div>
+          <div className="adm-stat-sub">{data.subscribers.total} {t("admin.stats.subscribers")}</div>
+        </div>
+
+        <div className="adm-stat-card">
+          <div className="adm-stat-number">{data.courses.total + data.presets.total + data.workshops.total}</div>
+          <div className="adm-stat-label">{t("admin.stats.content")}</div>
+          <div className="adm-stat-sub">{data.courses.total} {t("admin.stats.courses")} · {data.presets.total} {t("admin.stats.presets")} · {data.workshops.total} {t("admin.stats.workshops")}</div>
+        </div>
+      </div>
+
+      {(data.recentBookings.length > 0 || data.recentPhotos.length > 0) && (
+        <div className="adm-activity-section">
+          <h3><TrendingUp size={16} /> {t("admin.stats.recentActivity")}</h3>
+          <div className="adm-activity-grid">
+            {data.recentBookings.length > 0 && (
+              <div className="adm-activity-list">
+                <h4>{t("admin.stats.recentBookings")}</h4>
+                {data.recentBookings.map((b) => (
+                  <div key={b.id} className="adm-activity-item">
+                    <CalendarCheck size={14} />
+                    <span className="adm-activity-text">{b.name} — {b.package_name}</span>
+                    <span className={`adm-activity-badge adm-activity-badge--${b.status}`}>{b.status}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {data.recentPhotos.length > 0 && (
+              <div className="adm-activity-list">
+                <h4>{t("admin.stats.recentPhotos")}</h4>
+                {data.recentPhotos.map((p) => (
+                  <div key={p.id} className="adm-activity-item">
+                    <ImagePlus size={14} />
+                    <span className="adm-activity-text">{p.title}</span>
+                    <span className="adm-activity-badge">{p.style}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
