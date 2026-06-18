@@ -7,6 +7,7 @@ import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useAuth } from "../hooks/useAuth";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { BookingsTab } from "../components/dashboard/BookingsTab";
 import { MyPhotosTab } from "../components/dashboard/MyPhotosTab";
 import { PurchasesTab } from "../components/dashboard/PurchasesTab";
@@ -124,7 +125,8 @@ export function DashboardPage() {
       </section>
 
       <section className="section-shell is-visible">
-        <div className="dashboard-root">
+        <ErrorBoundary>
+          <div className="dashboard-root">
           <div className="dashboard-profile">
             <div className="dashboard-avatar">
               <User size={32} strokeWidth={1.5} />
@@ -139,6 +141,7 @@ export function DashboardPage() {
             <Tabs items={tabItems} defaultActiveKey="overview" />
           </div>
         </div>
+        </ErrorBoundary>
       </section>
     </PageTransition>
   );
