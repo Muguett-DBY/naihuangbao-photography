@@ -8,6 +8,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiItem } from "../hooks/useApiItem";
 import { useRelatedItems } from "../hooks/useRelatedItems";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
@@ -51,6 +52,7 @@ export function ShopDetailPage() {
         </div>
       </section>
 
+      <ErrorBoundary>
       <section className="section-shell is-visible">
         <div className="shop-detail-grid">
           <div>
@@ -148,6 +150,7 @@ export function ShopDetailPage() {
           </div>
         </section>
       )}
+      </ErrorBoundary>
     </PageTransition>
   );
 }

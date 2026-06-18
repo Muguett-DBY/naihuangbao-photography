@@ -942,7 +942,22 @@
     "registerLink": "登録",
     "hasAccount": "すでにアカウントをお持ちですか？",
     "loginLink": "ログイン",
-    "backToHome": "ホームに戻る"
+    "backToHome": "ホームに戻る",
+    "forgotPassword": "パスワードをお忘れですか？",
+    "resetTitle": "パスワードリセット",
+    "resetDesc": "メールアドレスを入力すると、リセットトークンをお送りします。",
+    "resetRequestButton": "リセットトークンを送信",
+    "resetEmailSent": "該当するメールに登録がある場合、リセットトークンが送信されました。",
+    "resetRequestFailed": "パスワードリセットのリクエストに失敗しました。もう一度お試しください。",
+    "resetDemoToken": "リセットトークン（デモモード）",
+    "resetDemoHint": "クリックしてコピー。本番環境ではこのトークンはメールで送信されます。",
+    "resetTokenLabel": "リセットトークン",
+    "resetTokenPlaceholder": "メールから受け取ったトークンを貼り付け",
+    "newPassword": "新しいパスワード",
+    "resetSubmitButton": "パスワードをリセット",
+    "resetSuccess": "パスワードがリセットされました。新しいパスワードでログインできます。",
+    "resetFailed": "パスワードのリセットに失敗しました。トークンが無効または期限切れの可能性があります。",
+    "backToLogin": "ログインに戻る"
   },
   "payment": {
     "purpose": {

@@ -9,6 +9,7 @@ import { useApiList } from "../hooks/useApiList";
 import { useWorkshopRegistration } from "../hooks/useWorkshopRegistration";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DataState } from "../components/shared/DataState";
 import { WorkshopCountdown } from "../components/WorkshopCountdown";
 import { CapacityBar } from "../components/CapacityBar";
@@ -47,6 +48,7 @@ export function WorkshopsPage() {
       />
 
       <section className="section-shell is-visible">
+        <ErrorBoundary>
         <DataState
           loading={loading}
           error={error}
@@ -145,6 +147,7 @@ export function WorkshopsPage() {
             })}
           </div>
         </DataState>
+        </ErrorBoundary>
       </section>
     </PageTransition>
   );

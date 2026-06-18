@@ -8,6 +8,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiItem } from "../hooks/useApiItem";
 import { useWorkshopRegistration } from "../hooks/useWorkshopRegistration";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
@@ -80,6 +81,7 @@ export function WorkshopDetailPage() {
         </div>
       </section>
 
+      <ErrorBoundary>
       {workshop.cover_image_url && (
         <section className="section-shell is-visible" style={{ paddingTop: 0 }}>
           <img src={workshop.cover_image_url} alt={getTitle(workshop, lang)} width={800} height={400} loading="lazy" className="workshop-detail-cover" />
@@ -210,6 +212,7 @@ export function WorkshopDetailPage() {
           </div>
         </div>
       </section>
+      </ErrorBoundary>
     </PageTransition>
   );
 }

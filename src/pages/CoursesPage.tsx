@@ -7,6 +7,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DataState } from "../components/shared/DataState";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import { tCourseCategory, tCourseDifficulty } from "../lib/i18n-typed";
@@ -43,6 +44,7 @@ export function CoursesPage() {
       />
 
       <section className="section-shell is-visible">
+        <ErrorBoundary>
         <DataState
           loading={loading}
           error={error}
@@ -110,6 +112,7 @@ export function CoursesPage() {
             ))}
           </div>
         </DataState>
+        </ErrorBoundary>
       </section>
     </PageTransition>
   );

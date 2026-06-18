@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { logError } from "../lib/error-logger";
 import type { BeautySettings, BeautyCategory, BeautyTool } from "../types/photo-editor";
 import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
@@ -1352,6 +1353,7 @@ export default function PhotoEditorPage() {
 
   return (
     <PageTransition>
+      <ErrorBoundary>
       <div className="editor-root" onMouseMove={onCompareMove} onMouseUp={() => setCompareDrag(false)} onTouchMove={onCompareMove} onTouchEnd={() => setCompareDrag(false)}>
         <header className="editor-header">
           <h1>{t("editor.title")}</h1>
@@ -1616,6 +1618,7 @@ export default function PhotoEditorPage() {
           </div>
         )}
       </div>
+      </ErrorBoundary>
     </PageTransition>
   );
 }

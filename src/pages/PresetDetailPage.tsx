@@ -7,6 +7,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiItem } from "../hooks/useApiItem";
 import { useRelatedItems } from "../hooks/useRelatedItems";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailLoading } from "../components/shared/DetailLoading";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
@@ -59,6 +60,7 @@ export function PresetDetailPage() {
         </div>
       </section>
 
+      <ErrorBoundary>
       <section className="section-shell is-visible">
         <div className="preset-detail-section">
           {preset.preview_images && preset.preview_images.length > 0 && (
@@ -155,6 +157,7 @@ export function PresetDetailPage() {
           </div>
         </section>
       )}
+      </ErrorBoundary>
     </PageTransition>
   );
 }
