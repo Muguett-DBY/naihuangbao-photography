@@ -19,6 +19,14 @@
     "backToHome": "回到首页",
     "mainNavigation": "主导航"
   },
+  "mobileNav": {
+    "label": "移动端主要导航",
+    "home": "首页",
+    "gallery": "作品",
+    "booking": "预约",
+    "editor": "修图",
+    "account": "我的"
+  },
   "hero": {
     "volBadge": "✦ Vol.1",
     "brandPrefix": "南京女生写真与情侣约拍",
@@ -772,6 +780,9 @@
     "noKeep": "不取消",
     "selectNewDate": "选择新日期",
     "confirmReschedule": "确认改期",
+    "editorTitle": "打开人像修图工作室",
+    "editorDescription": "直接在浏览器中修图，照片保留在当前设备。",
+    "openEditor": "开始修图",
     "status": {
       "pending": "待处理",
       "contacted": "已联系",

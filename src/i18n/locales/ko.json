@@ -19,6 +19,14 @@
     "backToHome": "홈페이지로 돌아가기",
     "mainNavigation": "주 내비게이션"
   },
+  "mobileNav": {
+    "label": "모바일 주요 내비게이션",
+    "home": "홈",
+    "gallery": "작품",
+    "booking": "예약",
+    "editor": "보정",
+    "account": "내 정보"
+  },
   "hero": {
     "volBadge": "✦ Vol.1",
     "brandPrefix": "난징 여성 사진 & 커플 사진",
@@ -718,6 +726,9 @@
     "noKeep": "아니요, 유지",
     "selectNewDate": "새 날짜 선택",
     "confirmReschedule": "확인",
+    "editorTitle": "인물 사진 편집기 열기",
+    "editorDescription": "브라우저에서 바로 편집하며 사진은 이 기기에 유지됩니다.",
+    "openEditor": "편집 시작",
     "status": {
       "pending": "대기 중",
       "contacted": "연락 완료",

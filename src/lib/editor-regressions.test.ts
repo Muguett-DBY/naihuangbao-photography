@@ -20,6 +20,7 @@ describe("editor regression contracts", () => {
     const zhCN = read("src/i18n/locales/zh-CN.json");
 
     expect(editor).toContain("waitForFaceModels");
+    expect(editor).toContain('import { ErrorBoundary } from "../components/ErrorBoundary"');
     expect(photoProcessing).toContain("prepareFaceApiBackend");
     expect(photoProcessing).toContain('setBackend?.("cpu")');
     expect(editor).toContain("editor.noFaceDetected");
@@ -38,6 +39,32 @@ describe("editor regression contracts", () => {
     expect(sectionsCss).toContain(".site-nav .nav-login span");
     expect(sectionsCss).toContain("max-width: 44px !important");
     expect(heroCss).toContain(".site-nav > .theme-toggle");
+  });
+
+  it("keeps core mobile destinations persistent without covering overlays", () => {
+    const rootLayout = read("src/layouts/RootLayout.tsx");
+    const mobileNav = read("src/components/shared/MobileBottomNav.tsx");
+    const dashboard = read("src/pages/DashboardPage.tsx");
+    const sectionsCss = read("src/styles/sections.css");
+    const chatCss = read("src/styles/chat.css");
+    const pagesCss = read("src/styles/pages.css");
+
+    expect(rootLayout).toContain("<MobileBottomNav");
+    expect(rootLayout).toContain("!isEditor");
+    expect(mobileNav).toContain('to="/gallery"');
+    expect(mobileNav).toContain('to="/editor"');
+    expect(mobileNav).toContain('user ? "/dashboard" : "/login"');
+    expect(mobileNav).toContain("openBooking");
+    expect(mobileNav).toContain('aria-current={active ? "page" : undefined}');
+    expect(dashboard).toContain('to="/editor"');
+    expect(dashboard).toContain("dashboard.editorTitle");
+    expect(sectionsCss).toContain(".mobile-bottom-nav");
+    expect(sectionsCss).toContain("env(safe-area-inset-bottom");
+    expect(sectionsCss).toMatch(/\.mobile-bottom-nav\s*\{[\s\S]*z-index:\s*900/s);
+    expect(chatCss).toContain("var(--mobile-bottom-nav-offset");
+    expect(pagesCss).toContain(".dashboard-editor-card");
+    expect(pagesCss).toContain(".nhb-scroll-top");
+    expect(pagesCss).toContain("var(--mobile-bottom-nav-offset");
   });
 
   it("does not parse Vite HTML fallbacks as JSON API data", () => {

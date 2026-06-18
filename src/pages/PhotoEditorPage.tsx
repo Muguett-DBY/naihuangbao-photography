@@ -1,8 +1,10 @@
 // @ts-nocheck - PhotoEditor uses face-api.js types not fully available in strict mode
+import "../styles/pages.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import type { BeautySettings, BeautyCategory, BeautyTool } from "../types/photo-editor";
 import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
 import { prepareFaceApiBackend, loadFaceApiModels } from "../lib/photo-processing";
@@ -953,4 +955,3 @@ export default function PhotoEditorPage() {
     </PageTransition>
   );
 }
-

@@ -69,7 +69,7 @@ test.describe("shoot.custard.top", () => {
 
   test("首页预约 CTA 打开可填写表单", async ({ page }) => {
     await page.goto("/");
-    await page.locator(".hero-cover-secondary-btn").click();
+    await page.locator(".hero-cover-primary-btn").click();
     await expect(page.locator("#booking-name")).toBeVisible();
     await expect(page.locator("#booking-contact")).toBeVisible();
     await expect(page.locator("#booking-package")).toBeVisible();
@@ -131,5 +131,27 @@ test.describe("shoot.custard.top", () => {
     await openGalleryFromNav(page);
     await expect(page).toHaveURL(/\/gallery$/);
     await expect(page.locator("#gallery")).toBeVisible();
+  });
+
+  test("移动端底部导航覆盖核心路径并打开预约", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const bottomNav = page.locator(".mobile-bottom-nav");
+    await expect(bottomNav).toBeVisible();
+    await expect(bottomNav.locator('a[href="/"]')).toHaveAttribute("aria-current", "page");
+
+    await bottomNav.locator('a[href="/gallery"]').click();
+    await expect(page).toHaveURL(/\/gallery$/);
+    await expect(bottomNav.locator('a[href="/gallery"]')).toHaveAttribute("aria-current", "page");
+
+    await bottomNav.locator("button.mobile-bottom-nav__booking").click();
+    await expect(page.locator("#booking-name")).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    await bottomNav.locator('a[href="/editor"]').click();
+    await expect(page).toHaveURL(/\/editor$/);
+    await expect(page.locator(".editor-root")).toBeVisible();
+    await expect(page.locator(".mobile-bottom-nav")).toHaveCount(0);
   });
 });
