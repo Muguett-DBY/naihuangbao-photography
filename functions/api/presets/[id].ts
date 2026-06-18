@@ -21,7 +21,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       ...preset,
       preview_images: typeof preset.preview_images === "string" ? JSON.parse(preset.preview_images as string) : preset.preview_images,
     } }, 200);
-  } catch {
+  } catch (error) {
+    console.error("[presets]", error);
     return jsonResponse({ error: "加载失败" }, 500);
   }
 };

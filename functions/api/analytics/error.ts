@@ -1,4 +1,5 @@
 import { jsonResponse } from "../../_responses";
+import { enforceRateLimit, rateLimited } from "../../_security";
 
 /**
  * POST /api/analytics/error
@@ -6,10 +7,8 @@ import { jsonResponse } from "../../_responses";
  * Rate-limited to prevent abuse.
  */
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  // Simple rate limiting: 30 requests per minute per IP
-  const ip = context.request.headers.get("cf-connecting-ip") || "unknown";
-  const now = Date.now();
-  const windowKey = `error-log:${ip}:${Math.floor(now / 60000)}`;
+  const limit = await enforceRateLimit(context.request, context.env, "analytics-error", 30, 60);
+  if (!limit.ok) return rateLimited(limit.retryAfter);
 
   try {
     const body = (await context.request.json().catch(() => ({}))) as Record<string, unknown>;
@@ -23,15 +22,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     console.error("[FrontendError]", JSON.stringify({
       context: body.context,
       message: body.message,
-      stack: body.stack,
-      url: body.url,
-      timestamp: body.timestamp,
     }));
-
-    // In a real implementation, you would:
-    // 1. Store in D1 error_logs table
-    // 2. Send to Sentry/LogRocket
-    // 3. Send to Cloudflare Analytics
 
     return jsonResponse({ ok: true }, 200);
   } catch {

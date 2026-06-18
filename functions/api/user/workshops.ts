@@ -39,7 +39,8 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
       .all<WorkshopRow>();
 
     return jsonResponse({ workshops: result.results });
-  } catch {
+  } catch (error) {
+    console.error("[user/workshops]", error);
     return jsonResponse({ workshops: [] });
   }
 };

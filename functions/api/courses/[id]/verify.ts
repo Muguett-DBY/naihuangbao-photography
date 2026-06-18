@@ -21,7 +21,8 @@ export const onRequestPost: PagesFunction<Env & { COURSE_PASSWORDS?: string }> =
     const verified = validPasswords.length === 0 || validPasswords.includes(body.password);
 
     return jsonResponse({ verified }, 200);
-  } catch {
+  } catch (error) {
+    console.error("[courses/verify]", error);
     return badRequest("请求格式错误");
   }
 };

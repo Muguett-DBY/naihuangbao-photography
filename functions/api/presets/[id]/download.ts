@@ -20,7 +20,8 @@ export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
     ).bind(id).run();
 
     return jsonResponse({ ok: true }, 200);
-  } catch {
+  } catch (error) {
+    console.error("[presets/download]", error);
     return jsonResponse({ ok: false }, 500);
   }
 };

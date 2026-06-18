@@ -52,7 +52,8 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
         });
 
     return jsonResponse({ course, modules: sanitizedModules }, 200);
-  } catch {
+  } catch (error) {
+    console.error("[courses]", error);
     return jsonResponse({ error: "加载失败" }, 500);
   }
 };

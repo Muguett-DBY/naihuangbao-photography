@@ -35,7 +35,8 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
       .all<PurchaseRow>();
 
     return jsonResponse({ purchases: result.results });
-  } catch {
+  } catch (error) {
+    console.error("[user/purchases]", error);
     return jsonResponse({ purchases: [] });
   }
 };

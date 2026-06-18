@@ -9,46 +9,52 @@ type NotificationBody = {
   data: Record<string, unknown>;
 };
 
+/** Escape HTML special characters to prevent injection */
+function esc(val: unknown): string {
+  const s = String(val ?? "");
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 const notificationTemplates: Record<NotificationType, (data: Record<string, unknown>) => { subject: string; html: string }> = {
   booking_confirmation: (data) => ({
-    subject: `Booking Confirmation - ${data.packageName || "Portrait Session"}`,
+    subject: `Booking Confirmation - ${esc(data.packageName || "Portrait Session")}`,
     html: `
       <h2>Booking Confirmation</h2>
-      <p>Dear ${data.name},</p>
+      <p>Dear ${esc(data.name)},</p>
       <p>Your portrait booking has been confirmed.</p>
       <ul>
-        <li>Package: ${data.packageName || "Standard"}</li>
-        <li>Date: ${data.preferredDate || "To be determined"}</li>
-        <li>Time: ${data.preferredTime || "To be determined"}</li>
+        <li>Package: ${esc(data.packageName || "Standard")}</li>
+        <li>Date: ${esc(data.preferredDate || "To be determined")}</li>
+        <li>Time: ${esc(data.preferredTime || "To be determined")}</li>
       </ul>
       <p>We will contact you shortly to finalize the details.</p>
-      <p>Booking ID: ${data.bookingId}</p>
+      <p>Booking ID: ${esc(data.bookingId)}</p>
     `,
   }),
   workshop_registration: (data) => ({
-    subject: `Workshop Registration - ${data.workshopTitle || "Workshop"}`,
+    subject: `Workshop Registration - ${esc(data.workshopTitle || "Workshop")}`,
     html: `
       <h2>Workshop Registration Confirmed</h2>
-      <p>Dear ${data.name},</p>
+      <p>Dear ${esc(data.name)},</p>
       <p>You have been successfully registered for the workshop.</p>
       <ul>
-        <li>Workshop: ${data.workshopTitle || "Workshop"}</li>
-        <li>Date: ${data.eventDate || "TBD"}</li>
-        <li>Location: ${data.location || "TBD"}</li>
+        <li>Workshop: ${esc(data.workshopTitle || "Workshop")}</li>
+        <li>Date: ${esc(data.eventDate || "TBD")}</li>
+        <li>Location: ${esc(data.location || "TBD")}</li>
       </ul>
-      <p>Registration ID: ${data.registrationId}</p>
+      <p>Registration ID: ${esc(data.registrationId)}</p>
     `,
   }),
   payment_receipt: (data) => ({
-    subject: `Payment Receipt - ${data.purpose || "Transaction"}`,
+    subject: `Payment Receipt - ${esc(data.purpose || "Transaction")}`,
     html: `
       <h2>Payment Receipt</h2>
-      <p>Dear ${data.name || "Customer"},</p>
+      <p>Dear ${esc(data.name || "Customer")},</p>
       <p>Your payment has been processed successfully.</p>
       <ul>
-        <li>Amount: $${((data.amountCents as number) / 100).toFixed(2)} ${(data.currency as string)?.toUpperCase() || "USD"}</li>
-        <li>Purpose: ${data.purpose || "Purchase"}</li>
-        <li>Transaction ID: ${data.paymentIntentId || data.transactionId}</li>
+        <li>Amount: $${esc(((data.amountCents as number) / 100).toFixed(2))} ${esc((data.currency as string)?.toUpperCase() || "USD")}</li>
+        <li>Purpose: ${esc(data.purpose || "Purchase")}</li>
+        <li>Transaction ID: ${esc(data.paymentIntentId || data.transactionId)}</li>
       </ul>
       <p>Thank you for your purchase!</p>
     `,
@@ -86,14 +92,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     // Example with Resend: await resend.emails.send({ from, to: body.to, subject: template.subject, html: template.html });
     // Example with Cloudflare Email Workers: await context.env.SEND_EMAIL(from, body.to, template.subject, template.html);
 
-    // Placeholder logging — no PII in production logs
-    console.log("Notification queued:", { type: body.type });
-
     return jsonResponse({
       ok: true,
       message: "Notification queued for delivery",
       type: body.type,
-      to: body.to,
     });
   } catch (error) {
     return unavailable("Failed to send notification", error, {
