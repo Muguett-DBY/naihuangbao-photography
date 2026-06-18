@@ -17,6 +17,7 @@
   --text-secondary: var(--caramel-muted);
   --border-subtle: var(--warm-border);
   --card-bg: var(--paper-white);
+  --card-gradient: linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26));
   --text-secondary-contrast: #666;
   --font-body:
     "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, -apple-system,

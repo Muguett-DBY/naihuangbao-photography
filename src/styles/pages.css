@@ -251,7 +251,7 @@
   align-items: flex-start;
   padding: 32px 28px;
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 22px;
@@ -363,7 +363,7 @@
 .course-card {
   position: relative;
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 22px;
@@ -510,7 +510,7 @@
 .preset-card {
   position: relative;
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 22px;
@@ -661,7 +661,7 @@
 .workshop-card {
   position: relative;
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 22px;
@@ -832,7 +832,7 @@
 .merchandise-card {
   position: relative;
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 22px;
@@ -1415,7 +1415,7 @@
 
 .detail-card {
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 22px;
@@ -2737,7 +2737,7 @@
   gap: 20px;
   padding: 28px 32px;
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 22px;
@@ -2783,7 +2783,7 @@
 
 .dashboard-card {
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 16px;
@@ -2951,7 +2951,7 @@
   gap: 16px;
   padding: 20px;
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 16px;
@@ -3551,7 +3551,7 @@
 /* ── Preset Preview ── */
 .preset-preview {
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 22px;
@@ -3748,7 +3748,7 @@
   min-width: 52px;
   padding: 10px 6px;
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 14px;
@@ -3895,7 +3895,7 @@
   gap: 8px;
   padding: 20px 12px;
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 2px solid rgba(139, 94, 74, 0.08);
   border-radius: 18px;
@@ -3998,7 +3998,7 @@
 
 .quiz-result-package {
   background:
-    linear-gradient(145deg, rgba(255, 253, 247, 0.9), rgba(237, 244, 234, 0.26)),
+    var(--card-gradient),
     rgba(255, 253, 247, 0.82);
   border: 1px solid rgba(139, 94, 74, 0.1);
   border-radius: 22px;

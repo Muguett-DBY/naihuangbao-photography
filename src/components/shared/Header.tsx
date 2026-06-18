@@ -26,10 +26,7 @@ export function Header() {
     { to: "/gallery", label: t("nav.gallery") },
     { to: "/courses", label: t("nav.courses") },
     { to: "/products", label: t("nav.presets") },
-    { to: "/workshops", label: t("nav.workshops") },
     { to: "/shop", label: t("nav.shop") },
-    { to: "/editor", label: t("nav.editor") },
-    { to: "/map", label: t("nav.map") },
     { to: "/booking", label: t("nav.booking") },
   ], [t]);
 
