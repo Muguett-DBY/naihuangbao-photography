@@ -71,7 +71,15 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     return jsonResponse({ ok: true, message: "如果该邮箱已注册，重置链接已发送" });
   }
 
-  // Demo mode: return token in response so the flow can be tested
+  // Demo mode: return token in response only if explicitly enabled
+  // In production, this code path should never run (email provider should be configured)
+  const isDemoMode = !!(context.env as { DEMO_MODE?: string }).DEMO_MODE;
+  if (!isDemoMode) {
+    // Production without email — log warning but never return token
+    console.warn("[forgot-password] No email provider configured and DEMO_MODE not set. Token generated but not delivered.");
+    return jsonResponse({ ok: true, message: "如果该邮箱已注册，重置链接已发送" });
+  }
+
   return jsonResponse({
     ok: true,
     message: "密码重置令牌已生成（演示模式）",

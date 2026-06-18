@@ -1,12 +1,9 @@
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
-  BookOpen,
   CalendarCheck,
   ImagePlus,
-  Layers,
   LockKeyhole,
   LogOut,
-  ShoppingBag,
   TrendingUp,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";

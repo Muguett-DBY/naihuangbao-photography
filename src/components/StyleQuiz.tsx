@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, RotateCcw, Share2, Sparkles } from "lucide-react";
 import { Button } from "animal-island-ui";
 import gsap from "gsap";
@@ -221,9 +220,9 @@ export function StyleQuiz() {
             )}
           </div>
           <div className="quiz-result-actions">
-            <Link to="/booking">
-              <Button type="primary" size="large">{t("quiz.bookNow")}</Button>
-            </Link>
+            <Button type="primary" size="large" onClick={() => {
+              document.getElementById("packages")?.scrollIntoView({ behavior: "smooth" });
+            }}>{t("quiz.bookNow")}</Button>
             <div className="quiz-result-secondary-actions">
               <button type="button" className="quiz-action-btn" onClick={handleShare}>
                 <Share2 size={14} /> {t("quiz.share")}
