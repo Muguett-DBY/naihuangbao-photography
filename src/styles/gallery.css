@@ -377,8 +377,8 @@
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
   border: none;
   background: rgba(139, 94, 74, 0.1);
@@ -612,8 +612,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--warm-border);
   border-radius: 8px;
   background: transparent;

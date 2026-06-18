@@ -473,7 +473,7 @@
   right: 0;
   background: linear-gradient(to left, var(--custard-bg, #FEF3DD), transparent);
 }
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   .process-scroll-wrap::before,
   .process-scroll-wrap::after {
     opacity: 1;
@@ -1107,7 +1107,7 @@
 /* ══════════════════════════════════════════════
    Mobile Nav Overlay — hidden on desktop
    ══════════════════════════════════════════════ */
-@media (min-width: 761px) {
+@media (min-width: 769px) {
   .nav-menu--overlay {
     display: none !important;
   }
@@ -1116,7 +1116,7 @@
 /* ══════════════════════════════════════════════
    Mobile Layout (<760px)
    ══════════════════════════════════════════════ */
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   .site-nav {
     padding: 12px 12px;
     grid-template-columns: minmax(0, 1fr) auto auto auto;
@@ -1331,6 +1331,7 @@
     font-weight: 700;
     opacity: 0;
     pointer-events: none;
+    overscroll-behavior: contain;
     transform: translate3d(0, -10px, 0);
     transition: opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
                 transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
@@ -1499,6 +1500,7 @@
     gap: 6px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
     scrollbar-width: none;
     flex-wrap: nowrap;
   }
@@ -2726,7 +2728,7 @@
 /* ══════════════════════════════════════════════
    Mobile Touch Target & Layout Fixes
    ══════════════════════════════════════════════ */
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   .filter-row button {
     min-height: 44px;
     padding: 12px 16px;
