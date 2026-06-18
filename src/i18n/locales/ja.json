@@ -311,6 +311,11 @@
       "social": "小红书 @naihuangbaosy"
     }
   },
+  "bookingPage": {
+    "readyTitle": "予約する準備はできましたか？",
+    "readyDesc": "お好みの撮影パッケージを選んで、今すぐセッションを予約しましょう。",
+    "startBooking": "今すぐ予約する"
+  },
   "themeToggle": {
     "light": "☀️ ライト",
     "dark": "🌙 ダーク",
