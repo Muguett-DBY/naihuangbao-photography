@@ -1082,6 +1082,22 @@
   to { transform: rotate(360deg); }
 }
 
+.gallery-end-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 0;
+  color: var(--caramel-muted, #8c7b6f);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+
+.gallery-search-empty {
+  color: var(--caramel-muted, #8c7b6f);
+  font-style: italic;
+}
+
 /* ══════════════════════════════════════════════
    Video Item in Masonry
    ══════════════════════════════════════════════ */

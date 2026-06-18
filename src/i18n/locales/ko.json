@@ -47,6 +47,8 @@
     "clearSearch": "검색 지우기",
     "resultCount": "사진 {{count}}장",
     "noResults": "검색 결과가 없습니다",
+    "searchEmpty": "검색과 일치하는 사진이 없습니다. 다른 키워드를 시도해 보세요.",
+    "allLoaded": "모든 사진이 로드되었습니다",
     "filters": {
       "all": "전체",
       "jiangnan": "장난",

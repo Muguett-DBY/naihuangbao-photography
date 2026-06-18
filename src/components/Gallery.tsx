@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Play, Share2, Loader2, Search, X, LayoutGrid, Columns } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
@@ -132,9 +133,10 @@ export function Gallery() {
   const { t } = useTranslation();
   const { sectionCopy } = useSiteContent();
   const { photos: sourcePhotos, remoteLoaded } = usePublicPhotos();
-  const [filter, setFilter] = useState<StyleFilter>("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filter, setFilter] = useState<StyleFilter>((searchParams.get("style") as StyleFilter) || "all");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchParams.get("q") || "");
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [viewMode, setViewMode] = useState<ViewMode>("masonry");
@@ -193,6 +195,14 @@ export function Gallery() {
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [filter, debouncedSearch]);
+
+  // Sync filter and search to URL params
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filter !== "all") params.set("style", filter);
+    if (debouncedSearch) params.set("q", debouncedSearch);
+    setSearchParams(params, { replace: true });
+  }, [filter, debouncedSearch, setSearchParams]);
 
   const visiblePhotos = useMemo(() => photos.slice(0, visibleCount), [photos, visibleCount]);
   const hasMore = visibleCount < photos.length;
@@ -332,7 +342,12 @@ export function Gallery() {
         {photos.length === 0 && !searchQuery && (
           <span className="gallery-search-count">{t("gallery.noResults", "No results")}</span>
         )}
-        {searchQuery && (
+        {searchQuery && photos.length === 0 && (
+          <span className="gallery-search-count gallery-search-empty">
+            {t("gallery.searchEmpty", "No photos match your search. Try a different keyword.")}
+          </span>
+        )}
+        {searchQuery && photos.length > 0 && (
           <span className="gallery-search-count">
             {t("gallery.resultCount", { count: photos.length, defaultValue: `${photos.length} photos` })}
           </span>
@@ -467,6 +482,11 @@ export function Gallery() {
           <div ref={sentinelRef} className="gallery-loading-indicator">
             <Loader2 className="gallery-loading-spinner" size={24} />
             <span>{t("gallery.loading")}</span>
+          </div>
+        )}
+        {!hasMore && photos.length > 0 && (
+          <div className="gallery-end-indicator">
+            <span>{t("gallery.allLoaded", "All photos loaded")}</span>
           </div>
         )}
       </div>
