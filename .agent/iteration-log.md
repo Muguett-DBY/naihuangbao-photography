@@ -1,6 +1,6 @@
 # 持续迭代记录
 
-## 本轮 (34632af → 待提交) — 移动端核心导航与编辑器发现路径
+## 本轮 (34632af → a58e755) — 移动端核心导航与编辑器发现路径
 
 ### 承接的上一轮方向
 - 推荐旗舰：**移动端底部导航** — ✅ 已完成
@@ -27,7 +27,7 @@
 - `build:full` + performance budget：通过
 - Playwright smoke：13/13 通过
 - 390×844 移动端视觉检查：无横向溢出、预约弹窗层级正确、无控制台错误
-- GitHub Actions：待本轮 push 后确认
+- GitHub Actions：CI run `27761215627` 通过（main / a58e755）
 
 ### 遗留风险
 - `PhotoEditorPage.tsx` 仍有 `@ts-nocheck`，类型风险未完全消除
