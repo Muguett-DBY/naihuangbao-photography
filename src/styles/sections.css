@@ -1503,6 +1503,8 @@
     overscroll-behavior: contain;
     scrollbar-width: none;
     flex-wrap: nowrap;
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
   }
 
   .filter-row::-webkit-scrollbar {

@@ -47,6 +47,8 @@
     "clearSearch": "Clear search",
     "resultCount": "{{count}} photos",
     "noResults": "No results found",
+    "searchEmpty": "No photos match your search. Try a different keyword.",
+    "allLoaded": "All photos loaded",
     "filters": {
       "all": "All",
       "jiangnan": "Jiangnan",
