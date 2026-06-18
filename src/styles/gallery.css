@@ -723,6 +723,9 @@
 .gallery-masonry-btn:hover .gallery-masonry-overlay {
   opacity: 1;
 }
+.gallery-masonry-item.is-touched .gallery-masonry-overlay {
+  opacity: 1;
+}
 
 .gallery-masonry-overlay-style {
   font-family: var(--font-display-cn);
