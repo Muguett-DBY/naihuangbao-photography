@@ -3,11 +3,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
-import { ErrorBoundary } from "../components/ErrorBoundary";
-import { logError } from "../lib/error-logger";
 import type { BeautySettings, BeautyCategory, BeautyTool } from "../types/photo-editor";
 import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
 import { prepareFaceApiBackend, loadFaceApiModels } from "../lib/photo-processing";
+import { applyWarp, applyFrame, analyzeFaceAndCalcParams, isSkin, type Landmarks } from "../lib/editor-utils";
+import {
+  applyBackgroundBlur as applyBackgroundBlurFn,
+  applyBackgroundRemove as applyBackgroundRemoveFn,
+  applyBackgroundSolid as applyBackgroundSolidFn,
+  applyBackgroundGradient as applyBackgroundGradientFn,
+  applyMakeup as applyMakeupFn,
+  applyLocalAdjustment as applyLocalAdjustmentFn,
+  applyColorSplash as applyColorSplashFn,
+  applyDoubleExposure as applyDoubleExposureFn,
+} from "../lib/editor-effects";
 
 const MODEL_URL = "/models";
 
@@ -660,358 +669,37 @@ export default function PhotoEditorPage() {
     });
   }, [frameId, texts, stickers, showMesh, selectedOverlay, bgSolidColor, bgGradientStart, bgGradientEnd, lipstickColor, blushColor, eyeshadowColor, colorSplashHue, colorSplashRange, doubleExposureImage, blendMode, doubleExposureOpacity]);
 
-  // Background blur algorithm
+  // Background effects — delegated to editor-effects.ts
   const applyBackgroundBlur = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number) => {
-    const w = canvas.width, h = canvas.height;
-    const jaw = lm.slice(0, 17);
-    const fL = Math.min(...lm.map(p => p.x)) - 20;
-    const fR = Math.max(...lm.map(p => p.x)) + 20;
-    const fT = Math.min(...lm.map(p => p.y)) - 30;
-    const fB = Math.max(...lm.map(p => p.y)) + 20;
-
-    // Create face mask
-    const maskCanvas = document.createElement("canvas");
-    maskCanvas.width = w; maskCanvas.height = h;
-    const maskCtx = maskCanvas.getContext("2d")!;
-    maskCtx.fillStyle = "white";
-    maskCtx.beginPath();
-    maskCtx.moveTo(jaw[0].x, jaw[0].y);
-    for (let i = 1; i < jaw.length; i++) {
-      maskCtx.lineTo(jaw[i].x, jaw[i].y);
-    }
-    maskCtx.closePath();
-    maskCtx.fill();
-
-    // Blur the entire image
-    const blurCanvas = document.createElement("canvas");
-    blurCanvas.width = w; blurCanvas.height = h;
-    const blurCtx = blurCanvas.getContext("2d")!;
-    blurCtx.filter = `blur(${Math.round(intensity * 15)}px)`;
-    blurCtx.drawImage(canvas, 0, 0);
-
-    // Composite: keep face sharp, blur background
-    const original = ctx.getImageData(0, 0, w, h);
-    const blurred = blurCtx.getImageData(0, 0, w, h);
-    const mask = maskCtx.getImageData(0, 0, w, h);
-    const out = ctx.createImageData(w, h);
-
-    for (let i = 0; i < original.data.length; i += 4) {
-      const maskAlpha = mask.data[i] / 255;
-      out.data[i] = original.data[i] * maskAlpha + blurred.data[i] * (1 - maskAlpha);
-      out.data[i + 1] = original.data[i + 1] * maskAlpha + blurred.data[i + 1] * (1 - maskAlpha);
-      out.data[i + 2] = original.data[i + 2] * maskAlpha + blurred.data[i + 2] * (1 - maskAlpha);
-      out.data[i + 3] = 255;
-    }
-
-    ctx.putImageData(out, 0, 0);
+    applyBackgroundBlurFn(ctx, canvas, lm, intensity);
   }, []);
 
-  // Feature 1: Background Remove/Replace
   const applyBackgroundRemove = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number) => {
-    const w = canvas.width, h = canvas.height;
-    const jaw = lm.slice(0, 17);
-    const fL = Math.min(...lm.map(p => p.x)) - 20;
-    const fR = Math.max(...lm.map(p => p.x)) + 20;
-    const fT = Math.min(...lm.map(p => p.y)) - 30;
-    const fB = Math.max(...lm.map(p => p.y)) + 20;
-    const maskCanvas = document.createElement("canvas");
-    maskCanvas.width = w; maskCanvas.height = h;
-    const maskCtx = maskCanvas.getContext("2d")!;
-    maskCtx.fillStyle = "white";
-    maskCtx.beginPath();
-    maskCtx.moveTo(jaw[0].x, jaw[0].y);
-    for (let i = 1; i < jaw.length; i++) { maskCtx.lineTo(jaw[i].x, jaw[i].y); }
-    maskCtx.closePath();
-    maskCtx.fill();
-    const id = ctx.getImageData(0, 0, w, h);
-    const mask = maskCtx.getImageData(0, 0, w, h);
-    for (let i = 0; i < id.data.length; i += 4) {
-      const a = mask.data[i] / 255;
-      id.data[i + 3] = Math.round(id.data[i + 3] * a * (1 - intensity) + id.data[i + 3] * a);
-    }
-    ctx.putImageData(id, 0, 0);
+    applyBackgroundRemoveFn(ctx, canvas, lm, intensity);
   }, []);
 
   const applyBackgroundSolid = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number, color: string) => {
-    const w = canvas.width, h = canvas.height;
-    const jaw = lm.slice(0, 17);
-    const maskCanvas = document.createElement("canvas");
-    maskCanvas.width = w; maskCanvas.height = h;
-    const maskCtx = maskCanvas.getContext("2d")!;
-    maskCtx.fillStyle = "white";
-    maskCtx.beginPath();
-    maskCtx.moveTo(jaw[0].x, jaw[0].y);
-    for (let i = 1; i < jaw.length; i++) { maskCtx.lineTo(jaw[i].x, jaw[i].y); }
-    maskCtx.closePath();
-    maskCtx.fill();
-    const r = parseInt(color.slice(1, 3), 16);
-    const g = parseInt(color.slice(3, 5), 16);
-    const b = parseInt(color.slice(5, 7), 16);
-    const bgCanvas = document.createElement("canvas");
-    bgCanvas.width = w; bgCanvas.height = h;
-    const bgCtx = bgCanvas.getContext("2d")!;
-    bgCtx.fillStyle = color;
-    bgCtx.fillRect(0, 0, w, h);
-    const original = ctx.getImageData(0, 0, w, h);
-    const bg = bgCtx.getImageData(0, 0, w, h);
-    const mask = maskCtx.getImageData(0, 0, w, h);
-    const out = ctx.createImageData(w, h);
-    for (let i = 0; i < original.data.length; i += 4) {
-      const a = (mask.data[i] / 255) * intensity;
-      out.data[i] = original.data[i] * (1 - a) + r * a;
-      out.data[i + 1] = original.data[i + 1] * (1 - a) + g * a;
-      out.data[i + 2] = original.data[i + 2] * (1 - a) + b * a;
-      out.data[i + 3] = 255;
-    }
-    ctx.putImageData(out, 0, 0);
+    applyBackgroundSolidFn(ctx, canvas, lm, intensity, color);
   }, []);
 
   const applyBackgroundGradient = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number, c1: string, c2: string) => {
-    const w = canvas.width, h = canvas.height;
-    const jaw = lm.slice(0, 17);
-    const maskCanvas = document.createElement("canvas");
-    maskCanvas.width = w; maskCanvas.height = h;
-    const maskCtx = maskCanvas.getContext("2d")!;
-    maskCtx.fillStyle = "white";
-    maskCtx.beginPath();
-    maskCtx.moveTo(jaw[0].x, jaw[0].y);
-    for (let i = 1; i < jaw.length; i++) { maskCtx.lineTo(jaw[i].x, jaw[i].y); }
-    maskCtx.closePath();
-    maskCtx.fill();
-    const gradCanvas = document.createElement("canvas");
-    gradCanvas.width = w; gradCanvas.height = h;
-    const gradCtx = gradCanvas.getContext("2d")!;
-    const grad = gradCtx.createLinearGradient(0, 0, w, h);
-    grad.addColorStop(0, c1);
-    grad.addColorStop(1, c2);
-    gradCtx.fillStyle = grad;
-    gradCtx.fillRect(0, 0, w, h);
-    const original = ctx.getImageData(0, 0, w, h);
-    const bg = gradCtx.getImageData(0, 0, w, h);
-    const mask = maskCtx.getImageData(0, 0, w, h);
-    const out = ctx.createImageData(w, h);
-    for (let i = 0; i < original.data.length; i += 4) {
-      const a = (mask.data[i] / 255) * intensity;
-      out.data[i] = original.data[i] * (1 - a) + bg.data[i] * a;
-      out.data[i + 1] = original.data[i + 1] * (1 - a) + bg.data[i + 1] * a;
-      out.data[i + 2] = original.data[i + 2] * (1 - a) + bg.data[i + 2] * a;
-      out.data[i + 3] = 255;
-    }
-    ctx.putImageData(out, 0, 0);
+    applyBackgroundGradientFn(ctx, canvas, lm, intensity, c1, c2);
   }, []);
 
-  // Feature 2: Virtual Makeup
   const applyMakeup = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, lm: Landmarks, s: BeautySettings, lipCol: string, blushCol: string, shadowCol: string) => {
-    const id = ctx.getImageData(0, 0, w, h);
-    const d = id.data;
-    const mouth = lm.slice(48, 68);
-    const lEye = lm.slice(36, 42);
-    const rEye = lm.slice(42, 48);
-    const jaw = lm.slice(0, 17);
-    const fL = Math.min(...lm.map(p => p.x)), fR = Math.max(...lm.map(p => p.x));
-    const fT = Math.min(...lm.map(p => p.y)), fB = Math.max(...lm.map(p => p.y));
-
-    // Lipstick
-    if (s.lipstick > 0) {
-      const lr = parseInt(lipCol.slice(1, 3), 16);
-      const lg = parseInt(lipCol.slice(3, 5), 16);
-      const lb = parseInt(lipCol.slice(5, 7), 16);
-      const lipCY = mouth.reduce((a, p) => a + p.y, 0) / mouth.length;
-      const lipL = Math.min(...mouth.map(p => p.x)), lipR = Math.max(...mouth.map(p => p.x));
-      const st = s.lipstick / 100;
-      for (let y = Math.max(0, lipCY - 18); y < Math.min(h, lipCY + 18); y++) {
-        for (let x = lipL - 2; x < lipR + 2; x++) {
-          if (x < 0 || x >= w) continue;
-          const idx = (y * w + x) * 4;
-          const distY = Math.abs(y - lipCY) / 18;
-          const alpha = st * 0.6 * (1 - distY);
-          d[idx] = d[idx] * (1 - alpha) + lr * alpha;
-          d[idx + 1] = d[idx + 1] * (1 - alpha) + lg * alpha;
-          d[idx + 2] = d[idx + 2] * (1 - alpha) + lb * alpha;
-        }
-      }
-    }
-
-    // Blush
-    if (s.blush > 0) {
-      const br = parseInt(blushCol.slice(1, 3), 16);
-      const bg2 = parseInt(blushCol.slice(3, 5), 16);
-      const bb = parseInt(blushCol.slice(5, 7), 16);
-      const lCheekX = (lEye[0].x + jaw[0].x) / 2;
-      const rCheekX = (rEye[3].x + jaw[16].x) / 2;
-      const cheekY = (lEye[0].y + jaw[8].y) / 2;
-      const st = s.blush / 100;
-      for (const cx of [lCheekX, rCheekX]) {
-        for (let y = cheekY - 30; y < cheekY + 30; y++) {
-          for (let x = cx - 30; x < cx + 30; x++) {
-            if (x < 0 || x >= w || y < 0 || y >= h) continue;
-            const dx = x - cx, dy = y - cheekY;
-            const dist = Math.sqrt(dx * dx + dy * dy) / 30;
-            if (dist > 1) continue;
-            const idx = (y * w + x) * 4;
-            const alpha = st * 0.35 * (1 - dist);
-            d[idx] = d[idx] * (1 - alpha) + br * alpha;
-            d[idx + 1] = d[idx + 1] * (1 - alpha) + bg2 * alpha;
-            d[idx + 2] = d[idx + 2] * (1 - alpha) + bb * alpha;
-          }
-        }
-      }
-    }
-
-    // Eyeshadow
-    if (s.eyeshadow > 0) {
-      const sr = parseInt(shadowCol.slice(1, 3), 16);
-      const sg = parseInt(shadowCol.slice(3, 5), 16);
-      const sb = parseInt(shadowCol.slice(5, 7), 16);
-      const lBrow = lm.slice(17, 22);
-      const rBrow = lm.slice(22, 27);
-      const st = s.eyeshadow / 100;
-      for (const eye of [lEye, rEye]) {
-        const eyeCX = eye.reduce((a, p) => a + p.x, 0) / 6;
-        const eyeCY = eye.reduce((a, p) => a + p.y, 0) / 6;
-        const brow = eye === lEye ? lBrow : rBrow;
-        const browCY = Math.min(...brow.map(p => p.y));
-        for (let y = browCY; y < eyeCY + 5; y++) {
-          for (let x = eyeCX - 35; x < eyeCX + 35; x++) {
-            if (x < 0 || x >= w || y < 0 || y >= h) continue;
-            const dy = (eyeCY - y) / (eyeCY - browCY);
-            const dx = Math.abs(x - eyeCX) / 35;
-            if (dy < 0 || dy > 1.2 || dx > 1) continue;
-            const idx = (y * w + x) * 4;
-            const alpha = st * 0.3 * Math.max(0, 1 - dx) * Math.min(1, dy);
-            d[idx] = d[idx] * (1 - alpha) + sr * alpha;
-            d[idx + 1] = d[idx + 1] * (1 - alpha) + sg * alpha;
-            d[idx + 2] = d[idx + 2] * (1 - alpha) + sb * alpha;
-          }
-        }
-      }
-    }
-
-    // Eyeliner
-    if (s.eyeliner > 0) {
-      const st = s.eyeliner / 100;
-      for (const eye of [lEye, rEye]) {
-        for (let i = 0; i < eye.length; i++) {
-          const p1 = eye[i], p2 = eye[(i + 1) % eye.length];
-          const steps = Math.max(Math.abs(p2.x - p1.x), Math.abs(p2.y - p1.y));
-          for (let t = 0; t <= steps; t++) {
-            const x = Math.round(p1.x + (p2.x - p1.x) * t / steps);
-            const y = Math.round(p1.y + (p2.y - p1.y) * t / steps);
-            for (let dy = -2; dy <= 2; dy++) {
-              for (let dx = -2; dx <= 2; dx++) {
-                const px = x + dx, py = y + dy;
-                if (px < 0 || px >= w || py < 0 || py >= h) continue;
-                const idx = (py * w + px) * 4;
-                const dist = Math.sqrt(dx * dx + dy * dy) / 2;
-                const alpha = st * 0.7 * Math.max(0, 1 - dist);
-                d[idx] = d[idx] * (1 - alpha);
-                d[idx + 1] = d[idx + 1] * (1 - alpha);
-                d[idx + 2] = d[idx + 2] * (1 - alpha);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    ctx.putImageData(id, 0, 0);
+    applyMakeupFn(ctx, w, h, lm, s, lipCol, blushCol, shadowCol);
   }, []);
 
-  // Feature 3: Local Adjustment Brush
   const applyLocalAdjustment = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, mask: ImageData, s: BeautySettings) => {
-    if (!mask) return;
-    const id = ctx.getImageData(0, 0, w, h);
-    const d = id.data;
-    const md = mask.data;
-    const bright = s.local_bright / 100 * 60;
-    const warm = s.local_warm / 100 * 30;
-    const sat = s.local_sat / 100;
-    for (let i = 0; i < d.length; i += 4) {
-      const alpha = md[i + 3] / 255;
-      if (alpha < 0.01) continue;
-      let r = d[i], g = d[i + 1], b = d[i + 2];
-      r += bright * alpha;
-      g += bright * alpha;
-      b += bright * alpha;
-      r += warm * alpha;
-      b -= warm * alpha;
-      const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-      r = gray + (1 + sat * alpha) * (r - gray);
-      g = gray + (1 + sat * alpha) * (g - gray);
-      b = gray + (1 + sat * alpha) * (b - gray);
-      d[i] = Math.max(0, Math.min(255, r));
-      d[i + 1] = Math.max(0, Math.min(255, g));
-      d[i + 2] = Math.max(0, Math.min(255, b));
-    }
-    ctx.putImageData(id, 0, 0);
+    applyLocalAdjustmentFn(ctx, w, h, mask, s);
   }, []);
 
-  // Feature 4: Color Splash
   const applyColorSplash = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, targetHue: number, range: number, intensity: number) => {
-    const id = ctx.getImageData(0, 0, w, h);
-    const d = id.data;
-    const halfRange = range / 2;
-    for (let i = 0; i < d.length; i += 4) {
-      const r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
-      const max = Math.max(r, g, b), min = Math.min(r, g, b);
-      let h2 = 0, s2 = 0;
-      const l = (max + min) / 2;
-      if (max !== min) {
-        const d2 = max - min;
-        s2 = l > 0.5 ? d2 / (2 - max - min) : d2 / (max + min);
-        if (max === r) h2 = ((g - b) / d2 + (g < b ? 6 : 0)) / 6;
-        else if (max === g) h2 = ((b - r) / d2 + 2) / 6;
-        else h2 = ((r - g) / d2 + 4) / 6;
-      }
-      const hueDeg = h2 * 360;
-      let dist = Math.abs(hueDeg - targetHue);
-      if (dist > 180) dist = 360 - dist;
-      if (dist > halfRange) {
-        const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-        const a = intensity;
-        d[i] = d[i] * (1 - a) + gray * a;
-        d[i + 1] = d[i + 1] * (1 - a) + gray * a;
-        d[i + 2] = d[i + 2] * (1 - a) + gray * a;
-      }
-    }
-    ctx.putImageData(id, 0, 0);
+    applyColorSplashFn(ctx, w, h, targetHue, range, intensity);
   }, []);
 
-  // Feature 5: Double Exposure
   const applyDoubleExposure = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, img2: HTMLImageElement, mode: string, intensity: number, opacity: number) => {
-    const w = canvas.width, h = canvas.height;
-    const tmpCanvas = document.createElement("canvas");
-    tmpCanvas.width = w; tmpCanvas.height = h;
-    const tmpCtx = tmpCanvas.getContext("2d")!;
-    tmpCtx.drawImage(img2, 0, 0, w, h);
-    const bg = tmpCtx.getImageData(0, 0, w, h);
-    const fg = ctx.getImageData(0, 0, w, h);
-    const out = ctx.createImageData(w, h);
-    for (let i = 0; i < fg.data.length; i += 4) {
-      let r: number, g: number, b: number;
-      const fr = fg.data[i] / 255, fb = fg.data[i + 1] / 255, fc = fg.data[i + 2] / 255;
-      const br = bg.data[i] / 255, bb2 = bg.data[i + 1] / 255, bc = bg.data[i + 2] / 255;
-      if (mode === "screen") {
-        r = 1 - (1 - fr) * (1 - br);
-        g = 1 - (1 - fb) * (1 - bb2);
-        b = 1 - (1 - fc) * (1 - bc);
-      } else if (mode === "soft-light") {
-        r = br < 0.5 ? 2 * fr * br + fr * fr * (1 - 2 * br) : Math.sqrt(fr) * (2 * br - 1) + (2 * fr) * (1 - br);
-        g = bb2 < 0.5 ? 2 * fb * bb2 + fb * fb * (1 - 2 * bb2) : Math.sqrt(fb) * (2 * bb2 - 1) + (2 * fb) * (1 - bb2);
-        b = bc < 0.5 ? 2 * fc * bc + fc * fc * (1 - 2 * bc) : Math.sqrt(fc) * (2 * bc - 1) + (2 * fc) * (1 - bc);
-      } else {
-        // overlay
-        r = fr < 0.5 ? 2 * fr * br : 1 - 2 * (1 - fr) * (1 - br);
-        g = fb < 0.5 ? 2 * fb * bb2 : 1 - 2 * (1 - fb) * (1 - bb2);
-        b = fc < 0.5 ? 2 * fc * bc : 1 - 2 * (1 - fc) * (1 - bc);
-      }
-      const a = intensity * opacity;
-      out.data[i] = Math.max(0, Math.min(255, fg.data[i] * (1 - a) + r * 255 * a));
-      out.data[i + 1] = Math.max(0, Math.min(255, fg.data[i + 1] * (1 - a) + g * 255 * a));
-      out.data[i + 2] = Math.max(0, Math.min(255, fg.data[i + 2] * (1 - a) + b * 255 * a));
-      out.data[i + 3] = 255;
-    }
-    ctx.putImageData(out, 0, 0);
+    applyDoubleExposureFn(ctx, canvas, img2, mode, intensity, opacity);
   }, []);
 
   // Blemish removal on click
@@ -1623,117 +1311,3 @@ export default function PhotoEditorPage() {
   );
 }
 
-// Helper: Apply warp distortion
-function applyWarp(d: Uint8ClampedArray, w: number, h: number, cx: number, cy: number, fL: number, fR: number, fT: number, fB: number, strength: number, axis: "horizontal" | "vertical") {
-  const tmp = new Uint8ClampedArray(d);
-  const range = axis === "horizontal" ? (fR - fL) / 2 : (fB - fT) / 2;
-  if (range === 0) return;
-  for (let y = fT; y < fB; y++) {
-    for (let x = fL; x < fR; x++) {
-      const dist = axis === "horizontal" ? (x - cx) / range : (y - cy) / range;
-      const warp = 1 - strength * dist * dist;
-      const sx = axis === "horizontal" ? Math.round(cx + (x - cx) * warp) : x;
-      const sy = axis === "vertical" ? Math.round(cy + (y - cy) * warp) : y;
-      if (sx >= 0 && sx < w && sy >= 0 && sy < h) {
-        const di = (y * w + x) * 4, si = (sy * w + sx) * 4;
-        tmp[di] = d[si]; tmp[di + 1] = d[si + 1]; tmp[di + 2] = d[si + 2];
-      }
-    }
-  }
-  for (let i = 0; i < d.length; i++) d[i] = tmp[i];
-}
-
-// Helper: Apply frame (does NOT modify canvas dimensions)
-function applyFrame(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, frameId: string) {
-  const frame = FRAMES.find(f => f.id === frameId);
-  if (!frame || frameId === "none") return;
-  const w = canvas.width, h = canvas.height;
-  const pad = frame.padding || 0;
-  const padBottom = (frame as { paddingBottom?: number }).paddingBottom ?? pad;
-
-  // Save current content
-  const tmpCanvas = document.createElement("canvas");
-  tmpCanvas.width = w; tmpCanvas.height = h;
-  const tmpCtx = tmpCanvas.getContext("2d");
-  if (!tmpCtx) return;
-  tmpCtx.drawImage(canvas, 0, 0);
-
-  // Fill background
-  ctx.fillStyle = frame.bg || "transparent";
-  ctx.fillRect(0, 0, w, h);
-
-  // Rounded rect clip
-  if (frame.borderRadius) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(0, 0, w, h, frame.borderRadius);
-    ctx.clip();
-    ctx.fillStyle = frame.bg || "transparent";
-    ctx.fillRect(0, 0, w, h);
-    // Draw original content centered with padding
-    ctx.drawImage(tmpCanvas, pad, pad, w - pad * 2, h - pad - padBottom);
-    ctx.restore();
-  } else {
-    // Draw original content with padding
-    ctx.drawImage(tmpCanvas, pad, pad, w - pad * 2, h - pad - padBottom);
-  }
-}
-
-// Helper: Smart auto-enhance based on face analysis
-function analyzeFaceAndCalcParams(canvas: HTMLCanvasElement, lm: Landmarks): BeautySettings {
-  const ctx = canvas.getContext("2d")!;
-  const w = canvas.width, h = canvas.height;
-  const lEye = lm.slice(36, 42), rEye = lm.slice(42, 48);
-  const nose = lm.slice(27, 36);
-
-  const fL = Math.min(...lm.map(p => p.x)), fR = Math.max(...lm.map(p => p.x));
-  const fT = Math.min(...lm.map(p => p.y)), fB = Math.max(...lm.map(p => p.y));
-  const faceW = fR - fL, faceH = fB - fT;
-  const aspectRatio = faceW / faceH;
-
-  const eyeW = Math.max(...rEye.map(p => p.x)) - Math.min(...lEye.map(p => p.x));
-  const eyeRatio = eyeW / faceW;
-
-  const noseW = Math.max(...nose.map(p => p.x)) - Math.min(...nose.map(p => p.x));
-  const noseRatio = noseW / faceW;
-
-  const cx = (fL + fR) / 2, cy = (fT + fB) / 2;
-  const sampleR = Math.min(faceW, faceH) * 0.2;
-  const imgData = ctx.getImageData(0, 0, w, h);
-  const px = imgData.data;
-  const brightnesses: number[] = [];
-
-  for (let y = cy - sampleR; y < cy + sampleR; y += 3) {
-    for (let x = cx - sampleR; x < cx + sampleR; x += 3) {
-      const ppx = Math.round(x), ppy = Math.round(y);
-      if (ppx < 0 || ppx >= w || ppy < 0 || ppy >= h) continue;
-      const idx = (ppy * w + ppx) * 4;
-      brightnesses.push(0.299 * px[idx] + 0.587 * px[idx + 1] + 0.114 * px[idx + 2]);
-    }
-  }
-
-  const avgBrightness = brightnesses.length > 0 ? brightnesses.reduce((a, b) => a + b, 0) / brightnesses.length : 128;
-  const variance = brightnesses.length > 1
-    ? brightnesses.reduce((s, v) => s + (v - avgBrightness) ** 2, 0) / brightnesses.length : 400;
-
-  return {
-    ...INITIAL,
-    smooth: variance > 800 ? 65 : variance > 400 ? 55 : 45,
-    whiten: avgBrightness < 100 ? 40 : avgBrightness < 140 ? 25 : 15,
-    slim: aspectRatio > 0.75 ? 25 : aspectRatio > 0.6 ? 15 : 8,
-    bigeye: eyeRatio < 0.2 ? 18 : eyeRatio < 0.3 ? 12 : 5,
-    nose: noseRatio > 0.35 ? 15 : 8,
-    lip: 15, sharpen: 12, contrast: 8, temperature: 5,
-    facelift: 10, jawline: aspectRatio > 0.7 ? 12 : 5,
-    forehead: 30, eyebag: 25, darkcircle: 20,
-  };
-}
-
-function isSkin(x: number, y: number, lEye: Landmarks, rEye: Landmarks, mouth: Landmarks, jaw: Landmarks): boolean {
-  if (lEye.some(p => Math.hypot(p.x - x, p.y - y) < 15)) return false;
-  if (rEye.some(p => Math.hypot(p.x - x, p.y - y) < 15)) return false;
-  if (mouth.some(p => Math.hypot(p.x - x, p.y - y) < 12)) return false;
-  const fL = Math.min(...jaw.map(p => p.x)), fR = Math.max(...jaw.map(p => p.x));
-  const fT = Math.min(...jaw.map(p => p.y)) - 30, fB = Math.max(...jaw.map(p => p.y)) + 10;
-  return x >= fL && x <= fR && y >= fT && y <= fB;
-}
