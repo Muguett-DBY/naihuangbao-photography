@@ -8,6 +8,7 @@ import type { PhotoItem, PhotoStyle } from "../types/photo";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { Section } from "./Section";
 import { HighlightText } from "./shared/HighlightText";
+import { Skeleton } from "./shared/Skeleton";
 import { useDistortionHover } from "../hooks/useDistortionHover";
 
 type StyleFilter = PhotoStyle | "all";
@@ -27,20 +28,37 @@ function VideoPreview({ videoUrl, posterUrl, title }: { videoUrl: string; poster
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hovering, setHovering] = useState(false);
 
+  const playVideo = () => {
+    setHovering(true);
+    videoRef.current?.play().catch(() => {});
+  };
+
+  const pauseVideo = () => {
+    setHovering(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  };
+
+  const toggleTouchPlay = () => {
+    if (videoRef.current?.paused) {
+      playVideo();
+    } else {
+      pauseVideo();
+    }
+  };
+
   return (
     <div
       className="gallery-video-wrap"
-      onMouseEnter={() => {
-        setHovering(true);
-        videoRef.current?.play().catch(() => {});
-      }}
-      onMouseLeave={() => {
-        setHovering(false);
-        if (videoRef.current) {
-          videoRef.current.pause();
-          videoRef.current.currentTime = 0;
-        }
-      }}
+      onMouseEnter={playVideo}
+      onMouseLeave={pauseVideo}
+      onTouchStart={toggleTouchPlay}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleTouchPlay(); } }}
+      aria-label={`Play video: ${title}`}
     >
       {!hovering && (
         <ImageWithFallback
@@ -113,7 +131,7 @@ function ShareButton({ photo }: { photo: PhotoItem }) {
 export function Gallery() {
   const { t } = useTranslation();
   const { sectionCopy } = useSiteContent();
-  const { photos: sourcePhotos } = usePublicPhotos();
+  const { photos: sourcePhotos, remoteLoaded } = usePublicPhotos();
   const [filter, setFilter] = useState<StyleFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");

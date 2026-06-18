@@ -4428,6 +4428,8 @@
     gap: 6px;
     border-radius: 18px;
     scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
   }
   .editor-toolbar::-webkit-scrollbar { display: none; }
 
@@ -4483,6 +4485,8 @@
     scroll-snap-type: x mandatory;
     padding-bottom: 8px;
     scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
   }
   .editor-categories::-webkit-scrollbar { display: none; }
 
