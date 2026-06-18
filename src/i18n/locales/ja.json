@@ -957,7 +957,9 @@
     "resetSubmitButton": "パスワードをリセット",
     "resetSuccess": "パスワードがリセットされました。新しいパスワードでログインできます。",
     "resetFailed": "パスワードのリセットに失敗しました。トークンが無効または期限切れの可能性があります。",
-    "backToLogin": "ログインに戻る"
+    "backToLogin": "ログインに戻る",
+    "resetTokenCopied": "トークンがクリップボードにコピーされました",
+    "resetTokenCopyFailed": "トークンのコピーに失敗しました"
   },
   "payment": {
     "purpose": {

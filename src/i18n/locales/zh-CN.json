@@ -1022,7 +1022,9 @@
     "resetSubmitButton": "重置密码",
     "resetSuccess": "密码已重置。请使用新密码登录。",
     "resetFailed": "密码重置失败。令牌可能无效或已过期。",
-    "backToLogin": "返回登录"
+    "backToLogin": "返回登录",
+    "resetTokenCopied": "令牌已复制到剪贴板",
+    "resetTokenCopyFailed": "复制令牌失败"
   },
   "payment": {
     "purpose": {

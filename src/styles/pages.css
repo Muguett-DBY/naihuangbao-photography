@@ -1701,6 +1701,80 @@
   color: var(--caramel-muted);
 }
 
+/* ── Toast Notifications ── */
+.nhb-toast-container {
+  position: fixed;
+  top: calc(var(--nav-h, 64px) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.nhb-toast {
+  max-width: 420px;
+  width: max-content;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: nhbToastIn 0.3s ease, nhbToastOut 0.3s ease 3.2s forwards;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.nhb-toast-success {
+  background: rgba(76, 175, 80, 0.12);
+  color: #2e7d32;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.nhb-toast-error {
+  background: rgba(180, 60, 60, 0.1);
+  color: #b43c3c;
+  border: 1px solid rgba(180, 60, 60, 0.15);
+}
+
+.nhb-toast-info {
+  background: rgba(73, 55, 53, 0.07);
+  color: #493735;
+  border: 1px solid rgba(73, 55, 53, 0.1);
+}
+
+@keyframes nhbToastIn {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes nhbToastOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-8px); }
+}
+
+:root[data-theme="dark"] .nhb-toast-success {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4ade80;
+  border-color: rgba(76, 175, 80, 0.25);
+}
+
+:root[data-theme="dark"] .nhb-toast-error {
+  background: rgba(180, 60, 60, 0.15);
+  color: #f87171;
+  border-color: rgba(180, 60, 60, 0.2);
+}
+
+:root[data-theme="dark"] .nhb-toast-info {
+  background: rgba(234, 219, 211, 0.1);
+  color: #eadbd3;
+  border-color: rgba(234, 219, 211, 0.12);
+}
+
 /* ── Shop Detail Page ── */
 .shop-detail-hero-heading {
   position: relative;

@@ -6,6 +6,7 @@ import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { PageTransition } from "../components/shared/PageTransition";
 import { useAuth } from "../hooks/useAuth";
 import { publicMutationHeaders } from "../lib/admin-helpers";
+import { useToast } from "../components/shared/Toast";
 
 type ResetStep = "forgot" | "token" | "done";
 
@@ -14,6 +15,7 @@ export function LoginPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { login, register } = useAuth();
+  const { showToast } = useToast();
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -111,6 +113,7 @@ export function LoginPage() {
       }
 
       setResetStep("done");
+      showToast(t("auth.resetSuccess"), "success");
     } catch {
       setResetError(t("auth.resetFailed"));
     } finally {
@@ -183,7 +186,10 @@ export function LoginPage() {
                     <div className="login-reset-demo">
                       <p className="login-reset-demo-label">{t("auth.resetDemoToken")}</p>
                       <code className="login-reset-demo-code" onClick={() => {
-                        navigator.clipboard.writeText(demoToken).catch(() => {});
+                        navigator.clipboard.writeText(demoToken).then(
+                          () => showToast(t("auth.resetTokenCopied", "Token copied"), "success"),
+                          () => showToast(t("auth.resetTokenCopyFailed", "Copy failed"), "error"),
+                        );
                       }}>
                         {demoToken}
                       </code>

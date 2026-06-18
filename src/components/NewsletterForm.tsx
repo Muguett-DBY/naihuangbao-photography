@@ -2,11 +2,13 @@ import { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
+import { useToast } from "./shared/Toast";
 
 type Status = "idle" | "loading" | "success" | "error" | "duplicate";
 
 export function NewsletterForm() {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const lastSubmitTime = useRef(0);
@@ -32,6 +34,7 @@ export function NewsletterForm() {
       if (res.ok) {
         setStatus("success");
         setEmail("");
+        showToast(t("newsletter.success"), "success");
         return;
       }
 
@@ -39,11 +42,14 @@ export function NewsletterForm() {
 
       if (res.status === 409 || getApiError(data, "") === "duplicate") {
         setStatus("duplicate");
+        showToast(t("newsletter.duplicate"), "info");
       } else {
         setStatus("error");
+        showToast(t("newsletter.error"), "error");
       }
     } catch {
       setStatus("error");
+      showToast(t("newsletter.error"), "error");
     }
   }
 
