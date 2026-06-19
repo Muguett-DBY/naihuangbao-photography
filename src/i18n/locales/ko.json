@@ -522,6 +522,8 @@
       "other": "기타"
     },
     "inquire": "구매 문의",
+    "inStock": "재고있음",
+    "outOfStock": "품절",
     "contactUs": "문의하기",
     "empty": "준비 중입니다, 기대해 주세요"
   },
