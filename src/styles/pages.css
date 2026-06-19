@@ -5292,9 +5292,37 @@
   border-radius: 16px;
   min-height: 400px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   background: transparent;
+  transition: all 0.2s ease;
+}
+.editor-drop-hint {
+  font-size: 0.8rem;
+  color: var(--caramel-muted);
+  opacity: 0.6;
+}
+.editor-drag-over .editor-canvas--empty,
+.editor-drag-over {
+  border-color: var(--peach-accent, #FFB8A1);
+  background: rgba(255, 184, 161, 0.06);
+}
+.editor-drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px;
+}
+.editor-drop-icon {
+  font-size: 3rem;
+  animation: editorDropPulse 1s ease infinite;
+}
+@keyframes editorDropPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
 }
 
 /* ══════════════════════════════════════════════
