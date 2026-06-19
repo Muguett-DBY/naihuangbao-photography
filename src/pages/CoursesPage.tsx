@@ -26,9 +26,9 @@ export function CoursesPage() {
   useGsapPageEffects(rootRef);
 
   const categories = useMemo(() => {
-    const cats = new Set<string>();
-    courses.forEach((c) => cats.add(c.category));
-    return Array.from(cats);
+    const cats = new Map<string, number>();
+    courses.forEach((c) => cats.set(c.category, (cats.get(c.category) || 0) + 1));
+    return Array.from(cats.entries());
   }, [courses]);
 
   const filteredCourses = useMemo(() => {
@@ -63,8 +63,9 @@ export function CoursesPage() {
                 onClick={() => setFilter("all")}
               >
                 {t("gallery.filters.all")}
+                <span className="filter-count">{courses.length}</span>
               </button>
-              {categories.map((cat) => (
+              {categories.map(([cat, count]) => (
                 <button
                   key={cat}
                   type="button"
@@ -73,6 +74,7 @@ export function CoursesPage() {
                   onClick={() => setFilter(cat)}
                 >
                   {tCourseCategory(t, cat)}
+                  <span className="filter-count">{count}</span>
                 </button>
               ))}
             </div>
