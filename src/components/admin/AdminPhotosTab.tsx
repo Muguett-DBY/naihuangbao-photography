@@ -25,6 +25,9 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
   const [saving, setSaving] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStyle, setFilterStyle] = useState<PhotoStyle | "all">("all");
+  const [filterVisibility, setFilterVisibility] = useState<"all" | "public" | "hidden">("all");
   const fileRef = useRef<HTMLInputElement>(null);
   const previewObjectUrlRef = useRef<string | null>(null);
 
@@ -235,6 +238,26 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
       <div className="adm-main">
         <div className="adm-list-header">
           <h2>作品集 ({photos.length})</h2>
+          <div className="adm-filter-bar">
+            <input
+              type="text"
+              className="adm-search-input"
+              placeholder="搜索标题、地点..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <select className="adm-filter-select" value={filterStyle} onChange={(e) => setFilterStyle(e.target.value as PhotoStyle | "all")}>
+              <option value="all">全部风格</option>
+              {Object.entries(styleLabels).filter(([k]) => k !== "all").map(([k, v]) => (
+                <option key={k} value={k}>{v}</option>
+              ))}
+            </select>
+            <select className="adm-filter-select" value={filterVisibility} onChange={(e) => setFilterVisibility(e.target.value as "all" | "public" | "hidden")}>
+              <option value="all">全部状态</option>
+              <option value="public">公开</option>
+              <option value="hidden">隐藏</option>
+            </select>
+          </div>
           <div className="adm-list-actions">
             {selectedIds.size > 0 && (
               <>
@@ -264,8 +287,20 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
         <div className="adm-grid">
           {photos.length === 0 ? (
             <div className="adm-empty"><ImagePlus size={36} /><p>上传你的第一张作品</p></div>
-          ) : (
-            photos.map((p) => (
+          ) : (() => {
+            const filtered = photos.filter((p) => {
+              if (filterStyle !== "all" && p.style !== filterStyle) return false;
+              if (filterVisibility !== "all" && p.visibility !== filterVisibility) return false;
+              if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                return p.title.toLowerCase().includes(q) || p.location.toLowerCase().includes(q) || p.alt?.toLowerCase().includes(q);
+              }
+              return true;
+            });
+            return filtered.length === 0 ? (
+              <div className="adm-empty"><ImagePlus size={36} /><p>没有匹配的照片</p></div>
+            ) : (
+              filtered.map((p) => (
               <div key={p.id} className={`adm-photo${p.featured ? " is-featured" : ""}${p.visibility === "hidden" ? " is-hidden" : ""}${selectedIds.has(p.id) ? " is-selected" : ""}`}>
                 <div className="adm-photo-check" onClick={() => toggleSelect(p.id)}>
                   <input type="checkbox" checked={selectedIds.has(p.id)} readOnly />
@@ -285,7 +320,8 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
                 </div>
               </div>
             ))
-          )}
+          );
+          })()}
         </div>
       </div>
 
