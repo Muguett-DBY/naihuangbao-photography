@@ -2,7 +2,7 @@ import "../styles/pages.css";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { MapPin, Calendar, Users, Clock } from "lucide-react";
+import { MapPin, Calendar, Users, Clock, Share2 } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
@@ -89,7 +89,26 @@ export function WorkshopsPage() {
                       <span><Users size={14} /> {isFull ? t("workshops.full") : `${t("workshops.spotsLeft")}: ${spotsLeft}`}</span>
                     </div>
                     {ws.price_display && <div className="workshop-price">{ws.price_display}</div>}
-                    {formOpen === ws.id ? (
+                    <div className="workshop-actions-row">
+                      <button
+                        type="button"
+                        className="workshop-share-btn"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          const url = `${window.location.origin}/workshops/${ws.id}`;
+                          try {
+                            if (navigator.share) {
+                              await navigator.share({ title: getTitle(ws, i18n.language), url });
+                            } else {
+                              await navigator.clipboard.writeText(url);
+                            }
+                          } catch { /* cancelled */ }
+                        }}
+                        aria-label={t("gallery.share")}
+                      >
+                        <Share2 size={14} />
+                      </button>
+                      {formOpen === ws.id ? (
                       <div className="workshop-register-form">
                         <label htmlFor={`workshop-name-${ws.id}`} className="sr-only">
                           {t("workshops.form.name")}
@@ -142,6 +161,7 @@ export function WorkshopsPage() {
                         </Link>
                       </div>
                     )}
+                    </div>
                   </div>
                 </div>
               );
