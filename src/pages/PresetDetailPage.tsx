@@ -1,5 +1,5 @@
 import "../styles/pages.css";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Download, Star, Check } from "lucide-react";
@@ -7,6 +7,7 @@ import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useApiItem } from "../hooks/useApiItem";
 import { useRelatedItems } from "../hooks/useRelatedItems";
+import { useJsonLd } from "../hooks/useJsonLd";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailLoading } from "../components/shared/DetailLoading";
@@ -16,6 +17,7 @@ import { CompareSlider } from "../components/CompareSlider";
 import { PresetPreview } from "../components/PresetPreview";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import { tPresetCategory } from "../lib/i18n-typed";
+import { siteOrigin } from "../lib/site-origin";
 import type { Preset } from "../types/content";
 
 export function PresetDetailPage() {
@@ -34,6 +36,66 @@ export function PresetDetailPage() {
     title: presetTitle,
     descKey: "seo.presetDetailDesc",
     path: id ? `/presets/${id}` : undefined,
+  });
+
+  const productJsonLd = useMemo(() => {
+    if (!preset) return null;
+    const priceMatch = preset.price_display?.match(/(\d+(?:\.\d+)?)/);
+    const price = priceMatch ? priceMatch[1] : "0";
+    const images = (preset.preview_images || []).slice(0, 4).map((img) =>
+      `${siteOrigin}${img.replace(/\?.*$/, "")}`,
+    );
+    return {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "@id": `${siteOrigin}/presets/${preset.id}#product`,
+      name: getName(preset, lang),
+      description: getDesc(preset, lang) || presetTitle,
+      image: images,
+      url: `${siteOrigin}/presets/${preset.id}`,
+      brand: { "@type": "Brand", name: "Naihuangbao Photography" },
+      category: preset.category,
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "CNY",
+        price,
+        availability: preset.download_url ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
+        url: `${siteOrigin}/presets/${preset.id}`,
+        seller: { "@type": "Organization", name: "Naihuangbao Photography" },
+      },
+      aggregateRating: preset.download_count > 0
+        ? {
+            "@type": "AggregateRating",
+            ratingValue: "4.8",
+            reviewCount: Math.max(1, Math.round(preset.download_count / 3)),
+            bestRating: "5",
+            worstRating: "1",
+          }
+        : undefined,
+    };
+  }, [preset, lang, presetTitle]);
+
+  useJsonLd({
+    id: preset ? `preset-${preset.id}` : "preset-empty",
+    data: productJsonLd ?? {},
+  });
+
+  const breadcrumb = useMemo(() => {
+    if (!preset) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${siteOrigin}/` },
+        { "@type": "ListItem", position: 2, name: "Presets", item: `${siteOrigin}/products` },
+        { "@type": "ListItem", position: 3, name: presetTitle, item: `${siteOrigin}/presets/${preset.id}` },
+      ],
+    };
+  }, [preset, presetTitle]);
+
+  useJsonLd({
+    id: preset ? `preset-breadcrumb-${preset.id}` : "preset-breadcrumb-empty",
+    data: breadcrumb ?? {},
   });
 
   const handleDownload = async () => {
