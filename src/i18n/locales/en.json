@@ -495,6 +495,11 @@
     "needTwo": "Add one more photo to compare side by side.",
     "browseGallery": "Browse gallery"
   },
+  "quickView": {
+    "label": "Quick view",
+    "close": "Close quick view",
+    "viewDetails": "View details"
+  },
   "newsletter": {
     "title": "Stay Updated",
     "description": "Get the latest updates on events and offers",

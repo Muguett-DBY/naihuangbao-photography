@@ -519,6 +519,11 @@
     "needTwo": "再选一张照片即可开始对比。",
     "browseGallery": "浏览作品集"
   },
+  "quickView": {
+    "label": "快速预览",
+    "close": "关闭快速预览",
+    "viewDetails": "查看详情"
+  },
   "newsletter": {
     "title": "订阅更新",
     "description": "获取最新活动和优惠信息",
