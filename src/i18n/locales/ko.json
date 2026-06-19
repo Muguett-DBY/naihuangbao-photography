@@ -497,6 +497,10 @@
     "close": "빠른 미리보기 닫기",
     "viewDetails": "자세히 보기"
   },
+  "photoOfTheDay": {
+    "eyebrow": "오늘의 추천",
+    "view": "사진 보기"
+  },
   "newsletter": {
     "title": "최신 소식 받기",
     "description": "최신 이벤트와 할인 정보를 받아보세요",
