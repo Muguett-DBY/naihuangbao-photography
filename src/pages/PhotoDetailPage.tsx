@@ -1,16 +1,18 @@
 import "../styles/pages.css";
-import { lazy, useMemo, useRef, useState } from "react";
+import { lazy, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { MapPin, Camera, Share2, ArrowRight, Eye } from "lucide-react";
+import { MapPin, Camera, Share2, ArrowRight, Eye, History } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { ImageWithFallback } from "../components/ImageWithFallback";
+import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import type { PhotoItem } from "../types/photo";
 
 const CompareSlider = lazy(() =>
@@ -38,6 +40,17 @@ export function PhotoDetailPage() {
   const [showComparison, setShowComparison] = useState(false);
 
   const photo = useMemo(() => photos.find((p) => p.id === id), [photos, id]);
+  const { recordVisit, entries: recentlyViewed, clear: clearRecentlyViewed } = useRecentlyViewed();
+
+  useEffect(() => {
+    if (!photo) return;
+    recordVisit({
+      id: photo.id,
+      title: photo.title,
+      href: `/gallery/${photo.id}`,
+      imageUrl: photo.imageUrl,
+    });
+  }, [photo, recordVisit]);
 
   const relatedPhotos = useMemo(() => {
     if (!photo) return [];
@@ -232,6 +245,8 @@ export function PhotoDetailPage() {
           </div>
         </section>
       )}
+
+      <RecentlyViewedStrip currentId={photo.id} />
       </ErrorBoundary>
     </PageTransition>
   );

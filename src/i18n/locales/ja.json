@@ -443,6 +443,10 @@
     "backToTop": "トップへ",
     "ariaLabel": "サイトフッター"
   },
+  "recentlyViewed": {
+    "title": "最近閲覧",
+    "clear": "クリア"
+  },
   "newsletter": {
     "title": "最新情報を受け取る",
     "description": "最新のイベントやオファー情報をお届けします",

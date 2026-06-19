@@ -446,6 +446,10 @@
     "backToTop": "Back to top",
     "ariaLabel": "Site footer"
   },
+  "recentlyViewed": {
+    "title": "Recently viewed",
+    "clear": "Clear"
+  },
   "newsletter": {
     "title": "Stay Updated",
     "description": "Get the latest updates on events and offers",
