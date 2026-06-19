@@ -3146,6 +3146,101 @@
   color: #d97706;
 }
 
+/* ── Dashboard favorites tab ── */
+.dashboard-favorites-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.dashboard-favorites-count {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--caramel-muted, #7f5a44);
+}
+.dashboard-favorites-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--caramel-line, #d8c3a6);
+  background: transparent;
+  color: var(--caramel-muted, #7f5a44);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.dashboard-favorites-clear:hover {
+  background: rgba(255, 130, 130, 0.18);
+  border-color: rgba(255, 130, 130, 0.7);
+  color: #c43c3c;
+}
+.dashboard-favorites-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+.dashboard-favorites-item {
+  position: relative;
+}
+.dashboard-favorites-card {
+  display: block;
+  text-decoration: none;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--paper-white, #fff7ec);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+}
+.dashboard-favorites-card:hover {
+  transform: translateY(-2px);
+}
+.dashboard-favorites-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+}
+.dashboard-favorites-name {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--caramel-ink, #2c2218);
+  padding: 8px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dashboard-favorites-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid transparent;
+  color: #c43c3c;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.18s ease, background 0.18s ease;
+}
+.dashboard-favorites-item:hover .dashboard-favorites-remove,
+.dashboard-favorites-remove:focus-visible {
+  opacity: 1;
+}
+.dashboard-favorites-remove:hover {
+  background: #c43c3c;
+  color: #fff;
+}
+
 .dashboard-status--contacted {
   background: rgba(59, 130, 246, 0.12);
   color: #2563eb;
