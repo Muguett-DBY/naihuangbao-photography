@@ -66,4 +66,21 @@ describe("favorites system", () => {
     const css = read("src/styles/pages.css");
     expect(css).toContain("favorite-pulse");
   });
+
+  it("shows a localized toast when a photo is favorited", () => {
+    const source = read("src/components/FavoriteButton.tsx");
+    expect(source).toContain("useToast");
+    expect(source).toContain("toastAdded");
+    expect(source).toContain("showToast");
+
+    for (const localePath of [
+      "src/i18n/locales/zh-CN.json",
+      "src/i18n/locales/en.json",
+      "src/i18n/locales/ja.json",
+      "src/i18n/locales/ko.json",
+    ]) {
+      const locale = JSON.parse(read(localePath));
+      expect(locale.favorites.toastAdded).toBeTruthy();
+    }
+  });
 });
