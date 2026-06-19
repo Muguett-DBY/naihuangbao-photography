@@ -2255,6 +2255,16 @@
 .booking-field.has-error .booking-textarea {
   border-color: #ef4444;
 }
+.booking-field.is-valid .booking-input,
+.booking-field.is-valid .booking-textarea {
+  border-color: #22c55e;
+}
+.booking-field.is-valid label::after {
+  content: " ✓";
+  color: #22c55e;
+  font-size: 12px;
+  font-weight: 700;
+}
 .booking-field-error {
   display: block;
   color: #ef4444;

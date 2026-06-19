@@ -312,7 +312,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               {t("bookingModal.back", "Back")}
             </button>
 
-            <div className={`booking-field ${errors.name && touched.name ? "has-error" : ""}`}>
+            <div className={`booking-field ${errors.name && touched.name ? "has-error" : ""} ${touched.name && !errors.name && name.trim().length >= 2 ? "is-valid" : ""}`}>
               <label htmlFor="booking-name">{t("bookingModal.name")} <span className="booking-required">*</span></label>
               <Input
                 id="booking-name"
@@ -332,7 +332,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               )}
             </div>
 
-            <div className={`booking-field ${errors.contact && touched.contact ? "has-error" : ""}`}>
+            <div className={`booking-field ${errors.contact && touched.contact ? "has-error" : ""} ${touched.contact && !errors.contact && contact.trim().length >= 5 ? "is-valid" : ""}`}>
               <label htmlFor="booking-contact">{t("bookingModal.contact")} <span className="booking-required">*</span></label>
               <Input
                 id="booking-contact"
