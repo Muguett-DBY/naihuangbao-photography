@@ -310,6 +310,12 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
       </div>
 
       <div className="adm-main">
+        <div className="adm-stats-bar">
+          <span>全部 <strong>{photos.length}</strong></span>
+          <span className="adm-stats-public">公开 <strong>{photos.filter((p) => p.visibility === "public").length}</strong></span>
+          <span className="adm-stats-hidden">隐藏 <strong>{photos.filter((p) => p.visibility === "hidden").length}</strong></span>
+          <span className="adm-stats-featured">精选 <strong>{photos.filter((p) => p.featured).length}</strong></span>
+        </div>
         <div className="adm-list-header">
           <h2>作品集 ({photos.length})</h2>
           <div className="adm-filter-bar">
