@@ -9,6 +9,7 @@ interface SEOOptions {
   descKey: string;
   descParams?: Record<string, string>;
   image?: string;
+  imageAlt?: string;
   path?: string;
 }
 
@@ -29,6 +30,7 @@ export function useSEO({
   descKey,
   descParams,
   image,
+  imageAlt,
   path,
 }: SEOOptions) {
   const { t, i18n } = useTranslation();
@@ -49,9 +51,13 @@ export function useSEO({
     setMeta("twitter:title", resolvedTitle);
     setMeta("twitter:description", description);
     setMeta("twitter:image", shareImage);
+    if (imageAlt) {
+      setMeta("og:image:alt", imageAlt);
+      setMeta("twitter:image:alt", imageAlt);
+    }
 
     return () => {
       document.title = t("seo.siteTagline");
     };
-  }, [i18n.language, title, titleKey, descKey, descParams, image, path, t]);
+  }, [i18n.language, title, titleKey, descKey, descParams, image, imageAlt, path, t]);
 }

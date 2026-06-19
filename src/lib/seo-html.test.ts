@@ -3,6 +3,8 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+const root = process.cwd();
+const read = (path: string) => readFileSync(resolve(root, path), "utf8");
 
 describe("static SEO shell", () => {
   it("publishes readable brand metadata for search engines", () => {
@@ -41,5 +43,20 @@ describe("static SEO shell", () => {
   it("links the web app manifest for PWA installs", () => {
     expect(html).toContain('rel="manifest" href="/manifest.webmanifest"');
     expect(html).toContain('name="theme-color" content="#F5E6D3"');
+  });
+});
+
+describe("useSEO dynamic meta", () => {
+  it("accepts a custom image and imageAlt and emits them as og:image and og:image:alt", () => {
+    const source = read("src/hooks/useSEO.ts");
+    expect(source).toContain("imageAlt");
+    expect(source).toContain("og:image:alt");
+    expect(source).toContain("twitter:image:alt");
+  });
+
+  it("passes the photo's own imageUrl to og:image on the photo detail page", () => {
+    const source = read("src/pages/PhotoDetailPage.tsx");
+    expect(source).toContain("image: photo?.imageUrl");
+    expect(source).toContain("imageAlt: photo?.alt");
   });
 });
