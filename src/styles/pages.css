@@ -4982,6 +4982,44 @@
   margin: 0 0 16px;
 }
 
+.editor-export-presets {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.editor-preset-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: 2px solid rgba(139, 94, 74, 0.15);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.editor-preset-btn:hover {
+  border-color: var(--peach-accent, #FFB8A1);
+  background: rgba(255, 184, 161, 0.08);
+}
+.editor-preset-btn.active {
+  border-color: var(--peach-accent, #FFB8A1);
+  background: rgba(255, 184, 161, 0.15);
+}
+.editor-preset-icon {
+  font-size: 1.2rem;
+}
+.editor-preset-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--caramel-ink);
+}
+.editor-preset-desc {
+  font-size: 0.7rem;
+  color: var(--caramel-muted);
+}
 .editor-export-options {
   display: flex;
   flex-direction: column;
