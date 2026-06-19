@@ -1,5 +1,69 @@
 # 持续迭代记录
 
+## Cycle 3 (9d21dca → 5c51f4f) — 6 阶段连续迭代
+
+### Stage 13: Gallery 筛选平滑滚动 ✅
+- **Commit**: `3601376` — `feat: smooth scroll to gallery grid when clicking filter tabs`
+- 点击筛选标签页时自动滚动到画廊网格区域
+- CI: ✅ 通过
+
+### Stage 14: 日历键盘导航 ✅
+- **Commit**: `cc0cb57` — `feat: add arrow key navigation to booking calendar days`
+- 日历支持方向键选择日期，Enter/Space 确认选择
+- CI: ✅ 通过
+
+### Stage 15: 错误边界视觉升级 ✅
+- **Commit**: `a77234e` — `feat: upgrade error boundary with icon, home link, and CSS design`
+- 新增错误图标、返回首页链接、CSS 设计系统
+- CI: ✅ 通过
+
+### Stage 16: Gallery 结果摘要动画 ✅
+- **Commit**: `5c51f4f` — `feat: add result summary animation when filter/search changes`
+- 筛选/搜索变化时结果摘要添加淡入动画
+- CI: ✅ 通过
+
+### Stage 17: 系统健康检查 ✅
+- 无代码变更 — 全面审计通过
+- CI: ✅ 通过
+
+### Stage 18: Cycle 3 最终打磨 ✅
+- **Commit**: `5c51f4f` — 最终状态更新
+- CI: ✅ 通过
+
+---
+
+## Cycle 2 (e71151c → 70873b8) — 6 阶段连续迭代
+
+### Stage 7: Gallery 空状态建议筛选 ✅
+- **Commit**: `e0dd030` — `feat: upgrade gallery empty state with suggested style filters`
+- 空搜索结果时显示可点击的风格建议按钮
+- CI: ✅ 通过
+
+### Stage 8: 预约表单实时验证指示 ✅
+- **Commit**: `8d2ed64` — `feat: add real-time validation indicators to booking form`
+- 表单字段验证通过时显示绿色边框和 ✓ 标记
+- CI: ✅ 通过
+
+### Stage 9: 移动端底部导航触控动画 ✅
+- **Commit**: `766648e` — `feat: add tap animation to mobile bottom nav items`
+- 底部导航项添加点击缩放动画
+- CI: ✅ 通过
+
+### Stage 10: PhotoEditor FrameId 类型安全 ✅
+- **Commit**: `70873b8` — `refactor: add FrameId type to PhotoEditor for type safety`
+- 新增 FrameId 联合类型，收紧 frameId 状态类型
+- CI: ✅ 通过
+
+### Stage 11: 系统健康检查 ✅
+- 无代码变更 — 全面审计通过
+- CI: ✅ 通过
+
+### Stage 12: Cycle 2 最终打磨 ✅
+- **Commit**: `70873b8` — 最终状态更新
+- CI: ✅ 通过
+
+---
+
 ## Cycle 1 (292d572 → 6fdefa4) — 6 阶段连续迭代
 
 ### Stage 1: 预约弹窗多步骤表单 ✅
