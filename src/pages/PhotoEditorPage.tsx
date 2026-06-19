@@ -930,6 +930,23 @@ export default function PhotoEditorPage() {
           <div className="editor-modal-overlay" onClick={() => setShowExport(false)}>
             <div className="editor-modal" onClick={e => e.stopPropagation()}>
               <h3>{t("editor.exportTitle")}</h3>
+              <div className="editor-export-presets">
+                <button type="button" className={`editor-preset-btn ${exportFormat === "jpeg" && exportQuality === 85 ? "active" : ""}`} onClick={() => { setExportFormat("jpeg"); setExportQuality(85); }}>
+                  <span className="editor-preset-icon">📱</span>
+                  <span className="editor-preset-label">{t("editor.presetSocial", "Social")}</span>
+                  <span className="editor-preset-desc">JPEG 85%</span>
+                </button>
+                <button type="button" className={`editor-preset-btn ${exportFormat === "jpeg" && exportQuality === 75 ? "active" : ""}`} onClick={() => { setExportFormat("jpeg"); setExportQuality(75); }}>
+                  <span className="editor-preset-icon">⚡</span>
+                  <span className="editor-preset-label">{t("editor.presetQuick", "Quick")}</span>
+                  <span className="editor-preset-desc">JPEG 75%</span>
+                </button>
+                <button type="button" className={`editor-preset-btn ${exportFormat === "png" ? "active" : ""}`} onClick={() => { setExportFormat("png"); setExportQuality(100); }}>
+                  <span className="editor-preset-icon">🖨</span>
+                  <span className="editor-preset-label">{t("editor.presetPrint", "Print")}</span>
+                  <span className="editor-preset-desc">PNG</span>
+                </button>
+              </div>
               <div className="editor-export-options">
                 <label>{t("editor.format")}
                   <select value={exportFormat} onChange={e => setExportFormat(e.target.value as "png" | "jpeg")}>
