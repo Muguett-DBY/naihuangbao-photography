@@ -507,7 +507,16 @@ export function Gallery() {
                   aria-disabled={isUnavailable}
                   className={item === filter ? "is-active" : ""}
                   disabled={isUnavailable}
-                  onClick={() => setFilter(item)}
+                  onClick={() => {
+                    setFilter(item);
+                    // Smooth scroll to gallery grid if user is above it
+                    if (masonryRef.current) {
+                      const rect = masonryRef.current.getBoundingClientRect();
+                      if (rect.top > window.innerHeight) {
+                        masonryRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }
+                    }
+                  }}
                 >
                   {t(`gallery.filters.${item}`)}
                   <span className="filter-count">{filterCounts[item]}</span>
