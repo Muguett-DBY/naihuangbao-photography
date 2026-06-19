@@ -15,6 +15,7 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SectionSkeleton } from "../components/SectionSkeleton";
 import { PhotoOfTheDay } from "../components/PhotoOfTheDay";
+import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -155,6 +156,9 @@ export function HomePage() {
 
       {/* ── Photo of the day ── */}
       <PhotoOfTheDay />
+
+      {/* ── Continue browsing (only if user has history) ── */}
+      <RecentlyViewedStrip />
 
       {/* ── Gallery（组件自带 Section 标题，无需外层再包） ── */}
       <div id="featured" style={{ scrollMarginTop: 80 }}>
