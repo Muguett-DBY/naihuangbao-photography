@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Tabs } from "animal-island-ui";
-import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin, Image, Settings, Sparkles, ArrowRight, Heart } from "lucide-react";
+import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin, Image, Settings, Sparkles, ArrowRight, Heart, History } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useAuth } from "../hooks/useAuth";
@@ -17,6 +17,7 @@ import { WorkshopsTab } from "../components/dashboard/WorkshopsTab";
 import { ProfileTab } from "../components/dashboard/ProfileTab";
 import { OverviewTab } from "../components/dashboard/OverviewTab";
 import { FavoritesTab } from "../components/dashboard/FavoritesTab";
+import { RecentlyViewedTab } from "../components/dashboard/RecentlyViewedTab";
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -85,6 +86,16 @@ export function DashboardPage() {
         </span>
       ),
       children: <FavoritesTab />,
+    },
+    {
+      key: "recently-viewed",
+      label: (
+        <span className="dashboard-tab-label">
+          <History size={16} />
+          {t("recentlyViewed.tabLabel", "Recently viewed")}
+        </span>
+      ),
+      children: <RecentlyViewedTab />,
     },
     {
       key: "purchases",

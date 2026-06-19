@@ -452,7 +452,11 @@
   },
   "recentlyViewed": {
     "title": "最近閲覧",
-    "clear": "クリア"
+    "clear": "クリア",
+    "tabLabel": "最近閲覧",
+    "tabEmpty": "最近閲覧した写真はありません。写真を開くとここに表示されます。",
+    "tabCount": "最近閲覧 {{count}}枚",
+    "clearAllTab": "すべてクリア"
   },
   "favorites": {
     "add": "お気に入りに追加",
