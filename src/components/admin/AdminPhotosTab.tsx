@@ -1,5 +1,5 @@
 import { ImagePlus, Pencil, Trash2, Upload, CheckSquare, Eye, EyeOff, Star } from "lucide-react";
-import { type FormEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
 import { getStyleLabels } from "../../data/site";
@@ -31,6 +31,14 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStyle, setFilterStyle] = useState<PhotoStyle | "all">("all");
   const [filterVisibility, setFilterVisibility] = useState<"all" | "public" | "hidden">("all");
+
+  const styleCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: photos.length };
+    for (const p of photos) {
+      counts[p.style] = (counts[p.style] || 0) + 1;
+    }
+    return counts;
+  }, [photos]);
   const editDialogRef = useFocusTrap<HTMLDivElement>({ active: !!editingPhoto });
   const deleteDialogRef = useFocusTrap<HTMLDivElement>({ active: !!deletingPhoto });
 
@@ -140,6 +148,22 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
       setPhotos((prev) => prev.map((p) => selectedIds.has(p.id) ? { ...p, featured: feat } : p));
       showToast(`已将 ${selectedIds.size} 张照片${feat ? "设为精选" : "取消精选"}`, "success");
       setSelectedIds(new Set());
+    } catch {
+      showToast("操作失败", "error");
+    }
+  };
+
+  const handleQuickVisibility = async (photo: PhotoItem) => {
+    const nextVis = photo.visibility === "public" ? "hidden" : "public";
+    try {
+      const r = await fetch("/api/admin/photos/batch", {
+        method: "POST", credentials: "include",
+        headers: { "content-type": "application/json", ...adminMutationHeaders },
+        body: JSON.stringify({ ids: [photo.id], action: "visibility", value: nextVis }),
+      });
+      if (!r.ok) { showToast("操作失败", "error"); return; }
+      setPhotos((prev) => prev.map((p) => p.id === photo.id ? { ...p, visibility: nextVis } : p));
+      showToast(`已将「${photo.title}」设为${nextVis === "public" ? "公开" : "隐藏"}`, "success");
     } catch {
       showToast("操作失败", "error");
     }
@@ -278,9 +302,9 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <select className="adm-filter-select" value={filterStyle} onChange={(e) => setFilterStyle(e.target.value as PhotoStyle | "all")}>
-              <option value="all">全部风格</option>
+              <option value="all">全部风格 ({styleCounts.all})</option>
               {Object.entries(styleLabels).filter(([k]) => k !== "all").map(([k, v]) => (
-                <option key={k} value={k}>{v}</option>
+                <option key={k} value={k}>{v} ({styleCounts[k] || 0})</option>
               ))}
             </select>
             <select className="adm-filter-select" value={filterVisibility} onChange={(e) => setFilterVisibility(e.target.value as "all" | "public" | "hidden")}>
@@ -348,6 +372,9 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
                   <span>{styleLabels[p.style]} · {p.location}</span>
                 </div>
                 <div className="adm-photo-actions">
+                  <Button type="text" size="small" className="adm-vis-toggle" onClick={() => handleQuickVisibility(p)} title={p.visibility === "public" ? "设为隐藏" : "设为公开"} aria-label={p.visibility === "public" ? "隐藏这张照片" : "公开这张照片"}>
+                    {p.visibility === "public" ? <EyeOff size={13} /> : <Eye size={13} />}
+                  </Button>
                   <Button type="text" size="small" className="adm-edit" onClick={() => { setEditingPhoto(p); setEditForm({ title: p.title, style: p.style, location: p.location, featured: p.featured, visibility: p.visibility }); }} title="编辑"><Pencil size={13} /></Button>
                   <Button type="text" size="small" className="adm-del" onClick={() => setDeletingPhoto(p)} title="删除"><Trash2 size={13} /></Button>
                 </div>
