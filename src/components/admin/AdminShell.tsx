@@ -21,6 +21,7 @@ import { AdminCoursesTab } from "./AdminCoursesTab";
 import { AdminPresetsTab } from "./AdminPresetsTab";
 import { AdminWorkshopsTab } from "./AdminWorkshopsTab";
 import { AdminMerchandiseTab } from "./AdminMerchandiseTab";
+import { AdminVitalsTab } from "./AdminVitalsTab";
 
 type BookingPollItem = {
   id: string;
@@ -200,6 +201,7 @@ export function AdminShell() {
         {activeTab === "faq" && <AdminFaqTab showToast={showToast} />}
         {activeTab === "copy" && <AdminCopyTab showToast={showToast} />}
         {activeTab === "stats" && <AdminStats />}
+        {activeTab === "vitals" && <AdminVitalsTab />}
         {activeTab === "courses" && <AdminCoursesTab showToast={showToast} />}
         {activeTab === "presets" && <AdminPresetsTab showToast={showToast} />}
         {activeTab === "workshops" && <AdminWorkshopsTab showToast={showToast} />}

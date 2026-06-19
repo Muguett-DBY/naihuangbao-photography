@@ -721,6 +721,7 @@
       "bookings": "予約",
       "photos": "写真",
       "stats": "統計",
+      "vitals": "Web Vitals",
       "courses": "講座",
       "presets": "プリセット",
       "workshops": "ワークショップ",
@@ -774,6 +775,23 @@
       "recentActivity": "最近のアクティビティ",
       "recentBookings": "最近の予約",
       "recentPhotos": "最近の写真"
+    },
+    "vitals": {
+      "title": "Web Vitals",
+      "noData": "パフォーマンスデータを読み込めません",
+      "empty": "まだリアルユーザーデータがありません。訪問者がサイトを閲覧すると、ここに表示されます。",
+      "totalSamples": "サンプル",
+      "dailyTitle": "日次推移 (p75)",
+      "noDaily": "サンプル数が不足しているため推移を表示できません。",
+      "dailyAria": "Web Vitals 日次 p75 推移",
+      "pagesTitle": "上位ページ",
+      "colPage": "ページ",
+      "colSamples": "サンプル",
+      "ratings": {
+        "good": "良好",
+        "needs-improvement": "改善が必要",
+        "poor": "不良"
+      }
     }
   },
   "chat": {

@@ -724,6 +724,7 @@
       "bookings": "Bookings",
       "photos": "Photos",
       "stats": "Stats",
+      "vitals": "Web Vitals",
       "courses": "Courses",
       "presets": "Presets",
       "workshops": "Workshops",
@@ -777,6 +778,23 @@
       "recentActivity": "Recent Activity",
       "recentBookings": "Recent Bookings",
       "recentPhotos": "Recent Photos"
+    },
+    "vitals": {
+      "title": "Web Vitals",
+      "noData": "Unable to load performance data",
+      "empty": "No real-user data yet. Once visitors browse the site, metrics will appear here.",
+      "totalSamples": "Samples",
+      "dailyTitle": "Daily trend (p75)",
+      "noDaily": "Not enough samples for a trend yet.",
+      "dailyAria": "Web Vitals daily p75 trend",
+      "pagesTitle": "Top pages",
+      "colPage": "Page",
+      "colSamples": "Samples",
+      "ratings": {
+        "good": "Good",
+        "needs-improvement": "Needs improvement",
+        "poor": "Poor"
+      }
     }
   },
   "chat": {

@@ -721,6 +721,7 @@
       "bookings": "예약",
       "photos": "사진",
       "stats": "통계",
+      "vitals": "웹 성능",
       "courses": "강좌",
       "presets": "프리셋",
       "workshops": "워크숍",
@@ -774,6 +775,23 @@
       "recentActivity": "최근 활동",
       "recentBookings": "최근 예약",
       "recentPhotos": "최근 사진"
+    },
+    "vitals": {
+      "title": "웹 성능 지표",
+      "noData": "성능 데이터를 불러올 수 없습니다",
+      "empty": "아직 실제 사용자 데이터가 없습니다. 방문자가 사이트를 둘러보면 여기에 표시됩니다.",
+      "totalSamples": "샘플",
+      "dailyTitle": "일별 추이 (p75)",
+      "noDaily": "샘플이 충분하지 않아 추이를 표시할 수 없습니다.",
+      "dailyAria": "웹 성능 지표 일별 p75 추이",
+      "pagesTitle": "인기 페이지",
+      "colPage": "페이지",
+      "colSamples": "샘플",
+      "ratings": {
+        "good": "양호",
+        "needs-improvement": "개선 필요",
+        "poor": "불량"
+      }
     }
   },
   "chat": {
