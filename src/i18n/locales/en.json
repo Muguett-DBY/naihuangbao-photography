@@ -400,7 +400,10 @@
     "reference": "Reference",
     "nextStep": "I'll review your booking and confirm via your contact info within 24 hours. You can also check the status in your dashboard.",
     "error": "Failed to send. Please try again or DM me on Xiaohongshu.",
-    "submitError": "Submission failed, please try again"
+    "submitError": "Submission failed, please try again",
+    "next": "Next",
+    "back": "Back",
+    "stepNavigation": "Booking steps"
   },
   "calendar": {
     "title": "Select Date",

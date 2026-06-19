@@ -2,6 +2,7 @@ import { Button, Input, Modal } from "animal-island-ui";
 import { type FormEvent, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ChevronLeft } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useNotification } from "../hooks/useNotification";
 import { PaymentForm } from "./PaymentForm";
@@ -24,6 +25,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const { t } = useTranslation();
   const { packages, siteConfig } = useSiteContent();
   const { sendBookingConfirmation, sending: notificationSending } = useNotification();
+  const [step, setStep] = useState<1 | 2>(1);
   const [selectedPkg, setSelectedPkg] = useState(initialPackage || "");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -49,7 +51,6 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         if (value.trim().length < 5) return t("bookingModal.contactTooShort", "Contact must be at least 5 characters");
         return undefined;
       case "date":
-        // Date is optional, no validation needed
         return undefined;
       default:
         return undefined;
@@ -66,7 +67,6 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     if (field === "name") setName(value);
     else if (field === "contact") setContact(value);
 
-    // Only validate if field has been touched
     if (touched[field]) {
       const error = validateField(field, value);
       setErrors((prev) => ({ ...prev, [field]: error }));
@@ -75,10 +75,19 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
   const isFormValid = name.trim().length >= 2 && contact.trim().length >= 5;
 
+  const handleNext = useCallback(() => {
+    setStep(2);
+    setError("");
+  }, []);
+
+  const handleBack = useCallback(() => {
+    setStep(1);
+    setError("");
+  }, []);
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    // Validate all fields
     const nameError = validateField("name", name);
     const contactError = validateField("contact", contact);
     setErrors({ name: nameError, contact: contactError });
@@ -135,7 +144,6 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     <option key={p.name} value={p.name}>{p.name} — {p.price}</option>
   ));
 
-  // Calculate deposit based on selected package (30% of minimum price, min 2000 cents)
   const calculateDepositCents = (): number => {
     if (!selectedPkg) return 2000;
     const pkg = packages.find((p) => p.name === selectedPkg);
@@ -231,7 +239,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     );
   }
 
-  // ── Form state ──
+  // ── Form state (multi-step) ──
   return (
     <Modal
       open
@@ -245,102 +253,133 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         {t("bookingModal.subtitle")}
       </p>
 
+      {/* Step indicator */}
+      <div className="booking-steps" role="navigation" aria-label={t("bookingModal.stepNavigation", "Booking steps")}>
+        <div className={`booking-step-dot ${step === 1 ? "is-active" : step === 2 ? "is-done" : ""}`}>
+          <span>1</span>
+        </div>
+        <div className="booking-step-line" />
+        <div className={`booking-step-dot ${step === 2 ? "is-active" : ""}`}>
+          <span>2</span>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} noValidate>
-        <div className="booking-field">
-          <label htmlFor="booking-package">{t("bookingModal.selectPackage")}</label>
-          <select id="booking-package" value={selectedPkg} onChange={(e) => setSelectedPkg(e.target.value)}>
-            <option value="">{t("bookingModal.anyPackage")}</option>
-            {packageOptions}
-          </select>
-        </div>
+        {/* Step 1: Session details */}
+        {step === 1 && (
+          <div className="booking-step-content">
+            <div className="booking-field">
+              <label htmlFor="booking-package">{t("bookingModal.selectPackage")}</label>
+              <select id="booking-package" value={selectedPkg} onChange={(e) => setSelectedPkg(e.target.value)}>
+                <option value="">{t("bookingModal.anyPackage")}</option>
+                {packageOptions}
+              </select>
+            </div>
 
-        <div className="booking-field">
-          <label>{t("bookingModal.date")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
-          <BookingCalendar
-            selectedDate={date}
-            onSelectDate={setDate}
-            minDate={new Date().toISOString().split("T")[0]}
-          />
-        </div>
+            <div className="booking-field">
+              <label>{t("bookingModal.date")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
+              <BookingCalendar
+                selectedDate={date}
+                onSelectDate={setDate}
+                minDate={new Date().toISOString().split("T")[0]}
+              />
+            </div>
 
-        <div className="booking-row">
-          <div className="booking-field">
-            <label htmlFor="booking-time">{t("bookingModal.time")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
-            <select id="booking-time" value={time} onChange={(e) => setTime(e.target.value)}>
-              <option value="">{t("bookingModal.any")}</option>
-              <option value="morning">{t("bookingModal.morning")}</option>
-              <option value="afternoon">{t("bookingModal.afternoon")}</option>
-              <option value="fullDay">{t("bookingModal.fullDay")}</option>
-            </select>
+            <div className="booking-field">
+              <label htmlFor="booking-time">{t("bookingModal.time")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
+              <select id="booking-time" value={time} onChange={(e) => setTime(e.target.value)}>
+                <option value="">{t("bookingModal.any")}</option>
+                <option value="morning">{t("bookingModal.morning")}</option>
+                <option value="afternoon">{t("bookingModal.afternoon")}</option>
+                <option value="fullDay">{t("bookingModal.fullDay")}</option>
+              </select>
+            </div>
+
+            <div className="booking-actions">
+              <Button type="default" onClick={onClose}>{t("bookingModal.cancel")}</Button>
+              <Button type="primary" onClick={handleNext}>
+                {t("bookingModal.next", "Next")}
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className={`booking-field ${errors.name && touched.name ? "has-error" : ""}`}>
-          <label htmlFor="booking-name">{t("bookingModal.name")} <span className="booking-required">*</span></label>
-          <Input
-            id="booking-name"
-            value={name}
-            onChange={(e) => handleChange("name", e.target.value)}
-            onBlur={() => handleBlur("name", name)}
-            placeholder={t("bookingModal.namePlaceholder")}
-            maxLength={50}
-            required
-            shadow
-          />
-          <div className="booking-field-extra">
-            <span className="booking-field-count">{name.length}/50</span>
+        {/* Step 2: Personal info */}
+        {step === 2 && (
+          <div className="booking-step-content">
+            <button type="button" className="booking-back-btn" onClick={handleBack}>
+              <ChevronLeft size={16} />
+              {t("bookingModal.back", "Back")}
+            </button>
+
+            <div className={`booking-field ${errors.name && touched.name ? "has-error" : ""}`}>
+              <label htmlFor="booking-name">{t("bookingModal.name")} <span className="booking-required">*</span></label>
+              <Input
+                id="booking-name"
+                value={name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                onBlur={() => handleBlur("name", name)}
+                placeholder={t("bookingModal.namePlaceholder")}
+                maxLength={50}
+                required
+                shadow
+              />
+              <div className="booking-field-extra">
+                <span className="booking-field-count">{name.length}/50</span>
+              </div>
+              {errors.name && touched.name && (
+                <span className="booking-field-error">{errors.name}</span>
+              )}
+            </div>
+
+            <div className={`booking-field ${errors.contact && touched.contact ? "has-error" : ""}`}>
+              <label htmlFor="booking-contact">{t("bookingModal.contact")} <span className="booking-required">*</span></label>
+              <Input
+                id="booking-contact"
+                value={contact}
+                onChange={(e) => handleChange("contact", e.target.value)}
+                onBlur={() => handleBlur("contact", contact)}
+                placeholder={t("bookingModal.contactPlaceholder")}
+                required
+                shadow
+              />
+              {errors.contact && touched.contact && (
+                <span className="booking-field-error">{errors.contact}</span>
+              )}
+            </div>
+
+            <div className="booking-field">
+              <label htmlFor="booking-notes">{t("bookingModal.message")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
+              <textarea
+                id="booking-notes"
+                className="booking-textarea"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder={t("bookingModal.messagePlaceholder")}
+                rows={3}
+              />
+            </div>
+
+            {error && <p className="booking-error" role="alert">{error}</p>}
+
+            <div className="booking-actions">
+              <Button type="default" onClick={handleBack}>{t("bookingModal.back", "Back")}</Button>
+              <Button type="primary" htmlType="submit" disabled={sending || !isFormValid}>
+                {sending ? (
+                  <span className="booking-btn-loading">
+                    <span className="booking-btn-spinner" />
+                    {t("bookingModal.submitting")}
+                  </span>
+                ) : t("bookingModal.submit")}
+              </Button>
+            </div>
+
+            <p className="booking-footer">
+              {t("bookingModal.agreement")}
+              <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">{t("bookingModal.contact")}</a>
+            </p>
           </div>
-          {errors.name && touched.name && (
-            <span className="booking-field-error">{errors.name}</span>
-          )}
-        </div>
-
-        <div className={`booking-field ${errors.contact && touched.contact ? "has-error" : ""}`}>
-          <label htmlFor="booking-contact">{t("bookingModal.contact")} <span className="booking-required">*</span></label>
-          <Input
-            id="booking-contact"
-            value={contact}
-            onChange={(e) => handleChange("contact", e.target.value)}
-            onBlur={() => handleBlur("contact", contact)}
-            placeholder={t("bookingModal.contactPlaceholder")}
-            required
-            shadow
-          />
-          {errors.contact && touched.contact && (
-            <span className="booking-field-error">{errors.contact}</span>
-          )}
-        </div>
-
-        <div className="booking-field">
-          <label htmlFor="booking-notes">{t("bookingModal.message")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
-          <textarea
-            id="booking-notes"
-            className="booking-textarea"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder={t("bookingModal.messagePlaceholder")}
-            rows={3}
-          />
-        </div>
-
-        {error && <p className="booking-error" role="alert">{error}</p>}
-
-        <div className="booking-actions">
-          <Button type="default" onClick={onClose}>{t("bookingModal.cancel")}</Button>
-          <Button type="primary" htmlType="submit" disabled={sending || !isFormValid}>
-            {sending ? (
-              <span className="booking-btn-loading">
-                <span className="booking-btn-spinner" />
-                {t("bookingModal.submitting")}
-              </span>
-            ) : t("bookingModal.submit")}
-          </Button>
-        </div>
-
-        <p className="booking-footer">
-          {t("bookingModal.agreement")}
-          <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">{t("bookingModal.contact")}</a>
-        </p>
+        )}
       </form>
     </Modal>
   );
