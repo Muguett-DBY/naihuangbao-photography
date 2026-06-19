@@ -41,9 +41,10 @@ export function PhotoDetailPage() {
 
   const relatedPhotos = useMemo(() => {
     if (!photo) return [];
-    return photos
-      .filter((p) => p.style === photo.style && p.id !== photo.id)
-      .slice(0, 4);
+    // Prioritize same album, then same style
+    const sameAlbum = photos.filter((p) => p.album === photo.album && p.id !== photo.id);
+    const sameStyle = photos.filter((p) => p.style === photo.style && p.id !== photo.id && p.album !== photo.album);
+    return [...sameAlbum, ...sameStyle].slice(0, 4);
   }, [photos, photo]);
 
   useSEO({
