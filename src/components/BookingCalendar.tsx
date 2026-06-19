@@ -202,7 +202,23 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
       )}
 
       {!loading && (
-        <div className="calendar-legend">
+        <>
+          <div className="calendar-summary" aria-live="polite">
+            {(() => {
+              const availableCount = Object.values(availability).filter((d) => d.status === "available").length;
+              const partialCount = Object.values(availability).filter((d) => d.status === "partial").length;
+              const bookedCount = Object.values(availability).filter((d) => d.status === "booked").length;
+              return (
+                <span>
+                  {availableCount > 0 && `${availableCount} ${t("calendar.availableDates", "open")}`}
+                  {availableCount > 0 && partialCount > 0 && " · "}
+                  {partialCount > 0 && `${partialCount} ${t("calendar.partialDates", "partial")}`}
+                  {bookedCount > 0 && ` · ${bookedCount} ${t("calendar.bookedDates", "full")}`}
+                </span>
+              );
+            })()}
+          </div>
+          <div className="calendar-legend">
         <span className="calendar-legend-item">
           <span className="calendar-day-dot calendar-day-dot--available" />
           {t("calendar.available")}
@@ -216,6 +232,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
           {t("calendar.booked")}
         </span>
       </div>
+      </>
       )}
     </div>
   );
