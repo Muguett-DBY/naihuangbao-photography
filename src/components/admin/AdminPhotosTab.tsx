@@ -407,7 +407,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
               <div className="adm-empty"><ImagePlus size={36} /><p>没有匹配的照片</p></div>
             ) : (
               filtered.map((p) => (
-              <div key={p.id} className={`adm-photo${p.featured ? " is-featured" : ""}${p.visibility === "hidden" ? " is-hidden" : ""}${selectedIds.has(p.id) ? " is-selected" : ""}`}>
+              <div key={p.id} className={`adm-photo${p.featured ? " is-featured" : ""}${p.visibility === "hidden" ? " is-hidden" : ""}${selectedIds.has(p.id) ? " is-selected" : ""}`} aria-label={`${p.title} - ${styleLabels[p.style]} - ${p.visibility === "public" ? "公开" : "隐藏"}${p.featured ? " - 精选" : ""}`}>
                 <div className="adm-photo-check" onClick={() => toggleSelect(p.id)}>
                   <input type="checkbox" checked={selectedIds.has(p.id)} readOnly />
                 </div>
