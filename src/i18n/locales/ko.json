@@ -472,6 +472,22 @@
     "copied": "링크가 복사되었습니다",
     "copyFailed": "링크를 복사할 수 없습니다"
   },
+  "photoCompare": {
+    "add": "비교에 추가",
+    "remove": "비교에서 제거",
+    "removeOne": "이 사진 제거",
+    "inCompare": "비교 중",
+    "fullHint": "비교는 최대 2장까지 가능합니다",
+    "title": "사진 비교",
+    "open": "지금 비교",
+    "clear": "지우기",
+    "clearAll": "모두 지우기",
+    "hint": "한 장만 더 추가하면 비교할 수 있습니다",
+    "backToGallery": "갤러리로 돌아가기",
+    "empty": "최대 2장의 사진을 나란히 비교할 수 있습니다.",
+    "needTwo": "한 장만 더 추가하면 나란히 비교할 수 있습니다.",
+    "browseGallery": "갤러리 보기"
+  },
   "newsletter": {
     "title": "최신 소식 받기",
     "description": "최신 이벤트와 할인 정보를 받아보세요",

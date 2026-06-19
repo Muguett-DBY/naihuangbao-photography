@@ -472,6 +472,22 @@
     "copied": "リンクをコピーしました",
     "copyFailed": "リンクをコピーできませんでした"
   },
+  "photoCompare": {
+    "add": "比較に追加",
+    "remove": "比較から外す",
+    "removeOne": "この写真を外す",
+    "inCompare": "比較中",
+    "fullHint": "比較は最大2枚までです",
+    "title": "写真を比較",
+    "open": "比較する",
+    "clear": "クリア",
+    "clearAll": "すべてクリア",
+    "hint": "もう1枚追加すると比較できます",
+    "backToGallery": "ギャラリーに戻る",
+    "empty": "写真を2枚まで追加して並べ比較できます。",
+    "needTwo": "もう1枚追加すると並べ比較できます。",
+    "browseGallery": "ギャラリーを見る"
+  },
   "newsletter": {
     "title": "最新情報を受け取る",
     "description": "最新のイベントやオファー情報をお届けします",

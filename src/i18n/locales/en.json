@@ -475,6 +475,22 @@
     "copied": "Link copied to clipboard",
     "copyFailed": "Could not copy link"
   },
+  "photoCompare": {
+    "add": "Add to compare",
+    "remove": "Remove from compare",
+    "removeOne": "Remove this photo",
+    "inCompare": "Comparing",
+    "fullHint": "Compare is full (max 2)",
+    "title": "Compare photos",
+    "open": "Compare now",
+    "clear": "Clear",
+    "clearAll": "Clear all",
+    "hint": "Add one more photo to start comparing",
+    "backToGallery": "Back to gallery",
+    "empty": "Add up to 2 photos to compare side by side.",
+    "needTwo": "Add one more photo to compare side by side.",
+    "browseGallery": "Browse gallery"
+  },
   "newsletter": {
     "title": "Stay Updated",
     "description": "Get the latest updates on events and offers",
