@@ -170,9 +170,16 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
         })}
       </div>
 
-      {loading && <p className="calendar-loading">{t("common.loading")}</p>}
+      {loading && (
+        <div className="calendar-skeleton" aria-hidden="true">
+          {Array.from({ length: 28 }, (_, i) => (
+            <span key={i} className="calendar-skeleton-day" />
+          ))}
+        </div>
+      )}
 
-      <div className="calendar-legend">
+      {!loading && (
+        <div className="calendar-legend">
         <span className="calendar-legend-item">
           <span className="calendar-day-dot calendar-day-dot--available" />
           {t("calendar.available")}
@@ -186,6 +193,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
           {t("calendar.booked")}
         </span>
       </div>
+      )}
     </div>
   );
 }
