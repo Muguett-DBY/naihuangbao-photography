@@ -6,6 +6,7 @@ import { getStyleLabels } from "../../data/site";
 import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
 import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import { SkeletonGrid } from "../SkeletonGrid";
 
 const maxPhotoUploadSize = 10 * 1024 * 1024;
 const allowedPhotoTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -13,6 +14,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
   const { t } = useTranslation();
   const styleLabels = getStyleLabels(t);
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [deletingPhoto, setDeletingPhoto] = useState<PhotoItem | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deletingBatch, setDeletingBatch] = useState(false);
@@ -52,13 +54,21 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
   const fileRef = useRef<HTMLInputElement>(null);
   const previewObjectUrlRef = useRef<string | null>(null);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    loadPhotos(controller.signal);
+    return () => controller.abort();
+  }, []);
+
   const loadPhotos = (signal?: AbortSignal) => {
+    setLoading(true);
     fetch("/api/admin/photos", { credentials: "include", signal })
       .then((r) => r.json())
       .then((d: { photos?: PhotoItem[] }) => {
         if (!signal?.aborted && d.photos) setPhotos(d.photos);
       })
-      .catch(() => showToast("加载照片失败", "error"));
+      .catch(() => showToast("加载照片失败", "error"))
+      .finally(() => { if (!signal?.aborted) setLoading(false); });
   };
 
   const revokePreview = () => {
@@ -306,7 +316,9 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
           </div>
         </div>
         <div className="adm-grid">
-          {photos.length === 0 ? (
+          {loading ? (
+            <SkeletonGrid count={6} columns={3} ariaLabel="Loading photos" />
+          ) : photos.length === 0 ? (
             <div className="adm-empty"><ImagePlus size={36} /><p>上传你的第一张作品</p></div>
           ) : (() => {
             const filtered = photos.filter((p) => {
