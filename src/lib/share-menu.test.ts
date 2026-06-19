@@ -24,6 +24,13 @@ describe("share menu", () => {
     expect(source).not.toContain("const handleShare");
   });
 
+  it("upgrades the gallery ShareButton to use the new ShareMenu with toast feedback", () => {
+    const source = read("src/components/Gallery.tsx");
+    expect(source).toContain("ShareMenu");
+    expect(source).not.toContain("navigator.share(shareData)");
+    expect(source).not.toContain("alert(t(\"gallery.linkCopied\"))");
+  });
+
   it("ships localized share labels in every locale", () => {
     for (const localePath of [
       "src/i18n/locales/zh-CN.json",
