@@ -10,8 +10,6 @@ import "./styles/animal-theme.css";
 
 initWebVitals();
 
-gsap.registerPlugin(ScrollTrigger);
-
 // Idle-time prefetch of key gallery images
 if ("requestIdleCallback" in window) {
   requestIdleCallback(
