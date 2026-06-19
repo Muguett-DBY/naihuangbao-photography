@@ -1856,3 +1856,15 @@
     font-size: 14px;
   }
 }
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll,
+  .gallery-masonry-item {
+    animation: none !important;
+    transition: none !important;
+  }
+  .gallery-masonry-btn:hover {
+    transform: none;
+  }
+}
