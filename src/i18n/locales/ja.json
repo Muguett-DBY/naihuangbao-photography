@@ -447,6 +447,12 @@
     "title": "最近閲覧",
     "clear": "クリア"
   },
+  "favorites": {
+    "add": "お気に入りに追加",
+    "remove": "お気に入りから削除",
+    "save": "保存",
+    "saved": "保存済み"
+  },
   "newsletter": {
     "title": "最新情報を受け取る",
     "description": "最新のイベントやオファー情報をお届けします",

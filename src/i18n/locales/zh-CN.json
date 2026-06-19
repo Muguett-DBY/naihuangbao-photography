@@ -474,6 +474,12 @@
     "title": "最近浏览",
     "clear": "清空"
   },
+  "favorites": {
+    "add": "加入收藏",
+    "remove": "取消收藏",
+    "save": "收藏",
+    "saved": "已收藏"
+  },
   "newsletter": {
     "title": "订阅更新",
     "description": "获取最新活动和优惠信息",
