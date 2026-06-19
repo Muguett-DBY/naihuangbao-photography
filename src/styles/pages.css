@@ -792,6 +792,29 @@
   font-size: 1.1rem;
   font-weight: 600;
 }
+.workshop-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.workshop-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(139, 94, 74, 0.15);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--caramel-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.workshop-share-btn:hover {
+  border-color: var(--peach-accent);
+  color: var(--peach-accent);
+}
 
 .workshop-register-form {
   width: 100%;
