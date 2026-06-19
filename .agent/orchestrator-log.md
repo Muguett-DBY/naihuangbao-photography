@@ -12,8 +12,12 @@
 - **Commit**: `e71151c` — `feat: add micro-interactions to gallery filter tabs and view toggle`
 - **CI**: ✅ Passed
 
-## Cycle 1, Stage 4: IMPROVE
-- **Prompt**: AGENT_IMPROVE_MAIN.txt
+## Cycle 1, Stage 4: IMPROVE ✅
+- **Commit**: `a46dc92` — `feat: replace calendar text loading with skeleton shimmer grid`
+- **CI**: ✅ Passed
+
+## Cycle 1, Stage 5: CHECK
+- **Prompt**: AGENT_CHECK_MAIN.txt
 - **Started**: 2026-06-19
 - **Status**: In Progress
-- **Goal**: Add skeleton loading state for booking calendar
+- **Goal**: Full project audit — lint, test, build, security, dead code
