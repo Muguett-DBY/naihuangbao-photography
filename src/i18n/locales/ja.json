@@ -61,9 +61,11 @@
     "discoveryHint": "タイトル、場所、スタイルで検索できます。コンパクト表示への切り替えも可能です。",
     "resultSummary": "全{{total}}枚中 {{count}}枚 · {{filter}}",
     "activeState": "現在のギャラリー状態",
-    "activeFilter": "スタイル：{{filter}}",
-    "activeSearch": "検索：{{query}}",
-    "activeView": "表示：{{view}}",
+      "activeFilter": "スタイル：{{filter}}",
+      "activeAlbum": "アルバム：{{album}}",
+      "activeDate": "期間：{{range}}",
+      "activeSearch": "検索：{{query}}",
+      "activeView": "表示：{{view}}",
     "clearDiscovery": "条件をクリア",
     "saveSearch": "検索を保存",
     "savedSearches": "保存済みの検索",
@@ -752,6 +754,17 @@
       "error": "ログアウトリクエストに失敗しました。ローカルのログイン状態が削除されました。"
     },
     "loading": "ログイン状態を確認中...",
+    "facetsLabel": "追加フィルター",
+    "albumLabel": "アルバム",
+    "albumAll": "すべてのアルバム",
+    "dateRangeLabel": "期間",
+    "dateRangeAll": "期間指定なし",
+    "dateRanges": {
+      "last-30": "過去 30 日",
+      "last-90": "過去 90 日",
+      "last-365": "過去 1 年",
+      "older": "1 年以上前"
+    },
     "stats": {
       "title": "データ概要",
       "noData": "データを読み込めません",

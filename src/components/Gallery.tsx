@@ -4,7 +4,14 @@ import { useTranslation } from "react-i18next";
 import { Play, Share2, Loader2, Search, X, LayoutGrid, Columns, RotateCcw, Eye } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
-import { getPhotosByStyle, searchPhotos } from "../lib/gallery";
+import {
+  countFacets,
+  DEFAULT_FACETS,
+  facetedSearch,
+  getAlbums,
+  type DateRange,
+  type FacetFilters,
+} from "../lib/gallery";
 import type { PhotoItem, PhotoStyle } from "../types/photo";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { Section } from "./Section";
@@ -188,6 +195,8 @@ export function Gallery() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialState = useMemo(() => getInitialState(searchParams), []);
   const [filter, setFilter] = useState<StyleFilter>(initialState.filter);
+  const [albumFilter, setAlbumFilter] = useState<string>("all");
+  const [dateRange, setDateRange] = useState<DateRange>("all");
   const [searchQuery, setSearchQuery] = useState(initialState.search);
   const [debouncedSearch, setDebouncedSearch] = useState(initialState.search);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -225,8 +234,17 @@ export function Gallery() {
     return counts;
   }, [sourcePhotos]);
 
-  const styleFiltered = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
-  const searched = useMemo<PhotoItem[]>(() => searchPhotos(styleFiltered, debouncedSearch), [styleFiltered, debouncedSearch]);
+  const albums = useMemo(() => getAlbums(sourcePhotos), [sourcePhotos]);
+  const facetCounts = useMemo(() => countFacets(sourcePhotos), [sourcePhotos]);
+
+  const facetedFilters = useMemo<FacetFilters>(() => ({
+    style: filter,
+    album: albumFilter,
+    dateRange,
+    search: debouncedSearch,
+  }), [filter, albumFilter, dateRange, debouncedSearch]);
+
+  const searched = useMemo<PhotoItem[]>(() => facetedSearch(sourcePhotos, facetedFilters), [sourcePhotos, facetedFilters]);
   const photos = useMemo<PhotoItem[]>(() => {
     if (sortMode === "default") return searched;
     const copy = [...searched];
@@ -242,8 +260,10 @@ export function Gallery() {
     return copy;
   }, [searched, sortMode]);
   const filterLabel = t(`gallery.filters.${filter}`, filter);
+  const albumLabel = albumFilter === "all" ? "" : albumFilter;
+  const dateRangeLabel = dateRange === "all" ? "" : t(`gallery.dateRanges.${dateRange}`, dateRange);
   const viewLabel = t(viewMode === "compact" ? "gallery.viewCompact" : "gallery.viewMasonry");
-  const hasActiveDiscovery = filter !== "all" || Boolean(searchQuery.trim() || debouncedSearch.trim()) || viewMode !== "masonry";
+  const hasActiveDiscovery = filter !== "all" || Boolean(searchQuery.trim() || debouncedSearch.trim()) || viewMode !== "masonry" || albumFilter !== "all" || dateRange !== "all";
   const isRemoteSyncing = !remoteLoaded && sourcePhotos.length === 0;
 
   const savedSearches = useSavedSearches();
@@ -305,6 +325,8 @@ export function Gallery() {
 
   const resetGalleryDiscovery = useCallback(() => {
     setFilter("all");
+    setAlbumFilter("all");
+    setDateRange("all");
     setSearchQuery("");
     setDebouncedSearch("");
     setViewMode("masonry");
@@ -564,6 +586,12 @@ export function Gallery() {
             {filter !== "all" && (
               <span>{t("gallery.activeFilter", { filter: filterLabel, defaultValue: `Style: ${filterLabel}` })}</span>
             )}
+            {albumFilter !== "all" && (
+              <span>{t("gallery.activeAlbum", { album: albumLabel, defaultValue: `Album: ${albumLabel}` })}</span>
+            )}
+            {dateRange !== "all" && (
+              <span>{t("gallery.activeDate", { range: dateRangeLabel, defaultValue: `Date: ${dateRangeLabel}` })}</span>
+            )}
             {debouncedSearch && (
               <span>{t("gallery.activeSearch", { query: debouncedSearch, defaultValue: `Search: ${debouncedSearch}` })}</span>
             )}
@@ -654,6 +682,40 @@ export function Gallery() {
             })}
           </div>
         </div>
+
+        {(albums.length > 0 || Object.values(facetCounts.dateRange).some((c) => c > 0)) && (
+          <div className="gallery-facet-row" role="group" aria-label={t("gallery.facetsLabel", "Additional filters")}>
+            {albums.length > 0 && (
+              <label className="gallery-facet-select">
+                <span>{t("gallery.albumLabel", "Album")}</span>
+                <select
+                  value={albumFilter}
+                  onChange={(e) => setAlbumFilter(e.target.value)}
+                >
+                  <option value="all">{t("gallery.albumAll", "All albums")}</option>
+                  {albums.map((album) => (
+                    <option key={album} value={album}>
+                      {album} ({facetCounts.album[album] ?? 0})
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <label className="gallery-facet-select">
+              <span>{t("gallery.dateRangeLabel", "Date range")}</span>
+              <select
+                value={dateRange}
+                onChange={(e) => setDateRange(e.target.value as DateRange)}
+              >
+                <option value="all">{t("gallery.dateRangeAll", "Any time")}</option>
+                <option value="last-30">{t("gallery.dateRanges.last-30", "Last 30 days")} ({facetCounts.dateRange["last-30"]})</option>
+                <option value="last-90">{t("gallery.dateRanges.last-90", "Last 90 days")} ({facetCounts.dateRange["last-90"]})</option>
+                <option value="last-365">{t("gallery.dateRanges.last-365", "Last year")} ({facetCounts.dateRange["last-365"]})</option>
+                <option value="older">{t("gallery.dateRanges.older", "Over a year ago")} ({facetCounts.dateRange.older})</option>
+              </select>
+            </label>
+          </div>
+        )}
 
         {photos.length > 0 && (
           <div className="gallery-result-summary" key={`${filter}-${debouncedSearch}-${photos.length}`}>
