@@ -58,4 +58,12 @@ describe("favorites system", () => {
     expect(page).toContain("FavoritesTab");
     expect(page).toContain("favorites");
   });
+
+  it("wires FavoriteButton into the gallery card overlay with a heart pulse animation", () => {
+    const gallery = read("src/components/Gallery.tsx");
+    expect(gallery).toContain("FavoriteButton");
+    expect(gallery).toContain('variant="icon"');
+    const css = read("src/styles/pages.css");
+    expect(css).toContain("favorite-pulse");
+  });
 });

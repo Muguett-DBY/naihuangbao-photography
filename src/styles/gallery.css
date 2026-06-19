@@ -1648,6 +1648,20 @@
   gap: 8px;
   margin-top: 4px;
 }
+.gallery-masonry-overlay-actions .favorite-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.92);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  justify-content: center;
+}
+.gallery-masonry-overlay-actions .favorite-btn.is-active {
+  background: rgba(255, 130, 130, 0.92);
+  border-color: transparent;
+  color: #fff;
+}
 .gallery-detail-link {
   font-size: 0.8rem;
   font-weight: 600;
