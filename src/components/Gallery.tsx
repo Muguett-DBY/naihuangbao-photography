@@ -11,6 +11,7 @@ import { Section } from "./Section";
 import { HighlightText } from "./shared/HighlightText";
 import { useDistortionHover } from "../hooks/useDistortionHover";
 import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
+import { useSavedSearches } from "../hooks/useSavedSearches";
 import { FavoriteButton } from "./FavoriteButton";
 import { RecentlyViewedStrip } from "./RecentlyViewedStrip";
 
@@ -246,6 +247,11 @@ export function Gallery() {
   const viewLabel = t(viewMode === "compact" ? "gallery.viewCompact" : "gallery.viewMasonry");
   const hasActiveDiscovery = filter !== "all" || Boolean(searchQuery.trim() || debouncedSearch.trim()) || viewMode !== "masonry";
   const isRemoteSyncing = !remoteLoaded && sourcePhotos.length === 0;
+
+  const savedSearches = useSavedSearches();
+  const currentSearchKey = `${filter}::${debouncedSearch}::${viewMode}`;
+  const isCurrentSaved = savedSearches.entries.some((item) => item.id === currentSearchKey);
+  const canSaveSearch = hasActiveDiscovery && !isCurrentSaved;
 
   // Debounce search input to avoid filtering on every keystroke
   useEffect(() => {
@@ -515,9 +521,55 @@ export function Gallery() {
             <button type="button" onClick={resetGalleryDiscovery}>
               {t("gallery.clearDiscovery")}
             </button>
+            {canSaveSearch && (
+              <button
+                type="button"
+                className="gallery-save-search"
+                onClick={() => {
+                  savedSearches.save({
+                    filter,
+                    search: debouncedSearch,
+                    view: viewMode,
+                    label: `${filterLabel}${debouncedSearch ? ` · ${debouncedSearch}` : ""}`,
+                  });
+                }}
+                aria-label={t("gallery.saveSearch", "Save this search")}
+              >
+                {t("gallery.saveSearch", "Save search")}
+              </button>
+            )}
           </div>
         ) : (
           <p className="gallery-active-hint">{t("gallery.discoveryHint")}</p>
+        )}
+
+        {savedSearches.entries.length > 0 && (
+          <div className="gallery-saved-searches" aria-label={t("gallery.savedSearches", "Saved searches")}>
+            <span className="gallery-saved-searches-label">{t("gallery.savedSearches", "Saved searches")}:</span>
+            {savedSearches.entries.map((item) => (
+              <span key={item.id} className="gallery-saved-search-pill">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilter(item.filter as StyleFilter);
+                    setSearchQuery(item.search);
+                    setDebouncedSearch(item.search);
+                    setViewMode(item.view as ViewMode);
+                  }}
+                >
+                  {item.label}
+                </button>
+                <button
+                  type="button"
+                  className="gallery-saved-search-remove"
+                  onClick={() => savedSearches.remove(item.id)}
+                  aria-label={t("gallery.removeSavedSearch", "Remove saved search")}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
         )}
 
         <div className="gallery-filter-scroll">

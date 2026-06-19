@@ -516,6 +516,66 @@
   outline-offset: 3px;
 }
 
+.gallery-save-search {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.4);
+  border-color: var(--caramel-line, #d8c3a6) !important;
+  color: var(--caramel-ink, #2c2218) !important;
+}
+.gallery-save-search:hover {
+  background: rgba(255, 255, 255, 0.7) !important;
+  border-color: var(--caramel-line, #d8c3a6) !important;
+}
+
+.gallery-saved-searches {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--caramel-muted, #7f5a44);
+}
+.gallery-saved-searches-label {
+  margin-right: 4px;
+}
+.gallery-saved-search-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--caramel-line, #d8c3a6);
+  padding: 2px 4px 2px 10px;
+}
+.gallery-saved-search-pill button {
+  border: none;
+  background: transparent;
+  color: var(--caramel-ink, #2c2218);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.gallery-saved-search-pill button:hover {
+  text-decoration: underline;
+}
+.gallery-saved-search-remove {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--caramel-muted, #7f5a44);
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.gallery-saved-search-remove:hover {
+  background: rgba(196, 60, 60, 0.18);
+  color: #c43c3c;
+}
+
 .gallery-filter-scroll {
   overflow-x: visible;
   padding-bottom: 2px;
