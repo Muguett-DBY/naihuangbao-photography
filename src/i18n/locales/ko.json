@@ -397,7 +397,10 @@
     "successHint": "입력하신 연락처로 날짜를 확인해 드립니다.",
     "gotIt": "확인",
     "error": "전송 실패. 잠시 후 다시 시도하거나 샤오홍슈로 문의해 주세요.",
-    "submitError": "전송 실패, 잠시 후 다시 시도해 주세요"
+    "submitError": "전송 실패, 잠시 후 다시 시도해 주세요",
+    "next": "다음",
+    "back": "뒤로",
+    "stepNavigation": "예약 단계"
   },
   "calendar": {
     "title": "날짜 선택",
