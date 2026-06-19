@@ -461,7 +461,8 @@
     "title": "Favorites",
     "empty": "No favorites yet. Tap the heart on any photo to save it.",
     "count": "{{count}} saved photos",
-    "clearAll": "Clear all"
+    "clearAll": "Clear all",
+    "toastAdded": "Saved \"{{title}}\" to your favorites"
   },
   "newsletter": {
     "title": "Stay Updated",

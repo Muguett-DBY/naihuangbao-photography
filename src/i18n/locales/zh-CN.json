@@ -485,7 +485,8 @@
     "title": "我的收藏",
     "empty": "还没有收藏，点击任意照片上的爱心即可保存。",
     "count": "已收藏 {{count}} 张照片",
-    "clearAll": "清空"
+    "clearAll": "清空",
+    "toastAdded": "已收藏《{{title}}》"
   },
   "newsletter": {
     "title": "订阅更新",

@@ -1,6 +1,7 @@
 import { Heart } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useFavorites } from "../hooks/useFavorites";
+import { useToast } from "./shared/Toast";
 
 type FavoriteButtonProps = {
   entry: { id: string; title?: string; href: string; imageUrl?: string };
@@ -11,11 +12,15 @@ type FavoriteButtonProps = {
 export function FavoriteButton({ entry, variant = "pill", onToggle }: FavoriteButtonProps) {
   const { t } = useTranslation();
   const { isFavorite, toggle } = useFavorites();
+  const { showToast } = useToast();
   const favorited = isFavorite(entry.id);
 
   const handleClick = () => {
     const next = toggle(entry);
     onToggle?.(next);
+    if (next) {
+      showToast(t("favorites.toastAdded", { title: entry.title ?? "" }), "success");
+    }
   };
 
   if (variant === "icon") {

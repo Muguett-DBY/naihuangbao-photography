@@ -458,7 +458,8 @@
     "title": "즐겨찾기",
     "empty": "아직 즐겨찾기가 없습니다. 사진의 하트를 눌러 저장하세요.",
     "count": "저장된 사진 {{count}}장",
-    "clearAll": "모두 지우기"
+    "clearAll": "모두 지우기",
+    "toastAdded": "\"{{title}}\"을(를) 즐겨찾기에 추가했습니다"
   },
   "newsletter": {
     "title": "최신 소식 받기",
