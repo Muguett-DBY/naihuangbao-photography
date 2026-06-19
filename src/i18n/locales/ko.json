@@ -501,6 +501,12 @@
     "eyebrow": "오늘의 추천",
     "view": "사진 보기"
   },
+  "pwaInstall": {
+    "label": "앱 설치",
+    "text": "홈 화면에 추가하여 최고의 경험을 하세요",
+    "install": "설치",
+    "dismiss": "닫기"
+  },
   "newsletter": {
     "title": "최신 소식 받기",
     "description": "최신 이벤트와 할인 정보를 받아보세요",

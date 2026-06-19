@@ -720,6 +720,68 @@ a {
   top: 44px;
 }
 
+/* ── PWA Install Banner ── */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 920;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--paper-white, #fff7ec);
+  border: 1px solid var(--caramel-line, #d8c3a6);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  animation: pwa-banner-slide-up 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes pwa-banner-slide-up {
+  from { transform: translate(-50%, 120%); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+.pwa-install-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--caramel-ink, #2c2218);
+  font-size: 0.9rem;
+}
+.pwa-install-content p { margin: 0; }
+.pwa-install-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.pwa-install-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--peach-accent, #d58a73);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.pwa-install-btn:hover { background: var(--caramel-deep, #7f5a44); }
+.pwa-install-dismiss {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--caramel-muted, #7f5a44);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.pwa-install-dismiss:hover {
+  background: rgba(196, 60, 60, 0.18);
+  color: #c43c3c;
+}
+
 /* ── Global :focus-visible for keyboard users ── */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 3px solid var(--peach-accent, #d58a73);

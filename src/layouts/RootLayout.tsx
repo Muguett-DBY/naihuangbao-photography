@@ -17,6 +17,7 @@ import { ToastProvider } from "../components/shared/Toast";
 import { ScrollToTop } from "../components/shared/ScrollToTop";
 import { MobileBottomNav } from "../components/shared/MobileBottomNav";
 import { ScrollProgress } from "../components/ScrollProgress";
+import { PwaInstallBanner } from "../components/PwaInstallBanner";
 
 export function RootLayout() {
   const { t } = useTranslation();
@@ -128,8 +129,9 @@ export function RootLayout() {
                   ) : null}
                 </div>
               )}
-              <ScrollToTop />
-              </ToastProvider>
+      <ScrollToTop />
+      <PwaInstallBanner />
+      </ToastProvider>
             </PublicPhotosProvider>
           </SiteContentProvider>
         </BookingProvider>
