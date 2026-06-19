@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { CalendarCheck, BookOpen, MapPin, ArrowRight } from "lucide-react";
+import { CalendarCheck, BookOpen, MapPin, ArrowRight, Camera, Sparkles, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useFetch } from "../../hooks/useFetch";
+import { useAuth } from "../../hooks/useAuth";
 import { Skeleton } from "../shared/Skeleton";
 
 type UserStats = {
@@ -12,6 +13,7 @@ type UserStats = {
 
 export function OverviewTab() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const { data, loading } = useFetch<UserStats>("/api/user/stats");
 
   if (loading) {
@@ -31,6 +33,8 @@ export function OverviewTab() {
     courses: { total: 0 },
     workshops: { total: 0 },
   };
+
+  const userName = user?.displayName || user?.email?.split("@")[0] || "";
 
   const cards = [
     {
@@ -59,25 +63,52 @@ export function OverviewTab() {
     },
   ];
 
+  const quickActions = [
+    { icon: <Camera size={18} />, label: t("dashboard.quickGallery", "Browse Gallery"), link: "/gallery" },
+    { icon: <Sparkles size={18} />, label: t("dashboard.quickEditor", "Open Editor"), link: "/editor" },
+    { icon: <ShoppingBag size={18} />, label: t("dashboard.quickShop", "Visit Shop"), link: "/shop" },
+  ];
+
   return (
-    <div className="overview-grid">
-      {cards.map((card, i) => (
-        <div key={i} className="overview-card">
-          <div className="overview-card-icon" style={{ background: `${card.color}18`, color: card.color }}>
-            {card.icon}
-          </div>
-          <div className="overview-card-body">
-            <span className="overview-card-label">{card.label}</span>
-            <span className="overview-card-value">{card.value}</span>
-            {card.sub && <span className="overview-card-sub">{card.sub}</span>}
-          </div>
-          {card.link && (
-            <Link to={card.link} className="overview-card-link" aria-label={card.label}>
-              <ArrowRight size={16} />
-            </Link>
-          )}
+    <div className="overview-tab">
+      {userName && (
+        <div className="overview-welcome">
+          <h2>{t("dashboard.welcomeBack", { name: userName, defaultValue: `Welcome back, ${userName}` })}</h2>
+          <p>{t("dashboard.welcomeDesc", "Here's what's happening with your account.")}</p>
         </div>
-      ))}
+      )}
+
+      <div className="overview-grid">
+        {cards.map((card, i) => (
+          <div key={i} className="overview-card">
+            <div className="overview-card-icon" style={{ background: `${card.color}18`, color: card.color }}>
+              {card.icon}
+            </div>
+            <div className="overview-card-body">
+              <span className="overview-card-label">{card.label}</span>
+              <span className="overview-card-value">{card.value}</span>
+              {card.sub && <span className="overview-card-sub">{card.sub}</span>}
+            </div>
+            {card.link && (
+              <Link to={card.link} className="overview-card-link" aria-label={card.label}>
+                <ArrowRight size={16} />
+              </Link>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="overview-quick-actions">
+        <h3>{t("dashboard.quickActions", "Quick Actions")}</h3>
+        <div className="overview-quick-grid">
+          {quickActions.map((action, i) => (
+            <Link key={i} to={action.link} className="overview-quick-btn">
+              {action.icon}
+              <span>{action.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
