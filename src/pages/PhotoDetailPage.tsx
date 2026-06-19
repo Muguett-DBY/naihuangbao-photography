@@ -126,6 +126,10 @@ export function PhotoDetailPage() {
     title: photo?.title,
     descKey: "seo.photoDetailDesc",
     path: id ? `/gallery/${id}` : undefined,
+    image: photo?.imageUrl
+      ? `${siteOrigin}${photo.imageUrl.replace(/\?.*$/, "")}`
+      : undefined,
+    imageAlt: photo?.alt || photo?.title,
   });
 
   useGsapPageEffects(rootRef);
