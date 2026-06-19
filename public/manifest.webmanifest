@@ -1,7 +1,7 @@
 {
-  "name": "奶黄包摄影",
+  "name": "奶黄包摄影 · 南京女生写真与情侣约拍",
   "short_name": "奶黄包",
-  "description": "南京女生写真与情侣约拍",
+  "description": "南京女生写真与情侣约拍，主打柔雾胶片感、江南感写真和尊重隐私的小红书约拍体验。",
   "lang": "zh-CN",
   "start_url": "/",
   "scope": "/",
@@ -9,6 +9,15 @@
   "orientation": "portrait-primary",
   "theme_color": "#F5E6D3",
   "background_color": "#F5E6D3",
+  "categories": ["photo", "lifestyle", "entertainment"],
+  "screenshots": [
+    {
+      "src": "/icons/pwa-screenshot-540.png",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
   "icons": [
     {
       "src": "/icons/pwa-icon.svg",
