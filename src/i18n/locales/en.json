@@ -504,6 +504,12 @@
     "eyebrow": "Photo of the day",
     "view": "View photo"
   },
+  "pwaInstall": {
+    "label": "Install app",
+    "text": "Add to your home screen for the best experience",
+    "install": "Install",
+    "dismiss": "Dismiss"
+  },
   "newsletter": {
     "title": "Stay Updated",
     "description": "Get the latest updates on events and offers",

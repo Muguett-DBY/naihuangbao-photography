@@ -528,6 +528,12 @@
     "eyebrow": "今日精选",
     "view": "查看照片"
   },
+  "pwaInstall": {
+    "label": "安装应用",
+    "text": "添加到主屏幕，获得最佳体验",
+    "install": "安装",
+    "dismiss": "忽略"
+  },
   "newsletter": {
     "title": "订阅更新",
     "description": "获取最新活动和优惠信息",

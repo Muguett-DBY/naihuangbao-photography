@@ -501,6 +501,12 @@
     "eyebrow": "今日の1枚",
     "view": "写真を見る"
   },
+  "pwaInstall": {
+    "label": "アプリをインストール",
+    "text": "ホーム画面に追加して最高の体験を",
+    "install": "インストール",
+    "dismiss": "閉じる"
+  },
   "newsletter": {
     "title": "最新情報を受け取る",
     "description": "最新のイベントやオファー情報をお届けします",
