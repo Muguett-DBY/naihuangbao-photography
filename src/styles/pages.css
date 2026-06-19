@@ -1561,6 +1561,18 @@
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
   padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+.login-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--peach-accent, #FFB8A1), var(--caramel-text, #8B5E4A));
+  opacity: 0.6;
 }
 
 .login-field {
