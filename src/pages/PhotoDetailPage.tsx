@@ -13,6 +13,7 @@ import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
+import { FavoriteButton } from "../components/FavoriteButton";
 import type { PhotoItem } from "../types/photo";
 
 const CompareSlider = lazy(() =>
@@ -141,6 +142,14 @@ export function PhotoDetailPage() {
               <Share2 size={14} />
               {t("gallery.share")}
             </button>
+            <FavoriteButton
+              entry={{
+                id: photo.id,
+                title: photo.title,
+                href: `/gallery/${photo.id}`,
+                imageUrl: photo.imageUrl,
+              }}
+            />
           </div>
 
           <h2>{t("photoDetail.about")}</h2>

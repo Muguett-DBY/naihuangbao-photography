@@ -450,6 +450,12 @@
     "title": "Recently viewed",
     "clear": "Clear"
   },
+  "favorites": {
+    "add": "Add to favorites",
+    "remove": "Remove from favorites",
+    "save": "Save",
+    "saved": "Saved"
+  },
   "newsletter": {
     "title": "Stay Updated",
     "description": "Get the latest updates on events and offers",
