@@ -455,7 +455,11 @@
   },
   "recentlyViewed": {
     "title": "Recently viewed",
-    "clear": "Clear"
+    "clear": "Clear",
+    "tabLabel": "Recently viewed",
+    "tabEmpty": "No recently viewed photos. Open a photo and it will appear here.",
+    "tabCount": "{{count}} recently viewed",
+    "clearAllTab": "Clear all"
   },
   "favorites": {
     "add": "Add to favorites",

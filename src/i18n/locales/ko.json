@@ -452,7 +452,11 @@
   },
   "recentlyViewed": {
     "title": "최근 본 사진",
-    "clear": "지우기"
+    "clear": "지우기",
+    "tabLabel": "최근 본 사진",
+    "tabEmpty": "최근 본 사진이 없습니다. 사진을 열면 여기에 표시됩니다.",
+    "tabCount": "최근 본 사진 {{count}}장",
+    "clearAllTab": "모두 지우기"
   },
   "favorites": {
     "add": "즐겨찾기에 추가",

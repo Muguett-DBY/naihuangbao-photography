@@ -479,7 +479,11 @@
   },
   "recentlyViewed": {
     "title": "最近浏览",
-    "clear": "清空"
+    "clear": "清空",
+    "tabLabel": "最近浏览",
+    "tabEmpty": "还没有最近浏览的照片，打开任意照片即可在这里看到。",
+    "tabCount": "已浏览 {{count}} 张",
+    "clearAllTab": "清空全部"
   },
   "favorites": {
     "add": "加入收藏",

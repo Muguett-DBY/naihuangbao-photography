@@ -31,6 +31,15 @@ describe("recently viewed photos", () => {
     expect(source).toContain("RecentlyViewedStrip");
   });
 
+  it("ships a dashboard RecentlyViewedTab and wires it into the dashboard", () => {
+    const tab = read("src/components/dashboard/RecentlyViewedTab.tsx");
+    expect(tab).toContain("RecentlyViewedTab");
+    expect(tab).toContain("useRecentlyViewed");
+    const page = read("src/pages/DashboardPage.tsx");
+    expect(page).toContain("RecentlyViewedTab");
+    expect(page).toContain("recently-viewed");
+  });
+
   it("ships localized recently viewed copy in all locales", () => {
     for (const localePath of [
       "src/i18n/locales/zh-CN.json",
@@ -41,6 +50,8 @@ describe("recently viewed photos", () => {
       const locale = JSON.parse(read(localePath));
       expect(locale.recentlyViewed.title).toBeTruthy();
       expect(locale.recentlyViewed.clear).toBeTruthy();
+      expect(locale.recentlyViewed.tabLabel).toBeTruthy();
+      expect(locale.recentlyViewed.tabEmpty).toBeTruthy();
     }
   });
 });
