@@ -2,7 +2,7 @@ import "../styles/pages.css";
 import { lazy, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { MapPin, Camera, Share2, ArrowRight, Eye, History } from "lucide-react";
+import { MapPin, Camera, ArrowRight, Eye } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
@@ -14,6 +14,7 @@ import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import { FavoriteButton } from "../components/FavoriteButton";
+import { ShareMenu } from "../components/ShareMenu";
 import type { PhotoItem } from "../types/photo";
 
 const CompareSlider = lazy(() =>
@@ -77,23 +78,6 @@ export function PhotoDetailPage() {
     return <DetailNotFound message={t("photoDetail.notFound")} backTo="/gallery" backLabel={t("photoDetail.backToGallery")} />;
   }
 
-  const handleShare = async () => {
-    const shareData = {
-      title: photo.title,
-      text: `${photo.title} — ${photo.location}`,
-      url: window.location.href,
-    };
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-      }
-    } catch {
-      // user cancelled share
-    }
-  };
-
   const beforeSrc = photo.imageUrl;
   const afterSrc = galleryThumb(photo.imageUrl);
   const hasComparison = beforeSrc !== afterSrc;
@@ -133,15 +117,12 @@ export function PhotoDetailPage() {
                 {photo.location}
               </span>
             )}
-            <button
-              type="button"
-              onClick={handleShare}
-              className="photo-detail-share-btn"
-              aria-label={t("gallery.share")}
-            >
-              <Share2 size={14} />
-              {t("gallery.share")}
-            </button>
+            <ShareMenu
+              variant="pill"
+              url={typeof window !== "undefined" ? window.location.href : ""}
+              title={photo.title}
+              text={`${photo.title} — ${photo.location}`}
+            />
             <FavoriteButton
               entry={{
                 id: photo.id,

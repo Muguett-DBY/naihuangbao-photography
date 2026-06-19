@@ -465,6 +465,13 @@
     "clearAll": "모두 지우기",
     "toastAdded": "\"{{title}}\"을(를) 즐겨찾기에 추가했습니다"
   },
+  "share": {
+    "label": "공유",
+    "system": "시스템 공유",
+    "copy": "링크 복사",
+    "copied": "링크가 복사되었습니다",
+    "copyFailed": "링크를 복사할 수 없습니다"
+  },
   "newsletter": {
     "title": "최신 소식 받기",
     "description": "최신 이벤트와 할인 정보를 받아보세요",

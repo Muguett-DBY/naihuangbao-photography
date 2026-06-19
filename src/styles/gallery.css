@@ -1504,6 +1504,76 @@
   transform: scale(0.95);
 }
 
+/* ── Share menu popover ── */
+.share-menu {
+  position: relative;
+  display: inline-flex;
+}
+.share-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid var(--caramel-line, #d8c3a6);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--caramel-ink, #2c2218);
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+.share-menu-trigger--icon {
+  padding: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  justify-content: center;
+}
+.share-menu-trigger:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+.share-menu-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 200px;
+  background: var(--paper-white, #fff7ec);
+  border: 1px solid var(--caramel-line, #d8c3a6);
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 50;
+}
+.share-menu-popover button,
+.share-menu-popover a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--caramel-ink, #2c2218);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+.share-menu-popover button:hover,
+.share-menu-popover a:hover {
+  background: rgba(255, 184, 161, 0.18);
+}
+.share-menu-divider {
+  height: 1px;
+  background: var(--caramel-line, #d8c3a6);
+  margin: 4px 0;
+}
+
 /* ══════════════════════════════════════════════
    Infinite Scroll Loading Indicator
    ══════════════════════════════════════════════ */
