@@ -8,6 +8,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import { useJsonLd } from "../hooks/useJsonLd";
+import { useHreflang } from "../hooks/useHreflang";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -131,6 +132,8 @@ export function PhotoDetailPage() {
       : undefined,
     imageAlt: photo?.alt || photo?.title,
   });
+
+  useHreflang({ path: id ? `/gallery/${id}` : "/gallery" });
 
   useGsapPageEffects(rootRef);
 
