@@ -782,6 +782,54 @@ a {
   color: #c43c3c;
 }
 
+/* ── PWA Update Banner ── */
+.pwa-update-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 960;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: #2a6f4f;
+  color: #fff;
+  font-size: 0.88rem;
+  animation: pwa-banner-slide-down 300ms ease-out;
+}
+@keyframes pwa-banner-slide-down {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}
+.pwa-update-banner p { margin: 0; flex: 1; }
+.pwa-update-icon { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.pwa-update-btn {
+  padding: 5px 14px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.pwa-update-btn:hover { background: rgba(255, 255, 255, 0.3); }
+.pwa-update-dismiss {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.pwa-update-dismiss:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+
 /* ── Global :focus-visible for keyboard users ── */
 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 3px solid var(--peach-accent, #d58a73);

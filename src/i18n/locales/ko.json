@@ -507,6 +507,12 @@
     "install": "설치",
     "dismiss": "닫기"
   },
+  "pwaUpdate": {
+    "label": "앱 업데이트 가능",
+    "text": "새 버전이 available 입니다",
+    "refresh": "새로고침",
+    "dismiss": "닫기"
+  },
   "newsletter": {
     "title": "최신 소식 받기",
     "description": "최신 이벤트와 할인 정보를 받아보세요",

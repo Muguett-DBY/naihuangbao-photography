@@ -18,6 +18,7 @@ import { ScrollToTop } from "../components/shared/ScrollToTop";
 import { MobileBottomNav } from "../components/shared/MobileBottomNav";
 import { ScrollProgress } from "../components/ScrollProgress";
 import { PwaInstallBanner } from "../components/PwaInstallBanner";
+import { PwaUpdateBanner } from "../components/PwaUpdateBanner";
 
 export function RootLayout() {
   const { t } = useTranslation();
@@ -47,6 +48,7 @@ export function RootLayout() {
   return (
     <div ref={rootRef} className={isEditor ? "site-shell is-editor" : "site-shell"}>
       {!isEditor && <ScrollProgress />}
+      <PwaUpdateBanner />
       <nav className="skip-links" aria-label={t("common.skipLinksLabel", "Skip links")}>
         <a
           href="#main-content"
