@@ -325,6 +325,14 @@
 .adm-photo:hover .adm-photo-info { opacity: 1; }
 .adm-photo-info strong { color: #fff; font-size: 12px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .adm-photo-info span { color: rgba(255,255,255,0.7); font-size: 11px; }
+.adm-photo-info .adm-highlight {
+  background: rgba(255, 184, 161, 0.35);
+  color: #fff;
+  border-radius: 2px;
+  padding: 0 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
 
 .adm-photo-actions {
   position: absolute; top: 6px; right: 6px; z-index: 3;

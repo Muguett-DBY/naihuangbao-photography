@@ -7,6 +7,7 @@ import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
 import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { SkeletonGrid } from "../SkeletonGrid";
+import { HighlightText } from "../shared/HighlightText";
 
 const maxPhotoUploadSize = 10 * 1024 * 1024;
 const allowedPhotoTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -368,7 +369,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
                   {p.visibility === "hidden" && <span className="adm-badge adm-badge-muted">隐藏</span>}
                 </div>
                 <div className="adm-photo-info">
-                  <strong>{p.title}</strong>
+                  <strong>{searchQuery ? <HighlightText text={p.title} query={searchQuery} className="adm-highlight" /> : p.title}</strong>
                   <span>{styleLabels[p.style]} · {p.location}</span>
                 </div>
                 <div className="adm-photo-actions">
