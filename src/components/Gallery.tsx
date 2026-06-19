@@ -551,6 +551,24 @@ export function Gallery() {
             <span>{isRemoteSyncing ? t("gallery.loading") : t("gallery.noResults")}</span>
             <h3>{t("gallery.emptyTitle")}</h3>
             <p>{t("gallery.emptyDesc")}</p>
+            {hasActiveDiscovery && (
+              <div className="gallery-empty-suggestions">
+                <span className="gallery-empty-suggestions-label">{t("gallery.tryFilters", "Try these styles:")}</span>
+                <div className="gallery-empty-suggestions-row">
+                  {STYLE_FILTERS.filter((s) => s !== "all" && filterCounts[s] > 0).slice(0, 4).map((style) => (
+                    <button
+                      key={style}
+                      type="button"
+                      className="gallery-empty-suggestion-btn"
+                      onClick={() => { setFilter(style); setSearchQuery(""); setDebouncedSearch(""); }}
+                    >
+                      {t(`gallery.filters.${style}`)}
+                      <span className="gallery-empty-suggestion-count">{filterCounts[style]}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             <button type="button" onClick={resetGalleryDiscovery}>
               {t("gallery.emptyReset")}
             </button>

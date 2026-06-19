@@ -75,6 +75,7 @@
     "allLoaded": "All photos loaded",
     "restoredSession": "Restored from your last visit",
     "dismiss": "Dismiss",
+    "tryFilters": "Try these styles:",
     "filters": {
       "all": "All",
       "jiangnan": "Jiangnan",

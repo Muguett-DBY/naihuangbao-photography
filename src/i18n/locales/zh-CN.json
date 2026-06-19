@@ -75,6 +75,7 @@
     "allLoaded": "已加载全部照片",
     "restoredSession": "已恢复上次浏览状态",
     "dismiss": "关闭",
+    "tryFilters": "试试这些风格：",
     "filters": {
       "all": "全部",
       "jiangnan": "江南感",
