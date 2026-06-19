@@ -821,7 +821,8 @@
   "errorBoundary": {
     "title": "This section did not load",
     "message": "Please try again, or come back a little later.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "goHome": "Go Home"
   },
   "seo": {
     "siteName": "Naihuangbao Photography",

@@ -1,4 +1,5 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import i18n from "../i18n";
 import { logError } from "../lib/error-logger";
 
@@ -37,42 +38,28 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       }
 
       return (
-        <div
-          style={{
-            padding: 48,
-            textAlign: "center",
-            color: "var(--caramel-text)",
-          }}
-        >
-          <h2 style={{ marginBottom: 12, fontSize: "1.25rem" }}>
+        <div className="error-boundary">
+          <div className="error-boundary-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="24" cy="24" r="20" />
+              <path d="M24 14v12" />
+              <circle cx="24" cy="34" r="1.5" fill="currentColor" stroke="none" />
+            </svg>
+          </div>
+          <h2 className="error-boundary-title">
             {i18n.t("errorBoundary.title", "页面暂时没有加载成功")}
           </h2>
-          <p
-            style={{
-              color: "var(--caramel-muted)",
-              marginBottom: 24,
-              maxWidth: 400,
-              margin: "0 auto 24px",
-              lineHeight: 1.6,
-            }}
-          >
+          <p className="error-boundary-message">
             {i18n.t("errorBoundary.message", "请重试一次，或稍后再回来查看。")}
           </p>
-          <button
-            onClick={this.handleRetry}
-            style={{
-              padding: "10px 24px",
-              borderRadius: 8,
-              border: "none",
-              background: "var(--peach-accent)",
-              color: "#fff",
-              fontWeight: 600,
-              cursor: "pointer",
-              fontSize: "0.95rem",
-            }}
-          >
-            {i18n.t("errorBoundary.retry", "重试")}
-          </button>
+          <div className="error-boundary-actions">
+            <button type="button" className="error-boundary-btn error-boundary-btn--primary" onClick={this.handleRetry}>
+              {i18n.t("errorBoundary.retry", "重试")}
+            </button>
+            <Link to="/" className="error-boundary-btn error-boundary-btn--secondary" onClick={this.handleRetry}>
+              {i18n.t("errorBoundary.goHome", "返回首页")}
+            </Link>
+          </div>
         </div>
       );
     }

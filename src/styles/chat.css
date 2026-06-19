@@ -516,3 +516,62 @@ a:focus-visible,
   font-family: "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
   font-weight: 800;
 }
+
+/* ── Enhanced Error Boundary ── */
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(32px, 6vw, 56px) 24px;
+  text-align: center;
+}
+.error-boundary-icon {
+  color: var(--peach-accent, #FFB8A1);
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+.error-boundary-title {
+  margin: 0 0 8px;
+  font-size: clamp(18px, 3vw, 24px);
+}
+.error-boundary-message {
+  max-width: 380px;
+}
+.error-boundary-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.error-boundary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.error-boundary-btn--primary {
+  border: none;
+  background: var(--peach-accent, #FFB8A1);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(255, 184, 161, 0.25);
+}
+.error-boundary-btn--primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(255, 184, 161, 0.35);
+}
+.error-boundary-btn--secondary {
+  border: 1px solid rgba(139, 94, 74, 0.2);
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--caramel-text, #8a7b66);
+}
+.error-boundary-btn--secondary:hover {
+  border-color: var(--peach-accent, #FFB8A1);
+  background: rgba(255, 184, 161, 0.08);
+}

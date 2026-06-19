@@ -816,7 +816,8 @@
   "errorBoundary": {
     "title": "이 섹션을 불러오지 못했습니다",
     "message": "다시 시도하거나 잠시 후 확인해 주세요.",
-    "retry": "다시 시도"
+    "retry": "다시 시도",
+    "goHome": "홈으로"
   },
   "seo": {
     "siteName": "나이황바오 사진촬영",
