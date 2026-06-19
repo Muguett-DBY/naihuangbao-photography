@@ -378,7 +378,14 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
             ))}
           </div>
 
-          {error ? <p className="public-chat-error">{error}</p> : null}
+          {error ? (
+            <div className="public-chat-error" role="alert">
+              <p>{error}</p>
+              <button type="button" className="public-chat-retry" onClick={() => { setError(""); void sendMessage(); }} disabled={loading || typing}>
+                {t("chat.retry", "Try again")}
+              </button>
+            </div>
+          ) : null}
 
           <div className="public-chat-form">
             <textarea
