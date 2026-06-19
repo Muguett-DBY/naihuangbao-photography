@@ -7,6 +7,7 @@ import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
+import { useJsonLd } from "../hooks/useJsonLd";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -15,6 +16,7 @@ import { ImageWithFallback } from "../components/ImageWithFallback";
 import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import { FavoriteButton } from "../components/FavoriteButton";
 import { ShareMenu } from "../components/ShareMenu";
+import { siteOrigin } from "../lib/site-origin";
 import type { PhotoItem } from "../types/photo";
 
 const CompareSlider = lazy(() =>
@@ -61,6 +63,64 @@ export function PhotoDetailPage() {
     const sameStyle = photos.filter((p) => p.style === photo.style && p.id !== photo.id && p.album !== photo.album);
     return [...sameAlbum, ...sameStyle].slice(0, 4);
   }, [photos, photo]);
+
+  const imageObject = useMemo(() => {
+    if (!photo) return null;
+    const cleanImageUrl = photo.imageUrl.replace(/\?.*$/, "");
+    return {
+      "@context": "https://schema.org",
+      "@type": "Photograph",
+      "@id": `${siteOrigin}/gallery/${photo.id}#photograph`,
+      name: photo.title,
+      description: photo.alt || photo.title,
+      contentUrl: `${siteOrigin}${cleanImageUrl}`,
+      url: `${siteOrigin}/gallery/${photo.id}`,
+      thumbnailUrl: `${siteOrigin}/images/gallery/640/${cleanImageUrl.split("/").pop()}`,
+      creator: {
+        "@type": "Person",
+        name: "Naihuangbao Photography",
+      },
+      copyrightHolder: {
+        "@type": "Organization",
+        name: "Naihuangbao Photography",
+      },
+      keywords: [photo.style, photo.location, photo.album].filter(Boolean).join(", "),
+      contentLocation: {
+        "@type": "Place",
+        name: photo.location,
+      },
+      isPartOf: {
+        "@type": "ImageGallery",
+        name: "Naihuangbao Photography Portfolio",
+        url: `${siteOrigin}/gallery`,
+      },
+    };
+  }, [photo]);
+
+  useJsonLd({
+    id: photo ? `photo-${photo.id}` : "photo-empty",
+    data: imageObject ?? {},
+    removeOnUnmount: true,
+  });
+
+  const breadcrumb = useMemo(() => {
+    if (!photo) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${siteOrigin}/` },
+        { "@type": "ListItem", position: 2, name: "Gallery", item: `${siteOrigin}/gallery` },
+        { "@type": "ListItem", position: 3, name: photo.title, item: `${siteOrigin}/gallery/${photo.id}` },
+      ],
+    };
+  }, [photo]);
+
+  useJsonLd({
+    id: photo ? `photo-breadcrumb-${photo.id}` : "photo-breadcrumb-empty",
+    data: breadcrumb ?? {},
+    removeOnUnmount: true,
+  });
 
   useSEO({
     title: photo?.title,
