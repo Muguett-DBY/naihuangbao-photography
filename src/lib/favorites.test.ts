@@ -41,6 +41,21 @@ describe("favorites system", () => {
       expect(locale.favorites.remove).toBeTruthy();
       expect(locale.favorites.save).toBeTruthy();
       expect(locale.favorites.saved).toBeTruthy();
+      expect(locale.favorites.title).toBeTruthy();
+      expect(locale.favorites.empty).toBeTruthy();
+      expect(locale.favorites.count).toBeTruthy();
+      expect(locale.favorites.clearAll).toBeTruthy();
     }
+  });
+
+  it("wires FavoritesTab into the dashboard", () => {
+    const tab = read("src/components/dashboard/FavoritesTab.tsx");
+    expect(tab).toContain("FavoritesTab");
+    expect(tab).toContain("useFavorites");
+    expect(tab).toContain("dashboard-favorites-grid");
+
+    const page = read("src/pages/DashboardPage.tsx");
+    expect(page).toContain("FavoritesTab");
+    expect(page).toContain("favorites");
   });
 });

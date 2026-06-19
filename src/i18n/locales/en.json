@@ -454,7 +454,11 @@
     "add": "Add to favorites",
     "remove": "Remove from favorites",
     "save": "Save",
-    "saved": "Saved"
+    "saved": "Saved",
+    "title": "Favorites",
+    "empty": "No favorites yet. Tap the heart on any photo to save it.",
+    "count": "{{count}} saved photos",
+    "clearAll": "Clear all"
   },
   "newsletter": {
     "title": "Stay Updated",
