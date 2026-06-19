@@ -66,7 +66,11 @@
 .adm-toast-error { background: rgba(180,60,60,0.1); color: #b43c3c; }
 .adm-toast-info { background: rgba(73,55,53,0.07); color: #493735; }
 
-.adm-body { display: grid; grid-template-columns: 340px 1fr; gap: 24px; max-width: 1120px; margin: 0 auto; padding: 24px; align-items: start; }
+.adm-body { display: grid; grid-template-columns: 340px 1fr; gap: 24px; max-width: 1120px; margin: 0 auto; padding: 24px; align-items: start; animation: adm-fade-in 300ms ease-out; }
+@keyframes adm-fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.adm-tab-content { animation: adm-fade-in 200ms ease-out; }
+
 
 .adm-shell {
   max-width: 1120px;
