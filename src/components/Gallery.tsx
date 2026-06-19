@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Play, Share2, Loader2, Search, X, LayoutGrid, Columns, RotateCcw } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
@@ -651,7 +651,12 @@ export function Gallery() {
                           <span className="gallery-masonry-overlay-location">
                             <HighlightText text={item.location} query={searchQuery} />
                           </span>
-                          <ShareButton photo={item} />
+                          <div className="gallery-masonry-overlay-actions">
+                            <Link to={`/gallery/${item.id}`} className="gallery-detail-link" onClick={(e) => e.stopPropagation()}>
+                              {t("gallery.viewDetails", "Details")} →
+                            </Link>
+                            <ShareButton photo={item} />
+                          </div>
                         </div>
                       </button>
                       <div className="gallery-masonry-caption">
