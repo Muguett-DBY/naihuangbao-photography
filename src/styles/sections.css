@@ -1236,6 +1236,10 @@
       transform 0.2s var(--ease-spring);
   }
 
+  .mobile-bottom-nav__item:active {
+    transform: scale(0.92);
+  }
+
   .mobile-bottom-nav__item > span:last-child {
     max-width: 100%;
     overflow: hidden;
