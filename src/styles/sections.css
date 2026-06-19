@@ -3071,3 +3071,45 @@
     height: 320px;
   }
 }
+
+/* ── Skeleton grid (loading state for thumbnails) ── */
+.skeleton-grid {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+}
+.skeleton-grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.skeleton-grid-thumb {
+  aspect-ratio: 4/5;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.04) 0%,
+    rgba(0, 0, 0, 0.08) 50%,
+    rgba(0, 0, 0, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.skeleton-grid-line {
+  height: 12px;
+  width: 70%;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.04) 0%,
+    rgba(0, 0, 0, 0.08) 50%,
+    rgba(0, 0, 0, 0.04) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  animation-delay: 120ms;
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
