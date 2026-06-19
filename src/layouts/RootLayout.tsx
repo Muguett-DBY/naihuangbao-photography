@@ -16,6 +16,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { ToastProvider } from "../components/shared/Toast";
 import { ScrollToTop } from "../components/shared/ScrollToTop";
 import { MobileBottomNav } from "../components/shared/MobileBottomNav";
+import { ScrollProgress } from "../components/ScrollProgress";
 
 export function RootLayout() {
   const { t } = useTranslation();
@@ -44,6 +45,7 @@ export function RootLayout() {
 
   return (
     <div ref={rootRef} className={isEditor ? "site-shell is-editor" : "site-shell"}>
+      {!isEditor && <ScrollProgress />}
       <nav className="skip-links" aria-label={t("common.skipLinksLabel", "Skip links")}>
         <a
           href="#main-content"
