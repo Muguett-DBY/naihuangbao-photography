@@ -527,7 +527,7 @@ export function Gallery() {
         </div>
 
         {photos.length > 0 && (
-          <div className="gallery-result-summary">
+          <div className="gallery-result-summary" key={`${filter}-${debouncedSearch}-${photos.length}`}>
             <span className="gallery-result-count">
               {t("gallery.showing", { count: photos.length, total: sourcePhotos.length, defaultValue: `Showing ${photos.length} of ${sourcePhotos.length} photos` })}
             </span>
