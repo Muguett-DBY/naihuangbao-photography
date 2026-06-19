@@ -12,6 +12,7 @@ import { HighlightText } from "./shared/HighlightText";
 import { useDistortionHover } from "../hooks/useDistortionHover";
 import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
 import { useSavedSearches } from "../hooks/useSavedSearches";
+import { useCompare } from "../hooks/useCompare";
 import { FavoriteButton } from "./FavoriteButton";
 import { CompareButton } from "./CompareButton";
 import { CompareBar } from "./CompareBar";
@@ -316,6 +317,15 @@ export function Gallery() {
     onMatch: () => {
       setSearchQuery("");
       setDebouncedSearch("");
+    },
+  });
+
+  const compare = useCompare();
+  useKeyboardShortcut({
+    key: "c",
+    enabled: compare.count >= 2,
+    onMatch: () => {
+      window.location.assign("/compare");
     },
   });
 

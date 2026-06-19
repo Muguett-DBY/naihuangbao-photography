@@ -41,6 +41,20 @@ describe("photo compare system", () => {
     expect(gallery).toContain("CompareButton");
   });
 
+  it("adds a 'c' keyboard shortcut to open /compare when 2 items are queued", () => {
+    const gallery = read("src/components/Gallery.tsx");
+    expect(gallery).toContain("useCompare");
+    expect(gallery).toContain('key: "c"');
+    expect(gallery).toContain("window.location.assign(\"/compare\")");
+  });
+
+  it("animates the compare bar with a slide-in keyframe and pulses the CTA", () => {
+    const css = read("src/styles/pages.css");
+    expect(css).toContain("compare-bar-slide-in");
+    expect(css).toContain("compare-bar-cta-pulse");
+    expect(css).toContain("compare-bar-kbd");
+  });
+
   it("ships localized photoCompare labels in all four locales", () => {
     for (const localePath of [
       "src/i18n/locales/zh-CN.json",

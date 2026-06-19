@@ -21,6 +21,9 @@ export function CompareBar() {
         <span className="compare-bar-title">
           <GitCompare size={16} />
           {t("photoCompare.title", "Compare photos")} ({entries.length}/2)
+          {entries.length >= 2 && (
+            <kbd className="compare-bar-kbd" aria-hidden="true">C</kbd>
+          )}
         </span>
         <div className="compare-bar-actions">
           <Link
