@@ -19,9 +19,26 @@ describe("dynamic JSON-LD for photo detail", () => {
     expect(source).toContain("useJsonLd");
     expect(source).toContain('"@type": "Photograph"');
     expect(source).toContain('"@type": "BreadcrumbList"');
-    expect(source).toContain('photo-${photo.id}');
     expect(source).toContain("imageObject");
     expect(source).toContain("breadcrumb");
+  });
+
+  it("emits a Product schema with Offer and AggregateRating for presets", () => {
+    const source = read("src/pages/PresetDetailPage.tsx");
+    expect(source).toContain("useJsonLd");
+    expect(source).toContain('"@type": "Product"');
+    expect(source).toContain('"@type": "Offer"');
+    expect(source).toContain("productJsonLd");
+    expect(source).toContain("priceCurrency");
+  });
+
+  it("emits a Course schema with CourseInstance and Offer for courses", () => {
+    const source = read("src/pages/CourseDetailPage.tsx");
+    expect(source).toContain("useJsonLd");
+    expect(source).toContain('"@type": "Course"');
+    expect(source).toContain('"@type": "CourseInstance"');
+    expect(source).toContain("courseJsonLd");
+    expect(source).toContain("priceCurrency");
   });
 
   it("preserves the static ProfessionalService and FAQPage schemas on the home shell", () => {

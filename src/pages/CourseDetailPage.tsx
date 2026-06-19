@@ -1,5 +1,5 @@
 import "../styles/pages.css";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Clock, BarChart3, Lock, Play, FileText, Images, LogIn, ShoppingCart } from "lucide-react";
@@ -7,6 +7,7 @@ import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useNotification } from "../hooks/useNotification";
 import { useSEO } from "../hooks/useSEO";
+import { useJsonLd } from "../hooks/useJsonLd";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailLoading } from "../components/shared/DetailLoading";
@@ -18,6 +19,7 @@ import { useFetch } from "../hooks/useFetch";
 import { useAuth } from "../hooks/useAuth";
 import { VideoPlayer } from "../components/VideoPlayer";
 import { PaymentForm } from "../components/PaymentForm";
+import { siteOrigin } from "../lib/site-origin";
 import type { Course, CourseModule } from "../types/content";
 
 const fetchWithCredentials: RequestInit = { credentials: "include" };
@@ -49,6 +51,68 @@ export function CourseDetailPage() {
     title: courseTitle,
     descKey: "seo.courseDetailDesc",
     path: id ? `/courses/${id}` : undefined,
+  });
+
+  const courseJsonLd = useMemo(() => {
+    if (!data?.course) return null;
+    const c = data.course;
+    return {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "@id": `${siteOrigin}/courses/${c.id}#course`,
+      name: courseTitle,
+      description: getDesc(c, lang) || courseTitle,
+      url: `${siteOrigin}/courses/${c.id}`,
+      provider: {
+        "@type": "Organization",
+        name: "Naihuangbao Photography",
+        sameAs: siteOrigin,
+      },
+      educationalLevel: tCourseDifficulty(t, c.difficulty),
+      inLanguage: lang,
+      hasCourseInstance: {
+        "@type": "CourseInstance",
+        courseMode: c.category === "online" ? "online" : "onsite",
+        courseWorkload: c.duration_minutes ? `PT${c.duration_minutes}M` : undefined,
+        instructor: {
+          "@type": "Person",
+          name: "Naihuangbao Photography",
+        },
+      },
+      offers: c.price_cents
+        ? {
+            "@type": "Offer",
+            category: "Paid",
+            price: (c.price_cents / 100).toFixed(2),
+            priceCurrency: c.currency || "CNY",
+            availability: "https://schema.org/InStock",
+            url: `${siteOrigin}/courses/${c.id}`,
+          }
+        : { "@type": "Offer", category: "Free", price: "0", priceCurrency: "CNY" },
+    };
+  }, [data, courseTitle, lang, t]);
+
+  useJsonLd({
+    id: data?.course ? `course-${data.course.id}` : "course-empty",
+    data: courseJsonLd ?? {},
+  });
+
+  const breadcrumb = useMemo(() => {
+    if (!data?.course) return null;
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${siteOrigin}/` },
+        { "@type": "ListItem", position: 2, name: "Courses", item: `${siteOrigin}/courses` },
+        { "@type": "ListItem", position: 3, name: courseTitle, item: `${siteOrigin}/courses/${data.course.id}` },
+      ],
+    };
+  }, [data, courseTitle]);
+
+  useJsonLd({
+    id: data?.course ? `course-breadcrumb-${data.course.id}` : "course-breadcrumb-empty",
+    data: breadcrumb ?? {},
   });
 
   useGsapPageEffects(rootRef);
