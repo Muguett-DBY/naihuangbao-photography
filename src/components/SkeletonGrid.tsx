@@ -1,4 +1,4 @@
-import "../../styles/sections.css";
+import "../styles/sections.css";
 
 type SkeletonGridProps = {
   count?: number;
