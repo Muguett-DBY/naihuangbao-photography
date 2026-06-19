@@ -26,3 +26,6 @@
 - Phase 3: `5cfb13c` — Mobile swipe gestures + PinchZoom + adjacent photo nav ✅
 - Phase 4: `a8eea5a` — Custom event tracking + booking funnel instrumentation ✅
 - Phase 5: `fe475e0` — CHECK + P0 fix (undefined gsap in main.tsx) + P1 fix (preconnect tags wiped by seo:sync) ✅
+- Phase 6: `4e582f7` — Faceted search: style + album + date range + free text + active chips ✅
+
+**Cycle 1 complete.**
