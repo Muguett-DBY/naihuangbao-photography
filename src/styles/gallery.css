@@ -39,6 +39,12 @@
   padding: 8px 0;
   font-size: 13px;
   color: var(--caramel-muted);
+  animation: resultSummaryFade 0.3s ease;
+}
+
+@keyframes resultSummaryFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .gallery-result-count {
