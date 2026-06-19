@@ -524,6 +524,10 @@
     "close": "关闭快速预览",
     "viewDetails": "查看详情"
   },
+  "photoOfTheDay": {
+    "eyebrow": "今日精选",
+    "view": "查看照片"
+  },
   "newsletter": {
     "title": "订阅更新",
     "description": "获取最新活动和优惠信息",

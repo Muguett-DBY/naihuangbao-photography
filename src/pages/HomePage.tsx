@@ -14,6 +14,7 @@ import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SectionSkeleton } from "../components/SectionSkeleton";
+import { PhotoOfTheDay } from "../components/PhotoOfTheDay";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -151,6 +152,9 @@ export function HomePage() {
           <FilmStripStory />
         </Suspense>
       </ErrorBoundary>
+
+      {/* ── Photo of the day ── */}
+      <PhotoOfTheDay />
 
       {/* ── Gallery（组件自带 Section 标题，无需外层再包） ── */}
       <div id="featured" style={{ scrollMarginTop: 80 }}>

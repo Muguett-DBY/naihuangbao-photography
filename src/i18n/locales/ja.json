@@ -497,6 +497,10 @@
     "close": "クイックビューを閉じる",
     "viewDetails": "詳細を見る"
   },
+  "photoOfTheDay": {
+    "eyebrow": "今日の1枚",
+    "view": "写真を見る"
+  },
   "newsletter": {
     "title": "最新情報を受け取る",
     "description": "最新のイベントやオファー情報をお届けします",

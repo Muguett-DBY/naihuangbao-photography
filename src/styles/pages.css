@@ -1540,6 +1540,94 @@
   background: var(--caramel-deep, #7f5a44);
 }
 
+/* ── Photo of the day ── */
+.photo-of-the-day {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 16px;
+}
+@media (min-width: 900px) {
+  .photo-of-the-day {
+    grid-template-columns: 1fr 1.2fr;
+  }
+}
+.potd-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.potd-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(255, 184, 161, 0.18);
+  border: 1px solid rgba(255, 184, 161, 0.5);
+  color: var(--caramel-deep, #7f5a44);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  width: fit-content;
+}
+.photo-of-the-day h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--caramel-ink, #2c2218);
+}
+.potd-alt {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--caramel-muted, #7f5a44);
+  line-height: 1.6;
+}
+.potd-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: var(--caramel-muted, #7f5a44);
+  font-size: 0.85rem;
+}
+.potd-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.potd-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--peach-accent, #d58a73);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 999px;
+  font-weight: 600;
+  width: fit-content;
+  margin-top: 4px;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.potd-cta:hover {
+  background: var(--caramel-deep, #7f5a44);
+  transform: translateX(2px);
+}
+.potd-image {
+  border-radius: 14px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background: rgba(0, 0, 0, 0.04);
+}
+.potd-image img,
+.potd-image video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 
 .photo-detail-share-btn:hover {
   border-color: var(--peach-accent);

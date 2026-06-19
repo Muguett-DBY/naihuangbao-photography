@@ -500,6 +500,10 @@
     "close": "Close quick view",
     "viewDetails": "View details"
   },
+  "photoOfTheDay": {
+    "eyebrow": "Photo of the day",
+    "view": "View photo"
+  },
   "newsletter": {
     "title": "Stay Updated",
     "description": "Get the latest updates on events and offers",
