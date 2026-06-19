@@ -13,6 +13,7 @@ import { useDistortionHover } from "../hooks/useDistortionHover";
 import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
 import { useSavedSearches } from "../hooks/useSavedSearches";
 import { useCompare } from "../hooks/useCompare";
+import { useSwipeGesture } from "../hooks/useSwipeGesture";
 import { FavoriteButton } from "./FavoriteButton";
 import { CompareButton } from "./CompareButton";
 import { CompareBar } from "./CompareBar";
@@ -380,24 +381,50 @@ export function Gallery() {
   // Haptic touch feedback with proper cleanup
   const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const touchCleanupRef = useRef<(() => void) | null>(null);
+  const swipeStartRef = useRef<{ x: number; y: number; t: number; id: string } | null>(null);
 
-  const handleTouchStart = useCallback((id: string) => {
+  const handleTouchStart = useCallback((id: string, e: React.TouchEvent) => {
     setTouchedId(id);
     touchCleanupRef.current?.();
     touchTimerRef.current = setTimeout(() => navigator.vibrate?.(12), 400);
+    const touch = e.touches[0];
+    if (touch) {
+      swipeStartRef.current = { x: touch.clientX, y: touch.clientY, t: Date.now(), id };
+    }
     const clear = () => {
       if (touchTimerRef.current) {
         clearTimeout(touchTimerRef.current);
         touchTimerRef.current = null;
       }
-      document.removeEventListener("touchend", clear);
-      document.removeEventListener("touchmove", clear);
+      document.removeEventListener("touchend", onTouchEndWithSwipe, true);
+      document.removeEventListener("touchmove", clear, true);
+      swipeStartRef.current = null;
       touchCleanupRef.current = null;
     };
+    const onTouchEndWithSwipe = (ev: Event) => {
+      const start = swipeStartRef.current;
+      if (start && ev.type === "touchend") {
+        const te = ev as TouchEvent;
+        const t = te.changedTouches[0];
+        if (t) {
+          const dx = t.clientX - start.x;
+          const dy = t.clientY - start.y;
+          const dt = Date.now() - start.t;
+          if (dt < 600 && Math.abs(dy) >= 50 && Math.abs(dx) < 80) {
+            const idx = photoIndexMap.get(start.id);
+            if (typeof idx === "number") {
+              setLightboxIndex(idx);
+              navigator.vibrate?.(8);
+            }
+          }
+        }
+      }
+      clear();
+    };
     touchCleanupRef.current = clear;
-    document.addEventListener("touchend", clear, { passive: true });
-    document.addEventListener("touchmove", clear, { passive: true });
-  }, []);
+    document.addEventListener("touchend", onTouchEndWithSwipe, { passive: true, capture: true });
+    document.addEventListener("touchmove", clear, { passive: true, capture: true });
+  }, [photoIndexMap]);
 
   useEffect(() => {
     return () => {
@@ -706,7 +733,7 @@ export function Gallery() {
                         type="button"
                         data-distort
                         onClick={() => setLightboxIndex(photoIndexMap.get(item.id) ?? 0)}
-                        onTouchStart={() => handleTouchStart(item.id)}
+                        onTouchStart={(e) => handleTouchStart(item.id, e)}
                         aria-label={`${t("gallery.viewLargeImage")}${item.title}`}
                       >
                         {isVideo && item.videoUrl ? (

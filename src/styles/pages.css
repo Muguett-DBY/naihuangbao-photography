@@ -1037,6 +1037,101 @@
   border-radius: 22px;
   background: var(--paper-white);
   box-shadow: var(--paper-inset), 0 18px 44px rgba(95, 60, 49, 0.12);
+  display: block;
+  user-select: none;
+}
+
+.photo-detail-cover-shell {
+  position: relative;
+}
+
+.photo-detail-nav-hint {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  padding: 0 14px;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.photo-detail-cover-shell:hover .photo-detail-nav-hint,
+.photo-detail-cover-shell:focus-within .photo-detail-nav-hint {
+  opacity: 0.85;
+}
+
+.photo-detail-nav-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 253, 247, 0.85);
+  color: #493735;
+  box-shadow: 0 6px 20px rgba(95, 60, 49, 0.18);
+  backdrop-filter: blur(6px);
+}
+
+.photo-detail-adjacent {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.photo-detail-adjacent-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid rgba(139, 94, 74, 0.18);
+  border-radius: 999px;
+  font-size: 13px;
+  color: #493735;
+  background: var(--paper-white);
+  text-decoration: none;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+  max-width: 45%;
+}
+
+.photo-detail-adjacent-link:hover {
+  background: #493735;
+  color: #fff8f3;
+  border-color: #493735;
+}
+
+.photo-detail-adjacent-link--next {
+  margin-left: auto;
+  flex-direction: row;
+}
+
+.photo-detail-adjacent-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 220px;
+}
+
+@media (max-width: 720px) {
+  .photo-detail-adjacent-link span {
+    max-width: 140px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-detail-nav-hint {
+    transition: none;
+  }
+  .photo-detail-adjacent-link {
+    transition: none;
+  }
 }
 
 .photo-detail-cover-frame .img-blur-wrap,
