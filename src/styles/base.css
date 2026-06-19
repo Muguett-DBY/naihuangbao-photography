@@ -678,6 +678,17 @@ a {
 }
 
 /* ── Skip-to-content link ── */
+.skip-links {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  pointer-events: none;
+}
 .skip-link {
   position: fixed;
   top: -100%;
@@ -692,12 +703,31 @@ a {
   text-decoration: none;
   transition: top 0.2s ease;
   outline: none;
+  pointer-events: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-.skip-link:focus {
+.skip-link:focus,
+.skip-link:focus-visible {
   top: 0;
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
 }
 .skip-link:hover {
   background: var(--caramel-deep);
+}
+.skip-link--secondary:focus,
+.skip-link--secondary:focus-visible {
+  top: 44px;
+}
+
+/* ── Global :focus-visible for keyboard users ── */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--peach-accent, #d58a73);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+:where(a, button, input, select, textarea, [tabindex]):focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* ── Reduced motion ── */

@@ -49,3 +49,42 @@ describe("modal accessibility contracts", () => {
     }
   });
 });
+
+describe("global a11y landmarks and skip links", () => {
+  it("ships multiple skip links, an aria-labelled main, and a labelled footer", () => {
+    const layout = read("src/layouts/RootLayout.tsx");
+    expect(layout).toContain("skip-links");
+    expect(layout).toContain("skipToContent");
+    expect(layout).toContain("skipToNav");
+    expect(layout).toContain("skipToFooter");
+    expect(layout).toContain('id="main-content"');
+    expect(layout).toContain("mainContentLabel");
+
+    const footer = read("src/components/shared/Footer.tsx");
+    expect(footer).toContain('id="site-footer"');
+    expect(footer).toContain("ariaLabel");
+  });
+
+  it("exposes skip link, nav, and footer labels in every locale", () => {
+    for (const localePath of [
+      "src/i18n/locales/zh-CN.json",
+      "src/i18n/locales/en.json",
+      "src/i18n/locales/ja.json",
+      "src/i18n/locales/ko.json",
+    ]) {
+      const locale = JSON.parse(read(localePath));
+      expect(locale.common.skipToContent).toBeTruthy();
+      expect(locale.common.skipToNav).toBeTruthy();
+      expect(locale.common.skipToFooter).toBeTruthy();
+      expect(locale.common.skipLinksLabel).toBeTruthy();
+      expect(locale.common.mainContentLabel).toBeTruthy();
+      expect(locale.footer.ariaLabel).toBeTruthy();
+    }
+  });
+
+  it("ships a global :focus-visible outline for keyboard users", () => {
+    const css = read("src/styles/base.css");
+    expect(css).toContain("focus-visible");
+    expect(css).toContain("outline:");
+  });
+});

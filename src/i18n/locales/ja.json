@@ -440,7 +440,8 @@
   },
   "footer": {
     "tagline": "{{city}} · 女性写真 · カップル写真",
-    "backToTop": "トップへ"
+    "backToTop": "トップへ",
+    "ariaLabel": "サイトフッター"
   },
   "newsletter": {
     "title": "最新情報を受け取る",
@@ -639,6 +640,10 @@
     "loadError": "読み込めませんでした。後でもう一度お試しください。",
     "retry": "再試行",
     "skipToContent": "コンテンツにスキップ",
+    "skipToNav": "ナビゲーションにスキップ",
+    "skipToFooter": "フッターにスキップ",
+    "skipLinksLabel": "スキップリンク",
+    "mainContentLabel": "メインコンテンツ",
     "socialXiaohongshu": "小紅書"
   },
   "admin": {

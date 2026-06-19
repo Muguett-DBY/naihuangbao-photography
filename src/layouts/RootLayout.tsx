@@ -44,13 +44,46 @@ export function RootLayout() {
 
   return (
     <div ref={rootRef} className={isEditor ? "site-shell is-editor" : "site-shell"}>
-      <a
-        href="#main-content"
-        className="skip-link"
-        onClick={handleSkipClick}
-      >
-        {t("common.skipToContent", "跳转到内容")}
-      </a>
+      <nav className="skip-links" aria-label={t("common.skipLinksLabel", "Skip links")}>
+        <a
+          href="#main-content"
+          className="skip-link"
+          onClick={handleSkipClick}
+        >
+          {t("common.skipToContent", "跳转到内容")}
+        </a>
+        <a
+          href="#site-navigation-menu"
+          className="skip-link skip-link--secondary"
+          onClick={(e) => {
+            e.preventDefault();
+            const target = document.getElementById("site-navigation-menu");
+            if (target) {
+              const focusable = target.querySelector<HTMLElement>("a[href]");
+              (focusable ?? target).setAttribute("tabindex", "-1");
+              (focusable ?? target).focus();
+              (focusable ?? target).removeAttribute("tabindex");
+            }
+          }}
+        >
+          {t("common.skipToNav", "跳转到导航")}
+        </a>
+        <a
+          href="#site-footer"
+          className="skip-link skip-link--secondary"
+          onClick={(e) => {
+            e.preventDefault();
+            const target = document.getElementById("site-footer");
+            if (target) {
+              target.setAttribute("tabindex", "-1");
+              target.focus();
+              target.removeAttribute("tabindex");
+            }
+          }}
+        >
+          {t("common.skipToFooter", "跳转到页脚")}
+        </a>
+      </nav>
       <LoadingScreen />
       {location.pathname !== "/editor" && (
         <>
@@ -68,7 +101,7 @@ export function RootLayout() {
             <PublicPhotosProvider>
               <ToastProvider>
               <Header />
-              <main id="main-content">
+              <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
                 <ErrorBoundary>
                   <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
                     <Outlet />

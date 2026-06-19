@@ -443,7 +443,8 @@
   },
   "footer": {
     "tagline": "{{city}} · Portrait · Couple",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "ariaLabel": "Site footer"
   },
   "newsletter": {
     "title": "Stay Updated",
@@ -642,6 +643,10 @@
     "loadError": "Unable to load. Please try again later.",
     "retry": "Retry",
     "skipToContent": "Skip to content",
+    "skipToNav": "Skip to navigation",
+    "skipToFooter": "Skip to footer",
+    "skipLinksLabel": "Skip links",
+    "mainContentLabel": "Main content",
     "socialXiaohongshu": "Xiaohongshu"
   },
   "admin": {
