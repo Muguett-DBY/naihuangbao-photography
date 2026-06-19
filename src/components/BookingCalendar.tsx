@@ -41,6 +41,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
   const today = useMemo(() => new Date(), []);
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
+  const [focusedDay, setFocusedDay] = useState<number | null>(null);
 
   const monthKey = formatMonth(year, month);
   const { data, loading } = useFetch<AvailabilityResponse>(`/api/availability?month=${monthKey}`);
@@ -60,6 +61,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
       }
       return m - 1;
     });
+    setFocusedDay(null);
   }, [canGoPrev]);
 
   const goNext = useCallback(() => {
@@ -70,6 +72,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
       }
       return m + 1;
     });
+    setFocusedDay(null);
   }, []);
 
   const handleDayClick = useCallback(
@@ -79,6 +82,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
       if (info?.status === "booked") return;
       if (minDate && key < minDate) return;
       onSelectDate(key);
+      setFocusedDay(day);
     },
     [year, month, availability, minDate, onSelectDate],
   );
@@ -87,12 +91,30 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
     const handleKeyDown = (e: KeyboardEvent) => {
       const cal = calendarRef.current;
       if (!cal || !cal.contains(e.target as Node)) return;
-      if (e.key === "ArrowLeft") goPrev();
-      if (e.key === "ArrowRight") goNext();
+
+      // Month navigation with left/right when no day is focused
+      if (focusedDay === null) {
+        if (e.key === "ArrowLeft") { e.preventDefault(); goPrev(); }
+        if (e.key === "ArrowRight") { e.preventDefault(); goNext(); }
+        if (e.key === "ArrowDown") { e.preventDefault(); setFocusedDay(1); }
+        return;
+      }
+
+      // Day navigation
+      let newDay = focusedDay;
+      if (e.key === "ArrowLeft") { e.preventDefault(); newDay = Math.max(1, focusedDay - 1); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); newDay = Math.min(daysInMonth, focusedDay + 1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); newDay = Math.max(1, focusedDay - 7); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); newDay = Math.min(daysInMonth, focusedDay + 7); }
+      else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleDayClick(focusedDay); return; }
+      else if (e.key === "Escape") { e.preventDefault(); setFocusedDay(null); return; }
+      else return;
+
+      setFocusedDay(newDay);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goPrev, goNext]);
+  }, [focusedDay, daysInMonth, goPrev, goNext, handleDayClick]);
 
   const monthLabel = new Intl.DateTimeFormat(i18n.language, { year: "numeric", month: "long" }).format(new Date(year, month, 1));
 
@@ -148,6 +170,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
             `calendar-day--${status}`,
             isSelected && "calendar-day--selected",
             isDisabled && "calendar-day--disabled",
+            focusedDay === cell.day && "calendar-day--focused",
           ]
             .filter(Boolean)
             .join(" ");
