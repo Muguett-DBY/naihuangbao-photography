@@ -16,6 +16,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SectionSkeleton } from "../components/SectionSkeleton";
 import { PhotoOfTheDay } from "../components/PhotoOfTheDay";
 import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
+import { useReveal } from "../hooks/useReveal";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,6 +39,7 @@ export function HomePage() {
   const { openBookingModal } = useBookingModal();
   const rootRef = useRef<HTMLDivElement>(null);
   const collageRef = useRef<HTMLDivElement>(null);
+  const servicesRef = useReveal<HTMLDivElement>();
 
   const { photos } = usePublicPhotos();
 
@@ -183,7 +185,7 @@ export function HomePage() {
           <p className="section-eyebrow">{t("home.servicesTitle")}</p>
           <h2 style={{ clipPath: "inset(0 0 0 0)" }}>{t("home.servicesTitle")}</h2>
         </div>
-        <div className="home-services-grid">
+        <div className="home-services-grid" ref={servicesRef}>
           <Link to="/courses" className="home-service-card">
             <BookOpen size={32} />
             <h3>{t("nav.courses")}</h3>
