@@ -3143,7 +3143,52 @@
 }
 
 @media (max-width: 480px) {
-  .overview-grid {
+.overview-welcome {
+  margin-bottom: 24px;
+}
+.overview-welcome h2 {
+  margin: 0 0 4px;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+  color: var(--caramel-ink);
+}
+.overview-welcome p {
+  margin: 0;
+  color: var(--caramel-muted);
+  font-size: 0.9rem;
+}
+.overview-quick-actions {
+  margin-top: 24px;
+}
+.overview-quick-actions h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: var(--caramel-ink);
+}
+.overview-quick-grid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.overview-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid rgba(139, 94, 74, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--caramel-ink);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.overview-quick-btn:hover {
+  border-color: var(--peach-accent);
+  background: rgba(255, 184, 161, 0.08);
+  transform: translateY(-1px);
+}
+.overview-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
