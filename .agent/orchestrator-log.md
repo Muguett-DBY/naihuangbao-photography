@@ -25,3 +25,4 @@
 - Phase 2: `ba60339` — Lazy-load GlobalEffects (CustomCursor/FilmGrain/ScrollProgress/Lenis) ✅
 - Phase 3: `5cfb13c` — Mobile swipe gestures + PinchZoom + adjacent photo nav ✅
 - Phase 4: `a8eea5a` — Custom event tracking + booking funnel instrumentation ✅
+- Phase 5: `fe475e0` — CHECK + P0 fix (undefined gsap in main.tsx) + P1 fix (preconnect tags wiped by seo:sync) ✅

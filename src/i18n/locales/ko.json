@@ -61,9 +61,11 @@
     "discoveryHint": "제목, 장소, 스타일로 검색하거나 컴팩트 보기로 빠르게 둘러볼 수 있습니다.",
     "resultSummary": "전체 {{total}}장 중 {{count}}장 · {{filter}}",
     "activeState": "현재 갤러리 상태",
-    "activeFilter": "스타일: {{filter}}",
-    "activeSearch": "검색: {{query}}",
-    "activeView": "보기: {{view}}",
+      "activeFilter": "스타일: {{filter}}",
+      "activeAlbum": "앨범: {{album}}",
+      "activeDate": "기간: {{range}}",
+      "activeSearch": "검색: {{query}}",
+      "activeView": "보기: {{view}}",
     "clearDiscovery": "필터 지우기",
     "saveSearch": "검색 저장",
     "savedSearches": "저장된 검색",
@@ -752,6 +754,17 @@
       "error": "로그아웃 요청 실패. 로컬 로그인 상태가 삭제되었습니다."
     },
     "loading": "로그인 상태 확인 중...",
+    "facetsLabel": "추가 필터",
+    "albumLabel": "앨범",
+    "albumAll": "모든 앨범",
+    "dateRangeLabel": "기간",
+    "dateRangeAll": "기간 무관",
+    "dateRanges": {
+      "last-30": "최근 30일",
+      "last-90": "최근 90일",
+      "last-365": "최근 1년",
+      "older": "1년 이상"
+    },
     "stats": {
       "title": "데이터 개요",
       "noData": "데이터를 불러올 수 없습니다",

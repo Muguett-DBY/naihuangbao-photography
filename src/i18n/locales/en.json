@@ -61,9 +61,11 @@
     "discoveryHint": "Search by title, place, or style, or switch to compact browsing.",
     "resultSummary": "{{count}} of {{total}} photos · {{filter}}",
     "activeState": "Active gallery state",
-    "activeFilter": "Style: {{filter}}",
-    "activeSearch": "Search: {{query}}",
-    "activeView": "View: {{view}}",
+      "activeFilter": "Style: {{filter}}",
+      "activeAlbum": "Album: {{album}}",
+      "activeDate": "Date: {{range}}",
+      "activeSearch": "Search: {{query}}",
+      "activeView": "View: {{view}}",
     "clearDiscovery": "Clear filters",
     "saveSearch": "Save search",
     "savedSearches": "Saved searches",
@@ -756,6 +758,17 @@
       "error": "Logout request failed. Local login state has been cleared."
     },
     "loading": "Checking login status...",
+    "facetsLabel": "Additional filters",
+    "albumLabel": "Album",
+    "albumAll": "All albums",
+    "dateRangeLabel": "Date range",
+    "dateRangeAll": "Any time",
+    "dateRanges": {
+      "last-30": "Last 30 days",
+      "last-90": "Last 90 days",
+      "last-365": "Last year",
+      "older": "Over a year ago"
+    },
     "stats": {
       "title": "Overview",
       "noData": "Unable to load data",

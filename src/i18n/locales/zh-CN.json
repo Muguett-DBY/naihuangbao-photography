@@ -61,9 +61,11 @@
     "discoveryHint": "可按标题、地点或风格搜索，也可以切换紧凑浏览。",
     "resultSummary": "共 {{total}} 张，当前 {{filter}} 显示 {{count}} 张",
     "activeState": "当前作品筛选状态",
-    "activeFilter": "风格：{{filter}}",
-    "activeSearch": "搜索：{{query}}",
-    "activeView": "视图：{{view}}",
+      "activeFilter": "风格：{{filter}}",
+      "activeAlbum": "相册：{{album}}",
+      "activeDate": "时间：{{range}}",
+      "activeSearch": "搜索：{{query}}",
+      "activeView": "视图：{{view}}",
     "clearDiscovery": "清除筛选",
     "saveSearch": "保存搜索",
     "savedSearches": "已保存的搜索",
@@ -806,6 +808,17 @@
       "error": "退出请求失败，本地登录状态已清除。"
     },
     "loading": "检查登录状态...",
+    "facetsLabel": "更多筛选",
+    "albumLabel": "相册",
+    "albumAll": "全部相册",
+    "dateRangeLabel": "时间范围",
+    "dateRangeAll": "不限时间",
+    "dateRanges": {
+      "last-30": "最近 30 天",
+      "last-90": "最近 90 天",
+      "last-365": "最近一年",
+      "older": "一年以前"
+    },
     "stats": {
       "title": "数据概览",
       "noData": "暂时无法加载数据",
