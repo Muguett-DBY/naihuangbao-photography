@@ -492,6 +492,11 @@
     "needTwo": "もう1枚追加すると並べ比較できます。",
     "browseGallery": "ギャラリーを見る"
   },
+  "quickView": {
+    "label": "クイックビュー",
+    "close": "クイックビューを閉じる",
+    "viewDetails": "詳細を見る"
+  },
   "newsletter": {
     "title": "最新情報を受け取る",
     "description": "最新のイベントやオファー情報をお届けします",

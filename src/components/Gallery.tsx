@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Play, Share2, Loader2, Search, X, LayoutGrid, Columns, RotateCcw } from "lucide-react";
+import { Play, Share2, Loader2, Search, X, LayoutGrid, Columns, RotateCcw, Eye } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { getPhotosByStyle, searchPhotos } from "../lib/gallery";
@@ -16,6 +16,7 @@ import { useCompare } from "../hooks/useCompare";
 import { FavoriteButton } from "./FavoriteButton";
 import { CompareButton } from "./CompareButton";
 import { CompareBar } from "./CompareBar";
+import { QuickView } from "./QuickView";
 import { RecentlyViewedStrip } from "./RecentlyViewedStrip";
 import { ShareMenu } from "./ShareMenu";
 
@@ -188,6 +189,7 @@ export function Gallery() {
   const [searchQuery, setSearchQuery] = useState(initialState.search);
   const [debouncedSearch, setDebouncedSearch] = useState(initialState.search);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [quickViewPhoto, setQuickViewPhoto] = useState<PhotoItem | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [viewMode, setViewMode] = useState<ViewMode>(initialState.view);
   const [sortMode, setSortMode] = useState<"default" | "newest" | "featured">("default");
@@ -743,6 +745,18 @@ export function Gallery() {
                             <HighlightText text={item.location} query={searchQuery} />
                           </span>
                           <div className="gallery-masonry-overlay-actions">
+                            <button
+                              type="button"
+                              className="gallery-quick-view-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setQuickViewPhoto(item);
+                              }}
+                              aria-label={`${t("quickView.label", "Quick view")} — ${item.title}`}
+                              title={t("quickView.label", "Quick view")}
+                            >
+                              <Eye size={14} />
+                            </button>
                             <Link to={`/gallery/${item.id}`} className="gallery-detail-link" onClick={(e) => e.stopPropagation()}>
                               {t("gallery.viewDetails", "Details")} →
                             </Link>
@@ -808,6 +822,7 @@ export function Gallery() {
           />
         </Suspense>
       )}
+      <QuickView photo={quickViewPhoto} onClose={() => setQuickViewPhoto(null)} />
       <CompareBar />
     </Section>
   );
