@@ -467,7 +467,8 @@
   },
   "footer": {
     "tagline": "{{city}} · 女生写真 · 情侣约拍",
-    "backToTop": "回到顶部"
+    "backToTop": "回到顶部",
+    "ariaLabel": "网站页脚"
   },
   "newsletter": {
     "title": "订阅更新",
@@ -693,6 +694,10 @@
     "loadError": "加载失败，请稍后重试",
     "retry": "重试",
     "skipToContent": "跳转到内容",
+    "skipToNav": "跳转到导航",
+    "skipToFooter": "跳转到页脚",
+    "skipLinksLabel": "跳转链接",
+    "mainContentLabel": "主要内容",
     "socialXiaohongshu": "小红书"
   },
   "admin": {

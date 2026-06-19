@@ -440,7 +440,8 @@
   },
   "footer": {
     "tagline": "{{city}} · 여성 사진 · 커플 사진",
-    "backToTop": "맨 위로"
+    "backToTop": "맨 위로",
+    "ariaLabel": "사이트 푸터"
   },
   "newsletter": {
     "title": "최신 소식 받기",
@@ -639,6 +640,10 @@
     "loadError": "로드할 수 없습니다. 나중에 다시 시도해 주세요.",
     "retry": "재시도",
     "skipToContent": "콘텐츠로 건너뛰기",
+    "skipToNav": "네비게이션으로 건너뛰기",
+    "skipToFooter": "푸터로 건너뛰기",
+    "skipLinksLabel": "건너뛰기 링크",
+    "mainContentLabel": "기본 콘텐츠",
     "socialXiaohongshu": "시아오홍수"
   },
   "admin": {

@@ -21,7 +21,7 @@ export function Footer() {
   }, []);
 
   return (
-    <footer className={`site-footer ${inView ? "is-visible" : ""}`} ref={ref}>
+    <footer id="site-footer" className={`site-footer ${inView ? "is-visible" : ""}`} ref={ref} aria-label={t("footer.ariaLabel", "Site footer")}>
       <div className="footer-brand">
         <span>{siteConfig.brandName}</span>
         <p>{t("footer.tagline", { city: siteConfig.city })}</p>
