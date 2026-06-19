@@ -499,6 +499,22 @@
     "copied": "链接已复制",
     "copyFailed": "无法复制链接"
   },
+  "photoCompare": {
+    "add": "加入对比",
+    "remove": "移出对比",
+    "removeOne": "移出该照片",
+    "inCompare": "对比中",
+    "fullHint": "对比已满（最多 2 张）",
+    "title": "对比照片",
+    "open": "开始对比",
+    "clear": "清空",
+    "clearAll": "清空全部",
+    "hint": "再选一张照片即可开始对比",
+    "backToGallery": "返回作品集",
+    "empty": "最多选择 2 张照片并排对比。",
+    "needTwo": "再选一张照片即可开始对比。",
+    "browseGallery": "浏览作品集"
+  },
   "newsletter": {
     "title": "订阅更新",
     "description": "获取最新活动和优惠信息",

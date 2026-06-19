@@ -20,6 +20,7 @@ const LoginPage = lazy(() => import("./pages/LoginPage").then((m) => ({ default:
 const DashboardPage = lazy(() => import("./pages/DashboardPage").then((m) => ({ default: m.DashboardPage })));
 const PhotoDetailPage = lazy(() => import("./pages/PhotoDetailPage").then((m) => ({ default: m.PhotoDetailPage })));
 const PhotoEditorPage = lazy(() => import("./pages/PhotoEditorPage"));
+const ComparePage = lazy(() => import("./pages/ComparePage").then((m) => ({ default: m.ComparePage })));
 
 const AdminDashboard = lazy(async () => {
   await import("./styles/admin.css");
@@ -86,6 +87,7 @@ export const router = createBrowserRouter([
       { path: "login", element: <PageSuspense><LoginPage /></PageSuspense> },
       { path: "dashboard", element: <PageSuspense><DashboardPage /></PageSuspense> },
       { path: "editor", element: <PageSuspense><PhotoEditorPage /></PageSuspense> },
+      { path: "compare", element: <PageSuspense><ComparePage /></PageSuspense> },
       { path: "*", element: <NotFound /> },
     ],
   },

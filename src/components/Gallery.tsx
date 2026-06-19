@@ -13,6 +13,8 @@ import { useDistortionHover } from "../hooks/useDistortionHover";
 import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
 import { useSavedSearches } from "../hooks/useSavedSearches";
 import { FavoriteButton } from "./FavoriteButton";
+import { CompareButton } from "./CompareButton";
+import { CompareBar } from "./CompareBar";
 import { RecentlyViewedStrip } from "./RecentlyViewedStrip";
 import { ShareMenu } from "./ShareMenu";
 
@@ -735,6 +737,17 @@ export function Gallery() {
                               {t("gallery.viewDetails", "Details")} →
                             </Link>
                             <span onClick={(e) => e.stopPropagation()} role="presentation">
+                              <CompareButton
+                                variant="icon"
+                                entry={{
+                                  id: item.id,
+                                  title: item.title,
+                                  href: `/gallery/${item.id}`,
+                                  imageUrl: item.imageUrl,
+                                }}
+                              />
+                            </span>
+                            <span onClick={(e) => e.stopPropagation()} role="presentation">
                               <FavoriteButton
                                 variant="icon"
                                 entry={{
@@ -785,6 +798,7 @@ export function Gallery() {
           />
         </Suspense>
       )}
+      <CompareBar />
     </Section>
   );
 }
