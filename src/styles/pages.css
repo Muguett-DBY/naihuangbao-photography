@@ -1133,6 +1133,17 @@
   color: #c43c3c;
 }
 
+/* Pulse animation when activating favorite */
+@keyframes favorite-pulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  70% { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+.favorite-btn.is-active {
+  animation: favorite-pulse 360ms ease;
+}
+
 
 .photo-detail-share-btn:hover {
   border-color: var(--peach-accent);

@@ -11,6 +11,7 @@ import { Section } from "./Section";
 import { HighlightText } from "./shared/HighlightText";
 import { useDistortionHover } from "../hooks/useDistortionHover";
 import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
+import { FavoriteButton } from "./FavoriteButton";
 
 type StyleFilter = PhotoStyle | "all";
 type ViewMode = "masonry" | "compact";
@@ -676,6 +677,17 @@ export function Gallery() {
                             <Link to={`/gallery/${item.id}`} className="gallery-detail-link" onClick={(e) => e.stopPropagation()}>
                               {t("gallery.viewDetails", "Details")} →
                             </Link>
+                            <span onClick={(e) => e.stopPropagation()} role="presentation">
+                              <FavoriteButton
+                                variant="icon"
+                                entry={{
+                                  id: item.id,
+                                  title: item.title,
+                                  href: `/gallery/${item.id}`,
+                                  imageUrl: item.imageUrl,
+                                }}
+                              />
+                            </span>
                             <ShareButton photo={item} />
                           </div>
                         </div>
