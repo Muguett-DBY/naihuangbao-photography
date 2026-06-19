@@ -786,6 +786,7 @@
     "welcome": "Hi! I'm the Naihuangbao Photography assistant. Ask me about pricing, booking, styles, or anything else!",
     "emptyReply": "Sorry, I didn't catch that. Could you rephrase?",
     "unavailable": "Chat service is temporarily unavailable. Please try again later.",
+    "retry": "Try again",
     "ariaLabel": "AI Chat Panel",
     "brandName": "Naihuangbao Photography",
     "title": "AI Assistant",

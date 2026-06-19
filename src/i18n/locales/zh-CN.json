@@ -837,6 +837,8 @@
     "welcome": "你好！我是奶黄包摄影的AI助手，可以帮你了解套餐价格、预约流程、拍摄风格等信息。",
     "emptyReply": "抱歉，我没有理解你的问题，请再描述一下。",
     "unavailable": "聊天服务暂时不可用，请稍后再试。",
+    "retry": "重试",
+    "retry": "重试",
     "ariaLabel": "AI聊天面板",
     "brandName": "奶黄包摄影",
     "title": "AI 助手",
