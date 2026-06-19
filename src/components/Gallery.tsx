@@ -14,6 +14,7 @@ import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
 import { useSavedSearches } from "../hooks/useSavedSearches";
 import { FavoriteButton } from "./FavoriteButton";
 import { RecentlyViewedStrip } from "./RecentlyViewedStrip";
+import { ShareMenu } from "./ShareMenu";
 
 type StyleFilter = PhotoStyle | "all";
 type ViewMode = "masonry" | "compact";
@@ -161,40 +162,15 @@ function VideoPreview({ videoUrl, posterUrl, title }: { videoUrl: string; poster
 }
 
 function ShareButton({ photo }: { photo: PhotoItem }) {
-  const { t } = useTranslation();
-
-  const handleShare = useCallback(async () => {
-    const shareData = {
-      title: photo.title,
-      text: `${photo.title} — ${photo.location}`,
-      url: window.location.href,
-    };
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        alert(t("gallery.linkCopied"));
-      }
-    } catch {
-      // user cancelled share or clipboard failed silently
-    }
-  }, [photo, t]);
-
+  const url = typeof window !== "undefined" ? `${window.location.origin}/gallery/${photo.id}` : "";
   return (
-    <span
-      role="button"
-      tabIndex={0}
-      className="gallery-share-btn"
-      onClick={(e) => {
-        e.stopPropagation();
-        void handleShare();
-      }}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); void handleShare(); } }}
-      aria-label={t("gallery.share")}
-      title={t("gallery.share")}
-    >
-      <Share2 size={16} />
+    <span onClick={(e) => e.stopPropagation()} role="presentation">
+      <ShareMenu
+        variant="icon"
+        url={url}
+        title={photo.title}
+        text={`${photo.title} — ${photo.location}`}
+      />
     </span>
   );
 }
