@@ -1,5 +1,5 @@
 import "../styles/pages.css";
-import { Suspense, lazy, useRef } from "react";
+import { Suspense, lazy, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
@@ -13,12 +13,39 @@ const HorizontalGallery = lazy(() => import("../components/HorizontalGallery").t
 const PolaroidWall = lazy(() => import("../components/PolaroidWall").then((m) => ({ default: m.PolaroidWall })));
 const PhotoMap = lazy(() => import("../components/PhotoMap").then((m) => ({ default: m.PhotoMap })));
 
+const GALLERY_SCROLL_KEY = "nhb-gallery-scroll-position";
+
 export function GalleryPage() {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
 
   useSEO({ titleKey: "seo.galleryTitle", descKey: "seo.galleryDesc", path: "/gallery" });
   useGsapPageEffects(rootRef);
+
+  // Restore scroll position on mount
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(GALLERY_SCROLL_KEY);
+      if (saved) {
+        sessionStorage.removeItem(GALLERY_SCROLL_KEY);
+        requestAnimationFrame(() => {
+          window.scrollTo({ top: parseInt(saved, 10), behavior: "instant" });
+        });
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  // Save scroll position on unmount (navigation away)
+  useEffect(() => {
+    return () => {
+      try {
+        const y = window.scrollY;
+        if (y > 100) {
+          sessionStorage.setItem(GALLERY_SCROLL_KEY, String(y));
+        }
+      } catch { /* ignore */ }
+    };
+  }, []);
 
   return (
     <PageTransition ref={rootRef}>
