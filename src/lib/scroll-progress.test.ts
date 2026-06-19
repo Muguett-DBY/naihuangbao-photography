@@ -17,9 +17,12 @@ describe("scroll progress and reading aids", () => {
   });
 
   it("mounts the scroll progress bar on non-editor pages", () => {
-    const source = read("src/layouts/RootLayout.tsx");
-    expect(source).toContain("ScrollProgress");
-    expect(source).toContain("!isEditor && <ScrollProgress />");
+    const rootLayout = read("src/layouts/RootLayout.tsx");
+    const globalEffects = read("src/components/GlobalEffects.tsx");
+    // ScrollProgress lives in the lazy GlobalEffects module
+    expect(rootLayout).toContain("!isEditor");
+    expect(rootLayout).toContain("GlobalEffects");
+    expect(globalEffects).toContain("ScrollProgress");
   });
 
   it("styles the scroll progress bar with a gradient and a thin fixed bar", () => {

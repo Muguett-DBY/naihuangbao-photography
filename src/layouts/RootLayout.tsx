@@ -1,9 +1,6 @@
-import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useGsapGlobalEffects } from "../hooks/useGsapGlobalEffects";
-import { CustomCursor } from "../components/CustomCursor";
-import { FilmGrain } from "../components/FilmGrain";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { PublicChatLauncher } from "../components/PublicChatLauncher";
 import { PublicPhotosProvider } from "../hooks/usePublicPhotos";
@@ -16,17 +13,20 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { ToastProvider } from "../components/shared/Toast";
 import { ScrollToTop } from "../components/shared/ScrollToTop";
 import { MobileBottomNav } from "../components/shared/MobileBottomNav";
-import { ScrollProgress } from "../components/ScrollProgress";
 import { PwaInstallBanner } from "../components/PwaInstallBanner";
 import { PwaUpdateBanner } from "../components/PwaUpdateBanner";
+
+// Heavy visual effects and animations are split into a separate chunk
+// so the initial bundle only ships React + i18n + router. These activate
+// on idle so the page can paint and become interactive first.
+const GlobalEffects = lazy(() => import("../components/GlobalEffects"));
+
+const PublicChatWidget = lazy(() => import("../components/PublicChatWidget"));
 
 export function RootLayout() {
   const { t } = useTranslation();
   const location = useLocation();
   const [chatOpen, setChatOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  useGsapGlobalEffects(rootRef);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -46,8 +46,7 @@ export function RootLayout() {
   const showPublicChat = !isEditor;
 
   return (
-    <div ref={rootRef} className={isEditor ? "site-shell is-editor" : "site-shell"}>
-      {!isEditor && <ScrollProgress />}
+    <div className={isEditor ? "site-shell is-editor" : "site-shell"}>
       <PwaUpdateBanner />
       <nav className="skip-links" aria-label={t("common.skipLinksLabel", "Skip links")}>
         <a
@@ -90,15 +89,12 @@ export function RootLayout() {
         </a>
       </nav>
       <LoadingScreen />
-      {location.pathname !== "/editor" && (
-        <>
-          <ErrorBoundary fallback={null}>
-            <FilmGrain />
-          </ErrorBoundary>
-          <ErrorBoundary fallback={null}>
-            <CustomCursor />
-          </ErrorBoundary>
-        </>
+      {!isEditor && (
+        <ErrorBoundary fallback={null}>
+          <Suspense fallback={null}>
+            <GlobalEffects />
+          </Suspense>
+        </ErrorBoundary>
       )}
       <AuthProvider>
         <BookingProvider>
@@ -141,5 +137,3 @@ export function RootLayout() {
     </div>
   );
 }
-
-const PublicChatWidget = lazy(() => import("../components/PublicChatWidget"));
