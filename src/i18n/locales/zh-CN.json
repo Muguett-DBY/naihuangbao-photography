@@ -872,7 +872,8 @@
   "errorBoundary": {
     "title": "页面暂时没有加载成功",
     "message": "请重试一次，或稍后再回来查看。",
-    "retry": "重试"
+    "retry": "重试",
+    "goHome": "返回首页"
   },
   "seo": {
     "siteName": "奶黄包摄影",
