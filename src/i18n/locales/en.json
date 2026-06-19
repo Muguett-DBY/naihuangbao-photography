@@ -510,6 +510,12 @@
     "install": "Install",
     "dismiss": "Dismiss"
   },
+  "pwaUpdate": {
+    "label": "App update available",
+    "text": "A new version is available",
+    "refresh": "Refresh",
+    "dismiss": "Dismiss"
+  },
   "newsletter": {
     "title": "Stay Updated",
     "description": "Get the latest updates on events and offers",

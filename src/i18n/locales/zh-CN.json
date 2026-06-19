@@ -534,6 +534,12 @@
     "install": "安装",
     "dismiss": "忽略"
   },
+  "pwaUpdate": {
+    "label": "应用有更新",
+    "text": "有新版本可用",
+    "refresh": "刷新",
+    "dismiss": "忽略"
+  },
   "newsletter": {
     "title": "订阅更新",
     "description": "获取最新活动和优惠信息",
