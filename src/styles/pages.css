@@ -2569,6 +2569,11 @@
   cursor: not-allowed;
 }
 
+.calendar-day--focused {
+  outline: 2px solid var(--peach-accent, #FFB8A1);
+  outline-offset: 2px;
+}
+
 .calendar-day--available .calendar-day-num {
   color: #22c55e;
 }
