@@ -1,11 +1,13 @@
 import {
   Bot,
+  ChevronDown,
   Send,
   Sparkles,
   X,
 } from "lucide-react";
 import {
   type KeyboardEvent,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -49,6 +51,8 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
   const sendingRef = useRef(false);
   const loadingRef = useRef(false);
   const typingRef = useRef(false);
+  const logRef = useRef<HTMLDivElement>(null);
+  const [isScrolledUp, setIsScrolledUp] = useState(false);
 
   useEffect(() => {
     loadingRef.current = loading;
@@ -82,14 +86,28 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
   }, [open]);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ block: "end" });
-  }, [messages, loading, typing, open]);
+    if (!isScrolledUp) {
+      endRef.current?.scrollIntoView({ block: "end" });
+    }
+  }, [messages, loading, typing, open, isScrolledUp]);
 
   useEffect(() => {
     return () => {
       mountedRef.current = false;
       cancelReveal();
     };
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    const log = logRef.current;
+    if (!log) return;
+    const atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 60;
+    setIsScrolledUp(!atBottom);
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    setIsScrolledUp(false);
   }, []);
 
   function clearRevealTimer() {
@@ -309,7 +327,7 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
             </button>
           </header>
 
-          <div className="public-chat-log" aria-live="polite">
+          <div className="public-chat-log" ref={logRef} aria-live="polite" onScroll={handleScroll}>
             {messages.map((message, index) => (
               <div className={`public-chat-message public-chat-message-${message.role}`} key={message.id}>
                 <div className="public-chat-avatar">{message.role === "assistant" ? <Bot size={15} /> : t("chat.avatarLabel")}</div>
@@ -336,6 +354,16 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
             ) : null}
             <div ref={endRef} />
           </div>
+          {isScrolledUp && (
+            <button
+              type="button"
+              className="public-chat-scroll-down"
+              onClick={scrollToBottom}
+              aria-label={t("chat.scrollToBottom", "Scroll to bottom")}
+            >
+              <ChevronDown size={18} />
+            </button>
+          )}
 
           <div className="public-chat-prompts" aria-label={t("chat.promptsLabel")}>
             {(t("chat.prompts", { returnObjects: true }) as string[]).map((prompt) => (
