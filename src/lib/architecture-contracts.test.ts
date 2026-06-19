@@ -106,6 +106,14 @@ describe("architecture optimization contracts", () => {
     expect(mainSource).toContain("requestIdleCallback");
   });
 
+  it("keeps main.tsx free of undefined identifiers (gsap/plugin references)", () => {
+    const mainSource = read("src/main.tsx");
+    // main.tsx must not reference gsap/ScrollTrigger without importing them
+    // (a previous regression caused a runtime ReferenceError at app boot)
+    expect(mainSource).not.toMatch(/^\s*gsap\./m);
+    expect(mainSource).not.toMatch(/^\s*ScrollTrigger\./m);
+  });
+
   it("removes the unused cinematic WebGL gallery from the public architecture", () => {
     const packageJson = read("package.json");
     const gallerySource = read("src/components/Gallery.tsx");

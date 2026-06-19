@@ -24,3 +24,4 @@
 - Phase 1: `5074793` — Web Vitals RUM (LCP/INP/CLS/FCP/TTFB) + admin Web Vitals tab ✅
 - Phase 2: `ba60339` — Lazy-load GlobalEffects (CustomCursor/FilmGrain/ScrollProgress/Lenis) ✅
 - Phase 3: `5cfb13c` — Mobile swipe gestures + PinchZoom + adjacent photo nav ✅
+- Phase 4: `a8eea5a` — Custom event tracking + booking funnel instrumentation ✅
