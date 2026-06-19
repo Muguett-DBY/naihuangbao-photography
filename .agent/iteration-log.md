@@ -1,6 +1,51 @@
 # 持续迭代记录
 
-## 本轮完整循环 (5932161 → 1729d80) — 6 阶段连续迭代
+## Cycle 1 (292d572 → 6fdefa4) — 6 阶段连续迭代
+
+### Stage 1: 预约弹窗多步骤表单 ✅
+- **Commit**: `2582917` — `feat: split booking modal into multi-step form for mobile density`
+- 预约弹窗拆分为 2 步：选择套餐/日期/时间 → 填写姓名/联系方式/备注
+- 新增步骤指示器、返回按钮、步骤切换动画
+- CI: ✅ 通过
+
+### Stage 2: Gallery 滚动位置恢复 ✅
+- **Commit**: `fb0208f` — `feat: restore gallery scroll position on back navigation`
+- 离开 Gallery 页面时保存滚动位置，返回时自动恢复
+- CI: ✅ 通过
+
+### Stage 3: Gallery 微交互 ✅
+- **Commit**: `e71151c` — `feat: add micro-interactions to gallery filter tabs and view toggle`
+- 筛选标签页添加缩放动画，视图切换按钮添加悬停/点击反馈
+- CI: ✅ 通过
+
+### Stage 4: 日历骨架屏加载 ✅
+- **Commit**: `a46dc92` — `feat: replace calendar text loading with skeleton shimmer grid`
+- 日历加载状态从文字替换为骨架屏闪烁网格
+- CI: ✅ 通过
+
+### Stage 5: 系统健康检查 ✅
+- 无代码变更 — 全面审计通过
+- Lint/Test/Build 全部通过
+- CI: ✅ 通过
+
+### Stage 6: 最终打磨 ✅
+- **Commit**: `6fdefa4` — `docs: update orchestrator log after cycle 1 health check`
+- CI: ✅ 通过
+
+---
+
+## 遗留风险
+- `useAdminSession` hook 仍为死代码（低优先级）
+- 支付仍为 placeholder
+
+### 下一轮建议方向
+1. **预约弹窗步骤动画增强** — 添加更流畅的步骤切换过渡效果
+2. **Gallery 空状态优化** — 当无搜索结果时显示更有引导性的空状态
+3. **PhotoEditor 剩余类型优化** — 进一步收紧 BeautySettings 索引签名
+
+---
+
+## 上一轮完整循环 (5932161 → 1729d80) — 6 阶段连续迭代
 
 ### Stage 1: Gallery 搜索状态持久化 ✅
 - **Commit**: `3c5ef23` — `feat: persist gallery search state across navigation sessions`
