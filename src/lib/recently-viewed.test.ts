@@ -40,6 +40,11 @@ describe("recently viewed photos", () => {
     expect(page).toContain("recently-viewed");
   });
 
+  it("mounts the RecentlyViewedStrip on the home page so returning visitors can resume", () => {
+    const home = read("src/pages/HomePage.tsx");
+    expect(home).toContain("RecentlyViewedStrip");
+  });
+
   it("ships localized recently viewed copy in all locales", () => {
     for (const localePath of [
       "src/i18n/locales/zh-CN.json",
