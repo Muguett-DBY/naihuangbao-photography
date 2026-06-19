@@ -1233,6 +1233,7 @@
   },
   "photoDetail": {
     "backToGallery": "返回作品集",
+    "adjacentNav": "相邻照片",
     "notFound": "照片不存在",
     "about": "关于这张照片",
     "aboutDesc": "这张照片采用{{style}}风格拍摄，捕捉了拍摄地点独特的氛围与美感。",

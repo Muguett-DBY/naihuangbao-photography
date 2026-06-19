@@ -1,14 +1,15 @@
 import "../styles/pages.css";
 import { lazy, useEffect, useMemo, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { MapPin, Camera, ArrowRight, Eye } from "lucide-react";
+import { MapPin, Camera, ArrowRight, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import { useJsonLd } from "../hooks/useJsonLd";
 import { useHreflang } from "../hooks/useHreflang";
+import { useSwipeGesture } from "../hooks/useSwipeGesture";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -17,6 +18,7 @@ import { ImageWithFallback } from "../components/ImageWithFallback";
 import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import { FavoriteButton } from "../components/FavoriteButton";
 import { ShareMenu } from "../components/ShareMenu";
+import { PinchZoom } from "../components/PinchZoom";
 import { siteOrigin } from "../lib/site-origin";
 import type { PhotoItem } from "../types/photo";
 
@@ -46,6 +48,22 @@ export function PhotoDetailPage() {
 
   const photo = useMemo(() => photos.find((p) => p.id === id), [photos, id]);
   const { recordVisit, entries: recentlyViewed, clear: clearRecentlyViewed } = useRecentlyViewed();
+  const navigate = useNavigate();
+
+  // Adjacent photos for swipe navigation
+  const adjacent = useMemo(() => {
+    if (!photo) return { prev: null as PhotoItem | null, next: null as PhotoItem | null };
+    const idx = photos.findIndex((p) => p.id === photo.id);
+    return {
+      prev: idx > 0 ? photos[idx - 1] ?? null : null,
+      next: idx >= 0 && idx < photos.length - 1 ? photos[idx + 1] ?? null : null,
+    };
+  }, [photos, photo]);
+
+  const swipeRef = useSwipeGesture({
+    onSwipeLeft: () => { if (adjacent.next) navigate(`/gallery/${adjacent.next.id}`); },
+    onSwipeRight: () => { if (adjacent.prev) navigate(`/gallery/${adjacent.prev.id}`); },
+  });
 
   useEffect(() => {
     if (!photo) return;
@@ -156,8 +174,22 @@ export function PhotoDetailPage() {
           <DetailBackLink to="/gallery" label={t("photoDetail.backToGallery")} />
           <h1>{photo.title}</h1>
         </div>
-        <div className="photo-detail-cover-shell">
-          <div className="photo-detail-cover-frame">
+        <div className="photo-detail-cover-shell" ref={swipeRef}>
+          {(adjacent.prev || adjacent.next) && (
+            <div className="photo-detail-nav-hint" aria-hidden="true">
+              {adjacent.prev && (
+                <span className="photo-detail-nav-arrow photo-detail-nav-arrow--prev">
+                  <ChevronLeft size={18} />
+                </span>
+              )}
+              {adjacent.next && (
+                <span className="photo-detail-nav-arrow photo-detail-nav-arrow--next">
+                  <ChevronRight size={18} />
+                </span>
+              )}
+            </div>
+          )}
+          <PinchZoom className="photo-detail-cover-frame">
             <ImageWithFallback
               src={galleryThumb(photo.imageUrl)}
               alt={photo.alt}
@@ -166,8 +198,24 @@ export function PhotoDetailPage() {
               priority={true}
               sizes="(max-width: 768px) 100vw, 960px"
             />
-          </div>
+          </PinchZoom>
         </div>
+        {(adjacent.prev || adjacent.next) && (
+          <nav className="photo-detail-adjacent" aria-label={t("photoDetail.adjacentNav", "Adjacent photos")}>
+            {adjacent.prev ? (
+              <Link to={`/gallery/${adjacent.prev.id}`} className="photo-detail-adjacent-link photo-detail-adjacent-link--prev">
+                <ChevronLeft size={16} />
+                <span>{adjacent.prev.title}</span>
+              </Link>
+            ) : <span />}
+            {adjacent.next ? (
+              <Link to={`/gallery/${adjacent.next.id}`} className="photo-detail-adjacent-link photo-detail-adjacent-link--next">
+                <span>{adjacent.next.title}</span>
+                <ChevronRight size={16} />
+              </Link>
+            ) : <span />}
+          </nav>
+        )}
       </section>
 
       <ErrorBoundary>

@@ -1167,6 +1167,7 @@
   },
   "photoDetail": {
     "backToGallery": "ギャラリーに戻る",
+    "adjacentNav": "前後の写真",
     "notFound": "写真が見つかりません",
     "about": "この写真について",
     "aboutDesc": "この写真は{{style}}スタイルで撮影されました。ロケーションの独特な雰囲気と美しさを捉えています。",

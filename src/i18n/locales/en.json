@@ -490,7 +490,8 @@
     "clear": "Clear",
     "clearAll": "Clear all",
     "hint": "Add one more photo to start comparing",
-    "backToGallery": "Back to gallery",
+      "backToGallery": "Back to gallery",
+      "adjacentNav": "Adjacent photos",
     "empty": "Add up to 2 photos to compare side by side.",
     "needTwo": "Add one more photo to compare side by side.",
     "browseGallery": "Browse gallery"

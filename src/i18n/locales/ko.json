@@ -1167,6 +1167,7 @@
   },
   "photoDetail": {
     "backToGallery": "갤러리로 돌아가기",
+    "adjacentNav": "인접 사진",
     "notFound": "사진을 찾을 수 없습니다",
     "about": "이 사진에 대해",
     "aboutDesc": "이 사진은 {{style}} 스타일로 촬영되었습니다. 로케션의 독특한 분위기와 아름다움을 담고 있습니다.",

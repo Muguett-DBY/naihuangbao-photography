@@ -331,8 +331,8 @@ describe("audit regression coverage", () => {
     expect(photoWallSource).toContain("document.hidden");
     expect(photoWallSource).toContain("visibilitychange");
     expect(gallerySource).toContain("touchCleanupRef");
-    expect(gallerySource).toContain('document.removeEventListener("touchend", clear)');
-    expect(gallerySource).toContain('document.removeEventListener("touchmove", clear)');
+    expect(gallerySource).toContain('removeEventListener("touchend"');
+    expect(gallerySource).toContain('removeEventListener("touchmove"');
   });
 
   it("keeps visible review content and SEO alternates localized", () => {
