@@ -10,6 +10,7 @@ import { ImageWithFallback } from "./ImageWithFallback";
 import { Section } from "./Section";
 import { HighlightText } from "./shared/HighlightText";
 import { useDistortionHover } from "../hooks/useDistortionHover";
+import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
 
 type StyleFilter = PhotoStyle | "all";
 type ViewMode = "masonry" | "compact";
@@ -300,6 +301,23 @@ export function Gallery() {
     searchInputRef.current?.focus();
   }, []);
 
+  useKeyboardShortcut({
+    key: "/",
+    onMatch: () => {
+      searchInputRef.current?.focus();
+      searchInputRef.current?.select();
+    },
+  });
+
+  useKeyboardShortcut({
+    key: "Escape",
+    enabled: Boolean(searchQuery),
+    onMatch: () => {
+      setSearchQuery("");
+      setDebouncedSearch("");
+    },
+  });
+
   const visiblePhotos = useMemo(() => photos.slice(0, visibleCount), [photos, visibleCount]);
   const hasMore = visibleCount < photos.length;
 
@@ -440,6 +458,9 @@ export function Gallery() {
               >
                 <X size={14} />
               </button>
+            )}
+            {!searchQuery && (
+              <kbd className="gallery-search-shortcut" aria-hidden="true">/</kbd>
             )}
           </div>
           <div className="gallery-view-toggle" aria-label={t("gallery.viewMode", "View mode")}>

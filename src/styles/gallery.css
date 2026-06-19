@@ -732,6 +732,26 @@
   background: rgba(139, 94, 74, 0.2);
 }
 
+.gallery-search-shortcut {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  color: var(--caramel-muted, #7f5a44);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--caramel-line, #d8c3a6);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
 .gallery-search-count {
   font-size: 0.82rem;
   color: var(--caramel-muted);
