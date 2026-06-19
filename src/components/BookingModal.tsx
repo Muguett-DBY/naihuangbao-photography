@@ -11,6 +11,7 @@ import { PaymentForm } from "./PaymentForm";
 import { BookingCalendar } from "./BookingCalendar";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
+import { track } from "../utils/track";
 
 type BookingModalProps = {
   initialPackage?: string;
@@ -84,12 +85,14 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const handleNext = useCallback(() => {
     setStep(2);
     setError("");
-  }, []);
+    track("booking_step1_done", { packageName: selectedPkg, date, time });
+  }, [selectedPkg, date, time]);
 
   const handleBack = useCallback(() => {
     setStep(1);
     setError("");
-  }, []);
+    track("booking_back_to_step1", { packageName: selectedPkg });
+  }, [selectedPkg]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -131,6 +134,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       if (!data?.id) throw new Error(t("bookingModal.submitError"));
       setBookingId(data.id);
       setShowPayment(true);
+      track("booking_submitted", { packageName: selectedPkg, bookingId: data.id, hasNotes: Boolean(trimmedNotes) });
 
       await sendBookingConfirmation(trimmedContact, {
         bookingId: data.id,

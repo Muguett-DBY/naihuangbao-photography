@@ -10,6 +10,7 @@ import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import { useJsonLd } from "../hooks/useJsonLd";
 import { useHreflang } from "../hooks/useHreflang";
 import { useSwipeGesture } from "../hooks/useSwipeGesture";
+import { track } from "../utils/track";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailNotFound } from "../components/shared/DetailNotFound";
@@ -61,8 +62,8 @@ export function PhotoDetailPage() {
   }, [photos, photo]);
 
   const swipeRef = useSwipeGesture({
-    onSwipeLeft: () => { if (adjacent.next) navigate(`/gallery/${adjacent.next.id}`); },
-    onSwipeRight: () => { if (adjacent.prev) navigate(`/gallery/${adjacent.prev.id}`); },
+    onSwipeLeft: () => { if (adjacent.next) { track("photo_navigate", { direction: "next", photoId: adjacent.next.id }); navigate(`/gallery/${adjacent.next.id}`); } },
+    onSwipeRight: () => { if (adjacent.prev) { track("photo_navigate", { direction: "prev", photoId: adjacent.prev.id }); navigate(`/gallery/${adjacent.prev.id}`); } },
   });
 
   useEffect(() => {
@@ -73,6 +74,7 @@ export function PhotoDetailPage() {
       href: `/gallery/${photo.id}`,
       imageUrl: photo.imageUrl,
     });
+    track("photo_view", { photoId: photo.id, style: photo.style, album: photo.album ?? "" });
   }, [photo, recordVisit]);
 
   const relatedPhotos = useMemo(() => {
@@ -203,13 +205,29 @@ export function PhotoDetailPage() {
         {(adjacent.prev || adjacent.next) && (
           <nav className="photo-detail-adjacent" aria-label={t("photoDetail.adjacentNav", "Adjacent photos")}>
             {adjacent.prev ? (
-              <Link to={`/gallery/${adjacent.prev.id}`} className="photo-detail-adjacent-link photo-detail-adjacent-link--prev">
+              <Link
+                to={`/gallery/${adjacent.prev.id}`}
+                className="photo-detail-adjacent-link photo-detail-adjacent-link--prev"
+                onClick={() => {
+                  if (adjacent.prev) {
+                    track("photo_navigate", { direction: "prev", photoId: adjacent.prev.id, source: "link" });
+                  }
+                }}
+              >
                 <ChevronLeft size={16} />
                 <span>{adjacent.prev.title}</span>
               </Link>
             ) : <span />}
             {adjacent.next ? (
-              <Link to={`/gallery/${adjacent.next.id}`} className="photo-detail-adjacent-link photo-detail-adjacent-link--next">
+              <Link
+                to={`/gallery/${adjacent.next.id}`}
+                className="photo-detail-adjacent-link photo-detail-adjacent-link--next"
+                onClick={() => {
+                  if (adjacent.next) {
+                    track("photo_navigate", { direction: "next", photoId: adjacent.next.id, source: "link" });
+                  }
+                }}
+              >
                 <span>{adjacent.next.title}</span>
                 <ChevronRight size={16} />
               </Link>

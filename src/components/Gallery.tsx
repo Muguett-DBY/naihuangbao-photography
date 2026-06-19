@@ -14,6 +14,7 @@ import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
 import { useSavedSearches } from "../hooks/useSavedSearches";
 import { useCompare } from "../hooks/useCompare";
 import { useSwipeGesture } from "../hooks/useSwipeGesture";
+import { track } from "../utils/track";
 import { FavoriteButton } from "./FavoriteButton";
 import { CompareButton } from "./CompareButton";
 import { CompareBar } from "./CompareBar";
@@ -285,8 +286,14 @@ export function Gallery() {
   // Sync filter, search, and non-default view state to URL params.
   useEffect(() => {
     const params = new URLSearchParams();
-    if (filter !== "all") params.set("style", filter);
-    if (debouncedSearch) params.set("q", debouncedSearch);
+    if (filter !== "all") {
+      params.set("style", filter);
+      track("gallery_filter", { style: filter });
+    }
+    if (debouncedSearch) {
+      params.set("q", debouncedSearch);
+      track("gallery_search", { query: debouncedSearch });
+    }
     if (viewMode !== "masonry") params.set("view", viewMode);
     setSearchParams(params, { replace: true });
   }, [filter, debouncedSearch, viewMode, setSearchParams]);
@@ -328,6 +335,7 @@ export function Gallery() {
     key: "c",
     enabled: compare.count >= 2,
     onMatch: () => {
+      track("compare_opened", { count: compare.count, source: "keyboard" });
       window.location.assign("/compare");
     },
   });
@@ -414,6 +422,7 @@ export function Gallery() {
             const idx = photoIndexMap.get(start.id);
             if (typeof idx === "number") {
               setLightboxIndex(idx);
+              track("lightbox_open", { photoId: start.id, source: "swipe" });
               navigator.vibrate?.(8);
             }
           }
@@ -732,7 +741,11 @@ export function Gallery() {
                         className="gallery-masonry-btn"
                         type="button"
                         data-distort
-                        onClick={() => setLightboxIndex(photoIndexMap.get(item.id) ?? 0)}
+                        onClick={() => {
+                          const idx = photoIndexMap.get(item.id) ?? 0;
+                          setLightboxIndex(idx);
+                          track("lightbox_open", { photoId: item.id, style: item.style, source: "tap" });
+                        }}
                         onTouchStart={(e) => handleTouchStart(item.id, e)}
                         aria-label={`${t("gallery.viewLargeImage")}${item.title}`}
                       >

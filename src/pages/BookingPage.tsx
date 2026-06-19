@@ -5,6 +5,7 @@ import { CalendarCheck } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useBookingModal } from "../hooks/useBookingModal";
+import { track } from "../utils/track";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SectionSkeleton } from "../components/SectionSkeleton";
@@ -21,6 +22,7 @@ export function BookingPage() {
 
   useSEO({ titleKey: "seo.bookingTitle", descKey: "seo.bookingDesc", path: "/booking" });
   useGsapPageEffects(rootRef);
+  track("booking_page_view");
 
   return (
     <PageTransition ref={rootRef}>
