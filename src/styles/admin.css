@@ -826,3 +826,332 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Web Vitals tab ── */
+
+.adm-vitals-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.adm-vitals-header h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.adm-vitals-range {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.adm-vitals-range-btn {
+  appearance: none;
+  border: 1px solid rgba(139, 94, 74, 0.18);
+  background: #fffdf7;
+  color: #7a5a4a;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.adm-vitals-range-btn:hover {
+  border-color: rgba(139, 94, 74, 0.35);
+}
+
+.adm-vitals-range-btn.is-active {
+  background: #493735;
+  color: #fff8f3;
+  border-color: #493735;
+}
+
+.adm-vitals-meta {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  color: #a08880;
+}
+
+.adm-vitals-meta strong {
+  color: #493735;
+  font-weight: 700;
+}
+
+.adm-vitals-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 16px;
+  color: #a08880;
+  text-align: center;
+}
+
+.adm-vitals-empty p {
+  margin: 0;
+  max-width: 360px;
+  line-height: 1.5;
+}
+
+.adm-vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.adm-vitals-card {
+  background: #fffdf7;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 14px;
+  padding: 18px 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.adm-vitals-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.adm-vitals-card-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #493735;
+  letter-spacing: 0.02em;
+}
+
+.adm-vitals-card-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #a08880;
+  background: rgba(139, 94, 74, 0.08);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.adm-vitals-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0;
+}
+
+.adm-vitals-card-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.adm-vitals-card-stats dt {
+  font-size: 11px;
+  font-weight: 600;
+  color: #a08880;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.adm-vitals-card-stats dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #493735;
+}
+
+.adm-vitals-rating-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.adm-vitals-rating-row {
+  display: grid;
+  grid-template-columns: 10px 110px 1fr 36px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #7a5a4a;
+}
+
+.adm-vitals-rating-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.adm-vitals-rating--good { background: #6a9a70; }
+.adm-vitals-rating--mid { background: #d8a14a; }
+.adm-vitals-rating--poor { background: #c75a4f; }
+
+.adm-vitals-rating-track {
+  height: 6px;
+  background: rgba(139, 94, 74, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.adm-vitals-rating-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.adm-vitals-rating-fill.adm-vitals-rating--good { background: #6a9a70; }
+.adm-vitals-rating-fill.adm-vitals-rating--mid { background: #d8a14a; }
+.adm-vitals-rating-fill.adm-vitals-rating--poor { background: #c75a4f; }
+
+.adm-vitals-rating-pct {
+  font-weight: 600;
+  text-align: right;
+  color: #493735;
+}
+
+.adm-vitals-section {
+  margin-top: 28px;
+}
+
+.adm-vitals-section h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #493735;
+  margin: 0 0 12px 0;
+}
+
+.adm-vitals-empty-line {
+  color: #a08880;
+  font-size: 13px;
+  margin: 0;
+}
+
+.adm-vitals-chart {
+  background: #fffdf7;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.adm-vitals-chart-grid {
+  display: flex;
+  gap: 2px;
+  margin-left: 60px;
+  margin-bottom: 6px;
+}
+
+.adm-vitals-chart-x-label {
+  flex: 1;
+  min-width: 14px;
+  font-size: 10px;
+  color: #a08880;
+  text-align: center;
+}
+
+.adm-vitals-chart-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.adm-vitals-chart-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.adm-vitals-chart-metric {
+  width: 52px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #7a5a4a;
+  padding-bottom: 4px;
+}
+
+.adm-vitals-chart-bars {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  flex: 1;
+}
+
+.adm-vitals-chart-bar {
+  flex: 1;
+  min-width: 12px;
+  background: linear-gradient(180deg, #c4775e, #8b5e4a);
+  border-radius: 2px 2px 0 0;
+  transition: opacity 0.2s;
+}
+
+.adm-vitals-chart-bar:hover {
+  opacity: 0.75;
+}
+
+.adm-vitals-pages-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fffdf7;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+.adm-vitals-pages-table th,
+.adm-vitals-pages-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(139, 94, 74, 0.06);
+}
+
+.adm-vitals-pages-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #a08880;
+  font-weight: 600;
+  background: rgba(139, 94, 74, 0.04);
+}
+
+.adm-vitals-pages-table tr:last-child td {
+  border-bottom: none;
+}
+
+.adm-vitals-page-cell {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: #493735;
+  word-break: break-all;
+}
+
+@media (max-width: 640px) {
+  .adm-vitals-rating-row {
+    grid-template-columns: 10px 1fr 36px;
+  }
+  .adm-vitals-rating-track {
+    grid-column: 1 / -1;
+  }
+  .adm-vitals-pages-table {
+    font-size: 12px;
+  }
+  .adm-vitals-pages-table th,
+  .adm-vitals-pages-table td {
+    padding: 8px 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adm-vitals-range-btn,
+  .adm-vitals-chart-bar,
+  .adm-vitals-rating-fill {
+    transition: none;
+  }
+}

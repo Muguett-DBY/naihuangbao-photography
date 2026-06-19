@@ -269,3 +269,21 @@ create table if not exists password_reset_tokens (
 
 create index if not exists idx_password_reset_tokens_user
   on password_reset_tokens (user_id, used, expires_at);
+
+-- ── Web Vitals RUM ──
+
+create table if not exists web_vitals (
+  id integer primary key autoincrement,
+  metric text not null,
+  value real not null,
+  rating text not null,
+  page text not null,
+  connection_type text,
+  created_at text not null default (datetime('now'))
+);
+
+create index if not exists idx_web_vitals_metric_time
+  on web_vitals (metric, created_at);
+
+create index if not exists idx_web_vitals_page_metric
+  on web_vitals (page, metric, created_at);

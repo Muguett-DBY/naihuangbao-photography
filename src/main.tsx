@@ -4,10 +4,13 @@ import { RouterProvider } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { router } from "./router";
+import { initWebVitals } from "./utils/webVitals";
 import "./i18n";
 import "animal-island-ui/style";
 import "./styles/global.css";
 import "./styles/animal-theme.css";
+
+initWebVitals();
 
 gsap.registerPlugin(ScrollTrigger);
 

@@ -775,6 +775,7 @@
       "bookings": "预约",
       "photos": "照片",
       "stats": "数据",
+      "vitals": "性能指标",
       "courses": "课程",
       "presets": "预设",
       "workshops": "活动",
@@ -828,6 +829,23 @@
       "recentActivity": "最近动态",
       "recentBookings": "最近预约",
       "recentPhotos": "最近上传"
+    },
+    "vitals": {
+      "title": "Web 性能指标",
+      "noData": "无法加载性能数据",
+      "empty": "暂无真实用户数据。访客访问后，指标会自动汇总到这里。",
+      "totalSamples": "样本数",
+      "dailyTitle": "每日趋势 (p75)",
+      "noDaily": "样本不足，暂无法绘制趋势。",
+      "dailyAria": "Web 性能指标每日 p75 趋势",
+      "pagesTitle": "热门页面",
+      "colPage": "页面",
+      "colSamples": "样本",
+      "ratings": {
+        "good": "良好",
+        "needs-improvement": "需改进",
+        "poor": "较差"
+      }
     }
   },
   "chat": {
