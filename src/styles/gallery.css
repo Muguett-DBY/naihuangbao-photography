@@ -1036,6 +1036,17 @@
   flex-shrink: 0;
 }
 
+.gallery-sort-toggle select {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--caramel-line, #d8c3a6);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  color: var(--caramel-ink, #2c2218);
+  cursor: pointer;
+}
+
 .gallery-view-btn {
   display: inline-flex;
   align-items: center;

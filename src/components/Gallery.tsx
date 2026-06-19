@@ -211,6 +211,7 @@ export function Gallery() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [viewMode, setViewMode] = useState<ViewMode>(initialState.view);
+  const [sortMode, setSortMode] = useState<"default" | "newest" | "featured">("default");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [touchedId, setTouchedId] = useState<string | null>(null);
   const [showRestored, setShowRestored] = useState(initialState.restored);
@@ -242,7 +243,21 @@ export function Gallery() {
   }, [sourcePhotos]);
 
   const styleFiltered = useMemo<PhotoItem[]>(() => getPhotosByStyle(sourcePhotos, filter), [sourcePhotos, filter]);
-  const photos = useMemo<PhotoItem[]>(() => searchPhotos(styleFiltered, debouncedSearch), [styleFiltered, debouncedSearch]);
+  const searched = useMemo<PhotoItem[]>(() => searchPhotos(styleFiltered, debouncedSearch), [styleFiltered, debouncedSearch]);
+  const photos = useMemo<PhotoItem[]>(() => {
+    if (sortMode === "default") return searched;
+    const copy = [...searched];
+    if (sortMode === "newest") {
+      copy.sort((a, b) => {
+        const ta = a.createdAt ? Date.parse(a.createdAt) : 0;
+        const tb = b.createdAt ? Date.parse(b.createdAt) : 0;
+        return tb - ta;
+      });
+    } else if (sortMode === "featured") {
+      copy.sort((a, b) => Number(b.featured) - Number(a.featured));
+    }
+    return copy;
+  }, [searched, sortMode]);
   const filterLabel = t(`gallery.filters.${filter}`, filter);
   const viewLabel = t(viewMode === "compact" ? "gallery.viewCompact" : "gallery.viewMasonry");
   const hasActiveDiscovery = filter !== "all" || Boolean(searchQuery.trim() || debouncedSearch.trim()) || viewMode !== "masonry";
@@ -495,6 +510,17 @@ export function Gallery() {
               <Columns size={16} />
             </button>
           </div>
+          <label className="gallery-sort-toggle">
+            <span className="sr-only">{t("gallery.sortLabel", "Sort photos")}</span>
+            <select
+              value={sortMode}
+              onChange={(e) => setSortMode(e.target.value as "default" | "newest" | "featured")}
+            >
+              <option value="default">{t("gallery.sortDefault", "Default order")}</option>
+              <option value="newest">{t("gallery.sortNewest", "Newest first")}</option>
+              <option value="featured">{t("gallery.sortFeatured", "Featured first")}</option>
+            </select>
+          </label>
         </div>
 
         {showRestored && hasActiveDiscovery && (
