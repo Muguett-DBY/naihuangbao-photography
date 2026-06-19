@@ -2816,6 +2816,67 @@
 /* ══════════════════════════════════════════════
    Travel Zone Map
    ══════════════════════════════════════════════ */
+.map-view-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.map-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid rgba(139, 94, 74, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--caramel-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.map-view-btn:hover {
+  border-color: var(--peach-accent);
+}
+.map-view-btn.active {
+  background: var(--peach-accent);
+  border-color: var(--peach-accent);
+  color: #fff;
+}
+.map-location-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+.map-location-card {
+  padding: 16px;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 253, 247, 0.8);
+}
+.map-location-card h3 {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  color: var(--caramel-ink);
+}
+.map-location-count {
+  font-size: 0.8rem;
+  color: var(--caramel-muted);
+}
+.map-location-styles {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.map-location-style {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(139, 94, 74, 0.08);
+  color: var(--caramel-text);
+}
+
 .photo-map-section {
   margin-bottom: clamp(40px, 6vw, 80px);
 }
