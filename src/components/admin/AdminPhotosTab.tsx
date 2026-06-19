@@ -1,4 +1,4 @@
-import { ImagePlus, Pencil, Trash2, Upload, CheckSquare, Eye, EyeOff, Star } from "lucide-react";
+import { ImagePlus, Pencil, Trash2, Upload, CheckSquare, Eye, EyeOff, Star, HelpCircle } from "lucide-react";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
@@ -8,6 +8,7 @@ import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { SkeletonGrid } from "../SkeletonGrid";
 import { HighlightText } from "../shared/HighlightText";
+import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 
 const maxPhotoUploadSize = 10 * 1024 * 1024;
 const allowedPhotoTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -16,6 +17,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
   const styleLabels = getStyleLabels(t);
   const [photos, setPhotos] = useState<PhotoItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const [deletingPhoto, setDeletingPhoto] = useState<PhotoItem | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deletingBatch, setDeletingBatch] = useState(false);
@@ -61,6 +63,28 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [deletingPhoto]);
+
+  // Admin keyboard shortcuts
+  useKeyboardShortcut({
+    key: "?",
+    onMatch: () => setShowShortcuts((v) => !v),
+  });
+  useKeyboardShortcut({
+    key: "n",
+    enabled: !showShortcuts && !editingPhoto && !deletingPhoto,
+    onMatch: () => fileRef.current?.click(),
+  });
+  useKeyboardShortcut({
+    key: "/",
+    enabled: !showShortcuts && !editingPhoto && !deletingPhoto,
+    onMatch: () => document.querySelector<HTMLInputElement>(".adm-search-input")?.focus(),
+  });
+  useKeyboardShortcut({
+    key: "Escape",
+    enabled: showShortcuts,
+    onMatch: () => setShowShortcuts(false),
+  });
+
   const fileRef = useRef<HTMLInputElement>(null);
   const previewObjectUrlRef = useRef<string | null>(null);
 
@@ -418,6 +442,23 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
             <div className="adm-actions">
               <Button type="default" size="small" className="adm-btn-cancel" onClick={() => setDeletingPhoto(null)}>取消</Button>
               <Button type="primary" size="small" className="adm-btn-confirm" onClick={handleDelete} disabled={deleting}>{deleting ? "删除中..." : "确认删除"}</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showShortcuts && (
+        <div className="adm-overlay" role="dialog" aria-modal="true" aria-label="键盘快捷键" onClick={() => setShowShortcuts(false)}>
+          <div className="adm-dialog adm-shortcuts-dialog" onClick={(e) => e.stopPropagation()}>
+            <h3><HelpCircle size={18} /> 键盘快捷键</h3>
+            <ul className="adm-shortcuts-list">
+              <li><kbd>/</kbd> 聚焦搜索框</li>
+              <li><kbd>N</kbd> 上传新照片</li>
+              <li><kbd>?</kbd> 显示/隐藏快捷键</li>
+              <li><kbd>Esc</kbd> 关闭弹窗</li>
+            </ul>
+            <div className="adm-actions">
+              <Button type="default" size="small" onClick={() => setShowShortcuts(false)}>关闭</Button>
             </div>
           </div>
         </div>

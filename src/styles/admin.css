@@ -413,9 +413,19 @@
   background: #fffaf6; box-shadow: 0 20px 60px rgba(0,0,0,0.18);
 }
 
-.adm-dialog h3 { margin: 0 0 16px; font-size: 17px; color: #2d2725; }
+.adm-dialog h3 { margin: 0 0 16px; font-size: 17px; color: #2d2725; display: flex; align-items: center; gap: 8px; }
 .adm-edit-grid { display: grid; gap: 12px; margin-bottom: 18px; }
 .adm-edit-grid label { display: grid; gap: 4px; font-size: 12px; font-weight: 700; color: #5d4e49; }
+
+.adm-shortcuts-list { list-style: none; padding: 0; margin: 0 0 18px; }
+.adm-shortcuts-list li { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(139, 94, 74, 0.1); font-size: 13px; color: #5c4d43; }
+.adm-shortcuts-list kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 28px; height: 26px; padding: 0 8px;
+  background: rgba(139, 94, 74, 0.08);
+  border: 1px solid rgba(139, 94, 74, 0.2);
+  border-radius: 6px; font-family: ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #5d4e49;
+}
 .adm-edit-grid input,
 .adm-edit-grid select {
   border: 1px solid rgba(117,88,83,0.16); border-radius: 8px; padding: 9px 11px;
