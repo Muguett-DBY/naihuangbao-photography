@@ -2607,6 +2607,20 @@
   margin: 8px 0;
 }
 
+.calendar-skeleton {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.calendar-skeleton-day {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--custard-cream, #FFF9EC) 25%, var(--custard-soft, #FFE8C5) 50%, var(--custard-cream, #FFF9EC) 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
 .calendar-legend {
   display: flex;
   justify-content: center;

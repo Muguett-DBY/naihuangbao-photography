@@ -8,8 +8,12 @@
 - **Commit**: `fb0208f` — `feat: restore gallery scroll position on back navigation`
 - **CI**: ✅ Passed
 
-## Cycle 1, Stage 3: UIUX
-- **Prompt**: AGENT_UIUX_MAIN.txt
+## Cycle 1, Stage 3: UIUX ✅
+- **Commit**: `e71151c` — `feat: add micro-interactions to gallery filter tabs and view toggle`
+- **CI**: ✅ Passed
+
+## Cycle 1, Stage 4: IMPROVE
+- **Prompt**: AGENT_IMPROVE_MAIN.txt
 - **Started**: 2026-06-19
 - **Status**: In Progress
-- **Goal**: Improve service cards and CTA button hover/active states across the site
+- **Goal**: Add skeleton loading state for booking calendar
