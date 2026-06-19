@@ -40,6 +40,12 @@ describe("static SEO shell", () => {
     expect(html).toContain('name="twitter:image" content="https://shoot.custard.top/wechat-share.jpg"');
   });
 
+  it("includes preconnect and font preload for faster first paint", () => {
+    expect(html).toContain('rel="preconnect" href="https://shoot.custard.top"');
+    expect(html).toContain('rel="dns-prefetch" href="https://shoot.custard.top"');
+    expect(html).toContain('rel="preload" href="/fonts/naihuangbao-wenkai-subset.woff2"');
+  });
+
   it("links the web app manifest for PWA installs", () => {
     expect(html).toContain('rel="manifest" href="/manifest.webmanifest"');
     expect(html).toContain('name="theme-color" content="#F5E6D3"');
