@@ -1618,9 +1618,30 @@
     font-size: 11px;
   }
 
-  .gallery-masonry-overlay-location {
-    font-size: 13px;
-  }
+.gallery-masonry-overlay-location {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+.gallery-masonry-overlay-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.gallery-detail-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  transition: all 0.2s ease;
+}
+.gallery-detail-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+}
 
   .gallery-masonry-caption p {
     font-size: 13px;
