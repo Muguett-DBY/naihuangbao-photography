@@ -1,10 +1,12 @@
 import { Button, Input, Modal } from "animal-island-ui";
-import { type FormEvent, useState, useCallback } from "react";
+import { type FormEvent, useId, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useNotification } from "../hooks/useNotification";
+import { useFocusTrap } from "../hooks/useFocusTrap";
+import { useModalA11y } from "../hooks/useModalA11y";
 import { PaymentForm } from "./PaymentForm";
 import { BookingCalendar } from "./BookingCalendar";
 import { publicMutationHeaders } from "../lib/admin-helpers";
@@ -39,6 +41,10 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const [showPayment, setShowPayment] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const titleId = useId();
+  const descriptionId = useId();
+  const contentRef = useFocusTrap<HTMLDivElement>({ initialFocus: "first" });
+  useModalA11y({ open: true, titleId, descriptionId });
 
   const validateField = useCallback((field: string, value: string): string | undefined => {
     switch (field) {
@@ -161,25 +167,28 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   if (showPayment && bookingId) {
     return (
       <Modal open onClose={onClose} footer={null} typewriter={false}>
-        <PaymentForm
-          purpose="booking_deposit"
-          amountCents={calculateDepositCents()}
-          currency="cny"
-          referenceId={bookingId}
-          metadata={{ packageName: selectedPkg, name: name.trim() }}
-          onSuccess={() => {
-            setDone(true);
-            setShowPayment(false);
-          }}
-          onError={(err) => {
-            setError(err);
-            setShowPayment(false);
-          }}
-          onCancel={() => {
-            setDone(true);
-            setShowPayment(false);
-          }}
-        />
+        <span id={titleId} className="sr-only">{t("bookingModal.paymentTitle", "Payment")}</span>
+        <div ref={contentRef} className="booking-modal-content">
+          <PaymentForm
+            purpose="booking_deposit"
+            amountCents={calculateDepositCents()}
+            currency="cny"
+            referenceId={bookingId}
+            metadata={{ packageName: selectedPkg, name: name.trim() }}
+            onSuccess={() => {
+              setDone(true);
+              setShowPayment(false);
+            }}
+            onError={(err) => {
+              setError(err);
+              setShowPayment(false);
+            }}
+            onCancel={() => {
+              setDone(true);
+              setShowPayment(false);
+            }}
+          />
+        </div>
       </Modal>
     );
   }
@@ -190,6 +199,8 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     const timeLabel: string = time ? String(t(`bookingModal.${time}` as any)) : String(t("bookingModal.any"));
     return (
       <Modal open onClose={onClose} footer={null} typewriter={false}>
+        <span id={titleId} className="sr-only">{t("bookingModal.successTitle")}</span>
+        <div ref={contentRef} className="booking-modal-content">
         <div className="booking-modal-success">
           <div className="booking-success-check">
             <svg viewBox="0 0 24 24" className="booking-success-check-svg" aria-hidden="true">
@@ -235,6 +246,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
             </Link>
           </div>
         </div>
+        </div>
       </Modal>
     );
   }
@@ -249,6 +261,9 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       maskClosable={false}
       footer={null}
     >
+      <span id={titleId} className="sr-only">{t("bookingModal.title")}</span>
+      <span id={descriptionId} className="sr-only">{t("bookingModal.subtitle")}</span>
+      <div ref={contentRef} className="booking-modal-content">
       <p className="booking-subtitle">
         {t("bookingModal.subtitle")}
       </p>
@@ -381,6 +396,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           </div>
         )}
       </form>
+      </div>
     </Modal>
   );
 }
