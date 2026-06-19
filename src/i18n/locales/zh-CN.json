@@ -470,6 +470,10 @@
     "backToTop": "回到顶部",
     "ariaLabel": "网站页脚"
   },
+  "recentlyViewed": {
+    "title": "最近浏览",
+    "clear": "清空"
+  },
   "newsletter": {
     "title": "订阅更新",
     "description": "获取最新活动和优惠信息",
