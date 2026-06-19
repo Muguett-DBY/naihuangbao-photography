@@ -525,6 +525,8 @@
       "other": "Other"
     },
     "inquire": "Inquire to Purchase",
+    "inStock": "In Stock",
+    "outOfStock": "Sold Out",
     "contactUs": "Contact Us",
     "empty": "Merchandise coming soon, stay tuned"
   },

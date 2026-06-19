@@ -522,6 +522,8 @@
       "other": "その他"
     },
     "inquire": "購入のお問い合わせ",
+    "inStock": "在庫あり",
+    "outOfStock": "売切れ",
     "contactUs": "お問い合わせ",
     "empty": "準備中です。お楽しみに"
   },

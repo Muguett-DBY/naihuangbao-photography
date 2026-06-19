@@ -29,9 +29,9 @@ export function ShopPage() {
   useGsapPageEffects(rootRef);
 
   const categories = useMemo(() => {
-    const cats = new Set<string>();
-    items.forEach((item) => cats.add(item.category));
-    return Array.from(cats);
+    const cats = new Map<string, number>();
+    items.forEach((item) => cats.set(item.category, (cats.get(item.category) || 0) + 1));
+    return Array.from(cats.entries());
   }, [items]);
 
   const filteredItems = useMemo(() => {
@@ -66,8 +66,9 @@ export function ShopPage() {
                 onClick={() => setFilter("all")}
               >
                 {t("gallery.filters.all")}
+                <span className="filter-count">{items.length}</span>
               </button>
-              {categories.map((cat) => (
+              {categories.map(([cat, count]) => (
                 <button
                   key={cat}
                   type="button"
@@ -76,6 +77,7 @@ export function ShopPage() {
                   onClick={() => setFilter(cat)}
                 >
                   {tMerchandiseCategory(t, cat)}
+                  <span className="filter-count">{count}</span>
                 </button>
               ))}
             </div>
@@ -104,9 +106,15 @@ export function ShopPage() {
                   <p>{getDesc(item, i18n.language)}</p>
                   <div className="merchandise-actions">
                     <span className="merchandise-price">{item.price_display}</span>
+                    {item.available > 0 ? (
+                      <span className="merchandise-stock in-stock">{t("merchandise.inStock", "In Stock")}</span>
+                    ) : (
+                      <span className="merchandise-stock out-of-stock">{t("merchandise.outOfStock", "Sold Out")}</span>
+                    )}
                     <button
                       className="merchandise-inquire-btn"
                       onClick={(e) => { e.stopPropagation(); openBookingModal(); }}
+                      disabled={item.available <= 0}
                     >
                       {t("merchandise.inquire")}
                     </button>

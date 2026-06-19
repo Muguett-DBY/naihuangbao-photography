@@ -943,6 +943,20 @@
   font-size: 1.1rem;
   font-weight: 600;
 }
+.merchandise-stock {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.merchandise-stock.in-stock {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+.merchandise-stock.out-of-stock {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
 
 .merchandise-inquire-btn {
   display: inline-flex;

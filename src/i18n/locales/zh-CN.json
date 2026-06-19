@@ -549,6 +549,8 @@
       "other": "其他"
     },
     "inquire": "咨询购买",
+    "inStock": "有货",
+    "outOfStock": "售罄",
     "contactUs": "联系我们",
     "empty": "周边产品即将上线，敬请期待"
   },
