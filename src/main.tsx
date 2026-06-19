@@ -1,8 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { router } from "./router";
 import { initWebVitals } from "./utils/webVitals";
 import "./i18n";
