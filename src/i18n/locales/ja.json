@@ -75,6 +75,7 @@
     "allLoaded": "すべての写真が読み込まれました",
     "restoredSession": "前回の浏览状態を復元しました",
     "dismiss": "閉じる",
+    "tryFilters": "これらのスタイルをお試し：",
     "filters": {
       "all": "すべて",
       "jiangnan": "江南",

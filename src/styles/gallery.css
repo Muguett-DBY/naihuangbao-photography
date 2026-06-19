@@ -601,6 +601,49 @@
   outline-offset: 3px;
 }
 
+.gallery-empty-suggestions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0 8px;
+}
+.gallery-empty-suggestions-label {
+  font-size: 12px;
+  color: var(--caramel-muted);
+  font-weight: 600;
+}
+.gallery-empty-suggestions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+.gallery-empty-suggestion-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border: 1px solid rgba(139, 94, 74, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--caramel-ink);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.gallery-empty-suggestion-btn:hover {
+  border-color: var(--peach-accent);
+  background: rgba(255, 184, 161, 0.1);
+  transform: translateY(-1px);
+}
+.gallery-empty-suggestion-count {
+  font-size: 10px;
+  color: var(--caramel-muted);
+  opacity: 0.7;
+}
+
 /* ══════════════════════════════════════════════
    Filter Row - Magazine Tab Style
    ══════════════════════════════════════════════ */
