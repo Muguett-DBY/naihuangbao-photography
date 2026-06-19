@@ -1,10 +1,11 @@
 import { ImagePlus, Pencil, Trash2, Upload, CheckSquare, Eye, EyeOff, Star } from "lucide-react";
-import { type FormEvent, useRef, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
 import { getStyleLabels } from "../../data/site";
 import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
 import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 const maxPhotoUploadSize = 10 * 1024 * 1024;
 const allowedPhotoTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -28,6 +29,26 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStyle, setFilterStyle] = useState<PhotoStyle | "all">("all");
   const [filterVisibility, setFilterVisibility] = useState<"all" | "public" | "hidden">("all");
+  const editDialogRef = useFocusTrap<HTMLDivElement>({ active: !!editingPhoto });
+  const deleteDialogRef = useFocusTrap<HTMLDivElement>({ active: !!deletingPhoto });
+
+  useEffect(() => {
+    if (!editingPhoto) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setEditingPhoto(null);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [editingPhoto]);
+
+  useEffect(() => {
+    if (!deletingPhoto) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setDeletingPhoto(null);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [deletingPhoto]);
   const fileRef = useRef<HTMLInputElement>(null);
   const previewObjectUrlRef = useRef<string | null>(null);
 
@@ -173,7 +194,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     <div className="adm-body">
       {editingPhoto && (
         <div className="adm-overlay" role="dialog" aria-modal="true" aria-label="编辑作品" onClick={() => setEditingPhoto(null)}>
-          <div className="adm-dialog" onClick={(e) => e.stopPropagation()}>
+          <div className="adm-dialog" ref={editDialogRef} onClick={(e) => e.stopPropagation()}>
             <h3>编辑作品</h3>
             <div className="adm-edit-grid">
               <label>标题 <input value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })} /></label>
@@ -327,7 +348,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
 
       {deletingPhoto && (
         <div className="adm-overlay" role="dialog" aria-modal="true" aria-label="确认删除" onClick={() => setDeletingPhoto(null)}>
-          <div className="adm-dialog" onClick={(e) => e.stopPropagation()}>
+          <div className="adm-dialog" ref={deleteDialogRef} onClick={(e) => e.stopPropagation()}>
             <h3>确认删除</h3>
             <p>确定删除「{deletingPhoto.title}」？删除后不可恢复。</p>
             <div className="adm-actions">
