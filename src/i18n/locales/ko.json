@@ -141,6 +141,9 @@
       "unreachableTitle": "10km 초과 · 서비스 불가",
       "unreachableText": "일일 촬영 범위를 벗어납니다. 양해 부탁드립니다."
     },
+    "mapView": "지도",
+    "listView": "목록",
+    "photos": "장의 사진",
     "studioLabel": "진셴 칼리지 · 시안린",
     "studioDesc": "스튜디오 베이스 · 출발 지점",
     "freeLabel": "✅ 2km 이내 무료",

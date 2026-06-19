@@ -141,6 +141,9 @@
       "unreachableTitle": "10公里以上 · 暂不可达",
       "unreachableText": "超出日常拍摄范围（10公里以上），暂时无法提供服务，敬请谅解。"
     },
+    "mapView": "地图",
+    "listView": "列表",
+    "photos": "张照片",
     "studioLabel": "金审学院 · 仙林大学城",
     "studioDesc": "拍摄基地 · 从这里出发",
     "freeLabel": "✅ 2km内免费到达",

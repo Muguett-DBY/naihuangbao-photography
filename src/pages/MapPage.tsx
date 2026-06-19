@@ -1,8 +1,10 @@
 import "../styles/pages.css";
-import { Suspense, lazy, useRef } from "react";
+import { Suspense, lazy, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Map, List } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
+import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SectionSkeleton } from "../components/SectionSkeleton";
@@ -12,9 +14,17 @@ const PhotoMap = lazy(() => import("../components/PhotoMap").then((m) => ({ defa
 export function MapPage() {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
+  const { photos } = usePublicPhotos();
+  const [view, setView] = useState<"map" | "list">("map");
 
   useGsapPageEffects(rootRef);
   useSEO({ titleKey: "seo.mapTitle", descKey: "seo.mapDesc", path: "/map" });
+
+  const locations = Array.from(new Set(photos.map((p) => p.location))).map((loc) => ({
+    name: loc,
+    count: photos.filter((p) => p.location === loc).length,
+    styles: Array.from(new Set(photos.filter((p) => p.location === loc).map((p) => p.style))),
+  }));
 
   return (
     <PageTransition ref={rootRef}>
@@ -27,10 +37,35 @@ export function MapPage() {
       </section>
 
       <section className="section-shell" style={{ padding: "0 0 60px" }}>
+        <div className="map-view-toggle">
+          <button type="button" className={`map-view-btn ${view === "map" ? "active" : ""}`} onClick={() => setView("map")}>
+            <Map size={16} /> {t("photoMap.mapView", "Map")}
+          </button>
+          <button type="button" className={`map-view-btn ${view === "list" ? "active" : ""}`} onClick={() => setView("list")}>
+            <List size={16} /> {t("photoMap.listView", "List")}
+          </button>
+        </div>
+
         <ErrorBoundary>
-        <Suspense fallback={<SectionSkeleton hasImage lines={2} />}>
-          <PhotoMap />
-        </Suspense>
+        {view === "map" ? (
+          <Suspense fallback={<SectionSkeleton hasImage lines={2} />}>
+            <PhotoMap />
+          </Suspense>
+        ) : (
+          <div className="map-location-list">
+            {locations.map((loc) => (
+              <div key={loc.name} className="map-location-card">
+                <h3>{loc.name}</h3>
+                <span className="map-location-count">{loc.count} {t("photoMap.photos", "photos")}</span>
+                <div className="map-location-styles">
+                  {loc.styles.map((s) => (
+                    <span key={s} className="map-location-style">{t(`gallery.filters.${s}`, s)}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         </ErrorBoundary>
       </section>
     </PageTransition>

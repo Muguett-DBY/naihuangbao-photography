@@ -141,6 +141,9 @@
       "unreachableTitle": "Beyond 10km · Unavailable",
       "unreachableText": "Outside daily shooting range — temporarily unable to serve. Sorry for the inconvenience."
     },
+    "mapView": "Map",
+    "listView": "List",
+    "photos": "photos",
     "studioLabel": "JinShen College · Xianlin",
     "studioDesc": "Studio Base · Starting point",
     "freeLabel": "✅ Free within 2km",

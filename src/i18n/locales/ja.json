@@ -141,6 +141,9 @@
       "unreachableTitle": "10km超 · 利用不可",
       "unreachableText": "日常の撮影範囲外のため、一時的にサービスを提供できません。"
     },
+    "mapView": "地図",
+    "listView": "リスト",
+    "photos": "枚の写真",
     "studioLabel": "金審学院 · 仙林",
     "studioDesc": "スタジオ拠点 · 出発地点",
     "freeLabel": "✅ 2km以内無料",
