@@ -117,6 +117,7 @@ export default function PhotoEditorPage() {
   const [doubleExposureImage, setDoubleExposureImage] = useState<HTMLImageElement | null>(null);
   const [blendMode, setBlendMode] = useState<"overlay" | "screen" | "soft-light">("overlay");
   const [doubleExposureOpacity, setDoubleExposureOpacity] = useState(50);
+  const [isDragOver, setIsDragOver] = useState(false);
 
   // Load models
   useEffect(() => {
@@ -478,6 +479,30 @@ export default function PhotoEditorPage() {
     e.target.value = "";
   }, [waitForFaceModels]);
 
+  // Drag-and-drop handlers
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      const syntheticEvent = { target: { files: [file], value: "" } } as unknown as React.ChangeEvent<HTMLInputElement>;
+      handleFileChange(syntheticEvent);
+    }
+  }, [handleFileChange]);
+
   // Feature 3: Local brush painting
   const handleBrushPaint = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!localBrushActive || !canvasRef.current) return;
@@ -686,7 +711,7 @@ export default function PhotoEditorPage() {
   return (
     <PageTransition>
       <ErrorBoundary>
-      <div className="editor-root" onMouseMove={onCompareMove} onMouseUp={() => setCompareDrag(false)} onTouchMove={onCompareMove} onTouchEnd={() => setCompareDrag(false)}>
+      <div className={`editor-root ${isDragOver ? "editor-drag-over" : ""}`} onMouseMove={onCompareMove} onMouseUp={() => setCompareDrag(false)} onTouchMove={onCompareMove} onTouchEnd={() => setCompareDrag(false)} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
         <header className="editor-header">
           <h1>{t("editor.title")}</h1>
           <p>{t("editor.subtitle")}</p>
@@ -828,7 +853,17 @@ export default function PhotoEditorPage() {
           <div className="editor-canvas-container">
             {!originalRef.current && !loading && (
               <div className="editor-canvas--empty">
-                <p>{t("editor.subtitle")}</p>
+                {isDragOver ? (
+                  <div className="editor-drop-zone">
+                    <span className="editor-drop-icon">📸</span>
+                    <p>{t("editor.dropHere", "Drop your photo here")}</p>
+                  </div>
+                ) : (
+                  <>
+                    <p>{t("editor.subtitle")}</p>
+                    <p className="editor-drop-hint">{t("editor.dropHint", "or drag and drop an image")}</p>
+                  </>
+                )}
               </div>
             )}
             <canvas
