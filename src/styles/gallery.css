@@ -721,7 +721,7 @@
   font-size: 13px;
   font-weight: 650;
   letter-spacing: 0.03em;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, transform 0.2s ease;
 }
 
 .filter-row button::after {
@@ -749,6 +749,7 @@
 .filter-row .is-active:hover {
   color: var(--caramel-ink);
   font-weight: 750;
+  transform: scale(1.02);
 }
 
 .filter-row .is-active::after,
@@ -917,18 +918,24 @@
   background: transparent;
   color: var(--caramel-muted);
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.15s ease;
 }
 
 .gallery-view-btn:hover {
   border-color: var(--peach-accent);
   color: var(--peach-accent);
+  transform: scale(1.05);
+}
+
+.gallery-view-btn:active {
+  transform: scale(0.95);
 }
 
 .gallery-view-btn.is-active {
   background: var(--peach-accent);
   border-color: var(--peach-accent);
   color: #fff;
+  transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
