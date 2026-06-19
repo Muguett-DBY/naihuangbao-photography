@@ -35,6 +35,8 @@ export interface CategoryDef { key: BeautyCategory; icon: string; labelKey: stri
 
 export interface ToolDef { key: BeautyTool; icon: string; labelKey: string; }
 
+export type FrameId = "none" | "polaroid" | "film" | "white" | "rounded" | "magazine" | "golden";
+
 export interface TextOverlay {
   id: string;
   text: string;

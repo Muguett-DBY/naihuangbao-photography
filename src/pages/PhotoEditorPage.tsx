@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
-import type { BeautySettings, BeautyCategory, BeautyTool, TextOverlay, StickerOverlay } from "../types/photo-editor";
+import type { BeautySettings, BeautyCategory, BeautyTool, TextOverlay, StickerOverlay, FrameId } from "../types/photo-editor";
 import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
 import { prepareFaceApiBackend, loadFaceApiModels } from "../lib/photo-processing";
 import { applyFrame, analyzeFaceAndCalcParams, detectFaceLandmarks, type Landmarks } from "../lib/editor-utils";
@@ -70,7 +70,7 @@ export default function PhotoEditorPage() {
   }, [modelError]);
 
   // New feature states
-  const [frameId, setFrameId] = useState("none");
+  const [frameId, setFrameId] = useState<FrameId>("none");
   const [texts, setTexts] = useState<TextOverlay[]>([]);
   const [stickers, setStickers] = useState<StickerOverlay[]>([]);
   const [showTextPanel, setShowTextPanel] = useState(false);
@@ -745,7 +745,7 @@ export default function PhotoEditorPage() {
         {showFramePanel && (
           <div className="editor-popup-panel editor-frame-panel">
             {FRAMES.map(f => (
-              <button key={f.id} type="button" className={`editor-frame-btn ${frameId === f.id ? "active" : ""}`} onClick={() => { setFrameId(f.id); render(settings); }}>
+              <button key={f.id} type="button" className={`editor-frame-btn ${frameId === f.id ? "active" : ""}`} onClick={() => { setFrameId(f.id as FrameId); render(settings); }}>
                 {t(f.labelKey as any)}
               </button>
             ))}
