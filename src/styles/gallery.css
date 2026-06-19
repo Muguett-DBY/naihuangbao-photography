@@ -1153,14 +1153,26 @@
     radial-gradient(circle at 50% 80%, rgba(255, 184, 161, 0.14), transparent 54%);
   opacity: 0;
   border-radius: 12px;
-  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
+  transform: translateY(8px);
+  will-change: opacity, transform;
 }
 .gallery-masonry-btn:hover .gallery-masonry-overlay {
   opacity: 1;
+  transform: translateY(0);
 }
 .gallery-masonry-item.is-touched .gallery-masonry-overlay {
   opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card-level hover: subtle scale + shadow lift */
+.gallery-masonry-item {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.gallery-masonry-btn:hover {
+  transform: translateY(-2px);
 }
 
 .gallery-masonry-overlay-style {
