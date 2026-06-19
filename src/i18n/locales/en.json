@@ -468,6 +468,13 @@
     "clearAll": "Clear all",
     "toastAdded": "Saved \"{{title}}\" to your favorites"
   },
+  "share": {
+    "label": "Share",
+    "system": "System share",
+    "copy": "Copy link",
+    "copied": "Link copied to clipboard",
+    "copyFailed": "Could not copy link"
+  },
   "newsletter": {
     "title": "Stay Updated",
     "description": "Get the latest updates on events and offers",

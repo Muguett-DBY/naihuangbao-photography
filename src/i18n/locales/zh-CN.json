@@ -492,6 +492,13 @@
     "clearAll": "清空",
     "toastAdded": "已收藏《{{title}}》"
   },
+  "share": {
+    "label": "分享",
+    "system": "系统分享",
+    "copy": "复制链接",
+    "copied": "链接已复制",
+    "copyFailed": "无法复制链接"
+  },
   "newsletter": {
     "title": "订阅更新",
     "description": "获取最新活动和优惠信息",

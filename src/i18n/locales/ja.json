@@ -465,6 +465,13 @@
     "clearAll": "すべてクリア",
     "toastAdded": "「{{title}}」をお気に入りに追加しました"
   },
+  "share": {
+    "label": "共有",
+    "system": "システム共有",
+    "copy": "リンクをコピー",
+    "copied": "リンクをコピーしました",
+    "copyFailed": "リンクをコピーできませんでした"
+  },
   "newsletter": {
     "title": "最新情報を受け取る",
     "description": "最新のイベントやオファー情報をお届けします",
