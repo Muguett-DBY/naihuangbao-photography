@@ -12,6 +12,7 @@ import { HighlightText } from "./shared/HighlightText";
 import { useDistortionHover } from "../hooks/useDistortionHover";
 import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
 import { FavoriteButton } from "./FavoriteButton";
+import { RecentlyViewedStrip } from "./RecentlyViewedStrip";
 
 type StyleFilter = PhotoStyle | "all";
 type ViewMode = "masonry" | "compact";
@@ -418,6 +419,8 @@ export function Gallery() {
         </div>
         <p>{t("gallery.description")}</p>
       </div>
+
+      <RecentlyViewedStrip />
 
       <div className="gallery-command-center" aria-label={t("gallery.discoveryTitle")}>
         <div className="gallery-command-header">
