@@ -28,6 +28,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
   });
   const [saving, setSaving] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewMeta, setPreviewMeta] = useState<{ width: number; height: number; size: number; type: string } | null>(null);
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStyle, setFilterStyle] = useState<PhotoStyle | "all">("all");
@@ -261,8 +262,25 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
           <form onSubmit={handleUpload}>
             {previewUrl ? (
               <div className="adm-upload-preview">
-                <img src={previewUrl} alt="预览" />
-                <button type="button" className="adm-upload-clear" onClick={() => { revokePreview(); setPreviewUrl(null); }}>×</button>
+                <img
+                  src={previewUrl}
+                  alt="预览"
+                  onLoad={(e) => {
+                    const img = e.target as HTMLImageElement;
+                    setPreviewMeta({
+                      width: img.naturalWidth,
+                      height: img.naturalHeight,
+                      size: fileRef.current?.files?.[0]?.size ?? 0,
+                      type: fileRef.current?.files?.[0]?.type ?? "",
+                    });
+                  }}
+                />
+                {previewMeta && (
+                  <div className="adm-upload-meta">
+                    {previewMeta.width}×{previewMeta.height} · {(previewMeta.size / 1024).toFixed(0)} KB · {previewMeta.type.split("/").pop()?.toUpperCase()}
+                  </div>
+                )}
+                <button type="button" className="adm-upload-clear" onClick={() => { revokePreview(); setPreviewUrl(null); setPreviewMeta(null); }}>×</button>
               </div>
             ) : (
               <label className="adm-upload-zone">
@@ -274,7 +292,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
                   if (!file) return;
                   if (!allowedPhotoTypes.has(file.type) || file.size > maxPhotoUploadSize) {
                     showToast(file.size > maxPhotoUploadSize ? "图片过大，请上传小于 10MB 的文件" : "只支持 JPEG、PNG 或 WebP 图片", "error");
-                    input.value = ""; revokePreview(); setPreviewUrl(null); return;
+                    input.value = ""; revokePreview(); setPreviewUrl(null); setPreviewMeta(null); return;
                   }
                   revokePreview(); const url = URL.createObjectURL(file); previewObjectUrlRef.current = url; setPreviewUrl(url);
                 }} hidden />
