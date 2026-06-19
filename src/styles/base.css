@@ -726,6 +726,26 @@ a {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* ── Scroll progress bar (top of viewport) ── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 1000;
+  background: transparent;
+  pointer-events: none;
+}
+.scroll-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--peach-accent, #d58a73), var(--caramel-deep, #7f5a44));
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 120ms ease-out;
+  will-change: transform;
+}
 :where(a, button, input, select, textarea, [tabindex]):focus:not(:focus-visible) {
   outline: none;
 }
