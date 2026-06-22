@@ -120,6 +120,28 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
       if (event.key === "Escape") {
         closeLightbox();
       }
+      // Arrow keys for navigation
+      if (event.key === "ArrowLeft") {
+        pswp.prev();
+      }
+      if (event.key === "ArrowRight") {
+        pswp.next();
+      }
+      // +/- for zoom (using zoomTo with current zoom level adjustment)
+      if (event.key === "+" || event.key === "=") {
+        const currentSlide = pswp.currSlide;
+        if (currentSlide) {
+          const currentZoom = currentSlide.currZoomLevel || 1;
+          currentSlide.zoomTo(Math.min(currentZoom + 0.5, 3));
+        }
+      }
+      if (event.key === "-" || event.key === "_") {
+        const currentSlide = pswp.currSlide;
+        if (currentSlide) {
+          const currentZoom = currentSlide.currZoomLevel || 1;
+          currentSlide.zoomTo(Math.max(currentZoom - 0.5, 0.5));
+        }
+      }
     };
 
     document.addEventListener("click", onFallbackClick, true);
