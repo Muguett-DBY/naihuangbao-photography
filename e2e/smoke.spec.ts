@@ -70,9 +70,13 @@ test.describe("shoot.custard.top", () => {
   test("首页预约 CTA 打开可填写表单", async ({ page }) => {
     await page.goto("/");
     await page.locator(".hero-cover-primary-btn").click();
+    // Wait for modal to open - it's a multi-step form, Step 1 shows package/date/time
+    await expect(page.locator("#booking-package")).toBeVisible();
+    await expect(page.locator("#booking-time")).toBeVisible();
+    // Click Next to go to Step 2 where name/contact are
+    await page.locator("button:has-text('Next')").click();
     await expect(page.locator("#booking-name")).toBeVisible();
     await expect(page.locator("#booking-contact")).toBeVisible();
-    await expect(page.locator("#booking-package")).toBeVisible();
   });
 
   test("登录与注册表单可切换且标签关联正确", async ({ page }) => {
@@ -146,7 +150,8 @@ test.describe("shoot.custard.top", () => {
     await expect(bottomNav.locator('a[href="/gallery"]')).toHaveAttribute("aria-current", "page");
 
     await bottomNav.locator("button.mobile-bottom-nav__booking").click();
-    await expect(page.locator("#booking-name")).toBeVisible();
+    // Wait for modal to open - it's a multi-step form
+    await expect(page.locator("#booking-package")).toBeVisible();
     await page.keyboard.press("Escape");
 
     await bottomNav.locator('a[href="/editor"]').click();
