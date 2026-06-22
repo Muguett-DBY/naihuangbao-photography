@@ -13,6 +13,7 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { parseMarkdown } from "../utils/markdown";
 
 type ChatMessage = {
   id: string;
@@ -28,14 +29,31 @@ type PublicChatWidgetProps = {
 const chatRequestTimeoutMs = 16_000;
 const chatRevealDelayMs = 40;
 const chatRevealBatchSize = 4;
+const CHAT_HISTORY_KEY = "chat-history";
+const MAX_HISTORY_MESSAGES = 20;
 
 export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProps) {
   const { t } = useTranslation();
-  const [messages, setMessages] = useState<ChatMessage[]>([{
-    id: "assistant-welcome",
-    role: "assistant",
-    content: t("chat.welcome"),
-  }]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    // Load messages from localStorage on initialization
+    try {
+      const saved = localStorage.getItem(CHAT_HISTORY_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as ChatMessage[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      // Ignore parse errors
+    }
+    // Default welcome message
+    return [{
+      id: "assistant-welcome",
+      role: "assistant",
+      content: t("chat.welcome"),
+    }];
+  });
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
   const [input, setInput] = useState("");
@@ -61,6 +79,21 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
   useEffect(() => {
     typingRef.current = typing;
   }, [typing]);
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    try {
+      // Don't save if it's just the welcome message
+      if (messages.length <= 1 && messages[0]?.id === "assistant-welcome") {
+        return;
+      }
+      // Keep only the last MAX_HISTORY_MESSAGES messages
+      const messagesToSave = messages.slice(-MAX_HISTORY_MESSAGES);
+      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messagesToSave));
+    } catch (e) {
+      // Ignore storage errors
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (!open) return;
@@ -332,7 +365,14 @@ export default function PublicChatWidget({ open, onClose }: PublicChatWidgetProp
               <div className={`public-chat-message public-chat-message-${message.role}`} key={message.id}>
                 <div className="public-chat-avatar">{message.role === "assistant" ? <Bot size={15} /> : t("chat.avatarLabel")}</div>
                 <div className="public-chat-bubble">
-                  <p>{message.content}</p>
+                  {message.role === "assistant" ? (
+                    <div 
+                      className="public-chat-markdown"
+                      dangerouslySetInnerHTML={{ __html: parseMarkdown(message.content) }}
+                    />
+                  ) : (
+                    <p>{message.content}</p>
+                  )}
                   {typing && index === messages.length - 1 && message.role === "assistant" ? (
                     <span className="public-chat-typing-label" aria-live="polite">
                       {t("chat.typing", "typing...")}
