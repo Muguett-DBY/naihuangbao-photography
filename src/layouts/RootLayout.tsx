@@ -15,6 +15,8 @@ import { ScrollToTop } from "../components/shared/ScrollToTop";
 import { MobileBottomNav } from "../components/shared/MobileBottomNav";
 import { PwaInstallBanner } from "../components/PwaInstallBanner";
 import { PwaUpdateBanner } from "../components/PwaUpdateBanner";
+import { OfflineFallback } from "../components/OfflineFallback";
+import { useOnlineStatus } from "../hooks/useOnlineStatus";
 
 // Heavy visual effects and animations are split into a separate chunk
 // so the initial bundle only ships React + i18n + router. These activate
@@ -27,6 +29,7 @@ export function RootLayout() {
   const { t } = useTranslation();
   const location = useLocation();
   const [chatOpen, setChatOpen] = useState(false);
+  const isOnline = useOnlineStatus();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -47,6 +50,7 @@ export function RootLayout() {
 
   return (
     <div className={isEditor ? "site-shell is-editor" : "site-shell"}>
+      <OfflineFallback isOffline={!isOnline} />
       <PwaUpdateBanner />
       <nav className="skip-links" aria-label={t("common.skipLinksLabel", "Skip links")}>
         <a
