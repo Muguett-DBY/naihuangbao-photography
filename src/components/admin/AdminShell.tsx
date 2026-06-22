@@ -22,6 +22,7 @@ import { AdminPresetsTab } from "./AdminPresetsTab";
 import { AdminWorkshopsTab } from "./AdminWorkshopsTab";
 import { AdminMerchandiseTab } from "./AdminMerchandiseTab";
 import { AdminVitalsTab } from "./AdminVitalsTab";
+import { AdminAuditLogTab } from "./AdminAuditLogTab";
 
 type BookingPollItem = {
   id: string;
@@ -110,6 +111,7 @@ export function AdminShell() {
     { key: "services", label: t("admin.tabs.services"), children: null },
     { key: "faq", label: t("admin.tabs.faq"), children: null },
     { key: "copy", label: t("admin.tabs.copy"), children: null },
+    { key: "auditLog", label: t("admin.tabs.auditLog"), children: null },
   ], [t, hasNewBookings]);
 
   useEffect(() => {
@@ -206,6 +208,7 @@ export function AdminShell() {
         {activeTab === "presets" && <AdminPresetsTab showToast={showToast} />}
         {activeTab === "workshops" && <AdminWorkshopsTab showToast={showToast} />}
         {activeTab === "merchandise" && <AdminMerchandiseTab showToast={showToast} />}
+        {activeTab === "auditLog" && <AdminAuditLogTab onShowToast={showToast} />}
       </div>
     </div>
   );

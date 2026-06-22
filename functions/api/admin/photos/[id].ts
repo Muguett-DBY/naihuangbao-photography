@@ -1,6 +1,7 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../../_auth";
 import { deletePhotoWithConsistency } from "../../../_photos";
 import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../../_responses";
+import { logAuditEvent } from "../../../lib/audit-log";
 import type { PhotoStyle } from "../../../../src/types/photo";
 
 type AdminPhotoEnv = Env & {
@@ -61,11 +62,37 @@ export const onRequestPatch: PagesFunction<AdminPhotoEnv> = async (context) => {
 
   values.push(id);
   try {
+    // Fetch old values for audit diff
+    const oldPhoto = await context.env.DB.prepare(
+      "SELECT title, style, location, featured, visibility FROM photos WHERE id = ?"
+    ).bind(id).first<Record<string, unknown>>();
+
     await context.env.DB.prepare(
       `update photos set ${updates.join(", ")} where id = ?`,
     )
       .bind(...values)
       .run();
+
+    // Build diff and log audit event
+    const newValues: Record<string, unknown> = {};
+    if (body.title !== undefined) newValues.title = body.title.trim();
+    if (body.style !== undefined) newValues.style = body.style;
+    if (body.location !== undefined) newValues.location = body.location.trim();
+    if (body.featured !== undefined) newValues.featured = body.featured;
+    if (body.visibility !== undefined) newValues.visibility = body.visibility;
+
+    const diff = oldPhoto
+      ? Object.fromEntries(
+          Object.entries(newValues).filter(([k]) => oldPhoto[k] !== undefined && oldPhoto[k] !== newValues[k])
+        )
+      : newValues;
+
+    await logAuditEvent(context, {
+      action: "update",
+      entity_type: "photo",
+      entity_id: String(id),
+      diff_json: JSON.stringify(diff),
+    });
 
     context.waitUntil(context.env.CACHE?.delete("photos:public").catch(() => {}));
     return jsonResponse({ ok: true });
@@ -89,10 +116,22 @@ export const onRequestDelete: PagesFunction<AdminPhotoEnv> = async (context) => 
   }
 
   try {
+    // Fetch photo details for audit log before deletion
+    const photo = await context.env.DB.prepare(
+      "SELECT title, style FROM photos WHERE id = ?"
+    ).bind(id).first<{ title: string; style: string }>();
+
     const result = await deletePhotoWithConsistency(context.env, id);
     if (!result.ok) {
       return jsonResponse({ error: result.error }, result.status);
     }
+
+    await logAuditEvent(context, {
+      action: "delete",
+      entity_type: "photo",
+      entity_id: String(id),
+      diff_json: JSON.stringify({ title: photo?.title, style: photo?.style }),
+    });
 
     context.waitUntil(context.env.CACHE?.delete("photos:public").catch(() => {}));
     return jsonResponse({ ok: true });
