@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
+import { CustomMarker } from "./CustomMarker";
+import { LocationSearch } from "./LocationSearch";
 import "leaflet/dist/leaflet.css";
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -221,10 +223,21 @@ function buildClickPopupContent(title: string, distance: string, zoneText: strin
 export function PhotoMap() {
   const { t } = useTranslation();
   const { photos } = usePublicPhotos();
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
 
   const uniqueLocs = useMemo(
     () => Array.from(new Set(photos.map((p) => p.location))),
     [photos]
+  );
+
+  const filteredPhotos = useMemo(() => {
+    if (!selectedLocation) return photos;
+    return photos.filter((p) => p.location === selectedLocation);
+  }, [photos, selectedLocation]);
+
+  const uniqueFilteredLocs = useMemo(
+    () => Array.from(new Set(filteredPhotos.map((p) => p.location))),
+    [filteredPhotos]
   );
 
   return (
@@ -240,6 +253,9 @@ export function PhotoMap() {
         <h2>{t("photoMap.title")}</h2>
         <span>{t("photoMap.intro")}</span>
       </div>
+
+      {/* ── Location Search ── */}
+      <LocationSearch locations={uniqueLocs} onLocationSelect={setSelectedLocation} />
 
       {/* ── Zone Legend ── */}
       <div className="travel-zone-legend">
@@ -339,70 +355,18 @@ export function PhotoMap() {
           </Marker>
 
           {/* Photo location markers */}
-          {uniqueLocs.map((loc) => {
+          {uniqueFilteredLocs.map((loc) => {
             const info = getLocationInfo(loc);
-            const locPhotos = photos.filter((p) => p.location === loc);
+            const locPhotos = filteredPhotos.filter((p) => p.location === loc);
             const count = locPhotos.length;
-            const thumb = (src: string) => {
-              const fileName = src.replace(/\?.*$/, "").split("/").pop() || "";
-              return `/images/gallery/640/${fileName}`;
-            };
             return (
-              <Marker key={loc} position={info.coords} icon={zoneIcon(info.zone)}>
-                <Popup>
-                  <div style={{ minWidth: 150, maxWidth: 220 }}>
-                    <strong style={{ color: "#5F3C31", fontSize: 13 }}>{loc}</strong>
-                    <br />
-                    <span style={{ fontSize: 12, color: "#8B7A6A" }}>
-                      {count} {t("photoMap.worksLabel")} · {info.distance.toFixed(1)}km
-                    </span>
-                    <br />
-                    <span style={{
-                      fontSize: 11, fontWeight: 600,
-                      color: info.zone === "free" ? "#7AA675" :
-                             info.zone === "fee" ? "#D4B05E" : "#B8A090",
-                    }}>
-                      {info.zone === "free" ? t("photoMap.freePopup") :
-                       info.zone === "fee" ? t("photoMap.feePopup") : t("photoMap.unreachablePopup")}
-                    </span>
-                    {locPhotos.length > 0 && (
-                      <div style={{
-                        display: "flex",
-                        gap: 4,
-                        marginTop: 8,
-                        flexWrap: "wrap",
-                      }}>
-                        {locPhotos.slice(0, 3).map((p) => (
-                          <img
-                            key={p.id}
-                            src={thumb(p.imageUrl || "")}
-                            alt={p.alt || p.title}
-                            loading="lazy"
-                            style={{
-                              width: 60,
-                              height: 75,
-                              objectFit: "cover",
-                              borderRadius: 6,
-                              border: "1px solid rgba(139,94,74,0.1)",
-                            }}
-                          />
-                        ))}
-                        {locPhotos.length > 3 && (
-                          <span style={{
-                            fontSize: 11,
-                            color: "#8B7A6A",
-                            display: "flex",
-                            alignItems: "center",
-                            paddingLeft: 2,
-                          }}>
-                            +{locPhotos.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </Popup>
-              </Marker>
+              <CustomMarker
+                key={loc}
+                position={info.coords}
+                count={count}
+                location={loc}
+                zone={info.zone}
+              />
             );
           })}
         </MapContainer>
