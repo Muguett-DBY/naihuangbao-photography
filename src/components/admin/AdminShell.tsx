@@ -23,6 +23,7 @@ import { AdminWorkshopsTab } from "./AdminWorkshopsTab";
 import { AdminMerchandiseTab } from "./AdminMerchandiseTab";
 import { AdminVitalsTab } from "./AdminVitalsTab";
 import { AdminAuditLogTab } from "./AdminAuditLogTab";
+import { AdminPhotoModerationQueue } from "./AdminPhotoModerationQueue";
 
 type BookingPollItem = {
   id: string;
@@ -112,6 +113,7 @@ export function AdminShell() {
     { key: "faq", label: t("admin.tabs.faq"), children: null },
     { key: "copy", label: t("admin.tabs.copy"), children: null },
     { key: "auditLog", label: t("admin.tabs.auditLog"), children: null },
+    { key: "moderation", label: t("admin.tabs.moderation"), children: null },
   ], [t, hasNewBookings]);
 
   useEffect(() => {
@@ -209,6 +211,7 @@ export function AdminShell() {
         {activeTab === "workshops" && <AdminWorkshopsTab showToast={showToast} />}
         {activeTab === "merchandise" && <AdminMerchandiseTab showToast={showToast} />}
         {activeTab === "auditLog" && <AdminAuditLogTab onShowToast={showToast} />}
+        {activeTab === "moderation" && <AdminPhotoModerationQueue onShowToast={showToast} />}
       </div>
     </div>
   );

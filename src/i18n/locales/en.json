@@ -736,7 +736,8 @@
       "services": "Service Rules",
       "faq": "FAQ / Process",
       "copy": "Homepage Copy",
-      "auditLog": "Audit Log"
+      "auditLog": "Audit Log",
+      "moderation": "Moderation"
     },
     "login": {
       "loggingIn": "Logging in...",
@@ -832,6 +833,14 @@
       "empty": "No audit log entries found",
       "loading": "Loading audit logs...",
       "error": "Failed to load audit logs"
+    },
+    "moderation": {
+      "title": "Photo Moderation Queue",
+      "empty": "No photos pending moderation",
+      "approve": "Approve",
+      "feature": "Feature",
+      "reject": "Reject",
+      "album": "Album"
     }
   },
   "chat": {
