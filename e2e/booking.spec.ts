@@ -32,10 +32,14 @@ test.describe("booking flow", () => {
     await expect(heroBookBtn).toBeVisible();
     await heroBookBtn.click();
 
-    // Wait for modal to open
-    await expect(page.locator("#booking-name")).toBeVisible({ timeout: 5000 });
+    // Wait for modal to open - Step 1 shows package/date/time
+    await expect(page.locator("#booking-package")).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("#booking-time")).toBeVisible();
+
+    // Click Next to go to Step 2 where name/contact are
+    await page.locator("button:has-text('Next')").click();
+    await expect(page.locator("#booking-name")).toBeVisible();
     await expect(page.locator("#booking-contact")).toBeVisible();
-    await expect(page.locator("#booking-package")).toBeVisible();
 
     // Verify validation - submit without filling
     const submitBtn = page.locator('button[type="submit"]').last();
@@ -47,20 +51,6 @@ test.describe("booking flow", () => {
 
     // Verify submit becomes enabled
     await expect(submitBtn).toBeEnabled();
-
-    // Select a package if options exist
-    const packageSelect = page.locator("#booking-package");
-    const options = await packageSelect.locator("option").all();
-    if (options.length > 1) {
-      await packageSelect.selectOption(options[1].getAttribute("value") as unknown as string);
-    }
-
-    // Select a time
-    const timeSelect = page.locator("#booking-time");
-    const timeOptions = await timeSelect.locator("option").all();
-    if (timeOptions.length > 1) {
-      await timeSelect.selectOption(timeOptions[1].getAttribute("value") as unknown as string);
-    }
 
     // Submit the form
     await submitBtn.click();
