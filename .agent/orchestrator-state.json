@@ -3,9 +3,9 @@
   "campaign_id": "campaign-006",
   "campaign_number": 6,
   "overall_status": "RUNNING",
-  "current_phase": 17,
+  "current_phase": 18,
   "current_cycle": 3,
-  "last_completed_phase": 16,
+  "last_completed_phase": 17,
   "started_at": "2026-06-19T11:15:00Z",
   "updated_at": "2026-06-19T12:25:00Z",
   "completed_at": null,
@@ -47,7 +47,7 @@
     { "phase": 14, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Service worker offline gallery (cache-first with fallback UI)", "commit": "747f510" },
     { "phase": 15, "cycle": 3, "type": "UIUX", "status": "DONE", "objective": "Map enhancements: custom markers + clustering + location search", "commit": "950a29f" },
     { "phase": 16, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Lightbox keyboard shortcuts (arrow nav + zoom)", "commit": "e1e828b" },
-    { "phase": 17, "cycle": 3, "type": "CHECK", "status": "RUNNING", "objective": "System health audit", "commit": null },
-    { "phase": 18, "cycle": 3, "type": "IMPROVE", "status": "PENDING", "objective": "Image gallery virtualization for large sets", "commit": null }
+    { "phase": 17, "cycle": 3, "type": "CHECK", "status": "DONE", "objective": "System health audit", "commit": null },
+    { "phase": 18, "cycle": 3, "type": "IMPROVE", "status": "RUNNING", "objective": "Image gallery virtualization for large sets", "commit": null }
   ]
 }
