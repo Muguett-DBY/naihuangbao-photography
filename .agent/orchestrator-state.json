@@ -3,9 +3,9 @@
   "campaign_id": "campaign-006",
   "campaign_number": 6,
   "overall_status": "RUNNING",
-  "current_phase": 12,
-  "current_cycle": 2,
-  "last_completed_phase": 11,
+  "current_phase": 13,
+  "current_cycle": 3,
+  "last_completed_phase": 12,
   "started_at": "2026-06-19T11:15:00Z",
   "updated_at": "2026-06-19T12:25:00Z",
   "completed_at": null,
@@ -23,7 +23,8 @@
     { "module": "Admin", "type": "feature", "objective": "Bulk photo operations: export CSV/JSON + bulk album change", "commit": "193993d", "campaign": 6, "phase": 7 },
     { "module": "Admin", "type": "feature", "objective": "Audit log for admin mutations", "commit": "566f9c5", "campaign": 6, "phase": 8 },
     { "module": "Chat", "type": "feature", "objective": "Chat markdown support + message history persistence", "commit": "c2835c0", "campaign": 6, "phase": 9 },
-    { "module": "Gallery", "type": "feature", "objective": "Related photos algorithm: hybrid scoring system", "commit": "f488c5c", "campaign": 6, "phase": 10 }
+    { "module": "Gallery", "type": "feature", "objective": "Related photos algorithm: hybrid scoring system", "commit": "f488c5c", "campaign": 6, "phase": 10 },
+    { "module": "Admin", "type": "feature", "objective": "Photo moderation queue (featured/hidden review)", "commit": "72a2cce", "campaign": 6, "phase": 12 }
   ],
   "phases": [
     { "phase": 1, "cycle": 1, "type": "IMPROVE", "status": "DONE", "commit": "5074793" },
@@ -37,8 +38,8 @@
     { "phase": 9, "cycle": 2, "type": "UIUX", "status": "DONE", "objective": "Chat markdown support + message history persistence", "commit": "c2835c0" },
     { "phase": 10, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Related photos algorithm (tags + style + album hybrid)", "commit": "f488c5c" },
     { "phase": 11, "cycle": 2, "type": "CHECK", "status": "DONE", "objective": "System health audit", "commit": null },
-    { "phase": 12, "cycle": 2, "type": "IMPROVE", "status": "RUNNING", "objective": "Photo moderation queue (featured/hidden review)", "commit": null },
-    { "phase": 13, "cycle": 3, "type": "IMPROVE", "status": "PENDING", "objective": "E2E test infrastructure: Playwright critical user flows", "commit": null },
+    { "phase": 12, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Photo moderation queue (featured/hidden review)", "commit": "72a2cce" },
+    { "phase": 13, "cycle": 3, "type": "IMPROVE", "status": "RUNNING", "objective": "E2E test infrastructure: Playwright critical user flows", "commit": null },
     { "phase": 14, "cycle": 3, "type": "IMPROVE", "status": "PENDING", "objective": "Service worker offline gallery (cache-first with fallback UI)", "commit": null },
     { "phase": 15, "cycle": 3, "type": "UIUX", "status": "PENDING", "objective": "Map enhancements: custom markers + clustering + location search", "commit": null },
     { "phase": 16, "cycle": 3, "type": "IMPROVE", "status": "PENDING", "objective": "Lightbox keyboard shortcuts (arrow nav + zoom)", "commit": null },
