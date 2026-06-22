@@ -1,9 +1,9 @@
-import { ImagePlus, Pencil, Trash2, Upload, CheckSquare, Eye, EyeOff, Star, HelpCircle } from "lucide-react";
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ImagePlus, Pencil, Trash2, Upload, CheckSquare, Eye, EyeOff, Star, HelpCircle, Download, FolderOpen } from "lucide-react";
+import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
+import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
 import { getStyleLabels } from "../../data/site";
-import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
 import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { SkeletonGrid } from "../SkeletonGrid";
@@ -195,6 +195,64 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     }
   };
 
+  const handleBatchAlbum = async (album: string) => {
+    if (selectedIds.size === 0) return;
+    try {
+      const r = await fetch("/api/admin/photos/batch", {
+        method: "POST", credentials: "include",
+        headers: { "content-type": "application/json", ...adminMutationHeaders },
+        body: JSON.stringify({ ids: Array.from(selectedIds), action: "album", value: album }),
+      });
+      if (!r.ok) { showToast("操作失败", "error"); return; }
+      setPhotos((prev) => prev.map((p) => selectedIds.has(p.id) ? { ...p, album: album || undefined } : p));
+      showToast(`已将 ${selectedIds.size} 张照片相册设为「${album || "无"}」`, "success");
+      setSelectedIds(new Set());
+    } catch {
+      showToast("操作失败", "error");
+    }
+  };
+
+  const getExportPhotos = useCallback((): PhotoItem[] => {
+    if (selectedIds.size > 0) {
+      return photos.filter((p) => selectedIds.has(p.id));
+    }
+    return photos.filter((p) => {
+      if (filterStyle !== "all" && p.style !== filterStyle) return false;
+      if (filterVisibility !== "all" && p.visibility !== filterVisibility) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        if (!p.title.toLowerCase().includes(q) && !p.location.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [photos, selectedIds, filterStyle, filterVisibility, searchQuery]);
+
+  const handleExportJSON = useCallback(() => {
+    const data = getExportPhotos().map((p) => ({
+      id: p.id, title: p.title, style: p.style, location: p.location,
+      album: p.album ?? "", featured: p.featured, visibility: p.visibility,
+      imageUrl: p.imageUrl, alt: p.alt, createdAt: p.createdAt ?? "",
+    }));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = `photos-export-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click(); URL.revokeObjectURL(url);
+    showToast(`已导出 ${data.length} 张照片 (JSON)`, "success");
+  }, [getExportPhotos, showToast]);
+
+  const handleExportCSV = useCallback(() => {
+    const rows = getExportPhotos().map((p) => [
+      p.id, p.title, p.style, p.location, p.album ?? "", String(p.featured), p.visibility, p.alt, p.createdAt ?? "",
+    ]);
+    const header = "id,title,style,location,album,featured,visibility,alt,createdAt";
+    const csv = [header, ...rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = `photos-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+    showToast(`已导出 ${rows.length} 张照片 (CSV)`, "success");
+  }, [getExportPhotos, showToast]);
+
   const handleDelete = async () => {
     if (!deletingPhoto) return;
     setDeleting(true);
@@ -378,8 +436,25 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
                 <Button type="primary" size="small" onClick={() => handleBatchFeatured(false)}>
                   取消精选
                 </Button>
+                <Button type="primary" size="small" onClick={handleExportJSON}>
+                  <Download size={13} /> 导出 JSON
+                </Button>
+                <Button type="primary" size="small" onClick={handleExportCSV}>
+                  <Download size={13} /> 导出 CSV
+                </Button>
                 <Button type="primary" size="small" className="adm-btn-danger" onClick={handleBatchDelete} disabled={deletingBatch}>
                   <Trash2 size={13} /> {deletingBatch ? "删除中..." : `删除选中`}
+                </Button>
+                <BulkAlbumInput onApply={handleBatchAlbum} />
+              </>
+            )}
+            {selectedIds.size === 0 && (
+              <>
+                <Button type="primary" size="small" onClick={handleExportJSON}>
+                  <Download size={13} /> 导出 JSON
+                </Button>
+                <Button type="primary" size="small" onClick={handleExportCSV}>
+                  <Download size={13} /> 导出 CSV
                 </Button>
               </>
             )}
@@ -464,5 +539,32 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
         </div>
       )}
     </div>
+  );
+}
+
+function BulkAlbumInput({ onApply }: { onApply: (album: string) => void }) {
+  const [value, setValue] = useState("");
+  const [open, setOpen] = useState(false);
+  return open ? (
+    <span className="adm-bulk-album-row">
+      <input
+        type="text"
+        className="adm-bulk-album-input"
+        placeholder="相册名"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") { onApply(value); setOpen(false); setValue(""); }
+          if (e.key === "Escape") { setOpen(false); setValue(""); }
+        }}
+        autoFocus
+      />
+      <Button type="primary" size="small" onClick={() => { onApply(value); setOpen(false); setValue(""); }}>设为</Button>
+      <Button type="default" size="small" onClick={() => { setOpen(false); setValue(""); }}>取消</Button>
+    </span>
+  ) : (
+    <Button type="primary" size="small" onClick={() => setOpen(true)}>
+      <FolderOpen size={13} /> 修改相册
+    </Button>
   );
 }

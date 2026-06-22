@@ -5,7 +5,7 @@ type AdminPhotosBatchEnv = Env & { ADMIN_PASSWORD?: string };
 
 type BatchBody = {
   ids?: string[];
-  action?: "visibility" | "featured";
+  action?: "visibility" | "featured" | "album";
   value?: boolean | string;
 };
 
@@ -56,7 +56,6 @@ export const onRequestPost: PagesFunction<AdminPhotosBatchEnv> = async (context)
     }
 
     if (body.action === "featured") {
-      // Toggle featured: set all selected photos to the specified value
       const feat = body.value === true || body.value === "true" ? 1 : 0;
       await db
         .prepare(`update photos set featured = ? where id in (${placeholders})`)
@@ -64,6 +63,16 @@ export const onRequestPost: PagesFunction<AdminPhotosBatchEnv> = async (context)
         .run();
 
       return jsonResponse({ ok: true, updated: validIds.length, featured: feat });
+    }
+
+    if (body.action === "album") {
+      const album = typeof body.value === "string" ? body.value.trim().slice(0, 100) : "";
+      await db
+        .prepare(`update photos set album = ? where id in (${placeholders})`)
+        .bind(album || null, ...validIds)
+        .run();
+
+      return jsonResponse({ ok: true, updated: validIds.length, album });
     }
 
     return badRequest("不支持的操作类型");

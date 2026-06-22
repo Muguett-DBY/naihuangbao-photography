@@ -537,6 +537,27 @@
 .adm-btn-done { background: #6a9a70; color: #fff; }
 .adm-btn-skip { background: transparent; color: #a08880; }
 
+/* Bulk album input */
+.adm-bulk-album-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.adm-bulk-album-input {
+  padding: 4px 10px;
+  border: 1px solid rgba(139, 94, 74, 0.25);
+  border-radius: 8px;
+  font-size: 13px;
+  background: #fffdf7;
+  color: #493735;
+  min-width: 120px;
+}
+.adm-bulk-album-input:focus {
+  outline: none;
+  border-color: #493735;
+  box-shadow: 0 0 0 2px rgba(73, 55, 53, 0.15);
+}
+
 .adm-stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
