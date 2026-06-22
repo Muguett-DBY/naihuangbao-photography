@@ -735,7 +735,8 @@
       "packages": "Packages & Pricing",
       "services": "Service Rules",
       "faq": "FAQ / Process",
-      "copy": "Homepage Copy"
+      "copy": "Homepage Copy",
+      "auditLog": "Audit Log"
     },
     "login": {
       "loggingIn": "Logging in...",
@@ -809,6 +810,28 @@
         "needs-improvement": "Needs improvement",
         "poor": "Poor"
       }
+    },
+    "auditLog": {
+      "title": "Audit Log",
+      "allEntities": "All Entities",
+      "photos": "Photos",
+      "presets": "Presets",
+      "courses": "Courses",
+      "bookings": "Bookings",
+      "allActions": "All Actions",
+      "create": "Create",
+      "update": "Update",
+      "delete": "Delete",
+      "batch": "Batch",
+      "timestamp": "Timestamp",
+      "action": "Action",
+      "entityType": "Entity",
+      "entityId": "ID",
+      "user": "User",
+      "changes": "Changes",
+      "empty": "No audit log entries found",
+      "loading": "Loading audit logs...",
+      "error": "Failed to load audit logs"
     }
   },
   "chat": {

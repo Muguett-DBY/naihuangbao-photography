@@ -785,7 +785,8 @@
       "packages": "套餐价格",
       "services": "服务规则",
       "faq": "FAQ/流程",
-      "copy": "主页文案"
+      "copy": "主页文案",
+      "auditLog": "审计日志"
     },
     "login": {
       "loggingIn": "正在登录...",
@@ -859,6 +860,28 @@
         "needs-improvement": "需改进",
         "poor": "较差"
       }
+    },
+    "auditLog": {
+      "title": "审计日志",
+      "allEntities": "所有实体",
+      "photos": "照片",
+      "presets": "预设",
+      "courses": "课程",
+      "bookings": "预约",
+      "allActions": "所有操作",
+      "create": "创建",
+      "update": "更新",
+      "delete": "删除",
+      "batch": "批量",
+      "timestamp": "时间",
+      "action": "操作",
+      "entityType": "类型",
+      "entityId": "ID",
+      "user": "用户",
+      "changes": "变更",
+      "empty": "暂无审计日志",
+      "loading": "加载审计日志...",
+      "error": "审计日志加载失败"
     }
   },
   "chat": {

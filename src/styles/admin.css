@@ -558,6 +558,120 @@
   box-shadow: 0 0 0 2px rgba(73, 55, 53, 0.15);
 }
 
+/* Audit log tab */
+.admin-audit-log {
+  padding: 20px;
+}
+.audit-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.audit-log-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+.audit-log-filters {
+  display: flex;
+  gap: 12px;
+}
+.audit-log-filters select {
+  padding: 8px 12px;
+  border: 1px solid rgba(139, 94, 74, 0.2);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+}
+.audit-log-loading,
+.audit-log-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+}
+.audit-log-table-container {
+  overflow-x: auto;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 12px;
+}
+.audit-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.audit-log-table th,
+.audit-log-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(139, 94, 74, 0.1);
+}
+.audit-log-table th {
+  background: var(--bg-secondary);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.audit-log-table tr:hover {
+  background: rgba(139, 94, 74, 0.02);
+}
+.entity-id {
+  font-family: monospace;
+  font-size: 12px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.audit-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.audit-badge-create {
+  background: rgba(102, 187, 106, 0.15);
+  color: #388e3c;
+}
+.audit-badge-update {
+  background: rgba(255, 183, 77, 0.15);
+  color: #f57c00;
+}
+.audit-badge-delete {
+  background: rgba(239, 83, 80, 0.15);
+  color: #d32f2f;
+}
+.audit-badge-batch {
+  background: rgba(100, 181, 246, 0.15);
+  color: #1976d2;
+}
+.audit-badge-batch_visibility,
+.audit-badge-batch_featured,
+.audit-badge-batch_album {
+  background: rgba(100, 181, 246, 0.15);
+  color: #1976d2;
+}
+.audit-diff {
+  margin: 0;
+  font-family: monospace;
+  font-size: 11px;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+.audit-log-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+}
+
 .adm-stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

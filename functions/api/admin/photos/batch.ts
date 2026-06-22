@@ -1,5 +1,6 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../../_auth";
 import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../../_responses";
+import { logAuditEvent } from "../../../lib/audit-log";
 
 type AdminPhotosBatchEnv = Env & { ADMIN_PASSWORD?: string };
 
@@ -45,12 +46,17 @@ export const onRequestPost: PagesFunction<AdminPhotosBatchEnv> = async (context)
 
   try {
     if (body.action === "visibility") {
-      // Toggle visibility: set all selected photos to the specified value
       const vis = body.value === "public" ? "public" : "hidden";
       await db
         .prepare(`update photos set visibility = ? where id in (${placeholders})`)
         .bind(vis, ...validIds)
         .run();
+
+      await logAuditEvent(context, {
+        action: `batch_${body.action}`,
+        entity_type: "photo",
+        diff_json: JSON.stringify({ count: validIds.length, visibility: vis }),
+      });
 
       return jsonResponse({ ok: true, updated: validIds.length, visibility: vis });
     }
@@ -62,6 +68,12 @@ export const onRequestPost: PagesFunction<AdminPhotosBatchEnv> = async (context)
         .bind(feat, ...validIds)
         .run();
 
+      await logAuditEvent(context, {
+        action: `batch_${body.action}`,
+        entity_type: "photo",
+        diff_json: JSON.stringify({ count: validIds.length, featured: feat === 1 }),
+      });
+
       return jsonResponse({ ok: true, updated: validIds.length, featured: feat });
     }
 
@@ -71,6 +83,12 @@ export const onRequestPost: PagesFunction<AdminPhotosBatchEnv> = async (context)
         .prepare(`update photos set album = ? where id in (${placeholders})`)
         .bind(album || null, ...validIds)
         .run();
+
+      await logAuditEvent(context, {
+        action: `batch_${body.action}`,
+        entity_type: "photo",
+        diff_json: JSON.stringify({ count: validIds.length, album }),
+      });
 
       return jsonResponse({ ok: true, updated: validIds.length, album });
     }
