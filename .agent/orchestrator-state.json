@@ -3,9 +3,9 @@
   "campaign_id": "campaign-006",
   "campaign_number": 6,
   "overall_status": "RUNNING",
-  "current_phase": 10,
+  "current_phase": 11,
   "current_cycle": 2,
-  "last_completed_phase": 9,
+  "last_completed_phase": 10,
   "started_at": "2026-06-19T11:15:00Z",
   "updated_at": "2026-06-19T12:25:00Z",
   "completed_at": null,
@@ -22,7 +22,8 @@
     { "module": "Gallery", "type": "feature", "objective": "Faceted search: style + album + date range + free text", "commit": "4e582f7", "campaign": 6, "phase": 6 },
     { "module": "Admin", "type": "feature", "objective": "Bulk photo operations: export CSV/JSON + bulk album change", "commit": "193993d", "campaign": 6, "phase": 7 },
     { "module": "Admin", "type": "feature", "objective": "Audit log for admin mutations", "commit": "566f9c5", "campaign": 6, "phase": 8 },
-    { "module": "Chat", "type": "feature", "objective": "Chat markdown support + message history persistence", "commit": "c2835c0", "campaign": 6, "phase": 9 }
+    { "module": "Chat", "type": "feature", "objective": "Chat markdown support + message history persistence", "commit": "c2835c0", "campaign": 6, "phase": 9 },
+    { "module": "Gallery", "type": "feature", "objective": "Related photos algorithm: hybrid scoring system", "commit": "f488c5c", "campaign": 6, "phase": 10 }
   ],
   "phases": [
     { "phase": 1, "cycle": 1, "type": "IMPROVE", "status": "DONE", "commit": "5074793" },
@@ -34,8 +35,8 @@
     { "phase": 7, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Bulk photo operations: multi-select export (CSV/JSON) + bulk tag", "commit": "193993d" },
     { "phase": 8, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Audit log for admin mutations", "commit": "566f9c5" },
     { "phase": 9, "cycle": 2, "type": "UIUX", "status": "DONE", "objective": "Chat markdown support + message history persistence", "commit": "c2835c0" },
-    { "phase": 10, "cycle": 2, "type": "IMPROVE", "status": "RUNNING", "objective": "Related photos algorithm (tags + style + album hybrid)", "commit": null },
-    { "phase": 11, "cycle": 2, "type": "CHECK", "status": "PENDING", "objective": "System health audit", "commit": null },
+    { "phase": 10, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Related photos algorithm (tags + style + album hybrid)", "commit": "f488c5c" },
+    { "phase": 11, "cycle": 2, "type": "CHECK", "status": "RUNNING", "objective": "System health audit", "commit": null },
     { "phase": 12, "cycle": 2, "type": "IMPROVE", "status": "PENDING", "objective": "Photo moderation queue (featured/hidden review)", "commit": null },
     { "phase": 13, "cycle": 3, "type": "IMPROVE", "status": "PENDING", "objective": "E2E test infrastructure: Playwright critical user flows", "commit": null },
     { "phase": 14, "cycle": 3, "type": "IMPROVE", "status": "PENDING", "objective": "Service worker offline gallery (cache-first with fallback UI)", "commit": null },
