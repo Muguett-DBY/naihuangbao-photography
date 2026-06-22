@@ -21,6 +21,7 @@ import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
 import { useSavedSearches } from "../hooks/useSavedSearches";
 import { useCompare } from "../hooks/useCompare";
 import { useSwipeGesture } from "../hooks/useSwipeGesture";
+import { useVirtualization } from "../hooks/useVirtualization";
 import { track } from "../utils/track";
 import { FavoriteButton } from "./FavoriteButton";
 import { CompareButton } from "./CompareButton";
@@ -259,6 +260,14 @@ export function Gallery() {
     }
     return copy;
   }, [searched, sortMode]);
+
+  // Virtualization for large galleries
+  const { visibleItems, totalHeight, offsetY, onScroll } = useVirtualization(photos, {
+    itemHeight: 300, // Approximate height of gallery item
+    containerHeight: typeof window !== "undefined" ? window.innerHeight : 800,
+    overscan: 2,
+  });
+
   const filterLabel = t(`gallery.filters.${filter}`, filter);
   const albumLabel = albumFilter === "all" ? "" : albumFilter;
   const dateRangeLabel = dateRange === "all" ? "" : t(`gallery.dateRanges.${dateRange}`, dateRange);
