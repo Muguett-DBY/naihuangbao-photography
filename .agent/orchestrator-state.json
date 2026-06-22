@@ -3,9 +3,9 @@
   "campaign_id": "campaign-006",
   "campaign_number": 6,
   "overall_status": "RUNNING",
-  "current_phase": 8,
+  "current_phase": 9,
   "current_cycle": 2,
-  "last_completed_phase": 7,
+  "last_completed_phase": 8,
   "started_at": "2026-06-19T11:15:00Z",
   "updated_at": "2026-06-19T12:25:00Z",
   "completed_at": null,
@@ -19,7 +19,9 @@
     { "module": "Mobile UX", "type": "ux", "objective": "Swipe gestures, pinch-zoom, adjacent photo nav", "commit": "5cfb13c", "campaign": 6, "phase": 3 },
     { "module": "Analytics", "type": "feature", "objective": "Custom event tracking for booking funnel", "commit": "a8eea5a", "campaign": 6, "phase": 4 },
     { "module": "Stability", "type": "fix", "objective": "Removed undefined gsap reference + protected preconnect tags from seo:sync", "commit": "fe475e0", "campaign": 6, "phase": 5 },
-    { "module": "Gallery", "type": "feature", "objective": "Faceted search: style + album + date range + free text", "commit": "4e582f7", "campaign": 6, "phase": 6 }
+    { "module": "Gallery", "type": "feature", "objective": "Faceted search: style + album + date range + free text", "commit": "4e582f7", "campaign": 6, "phase": 6 },
+    { "module": "Admin", "type": "feature", "objective": "Bulk photo operations: export CSV/JSON + bulk album change", "commit": "193993d", "campaign": 6, "phase": 7 },
+    { "module": "Admin", "type": "feature", "objective": "Audit log for admin mutations", "commit": "566f9c5", "campaign": 6, "phase": 8 }
   ],
   "phases": [
     { "phase": 1, "cycle": 1, "type": "IMPROVE", "status": "DONE", "commit": "5074793" },
@@ -29,8 +31,8 @@
     { "phase": 5, "cycle": 1, "type": "CHECK", "status": "DONE", "commit": "fe475e0" },
     { "phase": 6, "cycle": 1, "type": "IMPROVE", "status": "DONE", "commit": "4e582f7" },
     { "phase": 7, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Bulk photo operations: multi-select export (CSV/JSON) + bulk tag", "commit": "193993d" },
-    { "phase": 8, "cycle": 2, "type": "IMPROVE", "status": "RUNNING", "objective": "Audit log for admin mutations", "commit": null },
-    { "phase": 9, "cycle": 2, "type": "UIUX", "status": "PENDING", "objective": "Chat markdown support + message history persistence", "commit": null },
+    { "phase": 8, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Audit log for admin mutations", "commit": "566f9c5" },
+    { "phase": 9, "cycle": 2, "type": "UIUX", "status": "RUNNING", "objective": "Chat markdown support + message history persistence", "commit": null },
     { "phase": 10, "cycle": 2, "type": "IMPROVE", "status": "PENDING", "objective": "Related photos algorithm (tags + style + album hybrid)", "commit": null },
     { "phase": 11, "cycle": 2, "type": "CHECK", "status": "PENDING", "objective": "System health audit", "commit": null },
     { "phase": 12, "cycle": 2, "type": "IMPROVE", "status": "PENDING", "objective": "Photo moderation queue (featured/hidden review)", "commit": null },
