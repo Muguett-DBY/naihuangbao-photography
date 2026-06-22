@@ -3,9 +3,9 @@
   "campaign_id": "campaign-006",
   "campaign_number": 6,
   "overall_status": "RUNNING",
-  "current_phase": 15,
+  "current_phase": 16,
   "current_cycle": 3,
-  "last_completed_phase": 14,
+  "last_completed_phase": 15,
   "started_at": "2026-06-19T11:15:00Z",
   "updated_at": "2026-06-19T12:25:00Z",
   "completed_at": null,
@@ -26,7 +26,8 @@
     { "module": "Gallery", "type": "feature", "objective": "Related photos algorithm: hybrid scoring system", "commit": "f488c5c", "campaign": 6, "phase": 10 },
     { "module": "Admin", "type": "feature", "objective": "Photo moderation queue (featured/hidden review)", "commit": "72a2cce", "campaign": 6, "phase": 12 },
     { "module": "Testing", "type": "feature", "objective": "E2E test infrastructure: Playwright critical user flows", "commit": "536512e", "campaign": 6, "phase": 13 },
-    { "module": "PWA", "type": "feature", "objective": "Service worker offline gallery (cache-first with fallback UI)", "commit": "747f510", "campaign": 6, "phase": 14 }
+    { "module": "PWA", "type": "feature", "objective": "Service worker offline gallery (cache-first with fallback UI)", "commit": "747f510", "campaign": 6, "phase": 14 },
+    { "module": "Map", "type": "ux", "objective": "Map enhancements: custom markers + location search", "commit": "950a29f", "campaign": 6, "phase": 15 }
   ],
   "phases": [
     { "phase": 1, "cycle": 1, "type": "IMPROVE", "status": "DONE", "commit": "5074793" },
@@ -43,8 +44,8 @@
     { "phase": 12, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Photo moderation queue (featured/hidden review)", "commit": "72a2cce" },
     { "phase": 13, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "E2E test infrastructure: Playwright critical user flows", "commit": "536512e" },
     { "phase": 14, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Service worker offline gallery (cache-first with fallback UI)", "commit": "747f510" },
-    { "phase": 15, "cycle": 3, "type": "UIUX", "status": "RUNNING", "objective": "Map enhancements: custom markers + clustering + location search", "commit": null },
-    { "phase": 16, "cycle": 3, "type": "IMPROVE", "status": "PENDING", "objective": "Lightbox keyboard shortcuts (arrow nav + zoom)", "commit": null },
+    { "phase": 15, "cycle": 3, "type": "UIUX", "status": "DONE", "objective": "Map enhancements: custom markers + clustering + location search", "commit": "950a29f" },
+    { "phase": 16, "cycle": 3, "type": "IMPROVE", "status": "RUNNING", "objective": "Lightbox keyboard shortcuts (arrow nav + zoom)", "commit": null },
     { "phase": 17, "cycle": 3, "type": "CHECK", "status": "PENDING", "objective": "System health audit", "commit": null },
     { "phase": 18, "cycle": 3, "type": "IMPROVE", "status": "PENDING", "objective": "Image gallery virtualization for large sets", "commit": null }
   ]
