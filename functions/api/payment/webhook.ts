@@ -17,13 +17,17 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
     return jsonResponse({ error: "Service unavailable" }, 503);
   }
 
+  const rawBody = await context.request.text();
+  const signatureHeader = context.request.headers.get("stripe-signature") ?? "";
+  if (!hasStripeSignature(signatureHeader)) {
+    return jsonResponse({ error: "Invalid webhook signature" }, 400);
+  }
+
   const webhookSecret = context.env.STRIPE_WEBHOOK_SECRET?.trim();
   if (!webhookSecret) {
     return jsonResponse({ error: "Webhook signing secret is not configured" }, 503);
   }
 
-  const rawBody = await context.request.text();
-  const signatureHeader = context.request.headers.get("stripe-signature") ?? "";
   const verified = await verifyStripeSignature(rawBody, signatureHeader, webhookSecret);
   if (!verified) {
     return jsonResponse({ error: "Invalid webhook signature" }, 400);
@@ -112,6 +116,10 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
     return unavailable("Webhook processing failed", error, { route: "/api/payment/webhook", method: "POST" });
   }
 };
+
+function hasStripeSignature(header: string) {
+  return /(?:^|,)t=\d+/.test(header) && /(?:^|,)v1=[0-9a-f]+/i.test(header);
+}
 
 async function verifyStripeSignature(rawBody: string, header: string, secret: string) {
   const timestamp = header.match(/(?:^|,)t=(\d+)/)?.[1];

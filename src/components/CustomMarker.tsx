@@ -24,6 +24,7 @@ const zoneIcons: Record<string, string> = {
 
 export function CustomMarker({ position, count, location, zone, onClick }: CustomMarkerProps) {
   const { t } = useTranslation();
+  const markerEventHandlers = onClick ? { click: onClick } : undefined;
   
   const markerIcon = divIcon({
     className: "custom-marker",
@@ -51,7 +52,7 @@ export function CustomMarker({ position, count, location, zone, onClick }: Custo
   });
 
   return (
-    <Marker position={position} icon={markerIcon} eventHandlers={{ click: onClick }}>
+    <Marker position={position} icon={markerIcon} eventHandlers={markerEventHandlers}>
       <Tooltip direction="top" offset={[0, -10]}>
         {location} ({count})
       </Tooltip>
