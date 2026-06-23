@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { onRequestPost as uploadPhoto } from "./api/admin/photos";
 import { onRequestDelete as deletePhoto } from "./api/admin/photos/[id]";
 import { onRequestGet as getPublicPhotos } from "./api/photos";
+import { onRequestPost as paymentWebhook } from "./api/payment/webhook";
+import { onRequestGet as getUserProfile } from "./api/user/profile";
 
 function jsonRequest(url: string, init?: RequestInit) {
   return new Request(url, init);
@@ -115,5 +117,31 @@ describe("Cloudflare Pages API behavior", () => {
     expect(response.status).toBe(503);
     expect(body.error).toContain("删除失败");
     expect(db.statement.run).not.toHaveBeenCalled();
+  });
+
+  it("returns JSON auth errors for unsupported profile reads instead of SPA HTML", async () => {
+    const response = await getUserProfile({
+      request: jsonRequest("https://shoot.custard.top/api/user/profile"),
+      env: {},
+    } as never);
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(401);
+    expect(response.headers.get("content-type")).toContain("application/json");
+    expect(body.error).toBe("请先登录");
+  });
+
+  it("rejects unsigned Stripe webhook requests before checking deployment secrets", async () => {
+    const response = await paymentWebhook({
+      request: jsonRequest("https://shoot.custard.top/api/payment/webhook", {
+        method: "POST",
+        body: JSON.stringify({ type: "payment_intent.succeeded" }),
+      }),
+      env: { DB: createDb() },
+    } as never);
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(400);
+    expect(body.error).toBe("Invalid webhook signature");
   });
 });

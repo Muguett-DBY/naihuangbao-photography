@@ -50,6 +50,7 @@ const viteConfigSource = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const businessMigrationSource = readFileSync(resolve(root, "db/migrations/005_create_business_tables.sql"), "utf8");
 const videoPlayerSource = readFileSync(resolve(root, "src/components/VideoPlayer.tsx"), "utf8");
 const photoMapSource = readFileSync(resolve(root, "src/components/PhotoMap.tsx"), "utf8");
+const customMarkerSource = readFileSync(resolve(root, "src/components/CustomMarker.tsx"), "utf8");
 const presetPreviewSource = readFileSync(resolve(root, "src/components/PresetPreview.tsx"), "utf8");
 const customCursorSource = readFileSync(resolve(root, "src/components/CustomCursor.tsx"), "utf8");
 const filmGrainSource = readFileSync(resolve(root, "src/components/FilmGrain.tsx"), "utf8");
@@ -315,6 +316,12 @@ describe("audit regression coverage", () => {
       expect(locale.common.skipToContent).toBeTruthy();
       expect(locale.auth.userMenu).toBeTruthy();
     }
+  });
+
+  it("does not pass undefined Leaflet event handlers from custom map markers", () => {
+    expect(customMarkerSource).toContain("const markerEventHandlers = onClick ? { click: onClick } : undefined");
+    expect(customMarkerSource).toContain("eventHandlers={markerEventHandlers}");
+    expect(customMarkerSource).not.toContain("eventHandlers={{ click: onClick }}");
   });
 
   it("keeps public account registration on the stronger minimum password policy", () => {

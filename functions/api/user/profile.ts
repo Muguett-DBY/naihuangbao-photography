@@ -13,6 +13,8 @@ type UserRow = {
   salt: string;
 };
 
+export const onRequestGet: PagesFunction<AuthEnv> = async () => unauthorized("请先登录");
+
 export const onRequestPut: PagesFunction<AuthEnv> = async (context) => {
   const secret = getRequiredAuthSecret(context.env);
   if (!secret) return unauthorized("请先登录");
