@@ -737,7 +737,18 @@
       "faq": "FAQ / Process",
       "copy": "Homepage Copy",
       "auditLog": "Audit Log",
-      "moderation": "Moderation"
+      "moderation": "Moderation",
+      "reports": "Reports"
+    },
+    "reports": {
+      "title": "Reports",
+      "description": "Download data reports for offline analysis.",
+      "bookings": "Bookings Report",
+      "bookingsDesc": "All bookings with status, client info, and dates.",
+      "photos": "Photos Report",
+      "photosDesc": "All photos with metadata, visibility, and style info.",
+      "exporting": "Exporting...",
+      "downloadCSV": "Download CSV"
     },
     "login": {
       "loggingIn": "Logging in...",
