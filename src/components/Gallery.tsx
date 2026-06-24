@@ -1,12 +1,11 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Play, Share2, Loader2, Search, X, LayoutGrid, Columns, RotateCcw, Eye } from "lucide-react";
+import { Play, Loader2, Search, X, LayoutGrid, Columns, RotateCcw, Eye } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
 import {
   countFacets,
-  DEFAULT_FACETS,
   facetedSearch,
   getAlbums,
   type DateRange,
@@ -20,7 +19,6 @@ import { useDistortionHover } from "../hooks/useDistortionHover";
 import { useKeyboardShortcut } from "../hooks/useKeyboardShortcut";
 import { useSavedSearches } from "../hooks/useSavedSearches";
 import { useCompare } from "../hooks/useCompare";
-import { useSwipeGesture } from "../hooks/useSwipeGesture";
 import { useVirtualization } from "../hooks/useVirtualization";
 import { track } from "../utils/track";
 import { FavoriteButton } from "./FavoriteButton";
