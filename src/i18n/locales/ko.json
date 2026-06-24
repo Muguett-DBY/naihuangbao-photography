@@ -732,7 +732,19 @@
       "services": "서비스 규칙",
       "faq": "FAQ / 과정",
       "copy": "홈페이지 문구",
-      "auditLog": "감사 로그"
+      "auditLog": "감사 로그",
+      "moderation": "검토",
+      "reports": "리포트"
+    },
+    "reports": {
+      "title": "데이터 리포트",
+      "description": "데이터 리포트를 다운로드하여 오프라인 분석에 활용하세요.",
+      "bookings": "예약 리포트",
+      "bookingsDesc": "모든 예약의 상태, 고객 정보 및 날짜.",
+      "photos": "사진 리포트",
+      "photosDesc": "모든 사진의 메타데이터, 가시성 및 스타일 정보.",
+      "exporting": "내보내는 중...",
+      "downloadCSV": "CSV 다운로드"
     },
     "login": {
       "loggingIn": "로그인 중...",
