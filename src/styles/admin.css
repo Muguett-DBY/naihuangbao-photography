@@ -1267,6 +1267,105 @@
   word-break: break-all;
 }
 
+/* ── Interactive chart controls ── */
+.adm-vitals-chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.adm-vitals-chart-label {
+  font-size: 12px;
+  color: #7a5a4a;
+  font-weight: 600;
+}
+
+.adm-vitals-chart-metric-btn {
+  padding: 4px 12px;
+  border: 1px solid rgba(139, 94, 74, 0.2);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #fffdf7;
+  color: #7a5a4a;
+  transition: background 0.15s, color 0.15s;
+}
+
+.adm-vitals-chart-metric-btn.is-active {
+  background: #493735;
+  color: #fff8f3;
+}
+
+.adm-vitals-chart-metric-btn:hover {
+  border-color: #493735;
+}
+
+.adm-vitals-chart-container {
+  position: relative;
+}
+
+.adm-vitals-chart-tooltip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 10px;
+  background: #493735;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 12px;
+  position: absolute;
+  top: 4px;
+  right: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.adm-vitals-chart-bar.is-hovered {
+  opacity: 0.85;
+  outline: 2px solid #493735;
+  outline-offset: -2px;
+}
+
+.adm-vitals-chart-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  justify-content: center;
+}
+
+.adm-vitals-chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #7a5a4a;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 999px;
+  transition: background 0.15s;
+}
+
+.adm-vitals-chart-legend-item.is-active {
+  background: rgba(73, 55, 53, 0.08);
+  font-weight: 600;
+}
+
+.adm-vitals-chart-legend-item:hover {
+  background: rgba(73, 55, 53, 0.05);
+}
+
+.adm-vitals-chart-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
 @media (max-width: 640px) {
   .adm-vitals-rating-row {
     grid-template-columns: 10px 1fr 36px;

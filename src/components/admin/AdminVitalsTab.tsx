@@ -222,41 +222,77 @@ function DailyChart({ points }: { points: DailyPoint[] }) {
   const { t } = useTranslation();
   const metrics = Array.from(new Set(points.map((p) => p.metric)));
   const dates = Array.from(new Set(points.map((p) => p.date))).sort();
+  const [selectedMetric, setSelectedMetric] = useState<string>(metrics[0] ?? "LCP");
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  const selectedSeries = dates.map((d) => {
+    const pt = points.find((p) => p.date === d && p.metric === selectedMetric);
+    return pt?.p75 ?? 0;
+  });
+  const max = Math.max(1, ...selectedSeries);
 
   return (
     <div className="adm-vitals-chart" role="img" aria-label={t("admin.vitals.dailyAria", "Web Vitals daily p75 trend")}>
-      <div className="adm-vitals-chart-grid">
-        {dates.map((d) => (
-          <div key={d} className="adm-vitals-chart-x-label">{formatDate(d)}</div>
+      <div className="adm-vitals-chart-controls">
+        <span className="adm-vitals-chart-label">{t("admin.vitals.metric", "Metric")}:</span>
+        {metrics.map((m) => (
+          <button
+            key={m}
+            type="button"
+            className={`adm-vitals-chart-metric-btn${m === selectedMetric ? " is-active" : ""}`}
+            onClick={() => setSelectedMetric(m)}
+          >
+            {m}
+          </button>
         ))}
       </div>
-      <div className="adm-vitals-chart-rows">
-        {metrics.map((metric) => {
-          const series = dates.map((d) => {
-            const pt = points.find((p) => p.date === d && p.metric === metric);
-            return pt?.p75 ?? 0;
-          });
-          const max = Math.max(1, ...series);
-          return (
-            <div key={metric} className="adm-vitals-chart-row">
-              <span className="adm-vitals-chart-metric">{metric}</span>
-              <div className="adm-vitals-chart-bars">
-                {series.map((value, idx) => {
-                  const height = Math.max(2, Math.round((value / max) * 36));
-                  const date = dates[idx] ?? "";
-                  return (
-                    <div
-                      key={`${metric}-${date}`}
-                      className="adm-vitals-chart-bar"
-                      style={{ height: `${height}px` }}
-                      title={`${formatDate(date)}: ${formatValue(metric, value)}`}
-                    />
-                  );
-                })}
-              </div>
+
+      <div className="adm-vitals-chart-container">
+        <div className="adm-vitals-chart-bars" style={{ height: 120, position: "relative" }}>
+          {selectedSeries.map((value, idx) => {
+            const height = Math.max(2, (value / max) * 110);
+            const date = dates[idx] ?? "";
+            const isHovered = idx === hoveredIndex;
+            return (
+              <div
+                key={`${selectedMetric}-${date}`}
+                className={`adm-vitals-chart-bar${isHovered ? " is-hovered" : ""}`}
+                style={{ height: `${height}px`, flex: 1 }}
+                title={`${formatDate(date)}: ${formatValue(selectedMetric, value)}`}
+                onMouseEnter={() => setHoveredIndex(idx)}
+                onMouseLeave={() => setHoveredIndex(null)}
+              />
+            );
+          })}
+        </div>
+
+        <div className="adm-vitals-chart-grid">
+          {dates.map((d) => (
+            <div key={d} className="adm-vitals-chart-x-label" style={{ flex: 1, textAlign: "center", fontSize: 10, color: "#888" }}>
+              {formatDate(d)}
             </div>
-          );
-        })}
+          ))}
+        </div>
+      </div>
+
+      {hoveredIndex !== null && hoveredIndex >= 0 && hoveredIndex < selectedSeries.length && (
+        <div className="adm-vitals-chart-tooltip">
+          <strong>{formatValue(selectedMetric, selectedSeries[hoveredIndex])}</strong>
+          <span>{dates[hoveredIndex]}</span>
+        </div>
+      )}
+
+      <div className="adm-vitals-chart-legend">
+        {metrics.map((m) => (
+          <span
+            key={m}
+            className={`adm-vitals-chart-legend-item${m === selectedMetric ? " is-active" : ""}`}
+            onClick={() => setSelectedMetric(m)}
+          >
+            <span className="adm-vitals-chart-legend-dot" style={{ background: m === "LCP" ? "#4F46E5" : m === "INP" ? "#F59E0B" : "#10B981" }} />
+            {m}
+          </span>
+        ))}
       </div>
     </div>
   );
