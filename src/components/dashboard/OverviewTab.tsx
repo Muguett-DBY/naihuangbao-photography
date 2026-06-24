@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { CalendarCheck, BookOpen, MapPin, ArrowRight, Camera, Sparkles, ShoppingBag } from "lucide-react";
+import { CalendarCheck, BookOpen, MapPin, ArrowRight, Camera, Sparkles, ShoppingBag, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useFetch } from "../../hooks/useFetch";
 import { useAuth } from "../../hooks/useAuth";
 import { Skeleton } from "../shared/Skeleton";
+import { StatusBadge } from "./StatusBadge";
 
 type UserStats = {
   bookings: { total: number; upcoming: number };
@@ -11,10 +12,21 @@ type UserStats = {
   workshops: { total: number };
 };
 
+type BookingItem = {
+  id: string;
+  package_name: string;
+  preferred_date: string;
+  status: string;
+  created_at: string;
+};
+
 export function OverviewTab() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { data, loading } = useFetch<UserStats>("/api/user/stats");
+  const { data: bookingsData } = useFetch<{ bookings: BookingItem[] }>("/api/user/bookings?limit=3");
+
+  const recentBookings = bookingsData?.bookings ?? [];
 
   if (loading) {
     return (
@@ -109,6 +121,25 @@ export function OverviewTab() {
           ))}
         </div>
       </div>
+
+      {recentBookings.length > 0 && (
+        <div className="overview-recent-section">
+          <h3><Clock size={16} /> {t("dashboard.recentBookings", "Recent Bookings")}</h3>
+          <div className="overview-recent-list">
+            {recentBookings.map((b) => (
+              <div key={b.id} className="overview-recent-item">
+                <div className="overview-recent-info">
+                  <span className="overview-recent-package">{b.package_name}</span>
+                  <span className="overview-recent-date">
+                    {b.preferred_date ? new Date(b.preferred_date).toLocaleDateString() : t("bookingModal.any", "Any")}
+                  </span>
+                </div>
+                <StatusBadge status={b.status} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
