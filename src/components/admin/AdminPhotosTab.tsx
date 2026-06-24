@@ -35,6 +35,8 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStyle, setFilterStyle] = useState<PhotoStyle | "all">("all");
   const [filterVisibility, setFilterVisibility] = useState<"all" | "public" | "hidden">("all");
+  const [filterAlbum, setFilterAlbum] = useState("all");
+  const [filterFeatured, setFilterFeatured] = useState<"all" | "featured" | "not-featured">("all");
 
   const styleCounts = useMemo(() => {
     const counts: Record<string, number> = { all: photos.length };
@@ -43,6 +45,40 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     }
     return counts;
   }, [photos]);
+
+  const albumCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: photos.length };
+    for (const p of photos) {
+      const album = p.album || "未分类";
+      counts[album] = (counts[album] || 0) + 1;
+    }
+    return counts;
+  }, [photos]);
+
+  const filteredPhotos = useMemo(() => {
+    let result = photos;
+    if (filterStyle !== "all") {
+      result = result.filter((p) => p.style === filterStyle);
+    }
+    if (filterVisibility !== "all") {
+      result = result.filter((p) => p.visibility === filterVisibility);
+    }
+    if (filterAlbum !== "all") {
+      result = result.filter((p) => (p.album || "未分类") === filterAlbum);
+    }
+    if (filterFeatured !== "all") {
+      result = result.filter((p) => filterFeatured === "featured" ? p.featured : !p.featured);
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter((p) =>
+        p.title.toLowerCase().includes(q) ||
+        p.location.toLowerCase().includes(q) ||
+        (p.album && p.album.toLowerCase().includes(q))
+      );
+    }
+    return result;
+  }, [photos, filterStyle, filterVisibility, filterAlbum, filterFeatured, searchQuery]);
   const editDialogRef = useFocusTrap<HTMLDivElement>({ active: !!editingPhoto });
   const deleteDialogRef = useFocusTrap<HTMLDivElement>({ active: !!deletingPhoto });
 
@@ -83,6 +119,23 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     key: "Escape",
     enabled: showShortcuts,
     onMatch: () => setShowShortcuts(false),
+  });
+  useKeyboardShortcut({
+    key: "a",
+    enabled: !showShortcuts && !editingPhoto && !deletingPhoto,
+    onMatch: () => {
+      // Toggle select all
+      if (selectedIds.size === filteredPhotos.length) {
+        setSelectedIds(new Set());
+      } else {
+        setSelectedIds(new Set(filteredPhotos.map((p) => p.id)));
+      }
+    },
+  });
+  useKeyboardShortcut({
+    key: "Delete",
+    enabled: !showShortcuts && !editingPhoto && !deletingPhoto && selectedIds.size > 0,
+    onMatch: () => handleBatchDelete(),
   });
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -419,6 +472,17 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
               <option value="public">公开</option>
               <option value="hidden">隐藏</option>
             </select>
+            <select className="adm-filter-select" value={filterAlbum} onChange={(e) => setFilterAlbum(e.target.value)}>
+              <option value="all">全部相册 ({albumCounts.all})</option>
+              {Object.entries(albumCounts).filter(([k]) => k !== "all").sort(([,a],[,b]) => b - a).map(([k, v]) => (
+                <option key={k} value={k}>{k} ({v})</option>
+              ))}
+            </select>
+            <select className="adm-filter-select" value={filterFeatured} onChange={(e) => setFilterFeatured(e.target.value as "all" | "featured" | "not-featured")}>
+              <option value="all">全部精选</option>
+              <option value="featured">精选</option>
+              <option value="not-featured">非精选</option>
+            </select>
           </div>
           <div className="adm-list-actions">
             {selectedIds.size > 0 && (
@@ -459,29 +523,17 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
               </>
             )}
             <label className="adm-select-all">
-              <input type="checkbox" checked={photos.length > 0 && selectedIds.size === photos.length} onChange={toggleSelectAll} /> 全选
+              <input type="checkbox" checked={filteredPhotos.length > 0 && selectedIds.size === filteredPhotos.length} onChange={toggleSelectAll} /> 全选 ({filteredPhotos.length})
             </label>
           </div>
         </div>
         <div className="adm-grid">
           {loading ? (
             <SkeletonGrid count={6} columns={3} ariaLabel="Loading photos" />
-          ) : photos.length === 0 ? (
-            <div className="adm-empty"><ImagePlus size={36} /><p>上传你的第一张作品</p></div>
-          ) : (() => {
-            const filtered = photos.filter((p) => {
-              if (filterStyle !== "all" && p.style !== filterStyle) return false;
-              if (filterVisibility !== "all" && p.visibility !== filterVisibility) return false;
-              if (searchQuery) {
-                const q = searchQuery.toLowerCase();
-                return p.title.toLowerCase().includes(q) || p.location.toLowerCase().includes(q) || p.alt?.toLowerCase().includes(q);
-              }
-              return true;
-            });
-            return filtered.length === 0 ? (
-              <div className="adm-empty"><ImagePlus size={36} /><p>没有匹配的照片</p></div>
-            ) : (
-              filtered.map((p) => (
+          ) : filteredPhotos.length === 0 ? (
+            <div className="adm-empty"><ImagePlus size={36} /><p>{photos.length === 0 ? "上传你的第一张作品" : "没有匹配的照片"}</p></div>
+          ) : (
+            filteredPhotos.map((p) => (
               <div key={p.id} className={`adm-photo${p.featured ? " is-featured" : ""}${p.visibility === "hidden" ? " is-hidden" : ""}${selectedIds.has(p.id) ? " is-selected" : ""}`} aria-label={`${p.title} - ${styleLabels[p.style]} - ${p.visibility === "public" ? "公开" : "隐藏"}${p.featured ? " - 精选" : ""}`}>
                 <div className="adm-photo-check" onClick={() => toggleSelect(p.id)}>
                   <input type="checkbox" checked={selectedIds.has(p.id)} readOnly />
@@ -504,8 +556,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
                 </div>
               </div>
             ))
-          );
-          })()}
+          )}
         </div>
       </div>
 
@@ -529,6 +580,8 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
             <ul className="adm-shortcuts-list">
               <li><kbd>/</kbd> 聚焦搜索框</li>
               <li><kbd>N</kbd> 上传新照片</li>
+              <li><kbd>A</kbd> 全选/取消全选</li>
+              <li><kbd>Del</kbd> 删除选中照片</li>
               <li><kbd>?</kbd> 显示/隐藏快捷键</li>
               <li><kbd>Esc</kbd> 关闭弹窗</li>
             </ul>
