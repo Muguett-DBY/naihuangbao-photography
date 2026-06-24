@@ -374,6 +374,43 @@ export function PhotoMap() {
               />
             );
           })}
+
+          {/* Cluster overlay for close markers */}
+          {(() => {
+            const clusters: Array<{ center: [number, number]; count: number; zone: string; locations: string[] }> = [];
+            const processed = new Set<string>();
+            for (const loc of uniqueFilteredLocs) {
+              if (processed.has(loc)) continue;
+              const info = getLocationInfo(loc);
+              const nearby = uniqueFilteredLocs.filter((l) => {
+                if (processed.has(l)) return false;
+                const otherInfo = getLocationInfo(l);
+                const dist = Math.hypot(info.coords[0] - otherInfo.coords[0], info.coords[1] - otherInfo.coords[1]);
+                return dist < 0.005 && dist > 0;
+              });
+              if (nearby.length > 0) {
+                const allLocs = [loc, ...nearby];
+                const totalPhotos = allLocs.reduce((sum, l) => sum + filteredPhotos.filter((p) => p.location === l).length, 0);
+                clusters.push({
+                  center: info.coords,
+                  count: totalPhotos,
+                  zone: info.zone,
+                  locations: allLocs,
+                });
+                allLocs.forEach((l) => processed.add(l));
+              }
+            }
+            return clusters.map((cluster) => (
+              <Marker key={`cluster-${cluster.center[0]}`} position={cluster.center} icon={zoneIcon(cluster.zone as LocationInfo["zone"])}>
+                <Popup>
+                  <div className="map-cluster-popup">
+                    <strong>{cluster.count} {t("photoMap.photos", "photos")}</strong>
+                    <p>{cluster.locations.join(" · ")}</p>
+                  </div>
+                </Popup>
+              </Marker>
+            ));
+          })()}
         </MapContainer>
       </div>
 

@@ -5,7 +5,7 @@
   "overall_status": "RUNNING",
   "current_phase": 1,
   "current_cycle": 1,
-  "last_completed_phase": 7,
+  "last_completed_phase": 8,
   "started_at": "2026-06-24T22:26:00Z",
   "updated_at": "2026-06-24T22:26:00Z",
   "completed_at": null,
@@ -19,7 +19,8 @@
     { "module": "Admin", "type": "ux", "objective": "Advanced admin search with album/featured filters and keyboard shortcuts", "commit": "613f863", "campaign": 7, "phase": 3 },
     { "module": "Booking", "type": "feature", "objective": "Offline-first booking form with IndexedDB persistence", "commit": "a5ee615", "campaign": 7, "phase": 4 },
     { "module": "PWA", "type": "feature", "objective": "PWA push notifications for bookings, new photos, and announcements", "commit": "d576908", "campaign": 7, "phase": 6 },
-    { "module": "Accessibility", "type": "ux", "objective": "Deep accessibility audit with WCAG 2.1 AA compliance fixes", "commit": "0115a63", "campaign": 7, "phase": 7 }
+    { "module": "Accessibility", "type": "ux", "objective": "Deep accessibility audit with WCAG 2.1 AA compliance fixes", "commit": "0115a63", "campaign": 7, "phase": 7 },
+    { "module": "User", "type": "feature", "objective": "User preference persistence (theme, language, favorites sync across devices)", "commit": "478b8b2", "campaign": 7, "phase": 8 }
   ],
   "phases": [
     { "phase": 1, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "Performance analytics dashboard with interactive charts", "commit": "d2c6fae" },
@@ -29,8 +30,8 @@
     { "phase": 5, "cycle": 1, "type": "CHECK", "status": "DONE", "objective": "System health audit", "commit": null },
     { "phase": 6, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "PWA push notifications for bookings, new photos, and announcements", "commit": "d576908" },
     { "phase": 7, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Deep accessibility audit with WCAG 2.1 AA compliance fixes", "commit": "0115a63" },
-    { "phase": 8, "cycle": 2, "type": "IMPROVE", "status": "RUNNING", "objective": "User preference persistence (theme, language, favorites sync across devices)", "commit": null },
-    { "phase": 9, "cycle": 2, "type": "UIUX", "status": "PENDING", "objective": "Advanced admin search with full-text search, saved filters, and bulk operations", "commit": null },
+    { "phase": 8, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "User preference persistence (theme, language, favorites sync across devices)", "commit": "478b8b2" },
+    { "phase": 9, "cycle": 2, "type": "UIUX", "status": "RUNNING", "objective": "Map UX improvements with better clustering, popup styling, and location-based filtering", "commit": null },
     { "phase": 10, "cycle": 2, "type": "IMPROVE", "status": "PENDING", "objective": "User preference persistence (theme, language, favorites sync across devices)", "commit": null },
     { "phase": 11, "cycle": 2, "type": "CHECK", "status": "PENDING", "objective": "System health audit", "commit": null },
     { "phase": 12, "cycle": 2, "type": "IMPROVE", "status": "PENDING", "objective": "Performance analytics dashboard with interactive charts", "commit": null },

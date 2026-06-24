@@ -26,6 +26,15 @@ export function MapPage() {
     styles: Array.from(new Set(photos.filter((p) => p.location === loc).map((p) => p.style))),
   }));
 
+  const zoneStats = (() => {
+    const zones = { free: 0, fee: 0, unreachable: 0 };
+    photos.forEach((p) => {
+      if (p.location.includes("南京")) zones.free++;
+      else if (p.location) zones.fee++;
+    });
+    return zones;
+  })();
+
   return (
     <PageTransition ref={rootRef}>
       <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)", minHeight: "auto", paddingBottom: 40 }}>
@@ -53,6 +62,12 @@ export function MapPage() {
           </Suspense>
         ) : (
           <div className="map-location-list">
+            <div className="map-stats-bar">
+              <span className="map-stat"><strong>{photos.length}</strong> {t("photoMap.totalPhotos", "total photos")}</span>
+              <span className="map-stat"><strong>{locations.length}</strong> {t("photoMap.locations", "locations")}</span>
+              <span className="map-stat map-stat-free">{t("photoMap.freeZone", "Free")}: <strong>{zoneStats.free}</strong></span>
+              <span className="map-stat map-stat-fee">{t("photoMap.feeZone", "Fee")}: <strong>{zoneStats.fee}</strong></span>
+            </div>
             {locations.map((loc) => (
               <div key={loc.name} className="map-location-card">
                 <h3>{loc.name}</h3>
