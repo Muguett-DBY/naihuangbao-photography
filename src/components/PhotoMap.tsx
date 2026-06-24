@@ -1,12 +1,16 @@
 import { MapContainer, TileLayer, Marker, Popup, Circle, Tooltip, useMapEvents, useMap } from "react-leaflet";
 import L, { Icon, divIcon } from "leaflet";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { CustomMarker } from "./CustomMarker";
 import { LocationSearch } from "./LocationSearch";
 import "leaflet/dist/leaflet.css";
+
+const LazyMotion = lazy(async () => {
+  const { motion } = await import("framer-motion");
+  return { default: motion.section };
+});
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -241,13 +245,14 @@ export function PhotoMap() {
   );
 
   return (
-    <motion.section
-      className="section-shell photo-map-section"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-8% 0px" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <Suspense fallback={<div className="section-shell photo-map-section" />}>
+      <LazyMotion
+        className="section-shell photo-map-section"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-8% 0px" }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
       <div className="section-heading">
         <p>{t("photoMap.eyebrow")}</p>
         <h2>{t("photoMap.title")}</h2>
@@ -396,6 +401,7 @@ export function PhotoMap() {
           </div>
         </div>
       </div>
-    </motion.section>
+      </LazyMotion>
+    </Suspense>
   );
 }
