@@ -31,6 +31,18 @@ type BookingPollItem = {
   created_at: string;
 };
 
+type StatsData = {
+  photos: { total: number; public: number; featured: number };
+  bookings: { pending: number; contacted: number; done: number; total: number };
+  users: { total: number };
+  courses: { total: number };
+  presets: { total: number };
+  workshops: { total: number };
+  subscribers: { total: number };
+  recentBookings: { id: string; name: string; package_name: string; status: string; created_at: string }[];
+  recentPhotos: { id: string; title: string; style: string; created_at: string }[];
+};
+
 export function AdminShell() {
   const { t } = useTranslation();
   const { siteConfig } = useSiteContent();
@@ -215,24 +227,13 @@ export function AdminShell() {
       </div>
     </div>
   );
-}
-
-type StatsData = {
-  photos: { total: number; public: number; featured: number };
-  bookings: { pending: number; contacted: number; done: number; total: number };
-  users: { total: number };
-  courses: { total: number };
-  presets: { total: number };
-  workshops: { total: number };
-  subscribers: { total: number };
-  recentBookings: { id: string; name: string; package_name: string; status: string; created_at: string }[];
-  recentPhotos: { id: string; title: string; style: string; created_at: string }[];
-};
+ }
 
 function AdminStats() {
   const { t } = useTranslation();
   const [data, setData] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeChart, setActiveChart] = useState<"bookings" | "photos">("bookings");
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -259,6 +260,24 @@ function AdminStats() {
   }
 
   const bookingRate = data.bookings.total > 0 ? Math.round((data.bookings.done / data.bookings.total) * 100) : 0;
+  const photoRate = data.photos.total > 0 ? Math.round((data.photos.public / data.photos.total) * 100) : 0;
+
+  // Activity trend data (last 7 days based on recent items)
+  const activityTrend = (() => {
+    const now = new Date();
+    const days: { label: string; count: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+      const label = `${date.getMonth() + 1}/${date.getDate()}`;
+      const dayStr = date.toISOString().split("T")[0];
+      const count = data.recentBookings.filter((b) => b.created_at?.startsWith(dayStr)).length
+        + data.recentPhotos.filter((p) => p.created_at?.startsWith(dayStr)).length;
+      days.push({ label, count });
+    }
+    return days;
+  })();
+  const maxActivity = Math.max(1, ...activityTrend.map((d) => d.count));
 
   return (
     <div className="adm-content-panel">
@@ -269,7 +288,7 @@ function AdminStats() {
           <div className="adm-stat-number">{data.photos.total}</div>
           <div className="adm-stat-label">{t("admin.stats.photosTotal")}</div>
           <div className="adm-stat-sub">{data.photos.public} {t("admin.stats.public")} · {data.photos.featured} {t("admin.stats.featured")}</div>
-          <div className="adm-stat-bar"><div className="adm-stat-bar-fill" style={{ width: `${data.photos.total > 0 ? (data.photos.public / data.photos.total) * 100 : 0}%` }} /></div>
+          <div className="adm-stat-bar"><div className="adm-stat-bar-fill" style={{ width: `${photoRate}%` }} /></div>
         </div>
 
         <div className="adm-stat-card">
@@ -289,6 +308,25 @@ function AdminStats() {
           <div className="adm-stat-number">{data.courses.total + data.presets.total + data.workshops.total}</div>
           <div className="adm-stat-label">{t("admin.stats.content")}</div>
           <div className="adm-stat-sub">{data.courses.total} {t("admin.stats.courses")} · {data.presets.total} {t("admin.stats.presets")} · {data.workshops.total} {t("admin.stats.workshops")}</div>
+        </div>
+      </div>
+
+      {/* Activity trend chart */}
+      <div className="adm-activity-chart-section">
+        <h3><TrendingUp size={16} /> {t("admin.stats.activityTrend", "7-Day Activity Trend")}</h3>
+        <div className="adm-activity-chart">
+          <div className="adm-activity-chart-bars">
+            {activityTrend.map((day) => (
+              <div key={day.label} className="adm-activity-chart-bar-col">
+                <div className="adm-activity-chart-bar-value">{day.count}</div>
+                <div
+                  className="adm-activity-chart-bar"
+                  style={{ height: `${Math.max(4, (day.count / maxActivity) * 60)}px` }}
+                />
+                <div className="adm-activity-chart-bar-label">{day.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
