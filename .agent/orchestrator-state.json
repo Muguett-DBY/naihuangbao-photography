@@ -5,7 +5,7 @@
   "overall_status": "RUNNING",
   "current_phase": 1,
   "current_cycle": 1,
-  "last_completed_phase": 5,
+  "last_completed_phase": 6,
   "started_at": "2026-06-24T22:26:00Z",
   "updated_at": "2026-06-24T22:26:00Z",
   "completed_at": null,
@@ -17,7 +17,8 @@
     { "module": "Admin", "type": "feature", "objective": "Interactive performance analytics dashboard", "commit": "d2c6fae", "campaign": 7, "phase": 1 },
     { "module": "Performance", "type": "perf", "objective": "Lazy-load framer-motion in PageTransition and PhotoMap", "commit": "112a5bf", "campaign": 7, "phase": 2 },
     { "module": "Admin", "type": "ux", "objective": "Advanced admin search with album/featured filters and keyboard shortcuts", "commit": "613f863", "campaign": 7, "phase": 3 },
-    { "module": "Booking", "type": "feature", "objective": "Offline-first booking form with IndexedDB persistence", "commit": "a5ee615", "campaign": 7, "phase": 4 }
+    { "module": "Booking", "type": "feature", "objective": "Offline-first booking form with IndexedDB persistence", "commit": "a5ee615", "campaign": 7, "phase": 4 },
+    { "module": "PWA", "type": "feature", "objective": "PWA push notifications for bookings, new photos, and announcements", "commit": "d576908", "campaign": 7, "phase": 6 }
   ],
   "phases": [
     { "phase": 1, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "Performance analytics dashboard with interactive charts", "commit": "d2c6fae" },
@@ -25,8 +26,8 @@
     { "phase": 3, "cycle": 1, "type": "UIUX", "status": "DONE", "objective": "Advanced admin search with real-time filtering and keyboard shortcuts", "commit": "613f863" },
     { "phase": 4, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "Offline-first booking form with IndexedDB persistence and sync", "commit": "a5ee615" },
     { "phase": 5, "cycle": 1, "type": "CHECK", "status": "DONE", "objective": "System health audit", "commit": null },
-    { "phase": 6, "cycle": 1, "type": "IMPROVE", "status": "RUNNING", "objective": "PWA push notifications for bookings, new photos, and announcements", "commit": null },
-    { "phase": 7, "cycle": 2, "type": "IMPROVE", "status": "PENDING", "objective": "Deep accessibility audit with WCAG 2.1 AA compliance fixes", "commit": null },
+    { "phase": 6, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "PWA push notifications for bookings, new photos, and announcements", "commit": "d576908" },
+    { "phase": 7, "cycle": 2, "type": "IMPROVE", "status": "RUNNING", "objective": "Deep accessibility audit with WCAG 2.1 AA compliance fixes", "commit": null },
     { "phase": 8, "cycle": 2, "type": "IMPROVE", "status": "PENDING", "objective": "Performance analytics dashboard with interactive time-series charts", "commit": null },
     { "phase": 9, "cycle": 2, "type": "UIUX", "status": "PENDING", "objective": "Advanced admin search with full-text search, saved filters, and bulk operations", "commit": null },
     { "phase": 10, "cycle": 2, "type": "IMPROVE", "status": "PENDING", "objective": "User preference persistence (theme, language, favorites sync across devices)", "commit": null },
