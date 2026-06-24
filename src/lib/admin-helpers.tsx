@@ -34,7 +34,7 @@ export const publicMutationHeaders = { "x-nhb-public-action": "1" };
 
 export { isAbortError } from "./errors";
 
-export type AdminTab = "photos" | "bookings" | "packages" | "services" | "faq" | "copy" | "stats" | "vitals" | "courses" | "presets" | "workshops" | "merchandise" | "auditLog" | "moderation";
+export type AdminTab = "photos" | "bookings" | "packages" | "services" | "faq" | "copy" | "stats" | "vitals" | "courses" | "presets" | "workshops" | "merchandise" | "auditLog" | "moderation" | "reports";
 export type ToastType = "success" | "error" | "info";
 
 export type EditForm = {
