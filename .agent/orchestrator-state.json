@@ -5,7 +5,7 @@
   "overall_status": "RUNNING",
   "current_phase": 1,
   "current_cycle": 1,
-  "last_completed_phase": 1,
+  "last_completed_phase": 2,
   "started_at": "2026-06-24T22:26:00Z",
   "updated_at": "2026-06-24T22:26:00Z",
   "completed_at": null,
@@ -14,12 +14,13 @@
   "previous_campaign_summary": "Web Vitals RUM, Event tracking, Faceted search, Bulk photo ops, Audit log, Chat markdown, E2E tests, Offline gallery, Map enhancements, Lightbox keyboard, Gallery virtualization.",
   "theme": "Performance analytics, vendor code-splitting, advanced admin tools, offline-first PWA, deep accessibility, TypeScript strictness",
   "objective_registry": [
-    { "module": "Admin", "type": "feature", "objective": "Interactive performance analytics dashboard", "commit": "d2c6fae", "campaign": 7, "phase": 1 }
+    { "module": "Admin", "type": "feature", "objective": "Interactive performance analytics dashboard", "commit": "d2c6fae", "campaign": 7, "phase": 1 },
+    { "module": "Performance", "type": "perf", "objective": "Lazy-load framer-motion in PageTransition and PhotoMap", "commit": "112a5bf", "campaign": 7, "phase": 2 }
   ],
   "phases": [
     { "phase": 1, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "Performance analytics dashboard with interactive charts", "commit": "d2c6fae" },
-    { "phase": 2, "cycle": 1, "type": "IMPROVE", "status": "RUNNING", "objective": "Code-split heavy vendors (gsap, motion, face-api) to reduce initial bundle", "commit": null },
-    { "phase": 3, "cycle": 1, "type": "UIUX", "status": "PENDING", "objective": "Advanced admin search with real-time filtering and keyboard shortcuts", "commit": null },
+    { "phase": 2, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "Code-split heavy vendors (gsap, motion, face-api) to reduce initial bundle", "commit": "112a5bf" },
+    { "phase": 3, "cycle": 1, "type": "UIUX", "status": "RUNNING", "objective": "Advanced admin search with real-time filtering and keyboard shortcuts", "commit": null },
     { "phase": 4, "cycle": 1, "type": "IMPROVE", "status": "PENDING", "objective": "Offline-first booking form with IndexedDB persistence and sync", "commit": null },
     { "phase": 5, "cycle": 1, "type": "CHECK", "status": "PENDING", "objective": "System health audit", "commit": null },
     { "phase": 6, "cycle": 1, "type": "IMPROVE", "status": "PENDING", "objective": "PWA push notifications for bookings, new photos, and announcements", "commit": null },
