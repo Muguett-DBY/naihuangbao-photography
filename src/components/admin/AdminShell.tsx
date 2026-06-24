@@ -25,6 +25,7 @@ import { AdminVitalsTab } from "./AdminVitalsTab";
 import { AdminAuditLogTab } from "./AdminAuditLogTab";
 import { AdminPhotoModerationQueue } from "./AdminPhotoModerationQueue";
 import { AdminReportsTab } from "./AdminReportsTab";
+import { AdminNotificationBell } from "./AdminNotificationBell";
 
 type BookingPollItem = {
   id: string;
@@ -193,6 +194,7 @@ export function AdminShell() {
     <div className="adm-root">
       <header className="adm-bar">
         <div className="adm-bar-brand">{t("admin.header.brand", { name: siteConfig.brandName })}</div>
+        <AdminNotificationBell newBookingCount={newBookingIds.size} onDismiss={() => setHasNewBookings(false)} />
         <div className="adm-bar-actions">
           <Button type="text" onClick={handleLogout}>
             <LogOut size={14} /> {t("admin.header.logout")}
