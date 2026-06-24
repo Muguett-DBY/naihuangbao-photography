@@ -16,6 +16,7 @@ import { MobileBottomNav } from "../components/shared/MobileBottomNav";
 import { PwaInstallBanner } from "../components/PwaInstallBanner";
 import { PwaUpdateBanner } from "../components/PwaUpdateBanner";
 import { OfflineFallback } from "../components/OfflineFallback";
+import { PushNotificationBanner } from "../components/PushNotificationBanner";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
 
 // Heavy visual effects and animations are split into a separate chunk
@@ -100,6 +101,7 @@ export function RootLayout() {
           </Suspense>
         </ErrorBoundary>
       )}
+      {!isEditor && <PushNotificationBanner />}
       <AuthProvider>
         <BookingProvider>
           <SiteContentProvider>
