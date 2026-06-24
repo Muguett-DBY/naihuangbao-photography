@@ -732,7 +732,19 @@
       "services": "サービス規則",
       "faq": "FAQ / 流れ",
       "copy": "トップページコピー",
-      "auditLog": "監査ログ"
+      "auditLog": "監査ログ",
+      "moderation": "モデレーション",
+      "reports": "レポート"
+    },
+    "reports": {
+      "title": "データレポート",
+      "description": "データレポートをダウンロードしてオフライン分析に活用。",
+      "bookings": "予約レポート",
+      "bookingsDesc": "全ての予約のステータス、顧客情報、日付。",
+      "photos": "写真レポート",
+      "photosDesc": "全ての写真のメタデータ、表示設定、スタイル情報。",
+      "exporting": "エクスポート中...",
+      "downloadCSV": "CSVをダウンロード"
     },
     "login": {
       "loggingIn": "ログイン中...",

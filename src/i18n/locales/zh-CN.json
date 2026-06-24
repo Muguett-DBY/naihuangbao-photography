@@ -786,7 +786,19 @@
       "services": "服务规则",
       "faq": "FAQ/流程",
       "copy": "主页文案",
-      "auditLog": "审计日志"
+      "auditLog": "审计日志",
+      "moderation": "审核",
+      "reports": "报告"
+    },
+    "reports": {
+      "title": "数据报告",
+      "description": "下载数据报告用于离线分析。",
+      "bookings": "预约报告",
+      "bookingsDesc": "所有预约的状态、客户信息和日期。",
+      "photos": "照片报告",
+      "photosDesc": "所有照片的元数据、可见性和风格信息。",
+      "exporting": "导出中...",
+      "downloadCSV": "下载 CSV"
     },
     "login": {
       "loggingIn": "正在登录...",
