@@ -1,5 +1,5 @@
 import { Button, Input, Modal } from "animal-island-ui";
-import { type FormEvent, useId, useState, useCallback } from "react";
+import { type FormEvent, useId, useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft } from "lucide-react";
@@ -12,6 +12,7 @@ import { BookingCalendar } from "./BookingCalendar";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
 import { track } from "../utils/track";
+import { savePendingBooking, syncPendingBookings } from "../utils/offlineBooking";
 
 type BookingModalProps = {
   initialPackage?: string;
@@ -46,6 +47,18 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const descriptionId = useId();
   const contentRef = useFocusTrap<HTMLDivElement>({ initialFocus: "first" });
   useModalA11y({ open: true, titleId, descriptionId });
+
+  // Sync pending bookings when back online
+  useEffect(() => {
+    const handleOnline = async () => {
+      const { synced } = await syncPendingBookings();
+      if (synced > 0) {
+        track("booking_offline_synced", { count: synced });
+      }
+    };
+    window.addEventListener("online", handleOnline);
+    return () => window.removeEventListener("online", handleOnline);
+  }, []);
 
   const validateField = useCallback((field: string, value: string): string | undefined => {
     switch (field) {
@@ -112,6 +125,23 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     setError("");
 
     try {
+      // Check if online
+      if (!navigator.onLine) {
+        // Save to IndexedDB for later sync
+        const bookingId = await savePendingBooking({
+          packageName: selectedPkg,
+          preferredDate: date,
+          preferredTime: time,
+          name: trimmedName,
+          contact: trimmedContact,
+          notes: trimmedNotes,
+        });
+        setBookingId(bookingId);
+        setShowPayment(true);
+        track("booking_offline_saved", { packageName: selectedPkg, bookingId: bookingId ?? "" });
+        return;
+      }
+
       const r = await fetch("/api/booking", {
         method: "POST",
         headers: { "content-type": "application/json", ...publicMutationHeaders },
