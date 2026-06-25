@@ -3,9 +3,9 @@
   "campaign_id": "campaign-009",
   "campaign_number": 9,
   "overall_status": "RUNNING",
-  "current_phase": 16,
+  "current_phase": 17,
   "current_cycle": 3,
-  "last_completed_phase": 15,
+  "last_completed_phase": 16,
   "started_at": "2026-06-25T14:20:00Z",
   "updated_at": "2026-06-25T15:09:00Z",
   "completed_at": null,
@@ -30,8 +30,8 @@
     { "phase": 13, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Workshop email notifications with booking confirmation", "commit": "a3da213" },
     { "phase": 14, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Course module completion tracking with progress persistence", "commit": "667ab43" },
     { "phase": 15, "cycle": 3, "type": "UIUX", "status": "DONE", "objective": "Workshop registration UX improvements with form validation", "commit": "5a07fa4" },
-    { "phase": 16, "cycle": 3, "type": "IMPROVE", "status": "RUNNING", "objective": "Photo comparison page enhancements with keyboard navigation", "commit": null },
-    { "phase": 17, "cycle": 3, "type": "CHECK", "status": "PENDING", "objective": "System health audit", "commit": null },
+    { "phase": 16, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Photo comparison page enhancements with keyboard navigation", "commit": "36c9190" },
+    { "phase": 17, "cycle": 3, "type": "CHECK", "status": "RUNNING", "objective": "System health audit", "commit": null },
     { "phase": 18, "cycle": 3, "type": "IMPROVE", "status": "PENDING", "objective": "Final polish and bug fixes across the site", "commit": null }
   ]
 }
