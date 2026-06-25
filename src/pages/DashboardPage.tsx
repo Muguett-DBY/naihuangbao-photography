@@ -105,8 +105,8 @@ export function DashboardPage() {
 
   return (
     <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
+      <section className="hero dashboard-hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
+        <div className="section-heading dashboard-hero-heading" style={{ position: "relative", zIndex: 1 }}>
           <h1>{t("dashboard.title")}</h1>
         </div>
       </section>
@@ -115,13 +115,29 @@ export function DashboardPage() {
         <ErrorBoundary>
           <div className="dashboard-root">
           <div className="dashboard-profile">
-            <div className="dashboard-avatar">
-              <User size={32} strokeWidth={1.5} />
+            <div className="dashboard-profile-main">
+              <div className="dashboard-avatar">
+                <User size={32} strokeWidth={1.5} />
+              </div>
+              <div className="dashboard-profile-info">
+                <h3>{user.displayName}</h3>
+                <p>{user.email}</p>
+              </div>
             </div>
-            <div className="dashboard-profile-info">
-              <h3>{user.displayName}</h3>
-              <p>{user.email}</p>
-            </div>
+            <nav className="dashboard-profile-shortcuts" aria-label={t("dashboard.profileShortcuts", "Account shortcuts")}>
+              <Link to="/booking" className="dashboard-profile-shortcut">
+                <CalendarCheck size={15} aria-hidden="true" />
+                <span>{t("dashboard.bookings")}</span>
+              </Link>
+              <Link to="/gallery" className="dashboard-profile-shortcut">
+                <Image size={15} aria-hidden="true" />
+                <span>{t("dashboard.quickGallery", "Browse Gallery")}</span>
+              </Link>
+              <Link to="/editor" className="dashboard-profile-shortcut">
+                <Sparkles size={15} aria-hidden="true" />
+                <span>{t("dashboard.quickEditor", "Open Editor")}</span>
+              </Link>
+            </nav>
           </div>
 
           <Link to="/editor" className="dashboard-editor-card">

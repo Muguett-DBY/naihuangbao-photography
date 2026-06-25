@@ -198,3 +198,24 @@ Beginning execution.
 - **Risk**: Face-specific retouching still depends on the self-hosted face-api model files loading successfully; degraded mode keeps non-face editing usable when they fail.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`.
 - **Status**: COMPLETE
+
+### Stage 3 / 6 — UIUX
+- **Prompt**: `AGENT_UIUX_MAIN.txt`
+- **Objective**: Improve the mobile dashboard first viewport by reducing the full-cover hero footprint and making core account actions available immediately.
+- **Start state**: `main` at `ed0b39c`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Stage 2 recommended mobile personal-center first-viewport optimization.
+- **Completed locally**:
+  - Added a dashboard-specific compact hero class instead of using the full-height marketing hero on the account page.
+  - Added a first-viewport shortcut strip for booking, gallery, and editor actions inside the profile header.
+  - Added localized aria labels for the shortcut group across zh-CN, en, ja, and ko.
+  - Added source regressions for compact mobile hero and action-oriented profile shortcuts.
+- **Local verification so far**:
+  - Red: `npm test -- src/lib/audit-regressions.test.ts` failed on missing compact hero/shortcuts.
+  - Green: same command passed, 42/42 tests.
+  - `npm run lint` — passed.
+  - `npm test` — 224/224 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Booking/Dashboard Playwright against fresh Pages preview — 6/6 passed with one worker.
+  - Mobile browser measurement at 390x844 — hero 206px, 3 shortcuts in viewport, no horizontal overflow, tablist horizontal.
+- **Risk**: Dashboard remains auth-gated; visual validation used mocked authenticated session, matching the existing E2E pattern.
+- **Status**: READY TO COMMIT
