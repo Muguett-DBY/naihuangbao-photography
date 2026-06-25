@@ -4036,6 +4036,44 @@
   gap: 16px;
 }
 
+.dashboard-booking-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.dashboard-booking-summary-card {
+  min-height: 78px;
+  padding: 14px 16px;
+  border: 1px solid rgba(139, 94, 74, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 253, 247, 0.7);
+  box-shadow: 0 10px 24px rgba(111, 78, 62, 0.08);
+}
+
+.dashboard-booking-summary-card span {
+  display: block;
+  color: var(--caramel-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.dashboard-booking-summary-card strong {
+  display: block;
+  margin-top: 8px;
+  color: var(--caramel-ink);
+  font-family: var(--font-heading-cn);
+  font-size: 1.55rem;
+  line-height: 1;
+}
+
+.dashboard-booking-summary-card--active {
+  background: linear-gradient(135deg, rgba(255, 250, 240, 0.96), rgba(255, 239, 224, 0.76));
+  border-color: rgba(185, 101, 77, 0.24);
+}
+
 .dashboard-card {
   background:
     var(--card-gradient),
@@ -4077,6 +4115,45 @@
 .dashboard-card-meta span {
   font-size: 0.85rem;
   color: var(--caramel-muted);
+}
+
+.dashboard-booking-schedule {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(130px, 0.7fr);
+  gap: 10px;
+  margin: 12px 0 10px;
+}
+
+.dashboard-booking-schedule-item {
+  padding: 10px 12px;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 250, 240, 0.62);
+}
+
+.dashboard-booking-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--caramel-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.dashboard-booking-schedule-item strong {
+  color: var(--caramel-ink);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.dashboard-status-insight {
+  margin: 10px 0 0;
+  padding: 9px 11px;
+  border-left: 3px solid rgba(185, 101, 77, 0.42);
+  border-radius: 10px;
+  color: var(--caramel-muted);
+  background: rgba(255, 250, 240, 0.66);
+  font-size: 0.82rem;
+  line-height: 1.5;
 }
 
 .dashboard-card-type {
@@ -4716,6 +4793,10 @@
   margin-top: 12px;
 }
 
+.dashboard-reschedule-actions .ai-btn {
+  min-height: 40px;
+}
+
 .dashboard-action-error {
   margin: 10px 0 0;
   padding: 9px 11px;
@@ -4725,6 +4806,44 @@
   background: rgba(254, 226, 226, 0.64);
   font-size: 0.82rem;
   line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+  .dashboard-root {
+    padding-bottom: calc(24px + var(--mobile-bottom-nav-offset, 0px));
+  }
+
+  .dashboard-booking-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-booking-summary-card {
+    min-height: 64px;
+    padding: 12px 14px;
+  }
+
+  .dashboard-booking-schedule {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-confirm-panel--default .booking-calendar {
+    max-width: none;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .dashboard-reschedule-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .dashboard-reschedule-actions .ai-btn {
+    width: 100%;
+  }
+
+  .dashboard-card-action-region {
+    padding-bottom: 12px;
+  }
 }
 
 /* ── Dashboard Photo Grid ── */

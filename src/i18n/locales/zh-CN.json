@@ -978,6 +978,11 @@
     "workshops": "我的活动",
     "myPhotos": "我的照片",
     "noBookings": "暂无预约",
+    "bookingOverview": {
+      "active": "可操作预约",
+      "completed": "已完成",
+      "cancelled": "已取消"
+    },
     "noPurchases": "暂无购买",
     "noCourses": "暂无课程",
     "noWorkshops": "暂无活动",
@@ -1001,6 +1006,8 @@
     "passwordChanged": "密码已修改",
     "passwordError": "修改密码失败",
     "download": "下载",
+    "scheduledFor": "预约时间",
+    "requestedOn": "提交时间",
     "cancelBooking": "取消预约",
     "rescheduleBooking": "改期",
     "confirmCancel": "确定要取消这个预约吗？",
@@ -1014,6 +1021,12 @@
     "cancelError": "暂时无法取消预约，请稍后重试。",
     "rescheduleSuccess": "预约已改期至 {{date}}。",
     "rescheduleError": "暂时无法改期，请选择其他日期后重试。",
+    "statusHelp": {
+      "pending": "我们已收到预约请求，审核期间仍可调整到其他可用日期。",
+      "confirmed": "预约已确认。如需变更，请选择另一个仍有余量的日期。",
+      "done": "本次拍摄已完成，交付照片和购买记录可继续在个人中心查看。",
+      "cancelled": "该预约已关闭，不再占用可预约日期容量。"
+    },
     "editorTitle": "打开人像修图工作室",
     "editorDescription": "直接在浏览器中修图，照片保留在当前设备。",
     "openEditor": "开始修图",

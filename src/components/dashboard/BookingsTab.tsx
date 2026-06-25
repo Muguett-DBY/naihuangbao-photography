@@ -30,6 +30,27 @@ function getStepIndex(status: string): number {
   return timelineSteps.findIndex((s) => s.key === status);
 }
 
+function canManageBooking(status: string): boolean {
+  return status === "pending" || status === "confirmed";
+}
+
+function isCancelledBooking(status: string): boolean {
+  return status === "canceled" || status === "cancelled";
+}
+
+type StatusHelpKey =
+  | "dashboard.statusHelp.cancelled"
+  | "dashboard.statusHelp.done"
+  | "dashboard.statusHelp.confirmed"
+  | "dashboard.statusHelp.pending";
+
+function getStatusHelpKey(status: string): StatusHelpKey {
+  if (isCancelledBooking(status)) return "dashboard.statusHelp.cancelled";
+  if (status === "done") return "dashboard.statusHelp.done";
+  if (status === "contacted" || status === "confirmed") return "dashboard.statusHelp.confirmed";
+  return "dashboard.statusHelp.pending";
+}
+
 function BookingTimeline({ status }: { status: string }) {
   const { t } = useTranslation();
   const currentStep = getStepIndex(status);
@@ -140,6 +161,9 @@ export function BookingsTab() {
   }, [newDate, retry, showToast, t]);
 
   const bookings = data?.bookings ?? [];
+  const activeCount = bookings.filter((booking) => canManageBooking(booking.status)).length;
+  const completedCount = bookings.filter((booking) => booking.status === "done").length;
+  const cancelledCount = bookings.filter((booking) => isCancelledBooking(booking.status)).length;
 
   return (
     <DashboardTabWrapper
@@ -150,114 +174,138 @@ export function BookingsTab() {
       emptyText={t("dashboard.noBookings")}
       retry={retry}
     >
+      <div className="dashboard-booking-overview" aria-live="polite">
+        <div className="dashboard-booking-summary-card dashboard-booking-summary-card--active">
+          <span>{t("dashboard.bookingOverview.active")}</span>
+          <strong>{activeCount}</strong>
+        </div>
+        <div className="dashboard-booking-summary-card">
+          <span>{t("dashboard.bookingOverview.completed")}</span>
+          <strong>{completedCount}</strong>
+        </div>
+        <div className="dashboard-booking-summary-card">
+          <span>{t("dashboard.bookingOverview.cancelled")}</span>
+          <strong>{cancelledCount}</strong>
+        </div>
+      </div>
       <div className="dashboard-list">
         {bookings.map((b) => {
-          const canManage = b.status === "pending" || b.status === "confirmed";
+          const canManage = canManageBooking(b.status);
           return (
             <div key={b.id} className="dashboard-card">
               <div className="dashboard-card-header">
                 <h4>{b.package_name}</h4>
                 <StatusBadge status={b.status} />
               </div>
-              <div className="dashboard-card-meta">
-                {b.preferred_date && <span>{b.preferred_date}</span>}
-                {b.preferred_time && <span>{b.preferred_time}</span>}
+              <div className="dashboard-booking-schedule">
+                <div className="dashboard-booking-schedule-item">
+                  <span className="dashboard-booking-label">{t("dashboard.scheduledFor")}</span>
+                  <strong>
+                    {[b.preferred_date, b.preferred_time].filter(Boolean).join(" · ") || t("common.na", "N/A")}
+                  </strong>
+                </div>
+                <div className="dashboard-booking-schedule-item">
+                  <span className="dashboard-booking-label">{t("dashboard.requestedOn")}</span>
+                  <strong>{new Date(b.created_at).toLocaleDateString()}</strong>
+                </div>
               </div>
-              <p className="dashboard-card-date">
-                {new Date(b.created_at).toLocaleDateString()}
+              <p className="dashboard-status-insight">
+                {t(getStatusHelpKey(b.status))}
               </p>
               <BookingTimeline status={b.status} />
-              {canManage && (
-                <div className="dashboard-actions">
-                  <button
-                    type="button"
-                    className="dashboard-action-btn dashboard-action-btn--cancel"
-                    onClick={() => {
-                      setConfirmCancelId(b.id);
-                      setRescheduleId(null);
-                      setNewDate("");
-                      setActionError(null);
-                    }}
-                  >
-                    <X size={12} />
-                    {t("dashboard.cancelBooking")}
-                  </button>
-                  <button
-                    type="button"
-                    className="dashboard-action-btn dashboard-action-btn--reschedule"
-                    onClick={() => {
-                      const nextId = rescheduleId === b.id ? null : b.id;
-                      setRescheduleId(nextId);
-                      setConfirmCancelId(null);
-                      setNewDate("");
-                      setActionError(null);
-                    }}
-                  >
-                    <RefreshCw size={12} />
-                    {t("dashboard.rescheduleBooking")}
-                  </button>
-                </div>
-              )}
-              {confirmCancelId === b.id && (
-                <div className="dashboard-confirm-panel dashboard-confirm-panel--danger" aria-busy={cancelLoading}>
-                  <p className="dashboard-confirm-text">
-                    {t("dashboard.confirmCancel")}
-                  </p>
-                  <div className="dashboard-confirm-actions">
-                    <Button
-                      type="primary"
-                      onClick={() => handleCancel(b.id)}
-                      disabled={cancelLoading}
-                      style={{ fontSize: "0.8rem", padding: "4px 12px" }}
-                    >
-                      {cancelLoading ? t("common.loading") : t("dashboard.yesCancel")}
-                    </Button>
-                    <Button
-                      type="default"
-                      onClick={() => setConfirmCancelId(null)}
-                      style={{ fontSize: "0.8rem", padding: "4px 12px" }}
-                    >
-                      {t("dashboard.noKeep")}
-                    </Button>
-                  </div>
-                </div>
-              )}
-              {actionError?.bookingId === b.id && (
-                <p className="dashboard-action-error" role="alert">{actionError.message}</p>
-              )}
-              {rescheduleId === b.id && (
-                <div className="dashboard-confirm-panel dashboard-confirm-panel--default" aria-busy={rescheduleLoading}>
-                  <p className="dashboard-reschedule-label">
-                    {t("dashboard.selectNewDate")}
-                  </p>
-                  <p className="dashboard-reschedule-hint">
-                    {t("dashboard.rescheduleHint")}
-                  </p>
-                  <BookingCalendar
-                    selectedDate={newDate}
-                    minDate={getTodayString()}
-                    onSelectDate={setNewDate}
-                  />
-                  <div className="dashboard-reschedule-actions">
-                    <Button
-                      type="default"
+              <div className="dashboard-card-action-region" aria-live="polite">
+                {canManage && (
+                  <div className="dashboard-actions">
+                    <button
+                      type="button"
+                      className="dashboard-action-btn dashboard-action-btn--cancel"
                       onClick={() => {
+                        setConfirmCancelId(b.id);
                         setRescheduleId(null);
                         setNewDate("");
+                        setActionError(null);
                       }}
                     >
-                      {t("dashboard.closeReschedule")}
-                    </Button>
-                    <Button
-                      type="primary"
-                      onClick={() => handleReschedule(b.id)}
-                      disabled={!newDate || newDate === b.preferred_date || rescheduleLoading}
+                      <X size={12} />
+                      {t("dashboard.cancelBooking")}
+                    </button>
+                    <button
+                      type="button"
+                      className="dashboard-action-btn dashboard-action-btn--reschedule"
+                      onClick={() => {
+                        const nextId = rescheduleId === b.id ? null : b.id;
+                        setRescheduleId(nextId);
+                        setConfirmCancelId(null);
+                        setNewDate("");
+                        setActionError(null);
+                      }}
                     >
-                      {rescheduleLoading ? t("common.loading") : t("dashboard.confirmReschedule")}
-                    </Button>
+                      <RefreshCw size={12} />
+                      {t("dashboard.rescheduleBooking")}
+                    </button>
                   </div>
-                </div>
-              )}
+                )}
+                {confirmCancelId === b.id && (
+                  <div className="dashboard-confirm-panel dashboard-confirm-panel--danger" aria-busy={cancelLoading}>
+                    <p className="dashboard-confirm-text">
+                      {t("dashboard.confirmCancel")}
+                    </p>
+                    <div className="dashboard-confirm-actions">
+                      <Button
+                        type="primary"
+                        onClick={() => handleCancel(b.id)}
+                        disabled={cancelLoading}
+                        style={{ fontSize: "0.8rem", padding: "4px 12px" }}
+                      >
+                        {cancelLoading ? t("common.loading") : t("dashboard.yesCancel")}
+                      </Button>
+                      <Button
+                        type="default"
+                        onClick={() => setConfirmCancelId(null)}
+                        style={{ fontSize: "0.8rem", padding: "4px 12px" }}
+                      >
+                        {t("dashboard.noKeep")}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                {actionError?.bookingId === b.id && (
+                  <p className="dashboard-action-error" role="alert">{actionError.message}</p>
+                )}
+                {rescheduleId === b.id && (
+                  <div className="dashboard-confirm-panel dashboard-confirm-panel--default" aria-busy={rescheduleLoading}>
+                    <p className="dashboard-reschedule-label">
+                      {t("dashboard.selectNewDate")}
+                    </p>
+                    <p className="dashboard-reschedule-hint">
+                      {t("dashboard.rescheduleHint")}
+                    </p>
+                    <BookingCalendar
+                      selectedDate={newDate}
+                      minDate={getTodayString()}
+                      onSelectDate={setNewDate}
+                    />
+                    <div className="dashboard-reschedule-actions">
+                      <Button
+                        type="default"
+                        onClick={() => {
+                          setRescheduleId(null);
+                          setNewDate("");
+                        }}
+                      >
+                        {t("dashboard.closeReschedule")}
+                      </Button>
+                      <Button
+                        type="primary"
+                        onClick={() => handleReschedule(b.id)}
+                        disabled={!newDate || newDate === b.preferred_date || rescheduleLoading}
+                      >
+                        {rescheduleLoading ? t("common.loading") : t("dashboard.confirmReschedule")}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           );
         })}
