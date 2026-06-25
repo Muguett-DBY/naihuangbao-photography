@@ -169,5 +169,8 @@ Beginning execution.
   - `npm test` — 222/222 passed.
   - `npm run build:full` — passed, including performance budget and bundle analysis.
   - Booking Playwright against fresh Pages preview — 6/6 passed with one worker.
+- **Commit**: `60552a2` — `feat: expose booking payment readiness`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28205721670` passed.
 - **Risk**: Real charging is still not enabled; this stage intentionally keeps provider as `placeholder` until a full Stripe confirmation flow exists.
-- **Status**: READY TO COMMIT
+- **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
+- **Status**: COMPLETE
