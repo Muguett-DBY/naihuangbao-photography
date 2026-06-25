@@ -648,7 +648,11 @@
     "buyNow": "지금 구매",
     "ctaTitle": "더 배우고 싶으신가요?",
     "ctaDesc": "1:1 개인 지도를 예약하세요",
-    "ctaBtn": "상담 예약"
+    "ctaBtn": "상담 예약",
+    "syncing": "동기화 중...",
+    "progress": "진행 상황",
+    "markComplete": "완료로 표시",
+    "markIncomplete": "미완료로 표시"
   },
   "compare": {
     "before": "원본",

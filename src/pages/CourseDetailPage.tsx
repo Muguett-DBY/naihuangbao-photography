@@ -1,8 +1,8 @@
 import "../styles/pages.css";
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Clock, BarChart3, Lock, Play, FileText, Images, LogIn, ShoppingCart } from "lucide-react";
+import { Clock, BarChart3, Lock, Play, FileText, Images, LogIn, ShoppingCart, CheckCircle } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useNotification } from "../hooks/useNotification";
@@ -20,6 +20,7 @@ import { useAuth } from "../hooks/useAuth";
 import { VideoPlayer } from "../components/VideoPlayer";
 import { PaymentForm } from "../components/PaymentForm";
 import { siteOrigin } from "../lib/site-origin";
+import { publicMutationHeaders } from "../lib/admin-helpers";
 import type { Course, CourseModule } from "../types/content";
 
 const fetchWithCredentials: RequestInit = { credentials: "include" };
@@ -39,6 +40,7 @@ export function CourseDetailPage() {
     } catch {}
     return new Set();
   });
+  const [syncing, setSyncing] = useState(false);
   const { user } = useAuth();
   const lang = i18n.language;
 
@@ -52,11 +54,28 @@ export function CourseDetailPage() {
     fetchWithCredentials,
   );
 
+  const { data: progressData } = useFetch<{ completedModules: string[] }>(
+    user && id ? `/api/courses/${id}/progress` : null,
+    fetchWithCredentials,
+  );
+
   const unlocked = accessData?.hasAccess ?? false;
   const modules = data?.modules ?? [];
   const totalModules = modules.length;
   const completedCount = completedModules.size;
   const progressPercent = totalModules > 0 ? Math.round((completedCount / totalModules) * 100) : 0;
+
+  // Sync progress from server when available
+  useEffect(() => {
+    if (progressData?.completedModules && id) {
+      const serverModules = new Set(progressData.completedModules);
+      const localModules = new Set(completedModules);
+      const merged = new Set([...serverModules, ...localModules]);
+      if (merged.size > completedModules.size) {
+        setCompletedModules(merged);
+      }
+    }
+  }, [progressData, id]);
 
   // Persist completed modules to localStorage
   useEffect(() => {
@@ -64,6 +83,23 @@ export function CourseDetailPage() {
       localStorage.setItem(`course-progress-${id}`, JSON.stringify(Array.from(completedModules)));
     }
   }, [id, completedModules]);
+
+  // Save progress to server
+  const saveProgressToServer = useCallback(async (modules: Set<string>) => {
+    if (!user || !id) return;
+    setSyncing(true);
+    try {
+      await fetch(`/api/courses/${id}/progress`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
+        body: JSON.stringify({ completedModules: Array.from(modules) }),
+      });
+    } catch (err) {
+      console.error("[CourseProgress]", err);
+    } finally {
+      setSyncing(false);
+    }
+  }, [user, id]);
 
   const toggleModuleCompletion = (moduleId: string) => {
     setCompletedModules((prev) => {
@@ -73,6 +109,8 @@ export function CourseDetailPage() {
       } else {
         next.add(moduleId);
       }
+      // Save to server in background
+      saveProgressToServer(next);
       return next;
     });
   };
@@ -220,8 +258,14 @@ export function CourseDetailPage() {
               <div className="course-detail-progress-header">
                 <span className="course-detail-progress-label">
                   {t("courseDetail.progress", "Progress")}: {completedCount}/{totalModules}
+                  {syncing && <span className="course-detail-syncing"> ({t("courseDetail.syncing", "syncing...")})</span>}
                 </span>
-                <span className="course-detail-progress-pct">{progressPercent}%</span>
+                <span className="course-detail-progress-pct">
+                  {progressPercent === 100 ? (
+                    <CheckCircle size={14} className="course-detail-complete-icon" />
+                  ) : null}
+                  {progressPercent}%
+                </span>
               </div>
               <div className="course-detail-progress-bar">
                 <div className="course-detail-progress-fill" style={{ width: `${progressPercent}%` }} />

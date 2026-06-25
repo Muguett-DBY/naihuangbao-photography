@@ -675,7 +675,11 @@
     "buyNow": "立即购买",
     "ctaTitle": "想学习更多？",
     "ctaDesc": "预约一对一指导，获得个性化学习体验",
-    "ctaBtn": "预约咨询"
+    "ctaBtn": "预约咨询",
+    "syncing": "同步中...",
+    "progress": "学习进度",
+    "markComplete": "标记为已完成",
+    "markIncomplete": "标记为未完成"
   },
   "compare": {
     "before": "原图",

@@ -6866,6 +6866,19 @@
   font-size: 14px;
   font-weight: 700;
   color: #7AA675;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.course-detail-syncing {
+  font-size: 11px;
+  color: #999;
+  font-weight: 400;
+}
+
+.course-detail-complete-icon {
+  color: #22c55e;
 }
 
 .course-detail-progress-bar {
