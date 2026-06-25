@@ -1230,7 +1230,7 @@
     "confirmFailed": "Could not verify payment",
     "notCompleted": "Payment was not completed",
     "success": "Payment successful",
-    "successDesc": "Your payment status has been processed successfully.",
+    "successDesc": "Your payment has been processed successfully.",
     "failed": "Payment failed",
     "cancel": "Cancel",
     "retry": "Try again",
@@ -1241,7 +1241,9 @@
     "placeholderNotice": "Payment processing is in placeholder mode. No real charges will be made.",
     "initializing": "Initializing...",
     "processing": "Processing...",
-    "pay": "Pay {{amount}}"
+    "pay": "Pay {{amount}}",
+    "retrying": "Retrying payment confirmation...",
+    "transactionId": "Transaction ID"
   },
   "filmstrip": {
     "title": "Our Story",

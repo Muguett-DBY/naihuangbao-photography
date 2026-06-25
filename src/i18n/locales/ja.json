@@ -1215,7 +1215,7 @@
     "confirmFailed": "支払い状態を確認できませんでした",
     "notCompleted": "支払いが完了していません",
     "success": "支払い成功",
-    "successDesc": "支払い状態が正常に処理されました。",
+    "successDesc": "支払いが正常に処理されました。",
     "failed": "支払い失敗",
     "cancel": "キャンセル",
     "retry": "再試行",
@@ -1226,7 +1226,9 @@
     "placeholderNotice": "支払い機能はデモモードです。実際の請求は発生しません。",
     "initializing": "初期化中...",
     "processing": "処理中...",
-    "pay": "{{amount}} を支払う"
+    "pay": "{{amount}} を支払う",
+    "retrying": "支払い確認を再試行中...",
+    "transactionId": "取引ID"
   },
   "filmstrip": {
     "title": "私たちの物語",

@@ -1281,7 +1281,7 @@
     "confirmFailed": "无法确认支付状态",
     "notCompleted": "支付尚未完成",
     "success": "支付成功",
-    "successDesc": "支付状态已成功处理。",
+    "successDesc": "您的支付已成功处理。",
     "failed": "支付失败",
     "cancel": "取消",
     "retry": "重试",
@@ -1292,7 +1292,9 @@
     "placeholderNotice": "支付功能当前为占位演示模式，不会产生真实扣款。",
     "initializing": "初始化中...",
     "processing": "处理中...",
-    "pay": "支付 {{amount}}"
+    "pay": "支付 {{amount}}",
+    "retrying": "正在重试支付确认...",
+    "transactionId": "交易编号"
   },
   "filmstrip": {
     "title": "我们的故事",

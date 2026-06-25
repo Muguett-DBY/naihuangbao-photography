@@ -1215,7 +1215,7 @@
     "confirmFailed": "결제 상태를 확인하지 못했습니다",
     "notCompleted": "결제가 완료되지 않았습니다",
     "success": "결제 성공",
-    "successDesc": "결제 상태가 성공적으로 처리되었습니다.",
+    "successDesc": "결제가 성공적으로 처리되었습니다.",
     "failed": "결제 실패",
     "cancel": "취소",
     "retry": "다시 시도",
@@ -1226,7 +1226,9 @@
     "placeholderNotice": "결제 기능은 데모 모드입니다. 실제 청구는 발생하지 않습니다.",
     "initializing": "초기화 중...",
     "processing": "처리 중...",
-    "pay": "{{amount}} 결제"
+    "pay": "{{amount}} 결제",
+    "retrying": "결제 확인 재시도 중...",
+    "transactionId": "거래 ID"
   },
   "filmstrip": {
     "title": "우리의 이야기",

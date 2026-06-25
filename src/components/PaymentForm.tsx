@@ -1,12 +1,15 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Input } from "animal-island-ui";
-import { CreditCard, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { CreditCard, CheckCircle, AlertCircle, Loader2, RefreshCw, Shield } from "lucide-react";
 import type { PaymentFormProps, PaymentIntentStatus } from "../types/payment";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
 
 type InternalStatus = "idle" | "creating" | "confirming" | "succeeded" | "failed" | "cancelled";
+
+const MAX_RETRIES = 2;
+const RETRY_DELAY_MS = 2000;
 
 export function PaymentForm({
   purpose,
@@ -22,6 +25,8 @@ export function PaymentForm({
   const [status, setStatus] = useState<InternalStatus>("idle");
   const [error, setError] = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   const formatAmount = (cents: number, cur: string) => {
     const symbols: Record<string, string> = { usd: "$", eur: "\u20AC", gbp: "\u00A3", cny: "\u00A5", jpy: "\u00A5" };
@@ -38,9 +43,49 @@ export function PaymentForm({
     merchandise_purchase: t("payment.purpose.merchandise", "Merchandise"),
   };
 
-  const handleCreateIntent = async () => {
+  const simulateConfirmation = async (intentId: string, clientSecret: string, attempt = 0): Promise<boolean> => {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    try {
+      const r = await fetch("/api/payment/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
+        body: JSON.stringify({ paymentIntentId: intentId, clientSecret }),
+      });
+
+      if (!r.ok) {
+        throw new Error(t("payment.confirmFailed", "Could not verify payment"));
+      }
+
+      const data = await readJsonResponse<{ status?: PaymentIntentStatus }>(r);
+
+      if (data?.status === "succeeded") {
+        return true;
+      }
+
+      if (data?.status === "requires_confirmation" && attempt < MAX_RETRIES) {
+        setIsRetrying(true);
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+        setIsRetrying(false);
+        return simulateConfirmation(intentId, clientSecret, attempt + 1);
+      }
+
+      return false;
+    } catch (err) {
+      if (attempt < MAX_RETRIES) {
+        setIsRetrying(true);
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+        setIsRetrying(false);
+        return simulateConfirmation(intentId, clientSecret, attempt + 1);
+      }
+      throw err;
+    }
+  };
+
+  const handleCreateIntent = useCallback(async () => {
     setStatus("creating");
     setError("");
+    setRetryCount(0);
 
     try {
       const r = await fetch("/api/payment/create-intent", {
@@ -67,34 +112,11 @@ export function PaymentForm({
 
       setPaymentIntentId(data.paymentIntentId);
       setStatus("confirming");
-      await simulateConfirmation(data.paymentIntentId, data.clientSecret);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : t("payment.error", "Payment failed");
-      setError(msg);
-      setStatus("failed");
-      onError?.(msg);
-    }
-  };
 
-  const simulateConfirmation = async (intentId: string, clientSecret: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    try {
-      const r = await fetch("/api/payment/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
-        body: JSON.stringify({ paymentIntentId: intentId, clientSecret }),
-      });
-
-      if (!r.ok) {
-        throw new Error(t("payment.confirmFailed", "Could not verify payment"));
-      }
-
-      const data = await readJsonResponse<{ status?: PaymentIntentStatus }>(r);
-
-      if (data?.status === "succeeded") {
+      const success = await simulateConfirmation(data.paymentIntentId, data.clientSecret);
+      if (success) {
         setStatus("succeeded");
-        onSuccess?.(intentId);
+        onSuccess?.(data.paymentIntentId);
       } else {
         setStatus("failed");
         setError(t("payment.notCompleted", "Payment was not completed"));
@@ -106,52 +128,61 @@ export function PaymentForm({
       setStatus("failed");
       onError?.(msg);
     }
-  };
+  }, [purpose, amountCents, currency, referenceId, metadata, t, onSuccess, onError]);
+
+  const handleRetry = useCallback(() => {
+    setStatus("idle");
+    setError("");
+    setRetryCount((c) => c + 1);
+    setTimeout(() => handleCreateIntent(), 100);
+  }, [handleCreateIntent]);
 
   if (status === "succeeded") {
     return (
-      <div style={{ textAlign: "center", padding: 24 }}>
-        <CheckCircle size={48} style={{ color: "#22c55e", marginBottom: 12 }} />
-        <h3 style={{ marginBottom: 8 }}>{t("payment.success", "Payment Successful")}</h3>
-        <p style={{ color: "var(--caramel-muted)", fontSize: "0.9rem" }}>
-          {t("payment.successDesc", "Your payment has been processed successfully.")}
-        </p>
+      <div className="payment-success">
+        <CheckCircle size={48} className="payment-success-icon" />
+        <h3>{t("payment.success", "Payment Successful")}</h3>
+        <p>{t("payment.successDesc", "Your payment has been processed successfully.")}</p>
+        {paymentIntentId && (
+          <p className="payment-transaction-id">
+            {t("payment.transactionId", "Transaction ID")}: {paymentIntentId.slice(0, 16)}...
+          </p>
+        )}
       </div>
     );
   }
 
   if (status === "failed" || status === "cancelled") {
     return (
-      <div style={{ textAlign: "center", padding: 24 }}>
-        <AlertCircle size={48} style={{ color: "#ef4444", marginBottom: 12 }} />
-        <h3 style={{ marginBottom: 8 }}>{t("payment.failed", "Payment Failed")}</h3>
-        {error && <p style={{ color: "#ef4444", fontSize: "0.85rem", marginBottom: 16 }}>{error}</p>}
-        <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
+      <div className="payment-failed">
+        <AlertCircle size={48} className="payment-failed-icon" />
+        <h3>{t("payment.failed", "Payment Failed")}</h3>
+        {error && <p className="payment-error-msg">{error}</p>}
+        <div className="payment-failed-actions">
           <Button type="default" onClick={onCancel}>{t("payment.cancel", "Cancel")}</Button>
-          <Button type="primary" onClick={handleCreateIntent}>{t("payment.retry", "Try Again")}</Button>
+          <Button type="primary" onClick={handleRetry}>
+            <RefreshCw size={14} />
+            {t("payment.retry", "Try Again")}
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: "0 auto" }}>
-      <div style={{
-        background: "var(--card-bg, rgba(255,255,255,0.7))",
-        border: "1px solid var(--border-subtle)",
-        borderRadius: 16,
-        padding: 24,
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-          <CreditCard size={20} style={{ color: "var(--accent)" }} />
-          <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{t("payment.title", "Payment")}</h3>
+    <div className="payment-form-wrap">
+      <div className="payment-form-card">
+        <div className="payment-form-header">
+          <CreditCard size={20} className="payment-form-icon" />
+          <h3>{t("payment.title", "Payment")}</h3>
+          <Shield size={14} className="payment-form-secure" />
         </div>
 
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: "0.85rem", color: "var(--caramel-muted)", marginBottom: 4 }}>
+        <div className="payment-form-amount">
+          <div className="payment-form-purpose">
             {purposeLabels[purpose] || purpose}
           </div>
-          <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--accent)" }}>
+          <div className="payment-form-price">
             {formatAmount(amountCents, currency)}
           </div>
         </div>
@@ -187,19 +218,20 @@ export function PaymentForm({
           </div>
         </div>
 
-        <p style={{
-          fontSize: "0.8rem",
-          color: "var(--caramel-muted)",
-          textAlign: "center",
-          margin: "12px 0",
-          lineHeight: 1.5,
-        }}>
+        <p className="payment-placeholder-notice">
           {t("payment.placeholderNotice", "Payment processing is in placeholder mode. No real charges will be made.")}
         </p>
 
         {error && <p className="booking-error" role="alert">{error}</p>}
 
-        <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
+        {isRetrying && (
+          <p className="payment-retrying">
+            <Loader2 size={14} className="payment-spinner" />
+            {t("payment.retrying", "Retrying payment confirmation...")}
+          </p>
+        )}
+
+        <div className="payment-form-actions">
           <Button type="default" onClick={onCancel} disabled={status === "creating" || status === "confirming"}>
             {t("payment.cancel", "Cancel")}
           </Button>
@@ -210,8 +242,8 @@ export function PaymentForm({
             style={{ flex: 1 }}
           >
             {status === "creating" || status === "confirming" ? (
-              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <Loader2 size={14} style={{ animation: "spin 1s linear infinite" }} />
+              <span className="payment-loading">
+                <Loader2 size={14} className="payment-spinner" />
                 {status === "creating" ? t("payment.initializing", "Initializing...") : t("payment.processing", "Processing...")}
               </span>
             ) : (
