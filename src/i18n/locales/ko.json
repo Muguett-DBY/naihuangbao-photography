@@ -450,7 +450,12 @@
   "footer": {
     "tagline": "{{city}} · 여성 사진 · 커플 사진",
     "backToTop": "맨 위로",
-    "ariaLabel": "사이트 푸터"
+    "ariaLabel": "사이트 푸터",
+    "navLabel": "푸터 내비게이션",
+    "explore": "탐색",
+    "services": "서비스",
+    "discover": "발견",
+    "copyright": "© {{year}} {{brand}}. All rights reserved."
   },
   "recentlyViewed": {
     "title": "최근 본 사진",
