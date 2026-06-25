@@ -2,7 +2,9 @@ import { describe, expect, it, vi } from "vitest";
 import { onRequestPost as uploadPhoto } from "./api/admin/photos";
 import { onRequestDelete as deletePhoto } from "./api/admin/photos/[id]";
 import { onRequestGet as getPublicPhotos } from "./api/photos";
+import { onRequestPost as createPaymentIntent } from "./api/payment/create-intent";
 import { onRequestPost as paymentWebhook } from "./api/payment/webhook";
+import { onRequestGet as getUserBookings } from "./api/user/bookings";
 import { onRequestGet as getUserProfile } from "./api/user/profile";
 import { onRequestPost as cancelUserBooking } from "./api/user/bookings/[id]/cancel";
 import { onRequestPost as rescheduleUserBooking } from "./api/user/bookings/[id]/reschedule";
@@ -54,6 +56,81 @@ function createBucket() {
 }
 
 describe("Cloudflare Pages API behavior", () => {
+  it("returns the real provider and status for placeholder payment intents", async () => {
+    const db = createDb();
+    const response = await createPaymentIntent({
+      request: jsonRequest("https://shoot.custard.top/api/payment/create-intent", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-nhb-public-action": "1",
+        },
+        body: JSON.stringify({
+          purpose: "booking_deposit",
+          amountCents: 2000,
+          currency: "cny",
+          referenceId: "booking-12345678",
+        }),
+      }),
+      env: { DB: db },
+    } as never);
+    const body = (await response.json()) as { provider?: string; status?: string };
+
+    expect(response.status).toBe(201);
+    expect(body.provider).toBe("placeholder");
+    expect(body.status).toBe("pending");
+  });
+
+  it("projects the latest booking deposit state into the customer booking list", async () => {
+    const secret = "test-auth-secret-with-32-characters";
+    const session = await createUserSession("user-12345678", secret);
+    const projectedBooking = {
+      id: "booking-12345678",
+      package_name: "Portrait Session",
+      preferred_date: "2099-01-01",
+      preferred_time: "morning",
+      name: "Guest",
+      contact: "guest@example.com",
+      notes: "",
+      status: "confirmed",
+      created_at: "2026-06-26T00:00:00.000Z",
+      payment_intent_id: "pi_123",
+      payment_status: "canceled",
+      payment_provider: "placeholder",
+      payment_amount_cents: 2000,
+      payment_currency: "cny",
+    };
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          bind: vi.fn(() => statement),
+          first: vi.fn(async () => (
+            sql.includes("from users")
+              ? { id: "user-12345678", email: "guest@example.com" }
+              : null
+          )),
+          all: vi.fn(async () => ({ results: [projectedBooking] })),
+        };
+        return statement;
+      }),
+    };
+
+    const response = await getUserBookings({
+      request: jsonRequest("https://shoot.custard.top/api/user/bookings", {
+        headers: { cookie: `nhb_user_session=${session}` },
+      }),
+      env: { DB: db, AUTH_SECRET: secret },
+    } as never);
+    const body = (await response.json()) as {
+      bookings?: Array<{ payment_status?: string; payment_amount_cents?: number }>;
+    };
+
+    expect(response.status).toBe(200);
+    expect(body.bookings?.[0]?.payment_status).toBe("cancelled");
+    expect(body.bookings?.[0]?.payment_amount_cents).toBe(2000);
+    expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("payment_intents"));
+  });
+
   it("writes the canonical cancelled status for customer cancellations", async () => {
     const secret = "test-auth-secret-with-32-characters";
     const session = await createUserSession("user-12345678", secret);

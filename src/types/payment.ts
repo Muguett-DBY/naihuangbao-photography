@@ -19,6 +19,8 @@ export type CreatePaymentIntentResponse = {
   paymentIntentId: string;
   amountCents: number;
   currency: string;
+  provider: PaymentProvider;
+  status: PaymentStatus;
 };
 
 export type ConfirmPaymentRequest = {
@@ -64,6 +66,7 @@ export type PaymentFormProps = {
   referenceId: string;
   metadata?: Record<string, string>;
   onSuccess?: (paymentIntentId: string) => void;
+  onPending?: (paymentIntentId: string) => void;
   onError?: (error: string) => void;
   onCancel?: () => void;
 };

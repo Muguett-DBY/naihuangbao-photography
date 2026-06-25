@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { CalendarCheck, X, RefreshCw, CheckCircle2, Circle, Clock } from "lucide-react";
+import { CalendarCheck, X, RefreshCw, CheckCircle2, Circle, Clock, WalletCards } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { BookingCalendar } from "../BookingCalendar";
 import { useFetch } from "../../hooks/useFetch";
@@ -49,6 +49,18 @@ function getStatusHelpKey(status: string): StatusHelpKey {
   if (status === "done") return "dashboard.statusHelp.done";
   if (status === "contacted" || status === "confirmed") return "dashboard.statusHelp.confirmed";
   return "dashboard.statusHelp.pending";
+}
+
+function formatPaymentAmount(amountCents: number | null, currency: string | null): string | null {
+  if (amountCents == null || !currency) return null;
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: "currency",
+      currency: currency.toUpperCase(),
+    }).format(amountCents / (currency.toLowerCase() === "jpy" ? 1 : 100));
+  } catch {
+    return `${amountCents / 100} ${currency.toUpperCase()}`;
+  }
 }
 
 function BookingTimeline({ status }: { status: string }) {
@@ -191,6 +203,8 @@ export function BookingsTab() {
       <div className="dashboard-list">
         {bookings.map((b) => {
           const canManage = canManageBooking(b.status);
+          const paymentStatus = b.payment_status || "not_started";
+          const paymentAmount = formatPaymentAmount(b.payment_amount_cents, b.payment_currency);
           return (
             <div key={b.id} className="dashboard-card">
               <div className="dashboard-card-header">
@@ -212,6 +226,16 @@ export function BookingsTab() {
               <p className="dashboard-status-insight">
                 {t(getStatusHelpKey(b.status))}
               </p>
+              <div className={`dashboard-booking-deposit dashboard-booking-deposit--${paymentStatus}`}>
+                <span className="dashboard-booking-deposit-icon" aria-hidden="true">
+                  <WalletCards size={17} />
+                </span>
+                <span className="dashboard-booking-deposit-copy">
+                  <span>{t("dashboard.bookingDeposit")}</span>
+                  <strong>{t(`dashboard.paymentStatus.${paymentStatus}`)}</strong>
+                </span>
+                {paymentAmount && <span className="dashboard-booking-deposit-amount">{paymentAmount}</span>}
+              </div>
               <BookingTimeline status={b.status} />
               <div className="dashboard-card-action-region" aria-live="polite">
                 {canManage && (

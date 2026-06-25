@@ -414,7 +414,22 @@
     "submitError": "送信に失敗しました。再試行してください",
     "next": "次へ",
     "back": "戻る",
-    "stepNavigation": "予約ステップ"
+    "stepNavigation": "予約ステップ",
+    "offlineSyncNotice": "この端末に保存され、オンラインに戻ると自動送信されます。",
+    "depositOutcome": {
+      "pending": {
+        "title": "デポジットは保留として記録されました",
+        "description": "請求は発生していません。ダッシュボードで状態を確認できます。"
+      },
+      "deferred": {
+        "title": "支払いを後回しにしました",
+        "description": "予約は保存済みです。日程確認後にデポジットを手配できます。"
+      },
+      "offline": {
+        "title": "同期後にデポジットを処理します",
+        "description": "予約がサーバーへ同期されてから状態を作成できます。"
+      }
+    }
   },
   "calendar": {
     "title": "日付を選択",
@@ -966,6 +981,15 @@
     "cancelError": "予約をキャンセルできませんでした。もう一度お試しください。",
     "rescheduleSuccess": "予約日を {{date}} に変更しました。",
     "rescheduleError": "日程を変更できませんでした。別の日付を選んでください。",
+    "bookingDeposit": "予約デポジット",
+    "paymentStatus": {
+      "not_started": "未開始",
+      "pending": "保留中・請求なし",
+      "processing": "処理中",
+      "succeeded": "支払い済み",
+      "failed": "要確認",
+      "cancelled": "キャンセル済み"
+    },
     "statusHelp": {
       "pending": "リクエストを受け付けました。確認中は空き日へ変更できます。",
       "confirmed": "予約は確定しています。変更が必要な場合のみ、別の空き日を選んでください。",
@@ -1265,6 +1289,12 @@
     "expiryLabel": "有効期限",
     "cvcLabel": "CVC",
     "placeholderNotice": "支払い機能はデモモードです。実際の請求は発生しません。",
+    "pendingTitle": "デポジット状態を記録しました",
+    "pendingDesc": "予約は保存済みです。請求は発生せず、デポジットは保留中です。",
+    "referenceId": "参照ID",
+    "continue": "続ける",
+    "payLater": "後で支払う",
+    "recordPending": "保留として記録",
     "initializing": "初期化中...",
     "processing": "処理中...",
     "pay": "{{amount}} を支払う",

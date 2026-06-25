@@ -441,7 +441,22 @@
     "contactTooShort": "联系方式至少需要5个字符",
     "next": "下一步",
     "back": "返回",
-    "stepNavigation": "预约步骤"
+    "stepNavigation": "预约步骤",
+    "offlineSyncNotice": "预约已保存在当前设备，恢复联网后会自动提交。",
+    "depositOutcome": {
+      "pending": {
+        "title": "定金状态已记为待处理",
+        "description": "本次没有产生扣款，可在个人中心继续查看定金状态。"
+      },
+      "deferred": {
+        "title": "已选择稍后处理定金",
+        "description": "预约请求已经保存，确认档期后可继续完成定金安排。"
+      },
+      "offline": {
+        "title": "定金处理等待同步",
+        "description": "预约同步到服务器后才能创建定金状态。"
+      }
+    }
   },
   "calendar": {
     "title": "选择日期",
@@ -1021,6 +1036,15 @@
     "cancelError": "暂时无法取消预约，请稍后重试。",
     "rescheduleSuccess": "预约已改期至 {{date}}。",
     "rescheduleError": "暂时无法改期，请选择其他日期后重试。",
+    "bookingDeposit": "预约定金",
+    "paymentStatus": {
+      "not_started": "尚未开始",
+      "pending": "待处理，未产生扣款",
+      "processing": "处理中",
+      "succeeded": "已支付",
+      "failed": "需要处理",
+      "cancelled": "已取消"
+    },
     "statusHelp": {
       "pending": "我们已收到预约请求，审核期间仍可调整到其他可用日期。",
       "confirmed": "预约已确认。如需变更，请选择另一个仍有余量的日期。",
@@ -1331,6 +1355,12 @@
     "expiryLabel": "有效期",
     "cvcLabel": "安全码",
     "placeholderNotice": "支付功能当前为占位演示模式，不会产生真实扣款。",
+    "pendingTitle": "定金状态已记录",
+    "pendingDesc": "预约已经保存，本次没有产生扣款，定金仍为待处理状态。",
+    "referenceId": "状态编号",
+    "continue": "继续",
+    "payLater": "稍后处理",
+    "recordPending": "记录为待处理",
     "initializing": "初始化中...",
     "processing": "处理中...",
     "pay": "支付 {{amount}}",
