@@ -56,7 +56,7 @@
 - `BASE_URL=http://127.0.0.1:4174 npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line`：3/3 通过
 
 ### GitHub Actions / CI 状态
-- 待 Stage 2 commit + push 后检查。
+- Stage 2 commit `4f17b16` 已 push 到 `main`，GitHub Actions CI run `28195736252` 通过。
 
 ### 遗留风险
 - 支付仍为 placeholder。

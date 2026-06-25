@@ -65,7 +65,7 @@ Beginning execution.
   - `npm run build:full` — passed, including performance budget and bundle analysis.
   - Mocked desktop/mobile Playwright render check against `127.0.0.1:4174/dashboard` — no horizontal overflow, no console errors, 3 overview cards, 4 status insight blocks, mobile user button 44px, mobile dashboard bottom padding 98px.
   - `BASE_URL=http://127.0.0.1:4174 npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 3/3 passed.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `4f17b16` — `feat: upgrade dashboard booking experience`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28195736252` passed.
 - **Risk**: manual preview server was used for browser verification; generated screenshots and sitemap timestamp noise were removed before staging.
-- **Status**: READY TO COMMIT
+- **Status**: COMPLETE
