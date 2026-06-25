@@ -453,7 +453,12 @@
   "footer": {
     "tagline": "{{city}} · Portrait · Couple",
     "backToTop": "Back to top",
-    "ariaLabel": "Site footer"
+    "ariaLabel": "Site footer",
+    "navLabel": "Footer navigation",
+    "explore": "Explore",
+    "services": "Services",
+    "discover": "Discover",
+    "copyright": "© {{year}} {{brand}}. All rights reserved."
   },
   "recentlyViewed": {
     "title": "Recently viewed",

@@ -477,7 +477,12 @@
   "footer": {
     "tagline": "{{city}} · 女生写真 · 情侣约拍",
     "backToTop": "回到顶部",
-    "ariaLabel": "网站页脚"
+    "ariaLabel": "网站页脚",
+    "navLabel": "页脚导航",
+    "explore": "探索",
+    "services": "服务",
+    "discover": "发现",
+    "copyright": "© {{year}} {{brand}}. 保留所有权利。"
   },
   "recentlyViewed": {
     "title": "最近浏览",

@@ -450,7 +450,12 @@
   "footer": {
     "tagline": "{{city}} · 女性写真 · カップル写真",
     "backToTop": "トップへ",
-    "ariaLabel": "サイトフッター"
+    "ariaLabel": "サイトフッター",
+    "navLabel": "フッターナビゲーション",
+    "explore": "探す",
+    "services": "サービス",
+    "discover": "発見",
+    "copyright": "© {{year}} {{brand}}. All rights reserved."
   },
   "recentlyViewed": {
     "title": "最近閲覧",
