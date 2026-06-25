@@ -1,4 +1,4 @@
-import { ImagePlus, Pencil, Trash2, Upload, CheckSquare, Eye, EyeOff, Star, HelpCircle, Download, FolderOpen } from "lucide-react";
+import { ImagePlus, Pencil, Trash2, Upload, CheckSquare, Eye, EyeOff, Star, HelpCircle, Download, FolderOpen, Tag } from "lucide-react";
 import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../../types/photo";
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -265,6 +265,38 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     }
   };
 
+  const handleBatchTags = async (tags: string, mode: "add" | "remove" | "set") => {
+    if (selectedIds.size === 0) return;
+    const tagList = tags.split(",").map((t) => t.trim()).filter(Boolean);
+    if (tagList.length === 0) return;
+    try {
+      const r = await fetch("/api/admin/photos/batch", {
+        method: "POST", credentials: "include",
+        headers: { "content-type": "application/json", ...adminMutationHeaders },
+        body: JSON.stringify({ ids: Array.from(selectedIds), action: "tags", value: tagList, mode }),
+      });
+      if (!r.ok) { showToast("操作失败", "error"); return; }
+      setPhotos((prev) => prev.map((p) => {
+        if (!selectedIds.has(p.id)) return p;
+        const currentTags = p.tags || [];
+        let newTags: string[];
+        if (mode === "set") {
+          newTags = tagList;
+        } else if (mode === "add") {
+          newTags = [...new Set([...currentTags, ...tagList])];
+        } else {
+          newTags = currentTags.filter((t) => !tagList.includes(t));
+        }
+        return { ...p, tags: newTags };
+      }));
+      const actionText = mode === "add" ? "添加" : mode === "remove" ? "移除" : "设置";
+      showToast(`已${actionText} ${selectedIds.size} 张照片的标签`, "success");
+      setSelectedIds(new Set());
+    } catch {
+      showToast("操作失败", "error");
+    }
+  };
+
   const getExportPhotos = useCallback((): PhotoItem[] => {
     if (selectedIds.size > 0) {
       return photos.filter((p) => selectedIds.has(p.id));
@@ -510,6 +542,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
                   <Trash2 size={13} /> {deletingBatch ? "删除中..." : `删除选中`}
                 </Button>
                 <BulkAlbumInput onApply={handleBatchAlbum} />
+                <BulkTagsInput onApply={handleBatchTags} />
               </>
             )}
             {selectedIds.size === 0 && (
@@ -618,6 +651,39 @@ function BulkAlbumInput({ onApply }: { onApply: (album: string) => void }) {
   ) : (
     <Button type="primary" size="small" onClick={() => setOpen(true)}>
       <FolderOpen size={13} /> 修改相册
+    </Button>
+  );
+}
+
+function BulkTagsInput({ onApply }: { onApply: (tags: string, mode: "add" | "remove" | "set") => void }) {
+  const [value, setValue] = useState("");
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"add" | "remove" | "set">("add");
+  return open ? (
+    <span className="adm-bulk-album-row">
+      <select className="adm-filter-select" value={mode} onChange={(e) => setMode(e.target.value as "add" | "remove" | "set")}>
+        <option value="add">添加标签</option>
+        <option value="remove">移除标签</option>
+        <option value="set">覆盖标签</option>
+      </select>
+      <input
+        type="text"
+        className="adm-bulk-album-input"
+        placeholder="标签（逗号分隔）"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") { onApply(value, mode); setOpen(false); setValue(""); }
+          if (e.key === "Escape") { setOpen(false); setValue(""); }
+        }}
+        autoFocus
+      />
+      <Button type="primary" size="small" onClick={() => { onApply(value, mode); setOpen(false); setValue(""); }}>应用</Button>
+      <Button type="default" size="small" onClick={() => { setOpen(false); setValue(""); }}>取消</Button>
+    </span>
+  ) : (
+    <Button type="primary" size="small" onClick={() => setOpen(true)}>
+      <Tag size={13} /> 管理标签
     </Button>
   );
 }
