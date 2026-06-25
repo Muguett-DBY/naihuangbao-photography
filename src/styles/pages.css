@@ -2936,10 +2936,37 @@
   border-radius: 8px;
   font-size: 16px;
   box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.workshop-detail-register-input:focus {
+  outline: none;
+  border-color: var(--peach-accent);
+  box-shadow: 0 0 0 3px rgba(244, 164, 96, 0.15);
+}
+
+.workshop-detail-register-input.has-error {
+  border-color: #ef4444;
+}
+
+.workshop-detail-register-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .workshop-detail-register-input + .workshop-detail-register-input {
   margin-bottom: 12px;
+}
+
+.workshop-detail-field {
+  margin-bottom: 12px;
+}
+
+.workshop-detail-field-error {
+  display: block;
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 4px;
 }
 
 .workshop-detail-form-msg {

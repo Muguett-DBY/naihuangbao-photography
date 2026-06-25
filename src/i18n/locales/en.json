@@ -601,7 +601,9 @@
       "success": "Registration successful! We'll contact you soon.",
       "error": "Registration failed, please try again",
       "nameRequired": "Please enter your name",
-      "contactRequired": "Please enter your contact"
+      "contactRequired": "Please enter your contact",
+      "nameTooShort": "Name must be at least 2 characters",
+      "contactTooShort": "Contact must be at least 5 characters"
     },
     "confirmation": {
       "registrationId": "Registration ID",
