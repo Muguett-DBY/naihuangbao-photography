@@ -56,7 +56,7 @@ function createBucket() {
 }
 
 describe("Cloudflare Pages API behavior", () => {
-  it("returns the real provider and status for placeholder payment intents", async () => {
+  it("returns payment readiness details for placeholder payment intents", async () => {
     const db = createDb();
     const response = await createPaymentIntent({
       request: jsonRequest("https://shoot.custard.top/api/payment/create-intent", {
@@ -74,11 +74,20 @@ describe("Cloudflare Pages API behavior", () => {
       }),
       env: { DB: db },
     } as never);
-    const body = (await response.json()) as { provider?: string; status?: string };
+    const body = (await response.json()) as {
+      provider?: string;
+      status?: string;
+      readiness?: { mode?: string; nextAction?: string; missingConfiguration?: string[] };
+    };
 
     expect(response.status).toBe(201);
     expect(body.provider).toBe("placeholder");
     expect(body.status).toBe("pending");
+    expect(body.readiness).toEqual({
+      mode: "placeholder",
+      nextAction: "manual_follow_up",
+      missingConfiguration: ["STRIPE_SECRET_KEY"],
+    });
   });
 
   it("projects the latest booking deposit state into the customer booking list", async () => {

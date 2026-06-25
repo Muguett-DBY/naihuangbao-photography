@@ -14,6 +14,11 @@ type BookingRow = {
   notes: string;
   status: string;
   created_at: string;
+  payment_intent_id: string | null;
+  payment_status: string;
+  payment_provider: string | null;
+  payment_amount_cents: number | null;
+  payment_currency: string | null;
 };
 
 export const onRequestGet: PagesFunction<AdminBookingsEnv> = async (context) => {
@@ -22,12 +27,33 @@ export const onRequestGet: PagesFunction<AdminBookingsEnv> = async (context) => 
 
   try {
     const result = await context.env.DB.prepare(
-      `select id, package_name, preferred_date, preferred_time, name, contact, notes, status, created_at
-       from booking_requests
-       order by created_at desc`,
+      `select b.id, b.package_name, b.preferred_date, b.preferred_time, b.name, b.contact, b.notes,
+              case when b.status = 'canceled' then 'cancelled' else b.status end as status,
+              b.created_at,
+              pi.id as payment_intent_id,
+              coalesce(pi.status, 'not_started') as payment_status,
+              pi.provider as payment_provider,
+              pi.amount_cents as payment_amount_cents,
+              pi.currency as payment_currency
+       from booking_requests b
+       left join payment_intents pi
+         on pi.id = (
+           select latest.id
+           from payment_intents latest
+           where latest.purpose = 'booking_deposit'
+             and latest.reference_id = b.id
+           order by latest.created_at desc
+           limit 1
+         )
+       order by b.created_at desc`,
     ).all<BookingRow>();
 
-    return jsonResponse({ bookings: result.results });
+    const bookings = result.results.map((booking) => ({
+      ...booking,
+      payment_status: booking.payment_status === "canceled" ? "cancelled" : booking.payment_status,
+    }));
+
+    return jsonResponse({ bookings });
   } catch (error) {
     return unavailable("加载预约失败", error, { route: "/api/admin/bookings", method: "GET" });
   }

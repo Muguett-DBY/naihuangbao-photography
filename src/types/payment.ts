@@ -21,6 +21,11 @@ export type CreatePaymentIntentResponse = {
   currency: string;
   provider: PaymentProvider;
   status: PaymentStatus;
+  readiness?: {
+    mode: "placeholder" | "provider_configured";
+    nextAction: "manual_follow_up" | "confirm_payment";
+    missingConfiguration: string[];
+  };
 };
 
 export type ConfirmPaymentRequest = {

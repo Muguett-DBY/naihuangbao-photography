@@ -3824,6 +3824,8 @@
 }
 
 .payment-placeholder-notice {
+  display: grid;
+  gap: 4px;
   padding: 12px 14px;
   border: 1px solid rgba(217, 119, 6, 0.2);
   border-radius: 10px;
@@ -3832,6 +3834,16 @@
   color: var(--caramel-muted);
   margin: 12px 0;
   line-height: 1.5;
+}
+
+.payment-placeholder-notice strong {
+  color: var(--caramel-ink);
+  font-size: 0.86rem;
+}
+
+.payment-placeholder-notice small {
+  color: #9a6a33;
+  font-weight: 700;
 }
 
 .payment-form-actions {

@@ -504,6 +504,39 @@
   font-size: 12px;
 }
 
+.adm-booking-payment {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 9px 11px;
+  border: 1px solid rgba(184, 120, 64, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 248, 238, 0.72);
+  color: #6f4d3c;
+  font-size: 12px;
+}
+
+.adm-booking-payment strong {
+  color: #3f2a20;
+}
+
+.adm-booking-payment small {
+  color: #9b7463;
+}
+
+.adm-booking-payment--succeeded {
+  border-color: rgba(74, 122, 80, 0.32);
+  background: rgba(232, 246, 232, 0.78);
+}
+
+.adm-booking-payment--failed,
+.adm-booking-payment--cancelled {
+  border-color: rgba(169, 68, 66, 0.28);
+  background: rgba(255, 238, 236, 0.76);
+}
+
 .adm-booking-notes {
   margin: 10px 0 0;
   padding: 10px 12px;

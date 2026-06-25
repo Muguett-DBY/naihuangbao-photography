@@ -12,6 +12,18 @@ type CreateIntentBody = {
 const VALID_PURPOSES = ["booking_deposit", "course_purchase", "workshop_registration", "preset_purchase", "merchandise_purchase"];
 const VALID_CURRENCIES = ["usd", "eur", "gbp", "cny", "jpy"];
 
+function buildPaymentReadiness(env: Env & { STRIPE_SECRET_KEY?: string }) {
+  const missingConfiguration = [];
+  if (!env.STRIPE_SECRET_KEY?.trim()) missingConfiguration.push("STRIPE_SECRET_KEY");
+  else missingConfiguration.push("STRIPE_CLIENT_CONFIRMATION_FLOW");
+
+  return {
+    mode: "placeholder",
+    nextAction: "manual_follow_up",
+    missingConfiguration,
+  };
+}
+
 export const onRequestPost: PagesFunction<Env & { STRIPE_SECRET_KEY?: string }> = async (context) => {
   const publicActionError = requirePublicMutationRequest(context.request);
   if (publicActionError) return publicActionError;
@@ -53,11 +65,17 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_SECRET_KEY?: string }> 
   const paymentIntentId = `pi_${crypto.randomUUID().replace(/-/g, "").slice(0, 24)}`;
   const clientSecret = `${paymentIntentId}_secret_${crypto.randomUUID().replace(/-/g, "").slice(0, 16)}`;
   const createdAt = new Date().toISOString();
+  const readiness = buildPaymentReadiness(context.env);
+  const metadata = {
+    ...(body.metadata ?? {}),
+    payment_mode: readiness.mode,
+    payment_next_action: readiness.nextAction,
+  };
 
   try {
     await context.env.DB.prepare(
       `INSERT INTO payment_intents (id, purpose, reference_id, amount_cents, currency, status, provider, client_secret, metadata, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, 'pending', 'placeholder', ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?, ?)`,
     )
       .bind(
         paymentIntentId,
@@ -65,8 +83,9 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_SECRET_KEY?: string }> 
         referenceId,
         amountCents,
         currency,
+        "placeholder",
         clientSecret,
-        body.metadata ? JSON.stringify(body.metadata) : null,
+        JSON.stringify(metadata),
         createdAt,
         createdAt,
       )
@@ -79,6 +98,7 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_SECRET_KEY?: string }> 
       currency,
       provider: "placeholder",
       status: "pending",
+      readiness,
     }, 201);
   } catch (error) {
     return unavailable("Failed to create payment intent", error, { route: "/api/payment/create-intent", method: "POST" });

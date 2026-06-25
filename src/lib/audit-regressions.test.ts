@@ -37,11 +37,14 @@ const adminPhotoApiSource = readFileSync(resolve(root, "functions/api/admin/phot
 const authSource = readFileSync(resolve(root, "functions/_auth.ts"), "utf8");
 const securitySource = readFileSync(resolve(root, "functions/_security.ts"), "utf8");
 const paymentWebhookSource = readFileSync(resolve(root, "functions/api/payment/webhook.ts"), "utf8");
+const paymentCreateIntentSource = readFileSync(resolve(root, "functions/api/payment/create-intent.ts"), "utf8");
 const paymentConfirmSource = readFileSync(resolve(root, "functions/api/payment/confirm.ts"), "utf8");
 const responsesSource = readFileSync(resolve(root, "functions/_responses.ts"), "utf8");
 const publicChatApiSource = readFileSync(resolve(root, "functions/api/chat.ts"), "utf8");
 const photoDownloadApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/download.ts"), "utf8");
 const dashboardBookingsSource = readFileSync(resolve(root, "src/components/dashboard/BookingsTab.tsx"), "utf8");
+const adminBookingsSource = readFileSync(resolve(root, "src/components/admin/AdminBookingsTab.tsx"), "utf8");
+const adminBookingsApiSource = readFileSync(resolve(root, "functions/api/admin/bookings.ts"), "utf8");
 const photoImageApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/image.ts"), "utf8");
 const sitemapSource = readFileSync(resolve(root, "public/sitemap.xml"), "utf8");
 const adminCssSource = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
@@ -303,6 +306,20 @@ describe("audit regression coverage", () => {
     expect(bookingApi).toContain("payment_intents");
     expect(sectionStyles).toContain("body:has(.booking-modal-content) .mobile-bottom-nav");
     expect(sectionStyles).toContain("body:has(.booking-modal-content) .public-chat-widget");
+  });
+
+  it("surfaces payment readiness and deposit tracking to customers and admins", () => {
+    const paymentForm = readFileSync(resolve(root, "src/components/PaymentForm.tsx"), "utf8");
+
+    expect(paymentCreateIntentSource).toContain("buildPaymentReadiness");
+    expect(paymentCreateIntentSource).toContain("manual_follow_up");
+    expect(paymentCreateIntentSource).toContain("STRIPE_SECRET_KEY");
+    expect(paymentForm).toContain("payment.readinessTitle");
+    expect(paymentForm).toContain("readiness.nextAction");
+    expect(adminBookingsApiSource).toContain("payment_intents");
+    expect(adminBookingsApiSource).toContain("payment_status");
+    expect(adminBookingsSource).toContain("adm-booking-payment");
+    expect(adminBookingsSource).toContain("formatPaymentAmount");
   });
 
   it("keeps the dashboard workspace readable and actionable across breakpoints", () => {

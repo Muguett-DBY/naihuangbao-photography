@@ -27,6 +27,7 @@ export function PaymentForm({
   const [error, setError] = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
   const [isRetrying, setIsRetrying] = useState(false);
+  const [readiness, setReadiness] = useState<CreatePaymentIntentResponse["readiness"] | null>(null);
 
   const formatAmount = (cents: number, cur: string) => {
     const symbols: Record<string, string> = { usd: "$", eur: "\u20AC", gbp: "\u00A3", cny: "\u00A5", jpy: "\u00A5" };
@@ -110,6 +111,7 @@ export function PaymentForm({
       }
 
       setPaymentIntentId(data.paymentIntentId);
+      setReadiness(data.readiness ?? null);
       const provider = data.provider;
       if (provider === "placeholder") {
         setStatus("pending");
@@ -211,7 +213,17 @@ export function PaymentForm({
         </div>
 
         <div className="payment-placeholder-notice" role="note">
-          {t("payment.placeholderNotice", "Payment processing is in placeholder mode. No real charges will be made.")}
+          <strong>{t("payment.readinessTitle", "Payment readiness")}</strong>
+          <span>
+            {!readiness || readiness.nextAction === "manual_follow_up"
+              ? t("payment.placeholderNotice", "Payment processing is in placeholder mode. No real charges will be made.")
+              : t("payment.providerReadyNotice", "Payment provider configuration is present. Continue to confirm payment.")}
+          </span>
+          {readiness?.missingConfiguration?.length ? (
+            <small>
+              {t("payment.missingConfiguration", "Missing configuration")}: {readiness.missingConfiguration.join(", ")}
+            </small>
+          ) : null}
         </div>
 
         {error && <p className="booking-error" role="alert">{error}</p>}
