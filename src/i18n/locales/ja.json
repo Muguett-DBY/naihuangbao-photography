@@ -501,7 +501,12 @@
     "overlay": "オーバーレイ",
     "sideBySide": "並べて表示",
     "toggleMode": "表示モード切替",
-    "swap": "入れ替え"
+    "swap": "入れ替え",
+    "keyboardShortcuts": "キーボードショートカット",
+    "shortcutToggleMode": "表示モード切替",
+    "shortcutSwap": "写真を入れ替え",
+    "shortcutClear": "比較をクリア",
+    "shortcutHelp": "ヘルプを切替"
   },
   "quickView": {
     "label": "クイックビュー",

@@ -528,7 +528,12 @@
     "overlay": "叠加对比",
     "sideBySide": "并排对比",
     "toggleMode": "切换视图模式",
-    "swap": "交换位置"
+    "swap": "交换位置",
+    "keyboardShortcuts": "键盘快捷键",
+    "shortcutToggleMode": "切换视图模式",
+    "shortcutSwap": "交换照片",
+    "shortcutClear": "清除对比",
+    "shortcutHelp": "切换帮助"
   },
   "quickView": {
     "label": "快速预览",
