@@ -6556,3 +6556,72 @@
     content: none !important;
   }
 }
+
+/* ── Course Progress Tracking ── */
+.course-detail-progress {
+  background: rgba(255, 253, 247, 0.9);
+  border: 1px solid rgba(139, 94, 74, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.course-detail-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.course-detail-progress-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #493735;
+}
+
+.course-detail-progress-pct {
+  font-size: 14px;
+  font-weight: 700;
+  color: #7AA675;
+}
+
+.course-detail-progress-bar {
+  height: 8px;
+  background: rgba(139, 94, 74, 0.12);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.course-detail-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7AA675, #5a8a5a);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.course-detail-module-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(139, 94, 74, 0.2);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: #a08880;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.course-detail-module-check:hover {
+  border-color: #7AA675;
+  color: #7AA675;
+}
+
+.course-detail-module-check.is-completed {
+  background: #7AA675;
+  border-color: #7AA675;
+  color: white;
+}
