@@ -3618,6 +3618,145 @@
   padding: 0 20px;
 }
 
+/* ── Payment Form ── */
+.payment-form-wrap {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.payment-form-card {
+  background: var(--card-bg, rgba(255, 255, 255, 0.7));
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.payment-form-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.payment-form-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  flex: 1;
+}
+
+.payment-form-icon {
+  color: var(--peach-accent);
+}
+
+.payment-form-secure {
+  color: #22c55e;
+}
+
+.payment-form-amount {
+  margin-bottom: 16px;
+}
+
+.payment-form-purpose {
+  font-size: 0.85rem;
+  color: var(--caramel-muted);
+  margin-bottom: 4px;
+}
+
+.payment-form-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--peach-accent);
+}
+
+.payment-placeholder-notice {
+  font-size: 0.8rem;
+  color: var(--caramel-muted);
+  text-align: center;
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+.payment-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.payment-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payment-spinner {
+  animation: payment-spin 1s linear infinite;
+}
+
+@keyframes payment-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.payment-retrying {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--caramel-muted);
+  text-align: center;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.payment-success,
+.payment-failed {
+  text-align: center;
+  padding: 24px;
+}
+
+.payment-success-icon {
+  color: #22c55e;
+  margin-bottom: 12px;
+}
+
+.payment-success h3,
+.payment-failed h3 {
+  margin: 0 0 8px;
+}
+
+.payment-success p {
+  color: var(--caramel-muted);
+  font-size: 0.9rem;
+  margin: 4px 0;
+}
+
+.payment-transaction-id {
+  font-size: 0.75rem;
+  color: var(--caramel-muted);
+  font-family: monospace;
+  margin-top: 12px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+}
+
+.payment-failed-icon {
+  color: #ef4444;
+  margin-bottom: 12px;
+}
+
+.payment-error-msg {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.payment-failed-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
 /* ── Dashboard Page ── */
 .dashboard-root {
   max-width: 800px;
