@@ -2955,6 +2955,73 @@
   color: #ef4444;
 }
 
+/* ── Workshop Confirmation Modal ── */
+.workshop-confirmation-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.workshop-confirmation-modal {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.workshop-confirmation-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  padding: 4px;
+}
+
+.workshop-confirmation-close:hover {
+  color: #333;
+}
+
+.workshop-confirmation-icon {
+  color: #22c55e;
+  margin-bottom: 16px;
+}
+
+.workshop-confirmation-modal h2 {
+  margin: 0 0 16px;
+  color: #22c55e;
+}
+
+.workshop-confirmation-details {
+  text-align: left;
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.workshop-confirmation-details p {
+  margin: 8px 0;
+  font-size: 0.9rem;
+}
+
+.workshop-confirmation-email {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 16px;
+}
+
 /* ── Preset Detail Page ── */
 .preset-detail-hero-heading {
   position: relative;

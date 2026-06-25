@@ -2,7 +2,7 @@ import "../styles/pages.css";
 import { useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Calendar, MapPin, Users, Clock, CheckCircle } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, CheckCircle, X } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
@@ -27,6 +27,7 @@ export function WorkshopDetailPage() {
   const registration = useWorkshopRegistration(workshop);
   const [showPayment, setShowPayment] = useState(false);
   const [registrationId, setRegistrationId] = useState<string | null>(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   useGsapPageEffects(rootRef);
 
@@ -53,6 +54,8 @@ export function WorkshopDetailPage() {
       setRegistrationId(result.registrationId ?? null);
       if (result.requiresPayment) {
         setShowPayment(true);
+      } else {
+        setShowConfirmation(true);
       }
     }
   };
@@ -242,6 +245,30 @@ export function WorkshopDetailPage() {
           </div>
         </div>
       </section>
+
+      {showConfirmation && workshop && (
+        <div className="workshop-confirmation-overlay" onClick={() => setShowConfirmation(false)}>
+          <div className="workshop-confirmation-modal" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="workshop-confirmation-close" onClick={() => setShowConfirmation(false)}>
+              <X size={20} />
+            </button>
+            <CheckCircle size={48} className="workshop-confirmation-icon" />
+            <h2>{t("workshops.form.success")}</h2>
+            <div className="workshop-confirmation-details">
+              <p><strong>{t("workshops.title")}:</strong> {workshopTitle}</p>
+              {workshop.event_date && <p><strong>{t("workshops.detail.date")}:</strong> {workshop.event_date}</p>}
+              {workshop.location && <p><strong>{t("workshops.detail.location")}:</strong> {workshop.location}</p>}
+              {registrationId && <p><strong>{t("workshops.confirmation.registrationId")}:</strong> {registrationId}</p>}
+              <p><strong>{t("workshops.confirmation.name")}:</strong> {registration.formName}</p>
+              <p><strong>{t("workshops.confirmation.contact")}:</strong> {registration.formContact}</p>
+            </div>
+            <p className="workshop-confirmation-email">{t("workshops.confirmation.emailSent", "A confirmation email has been sent to your email address.")}</p>
+            <Button type="primary" onClick={() => { setShowConfirmation(false); registration.resetForm(); }}>
+              {t("workshops.confirmation.close", "Close")}
+            </Button>
+          </div>
+        </div>
+      )}
       </ErrorBoundary>
     </PageTransition>
   );

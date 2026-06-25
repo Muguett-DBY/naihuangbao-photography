@@ -598,6 +598,17 @@
       "error": "申し込みに失敗しました。もう一度お試しください",
       "nameRequired": "お名前を入力してください",
       "contactRequired": "連絡先を入力してください"
+    },
+    "confirmation": {
+      "registrationId": "申込番号",
+      "name": "お名前",
+      "contact": "連絡先",
+      "emailSent": "確認メールが送信されました。",
+      "close": "閉じる"
+    },
+    "detail": {
+      "date": "日付",
+      "location": "会場"
     }
   },
   "merchandise": {

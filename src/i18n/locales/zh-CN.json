@@ -625,6 +625,17 @@
       "error": "报名失败，请稍后重试",
       "nameRequired": "请填写姓名",
       "contactRequired": "请填写联系方式"
+    },
+    "confirmation": {
+      "registrationId": "报名编号",
+      "name": "姓名",
+      "contact": "联系方式",
+      "emailSent": "确认邮件已发送至您的邮箱。",
+      "close": "关闭"
+    },
+    "detail": {
+      "date": "日期",
+      "location": "地点"
     }
   },
   "merchandise": {

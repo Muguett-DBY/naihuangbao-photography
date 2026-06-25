@@ -598,6 +598,17 @@
       "error": "등록 실패, 다시 시도해주세요",
       "nameRequired": "이름을 입력해주세요",
       "contactRequired": "연락처를 입력해주세요"
+    },
+    "confirmation": {
+      "registrationId": "등록 번호",
+      "name": "이름",
+      "contact": "연락처",
+      "emailSent": "확인 이메일이 발송되었습니다.",
+      "close": "닫기"
+    },
+    "detail": {
+      "date": "날짜",
+      "location": "장소"
     }
   },
   "merchandise": {
