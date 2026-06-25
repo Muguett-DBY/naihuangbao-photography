@@ -648,7 +648,11 @@
     "buyNow": "今すぐ購入",
     "ctaTitle": "もっと学びたいですか？",
     "ctaDesc": "1対1の個人レッスンを予約しましょう",
-    "ctaBtn": "カウンセリング予約"
+    "ctaBtn": "カウンセリング予約",
+    "syncing": "同期中...",
+    "progress": "進捗",
+    "markComplete": "完了としてマーク",
+    "markIncomplete": "未完了としてマーク"
   },
   "compare": {
     "before": "元画像",

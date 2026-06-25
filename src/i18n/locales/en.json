@@ -652,7 +652,11 @@
     "buyNow": "Buy Course",
     "ctaTitle": "Want to learn more?",
     "ctaDesc": "Book a 1-on-1 session for personalized learning",
-    "ctaBtn": "Book Consultation"
+    "ctaBtn": "Book Consultation",
+    "syncing": "syncing...",
+    "progress": "Progress",
+    "markComplete": "Mark as complete",
+    "markIncomplete": "Mark as incomplete"
   },
   "compare": {
     "before": "Before",
