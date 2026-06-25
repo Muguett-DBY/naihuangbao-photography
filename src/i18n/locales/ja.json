@@ -525,8 +525,12 @@
     "placeholder": "メールアドレスを入力",
     "submit": "購読",
     "success": "購読成功！",
+    "successMessage": "ご購読ありがとうございます！最新情報をお届けします。",
+    "subscribeAnother": "別のメールアドレスで購読",
     "error": "購読失敗、しばらくしてからお試しください",
-    "duplicate": "このメールアドレスは既に購読されています"
+    "duplicate": "このメールアドレスは既に購読されています",
+    "errorEmailRequired": "メールアドレスを入力してください",
+    "errorEmailInvalid": "有効なメールアドレスを入力してください"
   },
   "courses": {
     "title": "写真講座",

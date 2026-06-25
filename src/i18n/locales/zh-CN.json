@@ -552,8 +552,12 @@
     "placeholder": "输入邮箱",
     "submit": "订阅",
     "success": "订阅成功！",
+    "successMessage": "感谢订阅！您将收到我们的最新动态。",
+    "subscribeAnother": "订阅其他邮箱",
     "error": "订阅失败，请稍后重试",
-    "duplicate": "该邮箱已订阅"
+    "duplicate": "该邮箱已订阅",
+    "errorEmailRequired": "请输入邮箱地址",
+    "errorEmailInvalid": "请输入有效的邮箱地址"
   },
   "courses": {
     "title": "摄影课程",

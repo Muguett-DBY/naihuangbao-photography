@@ -525,8 +525,12 @@
     "placeholder": "이메일 입력",
     "submit": "구독",
     "success": "구독 완료!",
+    "successMessage": "구독해 주셔서 감사합니다! 최신 소식을 전해 드리겠습니다.",
+    "subscribeAnother": "다른 이메일로 구독",
     "error": "구독 실패, 나중에 다시 시도해 주세요",
-    "duplicate": "이미 구독된 이메일입니다"
+    "duplicate": "이미 구독된 이메일입니다",
+    "errorEmailRequired": "이메일을 입력해 주세요",
+    "errorEmailInvalid": "유효한 이메일 주소를 입력해 주세요"
   },
   "courses": {
     "title": "사진 강좌",
