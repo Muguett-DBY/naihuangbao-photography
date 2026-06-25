@@ -33,6 +33,8 @@ describe("photo compare system", () => {
     const page = read("src/pages/ComparePage.tsx");
     expect(page).toContain("ComparePage");
     expect(page).toContain("compare-page-grid");
+    expect(page).toContain("compare-page-overlay");
+    expect(page).toContain("compare-page-mode-btn");
   });
 
   it("mounts CompareBar in the gallery and CompareButton on every card", () => {
@@ -53,6 +55,14 @@ describe("photo compare system", () => {
     expect(css).toContain("compare-bar-slide-in");
     expect(css).toContain("compare-bar-cta-pulse");
     expect(css).toContain("compare-bar-kbd");
+  });
+
+  it("ships CompareSlider with reset button and percentage indicator", () => {
+    const slider = read("src/components/CompareSlider.tsx");
+    expect(slider).toContain("CompareSlider");
+    expect(slider).toContain("compare-slider-percentage");
+    expect(slider).toContain("compare-slider-reset");
+    expect(slider).toContain("RotateCcw");
   });
 
   it("ships localized photoCompare labels in all four locales", () => {

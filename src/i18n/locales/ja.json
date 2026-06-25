@@ -492,7 +492,11 @@
     "backToGallery": "ギャラリーに戻る",
     "empty": "写真を2枚まで追加して並べ比較できます。",
     "needTwo": "もう1枚追加すると並べ比較できます。",
-    "browseGallery": "ギャラリーを見る"
+    "browseGallery": "ギャラリーを見る",
+    "overlay": "オーバーレイ",
+    "sideBySide": "並べて表示",
+    "toggleMode": "表示モード切替",
+    "swap": "入れ替え"
   },
   "quickView": {
     "label": "クイックビュー",
@@ -629,7 +633,8 @@
   "compare": {
     "before": "元画像",
     "after": "加工後",
-    "dragHint": "ドラッグで比較"
+    "dragHint": "ドラッグで比較",
+    "reset": "位置をリセット"
   },
   "presetDetail": {
     "backToList": "プリセット一覧に戻る",
