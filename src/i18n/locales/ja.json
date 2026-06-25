@@ -923,6 +923,11 @@
     "workshops": "ワークショップ",
     "myPhotos": "マイ写真",
     "noBookings": "予約はまだありません",
+    "bookingOverview": {
+      "active": "対応中の予約",
+      "completed": "完了",
+      "cancelled": "キャンセル"
+    },
     "noPurchases": "購入履歴はまだありません",
     "noCourses": "受講中のコースはありません",
     "noWorkshops": "ワークショップの登録はありません",
@@ -946,6 +951,8 @@
     "passwordChanged": "パスワードが変更されました",
     "passwordError": "パスワードの変更に失敗しました",
     "download": "ダウンロード",
+    "scheduledFor": "予約日時",
+    "requestedOn": "申込日",
     "cancelBooking": "キャンセル",
     "rescheduleBooking": "日程変更",
     "confirmCancel": "この予約をキャンセルしますか？",
@@ -959,6 +966,12 @@
     "cancelError": "予約をキャンセルできませんでした。もう一度お試しください。",
     "rescheduleSuccess": "予約日を {{date}} に変更しました。",
     "rescheduleError": "日程を変更できませんでした。別の日付を選んでください。",
+    "statusHelp": {
+      "pending": "リクエストを受け付けました。確認中は空き日へ変更できます。",
+      "confirmed": "予約は確定しています。変更が必要な場合のみ、別の空き日を選んでください。",
+      "done": "この撮影は完了しました。納品写真と購入履歴はダッシュボードで確認できます。",
+      "cancelled": "この予約は終了しており、空き枠の数には含まれません。"
+    },
     "editorTitle": "ポートレート編集を開く",
     "editorDescription": "ブラウザ内で編集し、写真はこの端末に保持されます。",
     "openEditor": "編集を始める",

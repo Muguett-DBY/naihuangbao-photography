@@ -1424,7 +1424,8 @@
   }
 
   .site-nav .lang-toggle,
-  .site-nav .nav-login {
+  .site-nav .nav-login,
+  .site-nav .nav-user-btn {
     width: 44px !important;
     min-width: 44px !important;
     max-width: 44px !important;
@@ -1443,7 +1444,8 @@
   }
 
   .site-nav .lang-toggle span,
-  .site-nav .nav-login span {
+  .site-nav .nav-login span,
+  .site-nav .nav-user-btn span {
     display: none !important;
   }
 

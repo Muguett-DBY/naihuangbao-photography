@@ -929,6 +929,11 @@
     "workshops": "My Workshops",
     "myPhotos": "My Photos",
     "noBookings": "No bookings yet",
+    "bookingOverview": {
+      "active": "Active bookings",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
     "noPurchases": "No purchases yet",
     "noCourses": "No courses enrolled",
     "noWorkshops": "No workshop registrations",
@@ -952,6 +957,8 @@
     "passwordChanged": "Password changed successfully",
     "passwordError": "Failed to change password",
     "download": "Download",
+    "scheduledFor": "Scheduled for",
+    "requestedOn": "Requested on",
     "cancelBooking": "Cancel",
     "rescheduleBooking": "Reschedule",
     "confirmCancel": "Are you sure you want to cancel this booking?",
@@ -965,6 +972,12 @@
     "cancelError": "Could not cancel this booking. Please try again.",
     "rescheduleSuccess": "Booking moved to {{date}}.",
     "rescheduleError": "Could not reschedule this booking. Please choose another date.",
+    "statusHelp": {
+      "pending": "We have your request. You can still adjust the date while it is being reviewed.",
+      "confirmed": "Your session is confirmed. Use reschedule only if you need to move to another available date.",
+      "done": "This session is complete. Delivered photos and purchases stay available in your dashboard.",
+      "cancelled": "This booking is closed and no longer counts against available dates."
+    },
     "editorTitle": "Edit your photos",
     "editorDescription": "Use the browser-based portrait studio. Your image stays on this device.",
     "openEditor": "Open editor",

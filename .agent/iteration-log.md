@@ -19,7 +19,7 @@
 - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line`：3/3 通过
 
 ### GitHub Actions / CI 状态
-- 待 Stage 1 commit + push 后检查。
+- Stage 1 commit `83154b6` 已 push 到 `main`，GitHub Actions CI run `28194736603` 通过。
 
 ### 遗留风险
 - `.agent/orchestrator-state.json` 是进入本轮前已有的 prior-campaign metadata 变更，本阶段未纳入 commit。
@@ -32,6 +32,43 @@
 
 ### 推荐下一轮优先执行的旗舰级主改动
 个人中心预约体验升级：围绕预约卡片、状态反馈、空状态和移动端日历交互做完整 UI/UX 提升。
+
+---
+
+## Campaign 010 Stage 2 — Dashboard Booking UI/UX Upgrade
+
+### 本轮 UI/UX 主改动
+- 个人中心预约区从普通列表升级为更清晰的预约管理面板：顶部概览、预约时间/提交时间标签、状态说明、可用性日历改期和移动端底部导航避让形成一套完整体验。
+
+### 完成内容
+- 新增活跃、已完成、已取消三项预约概览，提升用户第一眼可读性。
+- 预约卡片增加结构化时间信息和每种状态的下一步说明，减少用户对“还能做什么”的不确定。
+- 改期面板在移动端按钮纵向排列，日历宽度自适应，内容底部避让固定底部导航。
+- 修复 390px 移动端已登录头部用户按钮与菜单按钮拥挤的问题。
+- 新增审计回归，锁定预约概览、状态说明、响应式按钮、移动端底部避让和已登录头部压缩规则。
+
+### 已验证内容
+- `npm test -- src/lib/audit-regressions.test.ts`：38/38 通过
+- `npm run lint`：通过
+- `npm test`：217/217 通过
+- `npm run build:full`：通过，性能预算通过
+- 桌面 1366x900 和移动 390x844 mocked browser 检查：无横向溢出、无控制台错误、预约概览/状态说明/改期面板均渲染
+- `BASE_URL=http://127.0.0.1:4174 npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line`：3/3 通过
+
+### GitHub Actions / CI 状态
+- 待 Stage 2 commit + push 后检查。
+
+### 遗留风险
+- 支付仍为 placeholder。
+- 全站字体与 face-api vendor chunk 仍较大，本轮仅确认性能预算通过，未继续拆分资源。
+
+### 下一轮建议方向
+1. 支付 placeholder 到真实付款状态闭环，避免预约后商业流程断点。
+2. 个人中心空状态继续升级，让新用户首次进入时有更明确的预约、作品、收藏引导。
+3. 编辑器模型资源加载继续优化，减少首次进入编辑器的体感等待。
+
+### 推荐下一轮优先执行的旗舰级主改动
+支付与预约后续闭环：把预约确认、付款状态和用户可见下一步整合到个人中心，补齐从预约到交付的商业链路。
 
 ---
 

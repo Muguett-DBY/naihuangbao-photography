@@ -46,6 +46,7 @@ const photoImageApiSource = readFileSync(resolve(root, "functions/api/photos/[id
 const sitemapSource = readFileSync(resolve(root, "public/sitemap.xml"), "utf8");
 const adminCssSource = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
 const editorCssSource = readFileSync(resolve(root, "src/styles/pages.css"), "utf8");
+const sectionsCssSource = readFileSync(resolve(root, "src/styles/sections.css"), "utf8");
 const dashboardSource = readFileSync(resolve(root, "src/components/dashboard/ProfileTab.tsx"), "utf8");
 const viteConfigSource = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const businessMigrationSource = readFileSync(resolve(root, "db/migrations/005_create_business_tables.sql"), "utf8");
@@ -95,6 +96,19 @@ describe("audit regression coverage", () => {
     const panelBlock = editorCssSource.match(/\.dashboard-confirm-panel--default\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
     expect(panelBlock).toContain("--paper-white: #fffdf7");
     expect(panelBlock).toContain("--caramel-ink: #3f2f27");
+  });
+
+  it("keeps the customer booking dashboard scannable and responsive", () => {
+    expect(dashboardBookingsSource).toContain("dashboard-booking-overview");
+    expect(dashboardBookingsSource).toContain("getStatusHelpKey");
+    expect(dashboardBookingsSource).toContain("dashboard-status-insight");
+    expect(dashboardBookingsSource).toContain('aria-live="polite"');
+    expect(editorCssSource).toContain(".dashboard-booking-overview");
+    expect(editorCssSource).toContain(".dashboard-booking-schedule");
+    expect(editorCssSource).toContain(".dashboard-status-insight");
+    expect(editorCssSource).toContain(".dashboard-reschedule-actions .ai-btn");
+    expect(editorCssSource).toContain("padding-bottom: calc(24px + var(--mobile-bottom-nav-offset, 0px))");
+    expect(sectionsCssSource).toContain(".site-nav .nav-user-btn span");
   });
 
   it("limits the hand-written display font to titles and compact UI accents", () => {
