@@ -21,7 +21,9 @@ export function FavoritesTab() {
       error={null}
       empty={entries.length === 0}
       emptyIcon={<Heart size={40} strokeWidth={1.2} />}
-      emptyText={t("favorites.empty", "No favorites yet. Tap the heart on any photo to save it.")}
+      emptyTitle={t("dashboard.emptyStates.favorites.title")}
+      emptyText={t("dashboard.emptyStates.favorites.description")}
+      emptyAction={{ href: "/gallery", label: t("dashboard.emptyStates.favorites.action") }}
       retry={() => undefined}
     >
       <div className="dashboard-favorites-head">

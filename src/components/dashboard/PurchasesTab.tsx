@@ -16,7 +16,9 @@ export function PurchasesTab() {
       error={error}
       empty={purchases.length === 0}
       emptyIcon={<ShoppingCart size={40} strokeWidth={1.2} />}
-      emptyText={t("dashboard.noPurchases")}
+      emptyTitle={t("dashboard.emptyStates.purchases.title")}
+      emptyText={t("dashboard.emptyStates.purchases.description")}
+      emptyAction={{ href: "/shop", label: t("dashboard.emptyStates.purchases.action") }}
       retry={retry}
     >
       <div className="dashboard-list">

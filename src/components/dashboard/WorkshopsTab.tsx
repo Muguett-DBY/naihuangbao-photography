@@ -17,7 +17,9 @@ export function WorkshopsTab() {
       error={error}
       empty={workshops.length === 0}
       emptyIcon={<MapPin size={40} strokeWidth={1.2} />}
-      emptyText={t("dashboard.noWorkshops")}
+      emptyTitle={t("dashboard.emptyStates.workshops.title")}
+      emptyText={t("dashboard.emptyStates.workshops.description")}
+      emptyAction={{ href: "/workshops", label: t("dashboard.emptyStates.workshops.action") }}
       retry={retry}
     >
       <div className="dashboard-list">

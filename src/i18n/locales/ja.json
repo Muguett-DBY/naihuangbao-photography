@@ -981,6 +981,61 @@
     "cancelError": "予約をキャンセルできませんでした。もう一度お試しください。",
     "rescheduleSuccess": "予約日を {{date}} に変更しました。",
     "rescheduleError": "日程を変更できませんでした。別の日付を選んでください。",
+    "workspaceNavigation": "ダッシュボードのセクション",
+    "startHere": {
+      "eyebrow": "ここから始める",
+      "title": "ポートレート体験を始めましょう",
+      "description": "次の一歩を選ぶと、予約、参考写真、納品データがここに整理されます。",
+      "book": {
+        "title": "撮影を予約",
+        "description": "プランと空いている日付を選びます。"
+      },
+      "gallery": {
+        "title": "参考スタイルを保存",
+        "description": "ギャラリーから好きな雰囲気をお気に入りに追加します。"
+      },
+      "editor": {
+        "title": "編集を試す",
+        "description": "アップロードせず端末内で写真を編集します。"
+      }
+    },
+    "emptyStates": {
+      "bookings": {
+        "title": "予約はまだありません",
+        "description": "予約状態、デポジット、日程変更がここに表示されます。",
+        "action": "撮影を予約"
+      },
+      "photos": {
+        "title": "納品写真はまだありません",
+        "description": "納品後の写真はここで閲覧・ダウンロードできます。",
+        "action": "ギャラリーを見る"
+      },
+      "favorites": {
+        "title": "保存した参考写真はありません",
+        "description": "好きな写真をお気に入りにして撮影イメージをまとめましょう。",
+        "action": "スタイルを探す"
+      },
+      "recent": {
+        "title": "最近の閲覧履歴はありません",
+        "description": "開いた写真がここに表示され、すぐ戻れます。",
+        "action": "写真を見る"
+      },
+      "purchases": {
+        "title": "購入履歴はありません",
+        "description": "購入した商品やデジタルコンテンツがここに表示されます。",
+        "action": "ショップを見る"
+      },
+      "courses": {
+        "title": "受講中のコースはありません",
+        "description": "購入済みコースと学習進捗をここで管理できます。",
+        "action": "コースを見る"
+      },
+      "workshops": {
+        "title": "ワークショップ登録はありません",
+        "description": "参加予定と登録状態がここに表示されます。",
+        "action": "ワークショップを見る"
+      }
+    },
     "bookingDeposit": "予約デポジット",
     "paymentStatus": {
       "not_started": "未開始",

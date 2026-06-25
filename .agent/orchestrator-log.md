@@ -70,6 +70,38 @@ Beginning execution.
 - **Risk**: manual preview server was used for browser verification; generated screenshots and sitemap timestamp noise were removed before staging.
 - **Status**: COMPLETE
 
+### Stage 2 / 2 — UIUX
+- **Prompt**: `AGENT_UIUX_MAIN.txt`
+- **Objective**: Rebuild dashboard navigation and empty states into a clear, responsive customer workspace.
+- **Start state**: `main` at `30b1cda`; Stage 1 core CI run `28201299996` and log CI run `28203478148` passed.
+- **Protected existing change**: `.agent/orchestrator-state.json` remains prior Campaign 009 metadata and will not be staged.
+- **Baseline findings**:
+  - Nine desktop tab labels collapse into narrow vertical text.
+  - Mobile exposes only the first few tabs without a strong navigation affordance.
+  - Empty tabs provide no primary next action.
+  - Zero-state overview metrics do not guide a new customer into a useful first workflow.
+- **Planned flagship UI/UX change**:
+  - Native accessible dashboard workspace navigation: desktop sidebar, mobile horizontal touch rail.
+  - Action-oriented empty states with specific title, description, and CTA.
+  - Zero-state onboarding panel with booking, gallery, and editor entry points.
+  - Loading skeletons and keyboard navigation for clearer feedback and accessibility.
+- **Completed**:
+  - Replaced the compressed third-party tab layout with a native accessible tab workspace.
+  - Added a desktop sidebar and a horizontally scrollable mobile navigation rail.
+  - Added Arrow/Home/End keyboard navigation and standard tab/tabpanel semantics.
+  - Added onboarding actions for booking, gallery, and editor workflows.
+  - Added specific CTA-driven empty states and loading skeletons across dashboard tabs.
+  - Removed mobile dashboard collisions from the chat and scroll-to-top overlays.
+- **Local verification**:
+  - Red/green source regression failed on the missing workspace, then passed after implementation.
+  - `npm run lint` — passed.
+  - `npm test` — 221/221 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Booking/dashboard Playwright — 6/6 passed with one worker.
+  - Fresh Chromium render at 1440px and 390x844 — no horizontal overflow or console errors; desktop navigation is vertical, mobile navigation is horizontal and scrollable, and mobile overlays are hidden.
+- **Risk**: real charging still requires a production payment provider and secrets; editor model and font chunks remain large but route-lazy.
+- **Status**: READY TO COMMIT
+
 ---
 
 ## Campaign 011 — 2-Stage Product + UI/UX Sprint — Started 2026-06-26

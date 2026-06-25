@@ -183,7 +183,9 @@ export function BookingsTab() {
       error={error}
       empty={bookings.length === 0}
       emptyIcon={<CalendarCheck size={40} strokeWidth={1.2} />}
-      emptyText={t("dashboard.noBookings")}
+      emptyTitle={t("dashboard.emptyStates.bookings.title")}
+      emptyText={t("dashboard.emptyStates.bookings.description")}
+      emptyAction={{ href: "/booking", label: t("dashboard.emptyStates.bookings.action") }}
       retry={retry}
     >
       <div className="dashboard-booking-overview" aria-live="polite">

@@ -2,7 +2,6 @@ import "../styles/pages.css";
 import { useRef } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Tabs } from "animal-island-ui";
 import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin, Image, Settings, Sparkles, ArrowRight, Heart, History } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
@@ -18,6 +17,7 @@ import { ProfileTab } from "../components/dashboard/ProfileTab";
 import { OverviewTab } from "../components/dashboard/OverviewTab";
 import { FavoritesTab } from "../components/dashboard/FavoritesTab";
 import { RecentlyViewedTab } from "../components/dashboard/RecentlyViewedTab";
+import { DashboardWorkspace } from "../components/dashboard/DashboardWorkspace";
 
 export function DashboardPage() {
   const { t } = useTranslation();
@@ -49,93 +49,57 @@ export function DashboardPage() {
   const tabItems = [
     {
       key: "overview",
-      label: (
-        <span className="dashboard-tab-label">
-          <User size={16} />
-          {t("dashboard.overview")}
-        </span>
-      ),
-      children: <OverviewTab />,
+      label: t("dashboard.overview"),
+      icon: <User size={17} />,
+      content: <OverviewTab />,
     },
     {
       key: "bookings",
-      label: (
-        <span className="dashboard-tab-label">
-          <CalendarCheck size={16} />
-          {t("dashboard.bookings")}
-        </span>
-      ),
-      children: <BookingsTab />,
+      label: t("dashboard.bookings"),
+      icon: <CalendarCheck size={17} />,
+      content: <BookingsTab />,
     },
     {
       key: "photos",
-      label: (
-        <span className="dashboard-tab-label">
-          <Image size={16} />
-          {t("dashboard.myPhotos")}
-        </span>
-      ),
-      children: <MyPhotosTab />,
+      label: t("dashboard.myPhotos"),
+      icon: <Image size={17} />,
+      content: <MyPhotosTab />,
     },
     {
       key: "favorites",
-      label: (
-        <span className="dashboard-tab-label">
-          <Heart size={16} />
-          {t("favorites.title", "Favorites")}
-        </span>
-      ),
-      children: <FavoritesTab />,
+      label: t("favorites.title", "Favorites"),
+      icon: <Heart size={17} />,
+      content: <FavoritesTab />,
     },
     {
       key: "recently-viewed",
-      label: (
-        <span className="dashboard-tab-label">
-          <History size={16} />
-          {t("recentlyViewed.tabLabel", "Recently viewed")}
-        </span>
-      ),
-      children: <RecentlyViewedTab />,
+      label: t("recentlyViewed.tabLabel", "Recently viewed"),
+      icon: <History size={17} />,
+      content: <RecentlyViewedTab />,
     },
     {
       key: "purchases",
-      label: (
-        <span className="dashboard-tab-label">
-          <ShoppingCart size={16} />
-          {t("dashboard.purchases")}
-        </span>
-      ),
-      children: <PurchasesTab />,
+      label: t("dashboard.purchases"),
+      icon: <ShoppingCart size={17} />,
+      content: <PurchasesTab />,
     },
     {
       key: "courses",
-      label: (
-        <span className="dashboard-tab-label">
-          <BookOpen size={16} />
-          {t("dashboard.courses")}
-        </span>
-      ),
-      children: <CoursesTab />,
+      label: t("dashboard.courses"),
+      icon: <BookOpen size={17} />,
+      content: <CoursesTab />,
     },
     {
       key: "workshops",
-      label: (
-        <span className="dashboard-tab-label">
-          <MapPin size={16} />
-          {t("dashboard.workshops")}
-        </span>
-      ),
-      children: <WorkshopsTab />,
+      label: t("dashboard.workshops"),
+      icon: <MapPin size={17} />,
+      content: <WorkshopsTab />,
     },
     {
       key: "profile",
-      label: (
-        <span className="dashboard-tab-label">
-          <Settings size={16} />
-          {t("dashboard.profile")}
-        </span>
-      ),
-      children: <ProfileTab user={user} />,
+      label: t("dashboard.profile"),
+      icon: <Settings size={17} />,
+      content: <ProfileTab user={user} />,
     },
   ];
 
@@ -175,7 +139,11 @@ export function DashboardPage() {
           </Link>
 
           <div className="dashboard-tabs">
-            <Tabs items={tabItems} defaultActiveKey="overview" />
+            <DashboardWorkspace
+              items={tabItems}
+              defaultActiveKey="overview"
+              ariaLabel={t("dashboard.workspaceNavigation")}
+            />
           </div>
         </div>
         </ErrorBoundary>

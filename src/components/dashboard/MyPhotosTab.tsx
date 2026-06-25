@@ -17,7 +17,9 @@ export function MyPhotosTab() {
       error={error}
       empty={photos.length === 0}
       emptyIcon={<Image size={40} strokeWidth={1.2} />}
-      emptyText={t("dashboard.noPhotos")}
+      emptyTitle={t("dashboard.emptyStates.photos.title")}
+      emptyText={t("dashboard.emptyStates.photos.description")}
+      emptyAction={{ href: "/gallery", label: t("dashboard.emptyStates.photos.action") }}
       retry={retry}
     >
       <div className="dashboard-photo-grid">

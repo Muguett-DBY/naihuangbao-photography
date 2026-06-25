@@ -305,6 +305,31 @@ describe("audit regression coverage", () => {
     expect(sectionStyles).toContain("body:has(.booking-modal-content) .public-chat-widget");
   });
 
+  it("keeps the dashboard workspace readable and actionable across breakpoints", () => {
+    const dashboardPage = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
+    const workspacePath = resolve(root, "src/components/dashboard/DashboardWorkspace.tsx");
+    const wrapper = readFileSync(resolve(root, "src/components/dashboard/DashboardTabWrapper.tsx"), "utf8");
+    const overview = readFileSync(resolve(root, "src/components/dashboard/OverviewTab.tsx"), "utf8");
+    const pageStyles = readFileSync(resolve(root, "src/styles/pages.css"), "utf8");
+
+    expect(existsSync(workspacePath)).toBe(true);
+    if (!existsSync(workspacePath)) return;
+    const workspace = readFileSync(workspacePath, "utf8");
+
+    expect(dashboardPage).toContain("<DashboardWorkspace");
+    expect(workspace).toContain('role="tablist"');
+    expect(workspace).toContain("aria-selected");
+    expect(workspace).toContain('event.key === "ArrowRight"');
+    expect(workspace).toContain('event.key === "Home"');
+    expect(wrapper).toContain("emptyAction");
+    expect(wrapper).toContain("dashboard-empty-action");
+    expect(overview).toContain("overview-start-panel");
+    expect(pageStyles).toContain(".dashboard-workspace-nav");
+    expect(pageStyles).toContain("overflow-x: auto");
+    expect(pageStyles).toContain("body:has(.dashboard-root) .public-chat-widget");
+    expect(pageStyles).toContain("body:has(.dashboard-root) .nhb-scroll-top");
+  });
+
   it("documents required Cloudflare secrets without committing secret values", () => {
     expect(wranglerSource).toContain("Required Pages secrets");
     expect(readmeSource).toContain("AUTH_SECRET");
