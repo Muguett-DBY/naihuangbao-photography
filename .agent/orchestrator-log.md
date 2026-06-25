@@ -174,3 +174,24 @@ Beginning execution.
 - **Risk**: Real charging is still not enabled; this stage intentionally keeps provider as `placeholder` until a full Stripe confirmation flow exists.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
 - **Status**: COMPLETE
+
+### Stage 2 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Improve portrait editor resilience with model-load retry and degraded-mode guidance for weak networks or temporary model failures.
+- **Start state**: `main` at `2445bc3`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Stage 1 recommended editor resilience as the next flagship improvement.
+- **Completed locally**:
+  - Replaced the model-load failure page-refresh action with an in-place retry button.
+  - Added explicit degraded-mode copy so users know filters, text, frames, and export still work without face models.
+  - Reused the same model-loading path for initial load and manual retry.
+  - Localized the new editor status copy across zh-CN, en, ja, and ko.
+  - Added editor source regressions for retry and degraded-mode behavior.
+- **Local verification so far**:
+  - Red: `npm test -- src/lib/editor-regressions.test.ts` failed on missing retry/degraded-mode support.
+  - Green: same command passed, 11/11 tests.
+  - `npm run lint` — passed.
+  - `npm test` — 223/223 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Smoke Playwright against fresh Pages preview — 13/13 passed with one worker.
+- **Risk**: Face-specific retouching still depends on the self-hosted face-api model files loading successfully; degraded mode keeps non-face editing usable when they fail.
+- **Status**: READY TO COMMIT

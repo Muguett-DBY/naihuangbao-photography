@@ -121,6 +121,23 @@ describe("editor regression contracts", () => {
     expect(existsSync(resolve(root, "public/models/face_landmark_68_model-shard1"))).toBe(true);
   });
 
+  it("lets users retry editor model loading and continue in degraded mode", () => {
+    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const pagesCss = read("src/styles/pages.css");
+    const zhCN = read("src/i18n/locales/zh-CN.json");
+
+    expect(editor).toContain("handleRetryModels");
+    expect(editor).toContain("editor.modelLoadFailed");
+    expect(editor).toContain("editor.degradedMode");
+    expect(editor).toContain("editor.retryModels");
+    expect(editor).toContain("modelLoadAttempt");
+    expect(editor).toContain("setModelError(false)");
+    expect(pagesCss).toContain(".editor-model-fallback");
+    expect(pagesCss).toContain(".editor-model-retry");
+    expect(zhCN).toContain("模型加载失败");
+    expect(zhCN).toContain("仍可使用滤镜、文字、边框和导出");
+  });
+
   it("normalizes face landmark bounds before writing canvas pixels", () => {
     const editor = read("src/lib/editor-effects.ts");
 
