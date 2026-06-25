@@ -23,12 +23,41 @@ export function WorkshopsPage() {
   const { items: workshops, loading, error, retry, empty } = useApiList<Workshop>("/api/workshops", "workshops");
   const [registeringId, setRegisteringId] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useSEO({ titleKey: "seo.workshopsTitle", descKey: "seo.workshopsDesc", path: "/workshops" });
   useGsapPageEffects(rootRef);
 
   const activeWorkshop = workshops.find((w) => w.id === formOpen);
   const registration = useWorkshopRegistration(activeWorkshop ?? null);
+
+  const filteredWorkshops = workshops.filter((ws) => {
+    if (statusFilter === "upcoming") {
+      return new Date(ws.event_date) >= new Date();
+    }
+    if (statusFilter === "past") {
+      return new Date(ws.event_date) < new Date();
+    }
+    if (statusFilter === "full") {
+      const spotsLeft = (ws.max_participants || 0) - ws.current_participants;
+      return spotsLeft <= 0;
+    }
+    if (statusFilter === "available") {
+      const spotsLeft = (ws.max_participants || 0) - ws.current_participants;
+      return spotsLeft > 0;
+    }
+    return true;
+  });
+
+  // Group workshops by month for calendar view
+  const calendarMonths = filteredWorkshops.reduce<Record<string, Workshop[]>>((acc, ws) => {
+    const date = new Date(ws.event_date);
+    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    if (!acc[monthKey]) acc[monthKey] = [];
+    acc[monthKey].push(ws);
+    return acc;
+  }, {});
 
   const handleRegister = async (workshopId: string) => {
     setRegisteringId(workshopId);
@@ -50,6 +79,25 @@ export function WorkshopsPage() {
 
       <section className="section-shell is-visible">
         <ErrorBoundary>
+
+        {/* View mode and status filter controls */}
+        <div style={{ display: "flex", gap: 12, marginBottom: 24, flexWrap: "wrap", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: 4, background: "var(--paper-white, #fffdf7)", padding: 4, borderRadius: 8, border: "1px solid var(--warm-border, rgba(139,94,74,0.12))" }}>
+            <Button type={viewMode === "grid" ? "primary" : "text"} size="small" onClick={() => setViewMode("grid")}>
+              <MapPin size={14} /> {t("workshops.gridView", "Grid")}
+            </Button>
+            <Button type={viewMode === "calendar" ? "primary" : "text"} size="small" onClick={() => setViewMode("calendar")}>
+              <Calendar size={14} /> {t("workshops.calendarView", "Calendar")}
+            </Button>
+          </div>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid var(--warm-border, rgba(139,94,74,0.12))", background: "var(--paper-white, #fffdf7)", fontSize: 13 }}>
+            <option value="all">{t("workshops.filterAll", "All")}</option>
+            <option value="upcoming">{t("workshops.filterUpcoming", "Upcoming")}</option>
+            <option value="past">{t("workshops.filterPast", "Past")}</option>
+            <option value="available">{t("workshops.filterAvailable", "Available")}</option>
+            <option value="full">{t("workshops.filterFull", "Full")}</option>
+          </select>
+        </div>
         <DataState
           loading={loading}
           error={error}
