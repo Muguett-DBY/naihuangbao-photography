@@ -97,6 +97,8 @@ Beginning execution.
   - `npm test` — 220/220 passed.
   - `npm run build:full` — passed, including performance budget and bundle analysis.
   - Booking Playwright — 5/5 passed with one worker.
-- **Push / CI**: pending commit and push.
+- **Commit**: `ca7d99f` — `feat: complete booking deposit status flow`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28201299996` passed.
 - **Risk**: real charging still requires a production payment provider and secrets; this stage deliberately reports placeholder status truthfully.
-- **Status**: READY TO COMMIT
+- **Next stage**: Stage 2 / 2 — UIUX using `AGENT_UIUX_MAIN.txt`.
+- **Status**: COMPLETE

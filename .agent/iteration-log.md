@@ -23,7 +23,7 @@
 - 390×844 移动场景：无横向溢出，预约弹窗与全局浮层不重叠
 
 ### GitHub Actions / CI 状态
-- 等待 Stage 1 push 后检查。
+- Stage 1 commit `ca7d99f` 已 push 到 `main`，GitHub Actions CI run `28201299996` 通过。
 
 ### 遗留风险
 - 线上真实扣款仍需要正式支付 provider、客户端 SDK 和生产密钥；本轮明确呈现真实 placeholder 状态，没有伪造扣款。
