@@ -22,4 +22,5 @@ export type PhotoItem = {
   album?: string;
   videoUrl?: string;
   createdAt?: string;
+  tags?: string[];
 };
