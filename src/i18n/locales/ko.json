@@ -845,6 +845,18 @@
       "empty": "감사 로그 항목이 없습니다",
       "loading": "감사 로그 로딩 중...",
       "error": "감사 로그 로딩 실패"
+    },
+    "moderation": {
+      "title": "사진 검토 대기열",
+      "empty": "검토 대기 중인 사진이 없습니다",
+      "approve": "승인",
+      "feature": "추천",
+      "reject": "거부",
+      "album": "앨범",
+      "selectAll": "전체 선택",
+      "deselectAll": "선택 해제",
+      "batchApprove": "일괄 승인",
+      "batchReject": "일괄 거부"
     }
   },
   "chat": {

@@ -845,6 +845,18 @@
       "empty": "監査ログエントリが見つかりません",
       "loading": "監査ログを読み込み中...",
       "error": "監査ログの読み込みに失敗しました"
+    },
+    "moderation": {
+      "title": "写真モデレーションキュー",
+      "empty": "モデレーション待ちの写真はありません",
+      "approve": "承認",
+      "feature": "おすすめ",
+      "reject": "却下",
+      "album": "アルバム",
+      "selectAll": "すべて選択",
+      "deselectAll": "選択解除",
+      "batchApprove": "一括承認",
+      "batchReject": "一括却下"
     }
   },
   "chat": {
