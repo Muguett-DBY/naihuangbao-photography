@@ -71,8 +71,24 @@ export default defineConfig({
             options: {
               cacheName: "gallery-images",
               expiration: {
-                maxEntries: 48,
-                maxAgeSeconds: 60 * 60 * 24 * 60,
+                maxEntries: 120,
+                maxAgeSeconds: 60 * 60 * 24 * 90,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => {
+              return url.pathname.startsWith("/api/photos") || url.pathname.startsWith("/api/workshops") || url.pathname.startsWith("/api/courses");
+            },
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-data",
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 5,
               },
               cacheableResponse: {
                 statuses: [0, 200],
