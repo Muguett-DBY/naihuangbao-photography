@@ -99,8 +99,10 @@ Beginning execution.
   - `npm run build:full` — passed, including performance budget and bundle analysis.
   - Booking/dashboard Playwright — 6/6 passed with one worker.
   - Fresh Chromium render at 1440px and 390x844 — no horizontal overflow or console errors; desktop navigation is vertical, mobile navigation is horizontal and scrollable, and mobile overlays are hidden.
+- **Commit**: `641804d` — `feat: rebuild dashboard workspace experience`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28205009786` passed.
 - **Risk**: real charging still requires a production payment provider and secrets; editor model and font chunks remain large but route-lazy.
-- **Status**: READY TO COMMIT
+- **Status**: COMPLETE
 
 ---
 
