@@ -529,8 +529,12 @@
     "placeholder": "Enter your email",
     "submit": "Subscribe",
     "success": "Subscribed successfully!",
+    "successMessage": "Thanks for subscribing! You'll receive our latest updates.",
+    "subscribeAnother": "Subscribe another email",
     "error": "Subscription failed, please try again later",
-    "duplicate": "This email is already subscribed"
+    "duplicate": "This email is already subscribed",
+    "errorEmailRequired": "Please enter your email",
+    "errorEmailInvalid": "Please enter a valid email address"
   },
   "courses": {
     "title": "Photography Courses",
