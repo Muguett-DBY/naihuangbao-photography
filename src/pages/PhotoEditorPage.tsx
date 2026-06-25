@@ -60,6 +60,7 @@ export default function PhotoEditorPage() {
   const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("jpeg");
   const [compareDrag, setCompareDrag] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
+  const [modelLoadAttempt, setModelLoadAttempt] = useState(1);
 
   useEffect(() => {
     modelsReadyRef.current = modelsReady;
@@ -119,10 +120,13 @@ export default function PhotoEditorPage() {
   const [doubleExposureOpacity, setDoubleExposureOpacity] = useState(50);
   const [isDragOver, setIsDragOver] = useState(false);
 
-  // Load models
-  useEffect(() => {
+  const startModelLoad = useCallback(() => {
     let m = true;
     setLoadProgress(0);
+    setModelError(false);
+    setModelsReady(false);
+    modelErrorRef.current = false;
+    modelsReadyRef.current = false;
     const loadPromise = loadFaceApiModels((progress) => {
       if (m) setLoadProgress(progress);
     })
@@ -138,6 +142,13 @@ export default function PhotoEditorPage() {
       });
     faceModelsPromiseRef.current = loadPromise;
     return () => { m = false; };
+  }, []);
+
+  // Load models
+  useEffect(() => startModelLoad(), [startModelLoad, modelLoadAttempt]);
+
+  const handleRetryModels = useCallback(() => {
+    setModelLoadAttempt((attempt) => attempt + 1);
   }, []);
 
   const waitForFaceModels = useCallback(async () => {
@@ -723,7 +734,15 @@ export default function PhotoEditorPage() {
               <span>{t("editor.loadingModels")}{loadProgress > 0 ? ` ${Math.round(loadProgress)}%` : ""}</span>
             </div>
           )}
-          {modelError && <p className="editor-loading-models" role="alert">{t("editor.loadingModels")} — <button type="button" className="editor-btn" style={{fontSize: "0.8rem", padding: "4px 12px"}} onClick={() => window.location.reload()}>{t("editor.reset")}</button></p>}
+          {modelError && (
+            <div className="editor-model-fallback" role="alert">
+              <strong>{t("editor.modelLoadFailed")}</strong>
+              <span>{t("editor.degradedMode")}</span>
+              <button type="button" className="editor-model-retry" onClick={handleRetryModels}>
+                {t("editor.retryModels")}
+              </button>
+            </div>
+          )}
         </header>
 
         <div className="editor-toolbar">
