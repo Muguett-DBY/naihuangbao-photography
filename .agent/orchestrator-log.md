@@ -217,5 +217,8 @@ Beginning execution.
   - `npm run build:full` — passed, including performance budget and bundle analysis.
   - Booking/Dashboard Playwright against fresh Pages preview — 6/6 passed with one worker.
   - Mobile browser measurement at 390x844 — hero 206px, 3 shortcuts in viewport, no horizontal overflow, tablist horizontal.
+- **Commit**: `613652d` — `feat: compact mobile dashboard first viewport`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28206548831` passed.
 - **Risk**: Dashboard remains auth-gated; visual validation used mocked authenticated session, matching the existing E2E pattern.
-- **Status**: READY TO COMMIT
+- **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
+- **Status**: COMPLETE
