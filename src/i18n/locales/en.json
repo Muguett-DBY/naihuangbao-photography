@@ -961,6 +961,7 @@
     "profileError": "Failed to update profile",
     "welcomeBack": "Welcome back, {{name}}",
     "welcomeDesc": "Here's what's happening with your account.",
+    "profileShortcuts": "Account shortcuts",
     "quickActions": "Quick Actions",
     "quickGallery": "Browse Gallery",
     "quickEditor": "Open Editor",

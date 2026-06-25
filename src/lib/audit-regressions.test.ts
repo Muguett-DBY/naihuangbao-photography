@@ -347,6 +347,22 @@ describe("audit regression coverage", () => {
     expect(pageStyles).toContain("body:has(.dashboard-root) .nhb-scroll-top");
   });
 
+  it("keeps the mobile dashboard first viewport compact and action-oriented", () => {
+    const dashboardPage = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
+    const pageStyles = readFileSync(resolve(root, "src/styles/pages.css"), "utf8");
+
+    expect(dashboardPage).toContain("dashboard-hero");
+    expect(dashboardPage).toContain("dashboard-profile-shortcuts");
+    expect(dashboardPage).toContain('aria-label={t("dashboard.profileShortcuts"');
+    expect(dashboardPage).toContain('to="/booking"');
+    expect(dashboardPage).toContain('to="/gallery"');
+    expect(dashboardPage).toContain('to="/editor"');
+    expect(pageStyles).toMatch(/\.dashboard-hero\s*\{[\s\S]*min-height:\s*clamp\(190px,\s*32svh,\s*320px\)/);
+    expect(pageStyles).toContain(".dashboard-profile-shortcuts");
+    expect(pageStyles).toContain(".dashboard-profile-shortcut");
+    expect(pageStyles).toMatch(/@media\s*\(max-width:\s*768px\)\s*\{[\s\S]*\.dashboard-hero\s*\{[\s\S]*min-height:\s*clamp\(150px,\s*24svh,\s*220px\)/);
+  });
+
   it("documents required Cloudflare secrets without committing secret values", () => {
     expect(wranglerSource).toContain("Required Pages secrets");
     expect(readmeSource).toContain("AUTH_SECRET");

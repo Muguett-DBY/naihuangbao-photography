@@ -955,6 +955,7 @@
     "profileError": "프로필 업데이트 실패",
     "welcomeBack": "다시 오신 것을 환영합니다, {{name}}님",
     "welcomeDesc": "계정의 최신 상태를 확인하세요.",
+    "profileShortcuts": "계정 바로가기",
     "quickActions": "빠른 실행",
     "quickGallery": "갤러리 보기",
     "quickEditor": "편집기 열기",

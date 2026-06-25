@@ -955,6 +955,7 @@
     "profileError": "プロフィールの更新に失敗しました",
     "welcomeBack": "おかえりなさい、{{name}}さん",
     "welcomeDesc": "アカウントの最新情報はこちらです。",
+    "profileShortcuts": "アカウントのショートカット",
     "quickActions": "クイックアクション",
     "quickGallery": "ギャラリーを見る",
     "quickEditor": "エディタを開く",
