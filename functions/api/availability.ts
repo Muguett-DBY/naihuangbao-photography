@@ -1,4 +1,5 @@
 import { badRequest, jsonResponse, unavailable } from "../_responses";
+import { BOOKING_CAPACITY_PER_DAY } from "../_booking";
 
 type BookingRow = {
   preferred_date: string;
@@ -9,8 +10,6 @@ type DateInfo = {
   status: "available" | "booked" | "partial";
   count: number;
 };
-
-const MAX_SLOTS_PER_DAY = 3;
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (!context.env.DB) {
@@ -36,7 +35,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       `select preferred_date, preferred_time
        from booking_requests
        where preferred_date >= ? and preferred_date <= ?
-         and status != 'cancelled'`,
+         and status not in ('cancelled', 'canceled')`,
     )
       .bind(startDate, endDate)
       .all<BookingRow>();
@@ -52,7 +51,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       }
       dates[dateKey].count++;
 
-      if (dates[dateKey].count >= MAX_SLOTS_PER_DAY) {
+      if (dates[dateKey].count >= BOOKING_CAPACITY_PER_DAY) {
         dates[dateKey].status = "booked";
       } else {
         dates[dateKey].status = "partial";

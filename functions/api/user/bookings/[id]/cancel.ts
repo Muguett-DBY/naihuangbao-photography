@@ -2,6 +2,7 @@ import { jsonResponse, badRequest, unauthorized, unavailable } from "../../../..
 import { getUserFromRequest } from "../../../../_auth";
 import { getRequiredAuthSecret } from "../../../../_security";
 import { validateId } from "../../../../_validation";
+import { isCancelledBookingStatus } from "../../../../_booking";
 
 type AuthEnv = Env & { AUTH_SECRET?: string };
 
@@ -55,12 +56,12 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
       return badRequest("已完成的预约无法取消");
     }
 
-    if (booking.status === "canceled") {
+    if (isCancelledBookingStatus(booking.status)) {
       return badRequest("该预约已取消");
     }
 
     await context.env.DB.prepare(
-      `update booking_requests set status = 'canceled' where id = ?`,
+      `update booking_requests set status = 'cancelled' where id = ?`,
     ).bind(bookingId).run();
 
     return jsonResponse({ ok: true });

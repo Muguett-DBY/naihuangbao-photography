@@ -1,5 +1,40 @@
 # 持续迭代记录
 
+## Campaign 010 Stage 1 — Booking Self-Service Reliability
+
+### 本轮目标
+- 承接上一轮最终打磨后的核心业务闭环方向，把客户预约自助取消/改期从“能点按钮”升级为容量安全、反馈明确、状态一致的可靠流程。
+
+### 完成内容
+- 新增共享预约规则：每日容量、真实日期校验、营业日期、`cancelled` 标准状态与历史 `canceled` 兼容。
+- 改期 API 现在会拒绝格式错误、过去日期和已约满日期，并排除当前被移动的预约后再计算容量。
+- 取消 API 写入标准 `cancelled`，列表读取会规范化历史 `canceled` 状态。
+- 个人中心预约卡片复用可用性日历，已约满日期不可选，取消/改期成功用 Toast 反馈，失败用内联 `role="alert"` 告知。
+
+### 已验证内容
+- `npm test -- functions/booking-rules.test.ts functions/api.test.ts src/lib/audit-regressions.test.ts`：49/49 通过
+- `npm run lint`：通过
+- `npm test`：216/216 通过
+- `npm run build:full`：通过，性能预算通过
+- `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line`：3/3 通过
+
+### GitHub Actions / CI 状态
+- 待 Stage 1 commit + push 后检查。
+
+### 遗留风险
+- `.agent/orchestrator-state.json` 是进入本轮前已有的 prior-campaign metadata 变更，本阶段未纳入 commit。
+- 支付仍为 placeholder，仍是后续产品闭环风险。
+
+### 下一轮建议方向
+1. 个人中心预约区做 UI/UX 专项升级：让预约状态、下一步行动、改期日历和空状态更像成熟产品。
+2. 支付 placeholder 的真实支付/付款状态闭环。
+3. 编辑器大体积模型资源继续优化加载和可见反馈。
+
+### 推荐下一轮优先执行的旗舰级主改动
+个人中心预约体验升级：围绕预约卡片、状态反馈、空状态和移动端日历交互做完整 UI/UX 提升。
+
+---
+
 ## Cycle 3 (9d21dca → 5c51f4f) — 6 阶段连续迭代
 
 ### Stage 13: Gallery 筛选平滑滚动 ✅

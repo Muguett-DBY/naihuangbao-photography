@@ -41,6 +41,7 @@ const paymentConfirmSource = readFileSync(resolve(root, "functions/api/payment/c
 const responsesSource = readFileSync(resolve(root, "functions/_responses.ts"), "utf8");
 const publicChatApiSource = readFileSync(resolve(root, "functions/api/chat.ts"), "utf8");
 const photoDownloadApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/download.ts"), "utf8");
+const dashboardBookingsSource = readFileSync(resolve(root, "src/components/dashboard/BookingsTab.tsx"), "utf8");
 const photoImageApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/image.ts"), "utf8");
 const sitemapSource = readFileSync(resolve(root, "public/sitemap.xml"), "utf8");
 const adminCssSource = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
@@ -83,6 +84,19 @@ function countOccurrences(source: string, token: string) {
 }
 
 describe("audit regression coverage", () => {
+  it("keeps booking self-service availability-aware and exposes mutation feedback", () => {
+    expect(dashboardBookingsSource).toContain("BookingCalendar");
+    expect(dashboardBookingsSource).toContain("useToast");
+    expect(dashboardBookingsSource).toContain("getApiError");
+    expect(dashboardBookingsSource).toMatch(/role="alert"/);
+  });
+
+  it("keeps the embedded dashboard calendar readable in dark mode", () => {
+    const panelBlock = editorCssSource.match(/\.dashboard-confirm-panel--default\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
+    expect(panelBlock).toContain("--paper-white: #fffdf7");
+    expect(panelBlock).toContain("--caramel-ink: #3f2f27");
+  });
+
   it("limits the hand-written display font to titles and compact UI accents", () => {
     const bodyBlock = cssSource.match(/body\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
     const chatTextareaBlock = cssSource.match(/\.public-chat-form textarea\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";

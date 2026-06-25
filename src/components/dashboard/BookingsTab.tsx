@@ -2,10 +2,13 @@ import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { CalendarCheck, X, RefreshCw, CheckCircle2, Circle, Clock } from "lucide-react";
 import { Button } from "animal-island-ui";
+import { BookingCalendar } from "../BookingCalendar";
 import { useFetch } from "../../hooks/useFetch";
 import { DashboardTabWrapper } from "./DashboardTabWrapper";
 import { StatusBadge } from "./StatusBadge";
+import { useToast } from "../shared/Toast";
 import { publicMutationHeaders } from "../../lib/admin-helpers";
+import { getApiError, readJsonResponse } from "../../lib/http";
 import type { Booking } from "../../types/dashboard";
 
 function getTodayString(): string {
@@ -74,34 +77,44 @@ function BookingTimeline({ status }: { status: string }) {
 
 export function BookingsTab() {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const { data, loading, error, retry } = useFetch<{ bookings: Booking[] }>("/api/user/bookings");
-  const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [rescheduleId, setRescheduleId] = useState<string | null>(null);
   const [newDate, setNewDate] = useState("");
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
   const [rescheduleLoading, setRescheduleLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
+  const [actionError, setActionError] = useState<{ bookingId: string; message: string } | null>(null);
 
   const handleCancel = useCallback(async (bookingId: string) => {
     setCancelLoading(true);
+    setActionError(null);
     try {
       const response = await fetch(`/api/user/bookings/${bookingId}/cancel`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         credentials: "include",
       });
-      if (response.ok) {
-        setConfirmCancelId(null);
-        retry();
+      const body = await readJsonResponse(response);
+      if (!response.ok) {
+        throw new Error(getApiError(body, t("dashboard.cancelError")));
       }
+      setConfirmCancelId(null);
+      showToast(t("dashboard.cancelSuccess"), "success");
+      retry();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("dashboard.cancelError");
+      setActionError({ bookingId, message });
+      showToast(message, "error");
     } finally {
       setCancelLoading(false);
     }
-  }, [retry]);
+  }, [retry, showToast, t]);
 
   const handleReschedule = useCallback(async (bookingId: string) => {
     if (!newDate) return;
     setRescheduleLoading(true);
+    setActionError(null);
     try {
       const response = await fetch(`/api/user/bookings/${bookingId}/reschedule`, {
         method: "POST",
@@ -109,15 +122,22 @@ export function BookingsTab() {
         credentials: "include",
         body: JSON.stringify({ preferred_date: newDate }),
       });
-      if (response.ok) {
-        setRescheduleId(null);
-        setNewDate("");
-        retry();
+      const body = await readJsonResponse(response);
+      if (!response.ok) {
+        throw new Error(getApiError(body, t("dashboard.rescheduleError")));
       }
+      setRescheduleId(null);
+      setNewDate("");
+      showToast(t("dashboard.rescheduleSuccess", { date: newDate }), "success");
+      retry();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t("dashboard.rescheduleError");
+      setActionError({ bookingId, message });
+      showToast(message, "error");
     } finally {
       setRescheduleLoading(false);
     }
-  }, [newDate, retry]);
+  }, [newDate, retry, showToast, t]);
 
   const bookings = data?.bookings ?? [];
 
@@ -152,7 +172,12 @@ export function BookingsTab() {
                   <button
                     type="button"
                     className="dashboard-action-btn dashboard-action-btn--cancel"
-                    onClick={() => setConfirmCancelId(b.id)}
+                    onClick={() => {
+                      setConfirmCancelId(b.id);
+                      setRescheduleId(null);
+                      setNewDate("");
+                      setActionError(null);
+                    }}
                   >
                     <X size={12} />
                     {t("dashboard.cancelBooking")}
@@ -160,7 +185,13 @@ export function BookingsTab() {
                   <button
                     type="button"
                     className="dashboard-action-btn dashboard-action-btn--reschedule"
-                    onClick={() => setRescheduleId(rescheduleId === b.id ? null : b.id)}
+                    onClick={() => {
+                      const nextId = rescheduleId === b.id ? null : b.id;
+                      setRescheduleId(nextId);
+                      setConfirmCancelId(null);
+                      setNewDate("");
+                      setActionError(null);
+                    }}
                   >
                     <RefreshCw size={12} />
                     {t("dashboard.rescheduleBooking")}
@@ -168,7 +199,7 @@ export function BookingsTab() {
                 </div>
               )}
               {confirmCancelId === b.id && (
-                <div className="dashboard-confirm-panel dashboard-confirm-panel--danger">
+                <div className="dashboard-confirm-panel dashboard-confirm-panel--danger" aria-busy={cancelLoading}>
                   <p className="dashboard-confirm-text">
                     {t("dashboard.confirmCancel")}
                   </p>
@@ -191,26 +222,40 @@ export function BookingsTab() {
                   </div>
                 </div>
               )}
+              {actionError?.bookingId === b.id && (
+                <p className="dashboard-action-error" role="alert">{actionError.message}</p>
+              )}
               {rescheduleId === b.id && (
-                <div className="dashboard-confirm-panel dashboard-confirm-panel--default">
-                  <label className="dashboard-reschedule-label">
+                <div className="dashboard-confirm-panel dashboard-confirm-panel--default" aria-busy={rescheduleLoading}>
+                  <p className="dashboard-reschedule-label">
                     {t("dashboard.selectNewDate")}
-                  </label>
-                  <input
-                    type="date"
-                    value={newDate}
-                    min={getTodayString()}
-                    onChange={(e) => setNewDate(e.target.value)}
-                    className="dashboard-reschedule-date"
+                  </p>
+                  <p className="dashboard-reschedule-hint">
+                    {t("dashboard.rescheduleHint")}
+                  </p>
+                  <BookingCalendar
+                    selectedDate={newDate}
+                    minDate={getTodayString()}
+                    onSelectDate={setNewDate}
                   />
-                  <Button
-                    type="primary"
-                    onClick={() => handleReschedule(b.id)}
-                    disabled={!newDate || rescheduleLoading}
-                    style={{ fontSize: "0.8rem", padding: "6px 12px" }}
-                  >
-                    {rescheduleLoading ? t("common.loading") : t("dashboard.confirmReschedule")}
-                  </Button>
+                  <div className="dashboard-reschedule-actions">
+                    <Button
+                      type="default"
+                      onClick={() => {
+                        setRescheduleId(null);
+                        setNewDate("");
+                      }}
+                    >
+                      {t("dashboard.closeReschedule")}
+                    </Button>
+                    <Button
+                      type="primary"
+                      onClick={() => handleReschedule(b.id)}
+                      disabled={!newDate || newDate === b.preferred_date || rescheduleLoading}
+                    >
+                      {rescheduleLoading ? t("common.loading") : t("dashboard.confirmReschedule")}
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
