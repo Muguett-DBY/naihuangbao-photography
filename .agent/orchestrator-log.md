@@ -136,3 +136,38 @@ Beginning execution.
 - **Risk**: real charging still requires a production payment provider and secrets; this stage deliberately reports placeholder status truthfully.
 - **Next stage**: Stage 2 / 2 — UIUX using `AGENT_UIUX_MAIN.txt`.
 - **Status**: COMPLETE
+
+---
+
+## Campaign 012 — 6-Stage Product Strengthening Loop — Started 2026-06-26
+
+### Global preparation
+- **Orchestrator**: `03_LONG_6_STAGE_MAIN_V2.txt`
+- **Sequence**: IMPROVE -> IMPROVE -> UIUX -> IMPROVE -> CHECK -> IMPROVE
+- **Branch**: `main`
+- **Start state**: `8402b51`; `origin/main` aligned.
+- **Protected existing change**: `.agent/orchestrator-state.json` remains prior metadata and will not be staged.
+- **CI commands**: `npm ci`, `npm run lint`, `npm test`, `npm run build`, `npm run perf:budget`.
+- **Previous flagship direction**: real payment loop with production provider, payment confirmation, failure recovery, refund/status visibility.
+
+### Stage 1 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Advance the real-payment direction without pretending to charge cards: expose payment readiness, missing provider configuration, and booking-deposit traceability to customers and admins.
+- **Start state**: `main` at `8402b51`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Design decision**: Real charging still requires production secrets, so this stage delivers the verifiable provider-readiness and tracking layer first.
+- **Completed locally**:
+  - Added API payment-readiness metadata to created payment intents.
+  - Persisted readiness mode and next action in payment intent metadata.
+  - Made the booking deposit payment panel show readiness and missing configuration.
+  - Added latest booking-deposit status, provider, and amount to the admin booking API.
+  - Surfaced deposit tracking on admin booking cards.
+  - Added API/source regressions for readiness and admin traceability.
+- **Local verification so far**:
+  - Red: `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts` failed on missing readiness/admin traceability.
+  - Green: same command passed, 51/51 tests.
+  - `npm run lint` — passed.
+  - `npm test` — 222/222 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Booking Playwright against fresh Pages preview — 6/6 passed with one worker.
+- **Risk**: Real charging is still not enabled; this stage intentionally keeps provider as `placeholder` until a full Stripe confirmation flow exists.
+- **Status**: READY TO COMMIT

@@ -1,4 +1,4 @@
-import { CalendarCheck, CheckCircle, Clock, MessageCircle, XCircle } from "lucide-react";
+import { CalendarCheck, CheckCircle, Clock, MessageCircle, WalletCards, XCircle } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useEffect, useState } from "react";
 import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
@@ -14,13 +14,41 @@ type BookingItem = {
   notes: string;
   status: "pending" | "contacted" | "done";
   created_at: string;
+  payment_intent_id: string | null;
+  payment_status: "not_started" | "pending" | "processing" | "succeeded" | "failed" | "cancelled";
+  payment_provider: string | null;
+  payment_amount_cents: number | null;
+  payment_currency: string | null;
 };
 
 const statusLabels: Record<string, { label: string; icon: typeof Clock; className: string }> = {
   pending: { label: "待联系", icon: Clock, className: "badge-pending" },
   contacted: { label: "已联系", icon: CheckCircle, className: "badge-contacted" },
+  confirmed: { label: "已确认", icon: CheckCircle, className: "badge-contacted" },
+  cancelled: { label: "已取消", icon: XCircle, className: "badge-done" },
   done: { label: "已完成", icon: XCircle, className: "badge-done" },
 };
+
+const paymentStatusLabels: Record<BookingItem["payment_status"], string> = {
+  not_started: "未发起",
+  pending: "待处理",
+  processing: "处理中",
+  succeeded: "已支付",
+  failed: "失败",
+  cancelled: "已取消",
+};
+
+function formatPaymentAmount(amountCents: number | null, currency: string | null): string {
+  if (amountCents == null || !currency) return "金额待确认";
+  try {
+    return new Intl.NumberFormat("zh-CN", {
+      style: "currency",
+      currency: currency.toUpperCase(),
+    }).format(amountCents / (currency.toLowerCase() === "jpy" ? 1 : 100));
+  } catch {
+    return `${(amountCents / 100).toFixed(2)} ${currency.toUpperCase()}`;
+  }
+}
 
 export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (text: string, type: ToastType) => void; newBookingIds?: Set<string> }) {
   const [bookings, setBookings] = useState<BookingItem[]>([]);
@@ -88,6 +116,12 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
                   {b.package_name ? <span>套餐：{b.package_name}</span> : null}
                   {b.preferred_date ? <span>日期：{b.preferred_date} {b.preferred_time}</span> : null}
                   <span className="adm-booking-time">提交于：{new Date(b.created_at).toLocaleString("zh-CN")}</span>
+                </div>
+                <div className={`adm-booking-payment adm-booking-payment--${b.payment_status || "not_started"}`}>
+                  <WalletCards size={15} />
+                  <span>定金：{paymentStatusLabels[b.payment_status || "not_started"]}</span>
+                  <strong>{formatPaymentAmount(b.payment_amount_cents, b.payment_currency)}</strong>
+                  <small>{b.payment_provider ? `渠道：${b.payment_provider}` : "等待用户确认"}</small>
                 </div>
                 {b.notes ? <p className="adm-booking-notes">{b.notes}</p> : null}
                 <div className="adm-booking-actions">
