@@ -1,5 +1,5 @@
 import "../styles/pages.css";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Clock, BarChart3, Lock, Play, FileText, Images, LogIn, ShoppingCart } from "lucide-react";
@@ -31,6 +31,14 @@ export function CourseDetailPage() {
   const { sendPaymentReceipt } = useNotification();
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
+  const [completedModules, setCompletedModules] = useState<Set<string>>(() => {
+    if (!id) return new Set();
+    try {
+      const saved = localStorage.getItem(`course-progress-${id}`);
+      if (saved) return new Set(JSON.parse(saved));
+    } catch {}
+    return new Set();
+  });
   const { user } = useAuth();
   const lang = i18n.language;
 
@@ -45,6 +53,29 @@ export function CourseDetailPage() {
   );
 
   const unlocked = accessData?.hasAccess ?? false;
+  const modules = data?.modules ?? [];
+  const totalModules = modules.length;
+  const completedCount = completedModules.size;
+  const progressPercent = totalModules > 0 ? Math.round((completedCount / totalModules) * 100) : 0;
+
+  // Persist completed modules to localStorage
+  useEffect(() => {
+    if (id) {
+      localStorage.setItem(`course-progress-${id}`, JSON.stringify(Array.from(completedModules)));
+    }
+  }, [id, completedModules]);
+
+  const toggleModuleCompletion = (moduleId: string) => {
+    setCompletedModules((prev) => {
+      const next = new Set(prev);
+      if (next.has(moduleId)) {
+        next.delete(moduleId);
+      } else {
+        next.add(moduleId);
+      }
+      return next;
+    });
+  };
 
   const courseTitle = data?.course ? getTitle(data.course, lang) : "";
   useSEO({
@@ -121,7 +152,6 @@ export function CourseDetailPage() {
   if (error || !data?.course) return <DetailNotFound message={t("courseDetail.notFound")} backTo="/courses" backLabel={t("courseDetail.backToList")} />;
 
   const course = data.course;
-  const modules = data.modules || [];
 
   const getModuleTitle = (m: CourseModule) => getLocalizedField(m, lang, "title");
 
@@ -184,6 +214,21 @@ export function CourseDetailPage() {
         <div className="course-detail-content">
           <h2>{t("courseDetail.syllabus")}</h2>
 
+          {/* Progress Bar */}
+          {user && unlocked && totalModules > 0 && (
+            <div className="course-detail-progress">
+              <div className="course-detail-progress-header">
+                <span className="course-detail-progress-label">
+                  {t("courseDetail.progress", "Progress")}: {completedCount}/{totalModules}
+                </span>
+                <span className="course-detail-progress-pct">{progressPercent}%</span>
+              </div>
+              <div className="course-detail-progress-bar">
+                <div className="course-detail-progress-fill" style={{ width: `${progressPercent}%` }} />
+              </div>
+            </div>
+          )}
+
           {!user && (
             <div className="course-detail-lock-gate">
               <Lock size={32} />
@@ -235,6 +280,20 @@ export function CourseDetailPage() {
                     <div className="course-detail-module-content">
                       {mod.content}
                     </div>
+                  )}
+                  {unlocked && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleModuleCompletion(mod.id);
+                      }}
+                      className={`course-detail-module-check ${completedModules.has(mod.id) ? "is-completed" : ""}`}
+                      title={completedModules.has(mod.id)
+                        ? t("courseDetail.markIncomplete", "Mark as incomplete")
+                        : t("courseDetail.markComplete", "Mark as complete")}
+                    >
+                      {completedModules.has(mod.id) ? "✓" : "○"}
+                    </button>
                   )}
                 </div>
               ))}
