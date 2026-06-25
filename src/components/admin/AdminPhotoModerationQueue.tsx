@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
 import { adminMutationHeaders } from "../../lib/admin-helpers";
-import { CheckCircle, XCircle, Eye, Star } from "lucide-react";
+import { CheckCircle, XCircle, Eye, Star, Square, CheckSquare } from "lucide-react";
 
 type PhotoItem = {
   id: string;
@@ -26,6 +26,8 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
   const [pendingPhotos, setPendingPhotos] = useState<PhotoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [batchProcessing, setBatchProcessing] = useState(false);
 
   useEffect(() => {
     fetchPendingPhotos();
@@ -49,6 +51,26 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
     }
   };
 
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const selectAll = useCallback(() => {
+    if (selectedIds.size === pendingPhotos.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(pendingPhotos.map((p) => p.id)));
+    }
+  }, [pendingPhotos, selectedIds.size]);
+
   const handleApprove = async (photoId: string) => {
     setProcessingId(photoId);
     try {
@@ -65,6 +87,7 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
         throw new Error("Failed to approve photo");
       }
       setPendingPhotos((prev) => prev.filter((p) => p.id !== photoId));
+      setSelectedIds((prev) => { const next = new Set(prev); next.delete(photoId); return next; });
       onShowToast("Photo approved", "success");
     } catch (error) {
       onShowToast("Failed to approve photo", "error");
@@ -85,6 +108,7 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
         throw new Error("Failed to reject photo");
       }
       setPendingPhotos((prev) => prev.filter((p) => p.id !== photoId));
+      setSelectedIds((prev) => { const next = new Set(prev); next.delete(photoId); return next; });
       onShowToast("Photo rejected", "success");
     } catch (error) {
       onShowToast("Failed to reject photo", "error");
@@ -109,11 +133,62 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
         throw new Error("Failed to feature photo");
       }
       setPendingPhotos((prev) => prev.filter((p) => p.id !== photoId));
+      setSelectedIds((prev) => { const next = new Set(prev); next.delete(photoId); return next; });
       onShowToast("Photo featured", "success");
     } catch (error) {
       onShowToast("Failed to feature photo", "error");
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const handleBatchApprove = async () => {
+    if (selectedIds.size === 0) return;
+    setBatchProcessing(true);
+    try {
+      const response = await fetch("/api/admin/photos/batch", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...adminMutationHeaders,
+        },
+        body: JSON.stringify({
+          ids: Array.from(selectedIds),
+          action: "visibility",
+          value: "public",
+        }),
+      });
+      if (!response.ok) throw new Error("Batch approve failed");
+      setPendingPhotos((prev) => prev.filter((p) => !selectedIds.has(p.id)));
+      onShowToast(`${selectedIds.size} photos approved`, "success");
+      setSelectedIds(new Set());
+    } catch (error) {
+      onShowToast("Batch approve failed", "error");
+    } finally {
+      setBatchProcessing(false);
+    }
+  };
+
+  const handleBatchReject = async () => {
+    if (selectedIds.size === 0) return;
+    setBatchProcessing(true);
+    try {
+      const ids = Array.from(selectedIds);
+      await Promise.all(ids.map((id) =>
+        fetch(`/api/admin/photos/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+          headers: adminMutationHeaders,
+        })
+      ));
+      setPendingPhotos((prev) => prev.filter((p) => !selectedIds.has(p.id)));
+      onShowToast(`${selectedIds.size} photos rejected`, "success");
+      setSelectedIds(new Set());
+    } catch (error) {
+      onShowToast("Batch reject failed", "error");
+    } finally {
+      setBatchProcessing(false);
     }
   };
 
@@ -123,7 +198,35 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
 
   return (
     <div className="admin-moderation-queue">
-      <h2>{t("admin.moderation.title", "Photo Moderation Queue")}</h2>
+      <div className="admin-moderation-header">
+        <h2>{t("admin.moderation.title", "Photo Moderation Queue")}</h2>
+        <span className="admin-moderation-count">{pendingPhotos.length} pending</span>
+      </div>
+
+      {pendingPhotos.length > 0 && (
+        <div className="admin-moderation-toolbar">
+          <button type="button" className="admin-moderation-select-all" onClick={selectAll}>
+            {selectedIds.size === pendingPhotos.length ? (
+              <CheckSquare size={16} />
+            ) : (
+              <Square size={16} />
+            )}
+            {selectedIds.size === pendingPhotos.length ? t("admin.moderation.deselectAll", "Deselect all") : t("admin.moderation.selectAll", "Select all")}
+          </button>
+          {selectedIds.size > 0 && (
+            <div className="admin-moderation-batch-actions">
+              <span className="admin-moderation-selected-count">{selectedIds.size} selected</span>
+              <Button type="primary" size="small" onClick={handleBatchApprove} disabled={batchProcessing}>
+                <CheckCircle size={14} /> {t("admin.moderation.batchApprove", "Batch approve")}
+              </Button>
+              <Button type="default" size="small" danger onClick={handleBatchReject} disabled={batchProcessing}>
+                <XCircle size={14} /> {t("admin.moderation.batchReject", "Batch reject")}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
       {pendingPhotos.length === 0 ? (
         <div className="admin-moderation-empty">
           {t("admin.moderation.empty", "No photos pending moderation")}
@@ -131,7 +234,14 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
       ) : (
         <div className="admin-moderation-grid">
           {pendingPhotos.map((photo) => (
-            <div key={photo.id} className="admin-moderation-card">
+            <div key={photo.id} className={`admin-moderation-card ${selectedIds.has(photo.id) ? "selected" : ""}`}>
+              <div className="admin-moderation-select" onClick={() => toggleSelect(photo.id)}>
+                {selectedIds.has(photo.id) ? (
+                  <CheckSquare size={18} className="admin-moderation-checkbox checked" />
+                ) : (
+                  <Square size={18} className="admin-moderation-checkbox" />
+                )}
+              </div>
               <div className="admin-moderation-image">
                 <img src={photo.imageUrl} alt={photo.alt} />
               </div>

@@ -856,7 +856,11 @@
       "approve": "Approve",
       "feature": "Feature",
       "reject": "Reject",
-      "album": "Album"
+      "album": "Album",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "batchApprove": "Batch approve",
+      "batchReject": "Batch reject"
     }
   },
   "chat": {

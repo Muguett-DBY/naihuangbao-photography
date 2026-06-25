@@ -899,6 +899,18 @@
       "empty": "暂无审计日志",
       "loading": "加载审计日志...",
       "error": "审计日志加载失败"
+    },
+    "moderation": {
+      "title": "照片审核队列",
+      "empty": "没有待审核的照片",
+      "approve": "通过",
+      "feature": "推荐",
+      "reject": "拒绝",
+      "album": "相册",
+      "selectAll": "全选",
+      "deselectAll": "取消全选",
+      "batchApprove": "批量通过",
+      "batchReject": "批量拒绝"
     }
   },
   "chat": {
