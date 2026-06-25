@@ -41,6 +41,13 @@ export function WorkshopDetailPage() {
 
   const handleRegister = async () => {
     if (!id) return;
+
+    // Check availability first
+    const avail = await registration.checkAvailability(id);
+    if (!avail.available) {
+      return;
+    }
+
     const result = await registration.register(id);
     if (result) {
       setRegistrationId(result.registrationId ?? null);
@@ -182,6 +189,16 @@ export function WorkshopDetailPage() {
               />
             ) : (
               <>
+                {registration.availability && !registration.availability.available && (
+                  <div className="workshop-detail-register-full">
+                    {t("workshopDetail.fullMessage")}
+                  </div>
+                )}
+                {registration.checkingAvailability && (
+                  <div className="workshop-detail-availability-checking">
+                    {t("workshops.form.checkingAvailability", "Checking availability...")}
+                  </div>
+                )}
                 <label htmlFor="workshop-detail-name" className="sr-only">
                   {t("workshops.form.name")}
                 </label>
@@ -192,6 +209,7 @@ export function WorkshopDetailPage() {
                   placeholder={t("workshops.form.name")}
                   className="workshop-detail-register-input"
                   aria-label={t("workshops.form.name")}
+                  disabled={registration.availability?.available === false || registration.checkingAvailability}
                 />
                 <label htmlFor="workshop-detail-contact" className="sr-only">
                   {t("workshops.form.contact")}
@@ -203,10 +221,21 @@ export function WorkshopDetailPage() {
                   placeholder={t("workshops.form.contact")}
                   className="workshop-detail-register-input"
                   aria-label={t("workshops.form.contact")}
+                  disabled={registration.availability?.available === false || registration.checkingAvailability}
                 />
                 {registration.formMsg && <p className={`workshop-detail-form-msg${registration.formMsg === t("workshops.form.success") ? " workshop-detail-form-msg--success" : " workshop-detail-form-msg--error"}`}>{registration.formMsg}</p>}
-                <Button type="primary" onClick={handleRegister} disabled={registration.submitting}>
-                  {registration.submitting ? t("workshops.form.submitting") : t("workshops.register")}
+                <Button
+                  type="primary"
+                  onClick={handleRegister}
+                  disabled={registration.submitting || registration.availability?.available === false || registration.checkingAvailability}
+                >
+                  {registration.submitting
+                    ? t("workshops.form.submitting")
+                    : registration.checkingAvailability
+                      ? t("workshops.form.checkingAvailability", "Checking...")
+                      : registration.availability?.available === false
+                        ? t("workshops.form.full", "Full")
+                        : t("workshops.register")}
                 </Button>
               </>
             )}

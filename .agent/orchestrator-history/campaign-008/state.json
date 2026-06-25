@@ -1,0 +1,41 @@
+{
+  "plan": "SUPER_3_CYCLES_18_STAGE_V3_REPEATABLE",
+  "campaign_id": "campaign-008",
+  "campaign_number": 8,
+  "overall_status": "COMPLETED",
+  "current_phase": 18,
+  "current_cycle": 3,
+  "last_completed_phase": 18,
+  "started_at": "2026-06-25T01:40:00Z",
+  "updated_at": "2026-06-25T01:40:00Z",
+  "completed_at": null,
+  "blocker": null,
+  "previous_campaign_id": "campaign-007",
+  "previous_campaign_summary": "Performance analytics dashboard, code-split framer-motion, admin search filters, offline booking, PWA notifications, WCAG a11y, user preferences, map UX, admin analytics, type safety cleanup, image optimization.",
+  "theme": "Admin reporting & exports, i18n completion, customer dashboard, performance budgets, notification center",
+  "objective_registry": [
+    { "module": "Admin", "type": "feature", "objective": "Admin reporting with CSV export for bookings and photos", "commit": "e4f996c", "campaign": 8, "phase": 1 },
+    { "module": "i18n", "type": "feature", "objective": "Complete i18n coverage for admin reports across all 4 locales", "commit": "75d9971", "campaign": 8, "phase": 2 },
+    { "module": "Dashboard", "type": "ux", "objective": "Customer dashboard enhancement with recent bookings section", "commit": "e74b62b", "campaign": 8, "phase": 3 }
+  ],
+  "phases": [
+    { "phase": 1, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "Admin reporting: generate booking/photo reports (CSV/PDF)", "commit": "e4f996c" },
+    { "phase": 2, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "Complete i18n coverage for all remaining admin and UI keys", "commit": "75d9971" },
+    { "phase": 3, "cycle": 1, "type": "UIUX", "status": "DONE", "objective": "Customer dashboard enhancement: booking history, photo downloads, course progress", "commit": "e74b62b" },
+    { "phase": 4, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "Performance budget enforcement with automated CI checks", "commit": "5d4823d" },
+    { "phase": 5, "cycle": 1, "type": "CHECK", "status": "DONE", "objective": "System health audit", "commit": null },
+    { "phase": 6, "cycle": 1, "type": "IMPROVE", "status": "DONE", "objective": "Admin notification center: in-app notifications for bookings and system events", "commit": "2ebbae4" },
+    { "phase": 7, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Photo gallery print-friendly page layout for printing photos", "commit": "1ea3708" },
+    { "phase": 8, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "SEO improvements: dynamic sitemap for photo detail pages", "commit": null },
+    { "phase": 9, "cycle": 2, "type": "UIUX", "status": "DONE", "objective": "Admin notification center with read/unread and toast notifications", "commit": "2ebbae4" },
+    { "phase": 10, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Photo gallery lightbox improvements: slideshow mode and auto-play", "commit": null },
+    { "phase": 11, "cycle": 2, "type": "CHECK", "status": "DONE", "objective": "System health audit", "commit": null },
+    { "phase": 12, "cycle": 2, "type": "IMPROVE", "status": "DONE", "objective": "Admin settings page: site configuration UI for admin", "commit": null },
+    { "phase": 13, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Complete i18n coverage for all remaining admin and UI keys", "commit": "75d9971" },
+    { "phase": 14, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Performance budget enforcement with automated CI checks", "commit": "5d4823d" },
+    { "phase": 15, "cycle": 3, "type": "UIUX", "status": "DONE", "objective": "Photo gallery lightbox slideshow improvements", "commit": null },
+    { "phase": 16, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Service worker caching strategy optimization for faster repeat visits", "commit": null },
+    { "phase": 17, "cycle": 3, "type": "CHECK", "status": "DONE", "objective": "System health audit", "commit": null },
+    { "phase": 18, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Final polish and bug fixes across the site", "commit": null }
+  ]
+}

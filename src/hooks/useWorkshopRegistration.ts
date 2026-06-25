@@ -10,9 +10,15 @@ type RegistrationResult = {
   requiresPayment: boolean;
 };
 
+type AvailabilityResult = {
+  available: boolean;
+  spotsLeft: number;
+  error?: string;
+};
+
 /**
  * Shared workshop registration logic used by both WorkshopsPage and WorkshopDetailPage.
- * Handles form state, validation, API submission, and notification.
+ * Handles form state, validation, real-time availability check, API submission, and notification.
  */
 export function useWorkshopRegistration(workshop?: Workshop | null) {
   const { t, i18n } = useTranslation();
@@ -21,12 +27,62 @@ export function useWorkshopRegistration(workshop?: Workshop | null) {
   const [formContact, setFormContact] = useState("");
   const [formMsg, setFormMsg] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [availability, setAvailability] = useState<AvailabilityResult | null>(null);
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
 
   const resetForm = useCallback(() => {
     setFormName("");
     setFormContact("");
     setFormMsg("");
+    setAvailability(null);
   }, []);
+
+  /**
+   * Check real-time availability before registration
+   */
+  const checkAvailability = useCallback(async (workshopId: string): Promise<AvailabilityResult> => {
+    setCheckingAvailability(true);
+    try {
+      const r = await fetch(`/api/workshops/${workshopId}`, {
+        headers: { ...publicMutationHeaders },
+      });
+
+      if (!r.ok) {
+        const data = await readJsonResponse<{ error?: string }>(r);
+        const result: AvailabilityResult = {
+          available: false,
+          spotsLeft: 0,
+          error: data?.error || t("workshops.form.error"),
+        };
+        setAvailability(result);
+        setCheckingAvailability(false);
+        return result;
+      }
+
+      const data = await readJsonResponse<{ max_participants?: number; current_participants?: number }>(r);
+      const maxParticipants = data?.max_participants || 0;
+      const currentParticipants = data?.current_participants || 0;
+      const spotsLeft = maxParticipants > 0 ? maxParticipants - currentParticipants : 999;
+
+      const result: AvailabilityResult = {
+        available: spotsLeft > 0,
+        spotsLeft,
+      };
+
+      setAvailability(result);
+      setCheckingAvailability(false);
+      return result;
+    } catch {
+      const result: AvailabilityResult = {
+        available: true,
+        spotsLeft: 0,
+        error: t("workshops.form.error"),
+      };
+      setAvailability(result);
+      setCheckingAvailability(false);
+      return result;
+    }
+  }, [t]);
 
   const register = useCallback(async (workshopId: string): Promise<RegistrationResult | null> => {
     if (!formName.trim()) {
@@ -35,6 +91,13 @@ export function useWorkshopRegistration(workshop?: Workshop | null) {
     }
     if (!formContact.trim()) {
       setFormMsg(t("workshops.form.contactRequired"));
+      return null;
+    }
+
+    // Check availability before submitting
+    const avail = await checkAvailability(workshopId);
+    if (!avail.available) {
+      setFormMsg(t("workshops.form.fullMessage", "This workshop is full."));
       return null;
     }
 
@@ -81,7 +144,7 @@ export function useWorkshopRegistration(workshop?: Workshop | null) {
     } finally {
       setSubmitting(false);
     }
-  }, [formName, formContact, workshop, t, sendWorkshopRegistration, resetForm]);
+  }, [formName, formContact, workshop, t, sendWorkshopRegistration, resetForm, checkAvailability]);
 
   return {
     formName,
@@ -93,5 +156,8 @@ export function useWorkshopRegistration(workshop?: Workshop | null) {
     submitting,
     register,
     resetForm,
+    availability,
+    checkingAvailability,
+    checkAvailability,
   };
 }
