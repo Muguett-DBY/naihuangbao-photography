@@ -1,12 +1,12 @@
-import { type FormEvent, useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Input } from "animal-island-ui";
-import { CreditCard, CheckCircle, AlertCircle, Loader2, RefreshCw, Shield } from "lucide-react";
-import type { PaymentFormProps, PaymentIntentStatus } from "../types/payment";
+import { Button } from "animal-island-ui";
+import { CreditCard, CheckCircle, AlertCircle, Clock3, Loader2, RefreshCw, Shield } from "lucide-react";
+import type { CreatePaymentIntentResponse, PaymentFormProps, PaymentIntentStatus } from "../types/payment";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
 
-type InternalStatus = "idle" | "creating" | "confirming" | "succeeded" | "failed" | "cancelled";
+type InternalStatus = "idle" | "creating" | "confirming" | "pending" | "succeeded" | "failed" | "cancelled";
 
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 2000;
@@ -18,6 +18,7 @@ export function PaymentForm({
   referenceId,
   metadata,
   onSuccess,
+  onPending,
   onError,
   onCancel,
 }: PaymentFormProps) {
@@ -25,7 +26,6 @@ export function PaymentForm({
   const [status, setStatus] = useState<InternalStatus>("idle");
   const [error, setError] = useState("");
   const [paymentIntentId, setPaymentIntentId] = useState("");
-  const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
 
   const formatAmount = (cents: number, cur: string) => {
@@ -85,7 +85,6 @@ export function PaymentForm({
   const handleCreateIntent = useCallback(async () => {
     setStatus("creating");
     setError("");
-    setRetryCount(0);
 
     try {
       const r = await fetch("/api/payment/create-intent", {
@@ -105,12 +104,19 @@ export function PaymentForm({
         throw new Error(getApiError(data, t("payment.createFailed", "Failed to initialize payment")));
       }
 
-      const data = await readJsonResponse<{ paymentIntentId?: string; clientSecret?: string }>(r);
+      const data = await readJsonResponse<Partial<CreatePaymentIntentResponse>>(r);
       if (!data?.paymentIntentId || !data.clientSecret) {
         throw new Error(t("payment.createFailed", "Failed to initialize payment"));
       }
 
       setPaymentIntentId(data.paymentIntentId);
+      const provider = data.provider;
+      if (provider === "placeholder") {
+        setStatus("pending");
+        onPending?.(data.paymentIntentId);
+        return;
+      }
+
       setStatus("confirming");
 
       const success = await simulateConfirmation(data.paymentIntentId, data.clientSecret);
@@ -128,12 +134,11 @@ export function PaymentForm({
       setStatus("failed");
       onError?.(msg);
     }
-  }, [purpose, amountCents, currency, referenceId, metadata, t, onSuccess, onError]);
+  }, [purpose, amountCents, currency, referenceId, metadata, t, onSuccess, onPending, onError]);
 
   const handleRetry = useCallback(() => {
     setStatus("idle");
     setError("");
-    setRetryCount((c) => c + 1);
     setTimeout(() => handleCreateIntent(), 100);
   }, [handleCreateIntent]);
 
@@ -148,6 +153,24 @@ export function PaymentForm({
             {t("payment.transactionId", "Transaction ID")}: {paymentIntentId.slice(0, 16)}...
           </p>
         )}
+      </div>
+    );
+  }
+
+  if (status === "pending") {
+    return (
+      <div className="payment-pending" role="status">
+        <Clock3 size={48} className="payment-pending-icon" />
+        <h3>{t("payment.pendingTitle", "Deposit status recorded")}</h3>
+        <p>{t("payment.pendingDesc", "Your booking is saved. No charge was made, and the deposit remains pending.")}</p>
+        {paymentIntentId && (
+          <p className="payment-transaction-id">
+            {t("payment.referenceId", "Reference ID")}: {paymentIntentId.slice(0, 16)}...
+          </p>
+        )}
+        <Button type="primary" onClick={onCancel}>
+          {t("payment.continue", "Continue")}
+        </Button>
       </div>
     );
   }
@@ -187,40 +210,9 @@ export function PaymentForm({
           </div>
         </div>
 
-        <div className="booking-field">
-          <label htmlFor="payment-card">{t("payment.cardLabel", "Card Number")}</label>
-          <Input
-            id="payment-card"
-            placeholder="4242 4242 4242 4242"
-            disabled
-            shadow
-          />
-        </div>
-
-        <div className="booking-row">
-          <div className="booking-field">
-            <label htmlFor="payment-expiry">{t("payment.expiryLabel", "Expiry")}</label>
-            <Input
-              id="payment-expiry"
-              placeholder="MM/YY"
-              disabled
-              shadow
-            />
-          </div>
-          <div className="booking-field">
-            <label htmlFor="payment-cvc">{t("payment.cvcLabel", "CVC")}</label>
-            <Input
-              id="payment-cvc"
-              placeholder="123"
-              disabled
-              shadow
-            />
-          </div>
-        </div>
-
-        <p className="payment-placeholder-notice">
+        <div className="payment-placeholder-notice" role="note">
           {t("payment.placeholderNotice", "Payment processing is in placeholder mode. No real charges will be made.")}
-        </p>
+        </div>
 
         {error && <p className="booking-error" role="alert">{error}</p>}
 
@@ -233,7 +225,7 @@ export function PaymentForm({
 
         <div className="payment-form-actions">
           <Button type="default" onClick={onCancel} disabled={status === "creating" || status === "confirming"}>
-            {t("payment.cancel", "Cancel")}
+            {t("payment.payLater", "Pay later")}
           </Button>
           <Button
             type="primary"
@@ -247,7 +239,7 @@ export function PaymentForm({
                 {status === "creating" ? t("payment.initializing", "Initializing...") : t("payment.processing", "Processing...")}
               </span>
             ) : (
-              t("payment.pay", "Pay {{amount}}", { amount: formatAmount(amountCents, currency) })
+              t("payment.recordPending", "Record deposit as pending")
             )}
           </Button>
         </div>

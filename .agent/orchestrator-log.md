@@ -69,3 +69,34 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28195736252` passed.
 - **Risk**: manual preview server was used for browser verification; generated screenshots and sitemap timestamp noise were removed before staging.
 - **Status**: COMPLETE
+
+---
+
+## Campaign 011 — 2-Stage Product + UI/UX Sprint — Started 2026-06-26
+
+### Stage 1 / 2 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Close the post-booking deposit-status gap without pretending placeholder payments are real charges.
+- **Start state**: `main` at `c5fc056`; `origin/main` aligned; targeted Vitest 50/50 and TypeScript lint passed.
+- **Protected existing change**: `.agent/orchestrator-state.json` contains prior Campaign 009 completion metadata and will not be staged.
+- **Previous flagship direction**: Integrate booking confirmation, payment status, and the user-visible next step in the customer dashboard.
+- **Planned flagship change**:
+  - Return the latest booking-deposit state from the authenticated booking API.
+  - Replace fake disabled card fields and ineffective placeholder polling with an honest pending/deferred deposit flow.
+  - Surface deposit state in booking success and dashboard management views.
+  - Prevent offline-only booking IDs from entering the server payment flow before synchronization.
+- **Completed**:
+  - Projected the latest booking-deposit intent into authenticated booking records.
+  - Replaced fake card fields and ineffective placeholder polling with explicit pending/deferred outcomes.
+  - Added booking success and dashboard deposit state, amount, and provider-aware behavior.
+  - Prevented offline booking IDs from entering the server payment flow.
+  - Fixed mobile booking modal overlap by hiding bottom navigation and chat while the modal is open.
+  - Added API/source regressions and two browser E2E scenarios.
+- **Local verification**:
+  - `npm run lint` — passed.
+  - `npm test` — 220/220 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Booking Playwright — 5/5 passed with one worker.
+- **Push / CI**: pending commit and push.
+- **Risk**: real charging still requires a production payment provider and secrets; this stage deliberately reports placeholder status truthfully.
+- **Status**: READY TO COMMIT

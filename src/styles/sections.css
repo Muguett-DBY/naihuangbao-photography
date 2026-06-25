@@ -1233,6 +1233,13 @@
   display: none;
 }
 
+body:has(.booking-modal-content) .mobile-bottom-nav,
+body:has(.booking-modal-content) .public-chat-widget {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 @media (min-width: 769px) {
   .nav-menu--overlay {
     display: none !important;
@@ -2250,6 +2257,46 @@
   color: var(--caramel-muted);
   line-height: 1.6;
   margin: 0 0 12px;
+}
+
+.booking-deposit-outcome {
+  display: grid;
+  gap: 4px;
+  margin: 14px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(185, 101, 77, 0.18);
+  border-radius: 12px;
+  text-align: left;
+  background: rgba(255, 247, 236, 0.8);
+}
+
+.booking-deposit-outcome strong {
+  color: var(--caramel-ink);
+  font-size: 0.88rem;
+}
+
+.booking-deposit-outcome span {
+  color: var(--caramel-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.booking-deposit-outcome--pending {
+  border-color: rgba(217, 119, 6, 0.24);
+  background: rgba(254, 243, 199, 0.5);
+}
+
+.booking-deposit-outcome--offline {
+  border-color: rgba(37, 99, 235, 0.2);
+  background: rgba(219, 234, 254, 0.42);
+}
+
+.booking-success-offline-note {
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: rgba(37, 99, 235, 0.08);
+  color: #1d4ed8 !important;
+  font-size: 0.78rem !important;
 }
 
 /* Booking form improvements */

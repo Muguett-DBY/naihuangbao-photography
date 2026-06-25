@@ -77,6 +77,8 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_SECRET_KEY?: string }> 
       paymentIntentId,
       amountCents,
       currency,
+      provider: "placeholder",
+      status: "pending",
     }, 201);
   } catch (error) {
     return unavailable("Failed to create payment intent", error, { route: "/api/payment/create-intent", method: "POST" });

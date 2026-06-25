@@ -1,5 +1,39 @@
 # 持续迭代记录
 
+## Campaign 011 Stage 1 — Booking Deposit Status Closure
+
+### 承接的上一轮方向
+- 承接“支付与预约后续闭环”，把预约确认、定金状态和个人中心下一步整合起来。
+
+### 本轮旗舰级主改动
+- 预约列表 API 返回每个预约最新的定金 intent、状态、provider、金额和币种。
+- placeholder 支付不再展示不可输入的假卡号，也不再无效轮询等待永远不会出现的成功状态。
+- 用户可明确选择“记录为待处理”或“稍后处理”，预约成功页和个人中心均展示真实结果。
+
+### 新增增量与真实问题修复
+- 离线预约不会再为尚未同步的本地预约 ID 创建服务器付款记录。
+- 移动端预约弹窗打开时隐藏底部导航和聊天入口，修复操作按钮被覆盖。
+- 新增付款契约、预约付款投影和两条真实浏览器 E2E 回归。
+
+### 已验证内容
+- `npm run lint`：通过
+- `npm test`：220/220 通过
+- `npm run build:full`：通过，性能预算通过
+- `BASE_URL=http://127.0.0.1:4174 npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line`：5/5 通过
+- 390×844 移动场景：无横向溢出，预约弹窗与全局浮层不重叠
+
+### GitHub Actions / CI 状态
+- 等待 Stage 1 push 后检查。
+
+### 遗留风险
+- 线上真实扣款仍需要正式支付 provider、客户端 SDK 和生产密钥；本轮明确呈现真实 placeholder 状态，没有伪造扣款。
+- 字体与 face-api vendor chunk 仍较大，但性能预算通过。
+
+### 下一阶段
+- UI/UX 专项升级：围绕首次进入个人中心的空状态、关键路径引导和移动端标签导航做完整体验提升。
+
+---
+
 ## Campaign 010 Stage 1 — Booking Self-Service Reliability
 
 ### 本轮目标

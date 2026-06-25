@@ -6,6 +6,11 @@ export type Booking = {
   name: string;
   status: string;
   created_at: string;
+  payment_intent_id: string | null;
+  payment_status: "not_started" | "pending" | "processing" | "succeeded" | "failed" | "cancelled";
+  payment_provider: string | null;
+  payment_amount_cents: number | null;
+  payment_currency: string | null;
 };
 
 export type Purchase = {

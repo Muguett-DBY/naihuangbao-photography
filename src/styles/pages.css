@@ -3824,9 +3824,12 @@
 }
 
 .payment-placeholder-notice {
-  font-size: 0.8rem;
+  padding: 12px 14px;
+  border: 1px solid rgba(217, 119, 6, 0.2);
+  border-radius: 10px;
+  background: rgba(254, 243, 199, 0.45);
+  font-size: 0.82rem;
   color: var(--caramel-muted);
-  text-align: center;
   margin: 12px 0;
   line-height: 1.5;
 }
@@ -3864,6 +3867,7 @@
 }
 
 .payment-success,
+.payment-pending,
 .payment-failed {
   text-align: center;
   padding: 24px;
@@ -3883,6 +3887,23 @@
   color: var(--caramel-muted);
   font-size: 0.9rem;
   margin: 4px 0;
+}
+
+.payment-pending-icon {
+  color: #d97706;
+  margin-bottom: 12px;
+}
+
+.payment-pending h3 {
+  margin: 0 0 8px;
+}
+
+.payment-pending > p:not(.payment-transaction-id) {
+  max-width: 34ch;
+  margin: 0 auto 14px;
+  color: var(--caramel-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
 }
 
 .payment-transaction-id {
@@ -4154,6 +4175,67 @@
   background: rgba(255, 250, 240, 0.66);
   font-size: 0.82rem;
   line-height: 1.5;
+}
+
+.dashboard-booking-deposit {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 2px;
+  padding: 11px 12px;
+  border: 1px solid rgba(139, 94, 74, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 253, 247, 0.72);
+}
+
+.dashboard-booking-deposit-icon {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 9px;
+  color: var(--caramel-muted);
+  background: rgba(139, 94, 74, 0.08);
+}
+
+.dashboard-booking-deposit-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.dashboard-booking-deposit-copy > span {
+  color: var(--caramel-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.dashboard-booking-deposit-copy strong {
+  color: var(--caramel-ink);
+  font-size: 0.84rem;
+}
+
+.dashboard-booking-deposit-amount {
+  color: var(--caramel-ink);
+  font-size: 0.88rem;
+  font-weight: 750;
+}
+
+.dashboard-booking-deposit--pending,
+.dashboard-booking-deposit--processing {
+  border-color: rgba(217, 119, 6, 0.22);
+  background: rgba(254, 243, 199, 0.42);
+}
+
+.dashboard-booking-deposit--succeeded {
+  border-color: rgba(22, 163, 74, 0.22);
+  background: rgba(220, 252, 231, 0.42);
+}
+
+.dashboard-booking-deposit--failed,
+.dashboard-booking-deposit--cancelled {
+  border-color: rgba(220, 38, 38, 0.18);
+  background: rgba(254, 226, 226, 0.38);
 }
 
 .dashboard-card-type {
@@ -4824,6 +4906,14 @@
 
   .dashboard-booking-schedule {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-booking-deposit {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .dashboard-booking-deposit-amount {
+    grid-column: 2;
   }
 
   .dashboard-confirm-panel--default .booking-calendar {

@@ -286,6 +286,25 @@ describe("audit regression coverage", () => {
     expect(securitySource).toContain("enforceRateLimit");
   });
 
+  it("keeps placeholder booking deposits truthful from submission to dashboard", () => {
+    const paymentForm = readFileSync(resolve(root, "src/components/PaymentForm.tsx"), "utf8");
+    const bookingModal = readFileSync(resolve(root, "src/components/BookingModal.tsx"), "utf8");
+    const bookingsTab = readFileSync(resolve(root, "src/components/dashboard/BookingsTab.tsx"), "utf8");
+    const bookingApi = readFileSync(resolve(root, "functions/api/user/bookings.ts"), "utf8");
+    const sectionStyles = readFileSync(resolve(root, "src/styles/sections.css"), "utf8");
+
+    expect(paymentForm).toContain('provider === "placeholder"');
+    expect(paymentForm).toContain("payment.pendingTitle");
+    expect(paymentForm).not.toContain('placeholder="4242 4242 4242 4242"');
+    expect(bookingModal).toContain("setSavedOffline(true)");
+    expect(bookingModal).toContain("depositOutcome");
+    expect(bookingsTab).toContain("dashboard.bookingDeposit");
+    expect(bookingsTab).toContain("payment_status");
+    expect(bookingApi).toContain("payment_intents");
+    expect(sectionStyles).toContain("body:has(.booking-modal-content) .mobile-bottom-nav");
+    expect(sectionStyles).toContain("body:has(.booking-modal-content) .public-chat-widget");
+  });
+
   it("documents required Cloudflare secrets without committing secret values", () => {
     expect(wranglerSource).toContain("Required Pages secrets");
     expect(readmeSource).toContain("AUTH_SECRET");

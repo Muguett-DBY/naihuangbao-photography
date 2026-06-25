@@ -97,4 +97,97 @@ test.describe("booking flow", () => {
       await expect(page.locator("h1")).toBeVisible();
     }
   });
+
+  test("records a placeholder deposit without fake card fields or mobile overlay collisions", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.route("**/api/availability**", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ dates: {} }),
+    }));
+    await page.route("**/api/booking", (route) => route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({ id: "booking-placeholder-1" }),
+    }));
+    await page.route("**/api/notifications/send", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ sent: false }),
+    }));
+    await page.route("**/api/payment/create-intent", (route) => route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({
+        paymentIntentId: "pi_placeholder_1",
+        clientSecret: "pi_placeholder_1_secret",
+        amountCents: 2000,
+        currency: "cny",
+        provider: "placeholder",
+        status: "pending",
+      }),
+    }));
+
+    await page.goto("/");
+    await page.locator(".hero-cover-primary-btn").click();
+    await expect(page.locator("#booking-package")).toBeVisible();
+    await expect(page.locator(".mobile-bottom-nav")).toBeHidden();
+    await expect(page.locator(".public-chat-widget")).toBeHidden();
+
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await page.locator("#booking-name").fill("Deposit Guest");
+    await page.locator("#booking-contact").fill("deposit@example.com");
+    await page.getByRole("button", { name: "Send Booking", exact: true }).click();
+
+    await expect(page.locator(".payment-form-card")).toBeVisible();
+    await expect(page.locator("#payment-card")).toHaveCount(0);
+    await expect(page.getByText("No real charges will be made.", { exact: false })).toBeVisible();
+    await page.getByRole("button", { name: "Record deposit as pending", exact: true }).click();
+
+    await expect(page.locator(".booking-deposit-outcome--pending")).toBeVisible();
+    await expect(page.getByText("No charge was made.", { exact: false })).toBeVisible();
+  });
+
+  test("shows the latest booking deposit state in the customer dashboard", async ({ page }) => {
+    await page.route("**/api/auth/session", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        authenticated: true,
+        user: { id: "user-1", email: "guest@example.com", displayName: "Guest" },
+      }),
+    }));
+    await page.route("**/api/user/stats", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ bookings: 1, photos: 0, purchases: 0, courses: 0, workshops: 0 }),
+    }));
+    await page.route("**/api/user/bookings**", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        bookings: [{
+          id: "booking-1",
+          package_name: "Portrait Session",
+          preferred_date: "2099-08-18",
+          preferred_time: "morning",
+          name: "Guest",
+          status: "confirmed",
+          created_at: "2026-06-26T00:00:00.000Z",
+          payment_intent_id: "pi_placeholder_1",
+          payment_status: "pending",
+          payment_provider: "placeholder",
+          payment_amount_cents: 2000,
+          payment_currency: "cny",
+        }],
+      }),
+    }));
+
+    await page.goto("/dashboard");
+    await page.locator(".dashboard-tabs button").filter({ hasText: "My Bookings" }).click();
+
+    await expect(page.locator(".dashboard-booking-deposit--pending")).toBeVisible();
+    await expect(page.getByText("Pending, no charge made", { exact: true })).toBeVisible();
+    await expect(page.getByText("CN¥20.00", { exact: false })).toBeVisible();
+  });
 });

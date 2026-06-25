@@ -41,6 +41,8 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const [error, setError] = useState("");
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
+  const [savedOffline, setSavedOffline] = useState(false);
+  const [depositOutcome, setDepositOutcome] = useState<"pending" | "deferred" | "offline" | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const titleId = useId();
@@ -137,7 +139,9 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           notes: trimmedNotes,
         });
         setBookingId(bookingId);
-        setShowPayment(true);
+        setSavedOffline(true);
+        setDepositOutcome("offline");
+        setDone(true);
         track("booking_offline_saved", { packageName: selectedPkg, bookingId: bookingId ?? "" });
         return;
       }
@@ -210,6 +214,12 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
             referenceId={bookingId}
             metadata={{ packageName: selectedPkg, name: name.trim() }}
             onSuccess={() => {
+              setDepositOutcome(null);
+              setDone(true);
+              setShowPayment(false);
+            }}
+            onPending={() => {
+              setDepositOutcome("pending");
               setDone(true);
               setShowPayment(false);
             }}
@@ -218,6 +228,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               setShowPayment(false);
             }}
             onCancel={() => {
+              setDepositOutcome("deferred");
               setDone(true);
               setShowPayment(false);
             }}
@@ -267,6 +278,17 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           </div>
 
           <p className="booking-success-next">{t("bookingModal.nextStep")}</p>
+          {depositOutcome && (
+            <div className={`booking-deposit-outcome booking-deposit-outcome--${depositOutcome}`} role="status">
+              <strong>{t(`bookingModal.depositOutcome.${depositOutcome}.title`)}</strong>
+              <span>{t(`bookingModal.depositOutcome.${depositOutcome}.description`)}</span>
+            </div>
+          )}
+          {savedOffline && (
+            <p className="booking-success-offline-note">
+              {t("bookingModal.offlineSyncNotice")}
+            </p>
+          )}
           <p className="booking-success-hint">{t("bookingModal.success")} {siteConfig.xiaohongshuProfile}</p>
 
           <div className="booking-success-actions">

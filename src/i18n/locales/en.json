@@ -417,7 +417,22 @@
     "submitError": "Submission failed, please try again",
     "next": "Next",
     "back": "Back",
-    "stepNavigation": "Booking steps"
+    "stepNavigation": "Booking steps",
+    "offlineSyncNotice": "This request is saved on this device and will be sent automatically when you are back online.",
+    "depositOutcome": {
+      "pending": {
+        "title": "Deposit marked as pending",
+        "description": "No charge was made. You can follow the deposit status in your dashboard."
+      },
+      "deferred": {
+        "title": "Payment deferred",
+        "description": "Your booking request is saved. Deposit arrangements can be completed after confirmation."
+      },
+      "offline": {
+        "title": "Payment waits for sync",
+        "description": "The booking must reach the server before a deposit status can be created."
+      }
+    }
   },
   "calendar": {
     "title": "Select Date",
@@ -972,6 +987,15 @@
     "cancelError": "Could not cancel this booking. Please try again.",
     "rescheduleSuccess": "Booking moved to {{date}}.",
     "rescheduleError": "Could not reschedule this booking. Please choose another date.",
+    "bookingDeposit": "Booking deposit",
+    "paymentStatus": {
+      "not_started": "Not started",
+      "pending": "Pending, no charge made",
+      "processing": "Processing",
+      "succeeded": "Paid",
+      "failed": "Needs attention",
+      "cancelled": "Cancelled"
+    },
     "statusHelp": {
       "pending": "We have your request. You can still adjust the date while it is being reviewed.",
       "confirmed": "Your session is confirmed. Use reschedule only if you need to move to another available date.",
@@ -1280,6 +1304,12 @@
     "expiryLabel": "Expiry",
     "cvcLabel": "CVC",
     "placeholderNotice": "Payment processing is in placeholder mode. No real charges will be made.",
+    "pendingTitle": "Deposit status recorded",
+    "pendingDesc": "Your booking is saved. No charge was made, and the deposit remains pending.",
+    "referenceId": "Reference ID",
+    "continue": "Continue",
+    "payLater": "Pay later",
+    "recordPending": "Record deposit as pending",
     "initializing": "Initializing...",
     "processing": "Processing...",
     "pay": "Pay {{amount}}",
