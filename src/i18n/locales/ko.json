@@ -501,7 +501,12 @@
     "overlay": "오버레이",
     "sideBySide": "나란히 보기",
     "toggleMode": "보기 모드 전환",
-    "swap": "교환"
+    "swap": "교환",
+    "keyboardShortcuts": "키보드 단축키",
+    "shortcutToggleMode": "보기 모드 전환",
+    "shortcutSwap": "사진 교환",
+    "shortcutClear": "비교 지우기",
+    "shortcutHelp": "도움말 전환"
   },
   "quickView": {
     "label": "빠른 미리보기",

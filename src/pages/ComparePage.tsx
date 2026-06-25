@@ -1,11 +1,11 @@
 import "../styles/pages.css";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, GitCompare, Layers, Repeat, X } from "lucide-react";
+import { ArrowLeft, GitCompare, Layers, Repeat, X, Keyboard } from "lucide-react";
 import { useCompare } from "../hooks/useCompare";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { CompareSlider } from "../components/CompareSlider";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const fullSrc = (src: string) => {
   const base = src.replace(/\?.*$/, "");
@@ -18,9 +18,47 @@ export function ComparePage() {
   const { entries, clear, remove } = useCompare();
   const [viewMode, setViewMode] = useState<"side-by-side" | "overlay">("side-by-side");
   const [swapped, setSwapped] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   const photos = swapped ? [...entries].reverse() : entries;
   const hasBoth = entries.length === 2;
+
+  const toggleViewMode = useCallback(() => {
+    setViewMode((prev) => prev === "side-by-side" ? "overlay" : "side-by-side");
+  }, []);
+
+  const toggleSwap = useCallback(() => {
+    setSwapped((prev) => !prev);
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      switch (e.key) {
+        case "v":
+          e.preventDefault();
+          toggleViewMode();
+          break;
+        case "s":
+          e.preventDefault();
+          toggleSwap();
+          break;
+        case "Escape":
+          if (entries.length > 0) {
+            clear();
+          }
+          break;
+        case "?":
+          e.preventDefault();
+          setShowShortcuts((prev) => !prev);
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [toggleViewMode, toggleSwap, clear, entries.length]);
 
   return (
     <div className="compare-page">
@@ -39,7 +77,7 @@ export function ComparePage() {
               <button
                 type="button"
                 className="compare-page-mode-btn"
-                onClick={() => setViewMode(viewMode === "side-by-side" ? "overlay" : "side-by-side")}
+                onClick={toggleViewMode}
                 aria-label={t("photoCompare.toggleMode", "Toggle view mode")}
               >
                 <Layers size={14} />
@@ -48,7 +86,7 @@ export function ComparePage() {
               <button
                 type="button"
                 className="compare-page-mode-btn"
-                onClick={() => setSwapped(!swapped)}
+                onClick={toggleSwap}
                 aria-label={t("photoCompare.swap", "Swap photos")}
               >
                 <Repeat size={14} />
@@ -61,8 +99,28 @@ export function ComparePage() {
               <X size={14} /> {t("photoCompare.clear", "Clear all")}
             </button>
           )}
+          <button
+            type="button"
+            className="compare-page-shortcuts-btn"
+            onClick={() => setShowShortcuts(!showShortcuts)}
+            aria-label={t("photoCompare.keyboardShortcuts", "Keyboard shortcuts")}
+          >
+            <Keyboard size={14} />
+          </button>
         </div>
       </header>
+
+      {showShortcuts && (
+        <div className="compare-page-shortcuts">
+          <h3>{t("photoCompare.keyboardShortcuts", "Keyboard Shortcuts")}</h3>
+          <ul>
+            <li><kbd>V</kbd> {t("photoCompare.shortcutToggleMode", "Toggle view mode")}</li>
+            <li><kbd>S</kbd> {t("photoCompare.shortcutSwap", "Swap photos")}</li>
+            <li><kbd>Esc</kbd> {t("photoCompare.shortcutClear", "Clear comparison")}</li>
+            <li><kbd>?</kbd> {t("photoCompare.shortcutHelp", "Toggle this help")}</li>
+          </ul>
+        </div>
+      )}
 
       {entries.length === 0 ? (
         <div className="compare-page-empty">

@@ -505,7 +505,12 @@
     "overlay": "Overlay",
     "sideBySide": "Side by side",
     "toggleMode": "Toggle view mode",
-    "swap": "Swap"
+    "swap": "Swap",
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "shortcutToggleMode": "Toggle view mode",
+    "shortcutSwap": "Swap photos",
+    "shortcutClear": "Clear comparison",
+    "shortcutHelp": "Toggle this help"
   },
   "quickView": {
     "label": "Quick view",

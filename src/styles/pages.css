@@ -3706,6 +3706,67 @@
   border-color: #999;
 }
 
+.compare-page-shortcuts-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--sage-border, #c5d5c5);
+  border-radius: 8px;
+  background: var(--cream-bg, #faf6f1);
+  color: var(--text-dark, #333);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.compare-page-shortcuts-btn:hover {
+  background: #eee;
+  border-color: #999;
+}
+
+.compare-page-shortcuts {
+  background: #faf6f1;
+  border: 1px solid #e8dcc8;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.compare-page-shortcuts h3 {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.compare-page-shortcuts ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.compare-page-shortcuts li {
+  font-size: 0.85rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.compare-page-shortcuts kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  font-family: monospace;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 1px 0 #ccc;
+}
+
 .compare-page-overlay {
   max-width: 800px;
   margin: 0 auto;
