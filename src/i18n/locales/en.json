@@ -496,7 +496,11 @@
       "adjacentNav": "Adjacent photos",
     "empty": "Add up to 2 photos to compare side by side.",
     "needTwo": "Add one more photo to compare side by side.",
-    "browseGallery": "Browse gallery"
+    "browseGallery": "Browse gallery",
+    "overlay": "Overlay",
+    "sideBySide": "Side by side",
+    "toggleMode": "Toggle view mode",
+    "swap": "Swap"
   },
   "quickView": {
     "label": "Quick view",
@@ -633,7 +637,8 @@
   "compare": {
     "before": "Before",
     "after": "After",
-    "dragHint": "Drag to compare"
+    "dragHint": "Drag to compare",
+    "reset": "Reset position"
   },
   "presetDetail": {
     "backToList": "Back to Presets",

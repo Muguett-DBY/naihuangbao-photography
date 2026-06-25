@@ -492,7 +492,11 @@
     "backToGallery": "갤러리로 돌아가기",
     "empty": "최대 2장의 사진을 나란히 비교할 수 있습니다.",
     "needTwo": "한 장만 더 추가하면 나란히 비교할 수 있습니다.",
-    "browseGallery": "갤러리 보기"
+    "browseGallery": "갤러리 보기",
+    "overlay": "오버레이",
+    "sideBySide": "나란히 보기",
+    "toggleMode": "보기 모드 전환",
+    "swap": "교환"
   },
   "quickView": {
     "label": "빠른 미리보기",
@@ -629,7 +633,8 @@
   "compare": {
     "before": "원본",
     "after": "수정본",
-    "dragHint": "드래그하여 비교"
+    "dragHint": "드래그하여 비교",
+    "reset": "위치 초기화"
   },
   "presetDetail": {
     "backToList": "프리셋 목록으로",
