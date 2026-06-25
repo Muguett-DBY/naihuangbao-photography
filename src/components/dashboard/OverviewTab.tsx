@@ -57,7 +57,7 @@ export function OverviewTab() {
         ? `${stats.bookings.upcoming} ${t("dashboard.upcoming")}`
         : undefined,
       color: "#eab308",
-      link: "",
+      link: "/booking",
     },
     {
       icon: <BookOpen size={28} />,
@@ -80,6 +80,30 @@ export function OverviewTab() {
     { icon: <Sparkles size={18} />, label: t("dashboard.quickEditor", "Open Editor"), link: "/editor" },
     { icon: <ShoppingBag size={18} />, label: t("dashboard.quickShop", "Visit Shop"), link: "/shop" },
   ];
+  const isFirstVisit = stats.bookings.total === 0
+    && stats.courses.total === 0
+    && stats.workshops.total === 0
+    && recentBookings.length === 0;
+  const startActions = [
+    {
+      icon: <CalendarCheck size={18} />,
+      title: t("dashboard.startHere.book.title"),
+      description: t("dashboard.startHere.book.description"),
+      link: "/booking",
+    },
+    {
+      icon: <Camera size={18} />,
+      title: t("dashboard.startHere.gallery.title"),
+      description: t("dashboard.startHere.gallery.description"),
+      link: "/gallery",
+    },
+    {
+      icon: <Sparkles size={18} />,
+      title: t("dashboard.startHere.editor.title"),
+      description: t("dashboard.startHere.editor.description"),
+      link: "/editor",
+    },
+  ];
 
   return (
     <div className="overview-tab">
@@ -88,6 +112,28 @@ export function OverviewTab() {
           <h2>{t("dashboard.welcomeBack", { name: userName, defaultValue: `Welcome back, ${userName}` })}</h2>
           <p>{t("dashboard.welcomeDesc", "Here's what's happening with your account.")}</p>
         </div>
+      )}
+
+      {isFirstVisit && (
+        <section className="overview-start-panel" aria-labelledby="overview-start-title">
+          <div className="overview-start-heading">
+            <span>{t("dashboard.startHere.eyebrow")}</span>
+            <h3 id="overview-start-title">{t("dashboard.startHere.title")}</h3>
+            <p>{t("dashboard.startHere.description")}</p>
+          </div>
+          <div className="overview-start-grid">
+            {startActions.map((action) => (
+              <Link key={action.link} to={action.link} className="overview-start-action">
+                <span className="overview-start-icon" aria-hidden="true">{action.icon}</span>
+                <span className="overview-start-copy">
+                  <strong>{action.title}</strong>
+                  <span>{action.description}</span>
+                </span>
+                <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            ))}
+          </div>
+        </section>
       )}
 
       <div className="overview-grid">

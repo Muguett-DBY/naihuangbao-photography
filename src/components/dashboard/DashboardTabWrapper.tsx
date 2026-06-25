@@ -1,13 +1,19 @@
 import { type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertCircle, RefreshCw } from "lucide-react";
+import { Link } from "react-router-dom";
+import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
 
 type DashboardTabWrapperProps = {
   loading: boolean;
   error: string | null;
   empty: boolean;
   emptyIcon?: ReactNode;
+  emptyTitle?: string;
   emptyText?: string;
+  emptyAction?: {
+    href: string;
+    label: string;
+  };
   retry?: () => void;
   children: ReactNode;
 };
@@ -21,14 +27,22 @@ export function DashboardTabWrapper({
   error,
   empty,
   emptyIcon,
+  emptyTitle,
   emptyText,
+  emptyAction,
   retry,
   children,
 }: DashboardTabWrapperProps) {
   const { t } = useTranslation();
 
   if (loading) {
-    return <div className="dashboard-loading">{t("common.loading")}</div>;
+    return (
+      <div className="dashboard-loading" role="status" aria-label={t("common.loading")}>
+        <span className="dashboard-loading-line dashboard-loading-line--wide" />
+        <span className="dashboard-loading-line" />
+        <span className="dashboard-loading-line dashboard-loading-line--short" />
+      </div>
+    );
   }
 
   if (error) {
@@ -49,8 +63,17 @@ export function DashboardTabWrapper({
   if (empty) {
     return (
       <div className="dashboard-empty">
-        {emptyIcon}
-        <p>{emptyText || t("common.noData", "暂无数据")}</p>
+        <span className="dashboard-empty-icon" aria-hidden="true">{emptyIcon}</span>
+        <div className="dashboard-empty-copy">
+          <h3>{emptyTitle || t("common.noData", "暂无数据")}</h3>
+          <p>{emptyText || t("common.noData", "暂无数据")}</p>
+        </div>
+        {emptyAction && (
+          <Link to={emptyAction.href} className="dashboard-empty-action">
+            {emptyAction.label}
+            <ArrowRight size={15} aria-hidden="true" />
+          </Link>
+        )}
       </div>
     );
   }

@@ -987,6 +987,61 @@
     "cancelError": "Could not cancel this booking. Please try again.",
     "rescheduleSuccess": "Booking moved to {{date}}.",
     "rescheduleError": "Could not reschedule this booking. Please choose another date.",
+    "workspaceNavigation": "Dashboard sections",
+    "startHere": {
+      "eyebrow": "Start here",
+      "title": "Build your portrait journey",
+      "description": "Choose one useful next step. Your bookings, references, and delivered work will collect here.",
+      "book": {
+        "title": "Book a session",
+        "description": "Choose a package and an available date."
+      },
+      "gallery": {
+        "title": "Save visual references",
+        "description": "Browse the gallery and favorite the moods you like."
+      },
+      "editor": {
+        "title": "Try the portrait editor",
+        "description": "Edit a photo locally without uploading it."
+      }
+    },
+    "emptyStates": {
+      "bookings": {
+        "title": "No sessions booked yet",
+        "description": "Your booking status, deposit, and date changes will appear here.",
+        "action": "Book a session"
+      },
+      "photos": {
+        "title": "No delivered photos yet",
+        "description": "Delivered client galleries will stay available here for viewing and download.",
+        "action": "Browse the gallery"
+      },
+      "favorites": {
+        "title": "No saved references yet",
+        "description": "Favorite photos while browsing to build a clear style reference.",
+        "action": "Find a style"
+      },
+      "recent": {
+        "title": "No recent viewing history",
+        "description": "Photos you open will appear here so you can return to them quickly.",
+        "action": "Explore photos"
+      },
+      "purchases": {
+        "title": "No purchases yet",
+        "description": "Products and paid digital items will be listed here after checkout.",
+        "action": "Visit the shop"
+      },
+      "courses": {
+        "title": "No courses in progress",
+        "description": "Purchased courses and learning progress will stay organized here.",
+        "action": "Browse courses"
+      },
+      "workshops": {
+        "title": "No workshop registrations",
+        "description": "Upcoming workshop details and registration status will appear here.",
+        "action": "View workshops"
+      }
+    },
     "bookingDeposit": "Booking deposit",
     "paymentStatus": {
       "not_started": "Not started",

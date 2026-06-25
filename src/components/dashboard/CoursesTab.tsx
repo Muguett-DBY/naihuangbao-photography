@@ -17,7 +17,9 @@ export function CoursesTab() {
       error={error}
       empty={courses.length === 0}
       emptyIcon={<BookOpen size={40} strokeWidth={1.2} />}
-      emptyText={t("dashboard.noCourses")}
+      emptyTitle={t("dashboard.emptyStates.courses.title")}
+      emptyText={t("dashboard.emptyStates.courses.description")}
+      emptyAction={{ href: "/courses", label: t("dashboard.emptyStates.courses.action") }}
       retry={retry}
     >
       <div className="dashboard-list">

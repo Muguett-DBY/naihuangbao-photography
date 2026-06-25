@@ -1036,6 +1036,61 @@
     "cancelError": "暂时无法取消预约，请稍后重试。",
     "rescheduleSuccess": "预约已改期至 {{date}}。",
     "rescheduleError": "暂时无法改期，请选择其他日期后重试。",
+    "workspaceNavigation": "个人中心分区",
+    "startHere": {
+      "eyebrow": "从这里开始",
+      "title": "建立你的写真体验",
+      "description": "先完成一个最有用的下一步，预约、风格参考和交付内容都会在这里持续汇总。",
+      "book": {
+        "title": "预约一次拍摄",
+        "description": "选择套餐和仍有余量的日期。"
+      },
+      "gallery": {
+        "title": "收藏风格参考",
+        "description": "浏览作品并收藏喜欢的氛围。"
+      },
+      "editor": {
+        "title": "试用人像修图",
+        "description": "照片无需上传，直接在本地编辑。"
+      }
+    },
+    "emptyStates": {
+      "bookings": {
+        "title": "还没有拍摄预约",
+        "description": "预约状态、定金和日期变更都会在这里集中显示。",
+        "action": "预约拍摄"
+      },
+      "photos": {
+        "title": "还没有交付照片",
+        "description": "客户照片交付后可在这里长期查看和下载。",
+        "action": "浏览作品"
+      },
+      "favorites": {
+        "title": "还没有风格收藏",
+        "description": "浏览作品时收藏喜欢的照片，建立清晰的拍摄参考。",
+        "action": "寻找喜欢的风格"
+      },
+      "recent": {
+        "title": "还没有浏览记录",
+        "description": "打开过的照片会出现在这里，方便快速返回。",
+        "action": "探索作品"
+      },
+      "purchases": {
+        "title": "还没有购买记录",
+        "description": "完成结算后的商品和数字内容会列在这里。",
+        "action": "前往商城"
+      },
+      "courses": {
+        "title": "还没有学习中的课程",
+        "description": "购买的课程和学习进度会在这里统一管理。",
+        "action": "浏览课程"
+      },
+      "workshops": {
+        "title": "还没有活动报名",
+        "description": "即将参加的活动详情和报名状态会出现在这里。",
+        "action": "查看活动"
+      }
+    },
     "bookingDeposit": "预约定金",
     "paymentStatus": {
       "not_started": "尚未开始",

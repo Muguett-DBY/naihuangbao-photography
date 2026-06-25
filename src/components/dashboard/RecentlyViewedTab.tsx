@@ -21,7 +21,9 @@ export function RecentlyViewedTab() {
       error={null}
       empty={entries.length === 0}
       emptyIcon={<History size={40} strokeWidth={1.2} />}
-      emptyText={t("recentlyViewed.tabEmpty", "No recently viewed photos. Open a photo and it will appear here.")}
+      emptyTitle={t("dashboard.emptyStates.recent.title")}
+      emptyText={t("dashboard.emptyStates.recent.description")}
+      emptyAction={{ href: "/gallery", label: t("dashboard.emptyStates.recent.action") }}
       retry={() => undefined}
     >
       <div className="dashboard-favorites-head">

@@ -981,6 +981,61 @@
     "cancelError": "예약을 취소하지 못했습니다. 다시 시도해 주세요.",
     "rescheduleSuccess": "예약이 {{date}}(으)로 변경되었습니다.",
     "rescheduleError": "일정을 변경하지 못했습니다. 다른 날짜를 선택해 주세요.",
+    "workspaceNavigation": "대시보드 섹션",
+    "startHere": {
+      "eyebrow": "여기서 시작",
+      "title": "인물 촬영 여정을 시작하세요",
+      "description": "유용한 다음 단계를 선택하면 예약, 참고 사진, 납품 결과가 이곳에 정리됩니다.",
+      "book": {
+        "title": "촬영 예약",
+        "description": "패키지와 가능한 날짜를 선택하세요."
+      },
+      "gallery": {
+        "title": "스타일 참고 저장",
+        "description": "갤러리에서 마음에 드는 분위기를 즐겨찾기하세요."
+      },
+      "editor": {
+        "title": "편집기 체험",
+        "description": "업로드 없이 기기에서 사진을 편집하세요."
+      }
+    },
+    "emptyStates": {
+      "bookings": {
+        "title": "아직 촬영 예약이 없습니다",
+        "description": "예약 상태, 예약금, 일정 변경이 이곳에 표시됩니다.",
+        "action": "촬영 예약"
+      },
+      "photos": {
+        "title": "아직 납품된 사진이 없습니다",
+        "description": "납품된 사진을 이곳에서 확인하고 다운로드할 수 있습니다.",
+        "action": "갤러리 보기"
+      },
+      "favorites": {
+        "title": "저장한 참고 사진이 없습니다",
+        "description": "마음에 드는 사진을 저장해 촬영 스타일을 정리하세요.",
+        "action": "스타일 찾기"
+      },
+      "recent": {
+        "title": "최근 본 사진이 없습니다",
+        "description": "열어 본 사진이 이곳에 표시되어 빠르게 돌아갈 수 있습니다.",
+        "action": "사진 둘러보기"
+      },
+      "purchases": {
+        "title": "구매 내역이 없습니다",
+        "description": "구매한 상품과 디지털 콘텐츠가 이곳에 표시됩니다.",
+        "action": "쇼핑몰 보기"
+      },
+      "courses": {
+        "title": "진행 중인 강좌가 없습니다",
+        "description": "구매한 강좌와 학습 진도를 이곳에서 관리할 수 있습니다.",
+        "action": "강좌 보기"
+      },
+      "workshops": {
+        "title": "워크숍 등록이 없습니다",
+        "description": "예정된 워크숍과 등록 상태가 이곳에 표시됩니다.",
+        "action": "워크숍 보기"
+      }
+    },
     "bookingDeposit": "예약금",
     "paymentStatus": {
       "not_started": "시작 전",

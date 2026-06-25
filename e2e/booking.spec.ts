@@ -190,4 +190,68 @@ test.describe("booking flow", () => {
     await expect(page.getByText("Pending, no charge made", { exact: true })).toBeVisible();
     await expect(page.getByText("CN¥20.00", { exact: false })).toBeVisible();
   });
+
+  test("keeps dashboard navigation and empty actions usable on desktop and mobile", async ({ page }) => {
+    await page.route("**/api/auth/session", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        authenticated: true,
+        user: { id: "user-1", email: "guest@example.com", displayName: "Guest" },
+      }),
+    }));
+    await page.route("**/api/user/**", (route) => {
+      const resource = new URL(route.request().url()).pathname.split("/").pop() || "items";
+      const body = resource === "stats"
+        ? {
+            bookings: { total: 0, upcoming: 0 },
+            courses: { total: 0 },
+            workshops: { total: 0 },
+          }
+        : { [resource]: [] };
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(body),
+      });
+    });
+
+    await page.goto("/dashboard");
+    await expect(page.locator(".overview-start-panel")).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Overview", exact: true })).toHaveAttribute("aria-selected", "true");
+
+    const bookingsTab = page.getByRole("tab", { name: "My Bookings", exact: true });
+    await bookingsTab.click();
+    await expect(bookingsTab).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByRole("link", { name: "Book a session", exact: true })).toBeVisible();
+
+    await bookingsTab.press("ArrowRight");
+    await expect(page.getByRole("tab", { name: "My Photos", exact: true })).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByText("No delivered photos yet", { exact: true })).toBeVisible();
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator(".dashboard-workspace-tablist")).toHaveAttribute("aria-orientation", "horizontal");
+    const mobileMetrics = await page.locator(".dashboard-workspace-tablist").evaluate((element) => {
+      const firstLabel = element.querySelector("button span:last-child");
+      const chat = document.querySelector(".public-chat-widget");
+      const scrollTop = document.querySelector(".nhb-scroll-top");
+      return {
+        flexDirection: getComputedStyle(element).flexDirection,
+        scrollable: element.scrollWidth > element.clientWidth,
+        writingMode: firstLabel ? getComputedStyle(firstLabel).writingMode : "",
+        pageOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+        chatHidden: !chat || getComputedStyle(chat).display === "none",
+        scrollTopHidden: !scrollTop || getComputedStyle(scrollTop).display === "none",
+      };
+    });
+
+    expect(mobileMetrics).toEqual({
+      flexDirection: "row",
+      scrollable: true,
+      writingMode: "horizontal-tb",
+      pageOverflow: false,
+      chatHidden: true,
+      scrollTopHidden: true,
+    });
+  });
 });
