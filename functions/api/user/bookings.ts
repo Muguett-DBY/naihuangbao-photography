@@ -29,7 +29,9 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
 
   try {
     const result = await context.env.DB.prepare(
-      `select id, package_name, preferred_date, preferred_time, name, contact, notes, status, created_at
+      `select id, package_name, preferred_date, preferred_time, name, contact, notes,
+              case when status = 'canceled' then 'cancelled' else status end as status,
+              created_at
        from booking_requests
        where contact = (select email from users where id = ?)
        order by created_at desc`,

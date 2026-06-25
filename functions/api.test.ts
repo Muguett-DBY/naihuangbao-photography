@@ -4,6 +4,9 @@ import { onRequestDelete as deletePhoto } from "./api/admin/photos/[id]";
 import { onRequestGet as getPublicPhotos } from "./api/photos";
 import { onRequestPost as paymentWebhook } from "./api/payment/webhook";
 import { onRequestGet as getUserProfile } from "./api/user/profile";
+import { onRequestPost as cancelUserBooking } from "./api/user/bookings/[id]/cancel";
+import { onRequestPost as rescheduleUserBooking } from "./api/user/bookings/[id]/reschedule";
+import { createUserSession } from "./_auth";
 
 function jsonRequest(url: string, init?: RequestInit) {
   return new Request(url, init);
@@ -51,6 +54,104 @@ function createBucket() {
 }
 
 describe("Cloudflare Pages API behavior", () => {
+  it("writes the canonical cancelled status for customer cancellations", async () => {
+    const secret = "test-auth-secret-with-32-characters";
+    const session = await createUserSession("user-12345678", secret);
+    const writes: Array<{ sql: string; values: unknown[] }> = [];
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          bind: vi.fn((...values: unknown[]) => {
+            if (sql.includes("update booking_requests")) writes.push({ sql, values });
+            return statement;
+          }),
+          first: vi.fn(async () => {
+            if (sql.includes("from users")) return { id: "user-12345678", email: "guest@example.com" };
+            if (sql.includes("from booking_requests")) {
+              return { id: "booking-12345678", contact: "guest@example.com", status: "confirmed" };
+            }
+            return null;
+          }),
+          run: vi.fn(async () => ({ success: true })),
+        };
+        return statement;
+      }),
+    };
+
+    const response = await cancelUserBooking({
+      request: jsonRequest("https://shoot.custard.top/api/user/bookings/booking-12345678/cancel", {
+        method: "POST",
+        headers: { cookie: `nhb_user_session=${session}` },
+      }),
+      env: { DB: db, AUTH_SECRET: secret },
+      params: { id: "booking-12345678" },
+    } as never);
+
+    expect(response.status).toBe(200);
+    expect(writes[0]?.sql).toContain("status = 'cancelled'");
+  });
+
+  it("rejects past customer reschedule dates", async () => {
+    const secret = "test-auth-secret-with-32-characters";
+    const session = await createUserSession("user-12345678", secret);
+
+    const response = await rescheduleUserBooking({
+      request: jsonRequest("https://shoot.custard.top/api/user/bookings/booking-12345678/reschedule", {
+        method: "POST",
+        headers: {
+          cookie: `nhb_user_session=${session}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ preferred_date: "2020-01-01" }),
+      }),
+      env: { DB: createDb(), AUTH_SECRET: secret },
+      params: { id: "booking-12345678" },
+    } as never);
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(400);
+    expect(body.error).toContain("不能早于今天");
+  });
+
+  it("rejects rescheduling into a fully booked date", async () => {
+    const secret = "test-auth-secret-with-32-characters";
+    const session = await createUserSession("user-12345678", secret);
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          bind: vi.fn(() => statement),
+          first: vi.fn(async () => {
+            if (sql.includes("from users")) return { id: "user-12345678", email: "guest@example.com" };
+            if (sql.includes("select id, contact, status")) {
+              return { id: "booking-12345678", contact: "guest@example.com", status: "confirmed" };
+            }
+            if (sql.includes("count(*) as count")) return { count: 3 };
+            return null;
+          }),
+          run: vi.fn(async () => ({ success: true })),
+        };
+        return statement;
+      }),
+    };
+
+    const response = await rescheduleUserBooking({
+      request: jsonRequest("https://shoot.custard.top/api/user/bookings/booking-12345678/reschedule", {
+        method: "POST",
+        headers: {
+          cookie: `nhb_user_session=${session}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ preferred_date: "2099-01-01" }),
+      }),
+      env: { DB: db, AUTH_SECRET: secret },
+      params: { id: "booking-12345678" },
+    } as never);
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(409);
+    expect(body.error).toContain("已约满");
+  });
+
   it("returns a static public photo fallback when D1 is unavailable", async () => {
     const db = createDb({
       all: async () => {

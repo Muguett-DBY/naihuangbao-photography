@@ -1,7 +1,13 @@
 import { jsonResponse, badRequest, unauthorized, unavailable } from "../../../../_responses";
 import { getUserFromRequest } from "../../../../_auth";
 import { getRequiredAuthSecret } from "../../../../_security";
-import { validateId, validateString, validateBody } from "../../../../_validation";
+import { validateId } from "../../../../_validation";
+import {
+  getBusinessDate,
+  isBookingDateFull,
+  isCancelledBookingStatus,
+  validateBookingDate,
+} from "../../../../_booking";
 
 type AuthEnv = Env & { AUTH_SECRET?: string };
 
@@ -32,12 +38,9 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
   if (!idCheck.valid) return badRequest(idCheck.error);
 
   const body = (await context.request.json().catch(() => ({}))) as Record<string, unknown>;
-  const validated = validateBody(body, {
-    preferred_date: (v) => validateString(v, "新的预约日期"),
-  });
-  if (!validated.valid) return badRequest(validated.error);
-
-  const newDate = String(body.preferred_date).trim();
+  const dateCheck = validateBookingDate(body.preferred_date, getBusinessDate());
+  if (!dateCheck.valid) return badRequest(dateCheck.error);
+  const newDate = String(body.preferred_date);
 
   try {
     // Verify the booking belongs to this user (via email match)
@@ -59,8 +62,20 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
       return jsonResponse({ error: "无权操作此预约" }, 403);
     }
 
-    if (booking.status === "done" || booking.status === "canceled") {
+    if (booking.status === "done" || isCancelledBookingStatus(booking.status)) {
       return badRequest("该预约无法改期");
+    }
+
+    const capacity = await context.env.DB.prepare(
+      `select count(*) as count
+       from booking_requests
+       where preferred_date = ?
+         and id != ?
+         and status not in ('cancelled', 'canceled')`,
+    ).bind(newDate, bookingId).first<{ count: number }>();
+
+    if (isBookingDateFull(Number(capacity?.count ?? 0))) {
+      return jsonResponse({ error: "该日期已约满，请选择其他日期" }, 409);
     }
 
     await context.env.DB.prepare(
