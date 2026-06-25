@@ -602,6 +602,17 @@
       "error": "Registration failed, please try again",
       "nameRequired": "Please enter your name",
       "contactRequired": "Please enter your contact"
+    },
+    "confirmation": {
+      "registrationId": "Registration ID",
+      "name": "Name",
+      "contact": "Contact",
+      "emailSent": "A confirmation email has been sent to your email address.",
+      "close": "Close"
+    },
+    "detail": {
+      "date": "Date",
+      "location": "Location"
     }
   },
   "merchandise": {
