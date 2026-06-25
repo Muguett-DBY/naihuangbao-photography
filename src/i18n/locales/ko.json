@@ -597,7 +597,9 @@
       "success": "등록 성공! 곧 연락드리겠습니다.",
       "error": "등록 실패, 다시 시도해주세요",
       "nameRequired": "이름을 입력해주세요",
-      "contactRequired": "연락처를 입력해주세요"
+      "contactRequired": "연락처를 입력해주세요",
+      "nameTooShort": "이름은 2자 이상이어야 합니다",
+      "contactTooShort": "연락처는 5자 이상이어야 합니다"
     },
     "confirmation": {
       "registrationId": "등록 번호",

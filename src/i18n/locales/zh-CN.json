@@ -624,7 +624,9 @@
       "success": "报名成功！我们会尽快联系你确认。",
       "error": "报名失败，请稍后重试",
       "nameRequired": "请填写姓名",
-      "contactRequired": "请填写联系方式"
+      "contactRequired": "请填写联系方式",
+      "nameTooShort": "姓名至少需要2个字符",
+      "contactTooShort": "联系方式至少需要5个字符"
     },
     "confirmation": {
       "registrationId": "报名编号",

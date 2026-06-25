@@ -597,7 +597,9 @@
       "success": "申し込み完了！近日中にご連絡いたします。",
       "error": "申し込みに失敗しました。もう一度お試しください",
       "nameRequired": "お名前を入力してください",
-      "contactRequired": "連絡先を入力してください"
+      "contactRequired": "連絡先を入力してください",
+      "nameTooShort": "お名前は2文字以上必要です",
+      "contactTooShort": "連絡先は5文字以上必要です"
     },
     "confirmation": {
       "registrationId": "申込番号",

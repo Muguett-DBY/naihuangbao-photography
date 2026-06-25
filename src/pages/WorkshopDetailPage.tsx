@@ -202,35 +202,49 @@ export function WorkshopDetailPage() {
                     {t("workshops.form.checkingAvailability", "Checking availability...")}
                   </div>
                 )}
-                <label htmlFor="workshop-detail-name" className="sr-only">
-                  {t("workshops.form.name")}
-                </label>
-                <input
-                  id="workshop-detail-name"
-                  value={registration.formName}
-                  onChange={(e) => registration.setFormName(e.target.value)}
-                  placeholder={t("workshops.form.name")}
-                  className="workshop-detail-register-input"
-                  aria-label={t("workshops.form.name")}
-                  disabled={registration.availability?.available === false || registration.checkingAvailability}
-                />
-                <label htmlFor="workshop-detail-contact" className="sr-only">
-                  {t("workshops.form.contact")}
-                </label>
-                <input
-                  id="workshop-detail-contact"
-                  value={registration.formContact}
-                  onChange={(e) => registration.setFormContact(e.target.value)}
-                  placeholder={t("workshops.form.contact")}
-                  className="workshop-detail-register-input"
-                  aria-label={t("workshops.form.contact")}
-                  disabled={registration.availability?.available === false || registration.checkingAvailability}
-                />
+                <div className="workshop-detail-field">
+                  <label htmlFor="workshop-detail-name" className="sr-only">
+                    {t("workshops.form.name")}
+                  </label>
+                  <input
+                    id="workshop-detail-name"
+                    value={registration.formName}
+                    onChange={(e) => registration.setFormName(e.target.value)}
+                    placeholder={t("workshops.form.name")}
+                    className={`workshop-detail-register-input ${registration.formName && registration.formName.length < 2 ? "has-error" : ""}`}
+                    aria-label={t("workshops.form.name")}
+                    aria-invalid={registration.formName.length > 0 && registration.formName.length < 2}
+                    disabled={registration.availability?.available === false || registration.checkingAvailability}
+                    maxLength={50}
+                  />
+                  {registration.formName.length > 0 && registration.formName.length < 2 && (
+                    <span className="workshop-detail-field-error">{t("workshops.form.nameTooShort", "Name must be at least 2 characters")}</span>
+                  )}
+                </div>
+                <div className="workshop-detail-field">
+                  <label htmlFor="workshop-detail-contact" className="sr-only">
+                    {t("workshops.form.contact")}
+                  </label>
+                  <input
+                    id="workshop-detail-contact"
+                    value={registration.formContact}
+                    onChange={(e) => registration.setFormContact(e.target.value)}
+                    placeholder={t("workshops.form.contact")}
+                    className={`workshop-detail-register-input ${registration.formContact && registration.formContact.length < 5 ? "has-error" : ""}`}
+                    aria-label={t("workshops.form.contact")}
+                    aria-invalid={registration.formContact.length > 0 && registration.formContact.length < 5}
+                    disabled={registration.availability?.available === false || registration.checkingAvailability}
+                    maxLength={100}
+                  />
+                  {registration.formContact.length > 0 && registration.formContact.length < 5 && (
+                    <span className="workshop-detail-field-error">{t("workshops.form.contactTooShort", "Contact must be at least 5 characters")}</span>
+                  )}
+                </div>
                 {registration.formMsg && <p className={`workshop-detail-form-msg${registration.formMsg === t("workshops.form.success") ? " workshop-detail-form-msg--success" : " workshop-detail-form-msg--error"}`}>{registration.formMsg}</p>}
                 <Button
                   type="primary"
                   onClick={handleRegister}
-                  disabled={registration.submitting || registration.availability?.available === false || registration.checkingAvailability}
+                  disabled={registration.submitting || registration.availability?.available === false || registration.checkingAvailability || !registration.formName.trim() || registration.formContact.trim().length < 5}
                 >
                   {registration.submitting
                     ? t("workshops.form.submitting")
