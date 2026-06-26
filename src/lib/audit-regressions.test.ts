@@ -345,6 +345,24 @@ describe("audit regression coverage", () => {
     expect(paymentForm).toContain("payment.cancelledDesc");
   });
 
+  it("keeps payment status UX explicit and mobile-safe", () => {
+    const paymentForm = readFileSync(resolve(root, "src/components/PaymentForm.tsx"), "utf8");
+
+    expect(paymentForm).toContain("payment-status-track");
+    expect(paymentForm).toContain("payment.followUpTitle");
+    expect(paymentForm).toContain("payment.pendingNextStep");
+    expect(paymentForm).toContain("payment.continueWithoutPaying");
+    expect(editorCssSource).toContain(".payment-status-track");
+    expect(editorCssSource).toContain(".payment-status-step");
+    expect(editorCssSource).toMatch(/\.payment-failed-actions\s*\{[\s\S]*flex-wrap:\s*wrap/s);
+    expect(editorCssSource).toMatch(/@media\s*\(max-width:\s*560px\)[\s\S]*\.payment-form-actions/s);
+    for (const locale of Object.values(locales)) {
+      expect(locale.payment.followUpTitle).toBeTruthy();
+      expect(locale.payment.pendingNextStep).toBeTruthy();
+      expect(locale.payment.continueWithoutPaying).toBeTruthy();
+    }
+  });
+
   it("keeps the dashboard workspace readable and actionable across breakpoints", () => {
     const dashboardPage = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
     const workspacePath = resolve(root, "src/components/dashboard/DashboardWorkspace.tsx");

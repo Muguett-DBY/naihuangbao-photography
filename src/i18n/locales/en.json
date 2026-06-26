@@ -1399,6 +1399,17 @@
     "placeholderNotice": "Payment processing is in placeholder mode. No real charges will be made.",
     "pendingTitle": "Deposit status recorded",
     "pendingDesc": "Your booking is saved. No charge was made, and the deposit remains pending.",
+    "followUpTitle": "Manual follow-up",
+    "pendingNextStep": "We will confirm payment options with you before any deposit is collected.",
+    "cancelledNextStep": "Your booking is still saved. You can continue without paying or try again.",
+    "failedNextStep": "No deposit was collected. You can retry or continue and we will follow up.",
+    "continueWithoutPaying": "Continue without paying now",
+    "statusTrackLabel": "Payment status",
+    "track": {
+      "request": "Request",
+      "review": "Review",
+      "followUp": "Follow-up"
+    },
     "referenceId": "Reference ID",
     "continue": "Continue",
     "payLater": "Pay later",

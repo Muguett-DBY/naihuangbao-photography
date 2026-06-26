@@ -1450,6 +1450,17 @@
     "placeholderNotice": "支付功能当前为占位演示模式，不会产生真实扣款。",
     "pendingTitle": "定金状态已记录",
     "pendingDesc": "预约已经保存，本次没有产生扣款，定金仍为待处理状态。",
+    "followUpTitle": "人工跟进",
+    "pendingNextStep": "在收取任何定金前，我们会先与您确认可用的支付方式。",
+    "cancelledNextStep": "预约仍已保存。您可以先继续不支付，或重新尝试。",
+    "failedNextStep": "本次没有收取定金。您可以重试，或先继续并等待我们跟进。",
+    "continueWithoutPaying": "暂不支付并继续",
+    "statusTrackLabel": "支付状态",
+    "track": {
+      "request": "提交",
+      "review": "确认",
+      "followUp": "跟进"
+    },
     "referenceId": "状态编号",
     "continue": "继续",
     "payLater": "稍后处理",

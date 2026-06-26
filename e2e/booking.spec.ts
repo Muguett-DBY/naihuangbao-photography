@@ -140,6 +140,8 @@ test.describe("booking flow", () => {
     await page.getByRole("button", { name: "Send Booking", exact: true }).click();
 
     await expect(page.locator(".payment-form-card")).toBeVisible();
+    await expect(page.locator(".payment-status-track")).toBeVisible();
+    await expect(page.getByText("Request", { exact: true })).toBeVisible();
     await expect(page.locator("#payment-card")).toHaveCount(0);
     await expect(page.getByText("No real charges will be made.", { exact: false })).toBeVisible();
     await page.getByRole("button", { name: "Record deposit as pending", exact: true }).click();
