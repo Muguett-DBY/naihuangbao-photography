@@ -291,5 +291,8 @@ Beginning execution.
   - `npm run build:full` — passed, including performance budget and bundle analysis.
   - Fresh `wrangler pages dev dist` — parsed 1 valid redirect rule, no infinite-loop warnings.
   - Smoke Playwright against Pages preview — 13/13 passed with one worker.
+- **Commit**: `663d74b` — `ci: upgrade actions to node 24 runtime`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28210487623` passed with `actions/checkout@v5` and `actions/setup-node@v6`; the previous Node 20 actions deprecation annotation did not appear.
 - **Risk**: `setup-node@v6` and `checkout@v5` require modern GitHub-hosted runner support; `ubuntu-latest` meets that expectation.
-- **Status**: READY TO COMMIT
+- **Final stage status**: COMPLETE
+- **Status**: COMPLETE

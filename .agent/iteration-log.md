@@ -574,3 +574,40 @@ Pages 路由配置检查：移除或替换会触发 infinite-loop 的 SPA rewrit
 
 ### 推荐下一轮优先执行的旗舰级主改动
 CI 健康升级：将 GitHub Actions 的 Node/setup 路径更新到当前运行环境，消除 Node 20 actions 弃用提示，降低后续 CI 突然失败风险。
+
+---
+
+## Campaign 012 Stage 6 — CI Runtime Health Upgrade
+
+### 承接的上一轮方向
+- 上一轮推荐旗舰：CI 健康升级。
+- 本阶段处理 GitHub Actions 持续提示的 Node 20 actions 弃用风险。
+
+### 完成内容
+- `actions/checkout@v4` 升级到 `actions/checkout@v5`。
+- `actions/setup-node@v4` 升级到 `actions/setup-node@v6`。
+- CI Node runtime 从 22 升到 24。
+- 移除临时 `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` 环境变量。
+- 增加回归测试，防止 workflow 回退到 Node 20-era actions。
+
+### 已通过的验证
+- Red/green：CI runtime 回归测试先失败后通过。
+- TypeScript / lint：通过。
+- Vitest：226/226 通过。
+- `build:full` + performance budget：通过。
+- `wrangler pages dev dist`：只解析 1 条 redirect rule，无 infinite-loop warning。
+- Playwright smoke：13/13 通过。
+- GitHub Actions：CI run `28210487623` 通过（main / `663d74b`），不再出现 Node 20 actions 弃用注解。
+
+### 遗留风险
+- 真实支付仍未启用，仍需完整 Stripe 客户端确认、webhook、失败恢复和退款状态闭环。
+- 字体包与 `face-api-vendor` 仍是主要体积来源，但当前 performance budget 通过。
+- PhotoEditorPage 仍有历史 `@ts-nocheck`。
+
+### 下一轮建议方向
+1. 为编辑器移动工具栏增加分组、导出状态和弱网提示。
+2. 继续推进真实支付确认流，但必须先完成 Stripe 客户端确认和 webhook 方案。
+3. 拆分或延迟加载更多字体/模型资产，进一步压低首屏体积。
+
+### 推荐下一轮优先执行的旗舰级主改动
+编辑器移动工作流增强：把移动端工具栏按调色、滤镜、文字、导出分组，并补充导出进度与失败恢复。
