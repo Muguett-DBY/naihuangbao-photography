@@ -1264,7 +1264,27 @@
     "before": "Before",
     "after": "After",
     "export": "Export",
+    "workflow": {
+      "label": "Editor workflow",
+      "quick": "Beauty",
+      "quickDesc": "Start with portrait-ready retouching for fast results.",
+      "color": "Color",
+      "colorDesc": "Tune warmth, brightness, contrast, and one-tap filters together.",
+      "compose": "Compose",
+      "composeDesc": "Add text, stickers, frames, backgrounds, and local effects.",
+      "export": "Export",
+      "exportDesc": "Review comparison and choose social or print-ready output quality."
+    },
     "exportTitle": "Export Settings",
+    "exportSummaryTitle": "Pre-export check",
+    "exportSummaryDesc": "Confirm comparison, format, and quality before download. If export fails, you can retry here.",
+    "exportStatus": {
+      "idle": "Ready to export",
+      "exporting": "Generating image...",
+      "ready": "Image generated and download started",
+      "failed": "Export failed. Lower quality or try again.",
+      "retry": "Reopen export"
+    },
     "presetSocial": "Social",
     "presetQuick": "Quick",
     "presetPrint": "Print",

@@ -1249,7 +1249,27 @@
     "before": "원본",
     "after": "보정",
     "export": "내보내기",
+    "workflow": {
+      "label": "편집 워크플로",
+      "quick": "뷰티",
+      "quickDesc": "먼저 인물 보정으로 빠르게 결과를 만듭니다.",
+      "color": "컬러",
+      "colorDesc": "색온도, 밝기, 대비, 필터를 한 곳에서 조정합니다.",
+      "compose": "꾸미기",
+      "composeDesc": "텍스트, 스티커, 프레임, 배경, 로컬 효과를 추가합니다.",
+      "export": "내보내기",
+      "exportDesc": "비교를 확인하고 소셜 또는 인쇄용 품질을 선택합니다."
+    },
     "exportTitle": "내보내기 설정",
+    "exportSummaryTitle": "내보내기 전 확인",
+    "exportSummaryDesc": "비교, 형식, 품질을 확인한 뒤 다운로드하세요. 실패하면 여기서 다시 시도할 수 있습니다.",
+    "exportStatus": {
+      "idle": "내보내기 준비됨",
+      "exporting": "이미지 생성 중...",
+      "ready": "이미지가 생성되어 다운로드가 시작되었습니다",
+      "failed": "내보내기에 실패했습니다. 품질을 낮추거나 다시 시도하세요.",
+      "retry": "내보내기 다시 열기"
+    },
     "presetSocial": "소셜용",
     "presetQuick": "빠른 내보내기",
     "presetPrint": "인쇄용",

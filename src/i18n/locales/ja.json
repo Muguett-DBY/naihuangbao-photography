@@ -1249,7 +1249,27 @@
     "before": "元画像",
     "after": "補正後",
     "export": "エクスポート",
+    "workflow": {
+      "label": "編集ワークフロー",
+      "quick": "ビューティー",
+      "quickDesc": "まず人物補正で素早く仕上げます。",
+      "color": "カラー",
+      "colorDesc": "色温度、明るさ、コントラスト、フィルターをまとめて調整します。",
+      "compose": "装飾",
+      "composeDesc": "文字、スタンプ、フレーム、背景、部分効果を追加します。",
+      "export": "書き出し",
+      "exportDesc": "比較を確認し、SNS用または印刷用の品質を選びます。"
+    },
     "exportTitle": "エクスポート設定",
+    "exportSummaryTitle": "書き出し前チェック",
+    "exportSummaryDesc": "比較、形式、品質を確認してからダウンロードします。失敗した場合はここから再試行できます。",
+    "exportStatus": {
+      "idle": "書き出し準備完了",
+      "exporting": "画像を生成中...",
+      "ready": "画像を生成し、ダウンロードを開始しました",
+      "failed": "書き出しに失敗しました。品質を下げるか再試行してください。",
+      "retry": "書き出しを再表示"
+    },
     "presetSocial": "SNS用",
     "presetQuick": "クイック",
     "presetPrint": "印刷用",

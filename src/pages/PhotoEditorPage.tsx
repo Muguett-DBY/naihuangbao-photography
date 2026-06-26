@@ -24,6 +24,25 @@ import {
 
 const MODEL_URL = "/models";
 
+type EditorWorkflowKey = "quick" | "color" | "compose" | "export";
+type ExportStatus = {
+  state: "idle" | "exporting" | "ready" | "failed";
+  messageKey: string;
+};
+
+const EDITOR_WORKFLOW_GROUPS: Array<{
+  key: EditorWorkflowKey;
+  icon: string;
+  labelKey: string;
+  descKey: string;
+  categories: BeautyCategory[];
+}> = [
+  { key: "quick", icon: "✨", labelKey: "editor.workflow.quick", descKey: "editor.workflow.quickDesc", categories: ["beauty", "reshape"] },
+  { key: "color", icon: "🎨", labelKey: "editor.workflow.color", descKey: "editor.workflow.colorDesc", categories: ["color", "filter"] },
+  { key: "compose", icon: "🖼", labelKey: "editor.workflow.compose", descKey: "editor.workflow.composeDesc", categories: ["tools", "bg", "makeup"] },
+  { key: "export", icon: "↓", labelKey: "editor.workflow.export", descKey: "editor.workflow.exportDesc", categories: [] },
+];
+
 export default function PhotoEditorPage() {
   const { t } = useTranslation();
   useSEO({ titleKey: "editor.title", descKey: "editor.desc", path: "/editor" });
@@ -61,6 +80,11 @@ export default function PhotoEditorPage() {
   const [compareDrag, setCompareDrag] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
   const [modelLoadAttempt, setModelLoadAttempt] = useState(1);
+  const [activeWorkflowGroup, setActiveWorkflowGroup] = useState<EditorWorkflowKey>("quick");
+  const [exportStatus, setExportStatus] = useState<ExportStatus>({
+    state: "idle",
+    messageKey: "editor.exportStatus.idle",
+  });
 
   useEffect(() => {
     modelsReadyRef.current = modelsReady;
@@ -592,14 +616,35 @@ export default function PhotoEditorPage() {
     setSettings(next); render(next); pushHistory(next);
   }, [render, pushHistory]);
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const link = document.createElement("a");
-    link.download = `beautified.${exportFormat}`;
-    link.href = canvas.toDataURL(`image/${exportFormat}`, exportQuality / 100);
-    link.click();
-    setShowExport(false);
+    if (!canvas) {
+      setExportStatus({ state: "failed", messageKey: "editor.exportStatus.failed" });
+      return;
+    }
+    setExportStatus({ state: "exporting", messageKey: "editor.exportStatus.exporting" });
+    try {
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          (nextBlob) => {
+            if (nextBlob) resolve(nextBlob);
+            else reject(new Error("Canvas export returned no image data"));
+          },
+          `image/${exportFormat}`,
+          exportQuality / 100,
+        );
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.download = `beautified.${exportFormat}`;
+      link.href = url;
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setExportStatus({ state: "ready", messageKey: "editor.exportStatus.ready" });
+      setShowExport(false);
+    } catch {
+      setExportStatus({ state: "failed", messageKey: "editor.exportStatus.failed" });
+    }
   }, [exportFormat, exportQuality]);
 
   const handleReset = useCallback(() => {
@@ -718,6 +763,17 @@ export default function PhotoEditorPage() {
   }, [compareDrag]);
 
   const currentTools = TOOLS[cat];
+  const activeWorkflow = EDITOR_WORKFLOW_GROUPS.find(group => group.key === activeWorkflowGroup) ?? EDITOR_WORKFLOW_GROUPS[0];
+  const workflowCategories = CATEGORIES.filter(c => activeWorkflow.categories.includes(c.key));
+  const handleWorkflowSelect = useCallback((key: EditorWorkflowKey) => {
+    const nextGroup = EDITOR_WORKFLOW_GROUPS.find(group => group.key === key) ?? EDITOR_WORKFLOW_GROUPS[0];
+    setActiveWorkflowGroup(nextGroup.key);
+    const nextCategory = nextGroup.categories[0];
+    if (nextCategory && !nextGroup.categories.includes(cat)) {
+      setCat(nextCategory);
+      if (TOOLS[nextCategory]?.length) setTool(TOOLS[nextCategory][0].key);
+    }
+  }, [cat]);
 
   return (
     <PageTransition>
@@ -755,17 +811,69 @@ export default function PhotoEditorPage() {
               <button type="button" className="editor-btn" onClick={handleAutoEnhance} aria-label={t("editor.auto")} title={t("editor.auto")}>⚡</button>
               <button type="button" className={`editor-btn ${showMesh ? "active" : ""}`} onClick={() => setShowMesh(!showMesh)} aria-pressed={showMesh} aria-label="Face mesh" title="Face mesh">🗺</button>
               <button type="button" className="editor-btn" onClick={() => setShowCompare(!showCompare)} aria-label={t("editor.compare")} title={t("editor.compare")}>⇔</button>
-              <button type="button" className="editor-btn" onClick={() => setShowTextPanel(!showTextPanel)} aria-label={t("editor.addText")} title={t("editor.addText")}>T</button>
-              <button type="button" className="editor-btn" onClick={() => setShowStickerPanel(!showStickerPanel)} aria-label={t("editor.uploadOverlay")} title={t("editor.uploadOverlay")}>😊</button>
-              <button type="button" className="editor-btn" onClick={() => setShowFramePanel(!showFramePanel)} aria-label={t("editor.frame.none")} title={t("editor.frame.none")}>🖼</button>
+              <button type="button" className="editor-btn" onClick={() => { setActiveWorkflowGroup("compose"); setShowTextPanel(!showTextPanel); }} aria-label={t("editor.addText")} title={t("editor.addText")}>T</button>
+              <button type="button" className="editor-btn" onClick={() => { setActiveWorkflowGroup("compose"); setShowStickerPanel(!showStickerPanel); }} aria-label={t("editor.uploadOverlay")} title={t("editor.uploadOverlay")}>😊</button>
+              <button type="button" className="editor-btn" onClick={() => { setActiveWorkflowGroup("compose"); setShowFramePanel(!showFramePanel); }} aria-label={t("editor.frame.none")} title={t("editor.frame.none")}>🖼</button>
               <button type="button" className="editor-btn" onClick={handleReset} aria-label={t("editor.reset")} title={t("editor.reset")}>⟲</button>
-              <button type="button" className="editor-btn editor-btn--primary" onClick={() => setShowExport(true)} aria-label={t("editor.export")} title={t("editor.export")}>↓</button>
+              <button type="button" className="editor-btn editor-btn--primary" onClick={() => { setActiveWorkflowGroup("export"); setShowExport(true); }} aria-label={t("editor.export")} title={t("editor.export")}>↓</button>
             </>
           )}
           {detecting && <span className="editor-detecting" aria-live="polite">{t("editor.detecting")}</span>}
           {faceOk && <span className="editor-face-ok" role="status" aria-label={t("editor.faceDetected")}>✓</span>}
           {faceError && !detecting && <span className="editor-status-warning" role="status" aria-live="polite">{t("editor.noFaceDetected")}</span>}
         </div>
+
+        {originalRef.current && (
+          <section className="editor-workflow" aria-label={t("editor.workflow.label")}>
+            <div className="editor-workflow-tabs" role="tablist" aria-label={t("editor.workflow.label")}>
+              {EDITOR_WORKFLOW_GROUPS.map(group => (
+                <button
+                  key={group.key}
+                  type="button"
+                  role="tab"
+                  className={`editor-workflow-tab ${activeWorkflowGroup === group.key ? "active" : ""}`}
+                  aria-selected={activeWorkflowGroup === group.key}
+                  onClick={() => handleWorkflowSelect(group.key)}
+                >
+                  <span>{group.icon}</span>
+                  <span>{t(group.labelKey as any)}</span>
+                </button>
+              ))}
+            </div>
+            <div className="editor-workflow-panel" role="tabpanel">
+              <div>
+                <strong>{t(activeWorkflow.labelKey as any)}</strong>
+                <span>{t(activeWorkflow.descKey as any)}</span>
+              </div>
+              {activeWorkflowGroup === "quick" && (
+                <button type="button" className="editor-workflow-action" onClick={handleAutoEnhance}>
+                  {t("editor.auto")}
+                </button>
+              )}
+              {activeWorkflowGroup === "compose" && (
+                <div className="editor-workflow-actions">
+                  <button type="button" className="editor-workflow-action" onClick={() => setShowTextPanel(!showTextPanel)}>{t("editor.addText")}</button>
+                  <button type="button" className="editor-workflow-action" onClick={() => setShowStickerPanel(!showStickerPanel)}>{t("editor.uploadOverlay")}</button>
+                  <button type="button" className="editor-workflow-action" onClick={() => setShowFramePanel(!showFramePanel)}>{t("editor.frame.none")}</button>
+                </div>
+              )}
+              {activeWorkflowGroup === "export" && (
+                <div className="editor-workflow-actions">
+                  <button type="button" className="editor-workflow-action" onClick={() => setShowCompare(!showCompare)}>{t("editor.compare")}</button>
+                  <button type="button" className="editor-workflow-action editor-workflow-action--primary" onClick={() => setShowExport(true)}>{t("editor.export")}</button>
+                </div>
+              )}
+            </div>
+            {exportStatus.state !== "idle" && (
+              <div className={`editor-export-status editor-export-status--${exportStatus.state}`} role={exportStatus.state === "failed" ? "alert" : "status"} aria-live="polite">
+                <span>{t(exportStatus.messageKey as any)}</span>
+                {exportStatus.state === "failed" && (
+                  <button type="button" onClick={() => setShowExport(true)}>{t("editor.exportStatus.retry")}</button>
+                )}
+              </div>
+            )}
+          </section>
+        )}
 
         {/* Text input panel */}
         {showTextPanel && (
@@ -924,18 +1032,28 @@ export default function PhotoEditorPage() {
 
           {originalRef.current && (
             <div className="editor-beauty-panel">
-              <div className="editor-categories">
-                {CATEGORIES.map(c => (
-                  <button key={c.key} type="button" className={`editor-cat-btn ${cat === c.key ? "active" : ""}`}
-                    aria-pressed={cat === c.key}
-                    onClick={() => { setCat(c.key); if (TOOLS[c.key]?.length) setTool(TOOLS[c.key][0].key); }}>
-                    <span>{c.icon}</span><span>{t(c.labelKey as any)}</span>
-                  </button>
-                ))}
-              </div>
-              <p className="editor-cat-desc">{t(CATEGORY_DESCRIPTIONS[cat] as any)}</p>
+              {workflowCategories.length > 0 ? (
+                <>
+                  <div className="editor-categories">
+                    {workflowCategories.map(c => (
+                      <button key={c.key} type="button" className={`editor-cat-btn ${cat === c.key ? "active" : ""}`}
+                        aria-pressed={cat === c.key}
+                        onClick={() => { setCat(c.key); if (TOOLS[c.key]?.length) setTool(TOOLS[c.key][0].key); }}>
+                        <span>{c.icon}</span><span>{t(c.labelKey as any)}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="editor-cat-desc">{t(CATEGORY_DESCRIPTIONS[cat] as any)}</p>
+                </>
+              ) : (
+                <div className="editor-export-card">
+                  <strong>{t("editor.exportSummaryTitle")}</strong>
+                  <span>{t("editor.exportSummaryDesc")}</span>
+                  <button type="button" className="editor-btn editor-btn--primary" onClick={() => setShowExport(true)}>{t("editor.export")}</button>
+                </div>
+              )}
 
-              {cat === "filter" ? (
+              {workflowCategories.length === 0 ? null : cat === "filter" ? (
                 <div className="editor-filter-grid">
                   {FILTERS.map((f, i) => (
                     <button key={i} type="button" className="editor-filter-btn" onClick={() => applyPreset(f.settings)}>
