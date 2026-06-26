@@ -28,6 +28,7 @@ export function WorkshopDetailPage() {
   const [showPayment, setShowPayment] = useState(false);
   const [registrationId, setRegistrationId] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [paymentNotice, setPaymentNotice] = useState<"pending" | null>(null);
 
   useGsapPageEffects(rootRef);
 
@@ -52,6 +53,7 @@ export function WorkshopDetailPage() {
     const result = await registration.register(id);
     if (result) {
       setRegistrationId(result.registrationId ?? null);
+      setPaymentNotice(null);
       if (result.requiresPayment) {
         setShowPayment(true);
       } else {
@@ -184,8 +186,14 @@ export function WorkshopDetailPage() {
                 metadata={{ workshopTitle: getTitle(workshop, lang), name: registration.formName.trim() }}
                 onSuccess={() => {
                   registration.setFormMsg(t("workshops.form.success"));
+                  setPaymentNotice(null);
                   setShowPayment(false);
                   registration.resetForm();
+                }}
+                onPending={() => {
+                  setPaymentNotice("pending");
+                  setShowPayment(false);
+                  setShowConfirmation(true);
                 }}
                 onError={() => {}}
                 onCancel={() => setShowPayment(false)}
@@ -276,8 +284,14 @@ export function WorkshopDetailPage() {
               <p><strong>{t("workshops.confirmation.name")}:</strong> {registration.formName}</p>
               <p><strong>{t("workshops.confirmation.contact")}:</strong> {registration.formContact}</p>
             </div>
+            {paymentNotice === "pending" && (
+              <div className="workshop-payment-status-note" role="status">
+                <strong>{t("workshopDetail.paymentPendingTitle", "Payment pending")}</strong>
+                <span>{t("workshopDetail.paymentPendingDesc", "No charge was made. We will confirm payment options before your workshop payment is collected.")}</span>
+              </div>
+            )}
             <p className="workshop-confirmation-email">{t("workshops.confirmation.emailSent", "A confirmation email has been sent to your email address.")}</p>
-            <Button type="primary" onClick={() => { setShowConfirmation(false); registration.resetForm(); }}>
+            <Button type="primary" onClick={() => { setShowConfirmation(false); setPaymentNotice(null); registration.resetForm(); }}>
               {t("workshops.confirmation.close", "Close")}
             </Button>
           </div>

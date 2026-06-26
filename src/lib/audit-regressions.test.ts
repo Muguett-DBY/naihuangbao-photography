@@ -363,6 +363,26 @@ describe("audit regression coverage", () => {
     }
   });
 
+  it("keeps course and workshop payment entries aligned with pending/manual follow-up semantics", () => {
+    const courseDetailSource = readFileSync(resolve(root, "src/pages/CourseDetailPage.tsx"), "utf8");
+    const workshopDetailSource = readFileSync(resolve(root, "src/pages/WorkshopDetailPage.tsx"), "utf8");
+
+    expect(courseDetailSource).toContain("onPending");
+    expect(courseDetailSource).toContain("courseDetail.paymentPendingTitle");
+    expect(courseDetailSource).toContain("course-payment-status-note");
+    expect(workshopDetailSource).toContain("onPending");
+    expect(workshopDetailSource).toContain("workshopDetail.paymentPendingTitle");
+    expect(workshopDetailSource).toContain("workshop-payment-status-note");
+    expect(editorCssSource).toContain(".course-payment-status-note");
+    expect(editorCssSource).toContain(".workshop-payment-status-note");
+    for (const locale of Object.values(locales)) {
+      expect(locale.courseDetail.paymentPendingTitle).toBeTruthy();
+      expect(locale.courseDetail.paymentPendingDesc).toBeTruthy();
+      expect(locale.workshopDetail.paymentPendingTitle).toBeTruthy();
+      expect(locale.workshopDetail.paymentPendingDesc).toBeTruthy();
+    }
+  });
+
   it("keeps the dashboard workspace readable and actionable across breakpoints", () => {
     const dashboardPage = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
     const workspacePath = resolve(root, "src/components/dashboard/DashboardWorkspace.tsx");
