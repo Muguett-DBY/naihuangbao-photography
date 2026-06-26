@@ -977,3 +977,39 @@ Webhook 状态矩阵加固：用签名 webhook fixture 覆盖 processing、faile
 
 ### 推荐下一轮优先执行的旗舰级主改动
 支付状态矩阵验收：从 webhook、confirm API、客户 dashboard、管理员 booking 队列、i18n、文档和 E2E 逐项检查 pending/processing/succeeded/failed/cancelled/refunded 是否一致，并修复发现的问题。
+
+---
+
+## Campaign 014 Stage 5 — Payment Status Matrix Check
+
+### 承接的上一轮方向
+- 上一阶段推荐旗舰：支付状态矩阵验收。
+- 本阶段检查 webhook、confirm API、客户 dashboard、管理员 booking 队列、i18n、runbook 和 E2E 的状态一致性。
+
+### 完成内容
+- 发现并修复真实漂移：runbook 仍遗漏 `refunded`，且 `charge.refunded` 行没有写明实际存储状态。
+- 更新 `docs/payment-live-readiness.md`，补齐 `refunded` 状态、webhook matrix 和管理员筛选检查项。
+- booking E2E 增加 refunded dashboard 可见断言，确认用户侧能看到退款状态。
+- 审计回归增加 runbook `refunded` 保护。
+
+### 已通过的验证
+- Targeted：`audit-regressions` 51/51 通过。
+- Playwright booking flow：6/6 通过，包含 refunded dashboard 断言。
+- TypeScript / lint：通过。
+- Vitest：239/239 通过。
+- `build:full` + performance budget：通过。
+- Playwright smoke against Pages preview：13/13 通过。
+- GitHub Actions：CI run `28233345665` 通过（main / `772ad0c`）。
+
+### 遗留风险
+- Refund reconciliation 仍缺少 charge id、refund amount、actor、timestamp 等结构化记录。
+- 真实 Stripe Payment Element 仍未启用。
+- 大字体包与 `face-api-vendor` 仍是主要体积来源，但当前 performance budget 通过。
+
+### 下一轮建议方向
+1. IMPROVE：增加 refund reconciliation 基础记录，先记录 refund metadata，不启用真实退款。
+2. IMPROVE：继续优化字体/face-api 资产体积，降低首屏传输压力。
+3. CHECK：上线前对 live Stripe 环境变量、webhook secret 和 Payment Element 进行最后验收。
+
+### 推荐下一轮优先执行的旗舰级主改动
+退款对账基础：在不启用真实退款的前提下，为 `charge.refunded` 记录结构化 refund metadata 或 audit 事件，让后续 live refunds 有可追踪基础。

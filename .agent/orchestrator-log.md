@@ -560,3 +560,26 @@ Beginning execution.
 - **Risk**: Refund event handling now records `refunded` status, but full refund reconciliation still needs charge id, refund amount, actor, and timestamp fields before live refunds are operational.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a payment status matrix audit across API, customer dashboard, admin, i18n, and E2E.
 - **Status**: COMPLETE
+
+### Stage 5 / 6 — CHECK
+- **Prompt**: `AGENT_CHECK_MAIN.txt`
+- **Objective**: Audit the payment status matrix across API, customer dashboard, admin queue, i18n, E2E, and live-readiness documentation, then fix verified drift.
+- **Start state**: `main` at `0712868`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Stage 4 recommended a payment status matrix audit after adding `refunded`.
+- **Completed locally**:
+  - Found real drift: `docs/payment-live-readiness.md` still omitted `refunded` from the client/admin status model and described `charge.refunded` as "refund recorded" instead of the actual stored `refunded` status.
+  - Updated the runbook status list, webhook event matrix, and verification checklist to include `refunded`.
+  - Added audit regression coverage to keep the runbook aligned with the `refunded` status.
+  - Expanded booking E2E so the customer dashboard visibly renders both pending and refunded deposit states.
+- **Local verification**:
+  - Targeted: `npm test -- src/lib/audit-regressions.test.ts` — 51/51 passed.
+  - Playwright booking flow against Pages preview — 6/6 passed, including refunded dashboard assertion.
+  - `npm run lint` — passed.
+  - `npm test` — 239/239 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against Pages preview — 13/13 passed.
+- **Commit**: `772ad0c` — `fix: align payment status matrix docs`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28233345665` passed.
+- **Risk**: Status matrix is now aligned, but full refund reconciliation data model remains future work.
+- **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is a small but real refund reconciliation foundation without enabling live payments.
+- **Status**: COMPLETE
