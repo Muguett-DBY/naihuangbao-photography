@@ -333,6 +333,18 @@ describe("audit regression coverage", () => {
     expect(adminBookingsSource).toContain("formatPaymentAmount");
   });
 
+  it("keeps payment confirmation states safe and webhook handling idempotent", () => {
+    const paymentForm = readFileSync(resolve(root, "src/components/PaymentForm.tsx"), "utf8");
+
+    expect(paymentConfirmSource).toContain("normalizeStoredPaymentStatus");
+    expect(paymentConfirmSource).toContain("toClientConfirmationStatus");
+    expect(paymentConfirmSource).toContain("nextAction");
+    expect(paymentWebhookSource).toContain("idempotent: true");
+    expect(paymentWebhookSource).toContain("existingStatus === normalizedStatus");
+    expect(paymentForm).toContain('outcome === "pending"');
+    expect(paymentForm).toContain("payment.cancelledDesc");
+  });
+
   it("keeps the dashboard workspace readable and actionable across breakpoints", () => {
     const dashboardPage = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
     const workspacePath = resolve(root, "src/components/dashboard/DashboardWorkspace.tsx");

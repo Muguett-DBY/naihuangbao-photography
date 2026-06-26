@@ -6,6 +6,21 @@ type ConfirmBody = {
   clientSecret?: string;
 };
 
+function normalizeStoredPaymentStatus(status: string) {
+  if (status === "canceled") return "cancelled";
+  if (["pending", "processing", "succeeded", "failed", "cancelled"].includes(status)) return status;
+  return "pending";
+}
+
+function toClientConfirmationStatus(status: string) {
+  if (status === "pending") return "requires_confirmation";
+  if (status === "processing") return "processing";
+  if (status === "succeeded") return "succeeded";
+  if (status === "failed") return "failed";
+  if (status === "cancelled") return "cancelled";
+  return "requires_payment_method";
+}
+
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const publicActionError = requirePublicMutationRequest(context.request);
   if (publicActionError) return publicActionError;
@@ -28,25 +43,37 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   try {
     const record = await context.env.DB.prepare(
-      `SELECT id, status, amount_cents, currency, purpose FROM payment_intents WHERE id = ? AND client_secret = ?`,
+      `SELECT id, status, amount_cents, currency, purpose, provider FROM payment_intents WHERE id = ? AND client_secret = ?`,
     ).bind(body.paymentIntentId, body.clientSecret).first() as {
       id: string;
       status: string;
       amount_cents: number;
       currency: string;
       purpose: string;
+      provider: string;
     } | null;
 
     if (!record) {
       return jsonResponse({ error: "Payment intent not found" }, 404);
     }
 
+    const paymentStatus = normalizeStoredPaymentStatus(record.status);
+    const confirmationStatus = toClientConfirmationStatus(paymentStatus);
+    const nextAction = record.provider === "placeholder"
+      ? "manual_follow_up"
+      : confirmationStatus === "succeeded" || confirmationStatus === "failed" || confirmationStatus === "cancelled"
+        ? "none"
+        : "confirm_payment";
+
     return jsonResponse({
-      status: record.status,
+      status: confirmationStatus,
+      paymentStatus,
       paymentIntentId: record.id,
       amountCents: record.amount_cents,
       currency: record.currency,
       purpose: record.purpose,
+      provider: record.provider,
+      nextAction,
     }, 200);
   } catch (error) {
     return unavailable("Failed to confirm payment", error, { route: "/api/payment/confirm", method: "POST" });
