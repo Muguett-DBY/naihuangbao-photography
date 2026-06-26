@@ -30,15 +30,20 @@ import { ShareMenu } from "./ShareMenu";
 
 type StyleFilter = PhotoStyle | "all";
 type ViewMode = "masonry" | "compact";
+type SortMode = "default" | "newest" | "featured";
 
 interface GalleryPersistedState {
   filter: StyleFilter;
+  album: string;
+  dateRange: DateRange;
   search: string;
   view: ViewMode;
+  sort: SortMode;
 }
 
 const STYLE_FILTERS: StyleFilter[] = ["all", "jiangnan", "street", "park", "sweet", "couple", "indoor"];
 const VIEW_MODES: ViewMode[] = ["masonry", "compact"];
+const SORT_MODES: SortMode[] = ["default", "newest", "featured"];
 const GALLERY_STATE_KEY = "nhb-gallery-discovery-state";
 const tones = ["rose", "sage", "cream", "ink"] as const;
 const PAGE_SIZE = 12;
@@ -57,6 +62,14 @@ function isViewMode(value: string | null): value is ViewMode {
   return Boolean(value && VIEW_MODES.includes(value as ViewMode));
 }
 
+function isDateRange(value: string | null): value is DateRange {
+  return Boolean(value && ["all", "last-30", "last-90", "last-365", "older"].includes(value));
+}
+
+function isSortMode(value: string | null): value is SortMode {
+  return Boolean(value && SORT_MODES.includes(value as SortMode));
+}
+
 function loadPersistedState(): GalleryPersistedState | null {
   if (typeof window === "undefined") return null;
   try {
@@ -65,8 +78,11 @@ function loadPersistedState(): GalleryPersistedState | null {
     const parsed = JSON.parse(raw) as Partial<GalleryPersistedState>;
     return {
       filter: isStyleFilter(parsed.filter ?? null) ? (parsed.filter as StyleFilter) : "all",
+      album: typeof parsed.album === "string" && parsed.album ? parsed.album : "all",
+      dateRange: isDateRange(parsed.dateRange ?? null) ? (parsed.dateRange as DateRange) : "all",
       search: typeof parsed.search === "string" ? parsed.search : "",
       view: isViewMode(parsed.view ?? null) ? (parsed.view as ViewMode) : "masonry",
+      sort: isSortMode(parsed.sort ?? null) ? (parsed.sort as SortMode) : "default",
     };
   } catch {
     return null;
@@ -79,33 +95,42 @@ function persistGalleryState(state: GalleryPersistedState) {
   } catch { /* quota exceeded — ignore */ }
 }
 
-function getInitialState(searchParams: URLSearchParams): { filter: StyleFilter; search: string; view: ViewMode; restored: boolean } {
+function getInitialState(searchParams: URLSearchParams): GalleryPersistedState & { restored: boolean } {
   const urlFilter = searchParams.get("style");
+  const urlAlbum = searchParams.get("album");
+  const urlDate = searchParams.get("date");
   const urlSearch = searchParams.get("q") || "";
   const urlView = searchParams.get("view");
+  const urlSort = searchParams.get("sort");
 
   // URL params take priority
-  if (isStyleFilter(urlFilter) || urlSearch || isViewMode(urlView)) {
+  if (isStyleFilter(urlFilter) || urlAlbum || isDateRange(urlDate) || urlSearch || isViewMode(urlView) || isSortMode(urlSort)) {
     return {
       filter: isStyleFilter(urlFilter) ? urlFilter : "all",
+      album: urlAlbum || "all",
+      dateRange: isDateRange(urlDate) ? urlDate : "all",
       search: urlSearch,
       view: isViewMode(urlView) ? urlView : "masonry",
+      sort: isSortMode(urlSort) ? urlSort : "default",
       restored: false,
     };
   }
 
   // Fall back to persisted state
   const persisted = loadPersistedState();
-  if (persisted && (persisted.filter !== "all" || persisted.search || persisted.view !== "masonry")) {
+  if (persisted && (persisted.filter !== "all" || persisted.album !== "all" || persisted.dateRange !== "all" || persisted.search || persisted.view !== "masonry" || persisted.sort !== "default")) {
     return {
       filter: persisted.filter,
+      album: persisted.album,
+      dateRange: persisted.dateRange,
       search: persisted.search,
       view: persisted.view,
+      sort: persisted.sort,
       restored: true,
     };
   }
 
-  return { filter: "all", search: "", view: "masonry", restored: false };
+  return { filter: "all", album: "all", dateRange: "all", search: "", view: "masonry", sort: "default", restored: false };
 }
 
 function VideoPreview({ videoUrl, posterUrl, title }: { videoUrl: string; posterUrl: string; title: string }) {
@@ -194,15 +219,15 @@ export function Gallery() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialState = useMemo(() => getInitialState(searchParams), []);
   const [filter, setFilter] = useState<StyleFilter>(initialState.filter);
-  const [albumFilter, setAlbumFilter] = useState<string>("all");
-  const [dateRange, setDateRange] = useState<DateRange>("all");
+  const [albumFilter, setAlbumFilter] = useState<string>(initialState.album);
+  const [dateRange, setDateRange] = useState<DateRange>(initialState.dateRange);
   const [searchQuery, setSearchQuery] = useState(initialState.search);
   const [debouncedSearch, setDebouncedSearch] = useState(initialState.search);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [quickViewPhoto, setQuickViewPhoto] = useState<PhotoItem | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [viewMode, setViewMode] = useState<ViewMode>(initialState.view);
-  const [sortMode, setSortMode] = useState<"default" | "newest" | "featured">("default");
+  const [sortMode, setSortMode] = useState<SortMode>(initialState.sort);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [touchedId, setTouchedId] = useState<string | null>(null);
   const [showRestored, setShowRestored] = useState(initialState.restored);
@@ -270,11 +295,12 @@ export function Gallery() {
   const albumLabel = albumFilter === "all" ? "" : albumFilter;
   const dateRangeLabel = dateRange === "all" ? "" : t(`gallery.dateRanges.${dateRange}`, dateRange);
   const viewLabel = t(viewMode === "compact" ? "gallery.viewCompact" : "gallery.viewMasonry");
-  const hasActiveDiscovery = filter !== "all" || Boolean(searchQuery.trim() || debouncedSearch.trim()) || viewMode !== "masonry" || albumFilter !== "all" || dateRange !== "all";
+  const sortLabel = t(`gallery.sort${sortMode.charAt(0).toUpperCase()}${sortMode.slice(1)}`, sortMode);
+  const hasActiveDiscovery = filter !== "all" || Boolean(searchQuery.trim() || debouncedSearch.trim()) || viewMode !== "masonry" || albumFilter !== "all" || dateRange !== "all" || sortMode !== "default";
   const isRemoteSyncing = !remoteLoaded && sourcePhotos.length === 0;
 
   const savedSearches = useSavedSearches();
-  const currentSearchKey = `${filter}::${debouncedSearch}::${viewMode}`;
+  const currentSearchKey = `${filter}::${albumFilter}::${dateRange}::${debouncedSearch}::${viewMode}::${sortMode}`;
   const isCurrentSaved = savedSearches.entries.some((item) => item.id === currentSearchKey);
   const canSaveSearch = hasActiveDiscovery && !isCurrentSaved;
 
@@ -296,12 +322,12 @@ export function Gallery() {
     setIsTransitioning(true);
     const timer = setTimeout(() => setIsTransitioning(false), 400);
     return () => clearTimeout(timer);
-  }, [filter, debouncedSearch]);
+  }, [filter, albumFilter, dateRange, debouncedSearch, sortMode]);
 
   // Reset visible count when filter or debounced search changes
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [filter, debouncedSearch, viewMode]);
+  }, [filter, albumFilter, dateRange, debouncedSearch, viewMode, sortMode]);
 
   // Auto-dismiss restored banner after 5 seconds
   useEffect(() => {
@@ -317,18 +343,21 @@ export function Gallery() {
       params.set("style", filter);
       track("gallery_filter", { style: filter });
     }
+    if (albumFilter !== "all") params.set("album", albumFilter);
+    if (dateRange !== "all") params.set("date", dateRange);
     if (debouncedSearch) {
       params.set("q", debouncedSearch);
       track("gallery_search", { query: debouncedSearch });
     }
     if (viewMode !== "masonry") params.set("view", viewMode);
+    if (sortMode !== "default") params.set("sort", sortMode);
     setSearchParams(params, { replace: true });
-  }, [filter, debouncedSearch, viewMode, setSearchParams]);
+  }, [filter, albumFilter, dateRange, debouncedSearch, viewMode, sortMode, setSearchParams]);
 
   // Persist all gallery discovery state to localStorage
   useEffect(() => {
-    persistGalleryState({ filter, search: debouncedSearch, view: viewMode });
-  }, [filter, debouncedSearch, viewMode]);
+    persistGalleryState({ filter, album: albumFilter, dateRange, search: debouncedSearch, view: viewMode, sort: sortMode });
+  }, [filter, albumFilter, dateRange, debouncedSearch, viewMode, sortMode]);
 
   const resetGalleryDiscovery = useCallback(() => {
     setFilter("all");
@@ -337,6 +366,7 @@ export function Gallery() {
     setSearchQuery("");
     setDebouncedSearch("");
     setViewMode("masonry");
+    setSortMode("default");
     try { window.localStorage.removeItem(GALLERY_STATE_KEY); } catch { /* ignore */ }
     setShowRestored(false);
     searchInputRef.current?.focus();
@@ -605,6 +635,9 @@ export function Gallery() {
             {viewMode !== "masonry" && (
               <span>{t("gallery.activeView", { view: viewLabel, defaultValue: `View: ${viewLabel}` })}</span>
             )}
+            {sortMode !== "default" && (
+              <span>{t("gallery.sortLabel", "Sort photos")}: {sortLabel}</span>
+            )}
             <button type="button" onClick={resetGalleryDiscovery}>
               {t("gallery.clearDiscovery")}
             </button>
@@ -615,9 +648,12 @@ export function Gallery() {
                 onClick={() => {
                   savedSearches.save({
                     filter,
+                    album: albumFilter,
+                    dateRange,
                     search: debouncedSearch,
                     view: viewMode,
-                    label: `${filterLabel}${debouncedSearch ? ` · ${debouncedSearch}` : ""}`,
+                    sort: sortMode,
+                    label: [filterLabel, albumLabel, dateRangeLabel, debouncedSearch, viewMode !== "masonry" ? viewLabel : "", sortMode !== "default" ? sortLabel : ""].filter(Boolean).join(" · "),
                   });
                 }}
                 aria-label={t("gallery.saveSearch", "Save this search")}
@@ -639,9 +675,12 @@ export function Gallery() {
                   type="button"
                   onClick={() => {
                     setFilter(item.filter as StyleFilter);
+                    setAlbumFilter(item.album || "all");
+                    setDateRange((item.dateRange || "all") as DateRange);
                     setSearchQuery(item.search);
                     setDebouncedSearch(item.search);
                     setViewMode(item.view as ViewMode);
+                    setSortMode((item.sort || "default") as SortMode);
                   }}
                 >
                   {item.label}

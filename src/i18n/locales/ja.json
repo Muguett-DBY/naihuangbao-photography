@@ -70,6 +70,17 @@
     "saveSearch": "検索を保存",
     "savedSearches": "保存済みの検索",
     "removeSavedSearch": "保存済みの検索を削除",
+    "facetsLabel": "追加フィルター",
+    "albumLabel": "アルバム",
+    "albumAll": "すべてのアルバム",
+    "dateRangeLabel": "期間",
+    "dateRangeAll": "すべての期間",
+    "dateRanges": {
+      "last-30": "過去30日",
+      "last-90": "過去90日",
+      "last-365": "過去1年",
+      "older": "1年以上前"
+    },
     "sortLabel": "写真を並び替え",
     "sortDefault": "デフォルト順",
     "sortNewest": "新しい順",
@@ -86,6 +97,7 @@
     "dismiss": "閉じる",
     "tryFilters": "これらのスタイルをお試し：",
     "viewDetails": "詳細",
+    "photos": "枚",
     "filters": {
       "all": "すべて",
       "jiangnan": "江南",

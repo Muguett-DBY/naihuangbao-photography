@@ -222,3 +222,25 @@ Beginning execution.
 - **Risk**: Dashboard remains auth-gated; visual validation used mocked authenticated session, matching the existing E2E pattern.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
 - **Status**: COMPLETE
+
+### Stage 4 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Complete Gallery discovery persistence so advanced filters can be shared, restored, saved, and replayed without losing album/date/sort choices.
+- **Start state**: `main` at `484bb39`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Stage 3 recommended Gallery search/filter state enhancement as the next product improvement after dashboard UI/UX.
+- **Completed locally**:
+  - Persisted album, date range, and sort mode in Gallery URL params.
+  - Persisted the same advanced facets in `nhb-gallery-discovery-state`.
+  - Extended saved searches to include album, date range, view, sort, and backward-compatible defaults.
+  - Replayed saved searches into the complete Gallery state, not just style/search/view.
+  - Added localized album/date/facet copy across zh-CN, en, ja, and ko.
+  - Added source regressions for advanced Gallery state persistence and saved-search fields.
+- **Local verification so far**:
+  - Red: `npm test -- src/lib/gallery-uiux.test.ts src/lib/saved-searches.test.ts` failed on missing advanced persistence fields.
+  - Green: same command passed, 7/7 tests.
+  - `npm run lint` — passed.
+  - `npm test` — 225/225 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Browser check against fresh Pages preview — Gallery URL/localStorage/saved-search replay preserved album/date/search/view/sort, with localized saved-search label.
+- **Risk**: Existing old saved searches are migrated with default `album=all`, `dateRange=all`, and `sort=default`; this keeps them usable but not retroactively more specific.
+- **Status**: READY TO COMMIT

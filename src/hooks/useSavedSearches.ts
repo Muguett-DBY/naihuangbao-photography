@@ -7,8 +7,11 @@ const MAX_ITEMS = 8;
 export type SavedSearch = {
   id: string;
   filter: string;
+  album: string;
+  dateRange: string;
   search: string;
   view: string;
+  sort: string;
   label: string;
   savedAt: number;
 };
@@ -28,6 +31,12 @@ function readStored(): SavedSearch[] {
           typeof (entry as SavedSearch).id === "string" &&
           typeof (entry as SavedSearch).filter === "string",
       )
+      .map((entry) => ({
+        ...entry,
+        album: typeof entry.album === "string" ? entry.album : "all",
+        dateRange: typeof entry.dateRange === "string" ? entry.dateRange : "all",
+        sort: typeof entry.sort === "string" ? entry.sort : "default",
+      }))
       .slice(0, MAX_ITEMS);
   } catch {
     return [];
@@ -60,7 +69,7 @@ export function useSavedSearches() {
   const save = useCallback(
     (entry: Omit<SavedSearch, "id" | "savedAt">) => {
       const current = readStored();
-      const id = `${entry.filter}::${entry.search}::${entry.view}`;
+      const id = `${entry.filter}::${entry.album}::${entry.dateRange}::${entry.search}::${entry.view}::${entry.sort}`;
       const filtered = current.filter((item) => item.id !== id);
       const next: SavedSearch[] = [
         { ...entry, id, savedAt: Date.now() },
