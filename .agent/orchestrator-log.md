@@ -314,4 +314,22 @@ Beginning execution.
 - **Prompt**: `AGENT_IMPROVE_MAIN.txt`
 - **Objective**: Turn the portrait editor mobile workflow into grouped task lanes for color, filters, text/frame composition, and export, while fixing visible tool label translation gaps and adding export progress/failure recovery.
 - **Start state**: `main` at `58981e7`; only protected `.agent/orchestrator-state.json` was unstaged.
-- **Status**: IN PROGRESS
+- **Completed locally**:
+  - Added editor workflow groups for beauty, color/filter, composition, and export.
+  - Added export generation status with ready/failed feedback and retry entry.
+  - Fixed advanced editor tool label keys so background/local/double-exposure tools render localized labels.
+  - Switched face detection to `TinyFaceDetectorOptions`, matching the self-hosted tiny detector model actually loaded by the editor.
+  - Added regression coverage for workflow grouping, export recovery, localized tool labels, and detector/model alignment.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/editor-regressions.test.ts` failed on missing workflow/export recovery and wrong label keys, then passed 13/13.
+  - Red/green: detector regression failed until `detectSingleFace` used `new api.TinyFaceDetectorOptions`, then passed.
+  - `npm run lint` — passed.
+  - `npm test` — 228/228 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Browser verification against `wrangler pages dev dist`: desktop and 390px mobile editor upload, workflow tabs, export modal, download status, no console errors, no horizontal overflow.
+  - Playwright smoke with `BASE_URL=http://127.0.0.1:4174` and `e2e/playwright.config.ts` — 13/13 passed.
+- **Commit**: `52951c4` — `feat: improve mobile editor workflow`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28211209844` passed (`52951c4`).
+- **Risk**: Large font packages and `face-api-vendor` remain the dominant bundle assets; current performance budget passes.
+- **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
+- **Status**: COMPLETE
