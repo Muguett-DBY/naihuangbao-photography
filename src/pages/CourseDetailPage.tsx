@@ -32,6 +32,7 @@ export function CourseDetailPage() {
   const { sendPaymentReceipt } = useNotification();
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
+  const [purchaseNotice, setPurchaseNotice] = useState<"pending" | null>(null);
   const [completedModules, setCompletedModules] = useState<Set<string>>(() => {
     if (!id) return new Set();
     try {
@@ -361,6 +362,7 @@ export function CourseDetailPage() {
                 metadata={{ title: getTitle(course, lang) }}
                 onSuccess={async (paymentIntentId) => {
                   setShowPayment(false);
+                  setPurchaseNotice(null);
 
                   if (user?.email) {
                     await sendPaymentReceipt(user.email, {
@@ -371,6 +373,10 @@ export function CourseDetailPage() {
                       name: user.displayName || user.email,
                     });
                   }
+                }}
+                onPending={() => {
+                  setShowPayment(false);
+                  setPurchaseNotice("pending");
                 }}
                 onError={() => {}}
                 onCancel={() => setShowPayment(false)}
@@ -383,7 +389,13 @@ export function CourseDetailPage() {
                 <p className="course-detail-purchase-desc">
                   {t("courseDetail.purchaseDesc", "Get full access to all course modules and materials.")}
                 </p>
-                <Button type="primary" onClick={() => setShowPayment(true)}>
+                {purchaseNotice === "pending" && (
+                  <div className="course-payment-status-note" role="status">
+                    <strong>{t("courseDetail.paymentPendingTitle", "Payment pending")}</strong>
+                    <span>{t("courseDetail.paymentPendingDesc", "No charge was made. We will follow up before granting paid course access.")}</span>
+                  </div>
+                )}
+                <Button type="primary" onClick={() => { setPurchaseNotice(null); setShowPayment(true); }}>
                   <ShoppingCart size={14} />
                   {t("courseDetail.buyNow", "Buy Course")}
                 </Button>

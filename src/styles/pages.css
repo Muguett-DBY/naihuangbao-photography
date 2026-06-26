@@ -4027,6 +4027,28 @@
   min-width: min(180px, 100%);
 }
 
+.course-payment-status-note,
+.workshop-payment-status-note {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  max-width: 460px;
+  margin: 12px auto;
+  padding: 12px 14px;
+  border: 1px solid rgba(217, 119, 6, 0.24);
+  border-radius: 10px;
+  background: rgba(254, 243, 199, 0.48);
+  color: var(--caramel-muted);
+  font-size: 0.86rem;
+  line-height: 1.55;
+}
+
+.course-payment-status-note strong,
+.workshop-payment-status-note strong {
+  color: var(--caramel-ink);
+  font-size: 0.9rem;
+}
+
 @media (max-width: 560px) {
   .payment-form-card {
     padding: 18px;

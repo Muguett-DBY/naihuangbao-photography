@@ -221,6 +221,12 @@ Beginning execution.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
 - **Status**: COMPLETE
 
+### Stage 4 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Extend the payment status consistency work beyond booking deposits so course and workshop payment entry points handle placeholder pending/manual follow-up states explicitly.
+- **Start state**: `main` at `3a453fd`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Status**: IN PROGRESS
+
 ### Stage 3 / 6 — UIUX
 - **Prompt**: `AGENT_UIUX_MAIN.txt`
 - **Objective**: Improve the mobile dashboard first viewport by reducing the full-cover hero footprint and making core account actions available immediately.
