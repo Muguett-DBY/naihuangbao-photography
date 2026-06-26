@@ -844,7 +844,11 @@
       "waitingForPaymentConfirmation": "Waiting for customer confirmation",
       "paymentFilterAll": "All deposits",
       "paymentFilterLabel": "Filter deposits by payment status",
-      "paymentFollowUpQueue": "Payment follow-up queue"
+      "paymentFollowUpQueue": "Payment follow-up queue",
+      "paymentReadinessTitle": "Live payment readiness",
+      "paymentReadinessStripeKeys": "Set live Stripe keys before enabling Payment Element.",
+      "paymentReadinessWebhook": "Verify webhook secret and status matrix before accepting live deposits.",
+      "paymentReadinessRefunds": "Keep refunds and failed payments in manual follow-up until the runbook is complete."
     },
     "facetsLabel": "Additional filters",
     "albumLabel": "Album",

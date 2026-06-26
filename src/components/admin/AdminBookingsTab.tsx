@@ -111,6 +111,11 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
   const filteredBookings = paymentFilter === "all"
     ? bookings
     : bookings.filter((booking) => (booking.payment_status || "not_started") === paymentFilter);
+  const paymentReadinessItems = [
+    t("admin.bookings.paymentReadinessStripeKeys", "Set live Stripe keys before enabling Payment Element."),
+    t("admin.bookings.paymentReadinessWebhook", "Verify webhook secret and status matrix before accepting live deposits."),
+    t("admin.bookings.paymentReadinessRefunds", "Keep refunds and failed payments in manual follow-up until the runbook is complete."),
+  ];
 
   return (
     <div className="adm-content-panel">
@@ -140,6 +145,12 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
                 <strong>{filter.count}</strong>
               </button>
             ))}
+          </div>
+          <div className="adm-payment-readiness">
+            <strong>{t("admin.bookings.paymentReadinessTitle", "Live payment readiness")}</strong>
+            <ul>
+              {paymentReadinessItems.map((item) => <li key={item}>{item}</li>)}
+            </ul>
           </div>
         </div>
         <div className="adm-booking-list">
