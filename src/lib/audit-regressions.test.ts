@@ -222,7 +222,8 @@ describe("audit regression coverage", () => {
     expect(headersSource).toContain("frame-ancestors 'none'");
     expect(headersSource).toContain("object-src 'none'");
     expect(redirectsSource).toContain("/admin /admin/ 301");
-    expect(redirectsSource).toContain("/admin/ /index.html 200");
+    expect(redirectsSource).not.toContain("/index.html 200");
+    expect(redirectsSource).not.toContain("/* /index.html");
     expect(e2eConfigSource).toContain('testDir: "."');
     expect(e2eConfigSource).toContain("webServer");
     expect(e2eConfigSource).toContain("127.0.0.1:4174");
