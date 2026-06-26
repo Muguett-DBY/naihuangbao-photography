@@ -242,5 +242,8 @@ Beginning execution.
   - `npm test` — 225/225 passed.
   - `npm run build:full` — passed, including performance budget and bundle analysis.
   - Browser check against fresh Pages preview — Gallery URL/localStorage/saved-search replay preserved album/date/search/view/sort, with localized saved-search label.
+- **Commit**: `86760d0` — `feat: persist advanced gallery discovery state`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28208899378` passed.
 - **Risk**: Existing old saved searches are migrated with default `album=all`, `dateRange=all`, and `sort=default`; this keeps them usable but not retroactively more specific.
-- **Status**: READY TO COMMIT
+- **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`.
+- **Status**: COMPLETE
