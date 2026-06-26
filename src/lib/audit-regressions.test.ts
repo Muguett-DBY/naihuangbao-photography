@@ -383,6 +383,14 @@ describe("audit regression coverage", () => {
     }
   });
 
+  it("keeps admin booking payment status labels aligned with customer dashboard status labels", () => {
+    expect(adminBookingsSource).toContain("useTranslation");
+    expect(adminBookingsSource).toContain("dashboard.paymentStatus");
+    expect(adminBookingsSource).not.toContain("paymentStatusLabels");
+    expect(adminCssSource).toContain(".adm-booking-payment--pending");
+    expect(adminCssSource).toContain(".adm-booking-payment--processing");
+  });
+
   it("keeps the dashboard workspace readable and actionable across breakpoints", () => {
     const dashboardPage = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
     const workspacePath = resolve(root, "src/components/dashboard/DashboardWorkspace.tsx");

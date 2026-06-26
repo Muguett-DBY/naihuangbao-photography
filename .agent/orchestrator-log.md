@@ -243,6 +243,13 @@ Beginning execution.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`.
 - **Status**: COMPLETE
 
+### Stage 5 / 6 — CHECK
+- **Prompt**: `AGENT_CHECK_MAIN.txt`
+- **Objective**: Check payment status consistency across API enums, customer dashboard, admin booking cards, and payment entry points; fix any verified inconsistency.
+- **Start state**: `main` at `9e64b67`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Finding**: Admin booking cards used hard-coded Chinese payment labels and lacked distinct pending/processing payment styles, while the customer dashboard used localized `dashboard.paymentStatus.*` labels.
+- **Status**: IN PROGRESS
+
 ### Stage 3 / 6 — UIUX
 - **Prompt**: `AGENT_UIUX_MAIN.txt`
 - **Objective**: Improve the mobile dashboard first viewport by reducing the full-cover hero footprint and making core account actions available immediately.

@@ -526,6 +526,12 @@
   color: #9b7463;
 }
 
+.adm-booking-payment--pending,
+.adm-booking-payment--processing {
+  border-color: rgba(217, 119, 6, 0.28);
+  background: rgba(254, 243, 199, 0.62);
+}
+
 .adm-booking-payment--succeeded {
   border-color: rgba(74, 122, 80, 0.32);
   background: rgba(232, 246, 232, 0.78);

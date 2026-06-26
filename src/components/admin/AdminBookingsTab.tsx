@@ -1,6 +1,7 @@
 import { CalendarCheck, CheckCircle, Clock, MessageCircle, WalletCards, XCircle } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 import { isAbortError } from "../../lib/errors";
 
@@ -29,19 +30,10 @@ const statusLabels: Record<string, { label: string; icon: typeof Clock; classNam
   done: { label: "已完成", icon: XCircle, className: "badge-done" },
 };
 
-const paymentStatusLabels: Record<BookingItem["payment_status"], string> = {
-  not_started: "未发起",
-  pending: "待处理",
-  processing: "处理中",
-  succeeded: "已支付",
-  failed: "失败",
-  cancelled: "已取消",
-};
-
-function formatPaymentAmount(amountCents: number | null, currency: string | null): string {
-  if (amountCents == null || !currency) return "金额待确认";
+function formatPaymentAmount(amountCents: number | null, currency: string | null, locale: string, fallback: string): string {
+  if (amountCents == null || !currency) return fallback;
   try {
-    return new Intl.NumberFormat("zh-CN", {
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: currency.toUpperCase(),
     }).format(amountCents / (currency.toLowerCase() === "jpy" ? 1 : 100));
@@ -51,6 +43,7 @@ function formatPaymentAmount(amountCents: number | null, currency: string | null
 }
 
 export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (text: string, type: ToastType) => void; newBookingIds?: Set<string> }) {
+  const { t, i18n } = useTranslation();
   const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -102,6 +95,7 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
         <div className="adm-booking-list">
           {bookings.map((b) => {
             const st = statusLabels[b.status] || statusLabels.pending;
+            const paymentStatus = b.payment_status || "not_started";
             const Icon = st.icon;
             return (
               <div key={b.id} className={`adm-booking-card ${b.status}${newBookingIds?.has(b.id) ? " is-new" : ""}`}>
@@ -117,10 +111,10 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
                   {b.preferred_date ? <span>日期：{b.preferred_date} {b.preferred_time}</span> : null}
                   <span className="adm-booking-time">提交于：{new Date(b.created_at).toLocaleString("zh-CN")}</span>
                 </div>
-                <div className={`adm-booking-payment adm-booking-payment--${b.payment_status || "not_started"}`}>
+                <div className={`adm-booking-payment adm-booking-payment--${paymentStatus}`}>
                   <WalletCards size={15} />
-                  <span>定金：{paymentStatusLabels[b.payment_status || "not_started"]}</span>
-                  <strong>{formatPaymentAmount(b.payment_amount_cents, b.payment_currency)}</strong>
+                  <span>{t("dashboard.bookingDeposit")}: {t(`dashboard.paymentStatus.${paymentStatus}`)}</span>
+                  <strong>{formatPaymentAmount(b.payment_amount_cents, b.payment_currency, i18n.language, t("admin.bookings.amountPending", "Amount pending"))}</strong>
                   <small>{b.payment_provider ? `渠道：${b.payment_provider}` : "等待用户确认"}</small>
                 </div>
                 {b.notes ? <p className="adm-booking-notes">{b.notes}</p> : null}
