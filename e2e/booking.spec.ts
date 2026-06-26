@@ -171,20 +171,36 @@ test.describe("booking flow", () => {
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({
-        bookings: [{
-          id: "booking-1",
-          package_name: "Portrait Session",
-          preferred_date: "2099-08-18",
-          preferred_time: "morning",
-          name: "Guest",
-          status: "confirmed",
-          created_at: "2026-06-26T00:00:00.000Z",
-          payment_intent_id: "pi_placeholder_1",
-          payment_status: "pending",
-          payment_provider: "placeholder",
-          payment_amount_cents: 2000,
-          payment_currency: "cny",
-        }],
+        bookings: [
+          {
+            id: "booking-1",
+            package_name: "Portrait Session",
+            preferred_date: "2099-08-18",
+            preferred_time: "morning",
+            name: "Guest",
+            status: "confirmed",
+            created_at: "2026-06-26T00:00:00.000Z",
+            payment_intent_id: "pi_placeholder_1",
+            payment_status: "pending",
+            payment_provider: "placeholder",
+            payment_amount_cents: 2000,
+            payment_currency: "cny",
+          },
+          {
+            id: "booking-2",
+            package_name: "Refunded Session",
+            preferred_date: "2099-08-19",
+            preferred_time: "afternoon",
+            name: "Guest",
+            status: "confirmed",
+            created_at: "2026-06-26T00:00:00.000Z",
+            payment_intent_id: "pi_refunded_1",
+            payment_status: "refunded",
+            payment_provider: "stripe",
+            payment_amount_cents: 5000,
+            payment_currency: "cny",
+          },
+        ],
       }),
     }));
 
@@ -193,6 +209,8 @@ test.describe("booking flow", () => {
 
     await expect(page.locator(".dashboard-booking-deposit--pending")).toBeVisible();
     await expect(page.getByText("Pending, no charge made", { exact: true })).toBeVisible();
+    await expect(page.locator(".dashboard-booking-deposit--refunded")).toBeVisible();
+    await expect(page.getByText("Refunded", { exact: true })).toBeVisible();
     await expect(page.getByText("CN¥20.00", { exact: false })).toBeVisible();
   });
 
