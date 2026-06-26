@@ -115,7 +115,11 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
                   <WalletCards size={15} />
                   <span>{t("dashboard.bookingDeposit")}: {t(`dashboard.paymentStatus.${paymentStatus}`)}</span>
                   <strong>{formatPaymentAmount(b.payment_amount_cents, b.payment_currency, i18n.language, t("admin.bookings.amountPending", "Amount pending"))}</strong>
-                  <small>{b.payment_provider ? `渠道：${b.payment_provider}` : "等待用户确认"}</small>
+                  <small>
+                    {b.payment_provider
+                      ? `${t("admin.bookings.paymentProvider", "Provider")}: ${b.payment_provider}`
+                      : t("admin.bookings.waitingForPaymentConfirmation", "Waiting for customer confirmation")}
+                  </small>
                 </div>
                 {b.notes ? <p className="adm-booking-notes">{b.notes}</p> : null}
                 <div className="adm-booking-actions">

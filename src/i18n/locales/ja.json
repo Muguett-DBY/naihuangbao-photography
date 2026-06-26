@@ -834,6 +834,11 @@
       "error": "ログアウトリクエストに失敗しました。ローカルのログイン状態が削除されました。"
     },
     "loading": "ログイン状態を確認中...",
+    "bookings": {
+      "amountPending": "金額未確認",
+      "paymentProvider": "プロバイダー",
+      "waitingForPaymentConfirmation": "お客様の確認待ち"
+    },
     "facetsLabel": "追加フィルター",
     "albumLabel": "アルバム",
     "albumAll": "すべてのアルバム",
