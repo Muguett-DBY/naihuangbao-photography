@@ -117,6 +117,7 @@ describe("editor regression contracts", () => {
     expect(editor).not.toContain('new Error("Model loading timed out")');
     expect(editor).toContain("faceModelsPromiseRef");
     expect(editor).toContain("detectFaceLandmarks");
+    expect(read("src/lib/editor-utils.ts")).toContain("new api.TinyFaceDetectorOptions");
     expect(existsSync(resolve(root, "public/models/tiny_face_detector_model-shard1"))).toBe(true);
     expect(existsSync(resolve(root, "public/models/face_landmark_68_model-shard1"))).toBe(true);
   });
@@ -136,6 +137,45 @@ describe("editor regression contracts", () => {
     expect(pagesCss).toContain(".editor-model-retry");
     expect(zhCN).toContain("模型加载失败");
     expect(zhCN).toContain("仍可使用滤镜、文字、边框和导出");
+  });
+
+  it("groups the mobile editor workflow and exposes export recovery status", () => {
+    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const pagesCss = read("src/styles/pages.css");
+    const zhCN = read("src/i18n/locales/zh-CN.json");
+    const en = read("src/i18n/locales/en.json");
+
+    expect(editor).toContain("EDITOR_WORKFLOW_GROUPS");
+    expect(editor).toContain("activeWorkflowGroup");
+    expect(editor).toContain('className="editor-workflow-tabs"');
+    expect(editor).toContain('className="editor-workflow-panel"');
+    expect(editor).toContain("editor.exportStatus");
+    expect(editor).toContain('state: "exporting"');
+    expect(editor).toContain('state: "failed"');
+    expect(editor).toContain("try {");
+    expect(editor).toContain("catch");
+    expect(pagesCss).toContain(".editor-workflow-tabs");
+    expect(pagesCss).toContain(".editor-workflow-panel");
+    expect(pagesCss).toContain(".editor-export-status");
+    expect(zhCN).toContain("调色");
+    expect(zhCN).toContain("导出失败");
+    expect(en).toContain("Color");
+    expect(en).toContain("Export failed");
+  });
+
+  it("uses existing localized label keys for advanced editor tools", () => {
+    const constants = read("src/data/editor-constants.ts");
+
+    expect(constants).not.toContain("editor.blurBg");
+    expect(constants).not.toContain("editor.bgRemove");
+    expect(constants).not.toContain("editor.localBright");
+    expect(constants).not.toContain("editor.colorSplash");
+    expect(constants).not.toContain("editor.doubleExposure");
+    expect(constants).toContain('labelKey: "editor.blur_bg"');
+    expect(constants).toContain('labelKey: "editor.bg_remove"');
+    expect(constants).toContain('labelKey: "editor.local_bright"');
+    expect(constants).toContain('labelKey: "editor.color_splash"');
+    expect(constants).toContain('labelKey: "editor.double_exposure"');
   });
 
   it("normalizes face landmark bounds before writing canvas pixels", () => {

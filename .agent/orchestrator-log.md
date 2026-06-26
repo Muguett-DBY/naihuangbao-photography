@@ -296,3 +296,22 @@ Beginning execution.
 - **Risk**: `setup-node@v6` and `checkout@v5` require modern GitHub-hosted runner support; `ubuntu-latest` meets that expectation.
 - **Final stage status**: COMPLETE
 - **Status**: COMPLETE
+
+---
+
+## Campaign 013 — 6-Stage Product Strengthening Loop — Started 2026-06-26
+
+### Global preparation
+- **Orchestrator**: `03_LONG_6_STAGE_MAIN_V2.txt`
+- **Sequence**: IMPROVE -> IMPROVE -> UIUX -> IMPROVE -> CHECK -> IMPROVE
+- **Branch**: `main`
+- **Start state**: `58981e7`; local `main` aligned with `origin/main`.
+- **Protected existing change**: `.agent/orchestrator-state.json` remains prior metadata and will not be staged.
+- **CI commands**: `npm ci`, `npm run lint`, `npm test`, `npm run build`, `npm run perf:budget`.
+- **Previous flagship direction**: editor mobile workflow enhancement with grouped mobile tools, clearer export status, and failure recovery.
+
+### Stage 1 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Turn the portrait editor mobile workflow into grouped task lanes for color, filters, text/frame composition, and export, while fixing visible tool label translation gaps and adding export progress/failure recovery.
+- **Start state**: `main` at `58981e7`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Status**: IN PROGRESS

@@ -17,7 +17,7 @@ export async function detectFaceLandmarks(
   canvas: HTMLCanvasElement,
 ): Promise<Landmarks | null> {
   const detection = await api
-    .detectSingleFace(canvas)
+    .detectSingleFace(canvas, new api.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.45 }))
     .withFaceLandmarks();
   if (!detection) return null;
   return detection.landmarks.positions;

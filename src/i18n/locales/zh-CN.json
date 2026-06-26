@@ -1306,7 +1306,27 @@
     "before": "原图",
     "after": "修图",
     "export": "导出",
+    "workflow": {
+      "label": "修图工作流",
+      "quick": "美颜",
+      "quickDesc": "先做人像基础优化，适合快速出片。",
+      "color": "调色",
+      "colorDesc": "集中调整色温、亮度、对比和一键滤镜。",
+      "compose": "装饰",
+      "composeDesc": "添加文字、贴纸、边框、背景和局部效果。",
+      "export": "导出",
+      "exportDesc": "检查对比图并选择适合社交或打印的导出质量。"
+    },
     "exportTitle": "导出设置",
+    "exportSummaryTitle": "导出前检查",
+    "exportSummaryDesc": "确认对比效果、格式和质量后再下载，导出失败时可直接重试。",
+    "exportStatus": {
+      "idle": "准备导出",
+      "exporting": "正在生成图片...",
+      "ready": "图片已生成并开始下载",
+      "failed": "导出失败，请降低质量或重试。",
+      "retry": "重新打开导出"
+    },
     "presetSocial": "社交分享",
     "presetQuick": "快速导出",
     "presetPrint": "打印品质",
