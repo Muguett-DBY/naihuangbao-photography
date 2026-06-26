@@ -513,3 +513,27 @@ Beginning execution.
 - **Risk**: Live Stripe collection remains intentionally disabled until real environment secrets, Payment Element client integration, refund state storage, and signed webhook fixtures are configured.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is making customer-facing payment/follow-up status clearer in the booking completion experience.
 - **Status**: COMPLETE
+
+### Stage 3 / 6 — UIUX
+- **Prompt**: `AGENT_UIUX_MAIN.txt`
+- **Objective**: Make the customer-facing booking completion payment/follow-up state clearer, especially on mobile, so customers understand the booking is saved, no deposit was charged, and staff will follow up before collection.
+- **Start state**: `main` at `bd46037`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Stage 2 recommended clarifying pending/manual follow-up, no-charge state, next contact path, and dashboard visibility.
+- **Completed locally**:
+  - Added a payment clarity timeline to the booking success modal.
+  - Added clear "booking saved", "no deposit charged", and "follow-up next" steps.
+  - Added responsive mobile layout for the new clarity panel.
+  - Localized all new completion copy across zh-CN, en, ja, and ko.
+  - Added source regression coverage and real booking E2E assertions for the visible panel.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` failed on missing completion clarity UI, then passed 51/51.
+  - `npm run lint` — passed.
+  - `npm test` — 238/238 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against `wrangler pages dev dist` — 13/13 passed.
+  - Playwright booking flow against Pages preview — 6/6 passed, including the new payment clarity assertions.
+- **Commit**: `0546aed` — `feat: clarify booking payment completion`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28221882096` passed.
+- **Risk**: This clarifies placeholder/manual follow-up UX but still does not enable live card collection.
+- **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is webhook/refund status matrix coverage.
+- **Status**: COMPLETE
