@@ -1384,6 +1384,17 @@
     "placeholderNotice": "支払い機能はデモモードです。実際の請求は発生しません。",
     "pendingTitle": "デポジット状態を記録しました",
     "pendingDesc": "予約は保存済みです。請求は発生せず、デポジットは保留中です。",
+    "followUpTitle": "手動フォローアップ",
+    "pendingNextStep": "デポジットを回収する前に、利用可能な支払い方法を確認します。",
+    "cancelledNextStep": "予約は保存されています。今は支払わずに続行するか、再試行できます。",
+    "failedNextStep": "デポジットは回収されていません。再試行するか、続行してフォローアップを待てます。",
+    "continueWithoutPaying": "今は支払わずに続行",
+    "statusTrackLabel": "支払い状態",
+    "track": {
+      "request": "依頼",
+      "review": "確認",
+      "followUp": "フォロー"
+    },
     "referenceId": "参照ID",
     "continue": "続ける",
     "payLater": "後で支払う",

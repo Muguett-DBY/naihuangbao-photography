@@ -200,6 +200,12 @@ Beginning execution.
 - **Status**: COMPLETE
 
 ### Stage 3 / 6 — UIUX
+- **Prompt**: `AGENT_UIUX_MAIN.txt` was referenced by the orchestrator, but no standalone prompt file exists in `C:\Users\12031\Desktop\AGENT_ORCHESTRATOR_3_LEVELS_V2`; proceeding from the orchestrator stage type and the Stage 2 recommendation.
+- **Objective**: Improve the booking payment status experience so pending/manual follow-up, failure, and cancellation states are visually distinct and mobile-safe.
+- **Start state**: `main` at `4cbff78`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Status**: IN PROGRESS
+
+### Stage 3 / 6 — UIUX
 - **Prompt**: `AGENT_UIUX_MAIN.txt`
 - **Objective**: Improve the mobile dashboard first viewport by reducing the full-cover hero footprint and making core account actions available immediately.
 - **Start state**: `main` at `ed0b39c`; only protected `.agent/orchestrator-state.json` was unstaged.

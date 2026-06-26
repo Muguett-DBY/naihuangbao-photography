@@ -3811,6 +3811,56 @@
   margin-bottom: 16px;
 }
 
+.payment-status-track {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+}
+
+.payment-status-step {
+  min-width: 0;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  color: var(--caramel-muted);
+  font-size: 0.72rem;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.payment-status-step-dot {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(149, 105, 61, 0.24);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--caramel-muted);
+  font-weight: 800;
+}
+
+.payment-status-step.is-done,
+.payment-status-step.is-active {
+  color: var(--caramel-ink);
+  font-weight: 700;
+}
+
+.payment-status-step.is-done .payment-status-step-dot {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.36);
+  color: #15803d;
+}
+
+.payment-status-step.is-active .payment-status-step-dot {
+  background: rgba(217, 119, 6, 0.13);
+  border-color: rgba(217, 119, 6, 0.42);
+  color: #b45309;
+}
+
 .payment-form-purpose {
   font-size: 0.85rem;
   color: var(--caramel-muted);
@@ -3918,6 +3968,25 @@
   line-height: 1.6;
 }
 
+.payment-follow-up-note {
+  display: grid;
+  gap: 4px;
+  max-width: 34ch;
+  margin: 0 auto 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(217, 119, 6, 0.22);
+  background: rgba(254, 243, 199, 0.5);
+  color: var(--caramel-muted);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.payment-follow-up-note strong {
+  color: var(--caramel-ink);
+  font-size: 0.86rem;
+}
+
 .payment-transaction-id {
   font-size: 0.75rem;
   color: var(--caramel-muted);
@@ -3939,10 +4008,42 @@
   margin-bottom: 16px;
 }
 
+.payment-state-note {
+  max-width: 36ch;
+  margin: -6px auto 16px;
+  color: var(--caramel-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
 .payment-failed-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   justify-content: center;
+}
+
+.payment-failed-actions .ai-btn {
+  min-width: min(180px, 100%);
+}
+
+@media (max-width: 560px) {
+  .payment-form-card {
+    padding: 18px;
+  }
+
+  .payment-form-actions {
+    flex-direction: column;
+  }
+
+  .payment-form-actions .ai-btn,
+  .payment-failed-actions .ai-btn {
+    width: 100%;
+  }
+
+  .payment-status-step {
+    font-size: 0.68rem;
+  }
 }
 
 /* ── Dashboard Page ── */

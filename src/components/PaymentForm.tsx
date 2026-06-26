@@ -10,6 +10,7 @@ type InternalStatus = "idle" | "creating" | "confirming" | "pending" | "succeede
 
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 2000;
+type PaymentTrackStep = "request" | "review" | "followUp";
 
 export function PaymentForm({
   purpose,
@@ -42,6 +43,29 @@ export function PaymentForm({
     workshop_registration: t("payment.purpose.workshop", "Workshop Registration"),
     preset_purchase: t("payment.purpose.preset", "Preset Purchase"),
     merchandise_purchase: t("payment.purpose.merchandise", "Merchandise"),
+  };
+
+  const renderStatusTrack = (activeStep: PaymentTrackStep) => {
+    const steps: Array<{ key: PaymentTrackStep; label: string }> = [
+      { key: "request", label: t("payment.track.request", "Request") },
+      { key: "review", label: t("payment.track.review", "Review") },
+      { key: "followUp", label: t("payment.track.followUp", "Follow-up") },
+    ];
+    const activeIndex = steps.findIndex((step) => step.key === activeStep);
+
+    return (
+      <ol className="payment-status-track" aria-label={t("payment.statusTrackLabel", "Payment status")}>
+        {steps.map((step, index) => (
+          <li
+            key={step.key}
+            className={`payment-status-step${index < activeIndex ? " is-done" : ""}${index === activeIndex ? " is-active" : ""}`}
+          >
+            <span className="payment-status-step-dot" aria-hidden="true">{index + 1}</span>
+            <span>{step.label}</span>
+          </li>
+        ))}
+      </ol>
+    );
   };
 
   const simulateConfirmation = async (
@@ -159,6 +183,7 @@ export function PaymentForm({
   if (status === "succeeded") {
     return (
       <div className="payment-success">
+        {renderStatusTrack("followUp")}
         <CheckCircle size={48} className="payment-success-icon" />
         <h3>{t("payment.success", "Payment Successful")}</h3>
         <p>{t("payment.successDesc", "Your payment has been processed successfully.")}</p>
@@ -174,16 +199,21 @@ export function PaymentForm({
   if (status === "pending") {
     return (
       <div className="payment-pending" role="status">
+        {renderStatusTrack("followUp")}
         <Clock3 size={48} className="payment-pending-icon" />
         <h3>{t("payment.pendingTitle", "Deposit status recorded")}</h3>
         <p>{t("payment.pendingDesc", "Your booking is saved. No charge was made, and the deposit remains pending.")}</p>
+        <div className="payment-follow-up-note">
+          <strong>{t("payment.followUpTitle", "Manual follow-up")}</strong>
+          <span>{t("payment.pendingNextStep", "We will confirm payment options with you before any deposit is collected.")}</span>
+        </div>
         {paymentIntentId && (
           <p className="payment-transaction-id">
             {t("payment.referenceId", "Reference ID")}: {paymentIntentId.slice(0, 16)}...
           </p>
         )}
         <Button type="primary" onClick={onCancel}>
-          {t("payment.continue", "Continue")}
+          {t("payment.continueWithoutPaying", "Continue without paying now")}
         </Button>
       </div>
     );
@@ -192,11 +222,17 @@ export function PaymentForm({
   if (status === "failed" || status === "cancelled") {
     return (
       <div className="payment-failed">
+        {renderStatusTrack("review")}
         <AlertCircle size={48} className="payment-failed-icon" />
         <h3>{status === "cancelled" ? t("payment.cancelled", "Payment cancelled") : t("payment.failed", "Payment Failed")}</h3>
         {error && <p className="payment-error-msg">{error}</p>}
+        <p className="payment-state-note">
+          {status === "cancelled"
+            ? t("payment.cancelledNextStep", "Your booking is still saved. You can continue without paying or try again.")
+            : t("payment.failedNextStep", "No deposit was collected. You can retry or continue and we will follow up.")}
+        </p>
         <div className="payment-failed-actions">
-          <Button type="default" onClick={onCancel}>{t("payment.cancel", "Cancel")}</Button>
+          <Button type="default" onClick={onCancel}>{t("payment.continueWithoutPaying", "Continue without paying now")}</Button>
           <Button type="primary" onClick={handleRetry}>
             <RefreshCw size={14} />
             {t("payment.retry", "Try Again")}
@@ -214,6 +250,8 @@ export function PaymentForm({
           <h3>{t("payment.title", "Payment")}</h3>
           <Shield size={14} className="payment-form-secure" />
         </div>
+
+        {renderStatusTrack(status === "confirming" ? "review" : "request")}
 
         <div className="payment-form-amount">
           <div className="payment-form-purpose">
