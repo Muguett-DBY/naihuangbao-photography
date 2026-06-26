@@ -1050,3 +1050,41 @@ Webhook 状态矩阵加固：用签名 webhook fixture 覆盖 processing、faile
 
 ### 推荐下一轮优先执行的旗舰级主改动
 退款对账台账：新增专用 refund ledger/audit 表和管理员可见退款详情，替代目前临时复用 `payment_intents.metadata` 的方式。
+
+---
+
+## Campaign 015 Stage 1 — Refund Reconciliation Ledger
+
+### 承接的上一轮方向
+- 上一轮推荐旗舰：退款对账台账。
+- 本阶段新增专用 `payment_refunds` ledger，并让管理员在预约队列中直接查看退款对账详情。
+
+### 完成内容
+- 新增 `payment_refunds` 表和索引，使用 Stripe charge id 做幂等唯一键。
+- `charge.refunded` webhook 在更新 payment intent 状态/metadata 的同时写入专用退款台账。
+- 管理员预约 API 投影最新退款记录。
+- 管理员预约卡片展示退款金额、退款状态、charge id 和接收时间。
+- 更新 live-readiness 文档和审计回归，防止回退到只复用 `payment_intents.metadata`。
+
+### 已通过的验证
+- Red/green：退款台账与 admin 可见详情目标测试先失败后通过。
+- Targeted：`functions/api.test.ts + audit-regressions` 66/66 通过。
+- TypeScript / lint：通过。
+- Vitest：241/241 通过。
+- `build:full` + performance budget：通过。
+- Playwright smoke against Pages preview：13/13 通过。
+- Playwright booking flow：6/6 通过。
+- GitHub Actions：CI run `28234924115` 通过（main / `bc00fd5`）。
+
+### 遗留风险
+- 真实 Stripe Payment Element 和 live card collection 仍未启用。
+- 退款 actor/source attribution 仍需在真实退款操作上线时补齐。
+- 大字体包与 `face-api-vendor` 仍是主要体积来源，但当前 performance budget 通过。
+
+### 下一轮建议方向
+1. IMPROVE：继续优化字体/face-api 资产体积，降低首屏和编辑器路径传输压力。
+2. IMPROVE：为管理员支付跟进队列增加更清晰的退款/失败优先级分组。
+3. CHECK：在真实 Stripe keys/webhook secret 配置完成后，执行 live-readiness 最终验收。
+
+### 推荐下一轮优先执行的旗舰级主改动
+支付路径加载优化：针对当前最大的字体与 `face-api-vendor` 体积热点，做一次不影响设计语言的加载拆分或延迟加载改进，让首页/预约路径更轻，编辑器能力按需加载。

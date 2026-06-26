@@ -626,4 +626,21 @@ Beginning execution.
 - **Objective**: Add a dedicated refund reconciliation ledger and admin-visible refund details for signed `charge.refunded` webhooks, without enabling live refunds or live card collection.
 - **Start state**: `main` at `eaa87da`; only protected `.agent/orchestrator-state.json` was unstaged.
 - **Previous direction carried forward**: Campaign 014 recommended moving refund reconciliation out of temporary `payment_intents.metadata` storage and into a dedicated ledger.
-- **Status**: IN PROGRESS
+- **Completed locally**:
+  - Added `payment_refunds` to the migration and canonical schema with a unique Stripe charge id and a payment-intent lookup index.
+  - Updated signed `charge.refunded` webhook handling to upsert the dedicated refund ledger while preserving the existing metadata/status update.
+  - Projected latest refund ledger details into the admin bookings API.
+  - Added admin-visible refund details for refunded booking deposits: amount, status, charge id, and received timestamp.
+  - Updated live-readiness documentation and audit regressions so refund reconciliation remains dedicated and visible before live refunds.
+- **Local verification**:
+  - Red/green: `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts` failed on missing `payment_refunds` ledger/admin surfacing, then passed 66/66.
+  - `npm run lint` — passed.
+  - `npm test` — 241/241 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against Pages preview — 13/13 passed.
+  - Playwright booking flow against Pages preview — 6/6 passed.
+- **Commit**: `bc00fd5` — `feat: add refund reconciliation ledger`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28234924115` passed.
+- **Risk**: Live refunds are still not enabled; refund actor/source attribution remains manual until real refund operations are introduced.
+- **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing the known font/face-api payload pressure with a user-visible loading/performance improvement.
+- **Status**: COMPLETE
