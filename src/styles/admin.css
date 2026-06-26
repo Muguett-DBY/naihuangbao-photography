@@ -632,6 +632,11 @@
   background: rgba(255, 238, 236, 0.76);
 }
 
+.adm-booking-payment--refunded {
+  border-color: rgba(14, 116, 144, 0.24);
+  background: rgba(207, 250, 254, 0.52);
+}
+
 .adm-booking-notes {
   margin: 10px 0 0;
   padding: 10px 12px;

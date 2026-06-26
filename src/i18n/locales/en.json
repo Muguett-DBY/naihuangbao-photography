@@ -1088,7 +1088,8 @@
       "processing": "Processing",
       "succeeded": "Paid",
       "failed": "Needs attention",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
     },
     "statusHelp": {
       "pending": "We have your request. You can still adjust the date while it is being reviewed.",

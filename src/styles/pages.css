@@ -4499,6 +4499,11 @@
   background: rgba(254, 226, 226, 0.38);
 }
 
+.dashboard-booking-deposit--refunded {
+  border-color: rgba(14, 116, 144, 0.2);
+  background: rgba(207, 250, 254, 0.38);
+}
+
 .dashboard-card-type {
   font-size: 0.75rem;
   font-weight: 600;

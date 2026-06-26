@@ -1137,7 +1137,8 @@
       "processing": "处理中",
       "succeeded": "已支付",
       "failed": "需要处理",
-      "cancelled": "已取消"
+      "cancelled": "已取消",
+      "refunded": "已退款"
     },
     "statusHelp": {
       "pending": "我们已收到预约请求，审核期间仍可调整到其他可用日期。",
