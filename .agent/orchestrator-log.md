@@ -312,7 +312,23 @@ Beginning execution.
 - **Prompt**: `AGENT_IMPROVE_MAIN.txt`
 - **Objective**: Add an admin payment follow-up queue by aggregating and filtering booking deposits by payment status, starting with pending/manual follow-up work that does not require live Stripe secrets.
 - **Start state**: `main` at `8f283ed`; only protected `.agent/orchestrator-state.json` was unstaged.
-- **Status**: IN PROGRESS
+- **Completed locally**:
+  - Added an admin payment follow-up queue count for pending + processing booking deposits.
+  - Added payment status filter chips with per-status counts.
+  - Filtered the admin booking list by deposit status without changing server state.
+  - Added responsive/admin styling and four-language copy for the new queue/filter controls.
+  - Added audit regression coverage for the follow-up queue and filters.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` failed on missing filter/queue UI, then passed 49/49.
+  - `npm run lint` — passed.
+  - `npm test` — 236/236 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against `wrangler pages dev dist` — 13/13 passed with one worker.
+- **Commit**: `8aea9e3` — `feat: add admin payment follow-up queue`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28220980897` passed.
+- **Risk**: This improves manual follow-up operations but does not enable live Stripe collection.
+- **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
+- **Status**: COMPLETE
 
 ### Stage 3 / 6 — UIUX
 - **Prompt**: `AGENT_UIUX_MAIN.txt`
