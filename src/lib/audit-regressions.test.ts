@@ -365,6 +365,7 @@ describe("audit regression coverage", () => {
     expect(paymentWebhookSource).toContain("existingStatus === normalizedStatus");
     expect(paymentWebhookSource).toContain("charge.refunded");
     expect(paymentWebhookSource).toContain("refunded");
+    expect(paymentWebhookSource).toContain("buildRefundMetadata");
     expect(adminBookingsSource).toContain('"refunded"');
     expect(dashboardBookingsSource).toContain("dashboard.paymentStatus");
     expect(editorCssSource).toContain(".dashboard-booking-deposit--refunded");
