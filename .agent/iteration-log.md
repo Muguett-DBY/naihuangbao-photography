@@ -1088,3 +1088,40 @@ Webhook 状态矩阵加固：用签名 webhook fixture 覆盖 processing、faile
 
 ### 推荐下一轮优先执行的旗舰级主改动
 支付路径加载优化：针对当前最大的字体与 `face-api-vendor` 体积热点，做一次不影响设计语言的加载拆分或延迟加载改进，让首页/预约路径更轻，编辑器能力按需加载。
+
+---
+
+## Campaign 015 Stage 2 — Deferred Editor AI Loading
+
+### 承接的上一轮方向
+- 上一阶段推荐旗舰：支付路径/编辑器加载优化。
+- 本阶段针对 `face-api-vendor` 体积热点，把编辑器 AI 模型加载从进入页面即加载改为上传照片后按需加载。
+
+### 完成内容
+- 移除 `/editor` 挂载时自动加载 face-api 模型的行为。
+- 上传照片或点击重试时才启动 AI 模型与 face-api lazy chunk 加载。
+- 编辑器空状态新增提示，说明 AI 模型会在添加照片后加载，初始页面更轻。
+- 新增编辑器回归测试，防止恢复 eager model loading。
+
+### 已通过的验证
+- Red/green：编辑器按需加载目标测试先失败后通过。
+- Targeted：`editor-regressions` 14/14 通过。
+- TypeScript / lint：通过。
+- Vitest：242/242 通过。
+- `build:full` + performance budget：通过。
+- Playwright smoke against Pages preview：13/13 通过，包含编辑器上传/导出路径。
+- Playwright booking flow：6/6 通过。
+- GitHub Actions：CI run `28235442622` 通过（main / `aa8629b`）。
+
+### 遗留风险
+- `face-api-vendor` 仍是大 lazy chunk；本阶段降低请求时机，不降低 chunk 体积。
+- 中日韩字体仍是最大总资产来源。
+- 真实 Stripe Payment Element 和 live card collection 仍未启用。
+
+### 下一轮建议方向
+1. UIUX：围绕编辑器空状态、上传前说明、移动端首屏和模型加载反馈做一次明显体感升级。
+2. IMPROVE：继续拆分或替代 `face-api-vendor` / 多语言字体体积热点。
+3. CHECK：检查编辑器 degraded mode、模型缓存、离线/弱网路径和 PWA runtime cache 是否一致。
+
+### 推荐下一轮优先执行的旗舰级主改动
+编辑器首屏体验升级：在 deferred AI loading 基础上，重做编辑器空状态和上传前引导，让用户清楚知道“先上传、本地处理、AI 按需加载、无模型也可继续编辑”，并在移动端保持紧凑可操作。

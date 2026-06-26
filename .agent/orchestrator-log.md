@@ -650,4 +650,20 @@ Beginning execution.
 - **Objective**: Reduce editor resource pressure by deferring face-api/model loading until the user uploads a photo or explicitly retries, while making the lazy AI behavior visible in the editor empty state.
 - **Start state**: `main` at `ed32c89`; only protected `.agent/orchestrator-state.json` was unstaged.
 - **Previous direction carried forward**: Stage 1 recommended addressing the known font/face-api payload pressure with a user-visible loading/performance improvement.
-- **Status**: IN PROGRESS
+- **Completed locally**:
+  - Removed automatic face-api/model loading on `/editor` page mount.
+  - Changed AI model loading to start only after the user uploads a photo or explicitly retries model loading.
+  - Added visible empty-state copy explaining that AI models are loaded after a photo is added, keeping the initial editor screen lighter.
+  - Added regression coverage to prevent returning to eager face-api loading.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/editor-regressions.test.ts` failed on eager model loading, then passed 14/14.
+  - `npm run lint` — passed.
+  - `npm test` — 242/242 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against Pages preview — 13/13 passed, including editor upload/export path.
+  - Playwright booking flow against Pages preview — 6/6 passed.
+- **Commit**: `aa8629b` — `feat: defer editor ai model loading`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28235442622` passed.
+- **Risk**: `face-api-vendor` remains a large lazy chunk and multilingual font assets remain the largest total payload; this stage reduces when the AI chunk is requested, not its byte size.
+- **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is making the editor/upload empty state and mobile first interaction feel more polished after the new deferred loading behavior.
+- **Status**: COMPLETE
