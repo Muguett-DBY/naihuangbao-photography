@@ -294,6 +294,26 @@ Beginning execution.
 - **Protected existing change**: `.agent/orchestrator-state.json` remained unstaged throughout.
 - **Final status**: COMPLETE
 
+---
+
+## Campaign 014 — 6-Stage Product Strengthening Loop — Started 2026-06-26
+
+### Global preparation
+- **Orchestrator**: `03_LONG_6_STAGE_MAIN_V2.txt`
+- **Prompt folder**: `C:\Users\12031\Desktop\AGENT_PROMPTS_MAIN_PACK`
+- **Sequence**: IMPROVE -> IMPROVE -> UIUX -> IMPROVE -> CHECK -> IMPROVE
+- **Branch**: `main`
+- **Start state**: `8f283ed`; local `main` aligned with `origin/main`.
+- **Protected existing change**: `.agent/orchestrator-state.json` remains prior metadata and will not be staged.
+- **CI commands**: `npm ci`, `npm run lint`, `npm test`, `npm run build`, `npm run perf:budget`.
+- **Previous flagship direction**: Stripe live-enablement preparation with a config checklist, Payment Element path, webhook/refund runbook, and admin pending queue filtering.
+
+### Stage 1 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Add an admin payment follow-up queue by aggregating and filtering booking deposits by payment status, starting with pending/manual follow-up work that does not require live Stripe secrets.
+- **Start state**: `main` at `8f283ed`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Status**: IN PROGRESS
+
 ### Stage 3 / 6 — UIUX
 - **Prompt**: `AGENT_UIUX_MAIN.txt`
 - **Objective**: Improve the mobile dashboard first viewport by reducing the full-cover hero footprint and making core account actions available immediately.

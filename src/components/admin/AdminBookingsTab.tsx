@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 import { isAbortError } from "../../lib/errors";
 
+type PaymentFilter = "all" | BookingItem["payment_status"];
+
 type BookingItem = {
   id: string;
   package_name: string;
@@ -46,6 +48,7 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
   const { t, i18n } = useTranslation();
   const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>("all");
 
   useEffect(() => {
     const ctrl = new AbortController();
@@ -83,6 +86,32 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
     return <div className="adm-content-panel"><div className="adm-loading">加载中...</div></div>;
   }
 
+  const paymentStatusCounts = bookings.reduce<Record<BookingItem["payment_status"], number>>((counts, booking) => {
+    const status = booking.payment_status || "not_started";
+    counts[status] += 1;
+    return counts;
+  }, {
+    not_started: 0,
+    pending: 0,
+    processing: 0,
+    succeeded: 0,
+    failed: 0,
+    cancelled: 0,
+  });
+  const followUpCount = paymentStatusCounts.pending + paymentStatusCounts.processing;
+  const paymentFilters: Array<{ key: PaymentFilter; label: string; count: number }> = [
+    { key: "all", label: t("admin.bookings.paymentFilterAll", "All deposits"), count: bookings.length },
+    { key: "pending", label: t("dashboard.paymentStatus.pending"), count: paymentStatusCounts.pending },
+    { key: "processing", label: t("dashboard.paymentStatus.processing"), count: paymentStatusCounts.processing },
+    { key: "succeeded", label: t("dashboard.paymentStatus.succeeded"), count: paymentStatusCounts.succeeded },
+    { key: "failed", label: t("dashboard.paymentStatus.failed"), count: paymentStatusCounts.failed },
+    { key: "cancelled", label: t("dashboard.paymentStatus.cancelled"), count: paymentStatusCounts.cancelled },
+    { key: "not_started", label: t("dashboard.paymentStatus.not_started"), count: paymentStatusCounts.not_started },
+  ];
+  const filteredBookings = paymentFilter === "all"
+    ? bookings
+    : bookings.filter((booking) => (booking.payment_status || "not_started") === paymentFilter);
+
   return (
     <div className="adm-content-panel">
       <h2>预约请求 ({bookings.length})</h2>
@@ -92,8 +121,29 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
           <p>暂无预约请求</p>
         </div>
       ) : (
+        <>
+        <div className="adm-booking-payment-summary" aria-live="polite">
+          <div>
+            <span>{t("admin.bookings.paymentFollowUpQueue", "Payment follow-up queue")}</span>
+            <strong>{followUpCount}</strong>
+          </div>
+          <div className="adm-booking-payment-filters" role="group" aria-label={t("admin.bookings.paymentFilterLabel", "Filter deposits by payment status")}>
+            {paymentFilters.map((filter) => (
+              <button
+                key={filter.key}
+                type="button"
+                className={`adm-booking-payment-filter${paymentFilter === filter.key ? " is-active" : ""}`}
+                onClick={() => setPaymentFilter(filter.key)}
+                aria-pressed={paymentFilter === filter.key}
+              >
+                <span>{filter.label}</span>
+                <strong>{filter.count}</strong>
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="adm-booking-list">
-          {bookings.map((b) => {
+          {filteredBookings.map((b) => {
             const st = statusLabels[b.status] || statusLabels.pending;
             const paymentStatus = b.payment_status || "not_started";
             const Icon = st.icon;
@@ -143,6 +193,7 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
             );
           })}
         </div>
+        </>
       )}
     </div>
   );

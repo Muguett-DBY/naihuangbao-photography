@@ -841,7 +841,10 @@
     "bookings": {
       "amountPending": "Amount pending",
       "paymentProvider": "Provider",
-      "waitingForPaymentConfirmation": "Waiting for customer confirmation"
+      "waitingForPaymentConfirmation": "Waiting for customer confirmation",
+      "paymentFilterAll": "All deposits",
+      "paymentFilterLabel": "Filter deposits by payment status",
+      "paymentFollowUpQueue": "Payment follow-up queue"
     },
     "facetsLabel": "Additional filters",
     "albumLabel": "Album",

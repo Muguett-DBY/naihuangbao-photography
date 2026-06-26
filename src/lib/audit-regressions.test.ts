@@ -404,6 +404,21 @@ describe("audit regression coverage", () => {
     }
   });
 
+  it("keeps admin payment follow-up queue filterable by payment status", () => {
+    expect(adminBookingsSource).toContain("paymentFilter");
+    expect(adminBookingsSource).toContain("paymentStatusCounts");
+    expect(adminBookingsSource).toContain("filteredBookings");
+    expect(adminBookingsSource).toContain("admin.bookings.paymentFilterAll");
+    expect(adminBookingsSource).toContain("admin.bookings.paymentFollowUpQueue");
+    expect(adminCssSource).toContain(".adm-booking-payment-summary");
+    expect(adminCssSource).toContain(".adm-booking-payment-filter");
+    expect(adminCssSource).toContain(".adm-booking-payment-filter.is-active");
+    for (const locale of Object.values(locales)) {
+      expect(locale.admin.bookings.paymentFilterAll).toBeTruthy();
+      expect(locale.admin.bookings.paymentFollowUpQueue).toBeTruthy();
+    }
+  });
+
   it("keeps the dashboard workspace readable and actionable across breakpoints", () => {
     const dashboardPage = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
     const workspacePath = resolve(root, "src/components/dashboard/DashboardWorkspace.tsx");

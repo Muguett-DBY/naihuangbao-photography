@@ -837,7 +837,10 @@
     "bookings": {
       "amountPending": "金額未確認",
       "paymentProvider": "プロバイダー",
-      "waitingForPaymentConfirmation": "お客様の確認待ち"
+      "waitingForPaymentConfirmation": "お客様の確認待ち",
+      "paymentFilterAll": "すべてのデポジット",
+      "paymentFilterLabel": "支払い状態でデポジットを絞り込む",
+      "paymentFollowUpQueue": "支払いフォローアップ"
     },
     "facetsLabel": "追加フィルター",
     "albumLabel": "アルバム",
