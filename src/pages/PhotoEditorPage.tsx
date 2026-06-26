@@ -1,6 +1,7 @@
 import "../styles/pages.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ImagePlus, ShieldCheck, Sparkles, Zap } from "lucide-react";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
@@ -993,17 +994,27 @@ export default function PhotoEditorPage() {
                     <p>{t("editor.dropHere", "Drop your photo here")}</p>
                   </div>
                 ) : (
-                  <>
-                    <p>{t("editor.subtitle")}</p>
+                  <div className="editor-empty-panel">
+                    <span className="editor-empty-kicker">{t("editor.emptyKicker", "Local editing studio")}</span>
+                    <h2>{t("editor.emptyTitle", "Open a portrait to start editing")}</h2>
+                    <p>{t("editor.emptyDesc", "The workspace stays light until a photo is added, then loads the face model only when needed.")}</p>
+                    <button type="button" className="editor-empty-upload" onClick={handleUploadClick}>
+                      <ImagePlus size={18} aria-hidden="true" />
+                      <span>{t("editor.upload")}</span>
+                    </button>
+                    <div className="editor-empty-badges" aria-label={t("editor.emptyBadgesLabel", "Editor loading notes")}>
+                      <span><ShieldCheck size={14} aria-hidden="true" />{t("editor.localOnly", "Your photo stays on this device")}</span>
+                      <span><Sparkles size={14} aria-hidden="true" />{t("editor.modelsDeferred", "AI models load only after you add a photo.")}</span>
+                      <span><Zap size={14} aria-hidden="true" />{t("editor.manualFallback", "Filters, text, and export stay available")}</span>
+                    </div>
                     <p className="editor-drop-hint">{t("editor.dropHint", "or drag and drop an image")}</p>
-                    <p className="editor-model-deferred">{t("editor.modelsDeferred", "AI models load only after you add a photo.")}</p>
-                  </>
+                  </div>
                 )}
               </div>
             )}
             <canvas
               ref={canvasRef}
-              className="editor-canvas"
+              className={`editor-canvas ${!originalRef.current ? "editor-canvas--placeholder" : ""}`}
               style={{
                 ...(showCompare ? { clipPath: `inset(0 ${100 - comparePos}% 0 0)` } : undefined),
                 ...(blemishMode || localBrushActive ? { cursor: "crosshair" } : undefined),
