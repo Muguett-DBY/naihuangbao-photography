@@ -838,6 +838,11 @@
       "error": "Logout request failed. Local login state has been cleared."
     },
     "loading": "Checking login status...",
+    "bookings": {
+      "amountPending": "Amount pending",
+      "paymentProvider": "Provider",
+      "waitingForPaymentConfirmation": "Waiting for customer confirmation"
+    },
     "facetsLabel": "Additional filters",
     "albumLabel": "Album",
     "albumAll": "All albums",

@@ -265,6 +265,12 @@ Beginning execution.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
 - **Status**: COMPLETE
 
+### Stage 6 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Complete the admin booking payment block i18n follow-up by localizing provider, waiting-for-user, and amount-pending copy.
+- **Start state**: `main` at `e031e0b`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Status**: IN PROGRESS
+
 ### Stage 3 / 6 — UIUX
 - **Prompt**: `AGENT_UIUX_MAIN.txt`
 - **Objective**: Improve the mobile dashboard first viewport by reducing the full-cover hero footprint and making core account actions available immediately.

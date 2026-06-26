@@ -391,6 +391,19 @@ describe("audit regression coverage", () => {
     expect(adminCssSource).toContain(".adm-booking-payment--processing");
   });
 
+  it("keeps admin booking payment follow-up copy localized", () => {
+    expect(adminBookingsSource).toContain("admin.bookings.amountPending");
+    expect(adminBookingsSource).toContain("admin.bookings.paymentProvider");
+    expect(adminBookingsSource).toContain("admin.bookings.waitingForPaymentConfirmation");
+    expect(adminBookingsSource).not.toContain("渠道：");
+    expect(adminBookingsSource).not.toContain("等待用户确认");
+    for (const locale of Object.values(locales)) {
+      expect(locale.admin.bookings.amountPending).toBeTruthy();
+      expect(locale.admin.bookings.paymentProvider).toBeTruthy();
+      expect(locale.admin.bookings.waitingForPaymentConfirmation).toBeTruthy();
+    }
+  });
+
   it("keeps the dashboard workspace readable and actionable across breakpoints", () => {
     const dashboardPage = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
     const workspacePath = resolve(root, "src/components/dashboard/DashboardWorkspace.tsx");

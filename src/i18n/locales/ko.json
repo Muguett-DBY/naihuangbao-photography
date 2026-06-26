@@ -834,6 +834,11 @@
       "error": "로그아웃 요청 실패. 로컬 로그인 상태가 삭제되었습니다."
     },
     "loading": "로그인 상태 확인 중...",
+    "bookings": {
+      "amountPending": "금액 확인 대기",
+      "paymentProvider": "제공자",
+      "waitingForPaymentConfirmation": "고객 확인 대기"
+    },
     "facetsLabel": "추가 필터",
     "albumLabel": "앨범",
     "albumAll": "모든 앨범",
