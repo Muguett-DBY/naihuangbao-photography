@@ -139,6 +139,20 @@ describe("editor regression contracts", () => {
     expect(zhCN).toContain("仍可使用滤镜、文字、边框和导出");
   });
 
+  it("defers face-api model loading until upload or explicit retry", () => {
+    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const zhCN = read("src/i18n/locales/zh-CN.json");
+    const en = read("src/i18n/locales/en.json");
+
+    expect(editor).not.toContain("useEffect(() => startModelLoad(), [startModelLoad, modelLoadAttempt])");
+    expect(editor).toContain("startModelLoad({ force: true })");
+    expect(editor).toContain("await waitForFaceModels()");
+    expect(editor).toContain("editor.modelsDeferred");
+    expect(editor).toContain("faceModelsPromiseRef.current = null");
+    expect(zhCN).toContain("AI 模型会在上传照片后按需加载");
+    expect(en).toContain("AI models load only after you add a photo");
+  });
+
   it("groups the mobile editor workflow and exposes export recovery status", () => {
     const editor = read("src/pages/PhotoEditorPage.tsx");
     const pagesCss = read("src/styles/pages.css");

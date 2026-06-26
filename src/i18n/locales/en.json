@@ -1212,6 +1212,7 @@
     "desc": "Upload portrait photos and use AI face detection for professional beauty retouching including skin smoothing, face slimming, eye enlargement, nose slimming, lip enhancement, and more.",
     "subtitle": "Upload a portrait to start beautifying",
     "dropHint": "or drag and drop an image",
+    "modelsDeferred": "AI models load only after you add a photo, keeping this screen light.",
     "dropHere": "Drop your photo here",
     "upload": "Upload Photo",
     "download": "Download",
