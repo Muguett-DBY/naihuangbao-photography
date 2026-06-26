@@ -1165,3 +1165,42 @@ Webhook 状态矩阵加固：用签名 webhook fixture 覆盖 processing、faile
 
 ### 推荐下一轮优先执行的旗舰级主改动
 编辑器模型可靠性强化：围绕弱网、模型加载失败、PWA cache 与 degraded mode，确保用户上传照片后即使 AI 模型不可用，也能清楚看到状态并继续使用基础编辑、导出和重试路径。
+
+---
+
+## Campaign 015 Stage 4 — PWA Update Reliability Hardening
+
+### 承接的上一轮方向
+- 上一阶段发现本地预览域可能命中过期 PWA cache。
+- 本阶段优先处理 service worker 更新链路，让新 app shell 不再依赖静默自动替换。
+
+### 完成内容
+- 将 Vite PWA 注册模式从 `autoUpdate` 改为 `prompt`，确保更新可见。
+- 启用 Workbox `cleanupOutdatedCaches` 清理旧 precache，同时保留模型、图片、字体 runtime cache 策略。
+- 强化更新横幅：ready/focus/visibility 主动检查更新、刷新中状态、禁用重复点击、reload fallback、标准 `{ type: "SKIP_WAITING" }` 消息。
+- 补齐 zh-CN/en/ja/ko 刷新中文案。
+- 新增 audit regression，防止 PWA 更新提示和旧 cache 清理退化。
+
+### 已通过的验证
+- Red/green：PWA 更新可靠性回归测试先失败后通过。
+- Targeted：`audit-regressions` 53/53 通过。
+- TypeScript / lint：通过。
+- Vitest：245/245 通过。
+- `build:full` + performance budget：通过。
+- 生成产物检查：`dist/sw.js` 包含 Workbox `SKIP_WAITING` listener 和 `cleanupOutdatedCaches()`。
+- Playwright smoke：13/13 通过。
+- Playwright booking flow：6/6 通过。
+- GitHub Actions：CI run `28239561321` 通过（main / `ae65ce5`）。
+
+### 遗留风险
+- 已打开的旧标签页仍需要用户接受更新或刷新后才能切到最新 app shell。
+- 中日韩字体和 `face-api-vendor` 仍是主要体积热点。
+- 真实 Stripe Payment Element 和 live card collection 仍未启用。
+
+### 下一轮建议方向
+1. CHECK：系统检查 PWA service worker、runtime cache、构建产物、Pages 部署与 stale-cache 行为。
+2. IMPROVE：继续强化编辑器模型加载失败、弱网和 degraded mode 的用户反馈。
+3. IMPROVE：继续削减字体与 `face-api-vendor` 的实际加载压力。
+
+### 推荐下一轮优先执行的旗舰级主改动
+PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runtime cache、Pages 预览与生产更新链路做一次端到端核验，确保 Stage 4 的更新机制能在真实部署路径中可靠生效。

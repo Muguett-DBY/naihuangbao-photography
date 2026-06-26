@@ -700,3 +700,21 @@ Beginning execution.
 - **Objective**: Harden the PWA update and editor reliability path by making stale service-worker updates user-visible and deterministic, while preserving runtime caches for editor models and large assets.
 - **Start state**: `main` at `01d3af5`; only protected `.agent/orchestrator-state.json` was unstaged before this stage.
 - **Previous direction carried forward**: Stage 3 found stale local PWA cache during Browser validation and recommended strengthening editor model/degraded-mode behavior plus PWA cache update reliability.
+- **Completed locally**:
+  - Changed the PWA registration mode from automatic activation to prompt mode so updates remain user-visible instead of silently replacing app-shell assets.
+  - Enabled Workbox cleanup for outdated precaches while preserving runtime caches for editor models, image assets, and fonts.
+  - Hardened `PwaUpdateBanner` with explicit ready/focus/visibility update checks, a disabled refreshing state, a reload fallback, and the Workbox-standard `{ type: "SKIP_WAITING" }` message.
+  - Added zh-CN/en/ja/ko refreshing copy and regression coverage to keep PWA updates visible and outdated app-shell caches cleaned.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` failed on missing prompt-mode PWA update behavior, then passed 53/53.
+  - `npm run lint` — passed.
+  - `npm test` — 245/245 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Generated service worker check confirmed the Workbox `SKIP_WAITING` listener and `cleanupOutdatedCaches()` call in `dist/sw.js`.
+  - Playwright smoke against preview — 13/13 passed.
+  - Playwright booking flow — 6/6 passed.
+- **Commit**: `ae65ce5` — `feat: harden pwa update flow`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28239561321` passed.
+- **Risk**: Existing open tabs still require refresh/update acceptance to activate the latest app shell; large multilingual fonts and `face-api-vendor` remain the main payload risks.
+- **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a systematic PWA/cache/build-artifact sweep plus deployed Pages verification for stale-cache behavior.
+- **Status**: COMPLETE
