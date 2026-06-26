@@ -539,3 +539,38 @@ Pages 路由健康修复：清理 `_redirects` infinite-loop 警告，确保 `/a
 
 ### 推荐下一轮优先执行的 CHECK 项
 Pages 路由配置检查：移除或替换会触发 infinite-loop 的 SPA rewrite 规则，并用 `wrangler pages dev dist` 验证不再警告、核心路由仍可直达。
+
+---
+
+## Campaign 012 Stage 5 — Pages Redirect Health Check
+
+### 承接的上一轮方向
+- 上一轮推荐 CHECK 项：清理 `_redirects` infinite-loop 警告。
+- 本阶段聚焦 Cloudflare Pages preview 中反复出现的 3 条无效 SPA rewrite 规则。
+
+### 完成内容
+- 移除 `public/_redirects` 中会触发 infinite-loop 的 `/index.html 200` rewrite。
+- 移除不必要的 `/api/* /api/:splat 200` 规则，API 继续由 Pages Functions 处理。
+- 保留 `/admin /admin/ 301` 作为后台路径规范化。
+- 更新回归测试，防止未来重新加入 `/index.html 200` rewrite。
+
+### 已通过的验证
+- Targeted：`audit-regressions` 42/42 通过。
+- TypeScript / lint：通过。
+- Vitest：225/225 通过。
+- `build:full` + performance budget：通过。
+- `wrangler pages dev dist`：只解析 1 条 redirect rule，无 infinite-loop warning。
+- 直达路由验证：`/admin` 301 到 `/admin/`，`/admin/`、`/dashboard`、`/editor`、`/gallery/gallery-garden-01`、`/booking` 均 200。
+- Playwright smoke：13/13 通过。
+- GitHub Actions：CI run `28209203704` 通过（main / `44aeb91`）。
+
+### 遗留风险
+- 该修复依赖 Cloudflare Pages 默认 SPA fallback；本地 Pages preview 已验证行为正确。
+
+### 下一轮建议方向
+1. 更新 GitHub Actions 运行环境，处理 Node 20 actions 弃用提示。
+2. 为编辑器移动工具栏增加分组与导出状态。
+3. 继续推进真实支付确认流，但必须具备完整 Stripe 客户端确认和 webhook 方案。
+
+### 推荐下一轮优先执行的旗舰级主改动
+CI 健康升级：将 GitHub Actions 的 Node/setup 路径更新到当前运行环境，消除 Node 20 actions 弃用提示，降低后续 CI 突然失败风险。

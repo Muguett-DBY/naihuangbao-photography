@@ -266,5 +266,8 @@ Beginning execution.
   - Fresh `wrangler pages dev dist` — parsed 1 valid redirect rule, no infinite-loop warnings.
   - Direct route browser checks — `/admin` returned 301 to `/admin/`; `/admin/`, `/dashboard`, `/editor`, `/gallery/gallery-garden-01`, and `/booking` returned 200.
   - Smoke Playwright against Pages preview — 13/13 passed with one worker.
+- **Commit**: `44aeb91` — `fix: remove invalid pages spa redirects`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28209203704` passed.
 - **Risk**: This relies on Cloudflare Pages default SPA fallback for unmatched navigation routes, which matched local Pages preview behavior.
-- **Status**: READY TO COMMIT
+- **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
+- **Status**: COMPLETE
