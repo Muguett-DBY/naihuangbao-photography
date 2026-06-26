@@ -153,6 +153,36 @@ describe("editor regression contracts", () => {
     expect(en).toContain("AI models load only after you add a photo");
   });
 
+  it("keeps the editor empty state action-led and mobile-ready", () => {
+    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const pagesCss = read("src/styles/pages.css");
+    const zhCN = read("src/i18n/locales/zh-CN.json");
+    const en = read("src/i18n/locales/en.json");
+
+    expect(editor).toContain("ImagePlus");
+    expect(editor).toContain("editor-empty-panel");
+    expect(editor).toContain("editor-empty-upload");
+    expect(editor).toContain("editor-empty-badges");
+    expect(editor).toContain("editor.emptyTitle");
+    expect(editor).toContain("editor.localOnly");
+    expect(pagesCss).toContain(".editor-empty-panel");
+    expect(pagesCss).toContain(".editor-empty-upload");
+    expect(pagesCss).toMatch(/@media\s*\(max-width:\s*640px\)[\s\S]*\.editor-empty-badges/s);
+    expect(zhCN).toContain("打开一张照片");
+    expect(en).toContain("Open a portrait");
+  });
+
+  it("prevents the empty editor canvas from squeezing the mobile upload panel", () => {
+    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const pagesCss = read("src/styles/pages.css");
+
+    expect(editor).toContain("editor-canvas--placeholder");
+    expect(editor).toContain('!originalRef.current ? "editor-canvas--placeholder"');
+    expect(pagesCss).toContain("width: 100%;");
+    expect(pagesCss).toContain(".editor-canvas--placeholder");
+    expect(pagesCss).toContain("display: none;");
+  });
+
   it("groups the mobile editor workflow and exposes export recovery status", () => {
     const editor = read("src/pages/PhotoEditorPage.tsx");
     const pagesCss = read("src/styles/pages.css");

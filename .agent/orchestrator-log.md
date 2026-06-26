@@ -667,3 +667,9 @@ Beginning execution.
 - **Risk**: `face-api-vendor` remains a large lazy chunk and multilingual font assets remain the largest total payload; this stage reduces when the AI chunk is requested, not its byte size.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is making the editor/upload empty state and mobile first interaction feel more polished after the new deferred loading behavior.
 - **Status**: COMPLETE
+
+### Stage 3 / 6 — UIUX
+- **Prompt**: `AGENT_UIUX_MAIN.txt`
+- **Objective**: Upgrade the editor first-screen empty state after deferred AI model loading so users get a clear action-led upload path, local-processing reassurance, AI-on-demand feedback, and mobile-ready layout.
+- **Start state**: `main` at `898f295`; only protected `.agent/orchestrator-state.json` was unstaged before this stage.
+- **Previous direction carried forward**: Stage 2 recommended making the editor empty state and mobile first interaction more polished after lazy AI loading.
