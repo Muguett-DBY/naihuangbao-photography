@@ -69,6 +69,8 @@ const seoSource = readFileSync(resolve(root, "src/lib/seo.ts"), "utf8");
 const i18nSource = readFileSync(resolve(root, "src/i18n/index.ts"), "utf8");
 const packageSource = readFileSync(resolve(root, "package.json"), "utf8");
 const readmeSource = readFileSync(resolve(root, "README.md"), "utf8");
+const paymentLiveReadinessPath = resolve(root, "docs/payment-live-readiness.md");
+const paymentLiveReadinessSource = existsSync(paymentLiveReadinessPath) ? readFileSync(paymentLiveReadinessPath, "utf8") : "";
 const wranglerSource = readFileSync(resolve(root, "wrangler.toml"), "utf8");
 const htmlSource = readFileSync(resolve(root, "index.html"), "utf8");
 const loginPageSource = readFileSync(resolve(root, "src/pages/LoginPage.tsx"), "utf8");
@@ -416,6 +418,30 @@ describe("audit regression coverage", () => {
     for (const locale of Object.values(locales)) {
       expect(locale.admin.bookings.paymentFilterAll).toBeTruthy();
       expect(locale.admin.bookings.paymentFollowUpQueue).toBeTruthy();
+    }
+  });
+
+  it("keeps Stripe live-readiness documented and surfaced to admins without secret values", () => {
+    expect(existsSync(paymentLiveReadinessPath)).toBe(true);
+    expect(paymentLiveReadinessSource).toContain("Payment Element");
+    expect(paymentLiveReadinessSource).toContain("STRIPE_SECRET_KEY");
+    expect(paymentLiveReadinessSource).toContain("STRIPE_WEBHOOK_SECRET");
+    expect(paymentLiveReadinessSource).toContain("payment_intent.succeeded");
+    expect(paymentLiveReadinessSource).toContain("payment_intent.payment_failed");
+    expect(paymentLiveReadinessSource).toContain("charge.refunded");
+    expect(paymentLiveReadinessSource).toContain("rollback");
+    expect(paymentLiveReadinessSource).toContain("manual follow-up");
+    expect(paymentLiveReadinessSource).not.toMatch(/sk_live_[A-Za-z0-9]/);
+    expect(paymentLiveReadinessSource).not.toMatch(/whsec_[A-Za-z0-9]/);
+    expect(adminBookingsSource).toContain("paymentReadinessItems");
+    expect(adminBookingsSource).toContain("admin.bookings.paymentReadinessTitle");
+    expect(adminBookingsSource).toContain("adm-payment-readiness");
+    expect(adminCssSource).toContain(".adm-payment-readiness");
+    for (const locale of Object.values(locales)) {
+      expect(locale.admin.bookings.paymentReadinessTitle).toBeTruthy();
+      expect(locale.admin.bookings.paymentReadinessStripeKeys).toBeTruthy();
+      expect(locale.admin.bookings.paymentReadinessWebhook).toBeTruthy();
+      expect(locale.admin.bookings.paymentReadinessRefunds).toBeTruthy();
     }
   });
 

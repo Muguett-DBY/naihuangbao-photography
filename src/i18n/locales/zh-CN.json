@@ -894,7 +894,11 @@
       "waitingForPaymentConfirmation": "等待用户确认",
       "paymentFilterAll": "全部定金",
       "paymentFilterLabel": "按支付状态筛选定金",
-      "paymentFollowUpQueue": "支付跟进队列"
+      "paymentFollowUpQueue": "支付跟进队列",
+      "paymentReadinessTitle": "真实支付上线检查",
+      "paymentReadinessStripeKeys": "启用 Payment Element 前先配置 Stripe live keys。",
+      "paymentReadinessWebhook": "收取真实定金前验证 webhook secret 和状态矩阵。",
+      "paymentReadinessRefunds": "退款与失败支付在 runbook 完成前保持人工跟进。"
     },
     "facetsLabel": "更多筛选",
     "albumLabel": "相册",

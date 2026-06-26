@@ -518,6 +518,29 @@
   color: #9a5d14;
 }
 
+.adm-payment-readiness {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px dashed rgba(139, 94, 74, 0.24);
+  background: rgba(255, 253, 247, 0.82);
+  color: #5f493f;
+  font-size: 12px;
+}
+
+.adm-payment-readiness strong {
+  font-size: 13px;
+  color: #493735;
+}
+
+.adm-payment-readiness ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 18px;
+}
+
 .adm-booking-card {
   background: #fffdf7;
   border: 1px solid rgba(139, 94, 74, 0.1);
