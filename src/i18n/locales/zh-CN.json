@@ -891,7 +891,10 @@
     "bookings": {
       "amountPending": "金额待确认",
       "paymentProvider": "渠道",
-      "waitingForPaymentConfirmation": "等待用户确认"
+      "waitingForPaymentConfirmation": "等待用户确认",
+      "paymentFilterAll": "全部定金",
+      "paymentFilterLabel": "按支付状态筛选定金",
+      "paymentFollowUpQueue": "支付跟进队列"
     },
     "facetsLabel": "更多筛选",
     "albumLabel": "相册",

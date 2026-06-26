@@ -452,6 +452,72 @@
   margin-top: 16px;
 }
 
+.adm-booking-payment-summary {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(184, 120, 64, 0.18);
+  background: rgba(255, 248, 238, 0.72);
+}
+
+.adm-booking-payment-summary > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #6f4d3c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.adm-booking-payment-summary > div:first-child strong {
+  min-width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(217, 119, 6, 0.14);
+  color: #9a5d14;
+}
+
+.adm-booking-payment-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.adm-booking-payment-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(139, 94, 74, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 253, 247, 0.86);
+  color: #6f4d3c;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.adm-booking-payment-filter strong {
+  min-width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(73, 55, 53, 0.08);
+  color: #493735;
+}
+
+.adm-booking-payment-filter.is-active {
+  border-color: rgba(217, 119, 6, 0.34);
+  background: rgba(254, 243, 199, 0.78);
+  color: #9a5d14;
+}
+
 .adm-booking-card {
   background: #fffdf7;
   border: 1px solid rgba(139, 94, 74, 0.1);

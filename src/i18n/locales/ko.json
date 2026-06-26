@@ -837,7 +837,10 @@
     "bookings": {
       "amountPending": "금액 확인 대기",
       "paymentProvider": "제공자",
-      "waitingForPaymentConfirmation": "고객 확인 대기"
+      "waitingForPaymentConfirmation": "고객 확인 대기",
+      "paymentFilterAll": "전체 예약금",
+      "paymentFilterLabel": "결제 상태로 예약금 필터링",
+      "paymentFollowUpQueue": "결제 후속 대기열"
     },
     "facetsLabel": "추가 필터",
     "albumLabel": "앨범",
