@@ -591,6 +591,8 @@
     "label": "应用有更新",
     "text": "有新版本可用",
     "refresh": "刷新",
+    "refreshing": "正在刷新到最新版本",
+    "refreshingAction": "刷新中",
     "dismiss": "忽略"
   },
   "newsletter": {

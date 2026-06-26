@@ -44,7 +44,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       injectRegister: "script-defer",
       manifest: false,
       includeAssets: [
@@ -56,6 +56,7 @@ export default defineConfig({
         "icons/pwa-maskable-512.png",
       ],
       workbox: {
+        cleanupOutdatedCaches: true,
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         globPatterns: ["**/*.{js,css,html}"],
         globIgnores: [

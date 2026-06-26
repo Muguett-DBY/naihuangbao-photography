@@ -63,6 +63,7 @@ const filmGrainSource = readFileSync(resolve(root, "src/components/FilmGrain.tsx
 const bookingCalendarSource = readFileSync(resolve(root, "src/components/BookingCalendar.tsx"), "utf8");
 const loadingScreenSource = readFileSync(resolve(root, "src/components/LoadingScreen.tsx"), "utf8");
 const errorBoundarySource = readFileSync(resolve(root, "src/components/ErrorBoundary.tsx"), "utf8");
+const pwaUpdateBannerSource = readFileSync(resolve(root, "src/components/PwaUpdateBanner.tsx"), "utf8");
 const mapPageSource = readFileSync(resolve(root, "src/pages/MapPage.tsx"), "utf8");
 const styleQuizSource = readFileSync(resolve(root, "src/components/StyleQuiz.tsx"), "utf8");
 const seoSource = readFileSync(resolve(root, "src/lib/seo.ts"), "utf8");
@@ -713,5 +714,16 @@ describe("audit regression coverage", () => {
     expect(viteConfigSource).toContain('cacheName: "editor-models"');
     expect(viteConfigSource).toContain('cacheName: "font-assets"');
     expect(viteConfigSource).not.toContain("backgroundSync");
+  });
+
+  it("keeps PWA updates user-visible and clears outdated app-shell caches", () => {
+    expect(viteConfigSource).toContain('registerType: "prompt"');
+    expect(viteConfigSource).toContain("cleanupOutdatedCaches: true");
+    expect(pwaUpdateBannerSource).toContain("registrationRef.current?.update()");
+    expect(pwaUpdateBannerSource).toContain("visibilitychange");
+    expect(pwaUpdateBannerSource).toContain("{ type: \"SKIP_WAITING\" }");
+    expect(pwaUpdateBannerSource).toContain("pwaUpdate.refreshing");
+    expect(zhLocaleSource).toContain("正在刷新到最新版本");
+    expect(enLocaleSource).toContain("Refreshing to the latest version");
   });
 });
