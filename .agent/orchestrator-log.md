@@ -269,7 +269,30 @@ Beginning execution.
 - **Prompt**: `AGENT_IMPROVE_MAIN.txt`
 - **Objective**: Complete the admin booking payment block i18n follow-up by localizing provider, waiting-for-user, and amount-pending copy.
 - **Start state**: `main` at `e031e0b`; only protected `.agent/orchestrator-state.json` was unstaged.
-- **Status**: IN PROGRESS
+- **Completed locally**:
+  - Localized admin booking payment provider label.
+  - Localized admin booking waiting-for-payment-confirmation label.
+  - Added four-language admin booking amount-pending copy.
+  - Added audit regression coverage preventing hard-coded admin payment follow-up copy from returning.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` failed on hard-coded provider/waiting copy, then passed 48/48.
+  - `npm run lint` — passed.
+  - `npm test` — 235/235 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against `wrangler pages dev dist` — 13/13 passed with one worker.
+- **Commit**: `c0e5df4` — `feat: localize admin payment follow-up copy`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28219688368` passed.
+- **Risk**: Live Stripe collection remains intentionally disabled; the work completed here is state/UX/admin consistency for placeholder-safe payment handling.
+- **Final stage status**: COMPLETE
+- **Status**: COMPLETE
+
+---
+
+## Campaign 013 Final Status
+- **Stages complete**: 6 / 6
+- **Final main commit before closure record**: `c0e5df4`
+- **Protected existing change**: `.agent/orchestrator-state.json` remained unstaged throughout.
+- **Final status**: COMPLETE
 
 ### Stage 3 / 6 — UIUX
 - **Prompt**: `AGENT_UIUX_MAIN.txt`
