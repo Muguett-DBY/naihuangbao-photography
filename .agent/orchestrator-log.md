@@ -583,3 +583,32 @@ Beginning execution.
 - **Risk**: Status matrix is now aligned, but full refund reconciliation data model remains future work.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is a small but real refund reconciliation foundation without enabling live payments.
 - **Status**: COMPLETE
+
+### Stage 6 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Add a refund reconciliation foundation by recording structured refund metadata from signed `charge.refunded` webhooks without enabling live refunds or real card collection.
+- **Start state**: `main` at `d5a628a`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Stage 5 recommended refund reconciliation metadata as the next low-risk pre-live payment improvement.
+- **Completed locally**:
+  - Added `buildRefundMetadata` to preserve existing payment intent metadata and record refund charge id, refunded amount, currency, status, and received timestamp.
+  - Updated `charge.refunded` webhook handling to write both `refunded` status and refund metadata into `payment_intents.metadata`.
+  - Added API regression coverage for signed refund metadata recording.
+  - Added audit regression coverage for the refund metadata helper.
+- **Local verification**:
+  - Red/green: `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts` failed on missing refund metadata recording, then passed 65/65.
+  - `npm run lint` — passed.
+  - `npm test` — 240/240 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against `wrangler pages dev dist` — 13/13 passed.
+  - Playwright booking flow against Pages preview — 6/6 passed.
+- **Commit**: `d65f04d` — `feat: record refund webhook metadata`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28234197487` passed.
+- **Risk**: Refund metadata is stored in existing JSON metadata; a dedicated refund ledger/audit table is still recommended before live refunds.
+- **Final stage status**: COMPLETE
+- **Status**: COMPLETE
+
+## Campaign 014 Final Status
+- **Stages complete**: 6 / 6.
+- **Final implementation commit before closure record**: `d65f04d`.
+- **Protected existing change**: `.agent/orchestrator-state.json` remained unstaged throughout.
+- **Final status**: COMPLETE

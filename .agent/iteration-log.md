@@ -1013,3 +1013,40 @@ Webhook 状态矩阵加固：用签名 webhook fixture 覆盖 processing、faile
 
 ### 推荐下一轮优先执行的旗舰级主改动
 退款对账基础：在不启用真实退款的前提下，为 `charge.refunded` 记录结构化 refund metadata 或 audit 事件，让后续 live refunds 有可追踪基础。
+
+---
+
+## Campaign 014 Stage 6 — Refund Webhook Metadata Foundation
+
+### 承接的上一轮方向
+- 上一阶段推荐旗舰：退款对账基础。
+- 本阶段在不启用真实退款的前提下，让 `charge.refunded` webhook 记录可追踪 refund metadata。
+
+### 完成内容
+- `charge.refunded` webhook 更新 `payment_intents.status = refunded` 时同步写入 metadata。
+- 新增 `buildRefundMetadata`，保留既有 metadata，并记录 charge id、退款金额、币种、状态和接收时间。
+- 新增 API 回归测试，验证签名 refund webhook 会写入结构化 metadata。
+- 审计回归保护 refund metadata helper 不被移除。
+
+### 已通过的验证
+- Red/green：refund metadata 目标测试先失败后通过。
+- Targeted：`functions/api.test.ts + audit-regressions` 65/65 通过。
+- TypeScript / lint：通过。
+- Vitest：240/240 通过。
+- `build:full` + performance budget：通过。
+- Playwright smoke against Pages preview：13/13 通过。
+- Playwright booking flow：6/6 通过。
+- GitHub Actions：CI run `28234197487` 通过（main / `d65f04d`）。
+
+### 遗留风险
+- Refund metadata 当前复用 `payment_intents.metadata` JSON；live refunds 前仍建议增加专用 refund ledger/audit 表。
+- 真实 Stripe Payment Element 和 live card collection 仍未启用。
+- 大字体包与 `face-api-vendor` 仍是主要体积来源，但当前 performance budget 通过。
+
+### 下一轮建议方向
+1. IMPROVE：新增专用 refund ledger/audit 表并在 admin 侧展示退款对账详情。
+2. IMPROVE：继续优化字体/face-api 资产体积，降低首屏传输压力。
+3. CHECK：在真实 Stripe keys/webhook secret 配置完成后，执行 live-readiness 最终验收。
+
+### 推荐下一轮优先执行的旗舰级主改动
+退款对账台账：新增专用 refund ledger/audit 表和管理员可见退款详情，替代目前临时复用 `payment_intents.metadata` 的方式。
