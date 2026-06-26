@@ -247,3 +247,24 @@ Beginning execution.
 - **Risk**: Existing old saved searches are migrated with default `album=all`, `dateRange=all`, and `sort=default`; this keeps them usable but not retroactively more specific.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`.
 - **Status**: COMPLETE
+
+### Stage 5 / 6 — CHECK
+- **Prompt**: `AGENT_CHECK_MAIN.txt`
+- **Objective**: Remove Cloudflare Pages `_redirects` infinite-loop warnings while preserving SPA direct-route behavior and admin canonicalization.
+- **Start state**: `main` at `0c50274`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Finding**: `wrangler pages dev dist` reported 3 invalid rewrite rules: `/admin/ /index.html 200`, `/admin/* /index.html 200`, and `/* /index.html 200`.
+- **Completed locally**:
+  - Removed invalid `/index.html 200` SPA rewrite rules from `public/_redirects`.
+  - Removed the unnecessary `/api/* /api/:splat 200` rule; Pages Functions handle API routes.
+  - Kept `/admin /admin/ 301` for canonical admin URL behavior.
+  - Updated audit regression coverage to reject future `/index.html 200` rewrites.
+- **Local verification so far**:
+  - Targeted: `npm test -- src/lib/audit-regressions.test.ts` — 42/42 passed.
+  - `npm run lint` — passed.
+  - `npm test` — 225/225 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Fresh `wrangler pages dev dist` — parsed 1 valid redirect rule, no infinite-loop warnings.
+  - Direct route browser checks — `/admin` returned 301 to `/admin/`; `/admin/`, `/dashboard`, `/editor`, `/gallery/gallery-garden-01`, and `/booking` returned 200.
+  - Smoke Playwright against Pages preview — 13/13 passed with one worker.
+- **Risk**: This relies on Cloudflare Pages default SPA fallback for unmatched navigation routes, which matched local Pages preview behavior.
+- **Status**: READY TO COMMIT
