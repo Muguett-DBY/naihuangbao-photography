@@ -1082,7 +1082,8 @@
       "processing": "処理中",
       "succeeded": "支払い済み",
       "failed": "要確認",
-      "cancelled": "キャンセル済み"
+      "cancelled": "キャンセル済み",
+      "refunded": "返金済み"
     },
     "statusHelp": {
       "pending": "リクエストを受け付けました。確認中は空き日へ変更できます。",

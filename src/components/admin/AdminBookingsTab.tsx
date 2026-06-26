@@ -18,7 +18,7 @@ type BookingItem = {
   status: "pending" | "contacted" | "done";
   created_at: string;
   payment_intent_id: string | null;
-  payment_status: "not_started" | "pending" | "processing" | "succeeded" | "failed" | "cancelled";
+  payment_status: "not_started" | "pending" | "processing" | "succeeded" | "failed" | "cancelled" | "refunded";
   payment_provider: string | null;
   payment_amount_cents: number | null;
   payment_currency: string | null;
@@ -97,6 +97,7 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
     succeeded: 0,
     failed: 0,
     cancelled: 0,
+    refunded: 0,
   });
   const followUpCount = paymentStatusCounts.pending + paymentStatusCounts.processing;
   const paymentFilters: Array<{ key: PaymentFilter; label: string; count: number }> = [
@@ -106,6 +107,7 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
     { key: "succeeded", label: t("dashboard.paymentStatus.succeeded"), count: paymentStatusCounts.succeeded },
     { key: "failed", label: t("dashboard.paymentStatus.failed"), count: paymentStatusCounts.failed },
     { key: "cancelled", label: t("dashboard.paymentStatus.cancelled"), count: paymentStatusCounts.cancelled },
+    { key: "refunded", label: t("dashboard.paymentStatus.refunded"), count: paymentStatusCounts.refunded },
     { key: "not_started", label: t("dashboard.paymentStatus.not_started"), count: paymentStatusCounts.not_started },
   ];
   const filteredBookings = paymentFilter === "all"

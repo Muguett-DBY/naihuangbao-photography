@@ -7,7 +7,7 @@ export type Booking = {
   status: string;
   created_at: string;
   payment_intent_id: string | null;
-  payment_status: "not_started" | "pending" | "processing" | "succeeded" | "failed" | "cancelled";
+  payment_status: "not_started" | "pending" | "processing" | "succeeded" | "failed" | "cancelled" | "refunded";
   payment_provider: string | null;
   payment_amount_cents: number | null;
   payment_currency: string | null;

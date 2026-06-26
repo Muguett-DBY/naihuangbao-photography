@@ -8,7 +8,7 @@ type ConfirmBody = {
 
 function normalizeStoredPaymentStatus(status: string) {
   if (status === "canceled") return "cancelled";
-  if (["pending", "processing", "succeeded", "failed", "cancelled"].includes(status)) return status;
+  if (["pending", "processing", "succeeded", "failed", "cancelled", "refunded"].includes(status)) return status;
   return "pending";
 }
 
@@ -18,6 +18,7 @@ function toClientConfirmationStatus(status: string) {
   if (status === "succeeded") return "succeeded";
   if (status === "failed") return "failed";
   if (status === "cancelled") return "cancelled";
+  if (status === "refunded") return "refunded";
   return "requires_payment_method";
 }
 
@@ -61,7 +62,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const confirmationStatus = toClientConfirmationStatus(paymentStatus);
     const nextAction = record.provider === "placeholder"
       ? "manual_follow_up"
-      : confirmationStatus === "succeeded" || confirmationStatus === "failed" || confirmationStatus === "cancelled"
+      : confirmationStatus === "succeeded" || confirmationStatus === "failed" || confirmationStatus === "cancelled" || confirmationStatus === "refunded"
         ? "none"
         : "confirm_payment";
 

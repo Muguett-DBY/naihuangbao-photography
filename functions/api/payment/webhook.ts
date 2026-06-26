@@ -7,10 +7,13 @@ type WebhookBody = {
     object?: {
       id?: string;
       status?: string;
+      payment_intent?: string;
       metadata?: Record<string, string>;
     };
   };
 };
+
+type WebhookObject = NonNullable<NonNullable<WebhookBody["data"]>["object"]>;
 
 export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string }> = async (context) => {
   if (!context.env.DB) {
@@ -46,23 +49,12 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
 
   const { type, data } = body;
   const obj = data?.object;
-  if (!obj?.id || !obj.status) {
+  const paymentIntentId = getWebhookPaymentIntentId(type, obj);
+  const normalizedStatus = normalizeWebhookPaymentStatus(type, obj?.status);
+  if (!paymentIntentId || !normalizedStatus) {
     return badRequest("Missing payment intent details");
   }
-  const paymentIntentId = obj.id;
-  const rawStatus = obj.status;
-  const metadata = obj.metadata;
-
-  const statusMap: Record<string, string> = {
-    succeeded: "succeeded",
-    processing: "processing",
-    requires_payment_method: "pending",
-    requires_confirmation: "pending",
-    canceled: "cancelled",
-    failed: "failed",
-  };
-
-  const normalizedStatus = statusMap[rawStatus] || "pending";
+  const metadata = obj?.metadata;
 
   try {
     const existing = await context.env.DB.prepare(
@@ -121,6 +113,35 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
     return unavailable("Webhook processing failed", error, { route: "/api/payment/webhook", method: "POST" });
   }
 };
+
+function getWebhookPaymentIntentId(type: string, obj?: WebhookObject) {
+  if (type === "charge.refunded") return obj?.payment_intent;
+  return obj?.id;
+}
+
+function normalizeWebhookPaymentStatus(type: string, rawStatus?: string) {
+  const typeStatusMap: Record<string, string> = {
+    "payment_intent.succeeded": "succeeded",
+    "payment_intent.processing": "processing",
+    "payment_intent.payment_failed": "failed",
+    "payment_intent.canceled": "cancelled",
+    "charge.refunded": "refunded",
+  };
+  if (typeStatusMap[type]) return typeStatusMap[type];
+  if (!rawStatus) return null;
+
+  const statusMap: Record<string, string> = {
+    succeeded: "succeeded",
+    processing: "processing",
+    requires_payment_method: "pending",
+    requires_confirmation: "pending",
+    canceled: "cancelled",
+    failed: "failed",
+    refunded: "refunded",
+  };
+
+  return statusMap[rawStatus] || "pending";
+}
 
 function hasStripeSignature(header: string) {
   return /(?:^|,)t=\d+/.test(header) && /(?:^|,)v1=[0-9a-f]+/i.test(header);

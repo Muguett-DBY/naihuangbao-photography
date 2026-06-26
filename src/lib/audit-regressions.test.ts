@@ -363,8 +363,17 @@ describe("audit regression coverage", () => {
     expect(paymentConfirmSource).toContain("nextAction");
     expect(paymentWebhookSource).toContain("idempotent: true");
     expect(paymentWebhookSource).toContain("existingStatus === normalizedStatus");
+    expect(paymentWebhookSource).toContain("charge.refunded");
+    expect(paymentWebhookSource).toContain("refunded");
+    expect(adminBookingsSource).toContain('"refunded"');
+    expect(dashboardBookingsSource).toContain("dashboard.paymentStatus");
+    expect(editorCssSource).toContain(".dashboard-booking-deposit--refunded");
+    expect(adminCssSource).toContain(".adm-booking-payment--refunded");
     expect(paymentForm).toContain('outcome === "pending"');
     expect(paymentForm).toContain("payment.cancelledDesc");
+    for (const locale of Object.values(locales)) {
+      expect(locale.dashboard.paymentStatus.refunded).toBeTruthy();
+    }
   });
 
   it("keeps payment status UX explicit and mobile-safe", () => {

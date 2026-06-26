@@ -193,6 +193,64 @@ describe("Cloudflare Pages API behavior", () => {
     expect(writes).toEqual([]);
   });
 
+  it("handles signed payment webhook status matrix including refunds without success side effects", async () => {
+    const cases = [
+      { type: "payment_intent.processing", object: { id: "pi_processing", status: "processing" }, expected: "processing" },
+      { type: "payment_intent.payment_failed", object: { id: "pi_failed", status: "requires_payment_method" }, expected: "failed" },
+      { type: "payment_intent.canceled", object: { id: "pi_cancelled", status: "canceled" }, expected: "cancelled" },
+      { type: "charge.refunded", object: { id: "ch_refunded", payment_intent: "pi_refunded", amount_refunded: 2000 }, expected: "refunded" },
+    ];
+
+    for (const eventCase of cases) {
+      const payload = JSON.stringify({
+        type: eventCase.type,
+        data: { object: eventCase.object },
+      });
+      const updates: Array<{ sql: string; args: unknown[] }> = [];
+      const sideEffects: string[] = [];
+      const db = {
+        prepare: vi.fn((sql: string) => {
+          const statement = {
+            args: [] as unknown[],
+            bind: vi.fn((...args: unknown[]) => {
+              statement.args = args;
+              return statement;
+            }),
+            first: vi.fn(async () => ({
+              id: eventCase.type === "charge.refunded" ? "pi_refunded" : eventCase.object.id,
+              purpose: "booking_deposit",
+              reference_id: "booking-12345678",
+              status: "pending",
+            })),
+            run: vi.fn(async () => {
+              if (sql.includes("UPDATE payment_intents")) {
+                updates.push({ sql, args: statement.args });
+              } else {
+                sideEffects.push(sql);
+              }
+              return { success: true };
+            }),
+          };
+          return statement;
+        }),
+      };
+
+      const response = await paymentWebhook({
+        request: jsonRequest("https://shoot.custard.top/api/payment/webhook", {
+          method: "POST",
+          headers: { "stripe-signature": await stripeSignature(payload, "whsec_test") },
+          body: payload,
+        }),
+        env: { DB: db, STRIPE_WEBHOOK_SECRET: "whsec_test" },
+      } as never);
+
+      expect(response.status).toBe(200);
+      expect(updates).toHaveLength(1);
+      expect(updates[0]?.args[0]).toBe(eventCase.expected);
+      expect(sideEffects).toEqual([]);
+    }
+  });
+
   it("projects the latest booking deposit state into the customer booking list", async () => {
     const secret = "test-auth-secret-with-32-characters";
     const session = await createUserSession("user-12345678", secret);

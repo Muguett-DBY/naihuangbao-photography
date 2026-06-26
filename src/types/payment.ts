@@ -1,6 +1,6 @@
-export type PaymentStatus = "pending" | "processing" | "succeeded" | "failed" | "cancelled";
+export type PaymentStatus = "pending" | "processing" | "succeeded" | "failed" | "cancelled" | "refunded";
 
-export type PaymentIntentStatus = "requires_payment_method" | "requires_confirmation" | "processing" | "succeeded" | "failed" | "cancelled";
+export type PaymentIntentStatus = "requires_payment_method" | "requires_confirmation" | "processing" | "succeeded" | "failed" | "cancelled" | "refunded";
 
 export type PaymentProvider = "stripe" | "cloudflare" | "placeholder";
 
@@ -60,6 +60,7 @@ export type WebhookEvent = {
     object: {
       id: string;
       status: string;
+      payment_intent?: string;
       amount?: number;
       currency?: string;
       metadata?: Record<string, string>;

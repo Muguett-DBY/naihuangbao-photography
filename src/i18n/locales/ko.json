@@ -1082,7 +1082,8 @@
       "processing": "처리 중",
       "succeeded": "결제 완료",
       "failed": "확인 필요",
-      "cancelled": "취소됨"
+      "cancelled": "취소됨",
+      "refunded": "환불됨"
     },
     "statusHelp": {
       "pending": "요청이 접수되었습니다. 확인 중에는 다른 가능한 날짜로 변경할 수 있습니다.",
