@@ -7545,6 +7545,12 @@
   color: var(--caramel-muted);
   opacity: 0.6;
 }
+.editor-model-deferred {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: var(--caramel-muted);
+  opacity: 0.78;
+}
 .editor-drag-over .editor-canvas--empty,
 .editor-drag-over {
   border-color: var(--peach-accent, #FFB8A1);

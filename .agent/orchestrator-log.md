@@ -644,3 +644,10 @@ Beginning execution.
 - **Risk**: Live refunds are still not enabled; refund actor/source attribution remains manual until real refund operations are introduced.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing the known font/face-api payload pressure with a user-visible loading/performance improvement.
 - **Status**: COMPLETE
+
+### Stage 2 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Reduce editor resource pressure by deferring face-api/model loading until the user uploads a photo or explicitly retries, while making the lazy AI behavior visible in the editor empty state.
+- **Start state**: `main` at `ed32c89`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Stage 1 recommended addressing the known font/face-api payload pressure with a user-visible loading/performance improvement.
+- **Status**: IN PROGRESS

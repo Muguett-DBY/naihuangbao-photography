@@ -60,6 +60,7 @@ export default function PhotoEditorPage() {
   const modelsReadyRef = useRef(false);
   const modelErrorRef = useRef(false);
   const faceModelsPromiseRef = useRef<Promise<boolean> | null>(null);
+  const mountedRef = useRef(true);
 
   const [loading, setLoading] = useState(false);
   const [loadProgress, setLoadProgress] = useState(0);
@@ -70,6 +71,7 @@ export default function PhotoEditorPage() {
   const [faceOk, setFaceOk] = useState(false);
   const [faceError, setFaceError] = useState(false);
   const [modelsReady, setModelsReady] = useState(false);
+  const [modelLoading, setModelLoading] = useState(false);
   const [modelError, setModelError] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
   const [comparePos, setComparePos] = useState(50);
@@ -93,6 +95,10 @@ export default function PhotoEditorPage() {
   useEffect(() => {
     modelErrorRef.current = modelError;
   }, [modelError]);
+
+  useEffect(() => {
+    return () => { mountedRef.current = false; };
+  }, []);
 
   // New feature states
   const [frameId, setFrameId] = useState<FrameId>("none");
@@ -144,41 +150,42 @@ export default function PhotoEditorPage() {
   const [doubleExposureOpacity, setDoubleExposureOpacity] = useState(50);
   const [isDragOver, setIsDragOver] = useState(false);
 
-  const startModelLoad = useCallback(() => {
-    let m = true;
+  const startModelLoad = useCallback((options?: { force?: boolean }) => {
+    if (faceModelsPromiseRef.current && !options?.force) return faceModelsPromiseRef.current;
+    setModelLoadAttempt((attempt) => attempt + 1);
     setLoadProgress(0);
+    setModelLoading(true);
     setModelError(false);
     setModelsReady(false);
     modelErrorRef.current = false;
     modelsReadyRef.current = false;
     const loadPromise = loadFaceApiModels((progress) => {
-      if (m) setLoadProgress(progress);
+      if (mountedRef.current) setLoadProgress(progress);
     })
       .then(success => {
-        if (m) {
+        if (mountedRef.current) {
           modelsReadyRef.current = success;
           modelErrorRef.current = !success;
           setModelsReady(success);
+          setModelLoading(false);
           setModelError(!success);
           setLoadProgress(success ? 100 : 0);
         }
         return success;
       });
     faceModelsPromiseRef.current = loadPromise;
-    return () => { m = false; };
+    return loadPromise;
   }, []);
-
-  // Load models
-  useEffect(() => startModelLoad(), [startModelLoad, modelLoadAttempt]);
 
   const handleRetryModels = useCallback(() => {
-    setModelLoadAttempt((attempt) => attempt + 1);
-  }, []);
+    faceModelsPromiseRef.current = null;
+    void startModelLoad({ force: true });
+  }, [startModelLoad]);
 
   const waitForFaceModels = useCallback(async () => {
     if (modelsReadyRef.current) return true;
-    return (await faceModelsPromiseRef.current) ?? false;
-  }, []);
+    return await startModelLoad();
+  }, [startModelLoad]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -782,7 +789,7 @@ export default function PhotoEditorPage() {
         <header className="editor-header">
           <h1>{t("editor.title")}</h1>
           <p>{t("editor.subtitle")}</p>
-          {!modelsReady && !modelError && (
+          {modelLoading && !modelsReady && !modelError && (
             <div className="editor-loading-models">
               <div className="editor-loading-bar">
                 <div className="editor-loading-bar-fill" style={{ width: `${Math.max(loadProgress, 5)}%` }} />
@@ -989,6 +996,7 @@ export default function PhotoEditorPage() {
                   <>
                     <p>{t("editor.subtitle")}</p>
                     <p className="editor-drop-hint">{t("editor.dropHint", "or drag and drop an image")}</p>
+                    <p className="editor-model-deferred">{t("editor.modelsDeferred", "AI models load only after you add a photo.")}</p>
                   </>
                 )}
               </div>
