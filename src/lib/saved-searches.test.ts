@@ -13,6 +13,12 @@ describe("gallery saved searches", () => {
     expect(source).toContain("save");
     expect(source).toContain("remove");
     expect(source).toContain("clear");
+    expect(source).toContain("album: string");
+    expect(source).toContain("dateRange: string");
+    expect(source).toContain("sort: string");
+    expect(source).toContain("entry.album");
+    expect(source).toContain("entry.dateRange");
+    expect(source).toContain("entry.sort");
   });
 
   it("renders a save button and saved-search pills in the gallery active chips area", () => {

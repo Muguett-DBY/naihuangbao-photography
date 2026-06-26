@@ -70,6 +70,17 @@
     "saveSearch": "保存搜索",
     "savedSearches": "已保存的搜索",
     "removeSavedSearch": "移除已保存的搜索",
+    "facetsLabel": "更多筛选",
+    "albumLabel": "相册",
+    "albumAll": "全部相册",
+    "dateRangeLabel": "时间范围",
+    "dateRangeAll": "不限时间",
+    "dateRanges": {
+      "last-30": "最近 30 天",
+      "last-90": "最近 90 天",
+      "last-365": "最近一年",
+      "older": "一年以前"
+    },
     "sortLabel": "作品排序",
     "sortDefault": "默认顺序",
     "sortNewest": "最新优先",
@@ -86,6 +97,7 @@
     "dismiss": "关闭",
     "tryFilters": "试试这些风格：",
     "viewDetails": "详情",
+    "photos": "张照片",
     "filters": {
       "all": "全部",
       "jiangnan": "江南感",

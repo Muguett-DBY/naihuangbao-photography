@@ -70,6 +70,17 @@
     "saveSearch": "Save search",
     "savedSearches": "Saved searches",
     "removeSavedSearch": "Remove saved search",
+    "facetsLabel": "Additional filters",
+    "albumLabel": "Album",
+    "albumAll": "All albums",
+    "dateRangeLabel": "Date range",
+    "dateRangeAll": "Any time",
+    "dateRanges": {
+      "last-30": "Last 30 days",
+      "last-90": "Last 90 days",
+      "last-365": "Last year",
+      "older": "Over a year ago"
+    },
     "sortLabel": "Sort photos",
     "sortDefault": "Default order",
     "sortNewest": "Newest first",
@@ -86,6 +97,7 @@
     "dismiss": "Dismiss",
     "tryFilters": "Try these styles:",
     "viewDetails": "Details",
+    "photos": "photos",
     "filters": {
       "all": "All",
       "jiangnan": "Jiangnan",

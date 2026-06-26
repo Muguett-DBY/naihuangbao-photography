@@ -70,6 +70,17 @@
     "saveSearch": "검색 저장",
     "savedSearches": "저장된 검색",
     "removeSavedSearch": "저장된 검색 삭제",
+    "facetsLabel": "추가 필터",
+    "albumLabel": "앨범",
+    "albumAll": "전체 앨범",
+    "dateRangeLabel": "기간",
+    "dateRangeAll": "전체 기간",
+    "dateRanges": {
+      "last-30": "최근 30일",
+      "last-90": "최근 90일",
+      "last-365": "최근 1년",
+      "older": "1년 이전"
+    },
     "sortLabel": "사진 정렬",
     "sortDefault": "기본 순서",
     "sortNewest": "최신순",
@@ -86,6 +97,7 @@
     "dismiss": "닫기",
     "tryFilters": "이 스타일을 시도해 보세요:",
     "viewDetails": "상세",
+    "photos": "장",
     "filters": {
       "all": "전체",
       "jiangnan": "장난",
