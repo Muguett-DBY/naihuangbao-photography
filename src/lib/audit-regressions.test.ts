@@ -458,6 +458,7 @@ describe("audit regression coverage", () => {
     expect(paymentLiveReadinessSource).toContain("payment_intent.succeeded");
     expect(paymentLiveReadinessSource).toContain("payment_intent.payment_failed");
     expect(paymentLiveReadinessSource).toContain("charge.refunded");
+    expect(paymentLiveReadinessSource).toContain("`refunded`");
     expect(paymentLiveReadinessSource).toContain("rollback");
     expect(paymentLiveReadinessSource).toContain("manual follow-up");
     expect(paymentLiveReadinessSource).not.toMatch(/sk_live_[A-Za-z0-9]/);

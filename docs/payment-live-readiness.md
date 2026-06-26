@@ -16,7 +16,7 @@ This runbook keeps the current placeholder/manual follow-up flow safe until real
 3. Create a server PaymentIntent through `/api/payment/create-intent`.
 4. Mount Payment Element with the returned client secret.
 5. Submit with Stripe confirmation, then call `/api/payment/confirm` to read the stored status.
-6. Show `pending`, `processing`, `succeeded`, `failed`, and `cancelled` exactly as the existing customer and admin status model defines them.
+6. Show `pending`, `processing`, `succeeded`, `failed`, `cancelled`, and `refunded` exactly as the existing customer and admin status model defines them.
 
 ## Webhook event matrix
 
@@ -26,7 +26,7 @@ This runbook keeps the current placeholder/manual follow-up flow safe until real
 | `payment_intent.processing` | `processing` | Keep the booking in manual follow-up until Stripe sends a terminal event. |
 | `payment_intent.payment_failed` | `failed` | Keep the customer-facing retry path available and leave the admin item visible for manual follow-up. |
 | `payment_intent.canceled` | `cancelled` | Tell the customer no charge was completed and keep the admin item reviewable. |
-| `charge.refunded` | refund recorded | Add refund state before enabling live refunds; do not treat refund events as new successful payments. |
+| `charge.refunded` | `refunded` | Record the refunded state and keep the booking visible for reconciliation; do not treat refund events as new successful payments. |
 
 ## Refund and failure operations
 
@@ -48,5 +48,5 @@ Use this rollback plan when live payments need to be paused without losing the b
 - Local tests cover Payment Element readiness copy, confirmation states, webhook idempotency, and admin manual follow-up.
 - A signed webhook fixture updates each supported status once and ignores duplicate same-status events.
 - Unsigned webhook requests still fail before checking deployment secrets.
-- Admin booking filters show pending and processing counts before launch.
+- Admin booking filters show pending, processing, and refunded counts before launch.
 - No `sk_live_` or `whsec_` values exist in committed source, docs, logs, or test snapshots.
