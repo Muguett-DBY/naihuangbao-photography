@@ -8,6 +8,8 @@ type WebhookBody = {
       id?: string;
       status?: string;
       payment_intent?: string;
+      amount_refunded?: number;
+      currency?: string;
       metadata?: Record<string, string>;
     };
   };
@@ -64,6 +66,7 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
       purpose: string;
       reference_id: string;
       status: string;
+      metadata: string | null;
     } | null;
 
     if (!existing) {
@@ -75,9 +78,16 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
       return jsonResponse({ received: true, idempotent: true, status: normalizedStatus }, 200);
     }
 
-    await context.env.DB.prepare(
-      `UPDATE payment_intents SET status = ?, updated_at = ? WHERE id = ?`,
-    ).bind(normalizedStatus, new Date().toISOString(), paymentIntentId).run();
+    const updatedAt = new Date().toISOString();
+    if (type === "charge.refunded") {
+      await context.env.DB.prepare(
+        `UPDATE payment_intents SET status = ?, metadata = ?, updated_at = ? WHERE id = ?`,
+      ).bind(normalizedStatus, buildRefundMetadata(existing.metadata, obj, updatedAt), updatedAt, paymentIntentId).run();
+    } else {
+      await context.env.DB.prepare(
+        `UPDATE payment_intents SET status = ?, updated_at = ? WHERE id = ?`,
+      ).bind(normalizedStatus, updatedAt, paymentIntentId).run();
+    }
 
     if (type === "payment_intent.succeeded" && existing.purpose === "course_purchase") {
       await context.env.DB.prepare(
@@ -141,6 +151,31 @@ function normalizeWebhookPaymentStatus(type: string, rawStatus?: string) {
   };
 
   return statusMap[rawStatus] || "pending";
+}
+
+function buildRefundMetadata(existingMetadata: string | null, obj?: WebhookObject, receivedAt = new Date().toISOString()) {
+  let base: Record<string, unknown> = {};
+  if (existingMetadata) {
+    try {
+      const parsed = JSON.parse(existingMetadata) as unknown;
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        base = parsed as Record<string, unknown>;
+      }
+    } catch {
+      base = {};
+    }
+  }
+
+  return JSON.stringify({
+    ...base,
+    refund: {
+      chargeId: obj?.id ?? null,
+      amountRefunded: obj?.amount_refunded ?? null,
+      currency: obj?.currency ?? null,
+      status: "refunded",
+      receivedAt,
+    },
+  });
 }
 
 function hasStripeSignature(header: string) {

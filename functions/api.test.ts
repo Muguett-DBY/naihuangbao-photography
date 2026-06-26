@@ -251,6 +251,69 @@ describe("Cloudflare Pages API behavior", () => {
     }
   });
 
+  it("records refund webhook metadata for later reconciliation", async () => {
+    const payload = JSON.stringify({
+      type: "charge.refunded",
+      data: {
+        object: {
+          id: "ch_refund_meta",
+          payment_intent: "pi_refund_meta",
+          amount_refunded: 5000,
+          currency: "cny",
+        },
+      },
+    });
+    let refundMetadata = "";
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          args: [] as unknown[],
+          bind: vi.fn((...args: unknown[]) => {
+            statement.args = args;
+            return statement;
+          }),
+          first: vi.fn(async () => ({
+            id: "pi_refund_meta",
+            purpose: "booking_deposit",
+            reference_id: "booking-12345678",
+            status: "succeeded",
+            metadata: JSON.stringify({ packageName: "Portrait Session" }),
+          })),
+          run: vi.fn(async () => {
+            if (sql.includes("metadata = ?")) {
+              refundMetadata = String(statement.args[1]);
+            }
+            return { success: true };
+          }),
+        };
+        return statement;
+      }),
+    };
+
+    const response = await paymentWebhook({
+      request: jsonRequest("https://shoot.custard.top/api/payment/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": await stripeSignature(payload, "whsec_test") },
+        body: payload,
+      }),
+      env: { DB: db, STRIPE_WEBHOOK_SECRET: "whsec_test" },
+    } as never);
+    const metadata = JSON.parse(refundMetadata) as {
+      packageName?: string;
+      refund?: { chargeId?: string; amountRefunded?: number; currency?: string; status?: string; receivedAt?: string };
+    };
+
+    expect(response.status).toBe(200);
+    expect(metadata.packageName).toBe("Portrait Session");
+    expect(metadata.refund).toMatchObject({
+      chargeId: "ch_refund_meta",
+      amountRefunded: 5000,
+      currency: "cny",
+      status: "refunded",
+    });
+    expect(metadata.refund?.receivedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+
   it("projects the latest booking deposit state into the customer booking list", async () => {
     const secret = "test-auth-secret-with-32-characters";
     const session = await createUserSession("user-12345678", secret);
