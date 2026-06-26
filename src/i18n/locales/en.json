@@ -431,6 +431,16 @@
     "back": "Back",
     "stepNavigation": "Booking steps",
     "offlineSyncNotice": "This request is saved on this device and will be sent automatically when you are back online.",
+    "paymentClarityLabel": "Payment status next steps",
+    "paymentClarityTitle": "What happens with the deposit",
+    "paymentClarity": {
+      "saved": "Booking saved",
+      "savedDetail": "Your request has a reference number and can be checked later.",
+      "notCharged": "No deposit charged",
+      "notChargedDetail": "Placeholder payment mode only records the deposit status.",
+      "followUp": "Follow-up next",
+      "followUpDetail": "We will confirm schedule and payment options before collection."
+    },
     "depositOutcome": {
       "pending": {
         "title": "Deposit marked as pending",

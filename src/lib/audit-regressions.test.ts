@@ -321,6 +321,26 @@ describe("audit regression coverage", () => {
     expect(sectionStyles).toContain("body:has(.booking-modal-content) .public-chat-widget");
   });
 
+  it("keeps booking completion payment clarity visible and mobile-safe", () => {
+    const bookingModal = readFileSync(resolve(root, "src/components/BookingModal.tsx"), "utf8");
+    const sectionStyles = readFileSync(resolve(root, "src/styles/sections.css"), "utf8");
+
+    expect(bookingModal).toContain("bookingPaymentClaritySteps");
+    expect(bookingModal).toContain("booking-payment-clarity");
+    expect(bookingModal).toContain("booking-payment-clarity-step");
+    expect(bookingModal).toContain('aria-label={t("bookingModal.paymentClarityLabel"');
+    expect(bookingModal).toContain("bookingModal.paymentClarity.notCharged");
+    expect(sectionStyles).toContain(".booking-payment-clarity");
+    expect(sectionStyles).toContain(".booking-payment-clarity-steps");
+    expect(sectionStyles).toMatch(/@media\s*\(max-width:\s*560px\)[\s\S]*\.booking-payment-clarity/s);
+    for (const locale of Object.values(locales)) {
+      expect(locale.bookingModal.paymentClarityLabel).toBeTruthy();
+      expect(locale.bookingModal.paymentClarity.saved).toBeTruthy();
+      expect(locale.bookingModal.paymentClarity.notCharged).toBeTruthy();
+      expect(locale.bookingModal.paymentClarity.followUp).toBeTruthy();
+    }
+  });
+
   it("surfaces payment readiness and deposit tracking to customers and admins", () => {
     const paymentForm = readFileSync(resolve(root, "src/components/PaymentForm.tsx"), "utf8");
 

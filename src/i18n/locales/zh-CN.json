@@ -455,6 +455,16 @@
     "back": "返回",
     "stepNavigation": "预约步骤",
     "offlineSyncNotice": "预约已保存在当前设备，恢复联网后会自动提交。",
+    "paymentClarityLabel": "支付状态后续步骤",
+    "paymentClarityTitle": "定金接下来怎么处理",
+    "paymentClarity": {
+      "saved": "预约已保存",
+      "savedDetail": "本次请求已有预约编号，之后可在个人中心查看。",
+      "notCharged": "没有产生扣款",
+      "notChargedDetail": "当前占位支付模式只记录定金状态，不会真实扣款。",
+      "followUp": "后续人工确认",
+      "followUpDetail": "我们会先确认档期和支付方式，再收取定金。"
+    },
     "depositOutcome": {
       "pending": {
         "title": "定金状态已记为待处理",

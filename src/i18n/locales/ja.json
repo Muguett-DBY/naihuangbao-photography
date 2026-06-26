@@ -428,6 +428,16 @@
     "back": "戻る",
     "stepNavigation": "予約ステップ",
     "offlineSyncNotice": "この端末に保存され、オンラインに戻ると自動送信されます。",
+    "paymentClarityLabel": "支払い状態の次の手順",
+    "paymentClarityTitle": "デポジットの次の流れ",
+    "paymentClarity": {
+      "saved": "予約は保存済み",
+      "savedDetail": "予約番号が発行され、あとで確認できます。",
+      "notCharged": "デポジット請求なし",
+      "notChargedDetail": "プレースホルダー決済では状態のみを記録します。",
+      "followUp": "次にフォローアップ",
+      "followUpDetail": "日程と支払い方法を確認してから回収します。"
+    },
     "depositOutcome": {
       "pending": {
         "title": "デポジットは保留として記録されました",

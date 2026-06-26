@@ -242,6 +242,23 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   if (done) {
     const selectedPackageName = packages.find((p) => p.name === selectedPkg)?.name;
     const timeLabel: string = time ? String(t(`bookingModal.${time}` as any)) : String(t("bookingModal.any"));
+    const bookingPaymentClaritySteps = [
+      {
+        key: "saved",
+        label: t("bookingModal.paymentClarity.saved", "Booking saved"),
+        detail: t("bookingModal.paymentClarity.savedDetail", "Your request has a reference number and can be checked later."),
+      },
+      {
+        key: "notCharged",
+        label: t("bookingModal.paymentClarity.notCharged", "No deposit charged"),
+        detail: t("bookingModal.paymentClarity.notChargedDetail", "Placeholder payment mode only records the deposit status."),
+      },
+      {
+        key: "followUp",
+        label: t("bookingModal.paymentClarity.followUp", "Follow-up next"),
+        detail: t("bookingModal.paymentClarity.followUpDetail", "We will confirm schedule and payment options before collection."),
+      },
+    ];
     return (
       <Modal open onClose={onClose} footer={null} typewriter={false}>
         <span id={titleId} className="sr-only">{t("bookingModal.successTitle")}</span>
@@ -284,6 +301,20 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               <span>{t(`bookingModal.depositOutcome.${depositOutcome}.description`)}</span>
             </div>
           )}
+          <section className="booking-payment-clarity" aria-label={t("bookingModal.paymentClarityLabel", "Payment status next steps")}>
+            <p className="booking-payment-clarity-title">{t("bookingModal.paymentClarityTitle", "What happens with the deposit")}</p>
+            <ol className="booking-payment-clarity-steps">
+              {bookingPaymentClaritySteps.map((item, index) => (
+                <li key={item.key} className="booking-payment-clarity-step">
+                  <span className="booking-payment-clarity-index" aria-hidden="true">{index + 1}</span>
+                  <span>
+                    <strong>{item.label}</strong>
+                    <small>{item.detail}</small>
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </section>
           {savedOffline && (
             <p className="booking-success-offline-note">
               {t("bookingModal.offlineSyncNotice")}
