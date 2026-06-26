@@ -673,3 +673,24 @@ Beginning execution.
 - **Objective**: Upgrade the editor first-screen empty state after deferred AI model loading so users get a clear action-led upload path, local-processing reassurance, AI-on-demand feedback, and mobile-ready layout.
 - **Start state**: `main` at `898f295`; only protected `.agent/orchestrator-state.json` was unstaged before this stage.
 - **Previous direction carried forward**: Stage 2 recommended making the editor empty state and mobile first interaction more polished after lazy AI loading.
+- **Completed locally**:
+  - Rebuilt the `/editor` empty state into an action-led upload panel with icon button, local-processing reassurance, deferred-AI explanation, and manual-tool fallback messaging.
+  - Added zh-CN/en/ja/ko copy for the new editor empty-state hierarchy and badges.
+  - Added hover/focus styles, badge layout, and a 640px responsive breakpoint that stacks the badges on mobile.
+  - Fixed a rendered mobile regression where the default empty canvas squeezed the upload panel into a narrow column by hiding the placeholder canvas before a photo is loaded.
+  - Added editor regression coverage for the action-led empty state and the mobile squeeze prevention.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/editor-regressions.test.ts` failed on missing action-led empty state, then passed 15/15.
+  - Red/green after rendered QA found the mobile squeeze: `npm test -- src/lib/editor-regressions.test.ts` failed on missing placeholder-canvas guard, then passed 16/16.
+  - `npm run lint` — passed.
+  - `npm test` — 244/244 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - In-app Browser opened the local editor and exposed stale PWA service-worker cache; Browser page-context cache clearing was unavailable, so rendered validation used a fresh Playwright context with service workers blocked.
+  - Rendered desktop/mobile Playwright validation passed: `/editor` showed the new empty panel, one scoped empty-state upload button opened the file chooser, no horizontal overflow was detected, and the mobile panel measured 342px wide inside a 390px viewport.
+  - Playwright smoke against preview — 13/13 passed.
+  - Playwright booking flow — 6/6 passed.
+- **Commit**: `6fd98f7` — `feat: upgrade editor empty state experience`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28238821338` passed.
+- **Risk**: In-app Browser can show stale local PWA cache on this preview origin; validation used service-worker-blocked Playwright to prove current build output. Large multilingual fonts and `face-api-vendor` remain the main bundle-size risks.
+- **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is hardening editor model/degraded-mode behavior or continuing asset pressure reduction.
+- **Status**: COMPLETE

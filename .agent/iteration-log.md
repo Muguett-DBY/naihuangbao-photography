@@ -1125,3 +1125,43 @@ Webhook 状态矩阵加固：用签名 webhook fixture 覆盖 processing、faile
 
 ### 推荐下一轮优先执行的旗舰级主改动
 编辑器首屏体验升级：在 deferred AI loading 基础上，重做编辑器空状态和上传前引导，让用户清楚知道“先上传、本地处理、AI 按需加载、无模型也可继续编辑”，并在移动端保持紧凑可操作。
+
+---
+
+## Campaign 015 Stage 3 — Editor First-Screen UI/UX Upgrade
+
+### 承接的上一轮方向
+- 上一阶段推荐旗舰：编辑器首屏体验升级。
+- 本阶段围绕 deferred AI loading 后的上传前体验，重做 `/editor` 空状态与移动端首屏布局。
+
+### 完成内容
+- 将编辑器空状态从说明文字升级为操作优先的上传面板。
+- 新增本地处理、AI 按需加载、基础工具可先用的可见说明 badge。
+- 补齐空状态上传按钮的 hover/focus 样式和移动端 badge 堆叠布局。
+- 修复未上传照片时默认 canvas 挤压移动端空状态面板的问题。
+- 新增回归测试覆盖空状态结构和移动端 placeholder canvas 防挤压约束。
+
+### 已通过的验证
+- Red/green：空状态 UI 回归测试先失败后通过。
+- Red/green：移动端空状态挤压回归测试先失败后通过。
+- Targeted：`editor-regressions` 16/16 通过。
+- TypeScript / lint：通过。
+- Vitest：244/244 通过。
+- `build:full` + performance budget：通过。
+- Rendered QA：桌面与 390px 移动端 `/editor` 验证通过，空状态主按钮可打开文件选择器，移动端无横向溢出。
+- Playwright smoke：13/13 通过。
+- Playwright booking flow：6/6 通过。
+- GitHub Actions：CI run `28238821338` 通过（main / `6fd98f7`）。
+
+### 遗留风险
+- In-app Browser 在本地预览域可能命中过期 PWA cache；当前阶段用 service-worker-blocked Playwright 证明了最新构建产物。
+- `face-api-vendor` 和中日韩字体仍是主要体积热点。
+- 真实 Stripe Payment Element 和 live card collection 仍未启用。
+
+### 下一轮建议方向
+1. IMPROVE：检查并强化编辑器模型加载失败、弱网、缓存和 degraded mode 的一致性。
+2. IMPROVE：继续拆分或削减 `face-api-vendor` 与多语言字体的实际加载压力。
+3. CHECK：系统扫雷 PWA service worker、runtime cache、预览验证和生产缓存更新链路。
+
+### 推荐下一轮优先执行的旗舰级主改动
+编辑器模型可靠性强化：围绕弱网、模型加载失败、PWA cache 与 degraded mode，确保用户上传照片后即使 AI 模型不可用，也能清楚看到状态并继续使用基础编辑、导出和重试路径。
