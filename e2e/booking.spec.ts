@@ -148,6 +148,9 @@ test.describe("booking flow", () => {
 
     await expect(page.locator(".booking-deposit-outcome--pending")).toBeVisible();
     await expect(page.getByText("No charge was made.", { exact: false })).toBeVisible();
+    await expect(page.locator(".booking-payment-clarity")).toBeVisible();
+    await expect(page.getByText("What happens with the deposit", { exact: true })).toBeVisible();
+    await expect(page.getByText("No deposit charged", { exact: true })).toBeVisible();
   });
 
   test("shows the latest booking deposit state in the customer dashboard", async ({ page }) => {

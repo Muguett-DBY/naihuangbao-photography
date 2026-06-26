@@ -2291,12 +2291,85 @@ body:has(.booking-modal-content) .public-chat-widget {
   background: rgba(219, 234, 254, 0.42);
 }
 
+.booking-payment-clarity {
+  margin: 14px 0;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(139, 94, 74, 0.14);
+  background: linear-gradient(135deg, rgba(255, 253, 247, 0.92), rgba(255, 247, 236, 0.76));
+  text-align: left;
+}
+
+.booking-payment-clarity-title {
+  margin: 0 0 10px !important;
+  color: var(--caramel-ink) !important;
+  font-size: 0.86rem !important;
+  font-weight: 800;
+}
+
+.booking-payment-clarity-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.booking-payment-clarity-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.booking-payment-clarity-index {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(185, 101, 77, 0.14);
+  color: #9a5d14;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.booking-payment-clarity-step strong,
+.booking-payment-clarity-step small {
+  display: block;
+}
+
+.booking-payment-clarity-step strong {
+  color: var(--caramel-ink);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.booking-payment-clarity-step small {
+  color: var(--caramel-muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  margin-top: 3px;
+}
+
 .booking-success-offline-note {
   padding: 8px 10px;
   border-radius: 9px;
   background: rgba(37, 99, 235, 0.08);
   color: #1d4ed8 !important;
   font-size: 0.78rem !important;
+}
+
+@media (max-width: 560px) {
+  .booking-payment-clarity {
+    padding: 12px;
+  }
+
+  .booking-payment-clarity-steps {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Booking form improvements */
