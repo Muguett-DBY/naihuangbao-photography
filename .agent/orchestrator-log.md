@@ -225,7 +225,23 @@ Beginning execution.
 - **Prompt**: `AGENT_IMPROVE_MAIN.txt`
 - **Objective**: Extend the payment status consistency work beyond booking deposits so course and workshop payment entry points handle placeholder pending/manual follow-up states explicitly.
 - **Start state**: `main` at `3a453fd`; only protected `.agent/orchestrator-state.json` was unstaged.
-- **Status**: IN PROGRESS
+- **Completed locally**:
+  - Added explicit pending/manual follow-up handling to course purchases.
+  - Added explicit pending/manual follow-up handling to workshop registration payments and confirmation modal.
+  - Added reusable note styling for course/workshop payment pending states.
+  - Added four-language course/workshop pending payment copy.
+  - Added audit regression coverage requiring course and workshop payment entries to handle `onPending`.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` failed on missing course/workshop pending handling, then passed 46/46.
+  - `npm run lint` — passed.
+  - `npm test` — 233/233 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against `wrangler pages dev dist` — 13/13 passed with one worker.
+- **Commit**: `0602ccd` — `feat: align paid entry pending states`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28219073856` passed.
+- **Risk**: Preset and merchandise purchase flows do not currently expose direct `PaymentForm` entry points in the scanned pages; if added later, they should follow the same pending/manual follow-up contract.
+- **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`.
+- **Status**: COMPLETE
 
 ### Stage 3 / 6 — UIUX
 - **Prompt**: `AGENT_UIUX_MAIN.txt`
