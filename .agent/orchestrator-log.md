@@ -338,4 +338,21 @@ Beginning execution.
 - **Prompt**: `AGENT_IMPROVE_MAIN.txt`
 - **Objective**: Advance the real-payment direction without live secrets by adding a client-safe confirmation state model, explicit pending/cancelled handling, and idempotent webhook processing.
 - **Start state**: `main` at `4b202e6`; only protected `.agent/orchestrator-state.json` was unstaged.
-- **Status**: IN PROGRESS
+- **Completed locally**:
+  - Added a client-safe payment confirmation response with stored payment status, provider, and next-action guidance.
+  - Normalized pending, processing, succeeded, failed, cancelled, and legacy `canceled` statuses before exposing them to clients.
+  - Added explicit pending, failed, and cancelled handling in the booking payment form without requiring live payment secrets.
+  - Made duplicate same-status payment webhooks idempotent before database writes or side effects.
+  - Added API and audit regression coverage for confirmation states and webhook idempotency.
+- **Local verification**:
+  - Red/green: payment confirmation and duplicate webhook API tests failed on the old behavior, then passed.
+  - Targeted: `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts` — 56/56 passed.
+  - `npm run lint` — passed.
+  - `npm test` — 231/231 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright booking flow against `wrangler pages dev dist` — 6/6 passed with one worker.
+- **Commit**: `d5875e1` — `feat: improve payment confirmation states`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28218108321` passed.
+- **Risk**: This is still a placeholder-safe payment state model; live Stripe confirmation remains intentionally disabled until real publishable keys, Payment Element handling, and operational webhook secrets are configured.
+- **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`.
+- **Status**: COMPLETE
