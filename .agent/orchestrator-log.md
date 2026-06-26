@@ -537,3 +537,26 @@ Beginning execution.
 - **Risk**: This clarifies placeholder/manual follow-up UX but still does not enable live card collection.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is webhook/refund status matrix coverage.
 - **Status**: COMPLETE
+
+### Stage 4 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Harden the real-payment preflight path by adding signed webhook status matrix coverage for processing, failed, cancelled, and refunded events, and surface refunded status consistently to customers and admins.
+- **Start state**: `main` at `3e15606`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Stage 3 recommended webhook/refund status matrix coverage before any live Stripe enablement.
+- **Completed locally**:
+  - Added signed webhook fixture coverage for `payment_intent.processing`, `payment_intent.payment_failed`, `payment_intent.canceled`, and `charge.refunded`.
+  - Changed webhook normalization to prefer Stripe event type, fixing failed events whose object status is `requires_payment_method`.
+  - Added `refunded` payment status support through webhook, confirm API, shared payment/dashboard types, admin filters, customer dashboard styling, admin styling, and zh-CN/en/ja/ko labels.
+  - Added audit regression coverage for refund status UI and i18n.
+- **Local verification**:
+  - Red/green: `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts` failed on missing refund/event-matrix handling, then passed 64/64.
+  - `npm run lint` — initially caught nullable webhook object typing, then passed after fix.
+  - `npm test` — 239/239 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against `wrangler pages dev dist` — 13/13 passed.
+  - Playwright booking flow against Pages preview — 6/6 passed.
+- **Commit**: `4a46c2b` — `feat: harden payment webhook status matrix`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28232976126` passed.
+- **Risk**: Refund event handling now records `refunded` status, but full refund reconciliation still needs charge id, refund amount, actor, and timestamp fields before live refunds are operational.
+- **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a payment status matrix audit across API, customer dashboard, admin, i18n, and E2E.
+- **Status**: COMPLETE
