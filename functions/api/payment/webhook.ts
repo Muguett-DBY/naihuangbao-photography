@@ -60,7 +60,7 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
 
   try {
     const existing = await context.env.DB.prepare(
-      `SELECT id, purpose, reference_id, status FROM payment_intents WHERE id = ?`,
+      `SELECT id, purpose, reference_id, status, metadata FROM payment_intents WHERE id = ?`,
     ).bind(paymentIntentId).first() as {
       id: string;
       purpose: string;
@@ -74,11 +74,15 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
     }
 
     const existingStatus = existing.status === "canceled" ? "cancelled" : existing.status;
+    const updatedAt = new Date().toISOString();
+    if (type === "charge.refunded") {
+      await recordRefundLedgerEntry(context.env.DB, paymentIntentId, obj, type, updatedAt);
+    }
+
     if (existingStatus === normalizedStatus) {
       return jsonResponse({ received: true, idempotent: true, status: normalizedStatus }, 200);
     }
 
-    const updatedAt = new Date().toISOString();
     if (type === "charge.refunded") {
       await context.env.DB.prepare(
         `UPDATE payment_intents SET status = ?, metadata = ?, updated_at = ? WHERE id = ?`,
@@ -176,6 +180,45 @@ function buildRefundMetadata(existingMetadata: string | null, obj?: WebhookObjec
       receivedAt,
     },
   });
+}
+
+async function recordRefundLedgerEntry(db: D1Database, paymentIntentId: string, obj: WebhookObject | undefined, eventType: string, receivedAt: string) {
+  const chargeId = obj?.id;
+  if (!chargeId) return;
+
+  await db.prepare(
+    `INSERT INTO payment_refunds (
+       id, payment_intent_id, charge_id, amount_cents, currency, status,
+       raw_event_type, received_at, metadata, created_at, updated_at
+     )
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(charge_id) DO UPDATE SET
+       payment_intent_id = excluded.payment_intent_id,
+       amount_cents = excluded.amount_cents,
+       currency = excluded.currency,
+       status = excluded.status,
+       raw_event_type = excluded.raw_event_type,
+       received_at = excluded.received_at,
+       metadata = excluded.metadata,
+       updated_at = excluded.updated_at`,
+  ).bind(
+    chargeId,
+    paymentIntentId,
+    chargeId,
+    obj.amount_refunded ?? null,
+    obj.currency ?? null,
+    "refunded",
+    eventType,
+    receivedAt,
+    JSON.stringify({
+      payment_intent: paymentIntentId,
+      charge_id: chargeId,
+      amount_refunded: obj.amount_refunded ?? null,
+      currency: obj.currency ?? null,
+    }),
+    receivedAt,
+    receivedAt,
+  ).run();
 }
 
 function hasStripeSignature(header: string) {

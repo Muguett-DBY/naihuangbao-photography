@@ -225,7 +225,7 @@ describe("Cloudflare Pages API behavior", () => {
             run: vi.fn(async () => {
               if (sql.includes("UPDATE payment_intents")) {
                 updates.push({ sql, args: statement.args });
-              } else {
+              } else if (!sql.includes("payment_refunds")) {
                 sideEffects.push(sql);
               }
               return { success: true };
@@ -264,6 +264,7 @@ describe("Cloudflare Pages API behavior", () => {
       },
     });
     let refundMetadata = "";
+    const refundLedgerWrites: Array<{ sql: string; args: unknown[] }> = [];
     const db = {
       prepare: vi.fn((sql: string) => {
         const statement = {
@@ -282,6 +283,9 @@ describe("Cloudflare Pages API behavior", () => {
           run: vi.fn(async () => {
             if (sql.includes("metadata = ?")) {
               refundMetadata = String(statement.args[1]);
+            }
+            if (sql.includes("payment_refunds")) {
+              refundLedgerWrites.push({ sql, args: statement.args });
             }
             return { success: true };
           }),
@@ -312,6 +316,21 @@ describe("Cloudflare Pages API behavior", () => {
       status: "refunded",
     });
     expect(metadata.refund?.receivedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    expect(refundLedgerWrites).toHaveLength(1);
+    expect(refundLedgerWrites[0]?.sql).toContain("ON CONFLICT(charge_id)");
+    expect(refundLedgerWrites[0]?.args).toEqual([
+      "ch_refund_meta",
+      "pi_refund_meta",
+      "ch_refund_meta",
+      5000,
+      "cny",
+      "refunded",
+      "charge.refunded",
+      expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/),
+      expect.stringContaining('"payment_intent":"pi_refund_meta"'),
+      expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/),
+      expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/),
+    ]);
   });
 
   it("projects the latest booking deposit state into the customer booking list", async () => {

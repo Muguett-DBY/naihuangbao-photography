@@ -19,6 +19,11 @@ type BookingRow = {
   payment_provider: string | null;
   payment_amount_cents: number | null;
   payment_currency: string | null;
+  refund_charge_id: string | null;
+  refund_amount_cents: number | null;
+  refund_currency: string | null;
+  refund_status: string | null;
+  refund_received_at: string | null;
 };
 
 export const onRequestGet: PagesFunction<AdminBookingsEnv> = async (context) => {
@@ -34,7 +39,12 @@ export const onRequestGet: PagesFunction<AdminBookingsEnv> = async (context) => 
               coalesce(pi.status, 'not_started') as payment_status,
               pi.provider as payment_provider,
               pi.amount_cents as payment_amount_cents,
-              pi.currency as payment_currency
+              pi.currency as payment_currency,
+              pr.charge_id as refund_charge_id,
+              pr.amount_cents as refund_amount_cents,
+              pr.currency as refund_currency,
+              pr.status as refund_status,
+              pr.received_at as refund_received_at
        from booking_requests b
        left join payment_intents pi
          on pi.id = (
@@ -43,6 +53,14 @@ export const onRequestGet: PagesFunction<AdminBookingsEnv> = async (context) => 
            where latest.purpose = 'booking_deposit'
              and latest.reference_id = b.id
            order by latest.created_at desc
+           limit 1
+         )
+       left join payment_refunds pr
+         on pr.id = (
+           select latest_refund.id
+           from payment_refunds latest_refund
+           where latest_refund.payment_intent_id = pi.id
+           order by latest_refund.received_at desc, latest_refund.updated_at desc
            limit 1
          )
        order by b.created_at desc`,

@@ -612,3 +612,18 @@ Beginning execution.
 - **Final implementation commit before closure record**: `d65f04d`.
 - **Protected existing change**: `.agent/orchestrator-state.json` remained unstaged throughout.
 - **Final status**: COMPLETE
+
+## Campaign 015 — 6-Stage Product Strengthening Loop — Started 2026-06-26
+- **Orchestrator**: `03_LONG_6_STAGE_MAIN_V2.txt`
+- **Sequence**: IMPROVE -> IMPROVE -> UIUX -> IMPROVE -> CHECK -> IMPROVE
+- **Prompt folder**: `C:\Users\12031\Desktop\AGENT_PROMPTS_MAIN_PACK`
+- **Start state**: `main` at `eaa87da`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous flagship recommendation**: add a dedicated refund ledger/audit table and admin-visible refund details instead of relying on `payment_intents.metadata`.
+- **Protected existing change**: `.agent/orchestrator-state.json` remains prior metadata and will not be staged.
+
+### Stage 1 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Add a dedicated refund reconciliation ledger and admin-visible refund details for signed `charge.refunded` webhooks, without enabling live refunds or live card collection.
+- **Start state**: `main` at `eaa87da`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Campaign 014 recommended moving refund reconciliation out of temporary `payment_intents.metadata` storage and into a dedicated ledger.
+- **Status**: IN PROGRESS

@@ -858,7 +858,10 @@
       "paymentReadinessTitle": "Live payment readiness",
       "paymentReadinessStripeKeys": "Set live Stripe keys before enabling Payment Element.",
       "paymentReadinessWebhook": "Verify webhook secret and status matrix before accepting live deposits.",
-      "paymentReadinessRefunds": "Keep refunds and failed payments in manual follow-up until the runbook is complete."
+      "paymentReadinessRefunds": "Keep refunds and failed payments in manual follow-up until the runbook is complete.",
+      "refundLedger": "Refund ledger",
+      "refundReference": "Charge",
+      "refundReceivedAt": "Received"
     },
     "facetsLabel": "Additional filters",
     "albumLabel": "Album",

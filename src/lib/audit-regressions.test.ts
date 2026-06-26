@@ -377,6 +377,26 @@ describe("audit regression coverage", () => {
     }
   });
 
+  it("keeps refund reconciliation in a dedicated ledger and visible to admins", () => {
+    expect(businessMigrationSource).toContain("create table if not exists payment_refunds");
+    expect(businessMigrationSource).toContain("unique (charge_id)");
+    expect(businessMigrationSource).toContain("idx_payment_refunds_intent");
+    expect(paymentWebhookSource).toContain("recordRefundLedgerEntry");
+    expect(paymentWebhookSource).toContain("INSERT INTO payment_refunds");
+    expect(paymentWebhookSource).toContain("ON CONFLICT(charge_id)");
+    expect(adminBookingsApiSource).toContain("payment_refunds");
+    expect(adminBookingsApiSource).toContain("refund_amount_cents");
+    expect(adminBookingsSource).toContain("adm-booking-refund");
+    expect(adminBookingsSource).toContain("admin.bookings.refundLedger");
+    expect(adminBookingsSource).toContain("admin.bookings.refundReference");
+    expect(adminCssSource).toContain(".adm-booking-refund");
+    for (const locale of Object.values(locales)) {
+      expect(locale.admin.bookings.refundLedger).toBeTruthy();
+      expect(locale.admin.bookings.refundReference).toBeTruthy();
+      expect(locale.admin.bookings.refundReceivedAt).toBeTruthy();
+    }
+  });
+
   it("keeps payment status UX explicit and mobile-safe", () => {
     const paymentForm = readFileSync(resolve(root, "src/components/PaymentForm.tsx"), "utf8");
 
