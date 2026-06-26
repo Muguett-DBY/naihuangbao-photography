@@ -26,6 +26,7 @@ const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), 
 const reviewsSource = readFileSync(resolve(root, "src/components/Reviews.tsx"), "utf8");
 const headersSource = readFileSync(resolve(root, "public/_headers"), "utf8");
 const redirectsSource = readFileSync(resolve(root, "public/_redirects"), "utf8");
+const ciWorkflowSource = readFileSync(resolve(root, ".github/workflows/ci.yml"), "utf8");
 const useInViewSource = readFileSync(resolve(root, "src/hooks/useInView.ts"), "utf8");
 const gsapAnimationsSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
 const e2eConfigSource = readFileSync(resolve(root, "e2e/playwright.config.ts"), "utf8");
@@ -235,6 +236,15 @@ describe("audit regression coverage", () => {
     expect(e2eSmokeSource).not.toContain("https://shoot.custard.top/");
     expect(e2eSmokeSource).not.toContain("waitForTimeout");
     expect(e2eSmokeSource).not.toContain('a[href="#gallery"]');
+  });
+
+  it("keeps GitHub Actions on Node 24 compatible action runtimes", () => {
+    expect(ciWorkflowSource).toContain("actions/checkout@v5");
+    expect(ciWorkflowSource).toContain("actions/setup-node@v6");
+    expect(ciWorkflowSource).toContain("node-version: 24");
+    expect(ciWorkflowSource).not.toContain("actions/checkout@v4");
+    expect(ciWorkflowSource).not.toContain("actions/setup-node@v4");
+    expect(ciWorkflowSource).not.toContain("FORCE_JAVASCRIPT_ACTIONS_TO_NODE24");
   });
 
   it("avoids stale intersection state and hidden-tab gallery RAF work", () => {

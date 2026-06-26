@@ -271,3 +271,25 @@ Beginning execution.
 - **Risk**: This relies on Cloudflare Pages default SPA fallback for unmatched navigation routes, which matched local Pages preview behavior.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
 - **Status**: COMPLETE
+
+### Stage 6 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Upgrade GitHub Actions CI runtime compatibility to remove the recurring Node 20 action deprecation warning and reduce future CI breakage risk.
+- **Start state**: `main` at `560ceab`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Stage 5 recommended CI health upgrade after route health was fixed.
+- **Completed locally**:
+  - Updated CI from `actions/checkout@v4` to `actions/checkout@v5`.
+  - Updated CI from `actions/setup-node@v4` to `actions/setup-node@v6`.
+  - Moved CI runtime from Node 22 to Node 24.
+  - Removed the temporary `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` environment override.
+  - Added audit regression coverage to keep CI on Node 24 compatible action runtimes.
+- **Local verification so far**:
+  - Red: `npm test -- src/lib/audit-regressions.test.ts` failed on old action/runtime versions.
+  - Green: same command passed, 43/43 tests.
+  - `npm run lint` — passed.
+  - `npm test` — 226/226 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Fresh `wrangler pages dev dist` — parsed 1 valid redirect rule, no infinite-loop warnings.
+  - Smoke Playwright against Pages preview — 13/13 passed with one worker.
+- **Risk**: `setup-node@v6` and `checkout@v5` require modern GitHub-hosted runner support; `ubuntu-latest` meets that expectation.
+- **Status**: READY TO COMMIT
