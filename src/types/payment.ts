@@ -1,6 +1,6 @@
 export type PaymentStatus = "pending" | "processing" | "succeeded" | "failed" | "cancelled";
 
-export type PaymentIntentStatus = "requires_payment_method" | "requires_confirmation" | "succeeded" | "failed" | "cancelled";
+export type PaymentIntentStatus = "requires_payment_method" | "requires_confirmation" | "processing" | "succeeded" | "failed" | "cancelled";
 
 export type PaymentProvider = "stripe" | "cloudflare" | "placeholder";
 
@@ -35,6 +35,9 @@ export type ConfirmPaymentRequest = {
 export type ConfirmPaymentResponse = {
   status: PaymentIntentStatus;
   paymentIntentId: string;
+  paymentStatus: PaymentStatus;
+  provider: PaymentProvider;
+  nextAction: "manual_follow_up" | "confirm_payment" | "none";
 };
 
 export type PaymentRecord = {

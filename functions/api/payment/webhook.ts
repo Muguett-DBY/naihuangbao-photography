@@ -78,6 +78,11 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_WEBHOOK_SECRET?: string
       return jsonResponse({ received: true, note: "Payment intent not found, skipping" }, 200);
     }
 
+    const existingStatus = existing.status === "canceled" ? "cancelled" : existing.status;
+    if (existingStatus === normalizedStatus) {
+      return jsonResponse({ received: true, idempotent: true, status: normalizedStatus }, 200);
+    }
+
     await context.env.DB.prepare(
       `UPDATE payment_intents SET status = ?, updated_at = ? WHERE id = ?`,
     ).bind(normalizedStatus, new Date().toISOString(), paymentIntentId).run();

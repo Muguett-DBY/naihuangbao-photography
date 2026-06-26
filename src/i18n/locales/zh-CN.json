@@ -1439,6 +1439,8 @@
     "success": "支付成功",
     "successDesc": "您的支付已成功处理。",
     "failed": "支付失败",
+    "cancelled": "支付已取消",
+    "cancelledDesc": "支付已取消。您可以重试，或先继续保留为稍后处理。",
     "cancel": "取消",
     "retry": "重试",
     "title": "支付",

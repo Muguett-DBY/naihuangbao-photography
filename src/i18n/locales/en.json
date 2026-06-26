@@ -1388,6 +1388,8 @@
     "success": "Payment successful",
     "successDesc": "Your payment has been processed successfully.",
     "failed": "Payment failed",
+    "cancelled": "Payment cancelled",
+    "cancelledDesc": "Payment was cancelled. You can try again or continue without paying now.",
     "cancel": "Cancel",
     "retry": "Try again",
     "title": "Payment",

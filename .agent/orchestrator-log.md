@@ -333,3 +333,9 @@ Beginning execution.
 - **Risk**: Large font packages and `face-api-vendor` remain the dominant bundle assets; current performance budget passes.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
 - **Status**: COMPLETE
+
+### Stage 2 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Advance the real-payment direction without live secrets by adding a client-safe confirmation state model, explicit pending/cancelled handling, and idempotent webhook processing.
+- **Start state**: `main` at `4b202e6`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Status**: IN PROGRESS

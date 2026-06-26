@@ -3,6 +3,7 @@ import { onRequestPost as uploadPhoto } from "./api/admin/photos";
 import { onRequestDelete as deletePhoto } from "./api/admin/photos/[id]";
 import { onRequestGet as getPublicPhotos } from "./api/photos";
 import { onRequestPost as createPaymentIntent } from "./api/payment/create-intent";
+import { onRequestPost as confirmPayment } from "./api/payment/confirm";
 import { onRequestPost as paymentWebhook } from "./api/payment/webhook";
 import { onRequestGet as getUserBookings } from "./api/user/bookings";
 import { onRequestGet as getUserProfile } from "./api/user/profile";
@@ -55,6 +56,22 @@ function createBucket() {
   };
 }
 
+async function stripeSignature(payload: string, secret: string, timestamp = Math.floor(Date.now() / 1000)) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(`${timestamp}.${payload}`));
+  const hex = Array.from(new Uint8Array(signature))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+  return `t=${timestamp},v1=${hex}`;
+}
+
 describe("Cloudflare Pages API behavior", () => {
   it("returns payment readiness details for placeholder payment intents", async () => {
     const db = createDb();
@@ -88,6 +105,92 @@ describe("Cloudflare Pages API behavior", () => {
       nextAction: "manual_follow_up",
       missingConfiguration: ["STRIPE_SECRET_KEY"],
     });
+  });
+
+  it("returns a client-safe payment confirmation state and next action", async () => {
+    const db = createDb({
+      first: async () => ({
+        id: "pi_pending123",
+        status: "pending",
+        amount_cents: 2000,
+        currency: "cny",
+        purpose: "booking_deposit",
+        provider: "placeholder",
+      }),
+    });
+
+    const response = await confirmPayment({
+      request: jsonRequest("https://shoot.custard.top/api/payment/confirm", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-nhb-public-action": "1",
+        },
+        body: JSON.stringify({
+          paymentIntentId: "pi_pending123",
+          clientSecret: "pi_pending123_secret_123",
+        }),
+      }),
+      env: { DB: db },
+    } as never);
+    const body = (await response.json()) as {
+      status?: string;
+      paymentStatus?: string;
+      nextAction?: string;
+      provider?: string;
+    };
+
+    expect(response.status).toBe(200);
+    expect(body.status).toBe("requires_confirmation");
+    expect(body.paymentStatus).toBe("pending");
+    expect(body.nextAction).toBe("manual_follow_up");
+    expect(body.provider).toBe("placeholder");
+  });
+
+  it("treats duplicate succeeded payment webhooks as idempotent and skips side effects", async () => {
+    const payload = JSON.stringify({
+      type: "payment_intent.succeeded",
+      data: {
+        object: {
+          id: "pi_duplicate",
+          status: "succeeded",
+          metadata: { booking_id: "booking-12345678" },
+        },
+      },
+    });
+    const writes: string[] = [];
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          bind: vi.fn(() => statement),
+          first: vi.fn(async () => ({
+            id: "pi_duplicate",
+            purpose: "booking_deposit",
+            reference_id: "booking-12345678",
+            status: "succeeded",
+          })),
+          run: vi.fn(async () => {
+            writes.push(sql);
+            return { success: true };
+          }),
+        };
+        return statement;
+      }),
+    };
+
+    const response = await paymentWebhook({
+      request: jsonRequest("https://shoot.custard.top/api/payment/webhook", {
+        method: "POST",
+        headers: { "stripe-signature": await stripeSignature(payload, "whsec_test") },
+        body: payload,
+      }),
+      env: { DB: db, STRIPE_WEBHOOK_SECRET: "whsec_test" },
+    } as never);
+    const body = (await response.json()) as { received?: boolean; idempotent?: boolean; status?: string };
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({ received: true, idempotent: true, status: "succeeded" });
+    expect(writes).toEqual([]);
   });
 
   it("projects the latest booking deposit state into the customer booking list", async () => {

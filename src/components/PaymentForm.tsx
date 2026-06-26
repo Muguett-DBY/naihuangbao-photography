@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
 import { CreditCard, CheckCircle, AlertCircle, Clock3, Loader2, RefreshCw, Shield } from "lucide-react";
-import type { CreatePaymentIntentResponse, PaymentFormProps, PaymentIntentStatus } from "../types/payment";
+import type { ConfirmPaymentResponse, CreatePaymentIntentResponse, PaymentFormProps } from "../types/payment";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
 
@@ -44,7 +44,11 @@ export function PaymentForm({
     merchandise_purchase: t("payment.purpose.merchandise", "Merchandise"),
   };
 
-  const simulateConfirmation = async (intentId: string, clientSecret: string, attempt = 0): Promise<boolean> => {
+  const simulateConfirmation = async (
+    intentId: string,
+    clientSecret: string,
+    attempt = 0,
+  ): Promise<"succeeded" | "pending" | "failed" | "cancelled"> => {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
     try {
@@ -58,20 +62,22 @@ export function PaymentForm({
         throw new Error(t("payment.confirmFailed", "Could not verify payment"));
       }
 
-      const data = await readJsonResponse<{ status?: PaymentIntentStatus }>(r);
+      const data = await readJsonResponse<Partial<ConfirmPaymentResponse>>(r);
 
       if (data?.status === "succeeded") {
-        return true;
+        return "succeeded";
       }
 
-      if (data?.status === "requires_confirmation" && attempt < MAX_RETRIES) {
+      if ((data?.status === "requires_confirmation" || data?.status === "processing") && attempt < MAX_RETRIES && data.nextAction === "confirm_payment") {
         setIsRetrying(true);
         await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
         setIsRetrying(false);
         return simulateConfirmation(intentId, clientSecret, attempt + 1);
       }
 
-      return false;
+      if (data?.status === "failed" || data?.paymentStatus === "failed") return "failed";
+      if (data?.status === "cancelled" || data?.paymentStatus === "cancelled") return "cancelled";
+      return "pending";
     } catch (err) {
       if (attempt < MAX_RETRIES) {
         setIsRetrying(true);
@@ -121,10 +127,16 @@ export function PaymentForm({
 
       setStatus("confirming");
 
-      const success = await simulateConfirmation(data.paymentIntentId, data.clientSecret);
-      if (success) {
+      const outcome = await simulateConfirmation(data.paymentIntentId, data.clientSecret);
+      if (outcome === "succeeded") {
         setStatus("succeeded");
         onSuccess?.(data.paymentIntentId);
+      } else if (outcome === "pending") {
+        setStatus("pending");
+        onPending?.(data.paymentIntentId);
+      } else if (outcome === "cancelled") {
+        setStatus("cancelled");
+        setError(t("payment.cancelledDesc", "Payment was cancelled. You can try again or continue without paying now."));
       } else {
         setStatus("failed");
         setError(t("payment.notCompleted", "Payment was not completed"));
@@ -181,7 +193,7 @@ export function PaymentForm({
     return (
       <div className="payment-failed">
         <AlertCircle size={48} className="payment-failed-icon" />
-        <h3>{t("payment.failed", "Payment Failed")}</h3>
+        <h3>{status === "cancelled" ? t("payment.cancelled", "Payment cancelled") : t("payment.failed", "Payment Failed")}</h3>
         {error && <p className="payment-error-msg">{error}</p>}
         <div className="payment-failed-actions">
           <Button type="default" onClick={onCancel}>{t("payment.cancel", "Cancel")}</Button>
