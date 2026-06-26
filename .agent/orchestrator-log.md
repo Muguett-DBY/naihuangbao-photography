@@ -487,3 +487,29 @@ Beginning execution.
 - **Risk**: This is still a placeholder-safe payment state model; live Stripe confirmation remains intentionally disabled until real publishable keys, Payment Element handling, and operational webhook secrets are configured.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`.
 - **Status**: COMPLETE
+
+---
+
+## Campaign 014 — Continued Stage Log
+
+### Stage 2 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Finish the live-payment readiness package by documenting Stripe live configuration, Payment Element client path, webhook/refund handling, rollback steps, and surfacing the readiness checklist in admin booking operations without enabling live secrets.
+- **Start state**: `main` at `19b47ee`; only protected `.agent/orchestrator-state.json` was unstaged.
+- **Previous direction carried forward**: Stage 1 recommended a maintainable Stripe live-readiness checklist/runbook after admin pending queue filtering was completed.
+- **Completed locally**:
+  - Added `docs/payment-live-readiness.md` covering live keys, Payment Element flow, webhook event matrix, refund/failure operations, rollback, and verification.
+  - Added a compact admin live-payment readiness panel below the booking payment filters.
+  - Localized the readiness panel across zh-CN, en, ja, and ko.
+  - Added audit regression coverage requiring the runbook, admin surfacing, i18n keys, and absence of committed `sk_live_`/`whsec_` values.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` failed on missing runbook, then passed 50/50.
+  - `npm run lint` — passed.
+  - `npm test` — 237/237 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against `wrangler pages dev dist` — 13/13 passed with one worker.
+- **Commit**: `1026abe` — `feat: document live payment readiness`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28221389348` passed.
+- **Risk**: Live Stripe collection remains intentionally disabled until real environment secrets, Payment Element client integration, refund state storage, and signed webhook fixtures are configured.
+- **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is making customer-facing payment/follow-up status clearer in the booking completion experience.
+- **Status**: COMPLETE
