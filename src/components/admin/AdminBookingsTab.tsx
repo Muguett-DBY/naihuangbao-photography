@@ -22,6 +22,11 @@ type BookingItem = {
   payment_provider: string | null;
   payment_amount_cents: number | null;
   payment_currency: string | null;
+  refund_charge_id: string | null;
+  refund_amount_cents: number | null;
+  refund_currency: string | null;
+  refund_status: "refunded" | null;
+  refund_received_at: string | null;
 };
 
 const statusLabels: Record<string, { label: string; icon: typeof Clock; className: string }> = {
@@ -42,6 +47,13 @@ function formatPaymentAmount(amountCents: number | null, currency: string | null
   } catch {
     return `${(amountCents / 100).toFixed(2)} ${currency.toUpperCase()}`;
   }
+}
+
+function formatLedgerDate(value: string | null, locale: string): string {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString(locale);
 }
 
 export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (text: string, type: ToastType) => void; newBookingIds?: Set<string> }) {
@@ -159,6 +171,7 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
           {filteredBookings.map((b) => {
             const st = statusLabels[b.status] || statusLabels.pending;
             const paymentStatus = b.payment_status || "not_started";
+            const hasRefundLedger = Boolean(b.refund_status || b.refund_charge_id);
             const Icon = st.icon;
             return (
               <div key={b.id} className={`adm-booking-card ${b.status}${newBookingIds?.has(b.id) ? " is-new" : ""}`}>
@@ -184,6 +197,20 @@ export function AdminBookingsTab({ showToast, newBookingIds }: { showToast: (tex
                       : t("admin.bookings.waitingForPaymentConfirmation", "Waiting for customer confirmation")}
                   </small>
                 </div>
+                {hasRefundLedger ? (
+                  <div className="adm-booking-refund">
+                    <strong>{t("admin.bookings.refundLedger", "Refund ledger")}</strong>
+                    <span>
+                      {formatPaymentAmount(b.refund_amount_cents, b.refund_currency, i18n.language, t("admin.bookings.amountPending", "Amount pending"))}
+                      {" · "}
+                      {t(`dashboard.paymentStatus.${b.refund_status || "refunded"}`)}
+                    </span>
+                    <small>{t("admin.bookings.refundReference", "Charge")}: {b.refund_charge_id || "-"}</small>
+                    {b.refund_received_at ? (
+                      <small>{t("admin.bookings.refundReceivedAt", "Received")}: {formatLedgerDate(b.refund_received_at, i18n.language)}</small>
+                    ) : null}
+                  </div>
+                ) : null}
                 {b.notes ? <p className="adm-booking-notes">{b.notes}</p> : null}
                 <div className="adm-booking-actions">
                   {b.status === "pending" && (

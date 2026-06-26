@@ -26,11 +26,11 @@ This runbook keeps the current placeholder/manual follow-up flow safe until real
 | `payment_intent.processing` | `processing` | Keep the booking in manual follow-up until Stripe sends a terminal event. |
 | `payment_intent.payment_failed` | `failed` | Keep the customer-facing retry path available and leave the admin item visible for manual follow-up. |
 | `payment_intent.canceled` | `cancelled` | Tell the customer no charge was completed and keep the admin item reviewable. |
-| `charge.refunded` | `refunded` | Record the refunded state and keep the booking visible for reconciliation; do not treat refund events as new successful payments. |
+| `charge.refunded` | `refunded` | Record the refunded state, upsert the dedicated `payment_refunds` ledger, and keep the booking visible for reconciliation; do not treat refund events as new successful payments. |
 
 ## Refund and failure operations
 
-- Refunds need a stored refund status, amount, Stripe charge id, actor, and timestamp before the team can reconcile them safely.
+- Refund webhooks now store refund status, amount, Stripe charge id, event type, and received timestamp in `payment_refunds`; actor/source attribution is still manual until live refund operations are enabled.
 - Failed payments should remain visible in the admin payment follow-up queue until the customer retries, cancels, or staff resolves the booking manually.
 - Manual follow-up is the fallback whenever Stripe returns an unknown status, a webhook arrives out of order, or the local payment intent is missing.
 
@@ -48,5 +48,5 @@ Use this rollback plan when live payments need to be paused without losing the b
 - Local tests cover Payment Element readiness copy, confirmation states, webhook idempotency, and admin manual follow-up.
 - A signed webhook fixture updates each supported status once and ignores duplicate same-status events.
 - Unsigned webhook requests still fail before checking deployment secrets.
-- Admin booking filters show pending, processing, and refunded counts before launch.
+- Admin booking filters show pending, processing, and refunded counts before launch, and refunded cards expose the latest ledger charge id, amount, and received timestamp.
 - No `sk_live_` or `whsec_` values exist in committed source, docs, logs, or test snapshots.

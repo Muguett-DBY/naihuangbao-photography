@@ -854,7 +854,10 @@
       "paymentReadinessTitle": "실결제 준비 상태",
       "paymentReadinessStripeKeys": "Payment Element를 켜기 전에 Stripe live key를 설정합니다.",
       "paymentReadinessWebhook": "실제 예약금을 받기 전에 webhook secret과 상태 매트릭스를 검증합니다.",
-      "paymentReadinessRefunds": "환불 및 실패 결제는 runbook 완료 전까지 수동 후속 처리에 남깁니다."
+      "paymentReadinessRefunds": "환불 및 실패 결제는 runbook 완료 전까지 수동 후속 처리에 남깁니다.",
+      "refundLedger": "환불 원장",
+      "refundReference": "Charge",
+      "refundReceivedAt": "수신 시간"
     },
     "facetsLabel": "추가 필터",
     "albumLabel": "앨범",

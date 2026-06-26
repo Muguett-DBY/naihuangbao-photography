@@ -637,6 +637,28 @@
   background: rgba(207, 250, 254, 0.52);
 }
 
+.adm-booking-refund {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 9px 11px;
+  border: 1px solid rgba(14, 116, 144, 0.22);
+  border-radius: 10px;
+  background: rgba(236, 254, 255, 0.72);
+  color: #155e75;
+  font-size: 12px;
+}
+
+.adm-booking-refund strong {
+  color: #164e63;
+}
+
+.adm-booking-refund small {
+  color: #0e7490;
+}
+
 .adm-booking-notes {
   margin: 10px 0 0;
   padding: 10px 12px;

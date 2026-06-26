@@ -148,6 +148,25 @@ create table if not exists payment_intents (
 create index if not exists idx_payment_intents_reference
   on payment_intents (purpose, reference_id, created_at);
 
+create table if not exists payment_refunds (
+  id text primary key,
+  payment_intent_id text not null,
+  charge_id text not null,
+  amount_cents integer,
+  currency text,
+  status text not null default 'refunded',
+  raw_event_type text not null,
+  received_at text not null,
+  metadata text,
+  created_at text not null,
+  updated_at text not null,
+  unique (charge_id),
+  foreign key (payment_intent_id) references payment_intents(id)
+);
+
+create index if not exists idx_payment_refunds_intent
+  on payment_refunds (payment_intent_id, received_at);
+
 create table if not exists course_purchases (
   id text primary key,
   course_id text not null,

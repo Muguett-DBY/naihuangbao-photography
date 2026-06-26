@@ -908,7 +908,10 @@
       "paymentReadinessTitle": "真实支付上线检查",
       "paymentReadinessStripeKeys": "启用 Payment Element 前先配置 Stripe live keys。",
       "paymentReadinessWebhook": "收取真实定金前验证 webhook secret 和状态矩阵。",
-      "paymentReadinessRefunds": "退款与失败支付在 runbook 完成前保持人工跟进。"
+      "paymentReadinessRefunds": "退款与失败支付在 runbook 完成前保持人工跟进。",
+      "refundLedger": "退款台账",
+      "refundReference": "Charge",
+      "refundReceivedAt": "接收时间"
     },
     "facetsLabel": "更多筛选",
     "albumLabel": "相册",
