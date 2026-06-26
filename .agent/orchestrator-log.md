@@ -248,7 +248,22 @@ Beginning execution.
 - **Objective**: Check payment status consistency across API enums, customer dashboard, admin booking cards, and payment entry points; fix any verified inconsistency.
 - **Start state**: `main` at `9e64b67`; only protected `.agent/orchestrator-state.json` was unstaged.
 - **Finding**: Admin booking cards used hard-coded Chinese payment labels and lacked distinct pending/processing payment styles, while the customer dashboard used localized `dashboard.paymentStatus.*` labels.
-- **Status**: IN PROGRESS
+- **Completed locally**:
+  - Replaced admin booking payment status label mapping with shared localized `dashboard.paymentStatus.*` labels.
+  - Passed current locale into admin booking amount formatting and added an explicit amount fallback.
+  - Added pending/processing admin payment styles so these states are visually distinct from neutral/unstarted.
+  - Added audit regression coverage for admin/customer payment status label alignment.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` failed on hard-coded admin labels, then passed 47/47.
+  - `npm run lint` — passed.
+  - `npm test` — 234/234 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against `wrangler pages dev dist` — 13/13 passed with one worker.
+- **Commit**: `d4a0020` — `fix: align admin payment status display`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28219380047` passed.
+- **Risk**: Admin booking status labels outside the payment block still use existing Chinese copy; this CHECK only fixed payment status consistency.
+- **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`.
+- **Status**: COMPLETE
 
 ### Stage 3 / 6 — UIUX
 - **Prompt**: `AGENT_UIUX_MAIN.txt`
