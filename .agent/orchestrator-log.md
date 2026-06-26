@@ -694,3 +694,9 @@ Beginning execution.
 - **Risk**: In-app Browser can show stale local PWA cache on this preview origin; validation used service-worker-blocked Playwright to prove current build output. Large multilingual fonts and `face-api-vendor` remain the main bundle-size risks.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is hardening editor model/degraded-mode behavior or continuing asset pressure reduction.
 - **Status**: COMPLETE
+
+### Stage 4 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Harden the PWA update and editor reliability path by making stale service-worker updates user-visible and deterministic, while preserving runtime caches for editor models and large assets.
+- **Start state**: `main` at `01d3af5`; only protected `.agent/orchestrator-state.json` was unstaged before this stage.
+- **Previous direction carried forward**: Stage 3 found stale local PWA cache during Browser validation and recommended strengthening editor model/degraded-mode behavior plus PWA cache update reliability.

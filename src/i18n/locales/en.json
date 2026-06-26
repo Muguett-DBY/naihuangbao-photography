@@ -568,6 +568,8 @@
     "label": "App update available",
     "text": "A new version is available",
     "refresh": "Refresh",
+    "refreshing": "Refreshing to the latest version",
+    "refreshingAction": "Refreshing",
     "dismiss": "Dismiss"
   },
   "newsletter": {

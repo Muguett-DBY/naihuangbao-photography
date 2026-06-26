@@ -564,6 +564,8 @@
     "label": "앱 업데이트 가능",
     "text": "새 버전이 available 입니다",
     "refresh": "새로고침",
+    "refreshing": "최신 버전으로 새로고침 중입니다",
+    "refreshingAction": "새로고침 중",
     "dismiss": "닫기"
   },
   "newsletter": {

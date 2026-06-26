@@ -5,15 +5,38 @@ import { RefreshCw, X } from "lucide-react";
 export function PwaUpdateBanner() {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
+  const reloadFallbackRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return undefined;
 
-    let refreshing = false;
+    let reloading = false;
+    let disposed = false;
+
+    const checkForUpdate = () => {
+      void registrationRef.current?.update().catch(() => undefined);
+    };
+
+    const handleControllerChange = () => {
+      if (reloading) return;
+      reloading = true;
+      setRefreshing(true);
+      if (reloadFallbackRef.current) window.clearTimeout(reloadFallbackRef.current);
+      window.setTimeout(() => window.location.reload(), 120);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkForUpdate();
+      }
+    };
 
     navigator.serviceWorker.ready.then((reg) => {
+      if (disposed) return;
       registrationRef.current = reg;
+      registrationRef.current?.update();
 
       if (reg.waiting) {
         setVisible(true);
@@ -30,17 +53,20 @@ export function PwaUpdateBanner() {
       });
     });
 
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      if (!refreshing) {
-        refreshing = true;
-        window.location.reload();
-      }
-    });
+    navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", checkForUpdate);
 
     return () => {
-      if (registrationRef.current) {
-        registrationRef.current = null;
+      disposed = true;
+      navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", checkForUpdate);
+      if (reloadFallbackRef.current) {
+        window.clearTimeout(reloadFallbackRef.current);
+        reloadFallbackRef.current = null;
       }
+      registrationRef.current = null;
     };
   }, []);
 
@@ -49,16 +75,24 @@ export function PwaUpdateBanner() {
   return (
     <div className="pwa-update-banner" role="alert" aria-label={t("pwaUpdate.label", "App update available")}>
       <RefreshCw size={16} className="pwa-update-icon" />
-      <p>{t("pwaUpdate.text", "A new version is available")}</p>
+      <p>{refreshing ? t("pwaUpdate.refreshing", "Refreshing to the latest version") : t("pwaUpdate.text", "A new version is available")}</p>
       <button
         type="button"
         className="pwa-update-btn"
+        disabled={refreshing}
         onClick={() => {
-          registrationRef.current?.waiting?.postMessage("skipWaiting");
-          setVisible(false);
+          setRefreshing(true);
+          const waitingWorker = registrationRef.current?.waiting;
+          if (waitingWorker) {
+            waitingWorker.postMessage({ type: "SKIP_WAITING" });
+            reloadFallbackRef.current = window.setTimeout(() => window.location.reload(), 4000);
+            return;
+          }
+          registrationRef.current?.update();
+          reloadFallbackRef.current = window.setTimeout(() => window.location.reload(), 600);
         }}
       >
-        {t("pwaUpdate.refresh", "Refresh")}
+        {refreshing ? t("pwaUpdate.refreshingAction", "Refreshing") : t("pwaUpdate.refresh", "Refresh")}
       </button>
       <button
         type="button"
