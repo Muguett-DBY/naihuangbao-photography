@@ -8,6 +8,8 @@ export function PwaUpdateBanner() {
   const [refreshing, setRefreshing] = useState(false);
   const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
   const reloadFallbackRef = useRef<number | null>(null);
+  const refreshButtonRef = useRef<HTMLButtonElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return undefined;
@@ -75,13 +77,43 @@ export function PwaUpdateBanner() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!visible) return undefined;
+    const node = containerRef.current;
+    if (!node) return undefined;
+
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    refreshButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !refreshing) {
+        event.preventDefault();
+        setVisible(false);
+        previouslyFocused?.focus?.();
+      }
+    };
+
+    node.addEventListener("keydown", handleKeyDown);
+    return () => {
+      node.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [visible, refreshing]);
+
   if (!visible) return null;
 
   return (
-    <div className="pwa-update-banner" role="alert" aria-label={t("pwaUpdate.label", "App update available")}>
+    <div
+      ref={containerRef}
+      className="pwa-update-banner"
+      role="alertdialog"
+      aria-live="polite"
+      aria-label={t("pwaUpdate.label", "App update available")}
+      aria-describedby="pwa-update-text"
+    >
       <RefreshCw size={16} className="pwa-update-icon" />
-      <p>{refreshing ? t("pwaUpdate.refreshing", "Refreshing to the latest version") : t("pwaUpdate.text", "A new version is available")}</p>
+      <p id="pwa-update-text">{refreshing ? t("pwaUpdate.refreshing", "Refreshing to the latest version") : t("pwaUpdate.text", "A new version is available")}</p>
       <button
+        ref={refreshButtonRef}
         type="button"
         className="pwa-update-btn"
         disabled={refreshing}

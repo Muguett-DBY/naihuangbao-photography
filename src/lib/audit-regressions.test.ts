@@ -734,4 +734,12 @@ describe("audit regression coverage", () => {
     expect(viteConfigSource).toContain('cacheName: "api-photos"');
     expect(viteConfigSource).toContain('maxEntries: 1');
   });
+
+  it("keeps PWA update banner keyboard accessible with focus and escape handling", () => {
+    expect(pwaUpdateBannerSource).toContain('role="alertdialog"');
+    expect(pwaUpdateBannerSource).toContain("aria-describedby");
+    expect(pwaUpdateBannerSource).toContain("refreshButtonRef");
+    expect(pwaUpdateBannerSource).toContain('event.key === "Escape"');
+    expect(pwaUpdateBannerSource).toContain("previouslyFocused");
+  });
 });
