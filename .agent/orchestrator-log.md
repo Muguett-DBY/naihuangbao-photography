@@ -838,4 +838,7 @@ Beginning execution.
   - Playwright smoke against preview with the repository config — 13/13 passed.
   - Playwright booking flow against preview with the repository config — 6/6 passed.
 - **Risk**: Group matching intentionally uses exact category/message/source/URL identity; errors differing only by query string will remain separate to keep the batch mutation boundary exact. Existing multilingual font and `face-api-vendor` size warnings remain.
-- **Status**: LOCAL COMPLETE; commit, push, and CI pending.
+- **Commit**: `5c66966` — `feat: group repeated error reports`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28305291347` passed.
+- **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is production-safety verification for Error Reports permissions, D1 schema/migrations, API response shape, and group-scope mutation boundaries.
+- **Status**: COMPLETE

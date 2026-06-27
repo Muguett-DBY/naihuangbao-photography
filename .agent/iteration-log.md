@@ -1345,6 +1345,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - Playwright CLI + 本地 D1：重复 booking chunk 错误显示为 `2 occurrences`，执行 Resolve group 后两条重复记录都变为 resolved 并写入同一备注。
 - Playwright smoke：13/13 通过。
 - Playwright booking flow：6/6 通过。
+- GitHub Actions：CI run `28305291347` 通过（main / `5c66966`）。
 
 ### 遗留风险
 - 同组批量处理采用精确 category/message/source/URL 边界；带不同 query 的同一路径错误不会被合并，换取批量更新的确定性。
