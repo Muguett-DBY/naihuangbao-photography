@@ -940,7 +940,22 @@
       "colCategory": "유형",
       "colMessage": "메시지",
       "colPage": "페이지",
-      "colSource": "소스"
+      "colSource": "소스",
+      "colStatus": "상태",
+      "colActions": "작업",
+      "statusFilter": "상태",
+      "status": {
+        "all": "전체",
+        "open": "처리 대기",
+        "resolved": "해결됨",
+        "ignored": "무시됨"
+      },
+      "noteLabel": "처리 메모",
+      "notePlaceholder": "처리 메모",
+      "resolve": "해결",
+      "ignore": "무시",
+      "reopen": "다시 열기",
+      "updateFailed": "오류 리포트를 업데이트할 수 없습니다."
     },
     "auditLog": {
       "title": "감사 로그",

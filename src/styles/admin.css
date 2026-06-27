@@ -1644,6 +1644,36 @@
   line-height: 1.5;
 }
 
+.adm-errors-filters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.adm-errors-filters label {
+  min-width: 130px;
+}
+
+.adm-errors-filters select {
+  min-height: 38px;
+  padding-block: 7px;
+}
+
+.adm-errors-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(180, 60, 60, 0.18);
+  border-radius: 8px;
+  background: rgba(180, 60, 60, 0.08);
+  color: #9f433b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .adm-errors-summary {
   display: flex;
   align-items: center;
@@ -1684,6 +1714,36 @@
   color: #8a5b13;
 }
 
+.adm-errors-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.adm-errors-status--open {
+  background: rgba(199, 90, 79, 0.12);
+  color: #9f433b;
+}
+
+.adm-errors-status--resolved {
+  background: rgba(79, 137, 89, 0.14);
+  color: #376c40;
+}
+
+.adm-errors-status--ignored {
+  background: rgba(93, 78, 73, 0.1);
+  color: #5d4e49;
+}
+
+.adm-errors-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .adm-errors-table {
   width: 100%;
   border-collapse: collapse;
@@ -1721,6 +1781,69 @@
   font-weight: 600;
 }
 
+.adm-errors-message strong,
+.adm-errors-message small {
+  display: block;
+}
+
+.adm-errors-message small {
+  margin-top: 4px;
+  color: #a08880;
+  font-weight: 500;
+}
+
+.adm-errors-workflow {
+  display: grid;
+  gap: 7px;
+  min-width: 250px;
+}
+
+.adm-errors-workflow input {
+  min-height: 38px;
+  padding: 7px 9px;
+  font-size: 13px;
+}
+
+.adm-errors-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.adm-errors-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 36px;
+  border: 1px solid rgba(93, 78, 73, 0.14);
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #493735;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.adm-errors-actions button:hover:not(:disabled) {
+  border-color: rgba(73, 55, 53, 0.35);
+  background: #fff;
+}
+
+.adm-errors-actions button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.adm-spin {
+  animation: adm-errors-spin 0.8s linear infinite;
+}
+
+@keyframes adm-errors-spin {
+  to { transform: rotate(360deg); }
+}
+
 .adm-errors-empty {
   display: flex;
   flex-direction: column;
@@ -1738,16 +1861,20 @@
 }
 
 @media (max-width: 720px) {
-  .adm-errors-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
+  .adm-errors-table { white-space: nowrap; }
 
   .adm-errors-message {
     min-width: 220px;
     white-space: normal;
   }
+
+  .adm-errors-filters {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adm-spin { animation: none; }
 }
 
 /* ── Moderation Queue ── */

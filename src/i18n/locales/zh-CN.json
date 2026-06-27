@@ -994,7 +994,22 @@
       "colCategory": "类型",
       "colMessage": "错误信息",
       "colPage": "页面",
-      "colSource": "来源"
+      "colSource": "来源",
+      "colStatus": "状态",
+      "colActions": "处理",
+      "statusFilter": "状态",
+      "status": {
+        "all": "全部",
+        "open": "待处理",
+        "resolved": "已解决",
+        "ignored": "已忽略"
+      },
+      "noteLabel": "处理备注",
+      "notePlaceholder": "填写处理备注",
+      "resolve": "解决",
+      "ignore": "忽略",
+      "reopen": "重新打开",
+      "updateFailed": "无法更新错误报告。"
     },
     "auditLog": {
       "title": "审计日志",
