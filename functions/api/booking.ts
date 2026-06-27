@@ -18,7 +18,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (publicActionError) return publicActionError;
 
   const limit = await enforceRateLimit(context.request, context.env, "booking-submit", 6, 60 * 60);
-  if (!limit.ok) return rateLimited(limit.retryAfter);
+  if (!limit.ok) return rateLimited(limit.retryAfter, 6);
 
   if (!context.env.DB) {
     return jsonResponse({ error: "预约功能暂时不可用" }, 503);
