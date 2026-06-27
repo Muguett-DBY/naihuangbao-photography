@@ -2,7 +2,7 @@ import "../styles/pages.css";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { MapPin, Calendar, Users, Clock, Share2 } from "lucide-react";
+import { MapPin, Calendar, Users, Clock, Share2, Filter, X } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
@@ -25,6 +25,7 @@ export function WorkshopsPage() {
   const [formOpen, setFormOpen] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
 
   useSEO({ titleKey: "seo.workshopsTitle", descKey: "seo.workshopsDesc", path: "/workshops" });
   useGsapPageEffects(rootRef);
@@ -97,6 +98,16 @@ export function WorkshopsPage() {
             <option value="available">{t("workshops.filterAvailable", "Available")}</option>
             <option value="full">{t("workshops.filterFull", "Full")}</option>
           </select>
+          <button
+            type="button"
+            className="workshop-filter-mobile-btn"
+            onClick={() => setFilterSheetOpen(true)}
+            aria-label={t("workshops.filterSheetTitle", "Filter workshops")}
+          >
+            <Filter size={14} />
+            <span>{t("workshops.filter", "Filter")}</span>
+            {statusFilter !== "all" && <span className="workshop-filter-mobile-badge">1</span>}
+          </button>
         </div>
         <DataState
           loading={loading}
@@ -218,6 +229,38 @@ export function WorkshopsPage() {
         </DataState>
         </ErrorBoundary>
       </section>
+      {filterSheetOpen && (
+        <div className="workshop-filter-overlay" onClick={() => setFilterSheetOpen(false)}>
+          <div className="workshop-filter-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="workshop-filter-sheet-header">
+              <h3>{t("workshops.filterSheetTitle", "Filter workshops")}</h3>
+              <button type="button" onClick={() => setFilterSheetOpen(false)} aria-label={t("common.close", "Close")}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="workshop-filter-sheet-body">
+              <label className="workshop-filter-sheet-label">
+                <span>{t("workshops.filterStatusLabel", "Status")}</span>
+                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <option value="all">{t("workshops.statusAll", "All")}</option>
+                  <option value="upcoming">{t("workshops.statusUpcoming", "Upcoming")}</option>
+                  <option value="available">{t("workshops.statusAvailable", "Available")}</option>
+                  <option value="full">{t("workshops.statusFull", "Full")}</option>
+                  <option value="past">{t("workshops.statusPast", "Past")}</option>
+                </select>
+              </label>
+            </div>
+            <div className="workshop-filter-sheet-actions">
+              <Button type="default" onClick={() => { setStatusFilter("all"); setFilterSheetOpen(false); }}>
+                {t("workshops.filterReset", "Reset")}
+              </Button>
+              <Button type="primary" onClick={() => setFilterSheetOpen(false)}>
+                {t("workshops.filterApply", "Apply")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageTransition>
   );
 }
