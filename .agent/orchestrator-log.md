@@ -806,4 +806,7 @@ Beginning execution.
   - Playwright smoke against preview with the repository config — 13/13 passed.
   - Playwright booking flow against preview with the repository config — 6/6 passed.
 - **Risk**: The admin top-level tab set is still broad; narrow screens now make it horizontally reachable, but long-term information architecture may still benefit from grouping admin sections.
-- **Status**: LOCAL COMPLETE; commit, push, and CI pending.
+- **Commit**: `236b51f` — `feat: improve admin error triage experience`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28299944848` passed.
+- **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing duplicate error-report handling effort through aggregation, occurrence counts, or bulk actions.
+- **Status**: COMPLETE

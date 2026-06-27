@@ -1306,6 +1306,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - Playwright CLI 桌面截图确认后台 nav 不再生成空白 tab 内容区。
 - Playwright CLI 390px 移动端截图确认错误报告行已卡片化，字段标签、状态和操作按钮可见。
 - Playwright CLI 移动端 Resolve 操作确认成功提示出现，Open 数量从 2 降到 1。
+- GitHub Actions：CI run `28299944848` 通过（main / `236b51f`）。
 
 ### 遗留风险
 - 本地 Pages 种子环境进入后台时 `/api/admin/bookings` 会返回 503；本阶段确认它不是 Error Reports 交互新增错误。
