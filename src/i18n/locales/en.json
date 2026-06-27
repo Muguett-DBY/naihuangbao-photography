@@ -846,7 +846,8 @@
       "logout": "Logout",
       "backToSite": "← Site",
       "saving": "Saving...",
-      "savePublish": "Save & Publish"
+      "savePublish": "Save & Publish",
+      "localeLabel": "Interface language"
     },
     "logout": {
       "error": "Logout request failed. Local login state has been cleared."

@@ -896,7 +896,8 @@
       "logout": "退出",
       "backToSite": "← 官网",
       "saving": "保存中...",
-      "savePublish": "保存并发布"
+      "savePublish": "保存并发布",
+      "localeLabel": "界面语言"
     },
     "logout": {
       "error": "退出请求失败，本地登录状态已清除。"

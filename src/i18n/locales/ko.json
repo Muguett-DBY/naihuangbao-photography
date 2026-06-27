@@ -842,7 +842,8 @@
       "logout": "로그아웃",
       "backToSite": "← 사이트",
       "saving": "저장 중...",
-      "savePublish": "저장 및 게시"
+      "savePublish": "저장 및 게시",
+      "localeLabel": "인터페이스 언어"
     },
     "logout": {
       "error": "로그아웃 요청 실패. 로컬 로그인 상태가 삭제되었습니다."

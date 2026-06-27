@@ -46,7 +46,7 @@ type StatsData = {
 };
 
 export function AdminShell() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { siteConfig } = useSiteContent();
   const [authenticated, setAuthenticated] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -196,6 +196,17 @@ export function AdminShell() {
         <div className="adm-bar-brand">{t("admin.header.brand", { name: siteConfig.brandName })}</div>
         <AdminNotificationBell newBookingCount={newBookingIds.size} onDismiss={() => setHasNewBookings(false)} />
         <div className="adm-bar-actions">
+          <select
+            className="adm-bar-locale"
+            value={i18n.language}
+            onChange={(e) => { void i18n.changeLanguage(e.target.value); }}
+            aria-label={t("admin.header.localeLabel", "Interface language")}
+          >
+            <option value="zh-CN">中文</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+          </select>
           <Button type="text" onClick={handleLogout}>
             <LogOut size={14} /> {t("admin.header.logout")}
           </Button>
