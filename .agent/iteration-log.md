@@ -1204,3 +1204,41 @@ Webhook 状态矩阵加固：用签名 webhook fixture 覆盖 processing、faile
 
 ### 推荐下一轮优先执行的旗舰级主改动
 PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runtime cache、Pages 预览与生产更新链路做一次端到端核验，确保 Stage 4 的更新机制能在真实部署路径中可靠生效。
+
+---
+
+## Campaign 017 Stage 1 — Client Error Reports Admin Loop
+
+### 承接的上一轮方向
+- Campaign 016 已完成客户端错误追踪/上报基础能力。
+- 本阶段把上报链路从 console/localStorage 推进到可持久化、可管理、可回归验证的后台运营入口。
+
+### 完成内容
+- 新增 D1 表 `client_error_reports` 与迁移 `011_create_client_error_reports.sql`。
+- `/api/analytics/error` 支持真实 ErrorTracker payload 与旧 `logError` payload，写入 D1 并返回 `stored` 状态。
+- ErrorTracker 默认上报到 `/api/analytics/error`。
+- 新增管理员 `/api/admin/errors` 接口和后台“前端错误报告”Tab，支持 7/30 天范围、分类汇总、空/错/加载状态和响应式表格。
+- 补齐 zh-CN/en/ja/ko 文案。
+- 修复 smoke E2E 发现的 `/gallery` 双重 `id="gallery"` 导致导航定位歧义问题。
+
+### 已通过的验证
+- Red/green：错误报告持久化与后台可见性测试先失败后通过，目标测试 87/87 通过。
+- Red/green：`/gallery` 重复 landmark 回归测试先失败后通过，`audit-regressions` 57/57 通过。
+- TypeScript / lint：通过。
+- Vitest：286/286 通过。
+- `build:full` + performance budget：通过。
+- Playwright smoke：13/13 通过。
+- Playwright booking flow：6/6 通过。
+- GitHub Actions：CI run `28298584333` 通过（main / `df89c5b`）。
+
+### 遗留风险
+- 生产环境需要应用 D1 migration 后才能持久化错误报告；DB binding 不存在时接口会返回 `stored: false` 并保留 Workers console 记录。
+- 中日韩字体和 `face-api-vendor` 仍是主要体积热点。
+
+### 下一轮建议方向
+1. IMPROVE：让错误报告从“能看到”升级到“能处理”，例如状态、备注、解决/忽略、统计筛选。
+2. CHECK：核对新错误报告接口的权限、D1 迁移链路和生产部署兼容性。
+3. UIUX：优化后台错误报告页的信息密度、筛选体验和移动端阅读体验。
+
+### 推荐下一轮优先执行的旗舰级主改动
+管理员错误报告处理闭环：在已有捕获和收件箱基础上增加状态化处理能力，让错误能被标记、筛选和追踪，而不是只作为静态列表存在。

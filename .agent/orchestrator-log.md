@@ -732,3 +732,24 @@ Beginning execution.
 - **Objective**: Turn the latest client-side error tracker into an operational monitoring loop by accepting its real payload shape, persisting reports to D1, and giving admins a visible recent-error inbox.
 - **Start state**: `main` at `ee1475d`; tracked tree clean, existing untracked orchestrator history folders protected.
 - **Previous direction carried forward**: Campaign 016 ended with client-side error tracking/reporting; this stage makes that reporting usable beyond local storage and Workers console logs.
+- **Completed locally**:
+  - Added persistent D1 storage for client-side error reports through `client_error_reports` schema and migration `011_create_client_error_reports.sql`.
+  - Updated `/api/analytics/error` to accept the real tracker payload shape plus the legacy `logError` shape, sanitize/truncate fields, persist when DB is available, and return a `stored` signal.
+  - Set the shared `ErrorTracker` default endpoint to `/api/analytics/error`.
+  - Added authenticated `/api/admin/errors` and a new Admin Error Reports tab with 7/30 day range controls, category summary, loading/error/empty states, and responsive table layout.
+  - Added zh-CN/en/ja/ko admin copy for the new errors tab.
+  - Fixed a rendered `/gallery` accessibility/navigation regression found during smoke E2E by removing the duplicate outer `id="gallery"` landmark.
+- **Local verification**:
+  - Red/green: error reporting tests first failed on missing admin endpoint/default endpoint, then `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts src/lib/error-tracker.test.ts` passed 87/87.
+  - Red/green: gallery duplicate-id regression first failed, then `npm test -- src/lib/audit-regressions.test.ts` passed 57/57.
+  - `npm run lint` — passed.
+  - `npm test` — 286/286 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke — 13/13 passed.
+  - Playwright booking flow — 6/6 passed.
+  - `git diff --staged --check` and secret-pattern scan passed; matches were limited to existing test-secret fixtures and audit-pattern text.
+- **Commit**: `df89c5b` — `feat: add admin client error reports`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28298584333` passed.
+- **Risk**: production persistence requires applying D1 migration `011_create_client_error_reports.sql`; if DB binding is unavailable, the analytics endpoint reports `stored: false` while preserving console logging. Existing CJK font and `face-api-vendor` bundle warnings remain.
+- **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is closing the operational loop for admin error monitoring by making reports actionable after capture.
+- **Status**: COMPLETE
