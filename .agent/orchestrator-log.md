@@ -774,4 +774,7 @@ Beginning execution.
   - `npm run build:full` — passed, including performance budget and bundle analysis.
   - Playwright smoke against preview with the repository config — 13/13 passed.
 - **Risk**: Production needs migration `012_add_client_error_report_workflow.sql` applied before the updated listing and mutation routes are used. Existing multilingual font and `face-api-vendor` size warnings remain.
-- **Status**: LOCAL COMPLETE; commit, push, and CI pending.
+- **Commit**: `3d2f3eb` — `feat: add error report workflow`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28299055249` passed.
+- **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is improving the error workflow's desktop/mobile information hierarchy, scanability, and action ergonomics with rendered validation.
+- **Status**: COMPLETE
