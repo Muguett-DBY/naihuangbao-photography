@@ -8,6 +8,8 @@ import { onRequestPost as paymentWebhook } from "./api/payment/webhook";
 import { onRequestGet as getPaymentFollowUp } from "./api/admin/payments/follow-up";
 import { onRequestPost as expirePaymentFollowUp } from "./api/admin/payments/follow-up";
 import { onRequestGet as getAuditLog } from "./api/admin/audit-log";
+import { onRequestPost as createShareLink } from "./api/share/create";
+import { onRequestPost as resolveShareLink } from "./api/share/resolve";
 import { onRequestGet as getUserBookings } from "./api/user/bookings";
 import { onRequestGet as getUserProfile } from "./api/user/profile";
 import { onRequestPost as cancelUserBooking } from "./api/user/bookings/[id]/cancel";
@@ -708,5 +710,131 @@ describe("Cloudflare Pages API behavior", () => {
     const text = await response.text();
     expect(text.split("\n")[0]).toBe("id,created_at,action,entity_type,entity_id,admin_user,diff");
     expect(text).toContain('"photo""x"');
+  });
+
+  it("creates a share link with privacy controls and no-store cache header", async () => {
+    const run = vi.fn(async () => ({ success: true }));
+    const db = createDb({ run });
+
+    const response = await createShareLink({
+      request: jsonRequest("https://shoot.custard.top/api/share/create", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-nhb-public-action": "1" },
+        body: JSON.stringify({
+          resourceType: "photo",
+          resourceId: "photo-abc",
+          password: "secret123",
+          maxViews: 5,
+          expiresInDays: 7,
+        }),
+      }),
+      env: { DB: db },
+    } as never);
+    const body = (await response.json()) as { ok: boolean; link: { token: string; requiresPassword: boolean; maxViews: number; expiresAt: string } };
+
+    expect(response.status).toBe(201);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(body.ok).toBe(true);
+    expect(body.link.requiresPassword).toBe(true);
+    expect(body.link.maxViews).toBe(5);
+    expect(body.link.expiresAt).not.toBeNull();
+    expect(body.link.token).toHaveLength(24);
+  });
+
+  it("rejects share link creation with invalid resource type", async () => {
+    const response = await createShareLink({
+      request: jsonRequest("https://shoot.custard.top/api/share/create", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-nhb-public-action": "1" },
+        body: JSON.stringify({ resourceType: "invalid", resourceId: "x" }),
+      }),
+      env: { DB: createDb() },
+    } as never);
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(400);
+    expect(body.error).toContain("Invalid resource type");
+  });
+
+  it("resolves a valid share link and increments view count", async () => {
+    const first = vi.fn(async () => ({
+      id: "share_1",
+      token: "abcdef0123456789abcdef01",
+      resource_type: "photo",
+      resource_id: "photo-1",
+      visibility: "public",
+      password_hash: null,
+      max_views: 10,
+      view_count: 3,
+      expires_at: null,
+      created_at: "2026-06-27T00:00:00.000Z",
+      created_by: "admin",
+    }));
+    const run = vi.fn(async () => ({ success: true, meta: { changes: 1 } }));
+    const db = createDb({ first, run });
+
+    const response = await resolveShareLink({
+      request: jsonRequest("https://shoot.custard.top/api/share/resolve", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-nhb-public-action": "1" },
+        body: JSON.stringify({ token: "abcdef0123456789abcdef01" }),
+      }),
+      env: { DB: db },
+    } as never);
+    const body = (await response.json()) as { ok: boolean; viewCount: number; resource: { type: string; id: string } };
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).toBe("no-store");
+    expect(body.ok).toBe(true);
+    expect(body.viewCount).toBe(4);
+    expect(body.resource.type).toBe("photo");
+  });
+
+  it("returns 404 for unknown share tokens", async () => {
+    const first = vi.fn(async () => null);
+    const db = createDb({ first });
+
+    const response = await resolveShareLink({
+      request: jsonRequest("https://shoot.custard.top/api/share/resolve", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-nhb-public-action": "1" },
+        body: JSON.stringify({ token: "abcdef0123456789abcdef01" }),
+      }),
+      env: { DB: db },
+    } as never);
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(404);
+    expect(body.error).toContain("not found");
+  });
+
+  it("returns 401 when a password-protected share link is requested without a password", async () => {
+    const first = vi.fn(async () => ({
+      id: "share_pwd",
+      token: "abcdef0123456789abcdef01",
+      resource_type: "photo",
+      resource_id: "photo-pwd",
+      visibility: "unlisted",
+      password_hash: "hashed-value",
+      max_views: 10,
+      view_count: 0,
+      expires_at: null,
+      created_at: "2026-06-27T00:00:00.000Z",
+      created_by: "admin",
+    }));
+    const db = createDb({ first });
+
+    const response = await resolveShareLink({
+      request: jsonRequest("https://shoot.custard.top/api/share/resolve", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-nhb-public-action": "1" },
+        body: JSON.stringify({ token: "abcdef0123456789abcdef01" }),
+      }),
+      env: { DB: db },
+    } as never);
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(401);
+    expect(body.error).toBe("password_required");
   });
 });

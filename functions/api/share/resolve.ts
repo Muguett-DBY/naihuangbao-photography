@@ -79,7 +79,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         visibility: row.visibility,
       },
       viewCount: row.view_count + 1,
-    });
+    }, 200, { "cache-control": "no-store" });
   } catch (error) {
     return unavailable("Failed to resolve share link", error, { route: "/api/share/resolve", method: "POST" });
   }
