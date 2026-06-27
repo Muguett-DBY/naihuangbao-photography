@@ -958,7 +958,8 @@
       "selectAll": "すべて選択",
       "deselectAll": "選択解除",
       "batchApprove": "一括承認",
-      "batchReject": "一括却下"
+      "batchReject": "一括却下",
+      "approveAll": "すべて承認"
     }
   },
   "chat": {

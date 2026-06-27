@@ -958,7 +958,8 @@
       "selectAll": "전체 선택",
       "deselectAll": "선택 해제",
       "batchApprove": "일괄 승인",
-      "batchReject": "일괄 거부"
+      "batchReject": "일괄 거부",
+      "approveAll": "모두 승인"
     }
   },
   "chat": {
