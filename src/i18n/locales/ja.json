@@ -67,6 +67,8 @@
       "activeSearch": "検索：{{query}}",
       "activeView": "表示：{{view}}",
     "clearDiscovery": "条件をクリア",
+    "clearAll": "すべてクリア",
+    "clearAllFilters": "{{count}} 件のアクティブなフィルターをすべてクリア",
     "saveSearch": "検索を保存",
     "savedSearches": "保存済みの検索",
     "removeSavedSearch": "保存済みの検索を削除",

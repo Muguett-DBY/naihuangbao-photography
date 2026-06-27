@@ -67,6 +67,8 @@
       "activeSearch": "Search: {{query}}",
       "activeView": "View: {{view}}",
     "clearDiscovery": "Clear filters",
+    "clearAll": "Clear all",
+    "clearAllFilters": "Clear all {{count}} active filters",
     "saveSearch": "Save search",
     "savedSearches": "Saved searches",
     "removeSavedSearch": "Remove saved search",
