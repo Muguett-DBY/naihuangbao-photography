@@ -815,6 +815,7 @@
       "photos": "写真",
       "stats": "統計",
       "vitals": "Web Vitals",
+      "errors": "エラーレポート",
       "courses": "講座",
       "presets": "プリセット",
       "workshops": "ワークショップ",
@@ -925,6 +926,21 @@
         "needs-improvement": "改善が必要",
         "poor": "不良"
       }
+    },
+    "errors": {
+      "title": "エラーレポート",
+      "description": "訪問者のブラウザから収集した最近のフロントエンドエラーです。",
+      "rangeLabel": "エラーレポートの期間",
+      "days": "{{count}}日",
+      "summary": "エラーレポート概要",
+      "total": "件のレポート",
+      "loadFailed": "エラーレポートを読み込めません。",
+      "empty": "この期間のフロントエンドエラーはありません。",
+      "colTime": "時刻",
+      "colCategory": "種別",
+      "colMessage": "メッセージ",
+      "colPage": "ページ",
+      "colSource": "ソース"
     },
     "auditLog": {
       "title": "監査ログ",

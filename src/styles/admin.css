@@ -1620,6 +1620,136 @@
   }
 }
 
+/* ── Client error reports tab ── */
+.adm-errors-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.adm-errors-header h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+}
+
+.adm-errors-header p {
+  margin: 0;
+  color: #7a5a4a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.adm-errors-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #7a5a4a;
+  font-size: 13px;
+}
+
+.adm-errors-summary strong {
+  color: #493735;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.adm-errors-chip,
+.adm-errors-category {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 999px;
+  background: rgba(139, 94, 74, 0.08);
+  color: #6e5145;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.adm-errors-category--javascript,
+.adm-errors-category--react {
+  background: rgba(199, 90, 79, 0.12);
+  color: #9f433b;
+}
+
+.adm-errors-category--promise {
+  background: rgba(216, 161, 74, 0.16);
+  color: #8a5b13;
+}
+
+.adm-errors-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fffdf7;
+  border: 1px solid rgba(139, 94, 74, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+.adm-errors-table th,
+.adm-errors-table td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(139, 94, 74, 0.06);
+  vertical-align: top;
+}
+
+.adm-errors-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #a08880;
+  font-weight: 600;
+  background: rgba(139, 94, 74, 0.04);
+}
+
+.adm-errors-table tr:last-child td {
+  border-bottom: none;
+}
+
+.adm-errors-message {
+  max-width: 360px;
+  color: #493735;
+  font-weight: 600;
+}
+
+.adm-errors-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 16px;
+  color: #a08880;
+  text-align: center;
+}
+
+.adm-errors-empty p {
+  margin: 0;
+  max-width: 360px;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .adm-errors-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .adm-errors-message {
+    min-width: 220px;
+    white-space: normal;
+  }
+}
+
 /* ── Moderation Queue ── */
 .admin-moderation-queue {
   padding: 20px;

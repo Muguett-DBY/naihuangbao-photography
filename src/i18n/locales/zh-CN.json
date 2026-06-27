@@ -869,6 +869,7 @@
       "photos": "照片",
       "stats": "数据",
       "vitals": "性能指标",
+      "errors": "前端错误报告",
       "courses": "课程",
       "presets": "预设",
       "workshops": "活动",
@@ -979,6 +980,21 @@
         "needs-improvement": "需改进",
         "poor": "较差"
       }
+    },
+    "errors": {
+      "title": "前端错误报告",
+      "description": "汇总访客浏览器上报的近期前端错误。",
+      "rangeLabel": "错误报告时间范围",
+      "days": "{{count}}天",
+      "summary": "错误报告摘要",
+      "total": "条报告",
+      "loadFailed": "无法加载错误报告。",
+      "empty": "当前时间范围内没有前端错误报告。",
+      "colTime": "时间",
+      "colCategory": "类型",
+      "colMessage": "错误信息",
+      "colPage": "页面",
+      "colSource": "来源"
     },
     "auditLog": {
       "title": "审计日志",

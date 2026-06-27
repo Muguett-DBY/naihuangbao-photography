@@ -162,6 +162,7 @@ export function getSharedErrorTracker(): ErrorTracker {
   if (!sharedTracker) {
     sharedTracker = new ErrorTracker({
       maxReports: 50,
+      endpoint: "/api/analytics/error",
       sampleRate: 1.0,
     });
   }
