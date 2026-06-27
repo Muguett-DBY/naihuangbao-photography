@@ -1319,3 +1319,42 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 错误报告聚合与降噪：在已有捕获、状态和响应式处理台基础上，增加重复错误聚合或批量处理能力，让管理员面对同类前端错误时处理更快。
+
+---
+
+## Campaign 017 Stage 4 — Error Report Grouping and Noise Reduction
+
+### 承接的上一轮方向
+- Stage 3 推荐继续做“错误报告聚合与降噪”。
+- 本阶段已实质完成该方向：同类前端错误不再只以重复行出现，而是能按组显示发生次数并批量处理。
+
+### 完成内容
+- `/api/admin/errors` 返回按 category/message/source/URL 聚合后的错误组，新增 `occurrenceCount`、`groupKey`、`firstOccurredAt`、`latestOccurredAt` 和 `reportedTotal`。
+- 列表会扫描更多近期报告再按组返回，减少重复错误被分页切散的概率。
+- `PATCH /api/admin/errors/:id` 新增 `scope: "group"`，可对同组 open 错误批量解决、忽略或重开。
+- 后台 Error Reports 增加分组摘要、发生次数徽标、Resolve group / Ignore group 操作和成功反馈。
+- 补齐 zh-CN/en/ja/ko 文案和 CSS。
+- 修复一个实现中发现的一致性风险：groupKey 维度改为与批量 SQL 完全一致的完整 URL，避免 UI 合并但后端批量更新不完整。
+
+### 已通过的验证
+- Red/green：重复错误聚合与 group-scope PATCH 测试先失败，修复后 API + audit regression 88/88 通过。
+- Red/green：groupKey 与批量 SQL 维度一致性测试先失败，修复后通过。
+- TypeScript / lint：通过。
+- Vitest：292/292 通过。
+- `build:full` + performance budget：通过，主包 310,313 bytes 仍在预算内。
+- Playwright CLI + 本地 D1：重复 booking chunk 错误显示为 `2 occurrences`，执行 Resolve group 后两条重复记录都变为 resolved 并写入同一备注。
+- Playwright smoke：13/13 通过。
+- Playwright booking flow：6/6 通过。
+
+### 遗留风险
+- 同组批量处理采用精确 category/message/source/URL 边界；带不同 query 的同一路径错误不会被合并，换取批量更新的确定性。
+- 本地 Pages 种子环境仍会在进入后台时出现 `/api/admin/bookings` 503；本阶段确认它不来自 Error Reports。
+- 中日韩字体和 `face-api-vendor` 仍是主要体积热点。
+
+### 下一轮建议方向
+1. CHECK：重点核验 Error Reports 的权限边界、D1 migration 兼容性、生产 API 响应形状和 group-scope mutation 安全性。
+2. CHECK：复查本地/CI/部署链路中 D1 schema 是否已覆盖 011/012，避免生产缺列。
+3. IMPROVE：继续削减后台首屏资源压力，尤其是共享大包和 CJK 字体加载策略。
+
+### 推荐下一轮优先执行的旗舰级主改动
+错误报告工作流生产验收：系统检查后台错误报告 API、group-scope 批量处理、权限头、D1 schema/migration 和 Pages 部署兼容性，确保新增降噪能力可以安全上线。

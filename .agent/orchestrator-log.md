@@ -810,3 +810,32 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28299944848` passed.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing duplicate error-report handling effort through aggregation, occurrence counts, or bulk actions.
 - **Status**: COMPLETE
+
+### Stage 4 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Reduce admin error-triage noise by grouping repeated frontend errors and making repeated open errors bulk-actionable from the existing Error Reports workflow.
+- **Start state**: `main` at `283d40b`; tracked tree clean except protected untracked orchestrator history folders.
+- **Previous direction carried forward**: Stage 3 recommended error-report aggregation and noise reduction so admins do not need to process the same frontend failure one row at a time.
+- **Completed locally**:
+  - Added duplicate-error grouping in `GET /api/admin/errors` with `groupKey`, `occurrenceCount`, `firstOccurredAt`, `latestOccurredAt`, and `reportedTotal`.
+  - Increased the admin listing scan window up to 500 reports while still returning the requested limit of grouped rows, so repeated errors can collapse before pagination.
+  - Added protected group-scope PATCH support for resolving/ignoring/reopening matching open error reports from a seed report.
+  - Updated the Error Reports tab to show grouped totals, occurrence chips, and Resolve group / Ignore group actions for repeated open errors.
+  - Added zh-CN/en/ja/ko copy and CSS for grouped occurrence/action UI.
+  - Fixed a consistency risk found during implementation: the returned group key now matches the exact URL dimension used by the group mutation SQL, avoiding UI grouping that the backend cannot fully update.
+- **Rendered / data validation**:
+  - Seeded local D1 with two identical booking chunk failures plus one single editor error.
+  - Playwright CLI confirmed the admin page rendered `3 groups · 4 reports`, showed the repeated booking failure as `2 occurrences`, and exposed Resolve group / Ignore group actions.
+  - Playwright CLI clicked Resolve group with note `Fixed repeated booking chunk`; the Open queue dropped by two reported occurrences and showed `Error group updated.`
+  - Wrangler D1 local query confirmed both seeded repeated rows were `resolved` with the shared resolution note.
+  - Browser console errors observed during the local session were still limited to the existing default `/api/admin/bookings` 503 from the seeded local Pages environment, not the Error Reports workflow.
+- **Local verification**:
+  - Red/green: duplicate grouping and group-scope workflow tests first failed on missing aggregation/scope behavior, then `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts` passed 88/88.
+  - Red/green: a follow-up consistency test first failed because group keys used page paths while group mutations used full URLs, then passed after aligning the grouping dimension.
+  - `npm run lint` — passed.
+  - `npm test` — 292/292 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against preview with the repository config — 13/13 passed.
+  - Playwright booking flow against preview with the repository config — 6/6 passed.
+- **Risk**: Group matching intentionally uses exact category/message/source/URL identity; errors differing only by query string will remain separate to keep the batch mutation boundary exact. Existing multilingual font and `face-api-vendor` size warnings remain.
+- **Status**: LOCAL COMPLETE; commit, push, and CI pending.

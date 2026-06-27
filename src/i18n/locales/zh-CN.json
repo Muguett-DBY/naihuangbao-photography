@@ -989,6 +989,7 @@
       "days": "{{count}}天",
       "summary": "错误报告摘要",
       "total": "条报告",
+      "groupedTotal": "{{groups}} 个分组 · {{count}} 条报告",
       "loadFailed": "无法加载错误报告。",
       "empty": "当前时间范围内没有前端错误报告。",
       "colTime": "时间",
@@ -1007,11 +1008,15 @@
       },
       "noteLabel": "处理备注",
       "notePlaceholder": "填写处理备注",
+      "occurrenceCount": "发生 {{count}} 次",
       "resolve": "解决",
       "ignore": "忽略",
+      "resolveGroup": "解决同组",
+      "ignoreGroup": "忽略同组",
       "reopen": "重新打开",
       "updateFailed": "无法更新错误报告。",
-      "updateSuccess": "错误报告已更新。"
+      "updateSuccess": "错误报告已更新。",
+      "groupUpdateSuccess": "同组错误已更新。"
     },
     "auditLog": {
       "title": "审计日志",

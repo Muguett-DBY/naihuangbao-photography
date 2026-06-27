@@ -935,6 +935,7 @@
       "days": "{{count}}日",
       "summary": "エラーレポート概要",
       "total": "件のレポート",
+      "groupedTotal": "{{groups}}グループ · {{count}}件のレポート",
       "loadFailed": "エラーレポートを読み込めません。",
       "empty": "この期間のフロントエンドエラーはありません。",
       "colTime": "時刻",
@@ -953,11 +954,15 @@
       },
       "noteLabel": "対応メモ",
       "notePlaceholder": "対応メモ",
+      "occurrenceCount": "{{count}}件発生",
       "resolve": "解決",
       "ignore": "無視",
+      "resolveGroup": "グループを解決",
+      "ignoreGroup": "グループを無視",
       "reopen": "再開",
       "updateFailed": "エラーレポートを更新できません。",
-      "updateSuccess": "エラーレポートを更新しました。"
+      "updateSuccess": "エラーレポートを更新しました。",
+      "groupUpdateSuccess": "エラーグループを更新しました。"
     },
     "auditLog": {
       "title": "監査ログ",
