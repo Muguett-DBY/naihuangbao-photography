@@ -3,6 +3,7 @@ import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "
 import { validateEnum, validateId, validateOptionalString } from "../../../_validation";
 
 type ErrorWorkflowEnv = Env & { ADMIN_PASSWORD?: string; DB?: D1Database };
+type D1RunResult = Awaited<ReturnType<D1PreparedStatement["run"]>>;
 
 const workflowStatuses = ["open", "resolved", "ignored"] as const;
 const workflowScopes = ["single", "group"] as const;
@@ -46,14 +47,25 @@ export const onRequestPatch: PagesFunction<ErrorWorkflowEnv> = async (context) =
          where id = ?`,
       ).bind(status, note, resolvedBy, id).run();
 
+    if (changedRows(result) === 0) {
+      return jsonResponse({ error: "Client error report not found" }, 404);
+    }
+
     return jsonResponse({ ok: true, id, status, note, scope, updated: result.meta?.changes ?? 1 });
   } catch (error) {
+    if (error instanceof Error && error.message === "Client error report not found") {
+      return jsonResponse({ error: "Client error report not found" }, 404);
+    }
     return unavailable("Failed to update client error report", error, {
       route: `/api/admin/errors/${id}`,
       method: "PATCH",
     });
   }
 };
+
+function changedRows(result: D1RunResult) {
+  return typeof result.meta?.changes === "number" ? result.meta.changes : 1;
+}
 
 async function updateErrorGroup(
   db: D1Database,

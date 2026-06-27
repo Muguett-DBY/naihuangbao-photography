@@ -1359,3 +1359,45 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 错误报告工作流生产验收：系统检查后台错误报告 API、group-scope 批量处理、权限头、D1 schema/migration 和 Pages 部署兼容性，确保新增降噪能力可以安全上线。
+
+---
+
+## Campaign 017 Stage 5 — Error Reports Production Safety Check
+
+### 承接的上一轮方向
+- Stage 4 已完成错误报告重复聚合和 group-scope 批量处理。
+- 本阶段按 CHECK 重点核验权限、D1 migration/schema、API 响应形状、批量处理边界和部署工具链安全性。
+
+### 完成内容
+- 修复 `PATCH /api/admin/errors/:id` 单条更新时 D1 `changes = 0` 仍返回成功的问题，现在统一返回 `404 Client error report not found`。
+- 修复 group-scope PATCH 找不到 seed report 时返回泛化 503 的问题，现在返回同一 404 not-found 语义。
+- 新增 API 测试覆盖单条 missing report 与 group missing seed 两个边界。
+- 新增 audit regression，锁定错误报告 workflow 必须保留 not-found 处理和 D1 changes 检查。
+- 执行 `npm audit fix` 修复 dev 工具链漏洞，lockfile 更新 Wrangler/miniflare/workerd/undici/ws/esbuild/Babel 等依赖；复查 audit 为 0 漏洞。
+- 将 `package.json` Node 引擎从 `>=20.0.0` 提升到 `>=22.0.0`，与更新后的 Wrangler/miniflare 要求和 GitHub Actions Node 24 一致，并加回归断言防止回退。
+
+### 已通过的验证
+- Red/green：missing single report 和 missing group seed 测试先分别暴露 200/503，修复后 `functions/api.test.ts` 31/31 通过。
+- API + audit targeted：90/90 通过。
+- Red/green：Node engine 回归先因 `>=20.0.0` 失败，更新后 audit regression 59/59 通过。
+- 临时 Wrangler D1：成功应用 migration 011/012，插入临时报错记录，执行 group update SQL 后确认状态和备注正确。
+- `npm ci`：通过；此前 Windows 本地 `wrangler.exe`/`workerd.exe`/`esbuild.exe` 进程锁导致 EPERM，停止项目本地残留进程后通过。
+- `npm audit --json`：0 total vulnerabilities。
+- TypeScript / lint：通过。
+- Vitest：294/294 通过。
+- `build:full` + performance budget：通过，主包 310,313 bytes 仍在预算内。
+- Playwright smoke：13/13 通过。
+- Playwright booking flow：6/6 通过。
+
+### 遗留风险
+- 同组批量处理仍按精确 category/message/source/URL 边界匹配，带不同 query 的错误会独立成组。
+- 中日韩字体和 `face-api-vendor` 仍是主要体积热点。
+- Windows 本地若残留 Wrangler/workerd/esbuild 进程，`npm ci` 可能出现临时 EPERM 锁；清理相关项目进程即可恢复。
+
+### 下一轮建议方向
+1. IMPROVE：削减后台或全站资源压力，优先关注 CJK 字体、`face-api-vendor` 和后台懒加载边界。
+2. IMPROVE：在 Error Reports 已安全后增加更细的运维可见性，例如最近一次处理人/处理耗时/按来源筛选。
+3. CHECK：推送后继续核验 GitHub Actions 和 Pages 部署，确认依赖升级在 CI/生产构建中稳定。
+
+### 推荐下一轮优先执行的旗舰级主改动
+后台与公共资源加载减压：在不牺牲功能的前提下，继续削减大字体、`face-api-vendor` 或后台入口加载压力，让已新增的 Error Reports 能以更低资源成本运行。

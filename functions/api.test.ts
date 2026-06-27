@@ -256,6 +256,27 @@ describe("Cloudflare Pages API behavior", () => {
     expect(db.statement.bind).toHaveBeenCalledWith("resolved", "Fixed lazy gallery import", "admin@example.com", "err_recent");
   });
 
+  it("returns 404 when a single error status update does not match a report", async () => {
+    const db = createDb({ run: async () => ({ success: true, meta: { changes: 0 } }) });
+    const response = await updateErrorReportStatus({
+      request: jsonRequest("https://shoot.custard.top/api/admin/errors/err_missing", {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+          "cf-access-authenticated-user-email": "admin@example.com",
+          "x-nhb-admin-action": "1",
+        },
+        body: JSON.stringify({ status: "resolved", note: "No matching row" }),
+      }),
+      env: { ...adminEnv, DB: db },
+      params: { id: "err_missing" },
+    } as never);
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(404);
+    expect(body.error).toContain("not found");
+  });
+
   it("updates an open duplicate error group from the admin triage action", async () => {
     const db = createDb({
       first: async () => ({
@@ -292,6 +313,27 @@ describe("Cloudflare Pages API behavior", () => {
       "unhandledrejection",
       "https://shoot.custard.top/gallery",
     );
+  });
+
+  it("returns 404 when a duplicate error group seed cannot be found", async () => {
+    const db = createDb({ first: async () => null });
+    const response = await updateErrorReportStatus({
+      request: jsonRequest("https://shoot.custard.top/api/admin/errors/err_missing", {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+          "cf-access-authenticated-user-email": "admin@example.com",
+          "x-nhb-admin-action": "1",
+        },
+        body: JSON.stringify({ status: "resolved", note: "No seed", scope: "group" }),
+      }),
+      env: { ...adminEnv, DB: db },
+      params: { id: "err_missing" },
+    } as never);
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(404);
+    expect(body.error).toContain("not found");
   });
 
   it("returns payment readiness details for placeholder payment intents", async () => {

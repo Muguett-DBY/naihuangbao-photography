@@ -842,3 +842,37 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28305291347` passed.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is production-safety verification for Error Reports permissions, D1 schema/migrations, API response shape, and group-scope mutation boundaries.
 - **Status**: COMPLETE
+
+### Stage 5 / 6 — CHECK
+- **Prompt**: `AGENT_CHECK_MAIN.txt`
+- **Objective**: Production-safety check for the Error Reports workflow, with emphasis on permissions, D1 migration/schema compatibility, API response shape, group-scope mutation boundaries, and local/CI dependency hygiene.
+- **Start state**: `main` at `d90a2d1`; tracked tree clean except protected untracked orchestrator history folders.
+- **Previous direction carried forward**: Stage 4 recommended verifying Error Reports permissions, D1 schema/migrations, production API response shapes, and group-scope mutation safety before further expansion.
+- **Findings and fixes completed locally**:
+  - Found a data-consistency bug in `PATCH /api/admin/errors/:id`: single-report updates returned success when D1 changed zero rows. The route now returns `404 Client error report not found`.
+  - Found a group-scope error-shape bug: a missing group seed surfaced as a generic 503. The route now returns the same 404 not-found response.
+  - Added API tests for both missing single-report and missing group-seed cases, plus an audit-regression assertion that the workflow keeps explicit not-found handling.
+  - `npm audit` initially reported 6 dev-toolchain vulnerabilities (2 low, 4 high) across Wrangler/miniflare-related packages. A non-force `npm audit fix` updated the lockfile to Wrangler `4.105.0`, workerd `1.20260625.1`, undici `7.28.0`, ws `8.21.0`, esbuild `0.28.1`, and related Babel packages; follow-up audit is 0 vulnerabilities.
+  - Raised the project `engines.node` from `>=20.0.0` to `>=22.0.0` so the declared runtime matches the updated Wrangler/miniflare toolchain and existing GitHub Actions Node 24 CI.
+  - Added regression coverage that keeps the package engine aligned with the Node 24 CI/runtime expectation.
+- **Operational note**:
+  - A clean `npm ci` initially hit Windows `EPERM` locks on local `wrangler.exe`, `workerd.exe`, and `esbuild.exe` processes left by local Pages/build sessions. Those project-local processes were stopped and the clean install then passed. This was a local process-lock artifact, not a repository or CI failure.
+- **Data validation**:
+  - Temporary local Wrangler D1 persistence applied migrations `011_add_client_error_reports.sql` and `012_add_client_error_report_workflow.sql`.
+  - Inserted a temporary report row, exercised the group-update SQL against it, confirmed the row became `resolved` with the expected note, then removed the temp persistence directory.
+- **Local verification**:
+  - Red/green: missing single-report and missing group-seed API tests first failed with 200/503, then `npm test -- functions/api.test.ts` passed 31/31 after the 404 fix.
+  - `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts` — passed 90/90 after the workflow regression coverage was added.
+  - Red/green: Node engine regression first failed while `package.json` still declared `>=20.0.0`, then `npm test -- src/lib/audit-regressions.test.ts` passed 59/59 after updating package metadata.
+  - `npm ci` — passed from a clean dependency install.
+  - `npm audit --json` — passed with 0 total vulnerabilities.
+  - `npm run lint` — passed.
+  - `npm test` — 294/294 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against preview with the repository config — 13/13 passed.
+  - Playwright booking flow against preview with the repository config — 6/6 passed.
+- **Risk**: Group matching still intentionally uses exact category/message/source/URL identity. Existing multilingual font and `face-api-vendor` size warnings remain. Local Windows installs can hit transient process locks if Wrangler/workerd/esbuild dev processes are still running.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing admin/vendor bundle pressure or improving operational visibility now that Error Reports workflow safety has been checked.
+- **Status**: LOCAL COMPLETE; CI PENDING
