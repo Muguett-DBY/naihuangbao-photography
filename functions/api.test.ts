@@ -7,6 +7,7 @@ import { onRequestPost as confirmPayment } from "./api/payment/confirm";
 import { onRequestPost as paymentWebhook } from "./api/payment/webhook";
 import { onRequestGet as getPaymentFollowUp } from "./api/admin/payments/follow-up";
 import { onRequestPost as expirePaymentFollowUp } from "./api/admin/payments/follow-up";
+import { onRequestGet as getAuditLog } from "./api/admin/audit-log";
 import { onRequestGet as getUserBookings } from "./api/user/bookings";
 import { onRequestGet as getUserProfile } from "./api/user/profile";
 import { onRequestPost as cancelUserBooking } from "./api/user/bookings/[id]/cancel";
@@ -640,5 +641,72 @@ describe("Cloudflare Pages API behavior", () => {
     expect(body.expiredCount).toBe(2);
     expect(body.timeoutMinutes).toBe(45);
     expect(db.statement.bind).toHaveBeenCalled();
+  });
+
+  it("searches admin audit log with filters and reports total count", async () => {
+    const all = vi.fn(async () => ({
+      results: [
+        {
+          id: 42,
+          action: "update",
+          entity_type: "photo",
+          entity_id: "photo-abc",
+          admin_user: "admin@example.com",
+          diff_json: JSON.stringify({ title: { from: "A", to: "B" } }),
+          created_at: "2026-06-27T10:00:00.000Z",
+        },
+      ],
+    }));
+    const first = vi.fn(async () => ({ total: 1 }));
+    const db = createDb({ all, first });
+
+    const response = await getAuditLog({
+      request: jsonRequest("https://shoot.custard.top/api/admin/audit-log?q=abc&entity_type=photo&action=update&from=2026-06-01&to=2026-06-30&limit=10&offset=0", {
+        headers: { "cf-access-authenticated-user-email": "admin@example.com" },
+      }),
+      env: { DB: db, ...adminEnv },
+    } as never);
+    const body = (await response.json()) as { entries: Array<{ id: number; diff: { title: { from: string; to: string } } }>; total: number; hasMore: boolean; filters: { search: string | null; entityType: string | null; action: string | null } };
+
+    expect(response.status).toBe(200);
+    expect(body.total).toBe(1);
+    expect(body.entries).toHaveLength(1);
+    expect(body.entries[0].diff.title.to).toBe("B");
+    expect(body.hasMore).toBe(false);
+    expect(body.filters.search).toBe("abc");
+    expect(body.filters.entityType).toBe("photo");
+    expect(body.filters.action).toBe("update");
+  });
+
+  it("exports admin audit log to CSV when format=csv", async () => {
+    const all = vi.fn(async () => ({
+      results: [
+        {
+          id: 1,
+          action: "delete",
+          entity_type: "photo",
+          entity_id: 'photo"x',
+          admin_user: "admin@example.com",
+          diff_json: JSON.stringify({ removed: true }),
+          created_at: "2026-06-27T10:00:00.000Z",
+        },
+      ],
+    }));
+    const first = vi.fn(async () => ({ total: 1 }));
+    const db = createDb({ all, first });
+
+    const response = await getAuditLog({
+      request: jsonRequest("https://shoot.custard.top/api/admin/audit-log?format=csv", {
+        headers: { "cf-access-authenticated-user-email": "admin@example.com" },
+      }),
+      env: { DB: db, ...adminEnv },
+    } as never);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/csv");
+    expect(response.headers.get("content-disposition")).toContain("attachment");
+    const text = await response.text();
+    expect(text.split("\n")[0]).toBe("id,created_at,action,entity_type,entity_id,admin_user,diff");
+    expect(text).toContain('"photo""x"');
   });
 });
