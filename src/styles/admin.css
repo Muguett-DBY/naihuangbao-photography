@@ -1790,3 +1790,9 @@
     justify-content: flex-end;
   }
 }
+
+.admin-moderation-quick-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}

@@ -1012,7 +1012,8 @@
       "selectAll": "全选",
       "deselectAll": "取消全选",
       "batchApprove": "批量通过",
-      "batchReject": "批量拒绝"
+      "batchReject": "批量拒绝",
+      "approveAll": "全部通过"
     }
   },
   "chat": {

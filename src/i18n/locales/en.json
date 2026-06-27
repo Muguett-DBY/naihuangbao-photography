@@ -962,7 +962,8 @@
       "selectAll": "Select all",
       "deselectAll": "Deselect all",
       "batchApprove": "Batch approve",
-      "batchReject": "Batch reject"
+      "batchReject": "Batch reject",
+      "approveAll": "Approve all"
     }
   },
   "chat": {

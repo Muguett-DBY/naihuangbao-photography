@@ -224,6 +224,13 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
               </Button>
             </div>
           )}
+          {selectedIds.size === 0 && pendingPhotos.length > 0 && (
+            <div className="admin-moderation-quick-actions">
+              <Button type="text" size="small" onClick={handleBatchApprove} disabled={batchProcessing}>
+                <CheckCircle size={14} /> {t("admin.moderation.approveAll", "Approve all")}
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
