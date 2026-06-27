@@ -21,11 +21,16 @@ type ErrorReport = {
   resolvedAt: string | null;
   resolvedBy: string | null;
   occurredAt: string;
+  latestOccurredAt?: string;
+  firstOccurredAt?: string;
+  occurrenceCount?: number;
+  groupKey?: string;
 };
 
 type ErrorReportResponse = {
   reports: ErrorReport[];
   total: number;
+  reportedTotal?: number;
   days: number;
 };
 
@@ -89,13 +94,13 @@ export function AdminErrorReportsTab() {
   const categoryCounts = useMemo(() => {
     const counts = new Map<string, number>();
     for (const report of data?.reports ?? []) {
-      counts.set(report.category, (counts.get(report.category) ?? 0) + 1);
+      counts.set(report.category, (counts.get(report.category) ?? 0) + (report.occurrenceCount ?? 1));
     }
     return Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
   }, [data]);
 
-  async function updateStatus(report: ErrorReport, status: ErrorStatus) {
-    setUpdatingId(report.id);
+  async function updateStatus(report: ErrorReport, status: ErrorStatus, scope: "single" | "group" = "single") {
+    setUpdatingId(scope === "group" && report.groupKey ? report.groupKey : report.id);
     setActionError(false);
     setActionMessage("");
     try {
@@ -103,22 +108,37 @@ export function AdminErrorReportsTab() {
         method: "PATCH",
         credentials: "include",
         headers: { "content-type": "application/json", ...adminMutationHeaders },
-        body: JSON.stringify({ status, note: notes[report.id] ?? "" }),
+        body: JSON.stringify({ status, note: notes[report.id] ?? "", scope }),
       });
       if (!response.ok) throw new Error("Failed to update error report");
-      setActionMessage(t("admin.errors.updateSuccess", "Error report updated."));
+      setActionMessage(
+        scope === "group"
+          ? t("admin.errors.groupUpdateSuccess", "Error group updated.")
+          : t("admin.errors.updateSuccess", "Error report updated."),
+      );
 
       setData((current) => {
         if (!current) return current;
         if (statusFilter !== "all" && statusFilter !== status) {
-          const reports = current.reports.filter((item) => item.id !== report.id);
-          return { ...current, reports, total: reports.length };
+          const reports = current.reports.filter((item) => (
+            scope === "group" && report.groupKey ? item.groupKey !== report.groupKey : item.id !== report.id
+          ));
+          const removedOccurrences = scope === "group" ? report.occurrenceCount ?? 1 : 1;
+          return {
+            ...current,
+            reports,
+            total: reports.length,
+            reportedTotal: Math.max(0, (current.reportedTotal ?? current.total) - removedOccurrences),
+          };
         }
         return {
           ...current,
-          reports: current.reports.map((item) => item.id === report.id
+          reports: current.reports.map((item) => {
+            const isTarget = scope === "group" && report.groupKey ? item.groupKey === report.groupKey : item.id === report.id;
+            return isTarget
             ? { ...item, status, resolutionNote: notes[report.id] ?? null }
-            : item),
+            : item;
+          }),
         };
       });
     } catch {
@@ -188,7 +208,11 @@ export function AdminErrorReportsTab() {
         <>
           <div className="adm-errors-summary" aria-label={t("admin.errors.summary", "Error report summary")}>
             <strong>{data.total}</strong>
-            <span>{t("admin.errors.total", "reports in this range")}</span>
+            <span>
+              {(data.reportedTotal ?? data.total) > data.total
+                ? t("admin.errors.groupedTotal", "{{groups}} groups · {{count}} reports", { groups: data.total, count: data.reportedTotal ?? data.total })
+                : t("admin.errors.total", "reports in this range")}
+            </span>
             {categoryCounts.map(([category, count]) => (
               <span key={category} className="adm-errors-chip">{category}: {count}</span>
             ))}
@@ -207,13 +231,19 @@ export function AdminErrorReportsTab() {
               </thead>
               <tbody>
                 {data.reports.map((report) => {
-                  const isUpdating = updatingId === report.id;
+                  const occurrenceCount = report.occurrenceCount ?? 1;
+                  const isUpdating = updatingId === report.id || (!!report.groupKey && updatingId === report.groupKey);
                   return (
                     <tr key={report.id}>
                       <td className="adm-errors-time-cell" data-label={t("admin.errors.colTime", "Time")}>{formatTime(report.occurredAt)}</td>
                       <td className="adm-errors-category-cell" data-label={t("admin.errors.colCategory", "Category")}><span className={`adm-errors-category adm-errors-category--${report.category}`}>{report.category}</span></td>
                       <td className="adm-errors-message" data-label={t("admin.errors.colMessage", "Message")}>
                         <strong>{report.message}</strong>
+                        {occurrenceCount > 1 && (
+                          <span className="adm-errors-count">
+                            {t("admin.errors.occurrenceCount", "{{count}} occurrences", { count: occurrenceCount })}
+                          </span>
+                        )}
                         <small>{report.source || "-"}</small>
                       </td>
                       <td className="adm-errors-page-cell" data-label={t("admin.errors.colPage", "Page")}>{pageFromUrl(report.url)}</td>
@@ -239,6 +269,17 @@ export function AdminErrorReportsTab() {
                                 <button type="button" onClick={() => updateStatus(report, "ignored")} disabled={isUpdating}>
                                   <EyeOff size={15} /> {t("admin.errors.ignore", "Ignore")}
                                 </button>
+                                {occurrenceCount > 1 && (
+                                  <>
+                                    <button type="button" className="adm-errors-group-action" onClick={() => updateStatus(report, "resolved", "group")} disabled={isUpdating}>
+                                      {isUpdating ? <LoaderCircle className="adm-spin" size={15} /> : <CheckCircle2 size={15} />}
+                                      {t("admin.errors.resolveGroup", "Resolve group")}
+                                    </button>
+                                    <button type="button" className="adm-errors-group-action" onClick={() => updateStatus(report, "ignored", "group")} disabled={isUpdating}>
+                                      <EyeOff size={15} /> {t("admin.errors.ignoreGroup", "Ignore group")}
+                                    </button>
+                                  </>
+                                )}
                               </>
                             ) : (
                               <button type="button" onClick={() => updateStatus(report, "open")} disabled={isUpdating}>

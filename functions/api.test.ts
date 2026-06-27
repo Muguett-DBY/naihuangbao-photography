@@ -155,6 +155,70 @@ describe("Cloudflare Pages API behavior", () => {
     expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("from client_error_reports"));
   });
 
+  it("groups duplicate client error reports so admins can triage repeated failures once", async () => {
+    const db = createDb({
+      all: async () => ({
+        results: [
+          {
+            id: "err_latest",
+            message: "Route chunk failed",
+            category: "promise",
+            source: "unhandledrejection",
+            url: "https://shoot.custard.top/gallery",
+            user_agent: "Vitest",
+            stack: "ChunkLoadError latest",
+            metadata_json: "{}",
+            status: "open",
+            resolution_note: null,
+            resolved_at: null,
+            resolved_by: null,
+            occurred_at: "2026-06-28T00:02:00.000Z",
+            created_at: "2026-06-28T00:02:01.000Z",
+            updated_at: "2026-06-28T00:02:01.000Z",
+          },
+          {
+            id: "err_older",
+            message: "Route chunk failed",
+            category: "promise",
+            source: "unhandledrejection",
+            url: "https://shoot.custard.top/gallery",
+            user_agent: "Vitest",
+            stack: "ChunkLoadError older",
+            metadata_json: "{}",
+            status: "open",
+            resolution_note: null,
+            resolved_at: null,
+            resolved_by: null,
+            occurred_at: "2026-06-28T00:01:00.000Z",
+            created_at: "2026-06-28T00:01:01.000Z",
+            updated_at: "2026-06-28T00:01:01.000Z",
+          },
+        ],
+      }),
+    });
+    const response = await getErrorReports({
+      request: jsonRequest("https://shoot.custard.top/api/admin/errors?days=7&limit=50", {
+        headers: { "cf-access-authenticated-user-email": "admin@example.com" },
+      }),
+      env: { ...adminEnv, DB: db },
+    } as never);
+    const body = (await response.json()) as {
+      reports?: Array<{ id: string; occurrenceCount?: number; groupKey?: string; latestOccurredAt?: string }>;
+      total?: number;
+      reportedTotal?: number;
+    };
+
+    expect(response.status).toBe(200);
+    expect(body.total).toBe(1);
+    expect(body.reportedTotal).toBe(2);
+    expect(body.reports?.[0]).toMatchObject({
+      id: "err_latest",
+      occurrenceCount: 2,
+      latestOccurredAt: "2026-06-28T00:02:00.000Z",
+    });
+    expect(body.reports?.[0]?.groupKey).toContain("promise|route chunk failed|unhandledrejection|https://shoot.custard.top/gallery");
+  });
+
   it("filters client error reports by admin workflow status", async () => {
     const db = createDb();
     const response = await getErrorReports({
@@ -166,7 +230,7 @@ describe("Cloudflare Pages API behavior", () => {
 
     expect(response.status).toBe(200);
     expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("status = ?"));
-    expect(db.statement.bind).toHaveBeenCalledWith("-30 days", "resolved", 50);
+    expect(db.statement.bind).toHaveBeenCalledWith("-30 days", "resolved", 250);
   });
 
   it("updates client error report status with an admin note", async () => {
@@ -190,6 +254,44 @@ describe("Cloudflare Pages API behavior", () => {
     expect(body).toMatchObject({ ok: true, status: "resolved" });
     expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("update client_error_reports"));
     expect(db.statement.bind).toHaveBeenCalledWith("resolved", "Fixed lazy gallery import", "admin@example.com", "err_recent");
+  });
+
+  it("updates an open duplicate error group from the admin triage action", async () => {
+    const db = createDb({
+      first: async () => ({
+        message: "Route chunk failed",
+        category: "promise",
+        source: "unhandledrejection",
+        url: "https://shoot.custard.top/gallery",
+      }),
+    });
+    const response = await updateErrorReportStatus({
+      request: jsonRequest("https://shoot.custard.top/api/admin/errors/err_recent", {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+          "cf-access-authenticated-user-email": "admin@example.com",
+          "x-nhb-admin-action": "1",
+        },
+        body: JSON.stringify({ status: "resolved", note: "Fixed lazy gallery import", scope: "group" }),
+      }),
+      env: { ...adminEnv, DB: db },
+      params: { id: "err_recent" },
+    } as never);
+    const body = (await response.json()) as { ok?: boolean; scope?: string };
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({ ok: true, scope: "group" });
+    expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("where status = 'open'"));
+    expect(db.statement.bind).toHaveBeenLastCalledWith(
+      "resolved",
+      "Fixed lazy gallery import",
+      "admin@example.com",
+      "promise",
+      "Route chunk failed",
+      "unhandledrejection",
+      "https://shoot.custard.top/gallery",
+    );
   });
 
   it("returns payment readiness details for placeholder payment intents", async () => {

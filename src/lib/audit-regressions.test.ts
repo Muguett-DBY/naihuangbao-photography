@@ -776,6 +776,17 @@ describe("audit regression coverage", () => {
     expect(adminCssSource).toContain(".adm-errors-table tr { display: grid;");
   });
 
+  it("keeps repeated admin errors grouped and bulk-actionable", () => {
+    expect(adminErrorsApiSource).toContain("occurrenceCount");
+    expect(adminErrorsApiSource).toContain("groupKey");
+    expect(adminErrorWorkflowApiSource).toContain('scope === "group"');
+    expect(adminErrorWorkflowApiSource).toContain("where status = 'open'");
+    expect(adminErrorReportsSource).toContain("occurrenceCount");
+    expect(adminErrorReportsSource).toContain('updateStatus(report, "resolved", "group")');
+    expect(adminErrorReportsSource).toContain("adm-errors-count");
+    expect(adminCssSource).toContain(".adm-errors-count");
+  });
+
   it("keeps the gallery route from rendering duplicate gallery landmarks", () => {
     expect(gallerySource).toContain('id="gallery"');
     expect(galleryPageSource).not.toContain('id="gallery"');

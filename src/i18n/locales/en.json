@@ -939,6 +939,7 @@
       "days": "{{count}}d",
       "summary": "Error report summary",
       "total": "reports in this range",
+      "groupedTotal": "{{groups}} groups · {{count}} reports",
       "loadFailed": "Unable to load error reports.",
       "empty": "No frontend errors have been reported in this range.",
       "colTime": "Time",
@@ -957,11 +958,15 @@
       },
       "noteLabel": "Resolution note",
       "notePlaceholder": "Resolution note",
+      "occurrenceCount": "{{count}} occurrences",
       "resolve": "Resolve",
       "ignore": "Ignore",
+      "resolveGroup": "Resolve group",
+      "ignoreGroup": "Ignore group",
       "reopen": "Reopen",
       "updateFailed": "Unable to update the error report.",
-      "updateSuccess": "Error report updated."
+      "updateSuccess": "Error report updated.",
+      "groupUpdateSuccess": "Error group updated."
     },
     "auditLog": {
       "title": "Audit Log",

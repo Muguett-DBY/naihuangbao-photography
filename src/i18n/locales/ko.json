@@ -935,6 +935,7 @@
       "days": "{{count}}일",
       "summary": "오류 리포트 요약",
       "total": "건의 리포트",
+      "groupedTotal": "{{groups}}개 그룹 · {{count}}개 리포트",
       "loadFailed": "오류 리포트를 불러올 수 없습니다.",
       "empty": "이 기간에는 프론트엔드 오류 리포트가 없습니다.",
       "colTime": "시간",
@@ -953,11 +954,15 @@
       },
       "noteLabel": "처리 메모",
       "notePlaceholder": "처리 메모",
+      "occurrenceCount": "{{count}}회 발생",
       "resolve": "해결",
       "ignore": "무시",
+      "resolveGroup": "그룹 해결",
+      "ignoreGroup": "그룹 무시",
       "reopen": "다시 열기",
       "updateFailed": "오류 리포트를 업데이트할 수 없습니다.",
-      "updateSuccess": "오류 리포트가 업데이트되었습니다."
+      "updateSuccess": "오류 리포트가 업데이트되었습니다.",
+      "groupUpdateSuccess": "오류 그룹이 업데이트되었습니다."
     },
     "auditLog": {
       "title": "감사 로그",
