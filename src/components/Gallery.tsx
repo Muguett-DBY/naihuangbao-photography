@@ -297,6 +297,16 @@ export function Gallery() {
   const viewLabel = t(viewMode === "compact" ? "gallery.viewCompact" : "gallery.viewMasonry");
   const sortLabel = t(`gallery.sort${sortMode.charAt(0).toUpperCase()}${sortMode.slice(1)}`, sortMode);
   const hasActiveDiscovery = filter !== "all" || Boolean(searchQuery.trim() || debouncedSearch.trim()) || viewMode !== "masonry" || albumFilter !== "all" || dateRange !== "all" || sortMode !== "default";
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filter !== "all") count += 1;
+    if (albumFilter !== "all") count += 1;
+    if (dateRange !== "all") count += 1;
+    if (debouncedSearch.trim()) count += 1;
+    if (viewMode !== "masonry") count += 1;
+    if (sortMode !== "default") count += 1;
+    return count;
+  }, [filter, albumFilter, dateRange, debouncedSearch, viewMode, sortMode]);
   const isRemoteSyncing = !remoteLoaded && sourcePhotos.length === 0;
 
   const savedSearches = useSavedSearches();
@@ -972,6 +982,18 @@ export function Gallery() {
       )}
       <QuickView photo={quickViewPhoto} onClose={() => setQuickViewPhoto(null)} />
       <CompareBar />
+      {hasActiveDiscovery && (
+        <button
+          type="button"
+          className="gallery-clear-filters-fab"
+          onClick={resetGalleryDiscovery}
+          aria-label={t("gallery.clearAllFilters", `Clear all ${activeFilterCount} active filters`)}
+        >
+          <X size={16} />
+          <span>{t("gallery.clearAll", "Clear all")}</span>
+          <span className="gallery-clear-filters-count">{activeFilterCount}</span>
+        </button>
+      )}
     </Section>
   );
 }

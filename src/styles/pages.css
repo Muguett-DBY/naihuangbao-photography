@@ -8085,6 +8085,51 @@
   gap: 4px;
 }
 
+/* ── Gallery Clear Filters FAB ── */
+.gallery-clear-filters-fab {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--sage-border, #c5d5c5);
+  border-radius: 999px;
+  background: var(--peach-accent, #f4a460);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.gallery-clear-filters-fab:hover {
+  opacity: 0.95;
+  transform: translateX(-50%) translateY(-1px);
+}
+
+.gallery-clear-filters-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .gallery-clear-filters-fab {
+    display: inline-flex;
+  }
+}
+
 .course-detail-syncing {
   font-size: 11px;
   color: #999;
