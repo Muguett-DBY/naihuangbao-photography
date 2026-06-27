@@ -5,6 +5,8 @@ import { onRequestGet as getPublicPhotos } from "./api/photos";
 import { onRequestPost as createPaymentIntent } from "./api/payment/create-intent";
 import { onRequestPost as confirmPayment } from "./api/payment/confirm";
 import { onRequestPost as paymentWebhook } from "./api/payment/webhook";
+import { onRequestGet as getPaymentFollowUp } from "./api/admin/payments/follow-up";
+import { onRequestPost as expirePaymentFollowUp } from "./api/admin/payments/follow-up";
 import { onRequestGet as getUserBookings } from "./api/user/bookings";
 import { onRequestGet as getUserProfile } from "./api/user/profile";
 import { onRequestPost as cancelUserBooking } from "./api/user/bookings/[id]/cancel";
@@ -573,5 +575,70 @@ describe("Cloudflare Pages API behavior", () => {
 
     expect(response.status).toBe(400);
     expect(body.error).toBe("Invalid webhook signature");
+  });
+
+  it("lists stale placeholder payment intents for admin follow-up", async () => {
+    const now = new Date();
+    const oldIso = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+    const all = vi.fn(async () => ({
+      results: [
+        {
+          id: "pi_old_1",
+          purpose: "booking_deposit",
+          reference_id: "booking-old-1",
+          amount_cents: 5000,
+          currency: "usd",
+          status: "pending",
+          provider: "placeholder",
+          created_at: oldIso,
+          updated_at: oldIso,
+          age_minutes: 60,
+        },
+      ],
+    }));
+    const db = createDb({ all });
+
+    const response = await getPaymentFollowUp({
+      request: jsonRequest("https://shoot.custard.top/api/admin/payments/follow-up?timeoutMinutes=30", {
+        headers: { "cf-access-authenticated-user-email": "admin@example.com" },
+      }),
+      env: { DB: db, ...adminEnv },
+    } as never);
+    const body = (await response.json()) as { payments: Array<{ id: string; isStale: boolean; age_minutes: number }>; count: number; timeoutMinutes: number };
+
+    expect(response.status).toBe(200);
+    expect(body.count).toBe(1);
+    expect(body.payments[0].id).toBe("pi_old_1");
+    expect(body.payments[0].isStale).toBe(true);
+    expect(body.payments[0].age_minutes).toBe(60);
+    expect(body.timeoutMinutes).toBe(30);
+  });
+
+  it("expires stale placeholder payment intents and skips already-changed rows", async () => {
+    const candidates = vi.fn(async () => ({
+      results: [
+        { id: "pi_stale_1", status: "pending", metadata: JSON.stringify({ foo: "bar" }) },
+        { id: "pi_stale_2", status: "pending", metadata: null },
+      ],
+    }));
+    const run = vi.fn(async () => ({ success: true, meta: { changes: 1 } }));
+    const db = createDb({ all: candidates, run });
+
+    const response = await expirePaymentFollowUp({
+      request: jsonRequest("https://shoot.custard.top/api/admin/payments/follow-up", {
+        method: "POST",
+        headers: { "content-type": "application/json", "cf-access-authenticated-user-email": "admin@example.com", "x-nhb-admin-action": "1" },
+        body: JSON.stringify({ timeoutMinutes: 45 }),
+      }),
+      env: { DB: db, ...adminEnv },
+    } as never);
+    const body = (await response.json()) as { ok: boolean; expired: string[]; expiredCount: number; timeoutMinutes: number };
+
+    expect(response.status).toBe(200);
+    expect(body.ok).toBe(true);
+    expect(body.expired).toEqual(["pi_stale_1", "pi_stale_2"]);
+    expect(body.expiredCount).toBe(2);
+    expect(body.timeoutMinutes).toBe(45);
+    expect(db.statement.bind).toHaveBeenCalled();
   });
 });
