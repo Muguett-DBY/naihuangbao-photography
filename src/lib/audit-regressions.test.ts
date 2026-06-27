@@ -721,9 +721,17 @@ describe("audit regression coverage", () => {
     expect(viteConfigSource).toContain("cleanupOutdatedCaches: true");
     expect(pwaUpdateBannerSource).toContain("registrationRef.current?.update()");
     expect(pwaUpdateBannerSource).toContain("visibilitychange");
+    expect(pwaUpdateBannerSource).toContain("removeEventListener(\"updatefound\"");
     expect(pwaUpdateBannerSource).toContain("{ type: \"SKIP_WAITING\" }");
     expect(pwaUpdateBannerSource).toContain("pwaUpdate.refreshing");
     expect(zhLocaleSource).toContain("正在刷新到最新版本");
     expect(enLocaleSource).toContain("Refreshing to the latest version");
+  });
+
+  it("keeps photo API runtime cache from being shadowed by broader API routes", () => {
+    const apiDataRoute = viteConfigSource.match(/return [\s\S]*?cacheName: "api-data"/)?.[0] ?? "";
+    expect(apiDataRoute).not.toContain('url.pathname.startsWith("/api/photos")');
+    expect(viteConfigSource).toContain('cacheName: "api-photos"');
+    expect(viteConfigSource).toContain('maxEntries: 1');
   });
 });

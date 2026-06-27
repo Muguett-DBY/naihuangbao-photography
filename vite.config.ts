@@ -82,7 +82,7 @@ export default defineConfig({
           },
           {
             urlPattern: ({ url }) => {
-              return url.pathname.startsWith("/api/photos") || url.pathname.startsWith("/api/workshops") || url.pathname.startsWith("/api/courses");
+              return url.pathname.startsWith("/api/workshops") || url.pathname.startsWith("/api/courses");
             },
             handler: "NetworkFirst",
             options: {
