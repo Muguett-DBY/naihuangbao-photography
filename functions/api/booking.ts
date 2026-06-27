@@ -11,6 +11,8 @@ type BookingBody = {
   notes?: string;
 };
 
+const RECENT_BOOKING_WINDOW_MS = 5 * 60 * 1000;
+
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const publicActionError = requirePublicMutationRequest(context.request);
   if (publicActionError) return publicActionError;
@@ -41,20 +43,60 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const name = body.name!.trim();
   const contact = body.contact!.trim();
   const notes = body.notes?.trim() ?? "";
-
-  const id = crypto.randomUUID();
-  const createdAt = new Date().toISOString();
+  const preferredDate = body.preferredDate?.trim() ?? "";
+  const preferredTime = body.preferredTime?.trim() ?? "";
+  const packageName = body.packageName?.trim() ?? "";
 
   try {
+    if (preferredDate) {
+      const conflict = await context.env.DB.prepare(
+        `select id, name, contact, status, created_at from booking_requests
+         where preferred_date = ? and preferred_time = ? and status != 'cancelled' and contact = ?
+         order by created_at desc limit 1`,
+      )
+        .bind(preferredDate, preferredTime, contact)
+        .first<{ id: string; name: string; contact: string; status: string; created_at: string }>();
+
+      if (conflict) {
+        return jsonResponse({
+          error: "duplicate_booking",
+          message: "您已在此时间段提交过预约，请勿重复提交。",
+          existingId: conflict.id,
+          existingStatus: conflict.status,
+        }, 409);
+      }
+    }
+
+    const recentWindow = new Date(Date.now() - RECENT_BOOKING_WINDOW_MS).toISOString();
+    const recent = await context.env.DB.prepare(
+      `select id, status, created_at from booking_requests
+       where contact = ? and created_at >= ? and (status = 'pending' or status = 'contacted')
+       order by created_at desc limit 1`,
+    )
+      .bind(contact, recentWindow)
+      .first<{ id: string; status: string; created_at: string }>();
+
+    if (recent) {
+      return jsonResponse({
+        error: "recent_booking",
+        message: "您最近已提交过预约，请稍后再试或联系客服。",
+        existingId: recent.id,
+        existingStatus: recent.status,
+      }, 429);
+    }
+
+    const id = crypto.randomUUID();
+    const createdAt = new Date().toISOString();
+
     await context.env.DB.prepare(
       `insert into booking_requests (id, package_name, preferred_date, preferred_time, name, contact, notes, status, created_at)
        values (?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
     )
       .bind(
         id,
-        body.packageName ?? "",
-        body.preferredDate ?? "",
-        body.preferredTime ?? "",
+        packageName,
+        preferredDate,
+        preferredTime,
         name,
         contact,
         notes,
