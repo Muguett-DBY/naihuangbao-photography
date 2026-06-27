@@ -89,11 +89,19 @@ export async function enforceRateLimit(
     : { ok: false as const, retryAfter };
 }
 
-export function rateLimited(retryAfter: number) {
+export function rateLimited(retryAfter: number, limit?: number) {
+  const headers: Record<string, string> = {
+    "Retry-After": String(retryAfter),
+  };
+  if (limit !== undefined) {
+    headers["X-RateLimit-Limit"] = String(limit);
+    headers["X-RateLimit-Remaining"] = "0";
+    headers["X-RateLimit-Reset"] = String(Math.floor(Date.now() / 1000) + retryAfter);
+  }
   return jsonResponse(
     { error: "请求过于频繁，请稍后再试。", retryAfter },
     429,
-    { "Retry-After": String(retryAfter) },
+    headers,
   );
 }
 

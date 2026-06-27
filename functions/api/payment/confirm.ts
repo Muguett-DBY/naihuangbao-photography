@@ -27,7 +27,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (publicActionError) return publicActionError;
 
   const limit = await enforceRateLimit(context.request, context.env, "payment-confirm", 20, 60 * 60);
-  if (!limit.ok) return rateLimited(limit.retryAfter);
+  if (!limit.ok) return rateLimited(limit.retryAfter, 20);
 
   if (!context.env.DB) {
     return jsonResponse({ error: "Service unavailable" }, 503);

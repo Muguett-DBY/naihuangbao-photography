@@ -29,7 +29,7 @@ export const onRequestPost: PagesFunction<Env & { STRIPE_SECRET_KEY?: string }> 
   if (publicActionError) return publicActionError;
 
   const limit = await enforceRateLimit(context.request, context.env, "payment-create-intent", 12, 60 * 60);
-  if (!limit.ok) return rateLimited(limit.retryAfter);
+  if (!limit.ok) return rateLimited(limit.retryAfter, 12);
 
   if (!context.env.DB) {
     return jsonResponse({ error: "Payment service temporarily unavailable" }, 503);
