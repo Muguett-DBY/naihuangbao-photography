@@ -778,3 +778,32 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28299055249` passed.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is improving the error workflow's desktop/mobile information hierarchy, scanability, and action ergonomics with rendered validation.
 - **Status**: COMPLETE
+
+### Stage 3 / 6 — UIUX
+- **Prompt**: `AGENT_UIUX_MAIN.txt`
+- **Objective**: Improve the admin error-report triage workspace so the new workflow remains scanable, reachable, and action-safe on desktop and narrow mobile screens.
+- **Start state**: `main` at `dac72ef`; tracked tree clean except protected untracked orchestrator history folders.
+- **Previous direction carried forward**: Stage 2 recommended tightening the error workflow's information hierarchy, scanability, and action ergonomics with rendered validation.
+- **Completed locally**:
+  - Replaced the admin shell's empty-content `Tabs` usage with a native scrollable `<nav>` that keeps the active section reachable without rendering a blank tab body.
+  - Added accessible current-page state and icon-only compacting behavior for small top-bar actions.
+  - Converted the Error Reports table into labeled mobile cards below 720px while preserving the desktop table structure.
+  - Added a success live region for resolve/ignore/reopen actions so admin mutations produce visible feedback.
+  - Added zh-CN/en/ja/ko copy for admin section navigation and error-report update success.
+  - Added audit-regression coverage to prevent a return to the clipped mobile table or hidden active admin section.
+- **Rendered validation**:
+  - Playwright CLI desktop screenshot captured locally confirmed the admin nav no longer generated an empty tab body.
+  - Playwright CLI 390px mobile screenshot captured locally confirmed error rows rendered as labeled cards instead of clipped horizontal table rows.
+  - Playwright CLI mobile action screenshot captured locally confirmed the success live region and refreshed Open count after mutation.
+  - Mobile Resolve flow with note `Verified UI triage flow` showed `Error report updated.` and reduced the Open count from 2 to 1.
+  - Browser console errors observed during the local session were limited to the existing default `/api/admin/bookings` 503 from the seeded local Pages environment, not the Error Reports workflow.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` first failed on missing responsive admin triage wiring, then passed 58/58.
+  - `npm test` — 289/289 passed.
+  - `npm run lint` — passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Initial attempt to run smoke and booking E2E in parallel failed because both commands share the same Playwright webServer on `127.0.0.1:4174`; rerunning sequentially confirmed the product path.
+  - Playwright smoke against preview with the repository config — 13/13 passed.
+  - Playwright booking flow against preview with the repository config — 6/6 passed.
+- **Risk**: The admin top-level tab set is still broad; narrow screens now make it horizontally reachable, but long-term information architecture may still benefit from grouping admin sections.
+- **Status**: LOCAL COMPLETE; commit, push, and CI pending.

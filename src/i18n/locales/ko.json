@@ -826,7 +826,8 @@
       "copy": "홈페이지 문구",
       "auditLog": "감사 로그",
       "moderation": "검토",
-      "reports": "리포트"
+      "reports": "리포트",
+      "navigation": "관리 섹션"
     },
     "reports": {
       "title": "데이터 리포트",
@@ -955,7 +956,8 @@
       "resolve": "해결",
       "ignore": "무시",
       "reopen": "다시 열기",
-      "updateFailed": "오류 리포트를 업데이트할 수 없습니다."
+      "updateFailed": "오류 리포트를 업데이트할 수 없습니다.",
+      "updateSuccess": "오류 리포트가 업데이트되었습니다."
     },
     "auditLog": {
       "title": "감사 로그",

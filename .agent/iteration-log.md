@@ -1279,3 +1279,42 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 后台错误处理体验打磨：把当前功能完整的表格改造成更清晰、更适合高频排查的响应式工作台，并用真实浏览器尺寸验证。
+
+---
+
+## Campaign 017 Stage 3 — Admin Error Triage UIUX
+
+### 承接的上一轮方向
+- Stage 2 已完成错误报告的状态、备注、解决、忽略和重开工作流。
+- 本阶段重点解决实际渲染中暴露的后台导航空白区域、移动端当前标签不可见、错误报告表格横向裁切等体验问题。
+
+### 完成内容
+- 将后台 shell 从带空内容区的第三方 Tabs 渲染改为原生可横向滚动的 `<nav>`，并为当前标签添加 `aria-current`。
+- 小屏下压缩后台顶栏操作，把退出和返回站点变为有 `aria-label` 的图标按钮，减少标题换行和操作挤压。
+- Error Reports 在 720px 以下改为带字段标签的卡片化表格行，消息、状态、备注框和 Resolve/Ignore 操作都保持可见。
+- Resolve/Ignore/Reopen 成功后新增 `role="status"` 成功反馈。
+- 补齐 zh-CN/en/ja/ko 的后台导航和更新成功文案。
+- 新增 audit regression，锁定窄屏后台错误处理必须保留导航可达性、状态反馈和卡片化表格结构。
+
+### 已通过的验证
+- Red/green：`audit-regressions` 先因缺少原生 `adm-tabs`/移动端卡片化断言失败，修复后 58/58 通过。
+- Vitest：289/289 通过。
+- TypeScript / lint：通过。
+- `build:full` + performance budget：通过。
+- Playwright smoke：先因 smoke 与 booking 并行运行争用同一 `4174` 预览服务失败，顺序重跑后 13/13 通过。
+- Playwright booking flow：6/6 通过。
+- Playwright CLI 桌面截图确认后台 nav 不再生成空白 tab 内容区。
+- Playwright CLI 390px 移动端截图确认错误报告行已卡片化，字段标签、状态和操作按钮可见。
+- Playwright CLI 移动端 Resolve 操作确认成功提示出现，Open 数量从 2 降到 1。
+
+### 遗留风险
+- 本地 Pages 种子环境进入后台时 `/api/admin/bookings` 会返回 503；本阶段确认它不是 Error Reports 交互新增错误。
+- 后台功能入口数量仍多，当前通过横向滚动解决可达性，后续可考虑分组或二级导航。
+
+### 下一轮建议方向
+1. IMPROVE：让错误报告具备重复聚合、发生次数或批量处理，减少后台逐条处理成本。
+2. CHECK：核验错误报告工作流在权限、D1 migration 和部署环境中的边界。
+3. IMPROVE：继续削减后台首屏资源压力，尤其是共享大包和 CJK 字体加载策略。
+
+### 推荐下一轮优先执行的旗舰级主改动
+错误报告聚合与降噪：在已有捕获、状态和响应式处理台基础上，增加重复错误聚合或批量处理能力，让管理员面对同类前端错误时处理更快。

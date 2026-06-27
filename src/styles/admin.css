@@ -97,9 +97,13 @@
 
 .adm-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   margin-bottom: 18px;
+  padding: 2px 2px 9px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
 }
 
 .adm-tabs button {
@@ -114,6 +118,9 @@
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
+  flex: 0 0 auto;
+  min-height: 42px;
+  white-space: nowrap;
 }
 
 .adm-tabs button.is-active {
@@ -1674,6 +1681,12 @@
   font-weight: 700;
 }
 
+.adm-errors-alert--success {
+  border-color: rgba(79, 137, 89, 0.2);
+  background: rgba(79, 137, 89, 0.1);
+  color: #376c40;
+}
+
 .adm-errors-summary {
   display: flex;
   align-items: center;
@@ -1861,15 +1874,142 @@
 }
 
 @media (max-width: 720px) {
-  .adm-errors-table { white-space: nowrap; }
+  .adm-shell {
+    padding: 14px 12px 28px;
+  }
+
+  .adm-tabs {
+    margin-inline: -12px;
+    padding-inline: 12px;
+    scroll-padding-inline: 12px;
+  }
+
+  .adm-tabs button {
+    min-height: 44px;
+  }
+
+  .adm-content-panel {
+    padding: 18px 14px;
+    border-radius: 8px;
+  }
+
+  .adm-errors-table-wrap {
+    overflow: visible;
+  }
+
+  .adm-errors-table,
+  .adm-errors-table tbody {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+  }
+
+  .adm-errors-table thead { display: none; }
+
+  .adm-errors-table tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  .adm-errors-table tr { display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "time status"
+      "category page"
+      "message message"
+      "actions actions";
+    gap: 10px 12px;
+    padding: 14px;
+    border: 1px solid rgba(139, 94, 74, 0.12);
+    border-radius: 8px;
+    background: #fffdf7;
+  }
+
+  .adm-errors-table td {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    white-space: normal;
+  }
+
+  .adm-errors-table td::before {
+    display: block;
+    margin-bottom: 4px;
+    color: #a08880;
+    content: attr(data-label);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .adm-errors-time-cell { grid-area: time; }
+  .adm-errors-category-cell { grid-area: category; }
+  .adm-errors-message { grid-area: message; }
+  .adm-errors-page-cell { grid-area: page; text-align: right; }
+  .adm-errors-status-cell { grid-area: status; text-align: right; }
+  .adm-errors-actions-cell { grid-area: actions; }
 
   .adm-errors-message {
-    min-width: 220px;
+    max-width: none;
     white-space: normal;
   }
 
   .adm-errors-filters {
     width: 100%;
+  }
+
+  .adm-errors-filters label {
+    flex: 1 1 150px;
+  }
+
+  .adm-errors-workflow {
+    min-width: 0;
+  }
+
+  .adm-errors-actions button {
+    min-height: 44px;
+    flex: 1 1 120px;
+  }
+}
+
+@media (max-width: 640px) {
+  .adm-bar {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .adm-bar-brand {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .adm-bar-actions {
+    gap: 6px;
+  }
+
+  .adm-bar-actions button,
+  .adm-bar-actions a {
+    width: 40px;
+    min-height: 40px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .adm-bar-locale {
+    max-width: 88px;
+    min-height: 40px;
+  }
+
+  .adm-action-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 }
 

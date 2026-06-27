@@ -830,7 +830,8 @@
       "copy": "Homepage Copy",
       "auditLog": "Audit Log",
       "moderation": "Moderation",
-      "reports": "Reports"
+      "reports": "Reports",
+      "navigation": "Admin sections"
     },
     "reports": {
       "title": "Reports",
@@ -959,7 +960,8 @@
       "resolve": "Resolve",
       "ignore": "Ignore",
       "reopen": "Reopen",
-      "updateFailed": "Unable to update the error report."
+      "updateFailed": "Unable to update the error report.",
+      "updateSuccess": "Error report updated."
     },
     "auditLog": {
       "title": "Audit Log",

@@ -57,6 +57,7 @@ export function AdminErrorReportsTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [actionError, setActionError] = useState(false);
+  const [actionMessage, setActionMessage] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -96,6 +97,7 @@ export function AdminErrorReportsTab() {
   async function updateStatus(report: ErrorReport, status: ErrorStatus) {
     setUpdatingId(report.id);
     setActionError(false);
+    setActionMessage("");
     try {
       const response = await fetch(`/api/admin/errors/${encodeURIComponent(report.id)}`, {
         method: "PATCH",
@@ -104,6 +106,7 @@ export function AdminErrorReportsTab() {
         body: JSON.stringify({ status, note: notes[report.id] ?? "" }),
       });
       if (!response.ok) throw new Error("Failed to update error report");
+      setActionMessage(t("admin.errors.updateSuccess", "Error report updated."));
 
       setData((current) => {
         if (!current) return current;
@@ -170,6 +173,11 @@ export function AdminErrorReportsTab() {
           {t("admin.errors.updateFailed", "Unable to update the error report.")}
         </div>
       )}
+      {actionMessage && (
+        <div className="adm-errors-alert adm-errors-alert--success" role="status">
+          <CheckCircle2 size={16} /> {actionMessage}
+        </div>
+      )}
 
       {error ? (
         <div className="adm-errors-empty" role="alert">
@@ -202,15 +210,15 @@ export function AdminErrorReportsTab() {
                   const isUpdating = updatingId === report.id;
                   return (
                     <tr key={report.id}>
-                      <td>{formatTime(report.occurredAt)}</td>
-                      <td><span className={`adm-errors-category adm-errors-category--${report.category}`}>{report.category}</span></td>
-                      <td className="adm-errors-message">
+                      <td className="adm-errors-time-cell" data-label={t("admin.errors.colTime", "Time")}>{formatTime(report.occurredAt)}</td>
+                      <td className="adm-errors-category-cell" data-label={t("admin.errors.colCategory", "Category")}><span className={`adm-errors-category adm-errors-category--${report.category}`}>{report.category}</span></td>
+                      <td className="adm-errors-message" data-label={t("admin.errors.colMessage", "Message")}>
                         <strong>{report.message}</strong>
                         <small>{report.source || "-"}</small>
                       </td>
-                      <td>{pageFromUrl(report.url)}</td>
-                      <td><span className={`adm-errors-status adm-errors-status--${report.status}`}>{t(`admin.errors.status.${report.status}`, report.status)}</span></td>
-                      <td>
+                      <td className="adm-errors-page-cell" data-label={t("admin.errors.colPage", "Page")}>{pageFromUrl(report.url)}</td>
+                      <td className="adm-errors-status-cell" data-label={t("admin.errors.colStatus", "Status")}><span className={`adm-errors-status adm-errors-status--${report.status}`}>{t(`admin.errors.status.${report.status}`, report.status)}</span></td>
+                      <td className="adm-errors-actions-cell" data-label={t("admin.errors.colActions", "Actions")}>
                         <div className="adm-errors-workflow">
                           <input
                             type="text"
