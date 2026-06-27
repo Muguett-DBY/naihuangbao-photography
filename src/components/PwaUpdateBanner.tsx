@@ -14,9 +14,20 @@ export function PwaUpdateBanner() {
 
     let reloading = false;
     let disposed = false;
+    let updateRegistration: ServiceWorkerRegistration | null = null;
 
     const checkForUpdate = () => {
       void registrationRef.current?.update().catch(() => undefined);
+    };
+
+    const handleUpdateFound = () => {
+      const newWorker = registrationRef.current?.installing;
+      if (!newWorker) return;
+      newWorker.addEventListener("statechange", () => {
+        if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+          setVisible(true);
+        }
+      });
     };
 
     const handleControllerChange = () => {
@@ -36,22 +47,15 @@ export function PwaUpdateBanner() {
     navigator.serviceWorker.ready.then((reg) => {
       if (disposed) return;
       registrationRef.current = reg;
+      updateRegistration = reg;
       registrationRef.current?.update();
 
       if (reg.waiting) {
         setVisible(true);
       }
 
-      reg.addEventListener("updatefound", () => {
-        const newWorker = reg.installing;
-        if (!newWorker) return;
-        newWorker.addEventListener("statechange", () => {
-          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-            setVisible(true);
-          }
-        });
-      });
-    });
+      reg.addEventListener("updatefound", handleUpdateFound);
+    }).catch(() => undefined);
 
     navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -62,6 +66,7 @@ export function PwaUpdateBanner() {
       navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", checkForUpdate);
+      updateRegistration?.removeEventListener("updatefound", handleUpdateFound);
       if (reloadFallbackRef.current) {
         window.clearTimeout(reloadFallbackRef.current);
         reloadFallbackRef.current = null;
