@@ -842,7 +842,8 @@
       "logout": "ログアウト",
       "backToSite": "← サイト",
       "saving": "保存中...",
-      "savePublish": "保存して公開"
+      "savePublish": "保存して公開",
+      "localeLabel": "表示言語"
     },
     "logout": {
       "error": "ログアウトリクエストに失敗しました。ローカルのログイン状態が削除されました。"
