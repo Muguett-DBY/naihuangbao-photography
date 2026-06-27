@@ -255,6 +255,7 @@ describe("audit regression coverage", () => {
     expect(ciWorkflowSource).toContain("actions/checkout@v5");
     expect(ciWorkflowSource).toContain("actions/setup-node@v6");
     expect(ciWorkflowSource).toContain("node-version: 24");
+    expect(packageSource).toContain('"node": ">=22.0.0"');
     expect(ciWorkflowSource).not.toContain("actions/checkout@v4");
     expect(ciWorkflowSource).not.toContain("actions/setup-node@v4");
     expect(ciWorkflowSource).not.toContain("FORCE_JAVASCRIPT_ACTIONS_TO_NODE24");
@@ -781,6 +782,8 @@ describe("audit regression coverage", () => {
     expect(adminErrorsApiSource).toContain("groupKey");
     expect(adminErrorWorkflowApiSource).toContain('scope === "group"');
     expect(adminErrorWorkflowApiSource).toContain("where status = 'open'");
+    expect(adminErrorWorkflowApiSource).toContain("Client error report not found");
+    expect(adminErrorWorkflowApiSource).toContain("changedRows(result) === 0");
     expect(adminErrorReportsSource).toContain("occurrenceCount");
     expect(adminErrorReportsSource).toContain('updateStatus(report, "resolved", "group")');
     expect(adminErrorReportsSource).toContain("adm-errors-count");
