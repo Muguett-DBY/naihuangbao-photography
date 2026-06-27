@@ -23,6 +23,7 @@ const lightboxSource = readFileSync(resolve(root, "src/components/Lightbox.tsx")
 const widgetSource = readFileSync(resolve(root, "src/components/PublicChatWidget.tsx"), "utf8");
 const photoWallSource = readFileSync(resolve(root, "src/components/PhotoWall3DCss.tsx"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
+const galleryPageSource = readFileSync(resolve(root, "src/pages/GalleryPage.tsx"), "utf8");
 const reviewsSource = readFileSync(resolve(root, "src/components/Reviews.tsx"), "utf8");
 const headersSource = readFileSync(resolve(root, "public/_headers"), "utf8");
 const redirectsSource = readFileSync(resolve(root, "public/_redirects"), "utf8");
@@ -64,6 +65,13 @@ const bookingCalendarSource = readFileSync(resolve(root, "src/components/Booking
 const loadingScreenSource = readFileSync(resolve(root, "src/components/LoadingScreen.tsx"), "utf8");
 const errorBoundarySource = readFileSync(resolve(root, "src/components/ErrorBoundary.tsx"), "utf8");
 const pwaUpdateBannerSource = readFileSync(resolve(root, "src/components/PwaUpdateBanner.tsx"), "utf8");
+const errorTrackerSource = readFileSync(resolve(root, "src/lib/error-tracker.ts"), "utf8");
+const analyticsErrorApiSource = readFileSync(resolve(root, "functions/api/analytics/error.ts"), "utf8");
+const adminErrorsApiPath = resolve(root, "functions/api/admin/errors.ts");
+const adminErrorsApiSource = existsSync(adminErrorsApiPath) ? readFileSync(adminErrorsApiPath, "utf8") : "";
+const adminErrorReportsPath = resolve(root, "src/components/admin/AdminErrorReportsTab.tsx");
+const adminErrorReportsSource = existsSync(adminErrorReportsPath) ? readFileSync(adminErrorReportsPath, "utf8") : "";
+const schemaSource = readFileSync(resolve(root, "db/schema.sql"), "utf8");
 const mapPageSource = readFileSync(resolve(root, "src/pages/MapPage.tsx"), "utf8");
 const styleQuizSource = readFileSync(resolve(root, "src/components/StyleQuiz.tsx"), "utf8");
 const seoSource = readFileSync(resolve(root, "src/lib/seo.ts"), "utf8");
@@ -741,5 +749,21 @@ describe("audit regression coverage", () => {
     expect(pwaUpdateBannerSource).toContain("refreshButtonRef");
     expect(pwaUpdateBannerSource).toContain('event.key === "Escape"');
     expect(pwaUpdateBannerSource).toContain("previouslyFocused");
+  });
+
+  it("keeps client error reporting persistent and admin-visible", () => {
+    expect(errorTrackerSource).toContain('endpoint: "/api/analytics/error"');
+    expect(analyticsErrorApiSource).toContain("client_error_reports");
+    expect(schemaSource).toContain("create table if not exists client_error_reports");
+    expect(adminErrorsApiSource).toContain("from client_error_reports");
+    expect(adminSource).toContain("AdminErrorReportsTab");
+    expect(adminErrorReportsSource).toContain("/api/admin/errors");
+    expect(enLocaleSource).toContain("Error reports");
+    expect(zhLocaleSource).toContain("前端错误报告");
+  });
+
+  it("keeps the gallery route from rendering duplicate gallery landmarks", () => {
+    expect(gallerySource).toContain('id="gallery"');
+    expect(galleryPageSource).not.toContain('id="gallery"');
   });
 });

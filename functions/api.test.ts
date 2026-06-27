@@ -8,6 +8,8 @@ import { onRequestPost as paymentWebhook } from "./api/payment/webhook";
 import { onRequestGet as getPaymentFollowUp } from "./api/admin/payments/follow-up";
 import { onRequestPost as expirePaymentFollowUp } from "./api/admin/payments/follow-up";
 import { onRequestGet as getAuditLog } from "./api/admin/audit-log";
+import { onRequestGet as getErrorReports } from "./api/admin/errors";
+import { onRequestPost as postErrorReport } from "./api/analytics/error";
 import { onRequestPost as createShareLink } from "./api/share/create";
 import { onRequestPost as resolveShareLink } from "./api/share/resolve";
 import { onRequestGet as getUserBookings } from "./api/user/bookings";
@@ -78,6 +80,75 @@ async function stripeSignature(payload: string, secret: string, timestamp = Math
 }
 
 describe("Cloudflare Pages API behavior", () => {
+  it("stores client error tracker payloads for admin monitoring", async () => {
+    const db = createDb();
+    const response = await postErrorReport({
+      request: jsonRequest("https://shoot.custard.top/api/analytics/error", {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-nhb-public-action": "1" },
+        body: JSON.stringify({
+          id: "err_stage1",
+          message: "Editor export failed",
+          category: "javascript",
+          source: "PhotoEditorPage.tsx:120:8",
+          url: "https://shoot.custard.top/editor",
+          userAgent: "Vitest",
+          stack: "Error: Editor export failed",
+          metadata: { workflow: "export" },
+          timestamp: "2026-06-28T00:00:00.000Z",
+        }),
+      }),
+      env: { DB: db },
+    } as never);
+    const body = (await response.json()) as { ok?: boolean; stored?: boolean };
+
+    expect(response.status).toBe(200);
+    expect(body).toEqual({ ok: true, stored: true });
+    expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("insert into client_error_reports"));
+    expect(db.statement.bind).toHaveBeenCalledWith(
+      "err_stage1",
+      "Editor export failed",
+      "javascript",
+      "PhotoEditorPage.tsx:120:8",
+      "https://shoot.custard.top/editor",
+      "Vitest",
+      "Error: Editor export failed",
+      JSON.stringify({ workflow: "export" }),
+      "2026-06-28T00:00:00.000Z",
+    );
+  });
+
+  it("lists recent client error reports for admins", async () => {
+    const db = createDb({
+      all: async () => ({
+        results: [{
+          id: "err_recent",
+          message: "Route chunk failed",
+          category: "promise",
+          source: "unhandledrejection",
+          url: "https://shoot.custard.top/gallery",
+          user_agent: "Vitest",
+          stack: "ChunkLoadError",
+          metadata_json: "{\"chunk\":\"gallery\"}",
+          occurred_at: "2026-06-28T00:00:00.000Z",
+          created_at: "2026-06-28T00:00:01.000Z",
+        }],
+      }),
+    });
+    const response = await getErrorReports({
+      request: jsonRequest("https://shoot.custard.top/api/admin/errors?days=7", {
+        headers: { "cf-access-authenticated-user-email": "admin@example.com" },
+      }),
+      env: { ...adminEnv, DB: db },
+    } as never);
+    const body = (await response.json()) as { reports?: Array<{ id: string; metadata?: Record<string, unknown> }>; total?: number };
+
+    expect(response.status).toBe(200);
+    expect(body.total).toBe(1);
+    expect(body.reports?.[0]).toMatchObject({ id: "err_recent", metadata: { chunk: "gallery" } });
+    expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("from client_error_reports"));
+  });
+
   it("returns payment readiness details for placeholder payment intents", async () => {
     const db = createDb();
     const response = await createPaymentIntent({

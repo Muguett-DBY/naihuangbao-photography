@@ -75,7 +75,7 @@ export function GalleryPage() {
         </Suspense>
       </ErrorBoundary>
 
-      <section className="section-shell is-visible" id="gallery">
+      <section className="section-shell is-visible">
         <ErrorBoundary>
           <Gallery />
         </ErrorBoundary>

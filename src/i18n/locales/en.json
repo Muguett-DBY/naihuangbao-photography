@@ -819,6 +819,7 @@
       "photos": "Photos",
       "stats": "Stats",
       "vitals": "Web Vitals",
+      "errors": "Error reports",
       "courses": "Courses",
       "presets": "Presets",
       "workshops": "Workshops",
@@ -929,6 +930,21 @@
         "needs-improvement": "Needs improvement",
         "poor": "Poor"
       }
+    },
+    "errors": {
+      "title": "Error reports",
+      "description": "Recent frontend errors captured from visitor browsers.",
+      "rangeLabel": "Error report date range",
+      "days": "{{count}}d",
+      "summary": "Error report summary",
+      "total": "reports in this range",
+      "loadFailed": "Unable to load error reports.",
+      "empty": "No frontend errors have been reported in this range.",
+      "colTime": "Time",
+      "colCategory": "Category",
+      "colMessage": "Message",
+      "colPage": "Page",
+      "colSource": "Source"
     },
     "auditLog": {
       "title": "Audit Log",

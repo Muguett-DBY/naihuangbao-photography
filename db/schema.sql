@@ -324,6 +324,28 @@ create index if not exists idx_custom_events_event_time
 create index if not exists idx_custom_events_session
   on custom_events (session_id, created_at);
 
+
+-- ── Client-side error reports ──
+
+create table if not exists client_error_reports (
+  id text primary key,
+  message text not null,
+  category text not null default 'manual',
+  source text,
+  url text,
+  user_agent text,
+  stack text,
+  metadata_json text not null default '{}',
+  occurred_at text not null,
+  created_at text not null default (datetime('now'))
+);
+
+create index if not exists idx_client_error_reports_time
+  on client_error_reports (occurred_at);
+
+create index if not exists idx_client_error_reports_category
+  on client_error_reports (category, occurred_at);
+
 -- ── Admin audit log ──
 
 create table if not exists admin_audit_log (

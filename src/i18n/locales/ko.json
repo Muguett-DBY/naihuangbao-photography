@@ -815,6 +815,7 @@
       "photos": "사진",
       "stats": "통계",
       "vitals": "웹 성능",
+      "errors": "오류 리포트",
       "courses": "강좌",
       "presets": "프리셋",
       "workshops": "워크숍",
@@ -925,6 +926,21 @@
         "needs-improvement": "개선 필요",
         "poor": "불량"
       }
+    },
+    "errors": {
+      "title": "오류 리포트",
+      "description": "방문자 브라우저에서 수집된 최근 프론트엔드 오류입니다.",
+      "rangeLabel": "오류 리포트 기간",
+      "days": "{{count}}일",
+      "summary": "오류 리포트 요약",
+      "total": "건의 리포트",
+      "loadFailed": "오류 리포트를 불러올 수 없습니다.",
+      "empty": "이 기간에는 프론트엔드 오류 리포트가 없습니다.",
+      "colTime": "시간",
+      "colCategory": "유형",
+      "colMessage": "메시지",
+      "colPage": "페이지",
+      "colSource": "소스"
     },
     "auditLog": {
       "title": "감사 로그",

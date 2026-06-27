@@ -718,3 +718,17 @@ Beginning execution.
 - **Risk**: Existing open tabs still require refresh/update acceptance to activate the latest app shell; large multilingual fonts and `face-api-vendor` remain the main payload risks.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a systematic PWA/cache/build-artifact sweep plus deployed Pages verification for stale-cache behavior.
 - **Status**: COMPLETE
+
+## Campaign 017 — 6-Stage Product Strengthening Loop — Started 2026-06-28
+- **Orchestrator**: `03_LONG_6_STAGE_MAIN_V2.txt`
+- **Sequence**: IMPROVE -> IMPROVE -> UIUX -> IMPROVE -> CHECK -> IMPROVE
+- **Prompt folder**: `C:\Users\12031\Desktop\AGENT_PROMPTS_MAIN_PACK`
+- **Start state**: `main` at `ee1475d`; two existing untracked orchestrator history folders are preserved and will not be staged.
+- **Previous flagship context**: Campaign 016 completed booking reliability, admin tooling, payment readiness, and comprehensive client-side error tracking.
+- **Protected existing changes**: `.agent/orchestrator-history/campaign-015/` and `.agent/orchestrator-history/campaign-016/` remain untracked history exports and will not be included unless explicitly needed.
+
+### Stage 1 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Turn the latest client-side error tracker into an operational monitoring loop by accepting its real payload shape, persisting reports to D1, and giving admins a visible recent-error inbox.
+- **Start state**: `main` at `ee1475d`; tracked tree clean, existing untracked orchestrator history folders protected.
+- **Previous direction carried forward**: Campaign 016 ended with client-side error tracking/reporting; this stage makes that reporting usable beyond local storage and Workers console logs.

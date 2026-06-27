@@ -22,6 +22,7 @@ import { AdminPresetsTab } from "./AdminPresetsTab";
 import { AdminWorkshopsTab } from "./AdminWorkshopsTab";
 import { AdminMerchandiseTab } from "./AdminMerchandiseTab";
 import { AdminVitalsTab } from "./AdminVitalsTab";
+import { AdminErrorReportsTab } from "./AdminErrorReportsTab";
 import { AdminAuditLogTab } from "./AdminAuditLogTab";
 import { AdminPhotoModerationQueue } from "./AdminPhotoModerationQueue";
 import { AdminReportsTab } from "./AdminReportsTab";
@@ -118,6 +119,7 @@ export function AdminShell() {
     },
     { key: "photos", label: t("admin.tabs.photos"), children: null },
     { key: "stats", label: t("admin.tabs.stats"), children: null },
+    { key: "errors", label: t("admin.tabs.errors"), children: null },
     { key: "courses", label: t("admin.tabs.courses"), children: null },
     { key: "presets", label: t("admin.tabs.presets"), children: null },
     { key: "workshops", label: t("admin.tabs.workshops"), children: null },
@@ -233,6 +235,7 @@ export function AdminShell() {
         {activeTab === "copy" && <AdminCopyTab showToast={showToast} />}
         {activeTab === "stats" && <AdminStats />}
         {activeTab === "vitals" && <AdminVitalsTab />}
+        {activeTab === "errors" && <AdminErrorReportsTab />}
         {activeTab === "courses" && <AdminCoursesTab showToast={showToast} />}
         {activeTab === "presets" && <AdminPresetsTab showToast={showToast} />}
         {activeTab === "workshops" && <AdminWorkshopsTab showToast={showToast} />}
