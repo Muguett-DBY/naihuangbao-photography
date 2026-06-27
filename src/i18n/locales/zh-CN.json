@@ -880,7 +880,8 @@
       "copy": "主页文案",
       "auditLog": "审计日志",
       "moderation": "审核",
-      "reports": "报告"
+      "reports": "报告",
+      "navigation": "后台功能"
     },
     "reports": {
       "title": "数据报告",
@@ -1009,7 +1010,8 @@
       "resolve": "解决",
       "ignore": "忽略",
       "reopen": "重新打开",
-      "updateFailed": "无法更新错误报告。"
+      "updateFailed": "无法更新错误报告。",
+      "updateSuccess": "错误报告已更新。"
     },
     "auditLog": {
       "title": "审计日志",

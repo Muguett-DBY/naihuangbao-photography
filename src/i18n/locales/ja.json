@@ -826,7 +826,8 @@
       "copy": "トップページコピー",
       "auditLog": "監査ログ",
       "moderation": "モデレーション",
-      "reports": "レポート"
+      "reports": "レポート",
+      "navigation": "管理セクション"
     },
     "reports": {
       "title": "データレポート",
@@ -955,7 +956,8 @@
       "resolve": "解決",
       "ignore": "無視",
       "reopen": "再開",
-      "updateFailed": "エラーレポートを更新できません。"
+      "updateFailed": "エラーレポートを更新できません。",
+      "updateSuccess": "エラーレポートを更新しました。"
     },
     "auditLog": {
       "title": "監査ログ",

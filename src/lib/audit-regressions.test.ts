@@ -767,6 +767,15 @@ describe("audit regression coverage", () => {
     expect(zhLocaleSource).toContain("前端错误报告");
   });
 
+  it("keeps admin error triage usable on narrow screens", () => {
+    expect(adminSource).toContain('<nav className="adm-tabs"');
+    expect(adminSource).toContain('aria-current={activeTab === item.key ? "page" : undefined}');
+    expect(adminErrorReportsSource).toContain('role="status"');
+    expect(adminErrorReportsSource).toContain('data-label={t("admin.errors.colStatus"');
+    expect(adminCssSource).toContain(".adm-errors-table thead { display: none; }");
+    expect(adminCssSource).toContain(".adm-errors-table tr { display: grid;");
+  });
+
   it("keeps the gallery route from rendering duplicate gallery landmarks", () => {
     expect(gallerySource).toContain('id="gallery"');
     expect(galleryPageSource).not.toContain('id="gallery"');

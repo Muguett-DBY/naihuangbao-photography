@@ -1,14 +1,14 @@
-import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
   CalendarCheck,
+  House,
   ImagePlus,
   LockKeyhole,
   LogOut,
   TrendingUp,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button, Input, Loading, Tabs } from "animal-island-ui";
-import type { TabItem } from "animal-island-ui";
+import { Button, Input, Loading } from "animal-island-ui";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { isAbortError, type AdminTab, type ToastType } from "../../lib/admin-helpers";
 import { AdminBookingsTab } from "./AdminBookingsTab";
@@ -106,7 +106,7 @@ export function AdminShell() {
     }
   }, [activeTab]);
 
-  const adminTabItems: TabItem[] = useMemo(() => [
+  const adminTabItems: Array<{ key: AdminTab; label: ReactNode }> = useMemo(() => [
     {
       key: "bookings",
       label: (
@@ -115,22 +115,21 @@ export function AdminShell() {
           {hasNewBookings && <span className="adm-badge-dot" />}
         </span>
       ),
-      children: null,
     },
-    { key: "photos", label: t("admin.tabs.photos"), children: null },
-    { key: "stats", label: t("admin.tabs.stats"), children: null },
-    { key: "errors", label: t("admin.tabs.errors"), children: null },
-    { key: "courses", label: t("admin.tabs.courses"), children: null },
-    { key: "presets", label: t("admin.tabs.presets"), children: null },
-    { key: "workshops", label: t("admin.tabs.workshops"), children: null },
-    { key: "merchandise", label: t("admin.tabs.merchandise"), children: null },
-    { key: "packages", label: t("admin.tabs.packages"), children: null },
-    { key: "services", label: t("admin.tabs.services"), children: null },
-    { key: "faq", label: t("admin.tabs.faq"), children: null },
-    { key: "copy", label: t("admin.tabs.copy"), children: null },
-    { key: "auditLog", label: t("admin.tabs.auditLog"), children: null },
-    { key: "moderation", label: t("admin.tabs.moderation"), children: null },
-    { key: "reports", label: t("admin.tabs.reports"), children: null },
+    { key: "photos", label: t("admin.tabs.photos") },
+    { key: "stats", label: t("admin.tabs.stats") },
+    { key: "errors", label: t("admin.tabs.errors") },
+    { key: "courses", label: t("admin.tabs.courses") },
+    { key: "presets", label: t("admin.tabs.presets") },
+    { key: "workshops", label: t("admin.tabs.workshops") },
+    { key: "merchandise", label: t("admin.tabs.merchandise") },
+    { key: "packages", label: t("admin.tabs.packages") },
+    { key: "services", label: t("admin.tabs.services") },
+    { key: "faq", label: t("admin.tabs.faq") },
+    { key: "copy", label: t("admin.tabs.copy") },
+    { key: "auditLog", label: t("admin.tabs.auditLog") },
+    { key: "moderation", label: t("admin.tabs.moderation") },
+    { key: "reports", label: t("admin.tabs.reports") },
   ], [t, hasNewBookings]);
 
   useEffect(() => {
@@ -209,23 +208,34 @@ export function AdminShell() {
             <option value="ja">日本語</option>
             <option value="ko">한국어</option>
           </select>
-          <Button type="text" onClick={handleLogout}>
-            <LogOut size={14} /> {t("admin.header.logout")}
+          <Button type="text" onClick={handleLogout} aria-label={t("admin.header.logout")}>
+            <LogOut size={14} /> <span className="adm-action-label">{t("admin.header.logout")}</span>
           </Button>
-          <a href="/">{t("admin.header.backToSite")}</a>
+          <a href="/" aria-label={t("admin.header.backToSite")}>
+            <House size={14} /> <span className="adm-action-label">{t("admin.header.backToSite")}</span>
+          </a>
         </div>
       </header>
 
       {toast && <div className={`adm-toast adm-toast-${toast.type}`}>{toast.text}</div>}
 
       <div className="adm-shell">
-        <Tabs
-          items={adminTabItems}
-          activeKey={activeTab}
-          onChange={(key) => setActiveTab(key as AdminTab)}
-          leafAnimation={false}
-          shadow={false}
-        />
+        <nav className="adm-tabs" aria-label={t("admin.tabs.navigation", "Admin sections")}>
+          {adminTabItems.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              className={activeTab === item.key ? "is-active" : undefined}
+              aria-current={activeTab === item.key ? "page" : undefined}
+              onClick={(event) => {
+                setActiveTab(item.key);
+                event.currentTarget.scrollIntoView({ block: "nearest", inline: "center" });
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
 
         {activeTab === "bookings" && <AdminBookingsTab showToast={showToast} newBookingIds={newBookingIds} />}
         {activeTab === "photos" && <AdminPhotosTab showToast={showToast} />}
