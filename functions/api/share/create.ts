@@ -85,5 +85,5 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       requiresPassword: Boolean(record.passwordHash),
     },
     limits: SHARE_LINK_LIMITS,
-  }, 201);
+  }, 201, { "cache-control": "no-store" });
 };
