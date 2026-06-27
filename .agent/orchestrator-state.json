@@ -2,13 +2,13 @@
   "plan": "SUPER_3_CYCLES_18_STAGE_V3_REPEATABLE",
   "campaign_id": "campaign-016",
   "campaign_number": 16,
-  "overall_status": "RUNNING",
-  "current_phase": 17,
+  "overall_status": "COMPLETED",
+  "current_phase": 18,
   "current_cycle": 3,
-  "last_completed_phase": 16,
+  "last_completed_phase": 18,
   "started_at": "2026-06-27T12:44:00Z",
-  "updated_at": "2026-06-27T17:27:00Z",
-  "completed_at": null,
+  "updated_at": "2026-06-27T17:36:00Z",
+  "completed_at": "2026-06-27T17:36:00Z",
   "blocker": null,
   "previous_campaign_id": "campaign-015",
   "previous_campaign_summary": "PWA reliability, editor resilience, refund reconciliation, PWA update flow hardening, payment webhook hardening.",
@@ -31,7 +31,7 @@
     { "phase": 14, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Photo metadata extraction and search", "commit": "d317d72" },
     { "phase": 15, "cycle": 3, "type": "UIUX", "status": "DONE", "objective": "Admin moderation queue UX", "commit": "10f9192" },
     { "phase": 16, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Rate limiting with retry-after headers", "commit": "002390d" },
-    { "phase": 17, "cycle": 3, "type": "CHECK", "status": "RUNNING", "objective": "Final stability and regression audit", "commit": null },
-    { "phase": 18, "cycle": 3, "type": "IMPROVE", "status": "PENDING", "objective": "Comprehensive error tracking and reporting", "commit": null }
+    { "phase": 17, "cycle": 3, "type": "CHECK", "status": "DONE", "objective": "Final stability and regression audit", "commit": "0033d89" },
+    { "phase": 18, "cycle": 3, "type": "IMPROVE", "status": "DONE", "objective": "Comprehensive error tracking and reporting", "commit": "5d03da3" }
   ]
 }
