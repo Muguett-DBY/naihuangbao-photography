@@ -69,6 +69,8 @@ const errorTrackerSource = readFileSync(resolve(root, "src/lib/error-tracker.ts"
 const analyticsErrorApiSource = readFileSync(resolve(root, "functions/api/analytics/error.ts"), "utf8");
 const adminErrorsApiPath = resolve(root, "functions/api/admin/errors.ts");
 const adminErrorsApiSource = existsSync(adminErrorsApiPath) ? readFileSync(adminErrorsApiPath, "utf8") : "";
+const adminErrorWorkflowApiPath = resolve(root, "functions/api/admin/errors/[id].ts");
+const adminErrorWorkflowApiSource = existsSync(adminErrorWorkflowApiPath) ? readFileSync(adminErrorWorkflowApiPath, "utf8") : "";
 const adminErrorReportsPath = resolve(root, "src/components/admin/AdminErrorReportsTab.tsx");
 const adminErrorReportsSource = existsSync(adminErrorReportsPath) ? readFileSync(adminErrorReportsPath, "utf8") : "";
 const schemaSource = readFileSync(resolve(root, "db/schema.sql"), "utf8");
@@ -758,6 +760,9 @@ describe("audit regression coverage", () => {
     expect(adminErrorsApiSource).toContain("from client_error_reports");
     expect(adminSource).toContain("AdminErrorReportsTab");
     expect(adminErrorReportsSource).toContain("/api/admin/errors");
+    expect(adminErrorReportsSource).toContain("adminMutationHeaders");
+    expect(adminErrorReportsSource).toContain('status=${statusFilter}');
+    expect(adminErrorWorkflowApiSource).toContain("update client_error_reports");
     expect(enLocaleSource).toContain("Error reports");
     expect(zhLocaleSource).toContain("前端错误报告");
   });

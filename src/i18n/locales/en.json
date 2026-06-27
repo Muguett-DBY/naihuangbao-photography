@@ -944,7 +944,22 @@
       "colCategory": "Category",
       "colMessage": "Message",
       "colPage": "Page",
-      "colSource": "Source"
+      "colSource": "Source",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "statusFilter": "Status",
+      "status": {
+        "all": "All",
+        "open": "Open",
+        "resolved": "Resolved",
+        "ignored": "Ignored"
+      },
+      "noteLabel": "Resolution note",
+      "notePlaceholder": "Resolution note",
+      "resolve": "Resolve",
+      "ignore": "Ignore",
+      "reopen": "Reopen",
+      "updateFailed": "Unable to update the error report."
     },
     "auditLog": {
       "title": "Audit Log",

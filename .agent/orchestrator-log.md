@@ -753,3 +753,25 @@ Beginning execution.
 - **Risk**: production persistence requires applying D1 migration `011_create_client_error_reports.sql`; if DB binding is unavailable, the analytics endpoint reports `stored: false` while preserving console logging. Existing CJK font and `face-api-vendor` bundle warnings remain.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is closing the operational loop for admin error monitoring by making reports actionable after capture.
 - **Status**: COMPLETE
+
+### Stage 2 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Close the admin client-error monitoring loop by adding status, notes, filtering, and admin actions for resolving, ignoring, or reopening captured error reports.
+- **Start state**: `main` at `de9d3af`; tracked tree clean except protected untracked orchestrator history folders.
+- **Previous direction carried forward**: Stage 1 recommended making error reports actionable after capture rather than leaving them as a static inbox.
+- **Completed locally**:
+  - Added D1 workflow fields and migration `012_add_client_error_report_workflow.sql` for open/resolved/ignored status, resolution notes, resolver identity, resolution time, update time, and a status/time index.
+  - Extended authenticated `/api/admin/errors` listing with workflow fields and status filtering.
+  - Added protected `PATCH /api/admin/errors/:id` actions with admin mutation-header enforcement, input validation, resolver tracking, and reopen semantics.
+  - Upgraded the Admin Error Reports tab with status filters, localized status badges, editable notes, resolve/ignore/reopen actions, optimistic list updates, loading/error states, and responsive overflow handling.
+  - Added zh-CN/en/ja/ko workflow copy and regression coverage for API and UI wiring.
+- **Local verification**:
+  - Red/green: API workflow tests first failed on the missing dynamic PATCH route, then the targeted API/audit suite passed 84/84.
+  - Red/green: admin UI workflow regression first failed on missing mutation headers/status filters, then passed within the 84/84 targeted suite.
+  - Temporary Wrangler D1 execution applied migrations 011 and 012 successfully (9 SQL statements total).
+  - `npm run lint` — passed.
+  - `npm test` — 288/288 passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - Playwright smoke against preview with the repository config — 13/13 passed.
+- **Risk**: Production needs migration `012_add_client_error_report_workflow.sql` applied before the updated listing and mutation routes are used. Existing multilingual font and `face-api-vendor` size warnings remain.
+- **Status**: LOCAL COMPLETE; commit, push, and CI pending.

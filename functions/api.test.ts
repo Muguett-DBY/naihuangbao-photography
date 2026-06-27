@@ -9,6 +9,7 @@ import { onRequestGet as getPaymentFollowUp } from "./api/admin/payments/follow-
 import { onRequestPost as expirePaymentFollowUp } from "./api/admin/payments/follow-up";
 import { onRequestGet as getAuditLog } from "./api/admin/audit-log";
 import { onRequestGet as getErrorReports } from "./api/admin/errors";
+import { onRequestPatch as updateErrorReportStatus } from "./api/admin/errors/[id]";
 import { onRequestPost as postErrorReport } from "./api/analytics/error";
 import { onRequestPost as createShareLink } from "./api/share/create";
 import { onRequestPost as resolveShareLink } from "./api/share/resolve";
@@ -130,8 +131,13 @@ describe("Cloudflare Pages API behavior", () => {
           user_agent: "Vitest",
           stack: "ChunkLoadError",
           metadata_json: "{\"chunk\":\"gallery\"}",
+          status: "open",
+          resolution_note: null,
+          resolved_at: null,
+          resolved_by: null,
           occurred_at: "2026-06-28T00:00:00.000Z",
           created_at: "2026-06-28T00:00:01.000Z",
+          updated_at: "2026-06-28T00:00:01.000Z",
         }],
       }),
     });
@@ -145,8 +151,45 @@ describe("Cloudflare Pages API behavior", () => {
 
     expect(response.status).toBe(200);
     expect(body.total).toBe(1);
-    expect(body.reports?.[0]).toMatchObject({ id: "err_recent", metadata: { chunk: "gallery" } });
+    expect(body.reports?.[0]).toMatchObject({ id: "err_recent", metadata: { chunk: "gallery" }, status: "open" });
     expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("from client_error_reports"));
+  });
+
+  it("filters client error reports by admin workflow status", async () => {
+    const db = createDb();
+    const response = await getErrorReports({
+      request: jsonRequest("https://shoot.custard.top/api/admin/errors?days=30&status=resolved", {
+        headers: { "cf-access-authenticated-user-email": "admin@example.com" },
+      }),
+      env: { ...adminEnv, DB: db },
+    } as never);
+
+    expect(response.status).toBe(200);
+    expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("status = ?"));
+    expect(db.statement.bind).toHaveBeenCalledWith("-30 days", "resolved", 50);
+  });
+
+  it("updates client error report status with an admin note", async () => {
+    const db = createDb();
+    const response = await updateErrorReportStatus({
+      request: jsonRequest("https://shoot.custard.top/api/admin/errors/err_recent", {
+        method: "PATCH",
+        headers: {
+          "content-type": "application/json",
+          "cf-access-authenticated-user-email": "admin@example.com",
+          "x-nhb-admin-action": "1",
+        },
+        body: JSON.stringify({ status: "resolved", note: "Fixed lazy gallery import" }),
+      }),
+      env: { ...adminEnv, DB: db },
+      params: { id: "err_recent" },
+    } as never);
+    const body = (await response.json()) as { ok?: boolean; status?: string };
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({ ok: true, status: "resolved" });
+    expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("update client_error_reports"));
+    expect(db.statement.bind).toHaveBeenCalledWith("resolved", "Fixed lazy gallery import", "admin@example.com", "err_recent");
   });
 
   it("returns payment readiness details for placeholder payment intents", async () => {

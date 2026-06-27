@@ -336,8 +336,13 @@ create table if not exists client_error_reports (
   user_agent text,
   stack text,
   metadata_json text not null default '{}',
+  status text not null default 'open' check (status in ('open', 'resolved', 'ignored')),
+  resolution_note text,
+  resolved_at text,
+  resolved_by text,
   occurred_at text not null,
-  created_at text not null default (datetime('now'))
+  created_at text not null default (datetime('now')),
+  updated_at text not null default (datetime('now'))
 );
 
 create index if not exists idx_client_error_reports_time
@@ -345,6 +350,9 @@ create index if not exists idx_client_error_reports_time
 
 create index if not exists idx_client_error_reports_category
   on client_error_reports (category, occurred_at);
+
+create index if not exists idx_client_error_reports_status
+  on client_error_reports (status, occurred_at);
 
 -- ── Admin audit log ──
 

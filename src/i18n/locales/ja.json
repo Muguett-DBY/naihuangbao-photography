@@ -940,7 +940,22 @@
       "colCategory": "種別",
       "colMessage": "メッセージ",
       "colPage": "ページ",
-      "colSource": "ソース"
+      "colSource": "ソース",
+      "colStatus": "ステータス",
+      "colActions": "操作",
+      "statusFilter": "ステータス",
+      "status": {
+        "all": "すべて",
+        "open": "未対応",
+        "resolved": "解決済み",
+        "ignored": "無視"
+      },
+      "noteLabel": "対応メモ",
+      "notePlaceholder": "対応メモ",
+      "resolve": "解決",
+      "ignore": "無視",
+      "reopen": "再開",
+      "updateFailed": "エラーレポートを更新できません。"
     },
     "auditLog": {
       "title": "監査ログ",
