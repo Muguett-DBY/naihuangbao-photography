@@ -8180,3 +8180,91 @@
   border-color: #7AA675;
   color: white;
 }
+
+/* ©¤©¤ Workshop Filter Sheet (Mobile) ©¤©¤ */
+.workshop-filter-mobile-btn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--warm-border, rgba(139,94,74,0.12));
+  border-radius: 8px;
+  background: var(--paper-white, #fffdf7);
+  font-size: 13px;
+  cursor: pointer;
+  position: relative;
+}
+.workshop-filter-mobile-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--peach-accent, #f4a460);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+.workshop-filter-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.workshop-filter-sheet {
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 20px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+.workshop-filter-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.workshop-filter-sheet-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.workshop-filter-sheet-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.workshop-filter-sheet-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+}
+.workshop-filter-sheet-label select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--warm-border, rgba(139,94,74,0.12));
+  font-size: 0.9rem;
+}
+.workshop-filter-sheet-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+@media (max-width: 768px) {
+  .workshop-filter-mobile-btn {
+    display: inline-flex;
+  }
+  .workshop-filter-sheet {
+    border-radius: 16px 16px 0 0;
+  }
+}
