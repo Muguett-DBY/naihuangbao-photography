@@ -363,3 +363,20 @@ create index if not exists idx_share_links_token
 
 create index if not exists idx_share_links_resource
   on share_links (resource_type, resource_id, created_at);
+
+-- ©¤©¤ Booking waitlist ©¤©¤
+
+create table if not exists booking_waitlist (
+  id text primary key,
+  token text not null unique,
+  preferred_date text not null,
+  contact text not null,
+  name text not null,
+  package_name text,
+  active integer not null default 1,
+  notified integer not null default 0,
+  created_at text not null default (datetime('now'))
+);
+
+create index if not exists idx_booking_waitlist_date
+  on booking_waitlist (preferred_date, active);
