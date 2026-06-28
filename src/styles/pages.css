@@ -6409,6 +6409,31 @@
   background: var(--peach-light);
 }
 
+.editor-light-main {
+  width: min(920px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: clamp(18px, 4vw, 36px) 0 clamp(48px, 8vw, 88px);
+}
+
+.editor-light-shell .editor-canvas--empty {
+  min-height: min(58svh, 560px);
+  border-style: solid;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.78), rgba(255, 244, 237, 0.86)),
+    radial-gradient(circle at 18% 18%, rgba(245, 168, 145, 0.16), transparent 32%);
+  box-shadow: 0 22px 64px rgba(92, 57, 40, 0.1);
+}
+
+.editor-studio-loading {
+  min-height: 100dvh;
+  padding-top: var(--nav-h, 64px);
+  display: grid;
+  place-items: center;
+  background: var(--custard-bg);
+  color: var(--caramel-muted);
+  font-weight: 700;
+}
+
 .editor-toolbar {
   position: sticky;
   top: calc(var(--nav-h, 64px) + 8px);
@@ -6431,6 +6456,10 @@
 
 .editor-toolbar .editor-btn {
   scroll-margin-top: calc(var(--nav-h, 64px) + 28px);
+}
+
+.editor-toolbar--light {
+  position: static;
 }
 
 .editor-btn {

@@ -14,7 +14,7 @@ describe("editor regression contracts", () => {
   });
 
   it("keeps editor image previews bounded and face failures explicit", () => {
-    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const editor = read("src/pages/PhotoEditorWorkspace.tsx");
     const photoProcessing = read("src/lib/photo-processing.ts");
     const pagesCss = read("src/styles/pages.css");
     const zhCN = read("src/i18n/locales/zh-CN.json");
@@ -110,7 +110,7 @@ describe("editor regression contracts", () => {
   });
 
   it("self-hosts complete face-api models and keeps model loading separate from no-face results", () => {
-    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const editor = read("src/pages/PhotoEditorWorkspace.tsx");
 
     expect(editor).toContain('const MODEL_URL = "/models"');
     expect(editor).not.toContain("justadudewhohacks.github.io");
@@ -123,7 +123,7 @@ describe("editor regression contracts", () => {
   });
 
   it("lets users retry editor model loading and continue in degraded mode", () => {
-    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const editor = read("src/pages/PhotoEditorWorkspace.tsx");
     const pagesCss = read("src/styles/pages.css");
     const zhCN = read("src/i18n/locales/zh-CN.json");
 
@@ -140,7 +140,7 @@ describe("editor regression contracts", () => {
   });
 
   it("defers face-api model loading until upload or explicit retry", () => {
-    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const editor = read("src/pages/PhotoEditorWorkspace.tsx");
     const zhCN = read("src/i18n/locales/zh-CN.json");
     const en = read("src/i18n/locales/en.json");
 
@@ -151,6 +151,26 @@ describe("editor regression contracts", () => {
     expect(editor).toContain("faceModelsPromiseRef.current = null");
     expect(zhCN).toContain("AI 模型会在上传照片后按需加载");
     expect(en).toContain("AI models load only after you add a photo");
+  });
+
+  it("keeps the editor route lightweight until the full studio is requested", () => {
+    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const workspace = read("src/pages/PhotoEditorWorkspace.tsx");
+
+    expect(editor).toContain('lazy(() => import("./PhotoEditorWorkspace"))');
+    expect(editor).toContain("editor-light-shell");
+    expect(editor).toContain("editor-toolbar--light");
+    expect(editor).toContain('type="file"');
+    expect(editor).toContain("setStudioReady(true)");
+    expect(editor).toContain("setInitialFile(file)");
+    expect(editor).toContain("initialFile={initialFile}");
+    expect(editor).not.toContain("../data/editor-constants");
+    expect(editor).not.toContain("../lib/editor-effects");
+    expect(editor).not.toContain("../lib/photo-processing");
+    expect(editor).not.toContain("useRef<HTMLCanvasElement>");
+
+    expect(workspace).toContain("initialFile?: File | null");
+    expect(workspace).toContain("loadImageFile(initialFile)");
   });
 
   it("keeps the editor empty state action-led and mobile-ready", () => {
@@ -173,7 +193,7 @@ describe("editor regression contracts", () => {
   });
 
   it("prevents the empty editor canvas from squeezing the mobile upload panel", () => {
-    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const editor = read("src/pages/PhotoEditorWorkspace.tsx");
     const pagesCss = read("src/styles/pages.css");
 
     expect(editor).toContain("editor-canvas--placeholder");
@@ -184,7 +204,7 @@ describe("editor regression contracts", () => {
   });
 
   it("groups the mobile editor workflow and exposes export recovery status", () => {
-    const editor = read("src/pages/PhotoEditorPage.tsx");
+    const editor = read("src/pages/PhotoEditorWorkspace.tsx");
     const pagesCss = read("src/styles/pages.css");
     const zhCN = read("src/i18n/locales/zh-CN.json");
     const en = read("src/i18n/locales/en.json");
