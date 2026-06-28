@@ -1337,6 +1337,12 @@
     "faceDetected": "已检测到人脸",
     "noFaceDetected": "未检测到清晰人脸，基础调色、滤镜、文字和导出仍可使用。请换一张正脸照片再试美颜/重塑。",
     "loadingImage": "加载图片中...",
+    "imageLoadFailed": "图片无法打开",
+    "imageUnsupported": "请选择 JPG、PNG、WebP 或浏览器支持的图片文件。",
+    "imageReadFailed": "无法读取该文件，请重新导出图片或选择另一个副本。",
+    "imageDecodeFailed": "该文件可能已损坏，或并不是真正的图片。请换一张照片。",
+    "imageCanvasFailed": "修图画布准备失败，请刷新页面或换一张照片。",
+    "tryAnotherImage": "换一张图片",
     "cat": {
       "beauty": "美颜",
       "reshape": "重塑",
