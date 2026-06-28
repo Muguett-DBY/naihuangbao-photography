@@ -920,3 +920,38 @@ Beginning execution.
 - **Commit**: `d6b3033` — `feat: reduce font and route loading pressure`
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28307292636` passed `npm ci`, lint, tests, build, and performance budget.
 - **Status**: COMPLETE
+
+## Campaign 018 — 6-Stage Product Strengthening Loop — Started 2026-06-28
+- **Orchestrator**: `03_LONG_6_STAGE_MAIN_V2.txt`
+- **Sequence**: IMPROVE -> IMPROVE -> UIUX -> IMPROVE -> CHECK -> IMPROVE
+- **Prompt folder**: `C:\Users\12031\Desktop\AGENT_PROMPTS_MAIN_PACK`
+- **Start state**: `main` at `1eaf404`; tracked tree clean and the two existing untracked orchestrator history folders remain protected.
+- **Previous flagship context**: Campaign 017 recommended verifying and reducing the `face-api-vendor` trigger path so the large editor dependency is loaded only for real editing work.
+- **Protected existing changes**: `.agent/orchestrator-history/campaign-015/` and `.agent/orchestrator-history/campaign-016/` remain untracked and will not be staged.
+
+### Stage 1 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Reduce `/editor` route pressure by separating the lightweight entry screen from the full editing workspace while preserving the existing upload-first workflow.
+- **Start state**: `main` at `1eaf404`; tracked tree clean except the protected untracked orchestrator history folders.
+- **Previous direction carried forward**: Campaign 017 identified `face-api-vendor` as the largest lazy chunk and recommended proving that editor-heavy code is not requested before editing intent.
+- **Completed locally**:
+  - Split the original editor page into a lightweight `PhotoEditorPage` route shell and lazy `PhotoEditorWorkspace` implementation.
+  - Kept the established first-screen file input contract; the shell captures the selected `File`, loads the workspace, and passes the same file into the existing image pipeline.
+  - Reused one `loadImageFile` path for shell uploads, workspace uploads, and drag-and-drop instead of synthesizing input events.
+  - Added a focused loading fallback and a compact entry surface while keeping editor constants, effects, photo processing, canvas state, and face models out of the route shell.
+  - Added regression coverage locking the lazy boundary, file handoff, and absence of heavyweight imports from the shell.
+- **Rendered / resource validation**:
+  - In-app Browser confirmed `/editor` renders meaningful entry content with no framework overlay or console errors/warnings.
+  - The page asset inventory contained only `PhotoEditorPage` before intent; clicking `Open editor` added `PhotoEditorWorkspace` while `face-api-vendor` remained absent until a photo is supplied.
+  - The two previously failing editor Playwright cases passed after preserving the shell upload input and initial-file handoff.
+- **Local verification**:
+  - Red/green: the lightweight-route contract first failed on the missing upload bridge, then `src/lib/editor-regressions.test.ts` passed 17/17.
+  - `npm run lint` — passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis; route shell is 3.82 kB and workspace is 52.83 kB before gzip.
+  - `npm test -- --run` — 49 files / 317 tests passed.
+  - Targeted editor Playwright regression — 2/2 passed.
+  - Full Playwright suite with one worker — 30/30 passed.
+- **Risk**: `face-api-vendor` remains approximately 661.57 kB when a photo actually requires face detection. Unreadable/corrupt image decode feedback remains a useful next hardening target.
+- **Commit / Push / CI**: pending after the local verification gate.
+- **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is resilient editor image ingestion and explicit recovery for unreadable or unsupported files.
+- **Status**: LOCAL COMPLETE

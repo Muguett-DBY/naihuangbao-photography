@@ -1444,3 +1444,39 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 修图能力按需加载减压：围绕 `face-api-vendor` 的触发路径做源代码和浏览器网络核验，只在进入修图/人脸相关能力时加载该大包，并为误加载加回归测试。
+
+---
+
+## Campaign 018 Stage 1 — Editor Workspace Lazy Boundary
+
+### 承接的上一轮方向
+- Campaign 017 将 `face-api-vendor` 确认为最大 lazy chunk，并建议核验它及修图重型代码的真实触发路径。
+- 本阶段把 `/editor` 的轻量入口与完整工作区拆开，先解决进入路由就加载整套编辑代码的问题。
+
+### 完成内容
+- 新建轻量 `PhotoEditorPage`，通过 `lazy()` 和 `Suspense` 按需加载 `PhotoEditorWorkspace`。
+- 保留首屏 `.editor-toolbar input[type="file"]` 上传契约；轻量壳层接收文件后把同一个 `File` 传给工作区。
+- 将工作区的文件读取逻辑抽为 `loadImageFile`，统一处理壳层上传、工作区上传和拖拽文件。
+- 编辑器常量、效果、图片处理、Canvas 状态和人脸模型依赖均留在工作区，不进入路由壳层。
+- 增加回归测试，锁定 lazy 边界、初始文件传递以及轻量壳层不得导入重型模块。
+
+### 已通过的验证
+- Red/green：轻量路由契约先因缺少上传桥接失败，修复后 editor regression 17/17 通过。
+- TypeScript / lint：通过。
+- `build:full` + performance budget：通过；壳层 3.82 kB，工作区 52.83 kB，`face-api-vendor` 661.57 kB，均为 gzip 前体积。
+- Vitest 全量：49 个文件、317/317 通过。
+- Playwright 原失败用例：2/2 通过。
+- Playwright 全量：30/30 通过（单 worker）。
+- Browser：首屏仅观察到 `PhotoEditorPage`；点击 Open editor 后才出现 `PhotoEditorWorkspace`，且上传照片前仍没有 `face-api-vendor`；控制台无 error/warn。
+
+### 遗留风险
+- 真正上传照片并做人脸检测时仍需加载约 661.57 kB 的 `face-api-vendor`，这是功能成本而非首屏误加载。
+- 当前图片读取缺少明确的损坏文件/解码失败反馈，加载状态可能缺少可恢复的用户提示。
+
+### 下一轮建议方向
+1. IMPROVE：为不支持或损坏的图片补充明确错误状态、重试入口和状态清理。
+2. UIUX：在桌面与窄屏复查编辑器轻量入口、工作区工具栏和首屏可见性。
+3. CHECK：继续锁定首屏、打开工作区、上传照片三段资源触发边界。
+
+### 推荐下一轮优先执行的旗舰级主改动
+修图图片摄入韧性：让文件读取、图片解码和 Canvas 初始化失败都能结束 loading、展示可恢复错误，并保证用户无需刷新即可重新选择照片。
