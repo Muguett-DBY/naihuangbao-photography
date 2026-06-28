@@ -1286,6 +1286,12 @@
     "faceDetected": "Face detected",
     "noFaceDetected": "No clear face was detected. Color, filters, text and export still work; try a clearer front-facing portrait for beauty or reshape tools.",
     "loadingImage": "Loading image...",
+    "imageLoadFailed": "Image could not be opened",
+    "imageUnsupported": "Choose a JPG, PNG, WebP, or another browser-supported image file.",
+    "imageReadFailed": "The file could not be read. Try exporting it again or choosing another copy.",
+    "imageDecodeFailed": "The file looks damaged or is not a real image. Choose another photo.",
+    "imageCanvasFailed": "The editor could not prepare the image canvas. Reload the page or try another photo.",
+    "tryAnotherImage": "Try another image",
     "cat": {
       "beauty": "Beauty",
       "reshape": "Reshape",

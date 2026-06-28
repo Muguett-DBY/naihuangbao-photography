@@ -173,6 +173,24 @@ describe("editor regression contracts", () => {
     expect(workspace).toContain("loadImageFile(initialFile)");
   });
 
+  it("recovers from unreadable and superseded editor image loads", () => {
+    const workspace = read("src/pages/PhotoEditorWorkspace.tsx");
+    const pagesCss = read("src/styles/pages.css");
+    const en = read("src/i18n/locales/en.json");
+    const zhCN = read("src/i18n/locales/zh-CN.json");
+
+    expect(workspace).toContain("imageLoadRequestRef");
+    expect(workspace).toContain("setImageLoadError");
+    expect(workspace).toContain("img.onerror");
+    expect(workspace).toContain("reader.onabort");
+    expect(workspace).toContain("editor-image-error");
+    expect(workspace).toContain('role="alert"');
+    expect(workspace).toContain("tryAnotherImage");
+    expect(pagesCss).toContain(".editor-image-error");
+    expect(en).toContain('"imageDecodeFailed"');
+    expect(zhCN).toContain('"imageDecodeFailed"');
+  });
+
   it("keeps the editor empty state action-led and mobile-ready", () => {
     const editor = read("src/pages/PhotoEditorPage.tsx");
     const pagesCss = read("src/styles/pages.css");

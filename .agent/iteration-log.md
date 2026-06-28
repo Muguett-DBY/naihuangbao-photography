@@ -1481,3 +1481,41 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 修图图片摄入韧性：让文件读取、图片解码和 Canvas 初始化失败都能结束 loading、展示可恢复错误，并保证用户无需刷新即可重新选择照片。
+
+---
+
+## Campaign 018 Stage 2 — Editor Image Load Recovery
+
+### 承接的上一轮方向
+- Stage 1 已把 `/editor` 拆成轻量入口和完整工作区，并指出损坏图片/解码失败缺少可恢复反馈。
+- 本阶段按 IMPROVE 聚焦修图图片摄入韧性，确保失败不会卡住 loading，用户可以不用刷新直接换图。
+
+### 完成内容
+- 在 `PhotoEditorWorkspace` 的图片加载链路加入 `imageLoadRequestRef` 请求序号，防止旧 FileReader、旧图片解码或旧人脸检测结果覆盖新上传。
+- 覆盖 unsupported、FileReader error、FileReader abort、图片 decode error、canvas/context 缺失等失败路径。
+- 失败时统一清理 loading、detecting、人脸状态和 landmarks，并展示可访问的 `.editor-image-error` / `role="alert"`。
+- 新增“换一张图片”恢复动作和 zh-CN/en/ja/ko 文案。
+- 拖拽非图片文件不再静默忽略，而是走同一验证和错误提示路径。
+- 将修图 E2E 的正常图片 fixture 改为复用 `public/images/gallery/gallery-urban-01.webp`，避免测试运行改写 `test-results`。
+- 新增 Playwright 用例覆盖“损坏图片失败后重新上传有效图片”的完整恢复路径。
+
+### 已通过的验证
+- Red/green：源码回归先因缺少 `imageLoadRequestRef` 失败，修复后 `src/lib/editor-regressions.test.ts` 18/18 通过。
+- Red/green：Playwright 先因找不到 `.editor-image-error` 失败；重新构建生产 `dist` 后目标编辑器 E2E 2/2 通过。
+- TypeScript / lint：通过。
+- Vitest 全量：49 个文件、318/318 通过。
+- `build:full` + performance budget：通过，`PhotoEditorWorkspace` 53.80 kB，`face-api-vendor` 661.57 kB，仍保持 lazy chunk。
+- Playwright 全量：31/31 通过（单 worker）。
+- Browser：新 preview origin 上 `/editor` 页面身份正确、首屏有意义内容、无框架错误覆盖、console error/warn 为空。文件上传恢复以项目 Playwright 为权威证据，因为 Browser runtime 不暴露 `setInputFiles`。
+
+### 遗留风险
+- `face-api-vendor` 仍是最大 lazy chunk；本阶段只处理图片摄入错误恢复，不拆分人脸模型包。
+- Browser 复用旧 preview 端口时可能命中过旧 service-worker cache，因此本阶段渲染验证使用新 preview origin。
+
+### 下一轮建议方向
+1. UIUX：检查编辑器错误提示、空状态、toolbar 和移动端首屏之间的视觉层级，避免失败提示挤压主操作。
+2. UIUX：补充错误状态在窄屏和深色主题下的可读性与按钮可点击性。
+3. CHECK：继续核验 editor shell -> workspace -> photo upload 三段资源与状态边界。
+
+### 推荐下一轮优先执行的旗舰级主改动
+修图错误恢复体验打磨：围绕损坏图片提示、空画布、上传入口和移动端工具栏做 UIUX 校准，让失败后下一步操作更明显且不遮挡编辑区域。

@@ -34,6 +34,14 @@ type ExportStatus = {
   state: "idle" | "exporting" | "ready" | "failed";
   messageKey: string;
 };
+type ImageLoadError = "unsupported" | "read" | "decode" | "canvas";
+
+const IMAGE_LOAD_ERROR_KEYS: Record<ImageLoadError, string> = {
+  unsupported: "editor.imageUnsupported",
+  read: "editor.imageReadFailed",
+  decode: "editor.imageDecodeFailed",
+  canvas: "editor.imageCanvasFailed",
+};
 
 const EDITOR_WORKFLOW_GROUPS: Array<{
   key: EditorWorkflowKey;
@@ -67,8 +75,10 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const faceModelsPromiseRef = useRef<Promise<boolean> | null>(null);
   const mountedRef = useRef(true);
   const initialFileLoadedRef = useRef<File | null>(null);
+  const imageLoadRequestRef = useRef(0);
 
   const [loading, setLoading] = useState(false);
+  const [imageLoadError, setImageLoadError] = useState<ImageLoadError | null>(null);
   const [loadProgress, setLoadProgress] = useState(0);
   const [detecting, setDetecting] = useState(false);
   const [cat, setCat] = useState<BeautyCategory>("beauty");
@@ -452,11 +462,43 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   }, []);
 
   const loadImageFile = useCallback((file: File) => {
+    const requestId = imageLoadRequestRef.current + 1;
+    imageLoadRequestRef.current = requestId;
+    const isCurrentImageLoad = () => imageLoadRequestRef.current === requestId;
+    const failImageLoad = (reason: ImageLoadError, error?: unknown) => {
+      if (!isCurrentImageLoad()) return;
+      if (error) console.error("Editor image load failed:", error);
+      setLoading(false);
+      setDetecting(false);
+      setFaceOk(false);
+      setFaceError(false);
+      landmarksRef.current = null;
+      setImageLoadError(reason);
+    };
+
+    if (file.type && !file.type.startsWith("image/")) {
+      failImageLoad("unsupported");
+      return;
+    }
+
     setLoading(true);
+    setDetecting(false);
+    setFaceOk(false);
+    setFaceError(false);
+    landmarksRef.current = null;
+    setImageLoadError(null);
+
     const reader = new FileReader();
     reader.onload = () => {
+      if (!isCurrentImageLoad()) return;
+      const dataUrl = reader.result;
+      if (typeof dataUrl !== "string") {
+        failImageLoad("read");
+        return;
+      }
       const img = new Image();
       img.onload = async () => {
+        if (!isCurrentImageLoad()) return;
         const MAX_DIM = 2000;
         let w = img.width, h = img.height;
         if (w > MAX_DIM || h > MAX_DIM) {
@@ -464,15 +506,22 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           w = Math.round(w * ratio);
           h = Math.round(h * ratio);
         }
-        originalRef.current = img;
         const canvas = canvasRef.current;
-        if (!canvas) return;
+        if (!canvas) {
+          failImageLoad("canvas");
+          return;
+        }
         canvas.width = w; canvas.height = h;
         originalSizeRef.current = { w, h };
         const ctx = canvas.getContext("2d");
-        if (!ctx) return;
+        if (!ctx) {
+          failImageLoad("canvas");
+          return;
+        }
+        originalRef.current = img;
         ctx.drawImage(img, 0, 0, w, h);
         setLoading(false);
+        setImageLoadError(null);
 
         // Reset blemish canvas
         blemishCanvasRef.current = null;
@@ -483,11 +532,15 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
         setFaceOk(false);
         try {
           const ready = await waitForFaceModels();
+          if (!isCurrentImageLoad()) return;
           if (ready) {
             const api = faceApiRef.current || await import("face-api.js");
+            if (!isCurrentImageLoad()) return;
             await prepareFaceApiBackend(api);
+            if (!isCurrentImageLoad()) return;
             faceApiRef.current = api;
             const landmarks = await detectFaceLandmarks(api, canvas);
+            if (!isCurrentImageLoad()) return;
             if (landmarks) {
               setFaceOk(true);
               landmarksRef.current = landmarks;
@@ -506,19 +559,23 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           setFaceError(false);
           landmarksRef.current = null;
         } finally {
-          setDetecting(false);
+          if (isCurrentImageLoad()) setDetecting(false);
         }
+        if (!isCurrentImageLoad()) return;
         historyRef.current = [{ ...INITIAL }];
         historyIdxRef.current = 0;
         setHistoryIdx(0);
         setSettings({ ...INITIAL });
         setTexts([]); setStickers([]); setFrameId("none");
       };
-      img.src = reader.result as string;
+      img.onerror = () => failImageLoad("decode");
+      img.src = dataUrl;
     };
     reader.onerror = () => {
-      setLoading(false);
-      console.error("FileReader error:", reader.error);
+      failImageLoad("read", reader.error);
+    };
+    reader.onabort = () => {
+      failImageLoad("read");
     };
     reader.readAsDataURL(file);
   }, [waitForFaceModels]);
@@ -555,7 +612,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
     e.stopPropagation();
     setIsDragOver(false);
     const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith("image/")) {
+    if (file) {
       loadImageFile(file);
     }
   }, [loadImageFile]);
@@ -844,6 +901,16 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           {faceOk && <span className="editor-face-ok" role="status" aria-label={t("editor.faceDetected")}>✓</span>}
           {faceError && !detecting && <span className="editor-status-warning" role="status" aria-live="polite">{t("editor.noFaceDetected")}</span>}
         </div>
+
+        {imageLoadError && (
+          <div className="editor-image-error" role="alert" aria-live="assertive">
+            <strong>{t("editor.imageLoadFailed")}</strong>
+            <span>{t(IMAGE_LOAD_ERROR_KEYS[imageLoadError] as any)}</span>
+            <button type="button" className="editor-image-error-action" onClick={handleUploadClick}>
+              {t("editor.tryAnotherImage")}
+            </button>
+          </div>
+        )}
 
         {originalRef.current && (
           <section className="editor-workflow" aria-label={t("editor.workflow.label")}>

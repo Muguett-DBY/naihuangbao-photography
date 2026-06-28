@@ -956,3 +956,33 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28320940767` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is resilient editor image ingestion and explicit recovery for unreadable or unsupported files.
 - **Status**: COMPLETE
+
+### Stage 2 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Harden editor image ingestion so unreadable, unsupported, corrupt, aborted, or superseded image loads end cleanly and give the user a recoverable upload path.
+- **Start state**: `main` at `6ac08c5`; tracked tree clean except the protected untracked orchestrator history folders.
+- **Previous direction carried forward**: Stage 1 identified corrupt/unreadable image feedback as the next hardening target after the editor route shell split.
+- **Completed locally**:
+  - Added request sequencing around editor image loads so stale FileReader, image decode, canvas setup, and face-detection completions cannot overwrite the newest upload state.
+  - Added explicit failure handling for unsupported files, FileReader errors/abort, image decode errors, and missing canvas context.
+  - Added an accessible `.editor-image-error` alert with localized retry copy and a "try another image" action.
+  - Reset loading, detecting, face status, and landmarks on failed image loads while keeping the editor recoverable without a page refresh.
+  - Let drag-and-drop route non-image files through the same validation path so unsupported files get a visible error instead of being silently ignored.
+  - Replaced the editor E2E fixture generation with an existing gallery image fixture so Playwright does not mutate tracked `test-results` during normal runs.
+  - Added regression coverage for the new recoverable image-load contract.
+- **Rendered validation**:
+  - Targeted Playwright first reproduced the corrupt upload failure with no `.editor-image-error`, then passed after rebuilding `dist`.
+  - Full Playwright confirmed the corrupt-image recovery path: broken upload shows the alert, loading overlay hides, valid re-upload clears the alert, and the editor canvas renders.
+  - In-app Browser on a fresh preview origin confirmed `/editor` page identity, meaningful editor content, no framework overlay, and no console error/warn output. Browser file upload is not exposed in this runtime, so upload recovery evidence comes from project Playwright.
+- **Local verification**:
+  - Red/green: `src/lib/editor-regressions.test.ts` first failed on missing `imageLoadRequestRef`, then passed 18/18.
+  - Red/green: targeted Playwright first failed on missing `.editor-image-error`, then passed 2/2 after the image-load recovery implementation and production rebuild.
+  - `npm run lint` — passed.
+  - `npm test -- --run` — 49 files / 318 tests passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis; `PhotoEditorWorkspace` is 53.80 kB before gzip.
+  - Full Playwright e2e with one worker — 31/31 passed.
+- **Risk**: Browser plugin validation could not directly set file inputs, so the corrupt/valid file upload interaction is verified by Playwright CLI. The local in-app Browser has previously shown old service-worker cache behavior on reused preview ports; this stage used a fresh preview origin for Browser checks.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is making the editor failure/recovery state visually clear on desktop and mobile without crowding the toolbar.
+- **Status**: LOCAL COMPLETE / CI PENDING
