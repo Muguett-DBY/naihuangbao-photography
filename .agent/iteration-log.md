@@ -1430,6 +1430,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - Vitest 全量：45 个文件、302/302 通过。
 - Browser + Playwright QA：干净 preview origin 上首页首屏可见、console 无错误、hover Gallery 预取 `GalleryPage-BhoMyoPO.js`、`/#why` 与 `/booking#faq` 均滚到目标区块且没有 404。
 - Playwright e2e：30/30 通过。
+- GitHub Actions：CI run `28307292636` 通过，覆盖 `npm ci`、lint、test、build 和 performance budget。
 
 ### 遗留风险
 - `face-api-vendor` 仍是最大 lazy chunk，约 661 KB。

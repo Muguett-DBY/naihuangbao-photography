@@ -917,4 +917,6 @@ Beginning execution.
   - `npm test` — 302/302 passed.
   - Playwright e2e with repository config — 30/30 passed.
 - **Risk**: `face-api-vendor` remains the largest lazy chunk at about 661 KB, and Vite still reports the existing browser-compat `fs` externalization warning from `face-api.js`. The local in-app Browser on port 4174 had an old service-worker cache, so rendered QA used a clean preview origin for authoritative evidence.
-- **Status**: LOCAL COMPLETE; PUSH / CI PENDING
+- **Commit**: `d6b3033` — `feat: reduce font and route loading pressure`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28307292636` passed `npm ci`, lint, tests, build, and performance budget.
+- **Status**: COMPLETE
