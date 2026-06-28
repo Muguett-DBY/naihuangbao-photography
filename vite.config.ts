@@ -1,6 +1,7 @@
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { stripAnimalIslandFonts } from "./vite-plugins/strip-animal-fonts";
 
 export default defineConfig({
   build: {
@@ -42,6 +43,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    stripAnimalIslandFonts(),
     react(),
     VitePWA({
       registerType: "prompt",

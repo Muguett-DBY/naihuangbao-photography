@@ -3,29 +3,26 @@ import { createBrowserRouter } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { RootLayout } from "./layouts/RootLayout";
 import { NotFound } from "./components/NotFound";
+import { routeLoaders } from "./lib/route-preload";
 
-const HomePage = lazy(() => import("./pages/HomePage").then((m) => ({ default: m.HomePage })));
-const GalleryPage = lazy(() => import("./pages/GalleryPage").then((m) => ({ default: m.GalleryPage })));
-const CoursesPage = lazy(() => import("./pages/CoursesPage").then((m) => ({ default: m.CoursesPage })));
-const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage").then((m) => ({ default: m.CourseDetailPage })));
-const ProductsPage = lazy(() => import("./pages/ProductsPage").then((m) => ({ default: m.ProductsPage })));
-const PresetDetailPage = lazy(() => import("./pages/PresetDetailPage").then((m) => ({ default: m.PresetDetailPage })));
-const WorkshopsPage = lazy(() => import("./pages/WorkshopsPage").then((m) => ({ default: m.WorkshopsPage })));
-const WorkshopDetailPage = lazy(() => import("./pages/WorkshopDetailPage").then((m) => ({ default: m.WorkshopDetailPage })));
-const ShopPage = lazy(() => import("./pages/ShopPage").then((m) => ({ default: m.ShopPage })));
-const ShopDetailPage = lazy(() => import("./pages/ShopDetailPage").then((m) => ({ default: m.ShopDetailPage })));
-const BookingPage = lazy(() => import("./pages/BookingPage").then((m) => ({ default: m.BookingPage })));
-const MapPage = lazy(() => import("./pages/MapPage").then((m) => ({ default: m.MapPage })));
-const LoginPage = lazy(() => import("./pages/LoginPage").then((m) => ({ default: m.LoginPage })));
-const DashboardPage = lazy(() => import("./pages/DashboardPage").then((m) => ({ default: m.DashboardPage })));
-const PhotoDetailPage = lazy(() => import("./pages/PhotoDetailPage").then((m) => ({ default: m.PhotoDetailPage })));
-const PhotoEditorPage = lazy(() => import("./pages/PhotoEditorPage"));
-const ComparePage = lazy(() => import("./pages/ComparePage").then((m) => ({ default: m.ComparePage })));
-
-const AdminDashboard = lazy(async () => {
-  await import("./styles/admin.css");
-  return import("./components/AdminDashboard");
-});
+const HomePage = lazy(routeLoaders["/"]);
+const GalleryPage = lazy(routeLoaders["/gallery"]);
+const CoursesPage = lazy(routeLoaders["/courses"]);
+const CourseDetailPage = lazy(routeLoaders["/courses/:id"]);
+const ProductsPage = lazy(routeLoaders["/products"]);
+const PresetDetailPage = lazy(routeLoaders["/presets/:id"]);
+const WorkshopsPage = lazy(routeLoaders["/workshops"]);
+const WorkshopDetailPage = lazy(routeLoaders["/workshops/:id"]);
+const ShopPage = lazy(routeLoaders["/shop"]);
+const ShopDetailPage = lazy(routeLoaders["/shop/:id"]);
+const BookingPage = lazy(routeLoaders["/booking"]);
+const MapPage = lazy(routeLoaders["/map"]);
+const LoginPage = lazy(routeLoaders["/login"]);
+const DashboardPage = lazy(routeLoaders["/dashboard"]);
+const PhotoDetailPage = lazy(routeLoaders["/gallery/:id"]);
+const PhotoEditorPage = lazy(routeLoaders["/editor"]);
+const ComparePage = lazy(routeLoaders["/compare"]);
+const AdminDashboard = lazy(routeLoaders["/admin"]);
 
 function AdminRoute() {
   const { t } = useTranslation();

@@ -1,9 +1,10 @@
 import { CalendarCheck, Home, Images, Sparkles, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { useBookingModal } from "../../hooks/useBookingModal";
+import { PrefetchLink } from "./PrefetchLink";
 
 type MobileNavLinkProps = {
   to: string;
@@ -14,7 +15,7 @@ type MobileNavLinkProps = {
 
 function MobileNavLink({ to, label, active, icon }: MobileNavLinkProps) {
   return (
-    <Link
+    <PrefetchLink
       to={to}
       className={`mobile-bottom-nav__item${active ? " is-active" : ""}`}
       aria-current={active ? "page" : undefined}
@@ -22,7 +23,7 @@ function MobileNavLink({ to, label, active, icon }: MobileNavLinkProps) {
     >
       {icon}
       <span>{label}</span>
-    </Link>
+    </PrefetchLink>
   );
 }
 

@@ -1402,3 +1402,44 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 后台与公共资源加载减压：在不牺牲功能的前提下，继续削减大字体、`face-api-vendor` 或后台入口加载压力，让已新增的 Error Reports 能以更低资源成本运行。
+
+---
+
+## Campaign 017 Stage 6 — Resource Pressure and Navigation Intent Improve
+
+### 承接的上一轮方向
+- Stage 5 推荐继续削减 CJK 字体、`face-api-vendor` 或后台入口加载压力。
+- 本阶段优先处理可验证、低风险且影响全站首载的字体输出，并顺手修复页脚死链与路由预取体验。
+
+### 完成内容
+- 新增 Vite pre-transform 插件，只剥离 `animal-island-ui` 自带的 `@font-face`，保留组件 CSS。
+- 新增字体资源预算，限制 `dist/assets` 中 `.woff/.woff2/.ttf` 合计不超过 256 KiB。
+- 将路由 lazy loader 抽成共享 `routeLoaders`，新增可去重、失败可重试的 `preloadRoute`。
+- 新增 `PrefetchLink`，桌面导航、移动底栏、首页卡片和页脚链接会在 hover/focus/touch intent 时提前加载目标路由 chunk。
+- 新增 `RouteHashScroller`，hash 跳转会等待 lazy 内容出现后再滚动。
+- 修复页脚 `/about`、`/faq` 死链，改为 `/#why` 和 `/booking#faq`。
+- 补齐 zh-CN/en/ja/ko 的 `nav.about`，避免中文页脚显示英文 fallback。
+
+### 已通过的验证
+- Red/green：route preload 去重、hash/search 归一化和失败重试测试先失败，修复后通过。
+- Red/green：font strip 插件先保留 `@font-face` 导致测试失败，修复后通过并确认 `.animal-btn` 等组件 CSS 保留。
+- Red/green：字体预算先在旧构建 8,096,916 bytes 下失败，新构建 110,160 bytes 后通过。
+- Targeted Vitest：3 个文件、19/19 通过。
+- TypeScript / lint：通过。
+- `build:full`：通过，字体输出 6 个文件 / 110,160 bytes；总 bundle 2.90 MB / 966.3 KB gzip。
+- Vitest 全量：45 个文件、302/302 通过。
+- Browser + Playwright QA：干净 preview origin 上首页首屏可见、console 无错误、hover Gallery 预取 `GalleryPage-BhoMyoPO.js`、`/#why` 与 `/booking#faq` 均滚到目标区块且没有 404。
+- Playwright e2e：30/30 通过。
+
+### 遗留风险
+- `face-api-vendor` 仍是最大 lazy chunk，约 661 KB。
+- Vite 构建仍有既有的 `face-api.js` 浏览器兼容 `fs` externalization warning。
+- 本地内置 Browser 在 4174 曾命中过旧 service-worker cache；本阶段使用新 preview origin 和干净 Playwright context 作为权威浏览器证据。
+
+### 下一轮建议方向
+1. IMPROVE：继续拆分或按需加载 `face-api-vendor`，优先确认修图页之外不会触发该大包。
+2. CHECK：上线后确认 Pages 部署产物字体资源仍保持在预算内，且 `/about`、`/faq` 不再被公开入口引用。
+3. UIUX：复查移动端英雄区底部 CTA、scroll 提示和浮动 AI 按钮的间距，防止小屏高度下拥挤。
+
+### 推荐下一轮优先执行的旗舰级主改动
+修图能力按需加载减压：围绕 `face-api-vendor` 的触发路径做源代码和浏览器网络核验，只在进入修图/人脸相关能力时加载该大包，并为误加载加回归测试。

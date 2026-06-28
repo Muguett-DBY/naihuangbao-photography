@@ -876,3 +876,45 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28305717619` initially failed during `npm ci` with a transient registry `ECONNRESET`. The failed job was rerun without repository changes and passed all install, lint, test, build, and performance-budget steps.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing admin/vendor bundle pressure or improving operational visibility now that Error Reports workflow safety has been checked.
 - **Status**: COMPLETE
+
+### Stage 6 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Reduce first-load and deployment resource pressure while making primary navigation feel faster, then repair footer discovery links that currently lead to non-existent routes.
+- **Start state**: `main` at `84fa4e1`; tracked tree clean except protected untracked orchestrator history folders.
+- **Previous direction carried forward**: Stage 5 recommended reducing CJK/font, `face-api-vendor`, or admin-entry loading pressure without sacrificing functionality.
+- **Measured baseline**:
+  - The production bundle emits 18 font assets totaling 8,096,916 bytes; 15 declarations come from the globally imported `animal-island-ui` stylesheet, including unused Noto Sans SC and Zen Maru Gothic families.
+  - Route components are lazy, but primary desktop/mobile/footer navigation does not preload route chunks on hover, focus, or touch intent.
+  - Footer links to `/about` and `/faq` have no matching routes and land on the not-found view despite equivalent content existing at `/#why` and `/booking#faq`.
+- **Planned delivery**:
+  - Strip only the component library's bundled font-face declarations at build time while preserving its component CSS and the site's existing self-hosted/system font stack.
+  - Add a font-asset performance budget so dependency upgrades cannot silently restore multi-megabyte font output.
+  - Add deduplicated, retryable route preloading and use it for primary navigation links on pointer, focus, and touch intent.
+  - Repair footer discovery links and make hash navigation wait for lazy route content before scrolling to the requested section.
+- **Completed locally**:
+  - Added a Vite pre-transform plugin that removes only `animal-island-ui` bundled `@font-face` declarations while keeping the library's component CSS available.
+  - Added a font-asset performance budget capped at 256 KiB.
+  - Reused route lazy loaders through a shared `routeLoaders` map and added deduplicated, retryable route preloading.
+  - Converted primary desktop, mobile, home-card, and footer navigation links to `PrefetchLink`, preloading on pointer, focus, and touch intent.
+  - Added `RouteHashScroller` so hash navigation waits for lazy route content before scrolling.
+  - Repaired footer discovery links from dead `/about` and `/faq` routes to `/#why` and `/booking#faq`.
+  - Added missing `nav.about` copy in zh-CN/en/ja/ko so the repaired footer link stays localized.
+- **Measured result**:
+  - Font output dropped from 18 assets / 8,096,916 bytes to 6 assets / 110,160 bytes.
+  - Production bundle report remains 2.90 MB total / 966.3 KB gzip; main JS `index-B2BVqvH4.js` is 311,922 bytes and main CSS remains 178,086 bytes.
+- **Rendered validation**:
+  - Browser plugin validated the clean preview page identity, meaningful first screen, no framework overlay, and no console error/warn output.
+  - Temporary Playwright QA on a clean preview origin confirmed header hover requested `GalleryPage-BhoMyoPO.js` before navigation.
+  - The same Playwright QA confirmed footer `关于` navigates to `/#why` and footer `常见问题` navigates to `/booking#faq`; both targets exist, scroll to the target section, and do not show NotFound.
+  - Desktop and mobile screenshots were inspected; mobile bottom navigation and main content are visible.
+- **Local verification**:
+  - Red/green: route preloader tests first failed on missing dedupe/retry behavior, then `src/lib/route-preload.test.ts` passed.
+  - Red/green: font-strip plugin tests first failed while `@font-face` remained, then passed after the Vite plugin implementation.
+  - Red/green: the new font budget first failed against the old 8,096,916-byte font output, then passed at 110,160 bytes.
+  - Targeted tests: `npm test -- src/lib/route-preload.test.ts vite-plugins/strip-animal-fonts.test.ts src/lib/performance.test.ts` — 19/19 passed.
+  - `npm run lint` — passed.
+  - `npm run build:full` — passed, including font budget and bundle analysis.
+  - `npm test` — 302/302 passed.
+  - Playwright e2e with repository config — 30/30 passed.
+- **Risk**: `face-api-vendor` remains the largest lazy chunk at about 661 KB, and Vite still reports the existing browser-compat `fs` externalization warning from `face-api.js`. The local in-app Browser on port 4174 had an old service-worker cache, so rendered QA used a clean preview origin for authoritative evidence.
+- **Status**: LOCAL COMPLETE; PUSH / CI PENDING
