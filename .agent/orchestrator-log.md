@@ -982,7 +982,7 @@ Beginning execution.
   - `npm run build:full` — passed, including performance budget and bundle analysis; `PhotoEditorWorkspace` is 53.80 kB before gzip.
   - Full Playwright e2e with one worker — 31/31 passed.
 - **Risk**: Browser plugin validation could not directly set file inputs, so the corrupt/valid file upload interaction is verified by Playwright CLI. The local in-app Browser has previously shown old service-worker cache behavior on reused preview ports; this stage used a fresh preview origin for Browser checks.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `14a43b5` — `fix: recover from editor image load failures`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28321509688` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is making the editor failure/recovery state visually clear on desktop and mobile without crowding the toolbar.
-- **Status**: LOCAL COMPLETE / CI PENDING
+- **Status**: COMPLETE

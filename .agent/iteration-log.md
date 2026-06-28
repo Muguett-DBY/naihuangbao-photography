@@ -1507,6 +1507,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - `build:full` + performance budget：通过，`PhotoEditorWorkspace` 53.80 kB，`face-api-vendor` 661.57 kB，仍保持 lazy chunk。
 - Playwright 全量：31/31 通过（单 worker）。
 - Browser：新 preview origin 上 `/editor` 页面身份正确、首屏有意义内容、无框架错误覆盖、console error/warn 为空。文件上传恢复以项目 Playwright 为权威证据，因为 Browser runtime 不暴露 `setInputFiles`。
+- GitHub Actions：CI run `28321509688` 通过，覆盖 `npm ci`、lint、test、build 和 performance budget。
 
 ### 遗留风险
 - `face-api-vendor` 仍是最大 lazy chunk；本阶段只处理图片摄入错误恢复，不拆分人脸模型包。
