@@ -1388,6 +1388,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - `build:full` + performance budget：通过，主包 310,313 bytes 仍在预算内。
 - Playwright smoke：13/13 通过。
 - Playwright booking flow：6/6 通过。
+- GitHub Actions：CI run `28305717619` 首次在 `npm ci` 遇到 registry `ECONNRESET`；失败任务原样重跑后安装、lint、test、build 和 performance budget 全部通过。
 
 ### 遗留风险
 - 同组批量处理仍按精确 category/message/source/URL 边界匹配，带不同 query 的错误会独立成组。

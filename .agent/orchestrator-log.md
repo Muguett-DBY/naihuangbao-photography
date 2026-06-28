@@ -872,7 +872,7 @@ Beginning execution.
   - Playwright smoke against preview with the repository config — 13/13 passed.
   - Playwright booking flow against preview with the repository config — 6/6 passed.
 - **Risk**: Group matching still intentionally uses exact category/message/source/URL identity. Existing multilingual font and `face-api-vendor` size warnings remain. Local Windows installs can hit transient process locks if Wrangler/workerd/esbuild dev processes are still running.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `884ea5f` — `fix: harden error report workflow checks`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28305717619` initially failed during `npm ci` with a transient registry `ECONNRESET`. The failed job was rerun without repository changes and passed all install, lint, test, build, and performance-budget steps.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing admin/vendor bundle pressure or improving operational visibility now that Error Reports workflow safety has been checked.
-- **Status**: LOCAL COMPLETE; CI PENDING
+- **Status**: COMPLETE
