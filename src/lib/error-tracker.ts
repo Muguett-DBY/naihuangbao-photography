@@ -31,8 +31,11 @@ function generateId(): string {
 }
 
 function getStoredReports(): ErrorReport[] {
+  const storage = getBrowserStorage();
+  if (!storage) return [];
+
   try {
-    const stored = localStorage.getItem(ERROR_STORAGE_KEY);
+    const stored = storage.getItem(ERROR_STORAGE_KEY);
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
@@ -40,10 +43,23 @@ function getStoredReports(): ErrorReport[] {
 }
 
 function persistReports(reports: ErrorReport[]): void {
+  const storage = getBrowserStorage();
+  if (!storage) return;
+
   try {
-    localStorage.setItem(ERROR_STORAGE_KEY, JSON.stringify(reports));
+    storage.setItem(ERROR_STORAGE_KEY, JSON.stringify(reports));
   } catch {
     // Ignore storage failures
+  }
+}
+
+function getBrowserStorage(): Storage | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
   }
 }
 

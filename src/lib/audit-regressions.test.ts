@@ -65,6 +65,7 @@ const bookingCalendarSource = readFileSync(resolve(root, "src/components/Booking
 const loadingScreenSource = readFileSync(resolve(root, "src/components/LoadingScreen.tsx"), "utf8");
 const errorBoundarySource = readFileSync(resolve(root, "src/components/ErrorBoundary.tsx"), "utf8");
 const pwaUpdateBannerSource = readFileSync(resolve(root, "src/components/PwaUpdateBanner.tsx"), "utf8");
+const themeToggleSource = readFileSync(resolve(root, "src/components/ThemeToggle.tsx"), "utf8");
 const errorTrackerSource = readFileSync(resolve(root, "src/lib/error-tracker.ts"), "utf8");
 const analyticsErrorApiSource = readFileSync(resolve(root, "functions/api/analytics/error.ts"), "utf8");
 const adminErrorsApiPath = resolve(root, "functions/api/admin/errors.ts");
@@ -86,6 +87,7 @@ const wranglerSource = readFileSync(resolve(root, "wrangler.toml"), "utf8");
 const htmlSource = readFileSync(resolve(root, "index.html"), "utf8");
 const loginPageSource = readFileSync(resolve(root, "src/pages/LoginPage.tsx"), "utf8");
 const registerApiSource = readFileSync(resolve(root, "functions/api/auth/register.ts"), "utf8");
+const forgotPasswordApiSource = readFileSync(resolve(root, "functions/api/auth/forgot-password.ts"), "utf8");
 const jaLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ja.json"), "utf8");
 const zhLocaleSource = readFileSync(resolve(root, "src/i18n/locales/zh-CN.json"), "utf8");
 const enLocaleSource = readFileSync(resolve(root, "src/i18n/locales/en.json"), "utf8");
@@ -553,10 +555,18 @@ describe("audit regression coverage", () => {
     expect(wranglerSource).toContain("Required Pages secrets");
     expect(readmeSource).toContain("AUTH_SECRET");
     expect(readmeSource).toContain("RATE_LIMIT_SECRET");
+    expect(readmeSource).toContain("RESEND_API_KEY");
+    expect(readmeSource).toContain("RESET_EMAIL_FROM");
     expect(readmeSource).toContain("wrangler pages secret put AUTH_SECRET");
     expect(readmeSource).toContain("wrangler pages secret put ADMIN_PASSWORD");
     expect(wranglerSource).not.toMatch(/\[vars\][\s\S]*AUTH_SECRET/);
     expect(readmeSource).not.toMatch(/AUTH_SECRET\s*=\s*['"][^'"]+['"]/);
+  });
+
+  it("sends password reset mail when Resend is configured", () => {
+    expect(forgotPasswordApiSource).toContain("https://api.resend.com/emails");
+    expect(forgotPasswordApiSource).toContain("RESET_EMAIL_FROM");
+    expect(forgotPasswordApiSource).not.toContain("TODO: Send email");
   });
 
   it("applies shared security headers to API JSON and photo object responses", () => {
@@ -737,6 +747,12 @@ describe("audit regression coverage", () => {
     expect(pwaUpdateBannerSource).toContain("pwaUpdate.refreshing");
     expect(zhLocaleSource).toContain("正在刷新到最新版本");
     expect(enLocaleSource).toContain("Refreshing to the latest version");
+  });
+
+  it("removes the exact media-query listener used for system theme changes", () => {
+    expect(themeToggleSource).toContain("const onChange = (event: MediaQueryListEvent)");
+    expect(themeToggleSource).toContain('mq.addEventListener("change", onChange)');
+    expect(themeToggleSource).toContain('mq.removeEventListener("change", onChange)');
   });
 
   it("keeps photo API runtime cache from being shadowed by broader API routes", () => {

@@ -97,9 +97,10 @@ function clearVars(root: HTMLElement) {
 
 function watchSystem(handler: (isDark: boolean) => void) {
   const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const onChange = (event: MediaQueryListEvent) => handler(event.matches);
   handler(mq.matches);
-  mq.addEventListener("change", (e) => handler(e.matches));
-  return () => mq.removeEventListener("change", (e) => handler(e.matches));
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
 }
 
 export function ThemeToggle() {

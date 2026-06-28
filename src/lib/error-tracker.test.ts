@@ -1,11 +1,27 @@
-import { describe, expect, it, beforeEach, vi } from "vitest";
+import { afterEach, describe, expect, it, beforeEach, vi } from "vitest";
 import { ErrorTracker, reportError } from "./error-tracker";
 
 describe("error tracker", () => {
   beforeEach(() => {
-    if (typeof localStorage !== "undefined") {
-      localStorage.clear();
-    }
+    vi.unstubAllGlobals();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("does not touch Node global localStorage outside the browser", () => {
+    const storage = {
+      getItem: vi.fn(),
+      setItem: vi.fn(),
+    };
+    vi.stubGlobal("localStorage", storage);
+
+    const tracker = new ErrorTracker();
+    tracker.captureError({ message: "server-side error" });
+
+    expect(storage.getItem).not.toHaveBeenCalled();
+    expect(storage.setItem).not.toHaveBeenCalled();
   });
 
   it("captures errors and persists them in local storage", () => {

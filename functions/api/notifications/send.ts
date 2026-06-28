@@ -1,6 +1,11 @@
 import { jsonResponse, badRequest, unavailable } from "../../_responses";
 import { enforceRateLimit, isValidEmail, rateLimited, requirePublicMutationRequest } from "../../_security";
 
+type NotificationEnv = Env & {
+  EMAIL_FROM?: string;
+  RESEND_API_KEY?: string;
+};
+
 type NotificationType = "booking_confirmation" | "workshop_registration" | "payment_receipt";
 
 type NotificationBody = {
@@ -61,7 +66,7 @@ const notificationTemplates: Record<NotificationType, (data: Record<string, unkn
   }),
 };
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+export const onRequestPost: PagesFunction<NotificationEnv> = async (context) => {
   const publicActionError = requirePublicMutationRequest(context.request);
   if (publicActionError) return publicActionError;
 
@@ -83,18 +88,35 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const template = notificationTemplates[body.type](body.data || {});
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const env = context.env as any;
-  const from = env.EMAIL_FROM || "noreply@portrait-booking.example.com";
+  const apiKey = context.env.RESEND_API_KEY?.trim();
+  if (!apiKey) {
+    return jsonResponse({ error: "Email delivery is not configured" }, 503);
+  }
+
+  const from = context.env.EMAIL_FROM?.trim() || "Naihuangbao Photography <noreply@shoot.custard.top>";
 
   try {
-    // Placeholder: In production, replace with actual email provider API call
-    // Example with Resend: await resend.emails.send({ from, to: body.to, subject: template.subject, html: template.html });
-    // Example with Cloudflare Email Workers: await context.env.SEND_EMAIL(from, body.to, template.subject, template.html);
+    const response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${apiKey}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: [body.to.trim()],
+        subject: template.subject,
+        html: template.html,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Resend returned ${response.status}`);
+    }
 
     return jsonResponse({
       ok: true,
-      message: "Notification queued for delivery",
+      message: "Notification sent",
       type: body.type,
     });
   } catch (error) {

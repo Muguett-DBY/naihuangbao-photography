@@ -260,6 +260,19 @@ create table if not exists course_purchases (
 create index if not exists idx_course_purchases_user
   on course_purchases (user_id, created_at);
 
+create table if not exists course_progress (
+  user_id text not null,
+  course_id text not null,
+  completed_modules text not null default '[]',
+  updated_at text not null,
+  primary key (user_id, course_id),
+  foreign key (user_id) references users(id) on delete cascade,
+  foreign key (course_id) references courses(id) on delete cascade
+);
+
+create index if not exists idx_course_progress_course
+  on course_progress (course_id, updated_at);
+
 create table if not exists purchases (
   id text primary key,
   user_id text not null,
@@ -372,7 +385,7 @@ create index if not exists idx_admin_audit_log_action
 create index if not exists idx_admin_audit_log_entity
   on admin_audit_log (entity_type, entity_id, created_at);
 
--- ©¤©¤ Share links ©¤©¤
+-- ---- Share links ----
 
 create table if not exists share_links (
   id text primary key,
@@ -394,7 +407,7 @@ create index if not exists idx_share_links_token
 create index if not exists idx_share_links_resource
   on share_links (resource_type, resource_id, created_at);
 
--- ©¤©¤ Booking waitlist ©¤©¤
+-- ---- Booking waitlist ----
 
 create table if not exists booking_waitlist (
   id text primary key,

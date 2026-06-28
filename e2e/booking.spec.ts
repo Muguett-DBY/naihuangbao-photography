@@ -61,11 +61,10 @@ test.describe("booking flow", () => {
 
     const successMessage = page.locator(".booking-modal-success h2");
     const errorMessage = page.locator(".booking-error");
+    const hasSuccess = await successMessage.isVisible();
+    const hasError = await errorMessage.isVisible();
 
-    if (await errorMessage.isVisible()) {
-      // Error is acceptable if API is not available
-      console.log("Booking API returned error:", await errorMessage.textContent());
-    }
+    expect(hasSuccess || hasError).toBe(true);
   });
 
   test("presets page has working navigation", async ({ page }) => {
