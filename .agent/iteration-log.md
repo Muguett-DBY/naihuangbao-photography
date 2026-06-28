@@ -1468,6 +1468,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - Playwright 原失败用例：2/2 通过。
 - Playwright 全量：30/30 通过（单 worker）。
 - Browser：首屏仅观察到 `PhotoEditorPage`；点击 Open editor 后才出现 `PhotoEditorWorkspace`，且上传照片前仍没有 `face-api-vendor`；控制台无 error/warn。
+- GitHub Actions：提交 `89f6110` 的 CI run `28320940767` 通过 `npm ci`、lint、test、build 和 performance budget。
 
 ### 遗留风险
 - 真正上传照片并做人脸检测时仍需加载约 661.57 kB 的 `face-api-vendor`，这是功能成本而非首屏误加载。

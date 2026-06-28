@@ -952,6 +952,7 @@ Beginning execution.
   - Targeted editor Playwright regression — 2/2 passed.
   - Full Playwright suite with one worker — 30/30 passed.
 - **Risk**: `face-api-vendor` remains approximately 661.57 kB when a photo actually requires face detection. Unreadable/corrupt image decode feedback remains a useful next hardening target.
-- **Commit / Push / CI**: pending after the local verification gate.
+- **Commit**: `89f6110` — `feat: lazy load editor workspace`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28320940767` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is resilient editor image ingestion and explicit recovery for unreadable or unsupported files.
-- **Status**: LOCAL COMPLETE
+- **Status**: COMPLETE
