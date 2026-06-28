@@ -1,8 +1,12 @@
-import { jsonResponse, badRequest, unavailable } from "../../_responses";
-import { enforceRateLimit, getRequiredAuthSecret, isValidEmail, rateLimited } from "../../_security";
-import { hashPassword } from "../../_auth";
+import { jsonResponse, badRequest, logWorkerError } from "../../_responses";
+import { enforceRateLimit, isValidEmail, rateLimited } from "../../_security";
 
-type AuthEnv = Env & { AUTH_SECRET?: string };
+type AuthEnv = Env & {
+  AUTH_SECRET?: string;
+  DEMO_MODE?: string;
+  RESEND_API_KEY?: string;
+  RESET_EMAIL_FROM?: string;
+};
 
 type UserRow = {
   id: string;
@@ -59,21 +63,28 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
      values (?, ?, ?, ?, 0, ?)`,
   ).bind(id, user.id, tokenHash, expiresAt, createdAt).run();
 
-  // In demo mode (no email provider configured), return token directly
-  // In production, this would send an email with the token
-  const resendKey = (context.env as { RESEND_API_KEY?: string }).RESEND_API_KEY;
-  const sendEmailFn = (context.env as { SEND_EMAIL?: unknown }).SEND_EMAIL;
-  const hasEmailProvider = !!(resendKey || sendEmailFn);
-
-  if (hasEmailProvider) {
-    // TODO: Send email with reset link containing the token
-    // await sendResetEmail(user.email, token);
+  const resendKey = context.env.RESEND_API_KEY?.trim();
+  if (resendKey) {
+    try {
+      await sendResetEmail({
+        apiKey: resendKey,
+        from: context.env.RESET_EMAIL_FROM?.trim() || "Naihuangbao Photography <noreply@shoot.custard.top>",
+        origin: new URL(context.request.url).origin,
+        to: user.email,
+        token,
+      });
+    } catch (error) {
+      logWorkerError("Password reset email delivery failed", error, {
+        route: "/api/auth/forgot-password",
+        method: "POST",
+      });
+    }
     return jsonResponse({ ok: true, message: "如果该邮箱已注册，重置链接已发送" });
   }
 
   // Demo mode: return token in response only if explicitly enabled
   // In production, this code path should never run (email provider should be configured)
-  const isDemoMode = !!(context.env as { DEMO_MODE?: string }).DEMO_MODE;
+  const isDemoMode = !!context.env.DEMO_MODE;
   if (!isDemoMode) {
     // Production without email — log warning but never return token
     console.warn("[forgot-password] No email provider configured and DEMO_MODE not set. Token generated but not delivered.");
@@ -94,4 +105,44 @@ async function sha256Hex(value: string): Promise<string> {
   return Array.from(new Uint8Array(digest))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
+}
+
+async function sendResetEmail({
+  apiKey,
+  from,
+  origin,
+  to,
+  token,
+}: {
+  apiKey: string;
+  from: string;
+  origin: string;
+  to: string;
+  token: string;
+}) {
+  const loginUrl = `${origin}/login`;
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${apiKey}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      subject: "奶黄包摄影密码重置",
+      text: [
+        "你正在重置奶黄包摄影账号密码。",
+        "",
+        `重置令牌：${token}`,
+        `登录页：${loginUrl}`,
+        "",
+        "令牌 1 小时内有效。如果不是你本人操作，可以忽略这封邮件。",
+      ].join("\n"),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("reset email delivery failed");
+  }
 }

@@ -129,7 +129,15 @@ describe("performance budgets", () => {
   it("strips component-library font faces and budgets emitted fonts", () => {
     expect(viteConfig).toContain("stripAnimalIslandFonts()");
     expect(budgetSource).toContain("maxFontAssetBytes");
+    expect(budgetSource).toContain("maxLazyJsBytes");
     expect(budgetSource).toContain("Font asset budget exceeded");
+    expect(budgetSource).toContain("Lazy JS budget exceeded");
+  });
+
+  it("shims node-only face-api filesystem fallback out of the browser build", () => {
+    expect(viteConfig).toContain("empty-node-module");
+    expect(viteConfig).toContain("chunkSizeWarningLimit: 700");
+    expect(existsSync(resolve(root, "src/lib/empty-node-module.ts"))).toBe(true);
   });
 
   it("renders default homepage data first and defers remote enhancement until idle", () => {

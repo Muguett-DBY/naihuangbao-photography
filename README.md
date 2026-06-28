@@ -98,6 +98,7 @@ npx wrangler d1 execute naihuangbao-photography --file=./db/schema.sql --remote
 npx wrangler pages secret put ADMIN_PASSWORD --project-name naihuangbao-photography
 npx wrangler pages secret put AUTH_SECRET --project-name naihuangbao-photography
 npx wrangler pages secret put RATE_LIMIT_SECRET --project-name naihuangbao-photography
+npx wrangler pages secret put RESEND_API_KEY --project-name naihuangbao-photography
 ```
 
 必需和可选的 Cloudflare Pages 环境项：
@@ -105,6 +106,9 @@ npx wrangler pages secret put RATE_LIMIT_SECRET --project-name naihuangbao-photo
 - `ADMIN_PASSWORD`：后台登录密码，必须通过 Pages secret 配置。
 - `AUTH_SECRET`：站内用户登录 session 签名密钥，至少 32 字符，必须通过 Pages secret 配置。
 - `RATE_LIMIT_SECRET`：公开接口限流 key 哈希密钥，建议通过 Pages secret 配置；如不配置会回退到聊天 API key 等已有密钥。
+- `RESEND_API_KEY`：密码重置邮件发送密钥；配置后 `/api/auth/forgot-password` 会通过 Resend 发送重置令牌。
+- `RESET_EMAIL_FROM`：密码重置邮件发件人，例如 `Naihuangbao <reset@shoot.custard.top>`；可作为 Pages 变量配置。
+- `EMAIL_FROM`：预约确认和付款回执等事务邮件发件人；可作为 Pages 变量配置。
 - `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET`：支付功能启用时需要配置。
 - `OPENCODE_GO_API_KEY`：公开 AI 咨询启用时需要配置。
 - `COURSE_PASSWORDS`：课程密码锁启用时可配置。

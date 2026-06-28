@@ -1,11 +1,19 @@
 import { defineConfig } from "vitest/config";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import { stripAnimalIslandFonts } from "./vite-plugins/strip-animal-fonts";
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      fs: resolve(dirname(fileURLToPath(import.meta.url)), "src/lib/empty-node-module.ts"),
+    },
+  },
   build: {
     assetsInlineLimit: 0,
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
         manualChunks(id) {
