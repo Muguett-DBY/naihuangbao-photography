@@ -1,10 +1,10 @@
-import { ArrowUp, ExternalLink, Camera, MessageCircle } from "lucide-react";
+import { ArrowUp, Camera, MessageCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 import { useInView } from "../../hooks/useInView";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { NewsletterForm } from "../NewsletterForm";
+import { PrefetchLink } from "./PrefetchLink";
 
 export function Footer() {
   const { t } = useTranslation();
@@ -40,21 +40,21 @@ export function Footer() {
         <nav className="footer-nav" aria-label={t("footer.navLabel", "Footer navigation")}>
           <div className="footer-nav-group">
             <h3>{t("footer.explore", "Explore")}</h3>
-            <Link to="/gallery">{t("nav.gallery")}</Link>
-            <Link to="/courses">{t("nav.courses")}</Link>
-            <Link to="/products">{t("nav.presets")}</Link>
+            <PrefetchLink to="/gallery">{t("nav.gallery")}</PrefetchLink>
+            <PrefetchLink to="/courses">{t("nav.courses")}</PrefetchLink>
+            <PrefetchLink to="/products">{t("nav.presets")}</PrefetchLink>
           </div>
           <div className="footer-nav-group">
             <h3>{t("footer.services", "Services")}</h3>
-            <Link to="/workshops">{t("nav.workshops")}</Link>
-            <Link to="/shop">{t("nav.shop")}</Link>
-            <Link to="/booking">{t("nav.booking")}</Link>
+            <PrefetchLink to="/workshops">{t("nav.workshops")}</PrefetchLink>
+            <PrefetchLink to="/shop">{t("nav.shop")}</PrefetchLink>
+            <PrefetchLink to="/booking">{t("nav.booking")}</PrefetchLink>
           </div>
           <div className="footer-nav-group">
             <h3>{t("footer.discover", "Discover")}</h3>
-            <Link to="/map">{t("nav.map")}</Link>
-            <Link to="/about">{t("nav.about", "About")}</Link>
-            <Link to="/faq">{t("nav.faq", "FAQ")}</Link>
+            <PrefetchLink to="/map">{t("nav.map")}</PrefetchLink>
+            <PrefetchLink to="/#why">{t("nav.about", "About")}</PrefetchLink>
+            <PrefetchLink to="/booking#faq">{t("nav.faq", "FAQ")}</PrefetchLink>
           </div>
         </nav>
       </div>

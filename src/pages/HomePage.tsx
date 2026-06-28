@@ -1,7 +1,6 @@
 import "../styles/pages.css";
 import { Suspense, lazy, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 import { ArrowDown, ArrowRight, CalendarCheck, BookOpen, Download, ShieldCheck, Sparkles } from "lucide-react";
 import { Button, Divider, Icon } from "animal-island-ui";
 import gsap from "gsap";
@@ -17,6 +16,7 @@ import { SectionSkeleton } from "../components/SectionSkeleton";
 import { PhotoOfTheDay } from "../components/PhotoOfTheDay";
 import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import { useReveal } from "../hooks/useReveal";
+import { PrefetchLink } from "../components/shared/PrefetchLink";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -172,9 +172,9 @@ export function HomePage() {
       </div>
 
       <div style={{ textAlign: "center", padding: "0 16px 40px" }}>
-        <Link to="/gallery" className="home-page-link">
+        <PrefetchLink to="/gallery" className="home-page-link">
           {t("hero.ctaView")} <ArrowRight size={16} />
-        </Link>
+        </PrefetchLink>
       </div>
 
       <Divider type="wave-yellow" />
@@ -186,30 +186,30 @@ export function HomePage() {
           <h2 style={{ clipPath: "inset(0 0 0 0)" }}>{t("home.servicesTitle")}</h2>
         </div>
         <div className="home-services-grid" ref={servicesRef}>
-          <Link to="/courses" className="home-service-card">
+          <PrefetchLink to="/courses" className="home-service-card">
             <BookOpen size={32} />
             <h3>{t("nav.courses")}</h3>
             <p>{t("courses.intro")}</p>
             <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
-          </Link>
-          <Link to="/products" className="home-service-card">
+          </PrefetchLink>
+          <PrefetchLink to="/products" className="home-service-card">
             <Download size={32} />
             <h3>{t("nav.presets")}</h3>
             <p>{t("presets.intro")}</p>
             <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
-          </Link>
-          <Link to="/workshops" className="home-service-card">
+          </PrefetchLink>
+          <PrefetchLink to="/workshops" className="home-service-card">
             <Icon name="icon-map" size={32} />
             <h3>{t("nav.workshops")}</h3>
             <p>{t("workshops.intro")}</p>
             <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
-          </Link>
-          <Link to="/shop" className="home-service-card">
+          </PrefetchLink>
+          <PrefetchLink to="/shop" className="home-service-card">
             <Icon name="icon-camera" size={32} />
             <h3>{t("nav.shop")}</h3>
             <p>{t("merchandise.intro")}</p>
             <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={14} /></span>
-          </Link>
+          </PrefetchLink>
         </div>
       </section>
 

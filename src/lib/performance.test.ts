@@ -19,10 +19,21 @@ const allCss = [
 const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
 const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
 const routerSource = readFileSync(resolve(root, "src/router.tsx"), "utf8");
+const routePreloadSource = readFileSync(resolve(root, "src/lib/route-preload.ts"), "utf8");
 const navSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
 const html = readFileSync(resolve(root, "index.html"), "utf8");
 const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
+const headerSource = readFileSync(resolve(root, "src/components/shared/Header.tsx"), "utf8");
+const mobileNavSource = readFileSync(resolve(root, "src/components/shared/MobileBottomNav.tsx"), "utf8");
+const footerSource = readFileSync(resolve(root, "src/components/shared/Footer.tsx"), "utf8");
+const budgetSource = readFileSync(resolve(root, "scripts/check-performance-budget.mjs"), "utf8");
+const localeFiles = [
+  "src/i18n/locales/zh-CN.json",
+  "src/i18n/locales/en.json",
+  "src/i18n/locales/ja.json",
+  "src/i18n/locales/ko.json",
+];
 
 describe("performance budgets", () => {
   it("keeps route-only page styles out of the initial public shell", () => {
@@ -93,7 +104,32 @@ describe("performance budgets", () => {
     expect(gallerySource).toContain('loading="lazy"');
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
     expect(rootLayoutSource).toContain('lazy(() => import("../components/PublicChatWidget")');
-    expect(routerSource).toContain('import("./styles/admin.css")');
+    expect(routePreloadSource).toContain('import("../styles/admin.css")');
+  });
+
+  it("preloads primary routes on navigation intent", () => {
+    expect(routerSource).toContain("routeLoaders");
+    expect(headerSource).toContain("PrefetchLink");
+    expect(mobileNavSource).toContain("PrefetchLink");
+    expect(footerSource).toContain("PrefetchLink");
+  });
+
+  it("keeps footer discovery links on real lazy-rendered sections", () => {
+    expect(footerSource).not.toContain('to="/about"');
+    expect(footerSource).not.toContain('to="/faq"');
+    expect(footerSource).toContain('to="/#why"');
+    expect(footerSource).toContain('to="/booking#faq"');
+    for (const localeFile of localeFiles) {
+      const locale = JSON.parse(readFileSync(resolve(root, localeFile), "utf8"));
+      expect(locale.nav.about).toBeTruthy();
+    }
+    expect(rootLayoutSource).toContain("RouteHashScroller");
+  });
+
+  it("strips component-library font faces and budgets emitted fonts", () => {
+    expect(viteConfig).toContain("stripAnimalIslandFonts()");
+    expect(budgetSource).toContain("maxFontAssetBytes");
+    expect(budgetSource).toContain("Font asset budget exceeded");
   });
 
   it("renders default homepage data first and defers remote enhancement until idle", () => {

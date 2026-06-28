@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useState } from "react";
+import { Suspense, lazy, useCallback, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LoadingScreen } from "../components/LoadingScreen";
@@ -18,6 +18,7 @@ import { PwaUpdateBanner } from "../components/PwaUpdateBanner";
 import { OfflineFallback } from "../components/OfflineFallback";
 import { PushNotificationBanner } from "../components/PushNotificationBanner";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
+import { RouteHashScroller } from "../components/shared/RouteHashScroller";
 
 // Heavy visual effects and animations are split into a separate chunk
 // so the initial bundle only ships React + i18n + router. These activate
@@ -31,10 +32,6 @@ export function RootLayout() {
   const location = useLocation();
   const [chatOpen, setChatOpen] = useState(false);
   const isOnline = useOnlineStatus();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
 
   const handleSkipClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -53,6 +50,7 @@ export function RootLayout() {
     <div className={isEditor ? "site-shell is-editor" : "site-shell"}>
       <OfflineFallback isOffline={!isOnline} />
       <PwaUpdateBanner />
+      <RouteHashScroller />
       <nav className="skip-links" aria-label={t("common.skipLinksLabel", "Skip links")}>
         <a
           href="#main-content"

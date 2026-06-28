@@ -4,9 +4,10 @@ import { MoodToggle } from "../MoodToggle";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { useAuth } from "../../hooks/useAuth";
+import { PrefetchLink } from "./PrefetchLink";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -142,13 +143,13 @@ export function Header() {
 
   return (<>
     <header ref={navRef} className={`site-nav${scrolled ? " is-scrolled" : ""}`}>
-      <Link className="brand-mark" to="/" aria-label={t("nav.backToHome")}>
+      <PrefetchLink className="brand-mark" to="/" aria-label={t("nav.backToHome")}>
         <Camera size={18} />
         <span>{siteConfig.brandName}</span>
-      </Link>
+      </PrefetchLink>
       <nav className="nav-menu nav-menu--inline" aria-label={t("nav.mainNavigation")}>
         {navItems.map((item) => (
-          <Link
+          <PrefetchLink
             to={item.to}
             key={item.to}
             className={location.pathname === item.to ? "is-active" : ""}
@@ -156,7 +157,7 @@ export function Header() {
             onClick={() => setOpen(false)}
           >
             {item.label}
-          </Link>
+          </PrefetchLink>
         ))}
       </nav>
       <button
@@ -199,14 +200,14 @@ export function Header() {
                 <div className="nav-user-email">
                   {user.email}
                 </div>
-                <Link
+                <PrefetchLink
                   to="/dashboard"
                   onClick={() => setUserMenuOpen(false)}
                   className="nav-user-link"
                 >
                   <LayoutDashboard size={14} />
                   {t("dashboard.title", "个人中心")}
-                </Link>
+                </PrefetchLink>
                 <button
                   onClick={() => { logout(); setUserMenuOpen(false); }}
                   className="nav-user-link"
@@ -218,24 +219,24 @@ export function Header() {
             )}
           </>
         ) : (
-          <Link
+          <PrefetchLink
             to="/login"
             className="nav-login nav-user-btn"
           >
             <LogIn size={14} />
             <span>{t("auth.login", "登录")}</span>
-          </Link>
+          </PrefetchLink>
         )}
       </div>
-      <Link className="nav-cta" to="/booking" onClick={() => setOpen(false)}>
+      <PrefetchLink className="nav-cta" to="/booking" onClick={() => setOpen(false)}>
         <CalendarCheck size={16} />
         {t("nav.booking")}
-      </Link>
+      </PrefetchLink>
     </header>
     {createPortal(
       <nav ref={overlayNavRef} id="site-navigation-menu" className={`nav-menu nav-menu--overlay${open ? " is-open" : ""}`} aria-label={t("nav.mainNavigation")} aria-hidden={!open}>
         {navItems.map((item) => (
-          <Link
+          <PrefetchLink
             to={item.to}
             key={item.to}
             className={location.pathname === item.to ? "is-active" : ""}
@@ -243,7 +244,7 @@ export function Header() {
             onClick={() => setOpen(false)}
           >
             {item.label}
-          </Link>
+          </PrefetchLink>
         ))}
       </nav>,
       document.body,
