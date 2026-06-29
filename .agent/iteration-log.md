@@ -1624,6 +1624,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - `build:full` + performance budget：通过。
 - Playwright 全量：先暴露隐藏 input 上传竞态，修复后 32/32 通过（单 worker）。
 - `npm audit --json`：0 vulnerabilities；`npm ls --depth=0` clean；`npm ci` clean。
+- GitHub Actions：提交 `19584fe` 的 CI run `28366714911` 通过 `npm ci`、lint、test、build 和 performance budget。
 
 ### 遗留风险
 - 登录/注册/重置接口未在本阶段扩展 public-action header 策略，仅修复已证实的 demo token 解析风险。

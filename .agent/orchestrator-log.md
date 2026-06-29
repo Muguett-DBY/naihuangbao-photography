@@ -1078,7 +1078,7 @@ Beginning execution.
   - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
   - Full Playwright e2e with one worker — first exposed the hidden-input race, then passed 32/32 after the user-visible file chooser upload fix.
 - **Risk**: Auth login/register/reset endpoints were not broadened in this stage beyond the concrete demo-token leak; they remain candidates for a future CSRF/header-boundary audit. The `glob` and `source-map` deprecation warnings are upstream transitive dependencies via `vite-plugin-pwa` / Workbox with no current audit vulnerability.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `19584fe` — `fix: harden booking and auth mutations`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28366714911` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is closing one remaining user-visible or API reliability gap with a small, test-backed improvement.
-- **Status**: LOCAL VERIFICATION COMPLETE; COMMIT / PUSH / CI PENDING
+- **Status**: COMPLETE
