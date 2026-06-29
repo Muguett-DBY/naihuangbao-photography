@@ -1044,7 +1044,7 @@ Beginning execution.
   - Targeted model-failure Playwright — 1/1 passed.
   - Full Playwright e2e with one worker — 32/32 passed.
 - **Risk**: `face-api-vendor` remains the largest intentional lazy chunk at 661.57 kB. The fixed 20-second deadline may move exceptionally slow connections into degraded mode, but manual editing/export remain available and users can retry without reloading.
-- **Commit**: pending — `fix: harden editor model loading`
-- **Push / CI**: pending.
+- **Commit**: `ab53b19` — `fix: harden editor model loading`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28365005983` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; perform a system-wide code, security, CI, PWA, and core-flow sweep and fix concrete risks with regression coverage.
-- **Status**: LOCAL COMPLETE / REMOTE CI PENDING
+- **Status**: COMPLETE

@@ -1585,6 +1585,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - 模型失败目标 Playwright：1/1 通过。
 - Playwright 全量：32/32 通过（单 worker）。
 - 模型文件请求被中断时，画布、降级提示、重试入口和导出流程均可用。
+- GitHub Actions：提交 `ab53b19` 的 CI run `28365005983` 通过 `npm ci`、lint、test、build 和 performance budget。
 
 ### 遗留风险
 - `face-api-vendor` 仍为 661.57 kB 的最大按需 chunk。
