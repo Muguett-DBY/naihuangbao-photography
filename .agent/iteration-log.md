@@ -1858,7 +1858,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - PWA 产物：`SKIP_WAITING`、`cleanupOutdatedCaches()`、`api-content`、`api-photos`、`editor-models` 均存在。
 
 ### GitHub Actions / CI 状态
-- 待提交并推送后检查。
+- Stage 5 commit `087bdbf` 已 push 到 `main`，GitHub Actions CI run `28393851875` 通过。
 
 ### 遗留风险
 - `x-nhb-public-action` 是统一的同站页面操作边界，不是每会话 CSRF token；更强的 CSRF token 机制仍可作为未来加固项。

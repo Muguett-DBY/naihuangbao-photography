@@ -1267,7 +1267,7 @@ Beginning execution.
   - Booking + login Playwright — 12/12 passed.
   - Full Playwright e2e with one worker — 34/34 passed.
 - **Risk**: The public-action header is a pragmatic same-site page-action boundary, not a cryptographic CSRF token. It now applies consistently to public auth mutations, while stronger per-session CSRF tokens remain a future hardening option.
-- **Commit**: pending — `fix: protect public auth mutations`
-- **Push / CI**: pending.
+- **Commit**: `087bdbf` — `fix: protect public auth mutations`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28393851875` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing the remaining PWA old-bundle/update-friction risk with a small user-visible reliability improvement.
-- **Status**: READY TO COMMIT
+- **Status**: COMPLETE
