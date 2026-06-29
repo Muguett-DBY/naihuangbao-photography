@@ -209,6 +209,21 @@ describe("audit regression coverage", () => {
     }
   });
 
+  it("keeps booking completion states bridged to next actions", () => {
+    expect(bookingModalSource).toContain("booking-success-bridge");
+    expect(bookingModalSource).toContain("bookingModal.successBridgeTitle");
+    expect(bookingModalSource).toContain("bookingModal.messageOnXiaohongshu");
+    expect(bookingModalSource).toContain('to="/dashboard"');
+    expect(sectionsCssSource).toContain(".booking-success-bridge");
+    expect(sectionsCssSource).toMatch(/@media\s*\(max-width:\s*560px\)[\s\S]*\.booking-success-bridge-actions/);
+    for (const locale of Object.values(locales)) {
+      expect(locale.bookingModal.successBridgeTitle).toBeTruthy();
+      expect(locale.bookingModal.successBridgeDashboardDetail).toBeTruthy();
+      expect(locale.bookingModal.messageOnXiaohongshu).toBeTruthy();
+      expect(locale.bookingModal.continueBrowsing).toBeTruthy();
+    }
+  });
+
   it("keeps the embedded dashboard calendar readable in dark mode", () => {
     const panelBlock = editorCssSource.match(/\.dashboard-confirm-panel--default\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
     expect(panelBlock).toContain("--paper-white: #fffdf7");
