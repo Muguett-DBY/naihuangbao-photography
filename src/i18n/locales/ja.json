@@ -469,6 +469,8 @@
     "earliestBookable": "最短予約可能日：{{date}}",
     "unavailableBefore": "{{date}} より前は予約できません",
     "policyNote": "スタジオ方針：{{timeZone}}、1日最大{{capacity}}件",
+    "remainingSlots": "残り枠：{{count}}",
+    "remainingShort": "残{{count}}",
     "prevMonth": "前月",
     "nextMonth": "翌月",
     "weekdays": {

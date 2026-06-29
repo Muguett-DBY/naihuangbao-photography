@@ -469,6 +469,8 @@
     "earliestBookable": "가장 빠른 예약 가능일: {{date}}",
     "unavailableBefore": "{{date}} 이전은 예약할 수 없습니다",
     "policyNote": "스튜디오 정책: {{timeZone}}, 하루 최대 {{capacity}}건",
+    "remainingSlots": "남은 슬롯: {{count}}",
+    "remainingShort": "{{count}} 남음",
     "prevMonth": "이전 달",
     "nextMonth": "다음 달",
     "weekdays": {
