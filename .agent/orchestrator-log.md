@@ -1297,3 +1297,31 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28406599343` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: All 6 orchestrated stages are complete; no further stage is required by `03_LONG_6_STAGE_MAIN_V2.txt`.
 - **Status**: COMPLETE
+
+## Campaign 020
+
+### Stage 1 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Turn the PWA install prompt into a reliable, user-visible install flow with durable visit eligibility, finite dismissal, installation outcome handling, and responsive progress feedback.
+- **Start state**: `main` at `b782cd7`, synchronized with `origin/main`; the protected untracked `campaign-015` and `campaign-016` history directories remain isolated.
+- **Previous direction carried forward**: Campaign 019 closed PWA update reliability and recommended observing stability before more broad work. This stage stays on that PWA product line while addressing the separate install prompt path, where `sessionStorage` visit counting prevented most single-mount SPA sessions from ever becoming eligible and timer cleanup was ineffective.
+- **Impact choice**: PWA install completion scored highest for user visibility, complementarity, bounded risk, and browser-testability compared with a per-session CSRF redesign or time-slot booking migration.
+- **Completed locally**:
+  - Reworked `PwaInstallBanner` to persist visit eligibility in `localStorage`, respect installed/standalone state, and apply a finite 7-day dismissal cooldown instead of a permanent one-click suppression.
+  - Fixed deferred install-prompt lifecycle handling by storing/clearing the show timer at component scope and waiting for `userChoice` before hiding the install prompt.
+  - Added accepted-install persistence, `appinstalled` cleanup, installation progress/error UI, and responsive banner styling.
+  - Expanded all four locale files for the new install prompt labels.
+  - Added source regression coverage and a Playwright flow that dispatches `beforeinstallprompt`, clicks install, resolves `userChoice`, and verifies the installed state.
+- **Local verification**:
+  - Red/green: targeted PWA install tests first failed on the missing durable install contracts, then passed after implementation.
+  - `npm test -- src/lib/pwa-install.test.ts src/lib/audit-regressions.test.ts` — 2 files / 71 tests passed.
+  - `npm run lint` — passed.
+  - `npm test` — 56 files / 348 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 35/35 passed.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Risk**: Browser install prompting remains controlled by each browser's PWA heuristics; this stage makes the app-side prompt eligibility, dismissal, and install outcome handling deterministic once `beforeinstallprompt` is available.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is a bounded reliability improvement outside the already-covered PWA update/install path.
+- **Status**: LOCAL VERIFICATION COMPLETE

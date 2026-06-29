@@ -36,7 +36,9 @@ async function openGalleryFromNav(page: Page) {
 test.describe("shoot.custard.top", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.clear();
+      if (!window.location.search.includes("preserve-pwa-state")) {
+        localStorage.clear();
+      }
     });
   });
 
@@ -169,6 +171,46 @@ test.describe("shoot.custard.top", () => {
     }));
     expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
     await expect(page.locator(".hamburger")).toBeVisible();
+  });
+
+  test("PWA 安装提示跨访问出现并等待浏览器安装结果", async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem("nhb-visit-count", "1");
+    });
+    await page.goto("/?preserve-pwa-state=1");
+
+    await page.evaluate(() => {
+      type InstallChoice = { outcome: "accepted" | "dismissed"; platform: string };
+      type InstallTestWindow = Window & {
+        resolveInstallChoice?: (choice: InstallChoice) => void;
+      };
+      let resolveChoice: ((choice: InstallChoice) => void) | undefined;
+      const event = new Event("beforeinstallprompt");
+      Object.defineProperty(event, "prompt", { value: () => Promise.resolve() });
+      Object.defineProperty(event, "userChoice", {
+        value: new Promise<InstallChoice>((resolve) => {
+          resolveChoice = resolve;
+        }),
+      });
+      (window as InstallTestWindow).resolveInstallChoice = (choice) => resolveChoice?.(choice);
+      window.dispatchEvent(event);
+    });
+
+    const banner = page.locator(".pwa-install-banner");
+    await expect(banner).toBeVisible({ timeout: 6000 });
+    const installButton = banner.locator(".pwa-install-btn");
+    await installButton.click();
+    await expect(installButton).toBeDisabled();
+    await expect(banner.locator(".pwa-install-status")).toBeVisible();
+
+    await page.evaluate(() => {
+      const testWindow = window as Window & {
+        resolveInstallChoice?: (choice: { outcome: "accepted"; platform: string }) => void;
+      };
+      testWindow.resolveInstallChoice?.({ outcome: "accepted", platform: "web" });
+    });
+    await expect(banner).toBeHidden();
+    await expect.poll(() => page.evaluate(() => localStorage.getItem("nhb-pwa-installed"))).toBe("true");
   });
 
   test("移动端导航可打开作品页", async ({ page }) => {
