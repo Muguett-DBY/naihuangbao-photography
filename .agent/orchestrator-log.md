@@ -1234,7 +1234,7 @@ Beginning execution.
   - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
   - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 8/8 passed.
 - **Risk**: Direct booking capacity is still date-level, matching the existing daily-capacity policy. It does not reserve specific time slots; time remains a preference captured for follow-up.
-- **Commit**: pending — `feat: connect full booking dates to waitlist`
-- **Push / CI**: pending.
+- **Commit**: `b74a51b` — `feat: connect full booking dates to waitlist`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28392373447` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a security/stability sweep around public authentication/mutation boundaries, PWA freshness, and core build parity.
-- **Status**: READY TO COMMIT
+- **Status**: COMPLETE

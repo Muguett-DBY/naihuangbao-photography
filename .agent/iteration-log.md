@@ -1811,7 +1811,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - 预约 Playwright E2E：8/8 通过。
 
 ### GitHub Actions / CI 状态
-- 待提交并推送后检查。
+- Stage 4 commit `b74a51b` 已 push 到 `main`，GitHub Actions CI run `28392373447` 通过。
 
 ### 遗留风险
 - 当前容量策略仍是“每日最多 3 组”的日期级规则，不是具体时间段级锁定；`preferredTime` 仍作为偏好进入后续确认。
