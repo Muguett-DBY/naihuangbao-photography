@@ -4,7 +4,11 @@ import { onRequestPost as forgotPassword } from "./api/auth/forgot-password";
 function jsonRequest(body: unknown) {
   return new Request("https://shoot.custard.top/api/auth/forgot-password", {
     method: "POST",
-    headers: { "content-type": "application/json", "cf-connecting-ip": "127.0.0.1" },
+    headers: {
+      "content-type": "application/json",
+      "cf-connecting-ip": "127.0.0.1",
+      "x-nhb-public-action": "1",
+    },
     body: JSON.stringify(body),
   });
 }

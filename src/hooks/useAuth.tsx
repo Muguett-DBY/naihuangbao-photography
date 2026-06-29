@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
 import { logError } from "../lib/error-logger";
+import { publicMutationHeaders } from "../lib/admin-helpers";
 
 export type AuthUser = {
   id: string;
@@ -53,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         credentials: "include",
         body: JSON.stringify({ email, password }),
       });
@@ -76,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         credentials: "include",
         body: JSON.stringify({ email, password, displayName }),
       });
@@ -99,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
+        headers: publicMutationHeaders,
         credentials: "include",
       });
     } finally {

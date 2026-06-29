@@ -1823,3 +1823,50 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 公开入口安全与稳定性扫雷：围绕登录/注册/重置、cookie 写操作、service worker 更新和核心预约链路做 CHECK 阶段审计，发现真实问题即写回归并修复。
+
+---
+
+## Campaign 019 Stage 5 — Public Auth Boundary CHECK
+
+### 承接的上一轮方向
+- Stage 4 已把满员日期与候补名单接到同一容量策略。
+- 本阶段按 CHECK 主线审查公开认证写操作、依赖/构建一致性、PWA 产物和核心浏览器流程。
+
+### 审计发现
+- P0：未发现。`npm audit --json` 为 0 vulnerabilities，`npm ls --depth=0` clean。
+- P1：登录、注册、忘记密码、重置密码、退出等公开认证写接口未统一要求 `x-nhb-public-action`，边界弱于其它 public mutation。
+- P1：前端 `useAuth` 的 login/register/logout 未发送 `publicMutationHeaders`。
+- P2：本地残留 `vite preview` 进程占用 Rolldown 原生绑定，导致第一次 `npm ci` 在 Windows 上 EPERM；停止旧预览进程后重跑通过。
+
+### 完成内容
+- `/api/auth/login`、`/api/auth/register`、`/api/auth/forgot-password`、`/api/auth/reset-password`、`/api/auth/logout` 全部在 rate limit 和业务逻辑前执行 `requirePublicMutationRequest`。
+- `useAuth` 的登录、注册、退出请求统一携带 `publicMutationHeaders`。
+- 更新 password reset 正常路径测试，让合法前端流携带页面操作头。
+- 新增 `functions/auth-boundaries.test.ts`，覆盖无 header 的公开认证写操作全部 403。
+- 扩展源码回归，锁定认证端点和前端 hook 的 header 合同。
+
+### 已通过的验证
+- Red/green：认证边界目标测试先失败，修复后 75/75 通过。
+- `npm audit --json`：0 vulnerabilities。
+- `npm ls --depth=0`：clean。
+- `npm ci`：停止旧预览进程后通过。
+- TypeScript / lint：通过。
+- Vitest 全量：56 个文件、347 个测试通过。
+- `build:full` + performance budget：通过。
+- Booking + login Playwright：12/12 通过。
+- Playwright 全量：34/34 通过。
+- PWA 产物：`SKIP_WAITING`、`cleanupOutdatedCaches()`、`api-content`、`api-photos`、`editor-models` 均存在。
+
+### GitHub Actions / CI 状态
+- 待提交并推送后检查。
+
+### 遗留风险
+- `x-nhb-public-action` 是统一的同站页面操作边界，不是每会话 CSRF token；更强的 CSRF token 机制仍可作为未来加固项。
+
+### 下一轮建议方向
+1. IMPROVE：降低 PWA 旧 service worker / 旧 bundle 对真实用户和本地验证的干扰。
+2. IMPROVE：让更新提示更主动、更可恢复，避免用户长期停留在旧版本。
+3. CHECK：继续保持 `npm ci` 前清理旧 preview 的 Windows 验证习惯。
+
+### 推荐下一轮优先执行的旗舰级主改动
+PWA 更新可靠性：围绕旧 service worker、更新提示和刷新接管路径做一轮小范围实现，让用户更容易切到新版本。

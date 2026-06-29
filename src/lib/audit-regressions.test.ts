@@ -87,8 +87,12 @@ const paymentLiveReadinessSource = existsSync(paymentLiveReadinessPath) ? readFi
 const wranglerSource = readFileSync(resolve(root, "wrangler.toml"), "utf8");
 const htmlSource = readFileSync(resolve(root, "index.html"), "utf8");
 const loginPageSource = readFileSync(resolve(root, "src/pages/LoginPage.tsx"), "utf8");
+const useAuthSource = readFileSync(resolve(root, "src/hooks/useAuth.tsx"), "utf8");
+const loginApiSource = readFileSync(resolve(root, "functions/api/auth/login.ts"), "utf8");
 const registerApiSource = readFileSync(resolve(root, "functions/api/auth/register.ts"), "utf8");
 const forgotPasswordApiSource = readFileSync(resolve(root, "functions/api/auth/forgot-password.ts"), "utf8");
+const resetPasswordApiSource = readFileSync(resolve(root, "functions/api/auth/reset-password.ts"), "utf8");
+const logoutApiSource = readFileSync(resolve(root, "functions/api/auth/logout.ts"), "utf8");
 const businessDatePath = resolve(root, "src/utils/businessDate.ts");
 const bookingPolicyHookPath = resolve(root, "src/hooks/useBookingPolicy.ts");
 const bookingPolicyApiPath = resolve(root, "functions/api/booking/policy.ts");
@@ -397,6 +401,21 @@ describe("audit regression coverage", () => {
     expect(paymentConfirmSource).toContain("body.clientSecret");
     expect(securitySource).toContain("requirePublicMutationRequest");
     expect(securitySource).toContain("enforceRateLimit");
+  });
+
+  it("keeps public auth mutations behind the page action header", () => {
+    for (const source of [
+      loginApiSource,
+      registerApiSource,
+      forgotPasswordApiSource,
+      resetPasswordApiSource,
+      logoutApiSource,
+    ]) {
+      expect(source).toContain("requirePublicMutationRequest");
+    }
+    expect(useAuthSource).toContain("publicMutationHeaders");
+    expect(useAuthSource).toMatch(/headers:\s*\{\s*"Content-Type":\s*"application\/json",\s*\.\.\.publicMutationHeaders\s*\}/);
+    expect(loginPageSource).toContain("publicMutationHeaders");
   });
 
   it("keeps placeholder booking deposits truthful from submission to dashboard", () => {

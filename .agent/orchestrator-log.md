@@ -1238,3 +1238,36 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28392373447` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a security/stability sweep around public authentication/mutation boundaries, PWA freshness, and core build parity.
 - **Status**: COMPLETE
+
+### Stage 5 / 6 — CHECK
+- **Prompt**: `AGENT_CHECK_MAIN.txt`
+- **Objective**: Audit public authentication mutation boundaries, dependency/build parity, PWA generated output, and core browser flows; fix concrete reproducible risks with regression coverage.
+- **Start state**: `main` at `0d7d81a`; local and `origin/main` aligned, with only the protected untracked campaign-015 and campaign-016 history folders present.
+- **Audit findings**:
+  - P0: none found. `npm audit --json` reported 0 vulnerabilities and `npm ls --depth=0` completed cleanly.
+  - P1: public auth write endpoints for login, register, forgot password, reset password, and logout did not enforce the same `x-nhb-public-action` boundary used by other public mutations.
+  - P1: frontend login, register, and logout calls did not send `publicMutationHeaders`, so adding the server guard required a matching client update.
+  - P2: a stale local `vite preview` process on port 4187 held the Rolldown native binding and caused the first `npm ci` attempt to fail with Windows `EPERM`; stopping the stale process and rerunning `npm ci` restored dependency parity.
+- **Completed locally**:
+  - Added `requirePublicMutationRequest` to `/api/auth/login`, `/api/auth/register`, `/api/auth/forgot-password`, `/api/auth/reset-password`, and `/api/auth/logout` before rate limits or cookie mutations run.
+  - Updated `useAuth` so login, register, and logout send `publicMutationHeaders`.
+  - Updated password-reset tests to send the page action header in valid flows.
+  - Added `functions/auth-boundaries.test.ts` and source-regression coverage for auth mutation boundary enforcement.
+- **Generated output / PWA validation**:
+  - Fresh `dist/sw.js` after `build:full` contains `SKIP_WAITING`, `cleanupOutdatedCaches()`, `api-content`, `api-photos`, and `editor-models` runtime cache rules.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Local verification**:
+  - Red/green: `npm test -- functions/auth-boundaries.test.ts functions/auth-password-reset.test.ts src/lib/audit-regressions.test.ts` first failed on missing auth mutation guards and frontend headers, then passed 75/75 after implementation.
+  - `npm audit --json` — 0 vulnerabilities.
+  - `npm ls --depth=0` — clean.
+  - `npm ci` — first hit stale-preview `EPERM`, then passed after stopping the old project preview process.
+  - `npm run lint` — passed.
+  - `npm test` — 56 files / 347 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - Booking + login Playwright — 12/12 passed.
+  - Full Playwright e2e with one worker — 34/34 passed.
+- **Risk**: The public-action header is a pragmatic same-site page-action boundary, not a cryptographic CSRF token. It now applies consistently to public auth mutations, while stronger per-session CSRF tokens remain a future hardening option.
+- **Commit**: pending — `fix: protect public auth mutations`
+- **Push / CI**: pending.
+- **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing the remaining PWA old-bundle/update-friction risk with a small user-visible reliability improvement.
+- **Status**: READY TO COMMIT
