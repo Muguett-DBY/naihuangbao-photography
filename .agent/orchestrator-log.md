@@ -1016,7 +1016,7 @@ Beginning execution.
   - `npm run build:full` — passed, including performance budget and bundle analysis; `PhotoEditorWorkspace` is 54.70 kB before gzip and remains lazy.
   - Full Playwright e2e with one worker — 31/31 passed.
 - **Risk**: This improves the image failure/recovery state only; the larger `face-api-vendor` lazy chunk remains unchanged. Browser screenshots can be affected by the app splash/theme state, so the authoritative recovery screenshots used clean Playwright contexts with service workers blocked.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `68a2f64` — `feat: polish editor recovery experience`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28363891572` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is hardening editor model/asset loading boundaries or reducing the remaining face-api operational risk.
-- **Status**: LOCAL COMPLETE / CI PENDING
+- **Status**: COMPLETE

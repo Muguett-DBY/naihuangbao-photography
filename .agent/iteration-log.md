@@ -1547,6 +1547,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - Playwright 全量：31/31 通过（单 worker）。
 - 桌面 1440x900 和移动 390x844 视觉验证：恢复面板可见、无横向溢出、loading overlay 隐藏、console error/warn 为空。
 - Browser：`/editor` 页面身份正确，首屏 DOM 有意义，无框架错误覆盖，console error/warn 为空；文件上传恢复以 Playwright 为权威证据。
+- GitHub Actions：CI run `28363891572` 通过，覆盖 `npm ci`、lint、test、build 和 performance budget。
 
 ### 遗留风险
 - 本阶段未处理 `face-api-vendor` 体积和模型加载风险。
