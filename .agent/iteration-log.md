@@ -1773,7 +1773,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - 桌面 1440x1000 和移动 390x844 视觉验证：无横向溢出，策略说明、月状态和选中摘要均可见。
 
 ### GitHub Actions / CI 状态
-- 待提交并推送后检查。
+- Stage 3 commit `2100440` 已 push 到 `main`，GitHub Actions CI run `28391348161` 通过。
 
 ### 遗留风险
 - 零预约日期仍不在 availability `dates` 字典中，前端按既有合同把缺失日期视为可约；如果未来要显示所有日期的具体 3/3 剩余量，需要服务端补齐整月日期。

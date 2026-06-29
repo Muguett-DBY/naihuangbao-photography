@@ -1209,7 +1209,7 @@ Beginning execution.
   - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
   - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 7/7 passed.
 - **Risk**: Zero-booking dates still do not appear explicitly in the availability payload; the UI intentionally counts absent bookable dates as open, matching the existing API contract.
-- **Commit**: pending — `feat: refine booking calendar experience`
-- **Push / CI**: pending.
+- **Commit**: `2100440` — `feat: refine booking calendar experience`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28391348161` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is aligning waitlist/full-date behavior with the same booking policy and capacity contract.
-- **Status**: READY TO COMMIT
+- **Status**: COMPLETE
