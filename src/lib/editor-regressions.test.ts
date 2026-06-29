@@ -191,6 +191,24 @@ describe("editor regression contracts", () => {
     expect(zhCN).toContain('"imageDecodeFailed"');
   });
 
+  it("presents image load failures as a clear recovery state", () => {
+    const workspace = read("src/pages/PhotoEditorWorkspace.tsx");
+    const pagesCss = read("src/styles/pages.css");
+    const en = read("src/i18n/locales/en.json");
+    const zhCN = read("src/i18n/locales/zh-CN.json");
+
+    expect(workspace).toContain("editor-recovery-panel");
+    expect(workspace).toContain("editor-canvas--error");
+    expect(workspace).toContain("editor-recovery-action");
+    expect(workspace).toContain("editorRecoveryTitle");
+    expect(workspace).toContain("imageRecoveryHint");
+    expect(pagesCss).toContain(".editor-recovery-panel");
+    expect(pagesCss).toContain(".editor-canvas--error");
+    expect(pagesCss).toContain(".editor-recovery-action");
+    expect(en).toContain('"editorRecoveryTitle"');
+    expect(zhCN).toContain('"editorRecoveryTitle"');
+  });
+
   it("keeps the editor empty state action-led and mobile-ready", () => {
     const editor = read("src/pages/PhotoEditorPage.tsx");
     const pagesCss = read("src/styles/pages.css");

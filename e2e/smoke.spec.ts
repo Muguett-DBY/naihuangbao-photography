@@ -122,6 +122,9 @@ test.describe("shoot.custard.top", () => {
     });
 
     await expect(page.locator(".editor-image-error")).toBeVisible();
+    await expect(page.locator(".editor-recovery-panel")).toBeVisible();
+    await expect(page.locator(".editor-canvas--error")).toBeVisible();
+    await expect(page.locator(".editor-recovery-action")).toBeVisible();
     await expect(page.locator(".editor-overlay")).toBeHidden();
 
     await input.setInputFiles(editorTestImage);

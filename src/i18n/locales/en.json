@@ -1291,6 +1291,10 @@
     "imageReadFailed": "The file could not be read. Try exporting it again or choosing another copy.",
     "imageDecodeFailed": "The file looks damaged or is not a real image. Choose another photo.",
     "imageCanvasFailed": "The editor could not prepare the image canvas. Reload the page or try another photo.",
+    "editorRecoveryTitle": "Choose another photo to continue",
+    "imageRecoveryHint": "The editor is still ready. Pick a supported image and the workspace will reopen automatically.",
+    "supportedFormatsLabel": "Supported editor image formats",
+    "supportedFormats": "JPG, PNG, WebP, and browser-supported images",
     "tryAnotherImage": "Try another image",
     "cat": {
       "beauty": "Beauty",

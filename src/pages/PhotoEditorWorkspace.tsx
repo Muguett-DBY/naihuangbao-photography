@@ -73,6 +73,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const modelsReadyRef = useRef(false);
   const modelErrorRef = useRef(false);
   const faceModelsPromiseRef = useRef<Promise<boolean> | null>(null);
+  const recoveryRef = useRef<HTMLDivElement>(null);
   const mountedRef = useRef(true);
   const initialFileLoadedRef = useRef<File | null>(null);
   const imageLoadRequestRef = useRef(0);
@@ -115,6 +116,11 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   useEffect(() => {
     return () => { mountedRef.current = false; };
   }, []);
+
+  useEffect(() => {
+    if (!imageLoadError) return;
+    recoveryRef.current?.focus({ preventScroll: true });
+  }, [imageLoadError]);
 
   // New feature states
   const [frameId, setFrameId] = useState<FrameId>("none");
@@ -844,6 +850,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const currentTools = TOOLS[cat];
   const activeWorkflow = EDITOR_WORKFLOW_GROUPS.find(group => group.key === activeWorkflowGroup) ?? EDITOR_WORKFLOW_GROUPS[0];
   const workflowCategories = CATEGORIES.filter(c => activeWorkflow.categories.includes(c.key));
+  const imageLoadErrorMessageKey = imageLoadError ? IMAGE_LOAD_ERROR_KEYS[imageLoadError] : null;
   const handleWorkflowSelect = useCallback((key: EditorWorkflowKey) => {
     const nextGroup = EDITOR_WORKFLOW_GROUPS.find(group => group.key === key) ?? EDITOR_WORKFLOW_GROUPS[0];
     setActiveWorkflowGroup(nextGroup.key);
@@ -901,16 +908,6 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           {faceOk && <span className="editor-face-ok" role="status" aria-label={t("editor.faceDetected")}>✓</span>}
           {faceError && !detecting && <span className="editor-status-warning" role="status" aria-live="polite">{t("editor.noFaceDetected")}</span>}
         </div>
-
-        {imageLoadError && (
-          <div className="editor-image-error" role="alert" aria-live="assertive">
-            <strong>{t("editor.imageLoadFailed")}</strong>
-            <span>{t(IMAGE_LOAD_ERROR_KEYS[imageLoadError] as any)}</span>
-            <button type="button" className="editor-image-error-action" onClick={handleUploadClick}>
-              {t("editor.tryAnotherImage")}
-            </button>
-          </div>
-        )}
 
         {originalRef.current && (
           <section className="editor-workflow" aria-label={t("editor.workflow.label")}>
@@ -1068,11 +1065,27 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
         <div className="editor-workspace">
           <div className="editor-canvas-container">
             {!originalRef.current && !loading && (
-              <div className="editor-canvas--empty">
+              <div className={`editor-canvas--empty ${imageLoadError ? "editor-canvas--error" : ""}`}>
                 {isDragOver ? (
                   <div className="editor-drop-zone">
                     <span className="editor-drop-icon">📸</span>
                     <p>{t("editor.dropHere", "Drop your photo here")}</p>
+                  </div>
+                ) : imageLoadError && imageLoadErrorMessageKey ? (
+                  <div className="editor-image-error editor-recovery-panel" role="alert" aria-live="assertive" tabIndex={-1} ref={recoveryRef}>
+                    <span className="editor-recovery-icon" aria-hidden="true">!</span>
+                    <span className="editor-empty-kicker">{t("editor.imageLoadFailed")}</span>
+                    <h2>{t("editor.editorRecoveryTitle")}</h2>
+                    <p>{t(imageLoadErrorMessageKey as any)}</p>
+                    <p className="editor-recovery-hint">{t("editor.imageRecoveryHint")}</p>
+                    <button type="button" className="editor-empty-upload editor-recovery-action" onClick={handleUploadClick}>
+                      <ImagePlus size={18} aria-hidden="true" />
+                      <span>{t("editor.tryAnotherImage")}</span>
+                    </button>
+                    <div className="editor-recovery-badges" aria-label={t("editor.supportedFormatsLabel")}>
+                      <span><ShieldCheck size={14} aria-hidden="true" />{t("editor.supportedFormats")}</span>
+                      <span><Zap size={14} aria-hidden="true" />{t("editor.manualFallback", "Filters, text, and export stay available")}</span>
+                    </div>
                   </div>
                 ) : (
                   <div className="editor-empty-panel">
