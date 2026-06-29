@@ -1520,3 +1520,42 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 修图错误恢复体验打磨：围绕损坏图片提示、空画布、上传入口和移动端工具栏做 UIUX 校准，让失败后下一步操作更明显且不遮挡编辑区域。
+
+---
+
+## Campaign 018 Stage 3 — Editor Recovery UIUX Upgrade
+
+### 承接的上一轮方向
+- Stage 2 已经让损坏/不可读图片可以失败后重新上传。
+- 本阶段按 UIUX 主线把这个恢复流程从“出现一条错误提示”升级为“画布内明确下一步”的完整错误状态。
+
+### 完成内容
+- 将图片加载失败提示从 toolbar 下方的普通提示条移入编辑画布区域，形成 `editor-recovery-panel`。
+- 失败后的空画布新增 `editor-canvas--error`，视觉上明确当前处于恢复状态。
+- 恢复面板增加标题、失败原因、继续操作说明、主按钮和支持格式/功能可用徽标。
+- 错误出现时焦点移交到 `role="alert"` 恢复面板，提升键盘和辅助技术体验。
+- 增加移动端布局规则，390px 宽度下按钮、文案和徽标不横向溢出。
+- 补齐 zh-CN/en/ja/ko 文案。
+- 扩展源码回归和 Playwright E2E，锁定恢复面板、错误画布和恢复按钮。
+
+### 已通过的验证
+- Red/green：源码回归先因缺少 `editor-recovery-panel` 失败，修复后 editor regression 19/19 通过。
+- Red/green：目标 Playwright 先因找不到 `.editor-recovery-panel` 失败，修复并 rebuild 后 1/1 通过。
+- TypeScript / lint：通过。
+- Vitest 全量：49 个文件、319/319 通过。
+- `build:full` + performance budget：通过，`PhotoEditorWorkspace` 54.70 kB，仍为 lazy chunk。
+- Playwright 全量：31/31 通过（单 worker）。
+- 桌面 1440x900 和移动 390x844 视觉验证：恢复面板可见、无横向溢出、loading overlay 隐藏、console error/warn 为空。
+- Browser：`/editor` 页面身份正确，首屏 DOM 有意义，无框架错误覆盖，console error/warn 为空；文件上传恢复以 Playwright 为权威证据。
+
+### 遗留风险
+- 本阶段未处理 `face-api-vendor` 体积和模型加载风险。
+- Browser 截图可能受启动 splash 或主题状态影响；恢复态视觉证据使用干净 Playwright context。
+
+### 下一轮建议方向
+1. IMPROVE：围绕人脸模型加载失败、超时和重试做更完整的操作风险控制。
+2. IMPROVE：继续检查 `face-api-vendor` 触发边界，避免非必要路径误加载。
+3. CHECK：核验编辑器上传、模型加载、导出三段状态在 CI 和生产预览下的一致性。
+
+### 推荐下一轮优先执行的旗舰级主改动
+修图模型加载韧性：把 face-api 模型加载的失败、重试、降级和用户提示再做一轮实现级加固，确保上传照片后的大模型路径可控、可恢复、可验证。

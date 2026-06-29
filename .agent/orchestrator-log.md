@@ -986,3 +986,37 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28321509688` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is making the editor failure/recovery state visually clear on desktop and mobile without crowding the toolbar.
 - **Status**: COMPLETE
+
+### Stage 3 / 6 — UIUX
+- **Prompt**: `AGENT_UIUX_MAIN.txt`
+- **Objective**: Upgrade the editor corrupt-image path from a simple alert strip into a clear, polished, responsive recovery experience inside the canvas area.
+- **Start state**: `main` at `f110865`; tracked tree clean except the protected untracked orchestrator history folders.
+- **Previous direction carried forward**: Stage 2 made image-load failures recoverable; the next UX issue was that the failure state still read as a stacked warning strip rather than a focused next-step panel.
+- **UI/UX audit finding**:
+  - P1: On mobile, the error strip sat between toolbar and canvas, grew tall, and made the next action less visually obvious.
+  - P1: The empty canvas still said "open a portrait" after a corrupt upload, so the visual state did not fully match the user's failed action.
+  - P2: The recovery content lacked a concise title, format reassurance, and focus handoff for assistive technology.
+- **Flagship UI/UX change**:
+  - Moved image-load failures into an in-canvas recovery panel with a clear title, reason, primary "try another image" action, supported-format badge, and manual fallback reassurance.
+- **Completed locally**:
+  - Replaced the separate error strip with an `editor-recovery-panel` rendered inside the empty canvas.
+  - Added `editor-canvas--error` styling so the workspace visibly changes state after a failed upload.
+  - Added focus handoff to the recovery panel when a load error appears while keeping the `role="alert"` announcement.
+  - Added mobile-specific layout rules so recovery copy, badges, and action button stay readable in a 390px viewport.
+  - Added zh-CN/en/ja/ko copy for the recovery title, hint, and supported format note.
+  - Extended E2E and source-regression coverage for the recovery panel, canvas error state, and recovery action.
+- **Rendered validation**:
+  - Playwright desktop 1440x900 and mobile 390x844 screenshots confirmed the recovery panel is visible after a corrupt upload, no horizontal overflow occurs, loading overlay is hidden, and console error/warn output is empty.
+  - In-app Browser confirmed `/editor` page identity, meaningful initial editor shell, no framework overlay, and no console error/warn output. Browser file upload remains unavailable in this runtime, so file recovery visuals were verified by Playwright.
+- **Local verification**:
+  - Red/green: `src/lib/editor-regressions.test.ts` first failed on missing `editor-recovery-panel`, then passed 19/19.
+  - Red/green: targeted Playwright first failed on missing `.editor-recovery-panel`, then passed 1/1 after the recovery UI implementation and production rebuild.
+  - `npm run lint` — passed.
+  - `npm test -- --run` — 49 files / 319 tests passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis; `PhotoEditorWorkspace` is 54.70 kB before gzip and remains lazy.
+  - Full Playwright e2e with one worker — 31/31 passed.
+- **Risk**: This improves the image failure/recovery state only; the larger `face-api-vendor` lazy chunk remains unchanged. Browser screenshots can be affected by the app splash/theme state, so the authoritative recovery screenshots used clean Playwright contexts with service workers blocked.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is hardening editor model/asset loading boundaries or reducing the remaining face-api operational risk.
+- **Status**: LOCAL COMPLETE / CI PENDING

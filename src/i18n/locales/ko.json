@@ -1285,6 +1285,10 @@
     "imageReadFailed": "파일을 읽을 수 없습니다. 다시 내보내거나 다른 사본을 선택하세요.",
     "imageDecodeFailed": "파일이 손상되었거나 실제 이미지가 아닐 수 있습니다. 다른 사진을 선택하세요.",
     "imageCanvasFailed": "편집 캔버스를 준비하지 못했습니다. 페이지를 새로고침하거나 다른 사진을 시도하세요.",
+    "editorRecoveryTitle": "다른 사진을 선택해 계속하세요",
+    "imageRecoveryHint": "편집 스튜디오는 계속 준비되어 있습니다. 지원되는 이미지를 선택하면 작업 공간이 다시 열립니다.",
+    "supportedFormatsLabel": "지원되는 편집 이미지 형식",
+    "supportedFormats": "JPG, PNG, WebP 및 브라우저 지원 이미지",
     "tryAnotherImage": "다른 이미지 선택",
     "cat": {
       "beauty": "뷰티",

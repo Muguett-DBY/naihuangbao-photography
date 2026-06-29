@@ -1285,6 +1285,10 @@
     "imageReadFailed": "ファイルを読み取れませんでした。再書き出しするか、別のコピーを選択してください。",
     "imageDecodeFailed": "ファイルが破損しているか、実際の画像ではない可能性があります。別の写真を選択してください。",
     "imageCanvasFailed": "編集キャンバスを準備できませんでした。ページを再読み込みするか、別の写真をお試しください。",
+    "editorRecoveryTitle": "別の写真を選ぶと続行できます",
+    "imageRecoveryHint": "編集スタジオはそのまま使えます。対応画像を選ぶとワークスペースが自動で再開します。",
+    "supportedFormatsLabel": "対応している編集画像形式",
+    "supportedFormats": "JPG、PNG、WebP、ブラウザー対応画像",
     "tryAnotherImage": "別の画像を選択",
     "cat": {
       "beauty": "ビューティー",
