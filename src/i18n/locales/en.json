@@ -474,6 +474,9 @@
     "policyNote": "Studio policy: {{timeZone}}, up to {{capacity}} sessions per day",
     "remainingSlots": "Open slots: {{count}}",
     "remainingShort": "{{count}} left",
+    "monthStatus": "Availability for {{month}}",
+    "selectedDate": "Selected date",
+    "selectedRemaining": "Open spots: {{count}}",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
     "weekdays": {

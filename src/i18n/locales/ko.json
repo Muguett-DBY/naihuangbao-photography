@@ -471,6 +471,9 @@
     "policyNote": "스튜디오 정책: {{timeZone}}, 하루 최대 {{capacity}}건",
     "remainingSlots": "남은 슬롯: {{count}}",
     "remainingShort": "{{count}} 남음",
+    "monthStatus": "{{month}} 예약 현황",
+    "selectedDate": "선택한 날짜",
+    "selectedRemaining": "남은 자리: {{count}}",
     "prevMonth": "이전 달",
     "nextMonth": "다음 달",
     "weekdays": {

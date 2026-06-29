@@ -159,6 +159,22 @@ describe("audit regression coverage", () => {
     }
   });
 
+  it("keeps booking calendar policy, status, selection, and mobile hierarchy coherent", () => {
+    expect(bookingCalendarSource).toContain("calendar-policy-strip");
+    expect(bookingCalendarSource).toContain("calendar-status-strip");
+    expect(bookingCalendarSource).toContain("calendar-selection-summary");
+    expect(bookingCalendarSource).toContain("aria-pressed={isSelected}");
+    expect(bookingCalendarSource).toContain("ChevronLeft");
+    expect(bookingCalendarSource).toContain("CalendarDays");
+    expect(editorCssSource).toContain(".calendar-status-count");
+    expect(editorCssSource).not.toMatch(/\.booking-calendar\s*\{[^}]*max-width:\s*300px/s);
+    for (const locale of Object.values(locales)) {
+      expect(locale.calendar.selectedDate).toBeTruthy();
+      expect(locale.calendar.selectedRemaining).toBeTruthy();
+      expect(locale.calendar.monthStatus).toBeTruthy();
+    }
+  });
+
   it("keeps the embedded dashboard calendar readable in dark mode", () => {
     const panelBlock = editorCssSource.match(/\.dashboard-confirm-panel--default\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
     expect(panelBlock).toContain("--paper-white: #fffdf7");
