@@ -1325,3 +1325,33 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28408823208` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is a bounded reliability improvement outside the already-covered PWA update/install path.
 - **Status**: COMPLETE
+
+### Stage 2 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Make the full-date waitlist flow idempotent and user-visible so repeat joins for the same date/contact do not create duplicate waitlist rows or show a generic error.
+- **Start state**: `main` at `4d02623`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories were present.
+- **Previous direction carried forward**: Stage 1 recommended a bounded reliability improvement in booking/waitlist/user-state boundaries. This stage directly targets the waitlist side of the fully-booked booking path.
+- **Impact choice**: Duplicate waitlist prevention scored highest because it is user-visible, protects staff follow-up quality, complements the existing fully-booked date routing, and can be verified at API, source-regression, and browser-flow levels without introducing a large booking migration.
+- **Completed locally**:
+  - Added active waitlist lookup by date and normalized contact before inserting a new waitlist row.
+  - Returned an idempotent `already_waitlisted` success payload with `duplicate: true` and no existing unsubscribe token exposure.
+  - Trimmed preferred date, contact, and name before DB writes in the waitlist API.
+  - Updated the booking modal to display an "already on the waitlist" success state instead of a generic failure or misleading fresh-join state.
+  - Added four-language copy and a small existing-waitlist visual state.
+  - Added API regression, source regression, and Playwright coverage for repeat waitlist joins.
+- **Local verification**:
+  - Red/green: `npm test -- functions/waitlist.test.ts src/lib/audit-regressions.test.ts` first failed on missing idempotent waitlist and frontend state contracts, then passed after implementation.
+  - `npm test -- functions/waitlist.test.ts src/lib/audit-regressions.test.ts` — 2 files / 70 tests passed.
+  - `npm run build` — passed before targeted Playwright because this repo's Playwright config serves `dist` through `vite preview`.
+  - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line --grep "existing waitlist"` — 1/1 passed.
+  - In-app Browser preview check on `http://127.0.0.1:4189/` — homepage rendered nonblank, primary heading visible, no framework overlay, and no console error/warn entries.
+  - `npm run lint` — passed.
+  - `npm test` — 56 files / 350 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 36/36 passed.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Risk**: Duplicate detection is app-level and case-insensitive for the submitted contact string. It avoids duplicate rows in normal use, but a simultaneous race between identical requests could still need a future DB-level uniqueness guard if the production dataset is first deduplicated.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is a visible customer-facing experience improvement around booking or dashboard clarity.
+- **Status**: LOCAL VERIFICATION COMPLETE
