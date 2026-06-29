@@ -13,7 +13,8 @@ import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
 import { track } from "../utils/track";
 import { savePendingBooking, syncPendingBookings } from "../utils/offlineBooking";
-import { getBusinessDate, isBookableBusinessDate, isRealDateKey } from "../utils/businessDate";
+import { isBookableBusinessDate, isRealDateKey } from "../utils/businessDate";
+import { useBookingPolicy } from "../hooks/useBookingPolicy";
 
 type BookingModalProps = {
   initialPackage?: string;
@@ -46,7 +47,8 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const [depositOutcome, setDepositOutcome] = useState<"pending" | "deferred" | "offline" | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [earliestBookingDate] = useState(() => getBusinessDate());
+  const { policy: bookingPolicy } = useBookingPolicy();
+  const earliestBookingDate = bookingPolicy.earliestDate;
   const titleId = useId();
   const descriptionId = useId();
   const contentRef = useFocusTrap<HTMLDivElement>({ initialFocus: "first" });
@@ -404,6 +406,8 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
                 selectedDate={date}
                 onSelectDate={handleDateSelect}
                 minDate={earliestBookingDate}
+                policyTimeZone={bookingPolicy.timeZone}
+                capacityPerDay={bookingPolicy.capacityPerDay}
               />
               {errors.date && touched.date && (
                 <span className="booking-field-error">{errors.date}</span>

@@ -468,6 +468,7 @@
     "partial": "一部空き",
     "earliestBookable": "最短予約可能日：{{date}}",
     "unavailableBefore": "{{date}} より前は予約できません",
+    "policyNote": "スタジオ方針：{{timeZone}}、1日最大{{capacity}}件",
     "prevMonth": "前月",
     "nextMonth": "翌月",
     "weekdays": {

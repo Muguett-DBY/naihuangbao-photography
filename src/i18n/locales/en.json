@@ -471,6 +471,7 @@
     "partial": "Partially Available",
     "earliestBookable": "Earliest bookable date: {{date}}",
     "unavailableBefore": "Unavailable before {{date}}",
+    "policyNote": "Studio policy: {{timeZone}}, up to {{capacity}} sessions per day",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
     "weekdays": {

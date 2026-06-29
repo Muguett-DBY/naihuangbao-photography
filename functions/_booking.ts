@@ -1,6 +1,21 @@
 import type { ValidationResult } from "./_validation";
 
 export const BOOKING_CAPACITY_PER_DAY = 3;
+export const BOOKING_TIME_ZONE = "Asia/Shanghai";
+export const BOOKING_DATE_FORMAT = "YYYY-MM-DD";
+
+export type BookingPolicy = {
+  earliestDate: string;
+  timeZone: string;
+  capacityPerDay: number;
+  dateFormat: string;
+  unavailableReasons: {
+    beforeEarliest: "before_earliest";
+    fullyBooked: "fully_booked";
+    invalidDate: "invalid_date";
+  };
+  generatedAt: string;
+};
 
 export function isCancelledBookingStatus(status: string) {
   return status === "cancelled" || status === "canceled";
@@ -35,7 +50,7 @@ export function validateBookingDate(value: unknown, today: string): ValidationRe
   return { valid: true };
 }
 
-export function getBusinessDate(timeZone = "Asia/Shanghai", now = new Date()) {
+export function getBusinessDate(timeZone = BOOKING_TIME_ZONE, now = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone,
     year: "numeric",
@@ -44,4 +59,19 @@ export function getBusinessDate(timeZone = "Asia/Shanghai", now = new Date()) {
   }).formatToParts(now);
   const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
   return `${values.year}-${values.month}-${values.day}`;
+}
+
+export function getBookingPolicy(now = new Date()): BookingPolicy {
+  return {
+    earliestDate: getBusinessDate(BOOKING_TIME_ZONE, now),
+    timeZone: BOOKING_TIME_ZONE,
+    capacityPerDay: BOOKING_CAPACITY_PER_DAY,
+    dateFormat: BOOKING_DATE_FORMAT,
+    unavailableReasons: {
+      beforeEarliest: "before_earliest",
+      fullyBooked: "fully_booked",
+      invalidDate: "invalid_date",
+    },
+    generatedAt: now.toISOString(),
+  };
 }

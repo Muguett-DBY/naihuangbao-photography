@@ -1674,3 +1674,39 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 预约策略统一：由后端提供最早可预约日期、时区、容量规则和不可预约原因，前端日历只消费同一份 booking policy，彻底消除双端日期规则漂移。
+
+---
+
+## Campaign 019 Stage 1 — Booking Policy API Unification
+
+### 承接的上一轮方向
+- 上一轮推荐旗舰：预约策略统一，由后端提供最早可预约日期、时区、容量和不可预约原因，前端日历消费同一份策略。
+- 本阶段已完成可验证闭环：新增后端 policy API，并让预约弹窗和用户中心改期日历消费该策略。
+
+### 完成内容
+- 新增 `/api/booking/policy`，返回 `earliestDate`、`timeZone`、`capacityPerDay`、`dateFormat`、不可预约原因和生成时间。
+- 新增 `useBookingPolicy`，前端优先消费服务端 policy，失败时回退到本地业务日，避免预约入口被策略接口故障阻断。
+- 预约弹窗和 Dashboard 改期日历改用 policy 下发的最早可预约日期。
+- 日历新增可见策略说明：工作室时区和每日容量。
+- 增加 Functions、源码回归和预约 E2E 覆盖。
+
+### 已通过的验证
+- Red/green：policy API/hook 回归先失败，修复后目标 63/63 通过。
+- TypeScript / lint：通过。
+- Vitest 全量：53 个文件、334 个测试通过。
+- `build:full` + performance budget：通过。
+- 预约 Playwright E2E：7/7 通过。
+
+### GitHub Actions / CI 状态
+- 待 Stage 1 commit push 后检查。
+
+### 遗留风险
+- policy API 失败时仍会使用本地 fallback 计算业务日期；这是可用性兜底，但未来可以继续减少 fallback 与服务端规则的重复。
+
+### 下一轮建议方向
+1. IMPROVE：继续减少用户可见流程中的前后端策略漂移，例如预约可用性摘要、改期容量提示或等待名单规则。
+2. CHECK：复查公开认证端点的 public-action/header 策略。
+3. UIUX：减少 PWA 旧 service worker 对真实用户看到新 bundle 的影响。
+
+### 推荐下一轮优先执行的旗舰级主改动
+预约容量透明化：把 policy 和 availability 汇总成清晰的“可约/部分可约/已满”解释，让用户在预约与改期时更早知道可选范围和容量原因。

@@ -1115,3 +1115,43 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28369483995` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: None; this completes the requested 6-stage loop. Recommended future focus is reducing duplicated booking date rules by extracting a safe shared validation package or adding an API-provided booking policy endpoint.
 - **Status**: COMPLETE
+
+---
+
+## Campaign 019 — 6-Stage Reinforcement Loop — Started 2026-06-30
+
+### Global preparation
+- **Orchestrator**: `C:\Users\12031\Desktop\AGENT_ORCHESTRATOR_3_LEVELS_V2\03_LONG_6_STAGE_MAIN_V2.txt`
+- **Sequence**: IMPROVE -> IMPROVE -> UIUX -> IMPROVE -> CHECK -> IMPROVE
+- **Branch**: `main`
+- **Start state**: `main` at `6fdb34f`; `origin/main` aligned after `git fetch --prune` and `git pull --ff-only`.
+- **Protected existing changes**: untracked `.agent/orchestrator-history/campaign-015/` and `.agent/orchestrator-history/campaign-016/` are pre-existing and must not be staged.
+- **CI commands**: GitHub Actions uses Node 24 and runs `npm ci`, `npm run lint`, `npm test`, `npm run build`, and `npm run perf:budget`.
+- **Previous flagship direction**: booking policy unification: backend should provide earliest bookable date, timezone, capacity, and unavailable reasons so the frontend calendar no longer owns duplicate policy rules.
+
+### Stage 1 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Replace duplicated frontend booking-date policy ownership with an API-provided booking policy consumed by the booking modal and dashboard reschedule calendar, while keeping a local fallback for API outages.
+- **Start state**: `main` at `6fdb34f`; local and `origin/main` aligned, with only the protected untracked campaign-015 and campaign-016 history folders present.
+- **Plan / impact judgment**:
+  - Carry forward the previous flagship recommendation by adding `/api/booking/policy` backed by shared server booking rules.
+  - Add a small, user-visible calendar policy note showing the studio timezone and daily capacity from the policy response.
+  - Keep the fallback path client-side so users can still open the booking calendar if the policy request fails.
+- **Completed locally**:
+  - Added shared server booking policy generation in `functions/_booking.ts`.
+  - Added `/api/booking/policy` with no-store JSON containing earliest date, timezone, capacity, date format, unavailable reasons, and generation time.
+  - Added `useBookingPolicy` so the booking modal and dashboard reschedule calendar consume the server policy while retaining a local fallback.
+  - Added a visible calendar policy note showing the studio timezone and daily capacity.
+  - Updated booking E2E to prove a mocked server policy date drives the rendered calendar boundary.
+- **Local verification**:
+  - Red: `npm test -- functions/booking-policy.test.ts src/lib/audit-regressions.test.ts` failed on missing policy API and hook.
+  - Green: `npm test -- functions/booking-policy.test.ts src/lib/audit-regressions.test.ts` passed, 63/63.
+  - `npm run lint` — passed.
+  - `npm test` — 53 files / 334 tests passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 7/7 passed.
+- **Risk**: If `/api/booking/policy` is unavailable, the hook falls back to the local business-date utility; this protects booking availability but still leaves a short-lived fallback duplication path.
+- **Commit**: pending — `feat: serve booking policy to calendars`
+- **Push / CI**: pending.
+- **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing another user-visible policy or operational drift point with an independently testable improvement.
+- **Status**: READY TO COMMIT

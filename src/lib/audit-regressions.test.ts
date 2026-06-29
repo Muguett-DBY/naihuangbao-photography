@@ -90,6 +90,8 @@ const loginPageSource = readFileSync(resolve(root, "src/pages/LoginPage.tsx"), "
 const registerApiSource = readFileSync(resolve(root, "functions/api/auth/register.ts"), "utf8");
 const forgotPasswordApiSource = readFileSync(resolve(root, "functions/api/auth/forgot-password.ts"), "utf8");
 const businessDatePath = resolve(root, "src/utils/businessDate.ts");
+const bookingPolicyHookPath = resolve(root, "src/hooks/useBookingPolicy.ts");
+const bookingPolicyApiPath = resolve(root, "functions/api/booking/policy.ts");
 const jaLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ja.json"), "utf8");
 const zhLocaleSource = readFileSync(resolve(root, "src/i18n/locales/zh-CN.json"), "utf8");
 const enLocaleSource = readFileSync(resolve(root, "src/i18n/locales/en.json"), "utf8");
@@ -115,17 +117,28 @@ describe("audit regression coverage", () => {
 
   it("keeps booking date boundaries aligned with the studio business date", () => {
     expect(existsSync(businessDatePath)).toBe(true);
+    expect(existsSync(bookingPolicyHookPath)).toBe(true);
+    expect(existsSync(bookingPolicyApiPath)).toBe(true);
     const businessDateSource = existsSync(businessDatePath) ? readFileSync(businessDatePath, "utf8") : "";
+    const bookingPolicyHookSource = existsSync(bookingPolicyHookPath) ? readFileSync(bookingPolicyHookPath, "utf8") : "";
+    const bookingPolicyApiSource = existsSync(bookingPolicyApiPath) ? readFileSync(bookingPolicyApiPath, "utf8") : "";
 
     expect(businessDateSource).toContain("Asia/Shanghai");
-    expect(bookingModalSource).toContain("getBusinessDate");
-    expect(bookingModalSource).toContain("earliestBookingDate");
+    expect(bookingPolicyHookSource).toContain("/api/booking/policy");
+    expect(bookingPolicyHookSource).toContain("fallbackPolicy");
+    expect(bookingPolicyApiSource).toContain("getBookingPolicy");
+    expect(bookingPolicyApiSource).toContain("cache-control");
+    expect(bookingModalSource).toContain("useBookingPolicy");
+    expect(bookingModalSource).not.toContain("getBusinessDate");
     expect(bookingModalSource).toContain('validateField("date"');
+    expect(bookingCalendarSource).toContain("calendar.policyNote");
     expect(bookingCalendarSource).toContain("calendar.earliestBookable");
     expect(bookingCalendarSource).toContain("calendar.unavailableBefore");
+    expect(dashboardBookingsSource).toContain("useBookingPolicy");
     expect(dashboardBookingsSource).toContain("isBookableBusinessDate");
     expect(dashboardBookingsSource).not.toContain("function getTodayString");
     for (const locale of Object.values(locales)) {
+      expect(locale.calendar.policyNote).toBeTruthy();
       expect(locale.calendar.earliestBookable).toBeTruthy();
       expect(locale.calendar.unavailableBefore).toBeTruthy();
       expect(locale.bookingModal.datePast).toBeTruthy();

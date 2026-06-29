@@ -495,6 +495,7 @@
     "partial": "部分时段",
     "earliestBookable": "最早可预约日期：{{date}}",
     "unavailableBefore": "{{date}} 之前不可预约",
+    "policyNote": "工作室策略：{{timeZone}}，每日最多 {{capacity}} 组预约",
     "prevMonth": "上一月",
     "nextMonth": "下一月",
     "weekdays": {

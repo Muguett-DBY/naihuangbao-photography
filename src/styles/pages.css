@@ -3354,6 +3354,15 @@
   text-align: center;
 }
 
+.calendar-policy-note {
+  margin: -4px 0 12px;
+  color: var(--caramel-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+}
+
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);

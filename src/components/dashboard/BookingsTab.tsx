@@ -9,7 +9,8 @@ import { StatusBadge } from "./StatusBadge";
 import { useToast } from "../shared/Toast";
 import { publicMutationHeaders } from "../../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../../lib/http";
-import { getBusinessDate, isBookableBusinessDate } from "../../utils/businessDate";
+import { useBookingPolicy } from "../../hooks/useBookingPolicy";
+import { isBookableBusinessDate } from "../../utils/businessDate";
 import type { Booking } from "../../types/dashboard";
 
 const timelineSteps = [
@@ -111,7 +112,8 @@ export function BookingsTab() {
   const [rescheduleLoading, setRescheduleLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [actionError, setActionError] = useState<{ bookingId: string; message: string } | null>(null);
-  const [earliestBookingDate] = useState(() => getBusinessDate());
+  const { policy: bookingPolicy } = useBookingPolicy();
+  const earliestBookingDate = bookingPolicy.earliestDate;
 
   const handleCancel = useCallback(async (bookingId: string) => {
     setCancelLoading(true);
@@ -310,6 +312,8 @@ export function BookingsTab() {
                     <BookingCalendar
                       selectedDate={newDate}
                       minDate={earliestBookingDate}
+                      policyTimeZone={bookingPolicy.timeZone}
+                      capacityPerDay={bookingPolicy.capacityPerDay}
                       onSelectDate={setNewDate}
                     />
                     <div className="dashboard-reschedule-actions">
