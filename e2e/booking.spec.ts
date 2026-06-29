@@ -193,8 +193,17 @@ test.describe("booking flow", () => {
     await expect(page.locator(".calendar-date-boundary")).toContainText(policyDate);
     await expect(page.locator(".calendar-policy-note")).toContainText("Asia/Shanghai");
     await expect(page.locator(".calendar-policy-note")).toContainText("3");
+    await expect(page.locator(".calendar-policy-strip")).toBeVisible();
+    await expect(page.locator(".calendar-status-count--available")).toContainText("11");
+    await expect(page.locator(".calendar-status-count--partial")).toContainText("1");
+    await expect(page.locator(".calendar-status-count--booked")).toContainText("0");
     await expect(page.locator(".calendar-day-capacity")).toContainText("1 left");
-    await expect(page.getByRole("button", { name: /^20日 - Open slots: 1/ })).toBeEnabled();
+    const limitedDate = page.getByRole("button", { name: /^20日 - Open slots: 1/ });
+    await expect(limitedDate).toBeEnabled();
+    await limitedDate.click();
+    await expect(limitedDate).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator(".calendar-selection-summary")).toContainText("Selected date");
+    await expect(page.locator(".calendar-selection-summary")).toContainText("Open spots: 1");
     await expect(page.getByRole("button", { name: "Previous month" })).toBeDisabled();
     await expect(page.getByRole("button", { name: /^19日 - Unavailable before/ })).toBeDisabled();
   });

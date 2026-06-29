@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, UsersRound } from "lucide-react";
 import { useFetch } from "../hooks/useFetch";
 import { getBusinessDate } from "../utils/businessDate";
 
@@ -144,6 +145,28 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
     cells.push({ day: d, key });
   }
 
+  const monthStatus = cells.reduce(
+    (counts, cell) => {
+      if (!cell || cell.key < effectiveMinDate) return counts;
+      const status = availability[cell.key]?.status ?? "available";
+      counts[status] += 1;
+      return counts;
+    },
+    { available: 0, partial: 0, booked: 0 },
+  );
+  const selectedInfo = selectedDate.startsWith(`${monthKey}-`) ? availability[selectedDate] : undefined;
+  const selectedRemaining = selectedDate && calendarCapacity
+    ? selectedInfo?.remaining ?? Math.max(calendarCapacity - (selectedInfo?.count ?? 0), 0)
+    : undefined;
+  const selectedDateLabel = selectedDate
+    ? new Intl.DateTimeFormat(i18n.language, {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        weekday: "long",
+      }).format(new Date(`${selectedDate}T12:00:00`))
+    : "";
+
   return (
     <div className="booking-calendar" ref={calendarRef}>
       <div className="calendar-nav">
@@ -154,7 +177,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
           disabled={!canGoPrev}
           aria-label={t("calendar.prevMonth")}
         >
-          ‹
+          <ChevronLeft size={18} strokeWidth={2.2} aria-hidden="true" />
         </button>
         <span className="calendar-nav-title">{monthLabel}</span>
         <button
@@ -163,17 +186,25 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
           onClick={goNext}
           aria-label={t("calendar.nextMonth")}
         >
-          ›
+          <ChevronRight size={18} strokeWidth={2.2} aria-hidden="true" />
         </button>
       </div>
-      <p className="calendar-date-boundary">
-        {t("calendar.earliestBookable", { date: effectiveMinDate })}
-      </p>
-      {policyTimeZone && capacityPerDay && (
-        <p className="calendar-policy-note">
-          {t("calendar.policyNote", { timeZone: policyTimeZone, capacity: capacityPerDay })}
-        </p>
-      )}
+      <div className="calendar-policy-strip">
+        <div className="calendar-policy-item">
+          <CalendarDays size={17} strokeWidth={2} aria-hidden="true" />
+          <p className="calendar-date-boundary">
+            {t("calendar.earliestBookable", { date: effectiveMinDate })}
+          </p>
+        </div>
+        {policyTimeZone && capacityPerDay && (
+          <div className="calendar-policy-item">
+            <UsersRound size={17} strokeWidth={2} aria-hidden="true" />
+            <p className="calendar-policy-note">
+              {t("calendar.policyNote", { timeZone: policyTimeZone, capacity: capacityPerDay })}
+            </p>
+          </div>
+        )}
+      </div>
 
       <div className="calendar-weekdays">
         {WEEKDAY_KEYS.map((key) => (
@@ -181,8 +212,10 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
         ))}
       </div>
 
-      <div className="calendar-grid">
-        {cells.map((cell, i) => {
+      <div className="calendar-grid" aria-busy={loading}>
+        {loading ? Array.from({ length: cells.length }, (_, i) => (
+          <span key={i} className="calendar-skeleton-day" aria-hidden="true" />
+        )) : cells.map((cell, i) => {
           if (!cell) return <span key={`empty-${i}`} className="calendar-day calendar-day--empty" />;
 
           const info = availability[cell.key];
@@ -218,6 +251,9 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
               onClick={() => handleDayClick(cell.day)}
               disabled={isDisabled}
               aria-label={`${cell.day}日 - ${statusLabel}`}
+              aria-pressed={isSelected}
+              aria-current={isSelected ? "date" : undefined}
+              onFocus={() => setFocusedDay(cell.day)}
             >
               <span className="calendar-day-num">{cell.day}</span>
               {info && (
@@ -233,46 +269,39 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
         })}
       </div>
 
-      {loading && (
-        <div className="calendar-skeleton" aria-hidden="true">
-          {Array.from({ length: 28 }, (_, i) => (
-            <span key={i} className="calendar-skeleton-day" />
-          ))}
-        </div>
-      )}
-
       {!loading && (
         <>
-          <div className="calendar-summary" aria-live="polite">
-            {(() => {
-              const availableCount = Object.values(availability).filter((d) => d.status === "available").length;
-              const partialCount = Object.values(availability).filter((d) => d.status === "partial").length;
-              const bookedCount = Object.values(availability).filter((d) => d.status === "booked").length;
-              return (
-                <span>
-                  {availableCount > 0 && `${availableCount} ${t("calendar.availableDates", "open")}`}
-                  {availableCount > 0 && partialCount > 0 && " · "}
-                  {partialCount > 0 && `${partialCount} ${t("calendar.partialDates", "partial")}`}
-                  {bookedCount > 0 && ` · ${bookedCount} ${t("calendar.bookedDates", "full")}`}
-                </span>
-              );
-            })()}
+          <div
+            className="calendar-status-strip"
+            role="list"
+            aria-label={t("calendar.monthStatus", { month: monthLabel })}
+          >
+            <div className="calendar-status-count calendar-status-count--available" role="listitem">
+              <strong>{monthStatus.available}</strong>
+              <span><span className="calendar-day-dot calendar-day-dot--available" />{t("calendar.available")}</span>
+            </div>
+            <div className="calendar-status-count calendar-status-count--partial" role="listitem">
+              <strong>{monthStatus.partial}</strong>
+              <span><span className="calendar-day-dot calendar-day-dot--partial" />{t("calendar.partial")}</span>
+            </div>
+            <div className="calendar-status-count calendar-status-count--booked" role="listitem">
+              <strong>{monthStatus.booked}</strong>
+              <span><span className="calendar-day-dot calendar-day-dot--booked" />{t("calendar.booked")}</span>
+            </div>
           </div>
-          <div className="calendar-legend">
-        <span className="calendar-legend-item">
-          <span className="calendar-day-dot calendar-day-dot--available" />
-          {t("calendar.available")}
-        </span>
-        <span className="calendar-legend-item">
-          <span className="calendar-day-dot calendar-day-dot--partial" />
-          {t("calendar.partial")}
-        </span>
-        <span className="calendar-legend-item">
-          <span className="calendar-day-dot calendar-day-dot--booked" />
-          {t("calendar.booked")}
-        </span>
-      </div>
-      </>
+          {selectedDate && (
+            <div className="calendar-selection-summary" role="status" aria-live="polite">
+              <CheckCircle2 size={19} strokeWidth={2.2} aria-hidden="true" />
+              <span className="calendar-selection-copy">
+                <span>{t("calendar.selectedDate")}</span>
+                <time dateTime={selectedDate}>{selectedDateLabel}</time>
+              </span>
+              {selectedRemaining !== undefined && (
+                <strong>{t("calendar.selectedRemaining", { count: selectedRemaining })}</strong>
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

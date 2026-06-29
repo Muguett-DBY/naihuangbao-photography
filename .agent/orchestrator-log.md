@@ -1182,3 +1182,34 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28389437715` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is a visible booking calendar / modal experience upgrade now that policy and capacity data are available.
 - **Status**: COMPLETE
+
+### Stage 3 / 6 — UIUX
+- **Prompt**: `AGENT_UIUX_MAIN.txt`
+- **Objective**: Reorganize the shared booking calendar into a coherent availability experience with clear policy context, accurate month status, selection feedback, and stronger mobile usability.
+- **Start state**: `main` at `bc74ed5`; local and `origin/main` aligned, with only the protected untracked campaign-015 and campaign-016 history folders present.
+- **Previous direction carried forward**: Stage 2 recommended combining booking policy, earliest date, capacity, legend, and partial availability into one clearly understandable calendar experience.
+- **Flagship design**: A unified booking availability surface shared by the public booking modal and dashboard rescheduling flow.
+- **Completed locally**:
+  - Replaced the separate date boundary, policy note, summary, and legend with a single structured calendar policy/status surface.
+  - Added accurate open / limited / full counts for the bookable portion of the visible month, treating absent availability entries as open dates.
+  - Added selected-date confirmation with localized date text and remaining-capacity context.
+  - Swapped text-only month arrows for Lucide icon controls and added `aria-pressed` / `aria-current` selection semantics.
+  - Replaced the duplicate loading skeleton with in-place calendar grid skeleton cells.
+  - Widened the mobile calendar surface and added responsive selected-date summary layout.
+  - Added zh-CN, en, ja, and ko copy for month status and selected-date summaries.
+- **Rendered validation**:
+  - In-app Browser confirmed the fresh preview page rendered the new `.calendar-policy-strip`, `.calendar-status-strip`, and `.calendar-selection-summary` with no current-origin console errors.
+  - Playwright screenshots at 1440x1000 and 390x844 confirmed no horizontal overflow and visible policy/status/selection layout.
+  - Screenshot artifacts: `C:\Users\12031\AppData\Local\Temp\campaign019-stage3-desktop.png` and `C:\Users\12031\AppData\Local\Temp\campaign019-stage3-mobile.png`.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` first failed on missing calendar policy/status/selection contracts, then passed 64/64 after implementation.
+  - Red/green: targeted booking Playwright first failed on missing `.calendar-policy-strip`, then passed after implementation and production rebuild.
+  - `npm run lint` — passed.
+  - `npm test` — 54 files / 337 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 7/7 passed.
+- **Risk**: Zero-booking dates still do not appear explicitly in the availability payload; the UI intentionally counts absent bookable dates as open, matching the existing API contract.
+- **Commit**: pending — `feat: refine booking calendar experience`
+- **Push / CI**: pending.
+- **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is aligning waitlist/full-date behavior with the same booking policy and capacity contract.
+- **Status**: READY TO COMMIT

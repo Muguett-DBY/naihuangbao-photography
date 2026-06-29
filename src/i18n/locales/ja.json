@@ -471,6 +471,9 @@
     "policyNote": "スタジオ方針：{{timeZone}}、1日最大{{capacity}}件",
     "remainingSlots": "残り枠：{{count}}",
     "remainingShort": "残{{count}}",
+    "monthStatus": "{{month}}の空き状況",
+    "selectedDate": "選択した日付",
+    "selectedRemaining": "空き枠：{{count}}",
     "prevMonth": "前月",
     "nextMonth": "翌月",
     "weekdays": {

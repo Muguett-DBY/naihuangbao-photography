@@ -498,6 +498,9 @@
     "policyNote": "工作室策略：{{timeZone}}，每日最多 {{capacity}} 组预约",
     "remainingSlots": "剩余名额：{{count}}",
     "remainingShort": "余 {{count}}",
+    "monthStatus": "{{month}} 可约情况",
+    "selectedDate": "已选日期",
+    "selectedRemaining": "剩余名额：{{count}}",
     "prevMonth": "上一月",
     "nextMonth": "下一月",
     "weekdays": {

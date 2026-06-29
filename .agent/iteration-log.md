@@ -1745,3 +1745,43 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 预约日历体验升级：围绕最早日期、容量说明、图例和部分可约状态做 UIUX 整合，让用户一眼看懂如何选日期。
+
+---
+
+## Campaign 019 Stage 3 — Booking Calendar Experience UIUX
+
+### 承接的上一轮方向
+- Stage 2 已让 availability API 和日历显示剩余名额。
+- 本阶段按 UIUX 主线，把 policy、最早可约日期、容量说明、图例、月状态和选中反馈整合成一套更清晰的预约日历体验。
+
+### 完成内容
+- 日历头部新增统一的策略说明区，集中展示最早可约日期、工作室时区和每日容量。
+- 月状态从旧的零散摘要/图例升级为三栏 open / limited / full 计数，按当前月份可预约范围真实计算。
+- 选中日期后显示确认摘要，包含本地化日期和剩余名额。
+- 月份导航改为 Lucide 图标按钮，并补充 `aria-pressed` / `aria-current` 选中语义。
+- 加载态改为日历格内骨架，不再同时显示真实格子和第二套 skeleton。
+- 移动端日历宽度从固定 300px 改为自适应，选中摘要在窄屏下换行不溢出。
+- 补齐 zh-CN/en/ja/ko 文案，并新增源码回归和预约 E2E 覆盖。
+
+### 已通过的验证
+- Red/green：源码合同先因缺少 `.calendar-policy-strip` / `.calendar-status-strip` / `.calendar-selection-summary` 失败，修复后目标测试 64/64 通过。
+- Red/green：目标预约 E2E 先因缺少 `.calendar-policy-strip` 失败，修复并生产构建后通过。
+- TypeScript / lint：通过。
+- Vitest 全量：54 个文件、337 个测试通过。
+- `build:full` + performance budget：通过。
+- 预约 Playwright E2E：7/7 通过。
+- 桌面 1440x1000 和移动 390x844 视觉验证：无横向溢出，策略说明、月状态和选中摘要均可见。
+
+### GitHub Actions / CI 状态
+- 待提交并推送后检查。
+
+### 遗留风险
+- 零预约日期仍不在 availability `dates` 字典中，前端按既有合同把缺失日期视为可约；如果未来要显示所有日期的具体 3/3 剩余量，需要服务端补齐整月日期。
+
+### 下一轮建议方向
+1. IMPROVE：把等待名单和已满日期的用户路径接入同一 booking policy / capacity 规则，避免用户遇到满员日期后没有明确下一步。
+2. CHECK：复查登录/注册/重置公开端点的 header/CSRF 边界。
+3. IMPROVE：继续降低 PWA 旧 service worker 对新版本可见性的影响。
+
+### 推荐下一轮优先执行的旗舰级主改动
+等待名单与容量策略统一：当预约日期已满或用户需要候补时，使用同一份 policy/availability 规则给出清晰、可验证的下一步。
