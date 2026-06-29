@@ -111,6 +111,21 @@ test.describe("shoot.custard.top", () => {
     await expect(page.locator(".editor-modal")).toBeVisible();
   });
 
+  test("修图页模型失败后仍可导出并重试", async ({ page }) => {
+    await page.route("**/models/**", route => route.abort("failed"));
+    await page.goto("/editor");
+    await page.locator('.editor-toolbar input[type="file"]').setInputFiles(editorTestImage);
+
+    await expect(page.locator(".editor-canvas")).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(".editor-model-fallback")).toBeVisible({ timeout: 15000 });
+    await expect(page.locator(".editor-model-retry")).toBeVisible();
+
+    const exportButton = page.locator('.editor-toolbar button[aria-label="导出"], .editor-toolbar button[aria-label="Export"]');
+    await exportButton.evaluate((element) => element.scrollIntoView({ block: "start", inline: "nearest" }));
+    await exportButton.click();
+    await expect(page.locator(".editor-modal")).toBeVisible();
+  });
+
   test("修图页损坏图片失败后可以重新上传", async ({ page }) => {
     await page.goto("/editor");
     const input = page.locator('.editor-toolbar input[type="file"]');

@@ -7,7 +7,11 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import type { BeautySettings, BeautyCategory, BeautyTool, TextOverlay, StickerOverlay, FrameId } from "../types/photo-editor";
 import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
-import { prepareFaceApiBackend, loadFaceApiModels } from "../lib/photo-processing";
+import {
+  prepareFaceApiBackend,
+  loadFaceApiModels,
+  type FaceModelLoadFailureReason,
+} from "../lib/photo-processing";
 import { applyFrame, analyzeFaceAndCalcParams, detectFaceLandmarks, type Landmarks } from "../lib/editor-utils";
 import {
   applyBackgroundBlur as applyBackgroundBlurFn,
@@ -22,8 +26,6 @@ import {
   applyColorAdjustments,
   applyPostProcessing,
 } from "../lib/editor-effects";
-
-const MODEL_URL = "/models";
 
 type PhotoEditorWorkspaceProps = {
   initialFile?: File | null;
@@ -77,6 +79,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const mountedRef = useRef(true);
   const initialFileLoadedRef = useRef<File | null>(null);
   const imageLoadRequestRef = useRef(0);
+  const modelLoadRequestRef = useRef(0);
 
   const [loading, setLoading] = useState(false);
   const [imageLoadError, setImageLoadError] = useState<ImageLoadError | null>(null);
@@ -90,6 +93,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const [modelsReady, setModelsReady] = useState(false);
   const [modelLoading, setModelLoading] = useState(false);
   const [modelError, setModelError] = useState(false);
+  const [modelLoadIssue, setModelLoadIssue] = useState<FaceModelLoadFailureReason | null>(null);
   const [showCompare, setShowCompare] = useState(false);
   const [comparePos, setComparePos] = useState(50);
   const [historyIdx, setHistoryIdx] = useState(0);
@@ -98,7 +102,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const [exportFormat, setExportFormat] = useState<"png" | "jpeg">("jpeg");
   const [compareDrag, setCompareDrag] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
-  const [modelLoadAttempt, setModelLoadAttempt] = useState(1);
+  const [modelLoadAttempt, setModelLoadAttempt] = useState(0);
   const [activeWorkflowGroup, setActiveWorkflowGroup] = useState<EditorWorkflowKey>("quick");
   const [exportStatus, setExportStatus] = useState<ExportStatus>({
     state: "idle",
@@ -174,26 +178,38 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
 
   const startModelLoad = useCallback((options?: { force?: boolean }) => {
     if (faceModelsPromiseRef.current && !options?.force) return faceModelsPromiseRef.current;
+    const requestId = modelLoadRequestRef.current + 1;
+    modelLoadRequestRef.current = requestId;
     setModelLoadAttempt((attempt) => attempt + 1);
     setLoadProgress(0);
     setModelLoading(true);
     setModelError(false);
+    setModelLoadIssue(null);
     setModelsReady(false);
     modelErrorRef.current = false;
     modelsReadyRef.current = false;
     const loadPromise = loadFaceApiModels((progress) => {
-      if (mountedRef.current) setLoadProgress(progress);
+      if (mountedRef.current && modelLoadRequestRef.current === requestId) {
+        setLoadProgress(progress);
+      }
     })
-      .then(success => {
-        if (mountedRef.current) {
+      .then(result => {
+        const success = result.ok;
+        if (mountedRef.current && modelLoadRequestRef.current === requestId) {
           modelsReadyRef.current = success;
           modelErrorRef.current = !success;
           setModelsReady(success);
           setModelLoading(false);
           setModelError(!success);
+          setModelLoadIssue(result.ok ? null : result.reason);
           setLoadProgress(success ? 100 : 0);
         }
         return success;
+      })
+      .finally(() => {
+        if (modelLoadRequestRef.current === requestId && !modelsReadyRef.current) {
+          faceModelsPromiseRef.current = null;
+        }
       });
     faceModelsPromiseRef.current = loadPromise;
     return loadPromise;
@@ -873,12 +889,12 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
               <div className="editor-loading-bar">
                 <div className="editor-loading-bar-fill" style={{ width: `${Math.max(loadProgress, 5)}%` }} />
               </div>
-              <span>{t("editor.loadingModels")}{loadProgress > 0 ? ` ${Math.round(loadProgress)}%` : ""}</span>
+              <span>{t(modelLoadAttempt > 1 ? "editor.modelRetrying" : "editor.loadingModels")}{loadProgress > 0 ? ` ${Math.round(loadProgress)}%` : ""}</span>
             </div>
           )}
           {modelError && (
             <div className="editor-model-fallback" role="alert">
-              <strong>{t("editor.modelLoadFailed")}</strong>
+              <strong>{t(modelLoadIssue === "timeout" ? "editor.modelLoadTimedOut" : "editor.modelLoadFailed")}</strong>
               <span>{t("editor.degradedMode")}</span>
               <button type="button" className="editor-model-retry" onClick={handleRetryModels}>
                 {t("editor.retryModels")}
