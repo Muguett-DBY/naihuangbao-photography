@@ -1,6 +1,6 @@
 import { jsonResponse, badRequest, unauthorized, unavailable } from "../../_responses";
 import { getUserFromRequest, hashPassword, generateSalt } from "../../_auth";
-import { getRequiredAuthSecret, timingSafeEqual } from "../../_security";
+import { getRequiredAuthSecret, requirePublicMutationRequest, timingSafeEqual } from "../../_security";
 import { validateString, validateOptionalString, validateBody } from "../../_validation";
 
 type AuthEnv = Env & { AUTH_SECRET?: string };
@@ -16,6 +16,9 @@ type UserRow = {
 export const onRequestGet: PagesFunction<AuthEnv> = async () => unauthorized("请先登录");
 
 export const onRequestPut: PagesFunction<AuthEnv> = async (context) => {
+  const publicActionError = requirePublicMutationRequest(context.request);
+  if (publicActionError) return publicActionError;
+
   const secret = getRequiredAuthSecret(context.env);
   if (!secret) return unauthorized("请先登录");
 

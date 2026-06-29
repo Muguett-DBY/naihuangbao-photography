@@ -1598,3 +1598,41 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 全项目稳定性扫雷：从真实构建、测试、PWA 生成物、权限边界和核心用户流程中找出具体风险，先写回归再修复，不做无意义重构。
+
+---
+
+## Campaign 018 Stage 5 — CHECK Stability and Security Sweep
+
+### 承接的上一轮方向
+- Stage 4 已加固修图模型加载，本阶段按 CHECK 主线审查依赖、CI、API 权限边界、日期校验、PWA 产物和核心用户流程。
+- 检查目标不是只给状态报告，而是找出可复现风险并用回归测试闭合。
+
+### 完成内容
+- `DEMO_MODE` 改为严格解析，只有显式 `true` 才允许密码重置响应带 demo token，避免 `"false"` 被当成开启。
+- 用户资料更新、预约取消、预约改期新增 `x-nhb-public-action` 写操作边界校验，并保持前端现有 header 合同不变。
+- 候补预约和直接预约的日期字段复用严格业务日期校验，拒绝不存在日期和过去日期。
+- 新增 `functions/mutation-boundaries.test.ts`，覆盖 public mutation guard、候补日期和直接预约日期边界。
+- 扩展 `functions/auth-password-reset.test.ts`，覆盖 demo mode true/false 行为。
+- 修复编辑器 E2E 上传 flake：用可见上传按钮和 Playwright file chooser 取代直接设置隐藏 input。
+- 确认 `dist/sw.js` 中 `SKIP_WAITING`、`cleanupOutdatedCaches()`、`/api/photos` 独立缓存和 `editor-models` 缓存规则仍在。
+
+### 已通过的验证
+- Red/green：新增 API 安全/日期测试先出现预期失败，修复后目标 API 回归 46/46 通过。
+- 编辑器上传相关 Playwright 连续 3 轮 9/9 通过。
+- TypeScript / lint：通过。
+- Vitest 全量：51 个文件、330/330 通过。
+- `build:full` + performance budget：通过。
+- Playwright 全量：先暴露隐藏 input 上传竞态，修复后 32/32 通过（单 worker）。
+- `npm audit --json`：0 vulnerabilities；`npm ls --depth=0` clean；`npm ci` clean。
+
+### 遗留风险
+- 登录/注册/重置接口未在本阶段扩展 public-action header 策略，仅修复已证实的 demo token 解析风险。
+- `glob`、`source-map` deprecation warning 来自 `vite-plugin-pwa` / Workbox 传递依赖，目前无 audit 漏洞。
+
+### 下一轮建议方向
+1. IMPROVE：在不扩大改动面的前提下，补齐一个剩余 API/前端边界的用户可见稳定性问题。
+2. IMPROVE：优先选择能用小范围回归和全量验证闭合的改动。
+3. IMPROVE：完成后继续独立提交、推送、检查 GitHub Actions，并补齐日志。
+
+### 推荐下一轮优先执行的旗舰级主改动
+预约入口韧性收尾：检查前端预约日期/时间选择与服务端严格日期规则的一致性，避免用户在 UI 中选择或提交服务端会拒绝的日期。

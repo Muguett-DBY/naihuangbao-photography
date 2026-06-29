@@ -1,6 +1,7 @@
 import { badRequest, jsonResponse, unavailable } from "../_responses";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../_security";
-import { validateString, validateOptionalString, validateDate } from "../_validation";
+import { validateString, validateOptionalString } from "../_validation";
+import { getBusinessDate, validateBookingDate } from "../_booking";
 
 type BookingBody = {
   packageName?: string;
@@ -36,8 +37,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const notesResult = validateOptionalString(body.notes, "备注", 500);
   if (!notesResult.valid) return badRequest(notesResult.error);
 
-  if (body.preferredDate && !validateDate(body.preferredDate)) {
-    return badRequest("日期格式不正确");
+  if (body.preferredDate) {
+    const dateResult = validateBookingDate(body.preferredDate, getBusinessDate());
+    if (!dateResult.valid) return badRequest(dateResult.error);
   }
 
   const name = body.name!.trim();

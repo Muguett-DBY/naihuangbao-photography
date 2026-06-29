@@ -1,6 +1,6 @@
 import { jsonResponse, badRequest, unauthorized, unavailable } from "../../../../_responses";
 import { getUserFromRequest } from "../../../../_auth";
-import { getRequiredAuthSecret } from "../../../../_security";
+import { getRequiredAuthSecret, requirePublicMutationRequest } from "../../../../_security";
 import { validateId } from "../../../../_validation";
 import { isCancelledBookingStatus } from "../../../../_booking";
 
@@ -18,6 +18,9 @@ type UserRow = {
 };
 
 export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
+  const publicActionError = requirePublicMutationRequest(context.request);
+  if (publicActionError) return publicActionError;
+
   const secret = getRequiredAuthSecret(context.env);
   if (!secret) return unauthorized("请先登录");
 

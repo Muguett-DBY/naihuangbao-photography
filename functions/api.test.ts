@@ -673,7 +673,10 @@ describe("Cloudflare Pages API behavior", () => {
     const response = await cancelUserBooking({
       request: jsonRequest("https://shoot.custard.top/api/user/bookings/booking-12345678/cancel", {
         method: "POST",
-        headers: { cookie: `nhb_user_session=${session}` },
+        headers: {
+          cookie: `nhb_user_session=${session}`,
+          "x-nhb-public-action": "1",
+        },
       }),
       env: { DB: db, AUTH_SECRET: secret },
       params: { id: "booking-12345678" },
@@ -693,6 +696,7 @@ describe("Cloudflare Pages API behavior", () => {
         headers: {
           cookie: `nhb_user_session=${session}`,
           "content-type": "application/json",
+          "x-nhb-public-action": "1",
         },
         body: JSON.stringify({ preferred_date: "2020-01-01" }),
       }),
@@ -732,6 +736,7 @@ describe("Cloudflare Pages API behavior", () => {
         headers: {
           cookie: `nhb_user_session=${session}`,
           "content-type": "application/json",
+          "x-nhb-public-action": "1",
         },
         body: JSON.stringify({ preferred_date: "2099-01-01" }),
       }),

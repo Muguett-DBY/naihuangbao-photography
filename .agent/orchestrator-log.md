@@ -1048,3 +1048,37 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28365005983` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; perform a system-wide code, security, CI, PWA, and core-flow sweep and fix concrete risks with regression coverage.
 - **Status**: COMPLETE
+
+### Stage 5 / 6 — CHECK
+- **Prompt**: `AGENT_CHECK_MAIN.txt`
+- **Objective**: Audit build/dependency consistency, CI parity, TypeScript quality, API security and validation, PWA output, and core user flows; fix reproducible P0/P1 risks with regression coverage.
+- **Start state**: `main` at `edf4ddc`; local and `origin/main` aligned, with only the protected untracked campaign-015 and campaign-016 history folders present.
+- **CI baseline**: GitHub Actions uses Node 24 and runs `npm ci`, lint, tests, build, and performance budget on Ubuntu.
+- **Audit findings**:
+  - P0: none found. `npm audit --json` reported 0 vulnerabilities; `npm ls --depth=0` and `npm ci` completed cleanly after stopping stale local Wrangler/miniflare processes that were holding `node_modules` files open.
+  - P1: `DEMO_MODE="false"` was treated as enabled demo mode and exposed password reset tokens in responses.
+  - P1: cookie-authenticated public mutations for profile update, booking cancel, and booking reschedule did not enforce the same `x-nhb-public-action` boundary already used by the frontend and other public write endpoints.
+  - P1: waitlist and direct booking APIs accepted impossible or past dates because loose `Date` parsing normalized invalid calendar input.
+  - P2: editor Playwright upload checks manipulated a hidden file input directly, which made the full suite susceptible to a real hydration/event-binding race even though the user-visible upload path worked.
+- **Completed locally**:
+  - Parsed `DEMO_MODE` strictly so only the explicit string `true` enables demo token disclosure.
+  - Added `requirePublicMutationRequest` guards to profile update, customer booking cancel, and customer booking reschedule before cookie authentication runs.
+  - Reused strict business-date validation for waitlist dates and direct booking `preferredDate` values.
+  - Added regression coverage for demo-mode parsing, mutation boundary enforcement, invalid/impossible booking dates, and past booking dates.
+  - Stabilized editor upload E2E checks by using the visible upload button plus Playwright file chooser instead of setting hidden file inputs directly.
+- **Generated output / PWA validation**:
+  - Fresh `dist/sw.js` after `build:full` contains `SKIP_WAITING`, `cleanupOutdatedCaches()`, a separate `/api/photos` runtime cache, and the `editor-models` cache rule.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Local verification**:
+  - Red/green: new auth and mutation-boundary tests first failed with the expected demo-token, missing public-action, and loose-date validation failures, then passed after implementation.
+  - Targeted API regression suite: 4 files / 46 tests passed.
+  - Targeted editor Playwright stabilization: 9/9 passed across 3 repeat cycles after the helper change.
+  - `npm run lint` — passed.
+  - `npm test` — 51 files / 330 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - Full Playwright e2e with one worker — first exposed the hidden-input race, then passed 32/32 after the user-visible file chooser upload fix.
+- **Risk**: Auth login/register/reset endpoints were not broadened in this stage beyond the concrete demo-token leak; they remain candidates for a future CSRF/header-boundary audit. The `glob` and `source-map` deprecation warnings are upstream transitive dependencies via `vite-plugin-pwa` / Workbox with no current audit vulnerability.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is closing one remaining user-visible or API reliability gap with a small, test-backed improvement.
+- **Status**: LOCAL VERIFICATION COMPLETE; COMMIT / PUSH / CI PENDING

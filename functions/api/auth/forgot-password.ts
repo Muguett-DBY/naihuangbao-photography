@@ -84,7 +84,7 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
 
   // Demo mode: return token in response only if explicitly enabled
   // In production, this code path should never run (email provider should be configured)
-  const isDemoMode = !!context.env.DEMO_MODE;
+  const isDemoMode = context.env.DEMO_MODE?.trim().toLowerCase() === "true";
   if (!isDemoMode) {
     // Production without email — log warning but never return token
     console.warn("[forgot-password] No email provider configured and DEMO_MODE not set. Token generated but not delivered.");
