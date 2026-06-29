@@ -3638,6 +3638,10 @@
   background: linear-gradient(135deg, #f97316, #fb7185);
 }
 
+.booking-waitlist-success--existing .booking-success-check {
+  background: linear-gradient(135deg, #65a30d, #14b8a6);
+}
+
 @media (max-width: 768px) {
   .booking-calendar {
     max-width: 100%;

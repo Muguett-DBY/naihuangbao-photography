@@ -27,6 +27,14 @@ type FormErrors = {
   date?: string;
 };
 
+type WaitlistResponse = {
+  message?: string;
+  waitlist?: {
+    id?: string;
+    duplicate?: boolean;
+  };
+};
+
 export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const { t } = useTranslation();
   const { packages, siteConfig } = useSiteContent();
@@ -48,6 +56,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const [waitlistDate, setWaitlistDate] = useState("");
   const [joiningWaitlist, setJoiningWaitlist] = useState(false);
   const [waitlistDone, setWaitlistDone] = useState(false);
+  const [waitlistAlreadyJoined, setWaitlistAlreadyJoined] = useState(false);
   const [waitlistId, setWaitlistId] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -119,6 +128,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const handleWaitlistDate = useCallback((nextDate: string) => {
     setDate(nextDate);
     setWaitlistDate(nextDate);
+    setWaitlistAlreadyJoined(false);
     setTouched((prev) => ({ ...prev, date: true }));
     setErrors((prev) => ({ ...prev, date: validateField("date", nextDate) }));
     setStep(2);
@@ -167,15 +177,17 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           contact: trimmedContact,
         }),
       });
-      const data = await readJsonResponse<{ waitlist?: { id?: string } }>(response);
+      const data = await readJsonResponse<WaitlistResponse>(response);
 
       if (!response.ok) {
         throw new Error(getApiError(data, t("bookingModal.waitlistSubmitError")));
       }
 
+      const alreadyJoined = data?.message === "already_waitlisted" || data?.waitlist?.duplicate === true;
       setWaitlistId(data?.waitlist?.id ?? null);
+      setWaitlistAlreadyJoined(alreadyJoined);
       setWaitlistDone(true);
-      track("booking_waitlist_joined", { packageName: selectedPkg, date: preferredDate });
+      track(alreadyJoined ? "booking_waitlist_duplicate" : "booking_waitlist_joined", { packageName: selectedPkg, date: preferredDate });
     } catch (err) {
       setError(err instanceof Error ? err.message : t("bookingModal.waitlistSubmitError"));
     } finally {
@@ -288,19 +300,25 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
   if (waitlistDone) {
     const selectedPackageName = packages.find((p) => p.name === selectedPkg)?.name || selectedPkg;
+    const waitlistTitle = waitlistAlreadyJoined
+      ? t("bookingModal.waitlistAlreadyJoinedTitle")
+      : t("bookingModal.waitlistSuccessTitle");
+    const waitlistDescription = waitlistAlreadyJoined
+      ? t("bookingModal.waitlistAlreadyJoinedDescription")
+      : t("bookingModal.waitlistSuccessDescription");
     return (
       <Modal open onClose={onClose} footer={null} typewriter={false}>
-        <span id={titleId} className="sr-only">{t("bookingModal.waitlistSuccessTitle")}</span>
+        <span id={titleId} className="sr-only">{waitlistTitle}</span>
         <div ref={contentRef} className="booking-modal-content">
-          <div className="booking-modal-success booking-waitlist-success">
+          <div className={`booking-modal-success booking-waitlist-success${waitlistAlreadyJoined ? " booking-waitlist-success--existing" : ""}`}>
             <div className="booking-success-check">
               <svg viewBox="0 0 24 24" className="booking-success-check-svg" aria-hidden="true">
                 <path d="M20 6L9 17l-5-5" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h2>{t("bookingModal.waitlistSuccessTitle")}</h2>
+            <h2>{waitlistTitle}</h2>
             <p className="booking-success-next">
-              {t("bookingModal.waitlistSuccessDescription")}
+              {waitlistDescription}
             </p>
             <div className="booking-success-details">
               {waitlistId && (

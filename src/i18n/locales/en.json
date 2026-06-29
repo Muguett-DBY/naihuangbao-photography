@@ -441,6 +441,8 @@
     "waitlistNoticeDescription": "{{date}} is fully booked. Leave your contact and I will reach out if a spot opens.",
     "waitlistSuccessTitle": "Waitlist joined",
     "waitlistSuccessDescription": "Your waitlist request is saved. I will contact you if this date opens up.",
+    "waitlistAlreadyJoinedTitle": "Already on the waitlist",
+    "waitlistAlreadyJoinedDescription": "I found your active waitlist request for this date, so no duplicate was created.",
     "waitlistSuccessHint": "For urgent changes, DM me on",
     "next": "Next",
     "back": "Back",

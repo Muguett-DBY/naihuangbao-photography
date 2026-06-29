@@ -438,6 +438,8 @@
     "waitlistNoticeDescription": "{{date}} 날짜는 마감되었습니다. 연락처를 남기면 자리가 생길 때 연락드리겠습니다.",
     "waitlistSuccessTitle": "대기 명단에 등록되었습니다",
     "waitlistSuccessDescription": "대기 요청이 저장되었습니다. 이 날짜에 자리가 생기면 연락드리겠습니다.",
+    "waitlistAlreadyJoinedTitle": "이미 대기 명단에 등록되어 있습니다",
+    "waitlistAlreadyJoinedDescription": "이 날짜의 활성 대기 요청을 찾았으므로 중복으로 만들지 않았습니다.",
     "waitlistSuccessHint": "급한 변경은 DM으로 연락해 주세요:",
     "next": "다음",
     "back": "뒤로",

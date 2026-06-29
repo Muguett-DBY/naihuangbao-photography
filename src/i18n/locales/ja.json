@@ -438,6 +438,8 @@
     "waitlistNoticeDescription": "{{date}} は満席です。連絡先を残すと、空きが出た際にご連絡します。",
     "waitlistSuccessTitle": "キャンセル待ちに登録しました",
     "waitlistSuccessDescription": "キャンセル待ちのリクエストを保存しました。この日付に空きが出たらご連絡します。",
+    "waitlistAlreadyJoinedTitle": "すでにキャンセル待ちに登録済みです",
+    "waitlistAlreadyJoinedDescription": "この日付の有効なキャンセル待ちが見つかったため、重複登録は作成しませんでした。",
     "waitlistSuccessHint": "急ぎの場合はDMでご連絡ください：",
     "next": "次へ",
     "back": "戻る",

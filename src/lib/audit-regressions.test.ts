@@ -198,6 +198,17 @@ describe("audit regression coverage", () => {
     }
   });
 
+  it("keeps repeat waitlist joins idempotent and user-visible", () => {
+    expect(waitlistApiSource).toContain("already_waitlisted");
+    expect(waitlistApiSource).toContain("duplicate: true");
+    expect(bookingModalSource).toContain("waitlistAlreadyJoined");
+    expect(bookingModalSource).toContain("waitlistAlreadyJoinedTitle");
+    for (const locale of Object.values(locales)) {
+      expect(locale.bookingModal.waitlistAlreadyJoinedTitle).toBeTruthy();
+      expect(locale.bookingModal.waitlistAlreadyJoinedDescription).toBeTruthy();
+    }
+  });
+
   it("keeps the embedded dashboard calendar readable in dark mode", () => {
     const panelBlock = editorCssSource.match(/\.dashboard-confirm-panel--default\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
     expect(panelBlock).toContain("--paper-white: #fffdf7");

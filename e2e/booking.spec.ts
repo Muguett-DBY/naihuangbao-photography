@@ -282,6 +282,77 @@ test.describe("booking flow", () => {
     });
   });
 
+  test("shows an existing waitlist confirmation without creating a duplicate", async ({ page }) => {
+    const policyDate = "2099-08-20";
+    const fullDate = "2099-08-21";
+    const waitlistRequests: Array<Record<string, unknown>> = [];
+
+    await page.route("**/api/booking/policy", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        earliestDate: policyDate,
+        timeZone: "Asia/Shanghai",
+        capacityPerDay: 3,
+        dateFormat: "YYYY-MM-DD",
+        unavailableReasons: {
+          beforeEarliest: "before_earliest",
+          fullyBooked: "fully_booked",
+          invalidDate: "invalid_date",
+        },
+        generatedAt: "2099-08-19T16:00:00.000Z",
+      }),
+    }));
+    await page.route("**/api/availability**", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        capacityPerDay: 3,
+        dates: {
+          [fullDate]: {
+            status: "booked",
+            count: 3,
+            capacity: 3,
+            remaining: 0,
+          },
+        },
+      }),
+    }));
+    await page.route("**/api/booking/waitlist", (route) => {
+      waitlistRequests.push(route.request().postDataJSON() as Record<string, unknown>);
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ok: true,
+          message: "already_waitlisted",
+          waitlist: {
+            id: "wl_existing_123456",
+            preferredDate: fullDate,
+            active: true,
+            duplicate: true,
+            createdAt: "2099-08-19T16:00:00.000Z",
+          },
+        }),
+      });
+    });
+
+    await page.goto("/");
+    await page.locator(".hero-cover-primary-btn").click();
+
+    await page.getByRole("button", { name: /^21日 - Fully Booked, join waitlist/ }).click();
+    await page.locator("#booking-name").fill("Waitlist Guest");
+    await page.locator("#booking-contact").fill("waitlist@example.com");
+    await page.getByRole("button", { name: "Join waitlist", exact: true }).click();
+
+    const existingPanel = page.locator(".booking-waitlist-success--existing");
+    await expect(existingPanel).toBeVisible();
+    await expect(existingPanel).toContainText("Already on the waitlist");
+    await expect(existingPanel).toContainText("no duplicate was created");
+    await expect(page.locator(".booking-error")).toHaveCount(0);
+    expect(waitlistRequests).toHaveLength(1);
+  });
+
   test("shows the latest booking deposit state in the customer dashboard", async ({ page }) => {
     await page.route("**/api/auth/session", (route) => route.fulfill({
       status: 200,
