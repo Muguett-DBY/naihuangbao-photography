@@ -1321,7 +1321,7 @@ Beginning execution.
   - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 35/35 passed.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
 - **Risk**: Browser install prompting remains controlled by each browser's PWA heuristics; this stage makes the app-side prompt eligibility, dismissal, and install outcome handling deterministic once `beforeinstallprompt` is available.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `c876808` — `feat: improve pwa install flow`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28408823208` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is a bounded reliability improvement outside the already-covered PWA update/install path.
-- **Status**: LOCAL VERIFICATION COMPLETE
+- **Status**: COMPLETE
