@@ -1,16 +1,5 @@
 import { test, expect } from "@playwright/test";
 
-function getStudioBusinessDate(): string {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Shanghai",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(new Date());
-  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  return `${values.year}-${values.month}-${values.day}`;
-}
-
 test.describe("booking flow", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
@@ -164,9 +153,24 @@ test.describe("booking flow", () => {
   });
 
   test("keeps booking dates aligned with the studio business day", async ({ page }) => {
-    const studioDate = getStudioBusinessDate();
-    const day = Number(studioDate.slice(-2));
+    const policyDate = "2099-08-20";
 
+    await page.route("**/api/booking/policy", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        earliestDate: policyDate,
+        timeZone: "Asia/Shanghai",
+        capacityPerDay: 3,
+        dateFormat: "YYYY-MM-DD",
+        unavailableReasons: {
+          beforeEarliest: "before_earliest",
+          fullyBooked: "fully_booked",
+          invalidDate: "invalid_date",
+        },
+        generatedAt: "2099-08-19T16:00:00.000Z",
+      }),
+    }));
     await page.route("**/api/availability**", (route) => route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -176,12 +180,11 @@ test.describe("booking flow", () => {
     await page.goto("/");
     await page.locator(".hero-cover-primary-btn").click();
 
-    await expect(page.locator(".calendar-date-boundary")).toContainText(studioDate);
+    await expect(page.locator(".calendar-date-boundary")).toContainText(policyDate);
+    await expect(page.locator(".calendar-policy-note")).toContainText("Asia/Shanghai");
+    await expect(page.locator(".calendar-policy-note")).toContainText("3");
     await expect(page.getByRole("button", { name: "Previous month" })).toBeDisabled();
-
-    if (day > 1) {
-      await expect(page.getByRole("button", { name: new RegExp(`^${day - 1}日 - Unavailable before`) })).toBeDisabled();
-    }
+    await expect(page.getByRole("button", { name: /^19日 - Unavailable before/ })).toBeDisabled();
   });
 
   test("shows the latest booking deposit state in the customer dashboard", async ({ page }) => {

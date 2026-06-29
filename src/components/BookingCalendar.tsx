@@ -16,6 +16,8 @@ type BookingCalendarProps = {
   selectedDate: string;
   onSelectDate: (date: string) => void;
   minDate?: string;
+  policyTimeZone?: string;
+  capacityPerDay?: number;
 };
 
 const WEEKDAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
@@ -36,7 +38,7 @@ function formatDateKey(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
-export function BookingCalendar({ selectedDate, onSelectDate, minDate }: BookingCalendarProps) {
+export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTimeZone, capacityPerDay }: BookingCalendarProps) {
   const { t, i18n } = useTranslation();
   const calendarRef = useRef<HTMLDivElement>(null);
   const effectiveMinDate = useMemo(() => minDate || getBusinessDate(), [minDate]);
@@ -56,6 +58,14 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
   const firstDay = getFirstDayOfWeek(year, month);
 
   const canGoPrev = year > minYear || (year === minYear && month > minMonth);
+
+  useEffect(() => {
+    if (year < minYear || (year === minYear && month < minMonth)) {
+      setYear(minYear);
+      setMonth(minMonth);
+      setFocusedDay(null);
+    }
+  }, [minYear, minMonth, year, month]);
 
   const goPrev = useCallback(() => {
     if (!canGoPrev) return;
@@ -155,6 +165,11 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
       <p className="calendar-date-boundary">
         {t("calendar.earliestBookable", { date: effectiveMinDate })}
       </p>
+      {policyTimeZone && capacityPerDay && (
+        <p className="calendar-policy-note">
+          {t("calendar.policyNote", { timeZone: policyTimeZone, capacity: capacityPerDay })}
+        </p>
+      )}
 
       <div className="calendar-weekdays">
         {WEEKDAY_KEYS.map((key) => (
