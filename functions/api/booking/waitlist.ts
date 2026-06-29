@@ -1,6 +1,7 @@
 import { badRequest, jsonResponse, unavailable } from "../../_responses";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../_security";
 import { validateString } from "../../_validation";
+import { getBusinessDate, validateBookingDate } from "../../_booking";
 
 type WaitlistBody = {
   preferredDate?: string;
@@ -10,12 +11,6 @@ type WaitlistBody = {
 };
 
 const MAX_WAITLIST_PER_DAY = 50;
-
-function isValidDate(value: string): boolean {
-  if (!value) return false;
-  const date = new Date(value);
-  return !isNaN(date.getTime());
-}
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const publicActionError = requirePublicMutationRequest(context.request);
@@ -33,9 +28,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (!nameResult.valid) return badRequest(nameResult.error);
 
   const dateResult = validateString(body.preferredDate, "期望日期", 10);
-  if (!dateResult.valid || !isValidDate(body.preferredDate ?? "")) {
-    return badRequest("请提供有效的期望日期");
-  }
+  if (!dateResult.valid) return badRequest(dateResult.error);
+  const bookingDateResult = validateBookingDate(body.preferredDate, getBusinessDate());
+  if (!bookingDateResult.valid) return badRequest(bookingDateResult.error);
 
   const packageName = body.packageName?.trim() || "未指定";
 

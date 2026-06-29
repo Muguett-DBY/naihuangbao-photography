@@ -5,6 +5,21 @@ import { test, expect, type Page } from "@playwright/test";
 
 const editorTestImage = resolve("public/images/gallery/gallery-urban-01.webp");
 
+type EditorUploadFile = string | {
+  name: string;
+  mimeType: string;
+  buffer: Buffer;
+};
+
+async function uploadEditorPhoto(page: Page, file: EditorUploadFile) {
+  const uploadButton = page.locator(".editor-toolbar .editor-btn--primary").first();
+  await expect(uploadButton).toBeVisible();
+  const fileChooserPromise = page.waitForEvent("filechooser");
+  await uploadButton.click();
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles(file);
+}
+
 async function openGalleryFromNav(page: Page) {
   const inlineGalleryLink = page.locator('.nav-menu--inline a[href="/gallery"]').first();
   if (await inlineGalleryLink.isVisible()) {
@@ -103,7 +118,7 @@ test.describe("shoot.custard.top", () => {
 
   test("修图页上传后导出按钮可点击", async ({ page }) => {
     await page.goto("/editor");
-    await page.locator('.editor-toolbar input[type="file"]').setInputFiles(editorTestImage);
+    await uploadEditorPhoto(page, editorTestImage);
     await expect(page.locator(".editor-canvas")).toBeVisible({ timeout: 15000 });
     const exportButton = page.locator('.editor-toolbar button[aria-label="导出"], .editor-toolbar button[aria-label="Export"]');
     await exportButton.evaluate((element) => element.scrollIntoView({ block: "start", inline: "nearest" }));
@@ -114,7 +129,7 @@ test.describe("shoot.custard.top", () => {
   test("修图页模型失败后仍可导出并重试", async ({ page }) => {
     await page.route("**/models/**", route => route.abort("failed"));
     await page.goto("/editor");
-    await page.locator('.editor-toolbar input[type="file"]').setInputFiles(editorTestImage);
+    await uploadEditorPhoto(page, editorTestImage);
 
     await expect(page.locator(".editor-canvas")).toBeVisible({ timeout: 15000 });
     await expect(page.locator(".editor-model-fallback")).toBeVisible({ timeout: 15000 });
@@ -128,9 +143,7 @@ test.describe("shoot.custard.top", () => {
 
   test("修图页损坏图片失败后可以重新上传", async ({ page }) => {
     await page.goto("/editor");
-    const input = page.locator('.editor-toolbar input[type="file"]');
-
-    await input.setInputFiles({
+    await uploadEditorPhoto(page, {
       name: "broken.png",
       mimeType: "image/png",
       buffer: Buffer.from("not a decodable image"),
@@ -142,7 +155,7 @@ test.describe("shoot.custard.top", () => {
     await expect(page.locator(".editor-recovery-action")).toBeVisible();
     await expect(page.locator(".editor-overlay")).toBeHidden();
 
-    await input.setInputFiles(editorTestImage);
+    await uploadEditorPhoto(page, editorTestImage);
     await expect(page.locator(".editor-image-error")).toBeHidden();
     await expect(page.locator(".editor-canvas")).toBeVisible({ timeout: 15000 });
   });
