@@ -1662,6 +1662,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - `build:full` + performance budget：通过。
 - Playwright 全量：33/33 通过（单 worker）。
 - Browser：本地预览页面身份正确且 console error/warn 为 0；该 Browser 会话被旧 service worker 控制，新 UI 以干净 Playwright context 为权威证据。
+- GitHub Actions：提交 `eeb6fb5` 的 CI run `28369483995` 通过 `npm ci`、lint、test、build 和 performance budget。
 
 ### 遗留风险
 - 前端业务日期工具与服务端 `_booking.ts` 逻辑目前是双端重复实现；未来如果业务日期规则变化，需要同步更新两侧。

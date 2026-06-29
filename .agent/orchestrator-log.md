@@ -1111,7 +1111,7 @@ Beginning execution.
   - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
   - Full Playwright e2e with one worker — 33/33 passed.
 - **Risk**: The frontend utility intentionally duplicates the server business-date logic instead of sharing code across Cloudflare Functions and the browser bundle. This keeps the blast radius small, but future server date-rule changes must update both layers.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `eeb6fb5` — `feat: align booking date boundaries`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28369483995` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: None; this completes the requested 6-stage loop. Recommended future focus is reducing duplicated booking date rules by extracting a safe shared validation package or adding an API-provided booking policy endpoint.
-- **Status**: LOCAL VERIFICATION COMPLETE; COMMIT / PUSH / CI PENDING
+- **Status**: COMPLETE
