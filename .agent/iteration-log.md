@@ -1870,3 +1870,41 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 PWA 更新可靠性：围绕旧 service worker、更新提示和刷新接管路径做一轮小范围实现，让用户更容易切到新版本。
+
+---
+
+## Campaign 019 Stage 6 — PWA Update Reliability IMPROVE
+
+### 承接的上一轮方向
+- Stage 5 已完成公开认证边界 CHECK，并确认 PWA 生成物包含 `SKIP_WAITING`、过期缓存清理和关键 runtime cache 规则。
+- 本阶段按 IMPROVE 主线，继续降低旧 service worker / 旧 bundle 让用户停留在旧版本的风险。
+
+### 完成内容
+- `PwaUpdateBanner` 新增 30 分钟一次的主动更新检查。
+- 启动时额外调用 `navigator.serviceWorker.getRegistration()`，用于发现已经存在的 waiting worker，不再只依赖 `serviceWorker.ready`。
+- 抽出 registration 绑定逻辑，避免同一个 registration 被重复挂载 `updatefound` 监听。
+- 浏览器恢复 online 时主动检查更新，覆盖离线期间错过更新事件的场景。
+- 清理逻辑补齐 online listener、interval、updatefound listener 和 reload timeout。
+- 源码回归测试锁定 startup / interval / online 三类更新检查合同。
+
+### 已通过的验证
+- Red/green：PWA 更新合同测试先因缺少 interval/startup 机制失败，修复后目标 66/66 通过。
+- TypeScript / lint：通过。
+- Vitest 全量：56 个文件、347 个测试通过。
+- `build:full` + performance budget：通过。
+- Playwright 全量：34/34 通过。
+- PWA 构建产物：`dist/sw.js` 仍包含 `SKIP_WAITING`、`cleanupOutdatedCaches()`、`api-content`、`api-photos`、`editor-models`；主 bundle 包含 `getRegistration` 和 online 更新处理。
+
+### GitHub Actions / CI 状态
+- Stage 6 commit：pending。
+- GitHub Actions CI：pending。
+
+### 遗留风险
+- 如果用户浏览器仍由非常旧的 service worker 控制，且该旧 worker 不支持当前接管消息，仍可能需要一次手动刷新；本次改动主要提升当前和后续版本的更新发现与恢复能力。
+
+### 下一轮建议方向
+1. 全 6 阶段收尾后保持现状，先观察 GitHub Actions 和线上部署。
+2. 未来如继续强化，可考虑每会话 CSRF token 或更细粒度 PWA 更新遥测。
+
+### 推荐下一轮优先执行的旗舰级主改动
+本轮 6 阶段完成后不建议立刻追加新主改动；先以 CI、部署和核心流程稳定性为准。

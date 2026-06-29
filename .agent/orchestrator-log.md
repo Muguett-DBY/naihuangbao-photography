@@ -1271,3 +1271,29 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28393851875` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing the remaining PWA old-bundle/update-friction risk with a small user-visible reliability improvement.
 - **Status**: COMPLETE
+
+### Stage 6 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Improve PWA update reliability so already-waiting service workers and missed update events are detected on startup, when the browser comes back online, and on a bounded periodic check.
+- **Start state**: `main` at `8340c67`; local and `origin/main` aligned, with only the protected untracked campaign-015 and campaign-016 history folders present.
+- **Previous direction carried forward**: Stage 5 recommended reducing old service worker / old bundle update friction after verifying the generated PWA output.
+- **Completed locally**:
+  - Added a shared 30-minute update-check interval for the PWA update banner.
+  - Added an immediate `navigator.serviceWorker.getRegistration()` check so a waiting worker that already exists before `serviceWorker.ready` is surfaced.
+  - Reworked registration attachment so `updatefound` listeners are de-duplicated when the same registration is observed through multiple paths.
+  - Added an `online` listener that re-checks for updates after connectivity returns.
+  - Kept cleanup explicit for the online listener, interval timer, update listener, and reload timeout.
+  - Extended source regression coverage to lock the startup, periodic, and online update-check contracts.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` first failed on the missing PWA update-check interval/startup contracts, then passed 66/66 after implementation.
+  - `npm run lint` — passed.
+  - `npm test` — 56 files / 347 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 34/34 passed.
+  - Built output: `dist/sw.js` still contains `SKIP_WAITING`, `cleanupOutdatedCaches()`, `api-content`, `api-photos`, and `editor-models`; the main bundle contains the new `getRegistration` startup check and online update handling.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Risk**: A browser controlled by a much older service worker may still need one manual reload if that old worker cannot receive the newer skip-waiting message. The new client checks improve detection and recovery for current and future builds.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: All 6 stages complete after the Stage 6 commit, push, CI confirmation, and closure log update.
+- **Status**: LOCAL COMPLETE / CI PENDING

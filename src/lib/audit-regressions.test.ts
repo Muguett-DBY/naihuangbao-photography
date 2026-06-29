@@ -843,6 +843,10 @@ describe("audit regression coverage", () => {
     expect(viteConfigSource).toContain('registerType: "prompt"');
     expect(viteConfigSource).toContain("cleanupOutdatedCaches: true");
     expect(pwaUpdateBannerSource).toContain("registrationRef.current?.update()");
+    expect(pwaUpdateBannerSource).toContain("UPDATE_CHECK_INTERVAL_MS");
+    expect(pwaUpdateBannerSource).toContain("navigator.serviceWorker.getRegistration()");
+    expect(pwaUpdateBannerSource).toContain("window.setInterval(checkForUpdate");
+    expect(pwaUpdateBannerSource).toContain("window.addEventListener(\"online\", checkForUpdate)");
     expect(pwaUpdateBannerSource).toContain("visibilitychange");
     expect(pwaUpdateBannerSource).toContain("removeEventListener(\"updatefound\"");
     expect(pwaUpdateBannerSource).toContain("{ type: \"SKIP_WAITING\" }");

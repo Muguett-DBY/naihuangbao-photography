@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshCw, X } from "lucide-react";
 
+const UPDATE_CHECK_INTERVAL_MS = 30 * 60 * 1000;
+
 export function PwaUpdateBanner() {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
@@ -17,6 +19,7 @@ export function PwaUpdateBanner() {
     let reloading = false;
     let disposed = false;
     let updateRegistration: ServiceWorkerRegistration | null = null;
+    let updateTimer: number | null = null;
 
     const checkForUpdate = () => {
       void registrationRef.current?.update().catch(() => undefined);
@@ -46,29 +49,48 @@ export function PwaUpdateBanner() {
       }
     };
 
-    navigator.serviceWorker.ready.then((reg) => {
+    const attachRegistration = (reg: ServiceWorkerRegistration | undefined) => {
       if (disposed) return;
+      if (!reg) return;
       registrationRef.current = reg;
-      updateRegistration = reg;
-      registrationRef.current?.update();
 
       if (reg.waiting) {
         setVisible(true);
       }
 
+      if (updateRegistration === reg) {
+        checkForUpdate();
+        return;
+      }
+
+      updateRegistration?.removeEventListener("updatefound", handleUpdateFound);
+      updateRegistration = reg;
       reg.addEventListener("updatefound", handleUpdateFound);
+      checkForUpdate();
+    };
+
+    navigator.serviceWorker.getRegistration().then(attachRegistration).catch(() => undefined);
+    navigator.serviceWorker.ready.then((reg) => {
+      attachRegistration(reg);
     }).catch(() => undefined);
 
     navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", checkForUpdate);
+    window.addEventListener("online", checkForUpdate);
+    updateTimer = window.setInterval(checkForUpdate, UPDATE_CHECK_INTERVAL_MS);
 
     return () => {
       disposed = true;
       navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", checkForUpdate);
+      window.removeEventListener("online", checkForUpdate);
       updateRegistration?.removeEventListener("updatefound", handleUpdateFound);
+      if (updateTimer !== null) {
+        window.clearInterval(updateTimer);
+        updateTimer = null;
+      }
       if (reloadFallbackRef.current) {
         window.clearTimeout(reloadFallbackRef.current);
         reloadFallbackRef.current = null;
