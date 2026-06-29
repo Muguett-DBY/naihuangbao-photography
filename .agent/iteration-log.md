@@ -1698,7 +1698,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - 预约 Playwright E2E：7/7 通过。
 
 ### GitHub Actions / CI 状态
-- 待 Stage 1 commit push 后检查。
+- Stage 1 commit `51b80e4` 已 push 到 `main`，GitHub Actions CI run `28388185336` 通过。
 
 ### 遗留风险
 - policy API 失败时仍会使用本地 fallback 计算业务日期；这是可用性兜底，但未来可以继续减少 fallback 与服务端规则的重复。

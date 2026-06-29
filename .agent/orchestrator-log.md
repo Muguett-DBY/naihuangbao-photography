@@ -1151,7 +1151,7 @@ Beginning execution.
   - `npm run build:full` — passed, including performance budget and bundle analysis.
   - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 7/7 passed.
 - **Risk**: If `/api/booking/policy` is unavailable, the hook falls back to the local business-date utility; this protects booking availability but still leaves a short-lived fallback duplication path.
-- **Commit**: pending — `feat: serve booking policy to calendars`
-- **Push / CI**: pending.
+- **Commit**: `51b80e4` — `feat: serve booking policy to calendars`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28388185336` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing another user-visible policy or operational drift point with an independently testable improvement.
-- **Status**: READY TO COMMIT
+- **Status**: COMPLETE
