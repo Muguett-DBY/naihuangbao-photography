@@ -1,7 +1,7 @@
 import { badRequest, jsonResponse, unavailable } from "../../_responses";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../_security";
 import { validateString } from "../../_validation";
-import { getBusinessDate, validateBookingDate } from "../../_booking";
+import { BOOKING_CAPACITY_PER_DAY, getBusinessDate, isBookingDateFull, validateBookingDate } from "../../_booking";
 
 type WaitlistBody = {
   preferredDate?: string;
@@ -39,6 +39,28 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   try {
+    const active = await context.env.DB.prepare(
+      `select count(*) as count from booking_requests
+       where preferred_date = ?
+         and status not in ('cancelled', 'canceled')`,
+    )
+      .bind(body.preferredDate)
+      .first<{ count: number }>();
+    const activeBookings = Number(active?.count ?? 0);
+    const remaining = Math.max(BOOKING_CAPACITY_PER_DAY - activeBookings, 0);
+
+    if (!isBookingDateFull(activeBookings)) {
+      return jsonResponse({
+        error: "date_has_capacity",
+        message: "该日期仍可直接预约，无需加入候补名单。",
+        policy: {
+          capacityPerDay: BOOKING_CAPACITY_PER_DAY,
+          activeBookings,
+          remaining,
+        },
+      }, 409);
+    }
+
     const existing = await context.env.DB.prepare(
       `select count(*) as c from booking_waitlist where preferred_date = ? and active = 1`,
     )
@@ -77,6 +99,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         active: true,
         createdAt,
         unsubscribeToken: token,
+      },
+      policy: {
+        capacityPerDay: BOOKING_CAPACITY_PER_DAY,
+        activeBookings,
+        remaining: 0,
       },
     }, 201);
   } catch (error) {

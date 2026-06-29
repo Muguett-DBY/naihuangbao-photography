@@ -19,6 +19,7 @@ type AvailabilityResponse = {
 type BookingCalendarProps = {
   selectedDate: string;
   onSelectDate: (date: string) => void;
+  onRequestWaitlist?: (date: string) => void;
   minDate?: string;
   policyTimeZone?: string;
   capacityPerDay?: number;
@@ -42,7 +43,7 @@ function formatDateKey(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
-export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTimeZone, capacityPerDay }: BookingCalendarProps) {
+export function BookingCalendar({ selectedDate, onSelectDate, onRequestWaitlist, minDate, policyTimeZone, capacityPerDay }: BookingCalendarProps) {
   const { t, i18n } = useTranslation();
   const calendarRef = useRef<HTMLDivElement>(null);
   const effectiveMinDate = useMemo(() => minDate || getBusinessDate(), [minDate]);
@@ -99,12 +100,16 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
     (day: number) => {
       const key = formatDateKey(year, month, day);
       const info = availability[key];
-      if (info?.status === "booked") return;
       if (key < effectiveMinDate) return;
+      if (info?.status === "booked") {
+        onRequestWaitlist?.(key);
+        setFocusedDay(day);
+        return;
+      }
       onSelectDate(key);
       setFocusedDay(day);
     },
-    [year, month, availability, effectiveMinDate, onSelectDate],
+    [year, month, availability, effectiveMinDate, onSelectDate, onRequestWaitlist],
   );
 
   useEffect(() => {
@@ -223,12 +228,15 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
           const isBooked = status === "booked";
           const isSelected = cell.key === selectedDate;
           const isPast = cell.key < effectiveMinDate;
-          const isDisabled = isBooked || isPast;
+          const canRequestWaitlist = isBooked && Boolean(onRequestWaitlist) && !isPast;
+          const isDisabled = isPast || (isBooked && !canRequestWaitlist);
           const remaining = info?.remaining ?? (
             calendarCapacity && info ? Math.max(calendarCapacity - info.count, 0) : undefined
           );
           const statusLabel = isPast
             ? t("calendar.unavailableBefore", { date: effectiveMinDate })
+            : canRequestWaitlist
+              ? t("calendar.bookedWaitlistLabel")
             : status === "partial" && remaining !== undefined
               ? t("calendar.remainingSlots", { count: remaining })
             : t(`calendar.${status}`);
@@ -236,6 +244,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
           const classNames = [
             "calendar-day",
             `calendar-day--${status}`,
+            canRequestWaitlist && "calendar-day--waitlist",
             isSelected && "calendar-day--selected",
             isDisabled && "calendar-day--disabled",
             focusedDay === cell.day && "calendar-day--focused",
@@ -262,6 +271,11 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
               {status === "partial" && remaining !== undefined && (
                 <span className="calendar-day-capacity">
                   {t("calendar.remainingShort", { count: remaining })}
+                </span>
+              )}
+              {canRequestWaitlist && (
+                <span className="calendar-day-waitlist">
+                  {t("calendar.joinWaitlistShort")}
                 </span>
               )}
             </button>

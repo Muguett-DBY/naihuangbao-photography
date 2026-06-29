@@ -92,6 +92,8 @@ const forgotPasswordApiSource = readFileSync(resolve(root, "functions/api/auth/f
 const businessDatePath = resolve(root, "src/utils/businessDate.ts");
 const bookingPolicyHookPath = resolve(root, "src/hooks/useBookingPolicy.ts");
 const bookingPolicyApiPath = resolve(root, "functions/api/booking/policy.ts");
+const bookingApiSource = readFileSync(resolve(root, "functions/api/booking.ts"), "utf8");
+const waitlistApiSource = readFileSync(resolve(root, "functions/api/booking/waitlist.ts"), "utf8");
 const availabilityApiSource = readFileSync(resolve(root, "functions/api/availability.ts"), "utf8");
 const jaLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ja.json"), "utf8");
 const zhLocaleSource = readFileSync(resolve(root, "src/i18n/locales/zh-CN.json"), "utf8");
@@ -172,6 +174,23 @@ describe("audit regression coverage", () => {
       expect(locale.calendar.selectedDate).toBeTruthy();
       expect(locale.calendar.selectedRemaining).toBeTruthy();
       expect(locale.calendar.monthStatus).toBeTruthy();
+    }
+  });
+
+  it("keeps fully booked booking dates connected to the waitlist path", () => {
+    expect(bookingApiSource).toContain("fully_booked");
+    expect(bookingApiSource).toContain("waitlist");
+    expect(waitlistApiSource).toContain("date_has_capacity");
+    expect(waitlistApiSource).toContain("BOOKING_CAPACITY_PER_DAY");
+    expect(bookingCalendarSource).toContain("onRequestWaitlist");
+    expect(bookingCalendarSource).toContain("calendar-day-waitlist");
+    expect(bookingModalSource).toContain("/api/booking/waitlist");
+    expect(bookingModalSource).toContain("waitlistSuccessTitle");
+    expect(editorCssSource).toContain(".booking-waitlist-notice");
+    for (const locale of Object.values(locales)) {
+      expect(locale.calendar.joinWaitlistShort).toBeTruthy();
+      expect(locale.bookingModal.waitlistNoticeTitle).toBeTruthy();
+      expect(locale.bookingModal.waitlistSuccessTitle).toBeTruthy();
     }
   });
 

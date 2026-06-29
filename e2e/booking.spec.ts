@@ -208,6 +208,80 @@ test.describe("booking flow", () => {
     await expect(page.getByRole("button", { name: /^19日 - Unavailable before/ })).toBeDisabled();
   });
 
+  test("routes fully booked booking dates into the waitlist flow", async ({ page }) => {
+    const policyDate = "2099-08-20";
+    const fullDate = "2099-08-21";
+    const waitlistRequests: Array<Record<string, unknown>> = [];
+
+    await page.route("**/api/booking/policy", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        earliestDate: policyDate,
+        timeZone: "Asia/Shanghai",
+        capacityPerDay: 3,
+        dateFormat: "YYYY-MM-DD",
+        unavailableReasons: {
+          beforeEarliest: "before_earliest",
+          fullyBooked: "fully_booked",
+          invalidDate: "invalid_date",
+        },
+        generatedAt: "2099-08-19T16:00:00.000Z",
+      }),
+    }));
+    await page.route("**/api/availability**", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        capacityPerDay: 3,
+        dates: {
+          [fullDate]: {
+            status: "booked",
+            count: 3,
+            capacity: 3,
+            remaining: 0,
+          },
+        },
+      }),
+    }));
+    await page.route("**/api/booking/waitlist", (route) => {
+      waitlistRequests.push(route.request().postDataJSON() as Record<string, unknown>);
+      return route.fulfill({
+        status: 201,
+        contentType: "application/json",
+        body: JSON.stringify({
+          ok: true,
+          waitlist: {
+            id: "wl_full_date",
+            preferredDate: fullDate,
+            active: true,
+            createdAt: "2099-08-19T16:00:00.000Z",
+          },
+        }),
+      });
+    });
+
+    await page.goto("/");
+    await page.locator(".hero-cover-primary-btn").click();
+
+    const fullDateButton = page.getByRole("button", { name: /^21日 - Fully Booked, join waitlist/ });
+    await expect(fullDateButton).toBeEnabled();
+    await fullDateButton.click();
+    await expect(page.locator(".booking-waitlist-notice")).toContainText("Join the waitlist");
+
+    await page.locator("#booking-name").fill("Waitlist Guest");
+    await page.locator("#booking-contact").fill("waitlist@example.com");
+    await page.getByRole("button", { name: "Join waitlist", exact: true }).click();
+
+    await expect(page.locator(".booking-waitlist-success")).toBeVisible();
+    await expect(page.locator(".booking-waitlist-success")).toContainText(fullDate);
+    expect(waitlistRequests[0]).toMatchObject({
+      preferredDate: fullDate,
+      name: "Waitlist Guest",
+      contact: "waitlist@example.com",
+    });
+  });
+
   test("shows the latest booking deposit state in the customer dashboard", async ({ page }) => {
     await page.route("**/api/auth/session", (route) => route.fulfill({
       status: 200,

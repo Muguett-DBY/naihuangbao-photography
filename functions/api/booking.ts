@@ -1,7 +1,7 @@
 import { badRequest, jsonResponse, unavailable } from "../_responses";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../_security";
 import { validateString, validateOptionalString } from "../_validation";
-import { getBusinessDate, validateBookingDate } from "../_booking";
+import { BOOKING_CAPACITY_PER_DAY, getBusinessDate, isBookingDateFull, validateBookingDate } from "../_booking";
 
 type BookingBody = {
   packageName?: string;
@@ -85,6 +85,30 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         existingId: recent.id,
         existingStatus: recent.status,
       }, 429);
+    }
+
+    if (preferredDate) {
+      const capacity = await context.env.DB.prepare(
+        `select count(*) as count from booking_requests
+         where preferred_date = ?
+           and status not in ('cancelled', 'canceled')`,
+      )
+        .bind(preferredDate)
+        .first<{ count: number }>();
+      const activeBookings = Number(capacity?.count ?? 0);
+
+      if (isBookingDateFull(activeBookings)) {
+        return jsonResponse({
+          error: "fully_booked",
+          message: "该日期已约满，请加入候补名单。",
+          waitlist: {
+            recommended: true,
+            preferredDate,
+            capacityPerDay: BOOKING_CAPACITY_PER_DAY,
+            activeBookings,
+          },
+        }, 409);
+      }
     }
 
     const id = crypto.randomUUID();

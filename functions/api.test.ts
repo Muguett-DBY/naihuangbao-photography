@@ -13,6 +13,7 @@ import { onRequestPatch as updateErrorReportStatus } from "./api/admin/errors/[i
 import { onRequestPost as postErrorReport } from "./api/analytics/error";
 import { onRequestPost as createShareLink } from "./api/share/create";
 import { onRequestPost as resolveShareLink } from "./api/share/resolve";
+import { onRequestPost as submitBooking } from "./api/booking";
 import { onRequestGet as getUserBookings } from "./api/user/bookings";
 import { onRequestGet as getUserProfile } from "./api/user/profile";
 import { onRequestPost as cancelUserBooking } from "./api/user/bookings/[id]/cancel";
@@ -747,6 +748,50 @@ describe("Cloudflare Pages API behavior", () => {
 
     expect(response.status).toBe(409);
     expect(body.error).toContain("已约满");
+  });
+
+  it("rejects direct booking into a fully booked date with a waitlist hint", async () => {
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          bind: vi.fn(() => statement),
+          all: vi.fn(async () => ({ results: [] })),
+          first: vi.fn(async () => {
+            if (sql.includes("count(*) as count")) return { count: 3 };
+            return null;
+          }),
+          run: vi.fn(async () => ({ success: true })),
+        };
+        return statement;
+      }),
+    };
+
+    const response = await submitBooking({
+      request: jsonRequest("https://shoot.custard.top/api/booking", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-nhb-public-action": "1",
+        },
+        body: JSON.stringify({
+          packageName: "Portrait Session",
+          preferredDate: "2099-01-01",
+          preferredTime: "morning",
+          name: "Guest",
+          contact: "guest@example.com",
+        }),
+      }),
+      env: { DB: db },
+    } as never);
+    const body = (await response.json()) as {
+      error?: string;
+      waitlist?: { recommended?: boolean; preferredDate?: string };
+    };
+
+    expect(response.status).toBe(409);
+    expect(body.error).toBe("fully_booked");
+    expect(body.waitlist?.recommended).toBe(true);
+    expect(body.waitlist?.preferredDate).toBe("2099-01-01");
   });
 
   it("returns a static public photo fallback when D1 is unavailable", async () => {
