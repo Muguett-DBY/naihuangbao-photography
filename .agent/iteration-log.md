@@ -1733,7 +1733,7 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 - 预约 Playwright E2E：7/7 通过。
 
 ### GitHub Actions / CI 状态
-- 待 Stage 2 commit push 后检查。
+- 实现提交 `bc3a503` 已推送到 `origin/main`；GitHub Actions CI `28389437715` 已通过。
 
 ### 遗留风险
 - 零预约日期仍不在 availability `dates` 字典中，前端继续按全量可约处理；如果未来需要展示每一天的剩余 3/3，可考虑服务端补齐整月日期。

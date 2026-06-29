@@ -1178,7 +1178,7 @@ Beginning execution.
   - `npm run build:full` — passed, including performance budget and bundle analysis.
   - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` — first exposed a bad test mock, then passed 7/7 after correcting the mock.
 - **Risk**: Dates with zero bookings still do not appear in the availability payload; the UI treats absent dates as fully open, as before.
-- **Commit**: pending — `feat: show booking availability capacity`
-- **Push / CI**: pending.
+- **Commit**: `bc3a503` — `feat: show booking availability capacity`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28389437715` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is a visible booking calendar / modal experience upgrade now that policy and capacity data are available.
-- **Status**: READY TO COMMIT
+- **Status**: COMPLETE
