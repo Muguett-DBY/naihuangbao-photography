@@ -1213,3 +1213,28 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28391348161` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is aligning waitlist/full-date behavior with the same booking policy and capacity contract.
 - **Status**: COMPLETE
+
+### Stage 4 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Align fully booked direct booking and waitlist behavior with the same booking capacity policy so users can move from a full date into a verifiable waitlist path.
+- **Start state**: `main` at `7130d19`; local and `origin/main` aligned, with only the protected untracked campaign-015 and campaign-016 history folders present.
+- **Previous direction carried forward**: Stage 3 recommended connecting booked/full-date behavior to the booking policy and capacity contract instead of leaving full days as a dead end.
+- **Completed locally**:
+  - Added direct booking capacity enforcement before inserting a booking request; fully booked dates now return `fully_booked` with a waitlist recommendation.
+  - Updated `/api/booking/waitlist` to accept joins only when the requested date is actually full; dates with remaining capacity return `date_has_capacity` with policy details.
+  - Added a waitlist affordance to booked days in the public booking calendar while keeping dashboard rescheduling full dates disabled.
+  - Added a booking-modal waitlist mode, submission to `/api/booking/waitlist`, full-date race recovery, and a dedicated waitlist success state.
+  - Added zh-CN, en, ja, and ko copy for waitlist labels, notices, errors, and success state.
+  - Added API, source-regression, and Playwright coverage for full-date capacity and waitlist flow.
+- **Local verification**:
+  - Red/green: `npm test -- functions/api.test.ts functions/waitlist.test.ts src/lib/audit-regressions.test.ts` first failed on missing direct capacity enforcement, waitlist capacity policy, and frontend waitlist contracts, then passed 99/99 after implementation.
+  - Red/green: `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line --grep "routes fully booked"` passed after implementation and production rebuild.
+  - `npm run lint` — passed.
+  - `npm test` — 55 files / 341 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 8/8 passed.
+- **Risk**: Direct booking capacity is still date-level, matching the existing daily-capacity policy. It does not reserve specific time slots; time remains a preference captured for follow-up.
+- **Commit**: pending — `feat: connect full booking dates to waitlist`
+- **Push / CI**: pending.
+- **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a security/stability sweep around public authentication/mutation boundaries, PWA freshness, and core build parity.
+- **Status**: READY TO COMMIT

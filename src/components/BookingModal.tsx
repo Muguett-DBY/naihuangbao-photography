@@ -45,6 +45,10 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const [showPayment, setShowPayment] = useState(false);
   const [savedOffline, setSavedOffline] = useState(false);
   const [depositOutcome, setDepositOutcome] = useState<"pending" | "deferred" | "offline" | null>(null);
+  const [waitlistDate, setWaitlistDate] = useState("");
+  const [joiningWaitlist, setJoiningWaitlist] = useState(false);
+  const [waitlistDone, setWaitlistDone] = useState(false);
+  const [waitlistId, setWaitlistId] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const { policy: bookingPolicy } = useBookingPolicy();
@@ -106,10 +110,21 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   }, [touched, validateField]);
 
   const handleDateSelect = useCallback((nextDate: string) => {
+    setWaitlistDate("");
     handleChange("date", nextDate);
     setTouched((prev) => ({ ...prev, date: true }));
     setErrors((prev) => ({ ...prev, date: validateField("date", nextDate) }));
   }, [handleChange, validateField]);
+
+  const handleWaitlistDate = useCallback((nextDate: string) => {
+    setDate(nextDate);
+    setWaitlistDate(nextDate);
+    setTouched((prev) => ({ ...prev, date: true }));
+    setErrors((prev) => ({ ...prev, date: validateField("date", nextDate) }));
+    setStep(2);
+    setError("");
+    track("booking_waitlist_started", { packageName: selectedPkg, date: nextDate });
+  }, [selectedPkg, validateField]);
 
   const isFormValid = name.trim().length >= 2 && contact.trim().length >= 5;
 
@@ -126,9 +141,47 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
   const handleBack = useCallback(() => {
     setStep(1);
+    setWaitlistDate("");
     setError("");
     track("booking_back_to_step1", { packageName: selectedPkg });
   }, [selectedPkg]);
+
+  async function submitWaitlist(trimmedName: string, trimmedContact: string) {
+    const preferredDate = waitlistDate || date;
+    if (!preferredDate) {
+      setError(t("bookingModal.dateRequired", "Please choose a date"));
+      return;
+    }
+
+    setJoiningWaitlist(true);
+    setError("");
+
+    try {
+      const response = await fetch("/api/booking/waitlist", {
+        method: "POST",
+        headers: { "content-type": "application/json", ...publicMutationHeaders },
+        body: JSON.stringify({
+          preferredDate,
+          packageName: selectedPkg,
+          name: trimmedName,
+          contact: trimmedContact,
+        }),
+      });
+      const data = await readJsonResponse<{ waitlist?: { id?: string } }>(response);
+
+      if (!response.ok) {
+        throw new Error(getApiError(data, t("bookingModal.waitlistSubmitError")));
+      }
+
+      setWaitlistId(data?.waitlist?.id ?? null);
+      setWaitlistDone(true);
+      track("booking_waitlist_joined", { packageName: selectedPkg, date: preferredDate });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("bookingModal.waitlistSubmitError"));
+    } finally {
+      setJoiningWaitlist(false);
+    }
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -144,6 +197,11 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     const trimmedName = name.trim().slice(0, 50);
     const trimmedContact = contact.trim().slice(0, 100);
     const trimmedNotes = notes.trim().slice(0, 500);
+
+    if (waitlistDate) {
+      await submitWaitlist(trimmedName, trimmedContact);
+      return;
+    }
 
     setSending(true);
     setError("");
@@ -183,6 +241,11 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
       if (!r.ok) {
         const data = await readJsonResponse(r);
+        if (data && typeof data === "object" && "error" in data && data.error === "fully_booked" && date) {
+          setWaitlistDate(date);
+          setError(t("bookingModal.fullDateWaitlistPrompt"));
+          return;
+        }
         throw new Error(getApiError(data, t("bookingModal.submitError")));
       }
 
@@ -222,6 +285,50 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     const deposit = Math.round(hourlyRate * minimumHours * depositPercent * 100);
     return Math.max(deposit, 2000);
   };
+
+  if (waitlistDone) {
+    const selectedPackageName = packages.find((p) => p.name === selectedPkg)?.name || selectedPkg;
+    return (
+      <Modal open onClose={onClose} footer={null} typewriter={false}>
+        <span id={titleId} className="sr-only">{t("bookingModal.waitlistSuccessTitle")}</span>
+        <div ref={contentRef} className="booking-modal-content">
+          <div className="booking-modal-success booking-waitlist-success">
+            <div className="booking-success-check">
+              <svg viewBox="0 0 24 24" className="booking-success-check-svg" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <h2>{t("bookingModal.waitlistSuccessTitle")}</h2>
+            <p className="booking-success-next">
+              {t("bookingModal.waitlistSuccessDescription")}
+            </p>
+            <div className="booking-success-details">
+              {waitlistId && (
+                <div className="booking-success-detail-item">
+                  <span className="booking-success-detail-label">{t("bookingModal.reference")}</span>
+                  <span className="booking-success-detail-value">#{waitlistId.slice(0, 8).toUpperCase()}</span>
+                </div>
+              )}
+              <div className="booking-success-detail-item">
+                <span className="booking-success-detail-label">{t("bookingModal.date")}</span>
+                <span className="booking-success-detail-value">{waitlistDate || date}</span>
+              </div>
+              {selectedPackageName && (
+                <div className="booking-success-detail-item">
+                  <span className="booking-success-detail-label">{t("bookingModal.selectPackage")}</span>
+                  <span className="booking-success-detail-value">{selectedPackageName}</span>
+                </div>
+              )}
+            </div>
+            <p className="booking-success-hint">{t("bookingModal.waitlistSuccessHint")} {siteConfig.xiaohongshuProfile}</p>
+            <div className="booking-success-actions">
+              <Button type="primary" onClick={onClose}>{t("bookingModal.gotIt")}</Button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
 
   // ── Payment step ──
   if (showPayment && bookingId) {
@@ -361,6 +468,11 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   }
 
   // ── Form state (multi-step) ──
+  const isWaitlistMode = Boolean(waitlistDate);
+  const actionBusy = sending || joiningWaitlist;
+  const actionLabel = isWaitlistMode ? t("bookingModal.joinWaitlist") : t("bookingModal.submit");
+  const busyLabel = isWaitlistMode ? t("bookingModal.joiningWaitlist") : t("bookingModal.submitting");
+
   return (
     <Modal
       open
@@ -405,6 +517,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               <BookingCalendar
                 selectedDate={date}
                 onSelectDate={handleDateSelect}
+                onRequestWaitlist={handleWaitlistDate}
                 minDate={earliestBookingDate}
                 policyTimeZone={bookingPolicy.timeZone}
                 capacityPerDay={bookingPolicy.capacityPerDay}
@@ -440,6 +553,13 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               <ChevronLeft size={16} />
               {t("bookingModal.back", "Back")}
             </button>
+
+            {waitlistDate && (
+              <div className="booking-waitlist-notice" role="status">
+                <strong>{t("bookingModal.waitlistNoticeTitle")}</strong>
+                <span>{t("bookingModal.waitlistNoticeDescription", { date: waitlistDate })}</span>
+              </div>
+            )}
 
             <div className={`booking-field ${errors.name && touched.name ? "has-error" : ""} ${touched.name && !errors.name && name.trim().length >= 2 ? "is-valid" : ""}`}>
               <label htmlFor="booking-name">{t("bookingModal.name")} <span className="booking-required">*</span></label>
@@ -493,13 +613,13 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
             <div className="booking-actions">
               <Button type="default" onClick={handleBack}>{t("bookingModal.back", "Back")}</Button>
-              <Button type="primary" htmlType="submit" disabled={sending || !isFormValid}>
-                {sending ? (
+              <Button type="primary" htmlType="submit" disabled={actionBusy || !isFormValid}>
+                {actionBusy ? (
                   <span className="booking-btn-loading">
                     <span className="booking-btn-spinner" />
-                    {t("bookingModal.submitting")}
+                    {busyLabel}
                   </span>
-                ) : t("bookingModal.submit")}
+                ) : actionLabel}
               </Button>
             </div>
 

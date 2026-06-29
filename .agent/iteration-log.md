@@ -1785,3 +1785,41 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 等待名单与容量策略统一：当预约日期已满或用户需要候补时，使用同一份 policy/availability 规则给出清晰、可验证的下一步。
+
+---
+
+## Campaign 019 Stage 4 — Full-Date Waitlist Policy Alignment
+
+### 承接的上一轮方向
+- Stage 3 已把日历里的 policy、容量和状态整合清楚，但已满日期对新预约用户仍然是死路。
+- 本阶段按 IMPROVE 主线，把直接预约、候补 API 和前端满员日期入口都接到同一日容量规则上。
+
+### 完成内容
+- 直接预约 API 在插入前检查当日有效预约数，满员时返回 `fully_booked` 和 waitlist 推荐，不再继续写入超容量预约。
+- 候补 API 现在只接受真正已满的日期；仍有可预约容量时返回 `date_has_capacity` 和剩余容量信息。
+- 公共预约日历中的已满日期可进入候补流程；Dashboard 改期日历仍保持满员日期不可选。
+- 预约弹窗新增候补模式、候补提交、满员 race recovery 和独立候补成功态。
+- 补齐 zh-CN/en/ja/ko 的候补入口、提示、错误和成功文案。
+- 新增 API、源码契约和 Playwright E2E 覆盖满员日期候补路径。
+
+### 已通过的验证
+- Red/green：直接预约容量、候补容量策略和前端候补契约测试先失败，修复后目标 99/99 通过。
+- 目标候补 Playwright：1/1 通过。
+- TypeScript / lint：通过。
+- Vitest 全量：55 个文件、341 个测试通过。
+- `build:full` + performance budget：通过。
+- 预约 Playwright E2E：8/8 通过。
+
+### GitHub Actions / CI 状态
+- 待提交并推送后检查。
+
+### 遗留风险
+- 当前容量策略仍是“每日最多 3 组”的日期级规则，不是具体时间段级锁定；`preferredTime` 仍作为偏好进入后续确认。
+
+### 下一轮建议方向
+1. CHECK：复查公开认证端点、public-action header、cookie mutation 和 CSRF 边界。
+2. CHECK：复核 PWA service worker 生成物和旧 bundle 更新路径。
+3. CHECK：确认本地验证与 GitHub Actions 命令持续一致。
+
+### 推荐下一轮优先执行的旗舰级主改动
+公开入口安全与稳定性扫雷：围绕登录/注册/重置、cookie 写操作、service worker 更新和核心预约链路做 CHECK 阶段审计，发现真实问题即写回归并修复。
