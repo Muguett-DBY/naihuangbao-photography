@@ -1,5 +1,5 @@
 import { jsonResponse, badRequest, logWorkerError } from "../../_responses";
-import { enforceRateLimit, isValidEmail, rateLimited } from "../../_security";
+import { enforceRateLimit, isValidEmail, rateLimited, requirePublicMutationRequest } from "../../_security";
 
 type AuthEnv = Env & {
   AUTH_SECRET?: string;
@@ -14,6 +14,9 @@ type UserRow = {
 };
 
 export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
+  const publicActionError = requirePublicMutationRequest(context.request);
+  if (publicActionError) return publicActionError;
+
   const limit = await enforceRateLimit(context.request, context.env, "forgot-password", 5, 60 * 60);
   if (!limit.ok) return rateLimited(limit.retryAfter);
 

@@ -1,12 +1,15 @@
 import { jsonResponse, badRequest } from "../../_responses";
 import { hashPassword, createUserSession, userSessionCookie } from "../../_auth";
-import { authSecretUnavailable, enforceRateLimit, getRequiredAuthSecret, rateLimited, timingSafeEqual } from "../../_security";
+import { authSecretUnavailable, enforceRateLimit, getRequiredAuthSecret, rateLimited, requirePublicMutationRequest, timingSafeEqual } from "../../_security";
 
 type AuthEnv = Env & {
   AUTH_SECRET?: string;
 };
 
 export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
+  const publicActionError = requirePublicMutationRequest(context.request);
+  if (publicActionError) return publicActionError;
+
   const limit = await enforceRateLimit(context.request, context.env, "auth-login", 10, 60 * 15);
   if (!limit.ok) return rateLimited(limit.retryAfter);
 
