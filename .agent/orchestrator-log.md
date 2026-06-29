@@ -1293,7 +1293,7 @@ Beginning execution.
   - Built output: `dist/sw.js` still contains `SKIP_WAITING`, `cleanupOutdatedCaches()`, `api-content`, `api-photos`, and `editor-models`; the main bundle contains the new `getRegistration` startup check and online update handling.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
 - **Risk**: A browser controlled by a much older service worker may still need one manual reload if that old worker cannot receive the newer skip-waiting message. The new client checks improve detection and recovery for current and future builds.
-- **Commit**: pending
-- **Push / CI**: pending
-- **Next stage**: All 6 stages complete after the Stage 6 commit, push, CI confirmation, and closure log update.
-- **Status**: LOCAL COMPLETE / CI PENDING
+- **Commit**: `c23dc77` — `feat: improve pwa update checks`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28406599343` passed `npm ci`, lint, tests, build, and performance budget.
+- **Next stage**: All 6 orchestrated stages are complete; no further stage is required by `03_LONG_6_STAGE_MAIN_V2.txt`.
+- **Status**: COMPLETE
