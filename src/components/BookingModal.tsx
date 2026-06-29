@@ -2,7 +2,7 @@ import { Button, Input, Modal } from "animal-island-ui";
 import { type FormEvent, useId, useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ExternalLink, LayoutDashboard } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useNotification } from "../hooks/useNotification";
 import { useFocusTrap } from "../hooks/useFocusTrap";
@@ -64,6 +64,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const earliestBookingDate = bookingPolicy.earliestDate;
   const titleId = useId();
   const descriptionId = useId();
+  const successBridgeTitleId = useId();
   const contentRef = useFocusTrap<HTMLDivElement>({ initialFocus: "first" });
   useModalA11y({ open: true, titleId, descriptionId });
 
@@ -298,6 +299,38 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     return Math.max(deposit, 2000);
   };
 
+  const renderSuccessBridge = (detail: string) => (
+    <section className="booking-success-bridge" aria-labelledby={successBridgeTitleId}>
+      <div className="booking-success-bridge-copy">
+        <span>{t("bookingModal.successBridgeEyebrow", "Next steps")}</span>
+        <h3 id={successBridgeTitleId}>{t("bookingModal.successBridgeTitle", "Keep your session moving")}</h3>
+        <p>{detail}</p>
+      </div>
+      <div className="booking-success-bridge-actions">
+        <Link
+          to="/dashboard"
+          className="booking-success-bridge-action booking-success-bridge-action--primary booking-success-dashboard-btn"
+          onClick={onClose}
+        >
+          <LayoutDashboard size={16} aria-hidden="true" />
+          {t("bookingModal.viewDashboard")}
+        </Link>
+        <a
+          href={siteConfig.xiaohongshuProfile}
+          target="_blank"
+          rel="noreferrer"
+          className="booking-success-bridge-action booking-success-bridge-action--secondary"
+        >
+          <ExternalLink size={16} aria-hidden="true" />
+          {t("bookingModal.messageOnXiaohongshu", "Message on Xiaohongshu")}
+        </a>
+        <button type="button" className="booking-success-bridge-action booking-success-bridge-action--ghost" onClick={onClose}>
+          {t("bookingModal.continueBrowsing", "Continue browsing")}
+        </button>
+      </div>
+    </section>
+  );
+
   if (waitlistDone) {
     const selectedPackageName = packages.find((p) => p.name === selectedPkg)?.name || selectedPkg;
     const waitlistTitle = waitlistAlreadyJoined
@@ -338,10 +371,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
                 </div>
               )}
             </div>
-            <p className="booking-success-hint">{t("bookingModal.waitlistSuccessHint")} {siteConfig.xiaohongshuProfile}</p>
-            <div className="booking-success-actions">
-              <Button type="primary" onClick={onClose}>{t("bookingModal.gotIt")}</Button>
-            </div>
+            {renderSuccessBridge(t("bookingModal.successBridgeWaitlistDetail", "Your waitlist status is saved here; check bookings or message me if timing changes."))}
           </div>
         </div>
       </Modal>
@@ -467,18 +497,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               {t("bookingModal.offlineSyncNotice")}
             </p>
           )}
-          <p className="booking-success-hint">{t("bookingModal.success")} {siteConfig.xiaohongshuProfile}</p>
-
-          <div className="booking-success-actions">
-            <Button type="primary" onClick={onClose}>{t("bookingModal.gotIt")}</Button>
-            <Link
-              to="/dashboard"
-              className="booking-success-dashboard-btn"
-              onClick={onClose}
-            >
-              {t("bookingModal.viewDashboard")}
-            </Link>
-          </div>
+          {renderSuccessBridge(t("bookingModal.successBridgeDashboardDetail", "Check status, date changes, and deposit updates in your dashboard."))}
         </div>
         </div>
       </Modal>

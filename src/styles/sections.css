@@ -2259,6 +2259,109 @@ body:has(.booking-modal-content) .public-chat-widget {
   margin: 0 0 12px;
 }
 
+.booking-success-bridge {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid rgba(139, 94, 74, 0.14);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 247, 0.96), rgba(255, 247, 236, 0.74)),
+    rgba(255, 255, 255, 0.7);
+  text-align: left;
+}
+
+.booking-success-bridge-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.booking-success-bridge-copy > span {
+  color: #9a5d14;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.booking-success-bridge-copy h3 {
+  margin: 0;
+  color: var(--caramel-ink);
+  font-family: var(--font-display-cn);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.booking-success-bridge-copy p {
+  margin: 0 !important;
+  color: var(--caramel-muted) !important;
+  font-size: 0.8rem !important;
+  line-height: 1.5 !important;
+}
+
+.booking-success-bridge-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.booking-success-bridge-action {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(185, 101, 77, 0.18);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--caramel-ink);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.booking-success-bridge-action svg {
+  flex: 0 0 auto;
+}
+
+.booking-success-bridge-action--primary {
+  border-color: var(--peach-accent);
+  background: var(--peach-accent);
+  color: #fff;
+}
+
+.booking-success-bridge-action--secondary {
+  border-color: rgba(36, 99, 235, 0.24);
+  color: #1d4ed8;
+}
+
+.booking-success-bridge-action--ghost {
+  color: var(--caramel-muted);
+}
+
+.booking-success-bridge-action:hover,
+.booking-success-bridge-action:focus-visible {
+  transform: translateY(-1px);
+  border-color: var(--peach-accent);
+  background: rgba(185, 101, 77, 0.1);
+  color: var(--caramel-ink);
+  outline: none;
+}
+
+.booking-success-bridge-action--primary:hover,
+.booking-success-bridge-action--primary:focus-visible {
+  background: #a85b44;
+  color: #fff;
+}
+
 .booking-deposit-outcome {
   display: grid;
   gap: 4px;
@@ -2369,6 +2472,18 @@ body:has(.booking-modal-content) .public-chat-widget {
 
   .booking-payment-clarity-steps {
     grid-template-columns: 1fr;
+  }
+
+  .booking-success-bridge {
+    padding: 12px;
+  }
+
+  .booking-success-bridge-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-success-bridge-action {
+    width: 100%;
   }
 }
 

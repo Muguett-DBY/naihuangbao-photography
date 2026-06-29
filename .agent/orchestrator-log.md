@@ -1355,3 +1355,33 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28409731031` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is a visible customer-facing experience improvement around booking or dashboard clarity.
 - **Status**: COMPLETE
+
+### Stage 3 / 6 — UIUX
+- **Prompt**: `AGENT_UIUX_MAIN.txt`
+- **Objective**: Make booking and waitlist completion states give customers a clear next-action path into dashboard status, Xiaohongshu follow-up, or continuing the site without exposing raw contact URLs as the primary guidance.
+- **Start state**: `main` at `cb1db94`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories were present.
+- **Previous direction carried forward**: Stage 2 recommended a visible customer-facing experience improvement around booking or dashboard clarity. This stage targets the handoff after booking submission or waitlist confirmation, where users need to know what to do next.
+- **Flagship design**: A shared booking completion action bridge used by both normal booking success and waitlist success states.
+- **Completed locally**:
+  - Replaced the booking success raw Xiaohongshu URL hint and loose action buttons with a structured next-steps action bridge.
+  - Added dashboard, Xiaohongshu message, and continue-browsing actions to both booking and waitlist completion states.
+  - Added Lucide action icons, accessible section labeling, responsive stacked mobile actions, and clear hover/focus states.
+  - Extended zh-CN, en, ja, and ko locale copy for the bridge title, details, Xiaohongshu action, and continue action.
+  - Added source-regression and Playwright coverage for the new completion bridge on booking deposit and fully-booked waitlist flows.
+- **Rendered validation**:
+  - Mobile Playwright path at 390x844 confirmed the booking deposit success state shows the bridge, dashboard link, Xiaohongshu link, and hides page overlays while the modal is open.
+  - Desktop Playwright waitlist path confirmed the fully booked waitlist success state shows the same bridge and follow-up actions.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` first failed on the missing completion bridge contract, then passed 68/68 after implementation.
+  - `npm run build` — passed before targeted Playwright because this repo's Playwright config serves `dist` through `vite preview`.
+  - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line --grep "placeholder deposit|fully booked"` — 2/2 passed.
+  - `npm run lint` — passed.
+  - `npm test` — 56 files / 351 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 36/36 passed.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Risk**: Dashboard access may still require login, so anonymous users who click "View My Bookings" are routed through the existing authentication boundary before seeing personal booking data.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is another bounded customer-facing reliability improvement outside the just-completed completion bridge.
+- **Status**: LOCAL COMPLETE / CI PENDING

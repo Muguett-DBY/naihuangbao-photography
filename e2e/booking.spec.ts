@@ -150,6 +150,10 @@ test.describe("booking flow", () => {
     await expect(page.locator(".booking-payment-clarity")).toBeVisible();
     await expect(page.getByText("What happens with the deposit", { exact: true })).toBeVisible();
     await expect(page.getByText("No deposit charged", { exact: true })).toBeVisible();
+    await expect(page.locator(".booking-success-bridge")).toBeVisible();
+    await expect(page.getByText("Next steps", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "View My Bookings", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Message on Xiaohongshu", exact: true })).toBeVisible();
   });
 
   test("keeps booking dates aligned with the studio business day", async ({ page }) => {
@@ -275,6 +279,9 @@ test.describe("booking flow", () => {
 
     await expect(page.locator(".booking-waitlist-success")).toBeVisible();
     await expect(page.locator(".booking-waitlist-success")).toContainText(fullDate);
+    await expect(page.locator(".booking-success-bridge")).toBeVisible();
+    await expect(page.getByRole("link", { name: "View My Bookings", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Message on Xiaohongshu", exact: true })).toBeVisible();
     expect(waitlistRequests[0]).toMatchObject({
       preferredDate: fullDate,
       name: "Waitlist Guest",
