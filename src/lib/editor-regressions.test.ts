@@ -111,11 +111,16 @@ describe("editor regression contracts", () => {
 
   it("self-hosts complete face-api models and keeps model loading separate from no-face results", () => {
     const editor = read("src/pages/PhotoEditorWorkspace.tsx");
+    const photoProcessing = read("src/lib/photo-processing.ts");
 
-    expect(editor).toContain('const MODEL_URL = "/models"');
-    expect(editor).not.toContain("justadudewhohacks.github.io");
-    expect(editor).not.toContain('new Error("Model loading timed out")');
+    expect(photoProcessing).toContain('const MODEL_URL = "/models"');
+    expect(photoProcessing).not.toContain("justadudewhohacks.github.io");
+    expect(photoProcessing).toContain("FACE_MODEL_LOAD_TIMEOUT_MS");
+    expect(photoProcessing).toContain("withTimeout");
+    expect(photoProcessing).toContain("FaceModelLoadTimeoutError");
     expect(editor).toContain("faceModelsPromiseRef");
+    expect(editor).toContain("modelLoadRequestRef");
+    expect(editor).toContain("modelLoadRequestRef.current === requestId");
     expect(editor).toContain("detectFaceLandmarks");
     expect(read("src/lib/editor-utils.ts")).toContain("new api.TinyFaceDetectorOptions");
     expect(existsSync(resolve(root, "public/models/tiny_face_detector_model-shard1"))).toBe(true);
@@ -131,6 +136,8 @@ describe("editor regression contracts", () => {
     expect(editor).toContain("editor.modelLoadFailed");
     expect(editor).toContain("editor.degradedMode");
     expect(editor).toContain("editor.retryModels");
+    expect(editor).toContain("editor.modelLoadTimedOut");
+    expect(editor).toContain("editor.modelRetrying");
     expect(editor).toContain("modelLoadAttempt");
     expect(editor).toContain("setModelError(false)");
     expect(pagesCss).toContain(".editor-model-fallback");

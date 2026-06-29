@@ -1020,3 +1020,31 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28363891572` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is hardening editor model/asset loading boundaries or reducing the remaining face-api operational risk.
 - **Status**: COMPLETE
+
+### Stage 4 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Harden face-model loading so a stalled request cannot trap the editor in an indefinite loading state, retries are isolated from stale completions, and users receive a specific recoverable degraded state.
+- **Start state**: `main` at `e34da86`; tracked tree clean except the protected untracked orchestrator history folders.
+- **Previous direction carried forward**: Stage 3 recommended strengthening model loading failure, timeout, retry, and degraded-mode handling around the remaining `face-api-vendor` operational risk.
+- **Completed locally**:
+  - Added a 20-second deadline around the complete face-api import, backend preparation, and model-file sequence.
+  - Added structured `failed` versus `timeout` results so the editor can distinguish a slow or stalled network from a general model failure.
+  - Added model-load request sequencing; progress, success, failure, and cleanup from an older attempt cannot overwrite a newer forced retry.
+  - Cleared failed model promises so a later upload or explicit retry can start a fresh load without refreshing the page.
+  - Added first-load versus retry status copy and a specific timeout message in zh-CN, en, ja, and ko.
+  - Added unit, source-regression, and Playwright coverage for deadline behavior, stale-request protection, retry messaging, model-request failure, manual editing, and export continuity.
+- **Rendered validation**:
+  - Targeted Playwright aborted every `/models/**` request and confirmed the canvas remained visible, the degraded-mode alert and retry action appeared, and export still opened.
+  - Full Playwright exercised the normal successful editor upload/export path and the forced model-failure path in the same production preview suite.
+- **Local verification**:
+  - Red/green: the new timeout utility and editor contracts first failed with 4 expected failures, then passed 21/21 after implementation.
+  - `npm run lint` — passed.
+  - `npm test` — 50 files / 321 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, TypeScript, Vite build, performance budget, and bundle analysis.
+  - Targeted model-failure Playwright — 1/1 passed.
+  - Full Playwright e2e with one worker — 32/32 passed.
+- **Risk**: `face-api-vendor` remains the largest intentional lazy chunk at 661.57 kB. The fixed 20-second deadline may move exceptionally slow connections into degraded mode, but manual editing/export remain available and users can retry without reloading.
+- **Commit**: pending — `fix: harden editor model loading`
+- **Push / CI**: pending.
+- **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; perform a system-wide code, security, CI, PWA, and core-flow sweep and fix concrete risks with regression coverage.
+- **Status**: LOCAL COMPLETE / REMOTE CI PENDING
