@@ -3341,6 +3341,19 @@
   color: var(--caramel-ink);
 }
 
+.calendar-date-boundary {
+  margin: -4px 0 10px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 184, 161, 0.28);
+  border-radius: 10px;
+  background: rgba(255, 249, 236, 0.72);
+  color: var(--caramel-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+}
+
 .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);

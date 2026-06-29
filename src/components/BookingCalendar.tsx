@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetch } from "../hooks/useFetch";
+import { getBusinessDate } from "../utils/businessDate";
 
 type DateInfo = {
   status: "available" | "booked" | "partial";
@@ -38,9 +39,13 @@ function formatDateKey(year: number, month: number, day: number): string {
 export function BookingCalendar({ selectedDate, onSelectDate, minDate }: BookingCalendarProps) {
   const { t, i18n } = useTranslation();
   const calendarRef = useRef<HTMLDivElement>(null);
-  const today = useMemo(() => new Date(), []);
-  const [year, setYear] = useState(today.getFullYear());
-  const [month, setMonth] = useState(today.getMonth());
+  const effectiveMinDate = useMemo(() => minDate || getBusinessDate(), [minDate]);
+  const [minYear, minMonth] = useMemo(() => {
+    const [yearText, monthText] = effectiveMinDate.split("-");
+    return [Number(yearText), Number(monthText) - 1];
+  }, [effectiveMinDate]);
+  const [year, setYear] = useState(minYear);
+  const [month, setMonth] = useState(minMonth);
   const [focusedDay, setFocusedDay] = useState<number | null>(null);
 
   const monthKey = formatMonth(year, month);
@@ -50,7 +55,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfWeek(year, month);
 
-  const canGoPrev = !(year === today.getFullYear() && month === today.getMonth());
+  const canGoPrev = year > minYear || (year === minYear && month > minMonth);
 
   const goPrev = useCallback(() => {
     if (!canGoPrev) return;
@@ -80,11 +85,11 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
       const key = formatDateKey(year, month, day);
       const info = availability[key];
       if (info?.status === "booked") return;
-      if (minDate && key < minDate) return;
+      if (key < effectiveMinDate) return;
       onSelectDate(key);
       setFocusedDay(day);
     },
-    [year, month, availability, minDate, onSelectDate],
+    [year, month, availability, effectiveMinDate, onSelectDate],
   );
 
   useEffect(() => {
@@ -147,6 +152,9 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
           ›
         </button>
       </div>
+      <p className="calendar-date-boundary">
+        {t("calendar.earliestBookable", { date: effectiveMinDate })}
+      </p>
 
       <div className="calendar-weekdays">
         {WEEKDAY_KEYS.map((key) => (
@@ -162,8 +170,11 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
           const status = info?.status ?? "available";
           const isBooked = status === "booked";
           const isSelected = cell.key === selectedDate;
-          const isPast = minDate ? cell.key < minDate : cell.key < today.toISOString().slice(0, 10);
+          const isPast = cell.key < effectiveMinDate;
           const isDisabled = isBooked || isPast;
+          const statusLabel = isPast
+            ? t("calendar.unavailableBefore", { date: effectiveMinDate })
+            : t(`calendar.${status}`);
 
           const classNames = [
             "calendar-day",
@@ -182,7 +193,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate }: Booking
               className={classNames}
               onClick={() => handleDayClick(cell.day)}
               disabled={isDisabled}
-              aria-label={`${cell.day}日 - ${t(`calendar.${status}`)}`}
+              aria-label={`${cell.day}日 - ${statusLabel}`}
             >
               <span className="calendar-day-num">{cell.day}</span>
               {info && (

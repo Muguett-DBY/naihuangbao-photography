@@ -430,6 +430,8 @@
     "nextStep": "I'll review your booking and confirm via your contact info within 24 hours. You can also check the status in your dashboard.",
     "error": "Failed to send. Please try again or DM me on Xiaohongshu.",
     "submitError": "Submission failed, please try again",
+    "dateInvalid": "Please choose a valid booking date.",
+    "datePast": "Please choose {{date}} or later.",
     "next": "Next",
     "back": "Back",
     "stepNavigation": "Booking steps",
@@ -467,6 +469,8 @@
     "partialDates": "partial",
     "bookedDates": "full",
     "partial": "Partially Available",
+    "earliestBookable": "Earliest bookable date: {{date}}",
+    "unavailableBefore": "Unavailable before {{date}}",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
     "weekdays": {
@@ -1084,6 +1088,7 @@
     "cancelError": "Could not cancel this booking. Please try again.",
     "rescheduleSuccess": "Booking moved to {{date}}.",
     "rescheduleError": "Could not reschedule this booking. Please choose another date.",
+    "rescheduleDatePast": "Please choose {{date}} or later.",
     "workspaceNavigation": "Dashboard sections",
     "startHere": {
       "eyebrow": "Start here",

@@ -9,15 +9,8 @@ import { StatusBadge } from "./StatusBadge";
 import { useToast } from "../shared/Toast";
 import { publicMutationHeaders } from "../../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../../lib/http";
+import { getBusinessDate, isBookableBusinessDate } from "../../utils/businessDate";
 import type { Booking } from "../../types/dashboard";
-
-function getTodayString(): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
 
 const timelineSteps = [
   { key: "pending", icon: Clock },
@@ -118,6 +111,7 @@ export function BookingsTab() {
   const [rescheduleLoading, setRescheduleLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [actionError, setActionError] = useState<{ bookingId: string; message: string } | null>(null);
+  const [earliestBookingDate] = useState(() => getBusinessDate());
 
   const handleCancel = useCallback(async (bookingId: string) => {
     setCancelLoading(true);
@@ -146,6 +140,13 @@ export function BookingsTab() {
 
   const handleReschedule = useCallback(async (bookingId: string) => {
     if (!newDate) return;
+    if (!isBookableBusinessDate(newDate, earliestBookingDate)) {
+      const message = t("dashboard.rescheduleDatePast", { date: earliestBookingDate });
+      setActionError({ bookingId, message });
+      showToast(message, "error");
+      return;
+    }
+
     setRescheduleLoading(true);
     setActionError(null);
     try {
@@ -170,7 +171,7 @@ export function BookingsTab() {
     } finally {
       setRescheduleLoading(false);
     }
-  }, [newDate, retry, showToast, t]);
+  }, [earliestBookingDate, newDate, retry, showToast, t]);
 
   const bookings = data?.bookings ?? [];
   const activeCount = bookings.filter((booking) => canManageBooking(booking.status)).length;
@@ -308,7 +309,7 @@ export function BookingsTab() {
                     </p>
                     <BookingCalendar
                       selectedDate={newDate}
-                      minDate={getTodayString()}
+                      minDate={earliestBookingDate}
                       onSelectDate={setNewDate}
                     />
                     <div className="dashboard-reschedule-actions">

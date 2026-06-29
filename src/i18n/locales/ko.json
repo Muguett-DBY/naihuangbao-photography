@@ -427,6 +427,8 @@
     "gotIt": "확인",
     "error": "전송 실패. 잠시 후 다시 시도하거나 샤오홍슈로 문의해 주세요.",
     "submitError": "전송 실패, 잠시 후 다시 시도해 주세요",
+    "dateInvalid": "유효한 예약 날짜를 선택해 주세요.",
+    "datePast": "{{date}} 이후 날짜를 선택해 주세요.",
     "next": "다음",
     "back": "뒤로",
     "stepNavigation": "예약 단계",
@@ -464,6 +466,8 @@
     "partialDates": "일부가능",
     "bookedDates": "마감",
     "partial": "일부 가능",
+    "earliestBookable": "가장 빠른 예약 가능일: {{date}}",
+    "unavailableBefore": "{{date}} 이전은 예약할 수 없습니다",
     "prevMonth": "이전 달",
     "nextMonth": "다음 달",
     "weekdays": {
@@ -1078,6 +1082,7 @@
     "cancelError": "예약을 취소하지 못했습니다. 다시 시도해 주세요.",
     "rescheduleSuccess": "예약이 {{date}}(으)로 변경되었습니다.",
     "rescheduleError": "일정을 변경하지 못했습니다. 다른 날짜를 선택해 주세요.",
+    "rescheduleDatePast": "{{date}} 이후 날짜를 선택해 주세요.",
     "workspaceNavigation": "대시보드 섹션",
     "startHere": {
       "eyebrow": "여기서 시작",

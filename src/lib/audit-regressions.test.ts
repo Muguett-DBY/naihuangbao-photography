@@ -45,6 +45,7 @@ const responsesSource = readFileSync(resolve(root, "functions/_responses.ts"), "
 const publicChatApiSource = readFileSync(resolve(root, "functions/api/chat.ts"), "utf8");
 const photoDownloadApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/download.ts"), "utf8");
 const dashboardBookingsSource = readFileSync(resolve(root, "src/components/dashboard/BookingsTab.tsx"), "utf8");
+const bookingModalSource = readFileSync(resolve(root, "src/components/BookingModal.tsx"), "utf8");
 const adminBookingsSource = readFileSync(resolve(root, "src/components/admin/AdminBookingsTab.tsx"), "utf8");
 const adminBookingsApiSource = readFileSync(resolve(root, "functions/api/admin/bookings.ts"), "utf8");
 const photoImageApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/image.ts"), "utf8");
@@ -88,6 +89,7 @@ const htmlSource = readFileSync(resolve(root, "index.html"), "utf8");
 const loginPageSource = readFileSync(resolve(root, "src/pages/LoginPage.tsx"), "utf8");
 const registerApiSource = readFileSync(resolve(root, "functions/api/auth/register.ts"), "utf8");
 const forgotPasswordApiSource = readFileSync(resolve(root, "functions/api/auth/forgot-password.ts"), "utf8");
+const businessDatePath = resolve(root, "src/utils/businessDate.ts");
 const jaLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ja.json"), "utf8");
 const zhLocaleSource = readFileSync(resolve(root, "src/i18n/locales/zh-CN.json"), "utf8");
 const enLocaleSource = readFileSync(resolve(root, "src/i18n/locales/en.json"), "utf8");
@@ -109,6 +111,26 @@ describe("audit regression coverage", () => {
     expect(dashboardBookingsSource).toContain("useToast");
     expect(dashboardBookingsSource).toContain("getApiError");
     expect(dashboardBookingsSource).toMatch(/role="alert"/);
+  });
+
+  it("keeps booking date boundaries aligned with the studio business date", () => {
+    expect(existsSync(businessDatePath)).toBe(true);
+    const businessDateSource = existsSync(businessDatePath) ? readFileSync(businessDatePath, "utf8") : "";
+
+    expect(businessDateSource).toContain("Asia/Shanghai");
+    expect(bookingModalSource).toContain("getBusinessDate");
+    expect(bookingModalSource).toContain("earliestBookingDate");
+    expect(bookingModalSource).toContain('validateField("date"');
+    expect(bookingCalendarSource).toContain("calendar.earliestBookable");
+    expect(bookingCalendarSource).toContain("calendar.unavailableBefore");
+    expect(dashboardBookingsSource).toContain("isBookableBusinessDate");
+    expect(dashboardBookingsSource).not.toContain("function getTodayString");
+    for (const locale of Object.values(locales)) {
+      expect(locale.calendar.earliestBookable).toBeTruthy();
+      expect(locale.calendar.unavailableBefore).toBeTruthy();
+      expect(locale.bookingModal.datePast).toBeTruthy();
+      expect(locale.dashboard.rescheduleDatePast).toBeTruthy();
+    }
   });
 
   it("keeps the embedded dashboard calendar readable in dark mode", () => {
