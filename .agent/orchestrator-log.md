@@ -1351,7 +1351,7 @@ Beginning execution.
   - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 36/36 passed.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
 - **Risk**: Duplicate detection is app-level and case-insensitive for the submitted contact string. It avoids duplicate rows in normal use, but a simultaneous race between identical requests could still need a future DB-level uniqueness guard if the production dataset is first deduplicated.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `28fd870` — `feat: improve waitlist duplicate handling`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28409731031` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is a visible customer-facing experience improvement around booking or dashboard clarity.
-- **Status**: LOCAL VERIFICATION COMPLETE
+- **Status**: COMPLETE
