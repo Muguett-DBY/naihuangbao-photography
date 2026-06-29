@@ -1381,7 +1381,7 @@ Beginning execution.
   - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 36/36 passed.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
 - **Risk**: Dashboard access may still require login, so anonymous users who click "View My Bookings" are routed through the existing authentication boundary before seeing personal booking data.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `b7b7b6a` — `feat: improve booking completion actions`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28410527355` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is another bounded customer-facing reliability improvement outside the just-completed completion bridge.
-- **Status**: LOCAL COMPLETE / CI PENDING
+- **Status**: COMPLETE
