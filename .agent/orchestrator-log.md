@@ -1155,3 +1155,30 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28388185336` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is reducing another user-visible policy or operational drift point with an independently testable improvement.
 - **Status**: COMPLETE
+
+### Stage 2 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Make booking availability capacity transparent by returning per-date remaining slots from the availability API and rendering that capacity detail in the booking calendars.
+- **Start state**: `main` at `8a06a5f`; local and `origin/main` aligned, with only the protected untracked campaign-015 and campaign-016 history folders present.
+- **Previous direction carried forward**: Stage 1 recommended booking capacity transparency as the next flagship improvement after centralizing booking policy.
+- **Plan / impact judgment**:
+  - Extend `/api/availability` to return daily capacity and remaining slots for partially/full booked days.
+  - Surface remaining slots in the calendar day cells and aria labels so users understand what "partial" means before choosing a date.
+  - Keep the change scoped to booking availability and covered by API/source/E2E regressions.
+- **Completed locally**:
+  - Extended `/api/availability` to include top-level `capacityPerDay` and per-date `capacity` / `remaining`.
+  - Updated booking calendars to show remaining slots on partially available dates and include the remaining count in aria labels.
+  - Added localized remaining-slot copy across zh-CN, en, ja, and ko.
+  - Added API, source-regression, and Playwright coverage for capacity transparency.
+- **Local verification**:
+  - Red: `npm test -- functions/availability.test.ts src/lib/audit-regressions.test.ts` failed on missing `capacityPerDay`, `remaining`, and calendar capacity display.
+  - Green: `npm test -- functions/availability.test.ts src/lib/audit-regressions.test.ts` passed, 64/64.
+  - `npm run lint` — passed.
+  - `npm test` — 54 files / 336 tests passed.
+  - `npm run build:full` — passed, including performance budget and bundle analysis.
+  - `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` — first exposed a bad test mock, then passed 7/7 after correcting the mock.
+- **Risk**: Dates with zero bookings still do not appear in the availability payload; the UI treats absent dates as fully open, as before.
+- **Commit**: pending — `feat: show booking availability capacity`
+- **Push / CI**: pending.
+- **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is a visible booking calendar / modal experience upgrade now that policy and capacity data are available.
+- **Status**: READY TO COMMIT

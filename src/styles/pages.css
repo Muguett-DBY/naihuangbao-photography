@@ -3472,6 +3472,21 @@
   background: #ef4444;
 }
 
+.calendar-day-capacity {
+  color: var(--caramel-muted);
+  font-size: 0.56rem;
+  font-weight: 700;
+  line-height: 1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-day--selected .calendar-day-capacity {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .calendar-loading {
   text-align: center;
   font-size: 0.8rem;

@@ -92,6 +92,7 @@ const forgotPasswordApiSource = readFileSync(resolve(root, "functions/api/auth/f
 const businessDatePath = resolve(root, "src/utils/businessDate.ts");
 const bookingPolicyHookPath = resolve(root, "src/hooks/useBookingPolicy.ts");
 const bookingPolicyApiPath = resolve(root, "functions/api/booking/policy.ts");
+const availabilityApiSource = readFileSync(resolve(root, "functions/api/availability.ts"), "utf8");
 const jaLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ja.json"), "utf8");
 const zhLocaleSource = readFileSync(resolve(root, "src/i18n/locales/zh-CN.json"), "utf8");
 const enLocaleSource = readFileSync(resolve(root, "src/i18n/locales/en.json"), "utf8");
@@ -143,6 +144,18 @@ describe("audit regression coverage", () => {
       expect(locale.calendar.unavailableBefore).toBeTruthy();
       expect(locale.bookingModal.datePast).toBeTruthy();
       expect(locale.dashboard.rescheduleDatePast).toBeTruthy();
+    }
+  });
+
+  it("keeps booking availability capacity visible in calendars", () => {
+    expect(availabilityApiSource).toContain("capacityPerDay");
+    expect(availabilityApiSource).toContain("remaining");
+    expect(bookingCalendarSource).toContain("calendar-day-capacity");
+    expect(bookingCalendarSource).toContain("calendar.remainingSlots");
+    expect(bookingCalendarSource).toContain("calendar.remainingShort");
+    for (const locale of Object.values(locales)) {
+      expect(locale.calendar.remainingSlots).toBeTruthy();
+      expect(locale.calendar.remainingShort).toBeTruthy();
     }
   });
 

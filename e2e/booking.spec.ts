@@ -174,7 +174,17 @@ test.describe("booking flow", () => {
     await page.route("**/api/availability**", (route) => route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ dates: {} }),
+      body: JSON.stringify({
+        capacityPerDay: 3,
+        dates: {
+          [policyDate]: {
+            status: "partial",
+            count: 2,
+            capacity: 3,
+            remaining: 1,
+          },
+        },
+      }),
     }));
 
     await page.goto("/");
@@ -183,6 +193,8 @@ test.describe("booking flow", () => {
     await expect(page.locator(".calendar-date-boundary")).toContainText(policyDate);
     await expect(page.locator(".calendar-policy-note")).toContainText("Asia/Shanghai");
     await expect(page.locator(".calendar-policy-note")).toContainText("3");
+    await expect(page.locator(".calendar-day-capacity")).toContainText("1 left");
+    await expect(page.getByRole("button", { name: /^20日 - Open slots: 1/ })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Previous month" })).toBeDisabled();
     await expect(page.getByRole("button", { name: /^19日 - Unavailable before/ })).toBeDisabled();
   });

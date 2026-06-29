@@ -1710,3 +1710,38 @@ PWA / 部署缓存系统扫雷：对 service worker 注册、生成产物、runt
 
 ### 推荐下一轮优先执行的旗舰级主改动
 预约容量透明化：把 policy 和 availability 汇总成清晰的“可约/部分可约/已满”解释，让用户在预约与改期时更早知道可选范围和容量原因。
+
+---
+
+## Campaign 019 Stage 2 — Booking Availability Capacity Transparency
+
+### 承接的上一轮方向
+- Stage 1 建议继续减少预约策略漂移，并推荐把预约容量透明化。
+- 本阶段将 availability API 和日历展示连接起来，让用户能看到部分可约日期的剩余名额。
+
+### 完成内容
+- `/api/availability` 新增 `capacityPerDay`，被占用日期新增 `capacity` 和 `remaining`。
+- 日历在部分可约日期显示剩余名额短标签，并在 aria label 中说明剩余开放名额。
+- 补齐 zh-CN/en/ja/ko 的剩余名额文案。
+- 增加 availability API 单测、源码回归和预约 E2E。
+
+### 已通过的验证
+- Red/green：容量透明化回归先失败，修复后目标 64/64 通过。
+- TypeScript / lint：通过。
+- Vitest 全量：54 个文件、336 个测试通过。
+- `build:full` + performance budget：通过。
+- 预约 Playwright E2E：7/7 通过。
+
+### GitHub Actions / CI 状态
+- 待 Stage 2 commit push 后检查。
+
+### 遗留风险
+- 零预约日期仍不在 availability `dates` 字典中，前端继续按全量可约处理；如果未来需要展示每一天的剩余 3/3，可考虑服务端补齐整月日期。
+
+### 下一轮建议方向
+1. UIUX：把 booking policy、最早日期、容量说明和图例整合成更清晰的日历头部体验。
+2. IMPROVE：把等待名单规则与当前日期/容量策略继续统一。
+3. CHECK：复查登录/注册/重置公开端点的 header/CSRF 边界。
+
+### 推荐下一轮优先执行的旗舰级主改动
+预约日历体验升级：围绕最早日期、容量说明、图例和部分可约状态做 UIUX 整合，让用户一眼看懂如何选日期。

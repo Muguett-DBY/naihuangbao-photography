@@ -472,6 +472,8 @@
     "earliestBookable": "Earliest bookable date: {{date}}",
     "unavailableBefore": "Unavailable before {{date}}",
     "policyNote": "Studio policy: {{timeZone}}, up to {{capacity}} sessions per day",
+    "remainingSlots": "Open slots: {{count}}",
+    "remainingShort": "{{count}} left",
     "prevMonth": "Previous month",
     "nextMonth": "Next month",
     "weekdays": {

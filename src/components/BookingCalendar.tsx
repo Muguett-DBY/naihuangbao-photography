@@ -6,10 +6,13 @@ import { getBusinessDate } from "../utils/businessDate";
 type DateInfo = {
   status: "available" | "booked" | "partial";
   count: number;
+  capacity?: number;
+  remaining?: number;
 };
 
 type AvailabilityResponse = {
   dates: Record<string, DateInfo>;
+  capacityPerDay?: number;
 };
 
 type BookingCalendarProps = {
@@ -53,6 +56,7 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
   const monthKey = formatMonth(year, month);
   const { data, loading } = useFetch<AvailabilityResponse>(`/api/availability?month=${monthKey}`);
   const availability = data?.dates ?? {};
+  const calendarCapacity = capacityPerDay ?? data?.capacityPerDay;
 
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfWeek(year, month);
@@ -187,8 +191,13 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
           const isSelected = cell.key === selectedDate;
           const isPast = cell.key < effectiveMinDate;
           const isDisabled = isBooked || isPast;
+          const remaining = info?.remaining ?? (
+            calendarCapacity && info ? Math.max(calendarCapacity - info.count, 0) : undefined
+          );
           const statusLabel = isPast
             ? t("calendar.unavailableBefore", { date: effectiveMinDate })
+            : status === "partial" && remaining !== undefined
+              ? t("calendar.remainingSlots", { count: remaining })
             : t(`calendar.${status}`);
 
           const classNames = [
@@ -213,6 +222,11 @@ export function BookingCalendar({ selectedDate, onSelectDate, minDate, policyTim
               <span className="calendar-day-num">{cell.day}</span>
               {info && (
                 <span className={`calendar-day-dot calendar-day-dot--${status}`} />
+              )}
+              {status === "partial" && remaining !== undefined && (
+                <span className="calendar-day-capacity">
+                  {t("calendar.remainingShort", { count: remaining })}
+                </span>
               )}
             </button>
           );
