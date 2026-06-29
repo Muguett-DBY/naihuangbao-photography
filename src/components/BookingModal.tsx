@@ -13,6 +13,7 @@ import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
 import { track } from "../utils/track";
 import { savePendingBooking, syncPendingBookings } from "../utils/offlineBooking";
+import { getBusinessDate, isBookableBusinessDate, isRealDateKey } from "../utils/businessDate";
 
 type BookingModalProps = {
   initialPackage?: string;
@@ -45,6 +46,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const [depositOutcome, setDepositOutcome] = useState<"pending" | "deferred" | "offline" | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [earliestBookingDate] = useState(() => getBusinessDate());
   const titleId = useId();
   const descriptionId = useId();
   const contentRef = useFocusTrap<HTMLDivElement>({ initialFocus: "first" });
@@ -73,11 +75,16 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         if (value.trim().length < 5) return t("bookingModal.contactTooShort", "Contact must be at least 5 characters");
         return undefined;
       case "date":
+        if (!value) return undefined;
+        if (!isRealDateKey(value)) return t("bookingModal.dateInvalid", "Please choose a valid date");
+        if (!isBookableBusinessDate(value, earliestBookingDate)) {
+          return t("bookingModal.datePast", { date: earliestBookingDate, defaultValue: "Please choose {{date}} or later" });
+        }
         return undefined;
       default:
         return undefined;
     }
-  }, [t]);
+  }, [earliestBookingDate, t]);
 
   const handleBlur = useCallback((field: string, value: string) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
@@ -88,6 +95,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const handleChange = useCallback((field: string, value: string) => {
     if (field === "name") setName(value);
     else if (field === "contact") setContact(value);
+    else if (field === "date") setDate(value);
 
     if (touched[field]) {
       const error = validateField(field, value);
@@ -95,13 +103,24 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     }
   }, [touched, validateField]);
 
+  const handleDateSelect = useCallback((nextDate: string) => {
+    handleChange("date", nextDate);
+    setTouched((prev) => ({ ...prev, date: true }));
+    setErrors((prev) => ({ ...prev, date: validateField("date", nextDate) }));
+  }, [handleChange, validateField]);
+
   const isFormValid = name.trim().length >= 2 && contact.trim().length >= 5;
 
   const handleNext = useCallback(() => {
+    const dateError = validateField("date", date);
+    setErrors((prev) => ({ ...prev, date: dateError }));
+    setTouched((prev) => ({ ...prev, date: true }));
+    if (dateError) return;
+
     setStep(2);
     setError("");
     track("booking_step1_done", { packageName: selectedPkg, date, time });
-  }, [selectedPkg, date, time]);
+  }, [date, selectedPkg, time, validateField]);
 
   const handleBack = useCallback(() => {
     setStep(1);
@@ -114,10 +133,11 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
     const nameError = validateField("name", name);
     const contactError = validateField("contact", contact);
-    setErrors({ name: nameError, contact: contactError });
-    setTouched({ name: true, contact: true });
+    const dateError = validateField("date", date);
+    setErrors({ name: nameError, contact: contactError, date: dateError });
+    setTouched({ name: true, contact: true, date: true });
 
-    if (nameError || contactError) return;
+    if (nameError || contactError || dateError) return;
 
     const trimmedName = name.trim().slice(0, 50);
     const trimmedContact = contact.trim().slice(0, 100);
@@ -378,13 +398,16 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               </select>
             </div>
 
-            <div className="booking-field">
+            <div className={`booking-field ${errors.date && touched.date ? "has-error" : ""}`}>
               <label>{t("bookingModal.date")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
               <BookingCalendar
                 selectedDate={date}
-                onSelectDate={setDate}
-                minDate={new Date().toISOString().split("T")[0]}
+                onSelectDate={handleDateSelect}
+                minDate={earliestBookingDate}
               />
+              {errors.date && touched.date && (
+                <span className="booking-field-error">{errors.date}</span>
+              )}
             </div>
 
             <div className="booking-field">

@@ -1,5 +1,16 @@
 import { test, expect } from "@playwright/test";
 
+function getStudioBusinessDate(): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
 test.describe("booking flow", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
@@ -150,6 +161,27 @@ test.describe("booking flow", () => {
     await expect(page.locator(".booking-payment-clarity")).toBeVisible();
     await expect(page.getByText("What happens with the deposit", { exact: true })).toBeVisible();
     await expect(page.getByText("No deposit charged", { exact: true })).toBeVisible();
+  });
+
+  test("keeps booking dates aligned with the studio business day", async ({ page }) => {
+    const studioDate = getStudioBusinessDate();
+    const day = Number(studioDate.slice(-2));
+
+    await page.route("**/api/availability**", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ dates: {} }),
+    }));
+
+    await page.goto("/");
+    await page.locator(".hero-cover-primary-btn").click();
+
+    await expect(page.locator(".calendar-date-boundary")).toContainText(studioDate);
+    await expect(page.getByRole("button", { name: "Previous month" })).toBeDisabled();
+
+    if (day > 1) {
+      await expect(page.getByRole("button", { name: new RegExp(`^${day - 1}日 - Unavailable before`) })).toBeDisabled();
+    }
   });
 
   test("shows the latest booking deposit state in the customer dashboard", async ({ page }) => {

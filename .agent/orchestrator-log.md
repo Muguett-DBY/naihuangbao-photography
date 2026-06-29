@@ -1082,3 +1082,36 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28366714911` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is closing one remaining user-visible or API reliability gap with a small, test-backed improvement.
 - **Status**: COMPLETE
+
+### Stage 6 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt` from `C:\Users\12031\Desktop\AGENT_PROMPTS_MAIN_PACK`.
+- **Objective**: Close the Stage 5 follow-up by aligning the frontend booking and reschedule date pickers with the stricter server-side business-date validation, so users cannot choose or submit dates the API will reject.
+- **Start state**: `main` at `647472f`; local and `origin/main` aligned, with only the protected untracked campaign-015 and campaign-016 history folders present.
+- **Previous direction carried forward**: Stage 5 recommended an IMPROVE pass for booking entry resilience, specifically checking frontend booking date/time selection against the new strict server date rules.
+- **Plan / impact judgment**:
+  - Candidate chosen: unify frontend booking date boundaries with the studio business date (`Asia/Shanghai`) and make the earliest bookable date visible in the calendar.
+  - User-visible value: the booking modal and dashboard reschedule flow now explain the earliest bookable date up front instead of letting users reach an API rejection.
+  - Stability value: one shared frontend utility mirrors the Cloudflare API business-date rule and is covered by unit, source-regression, and browser-flow tests.
+- **Completed locally**:
+  - Added `src/utils/businessDate.ts` with `getBusinessDate`, strict real-date parsing, and bookable-date checks using `Asia/Shanghai`.
+  - Updated the booking modal to use the studio business date for `BookingCalendar.minDate`, validate selected dates before advancing or submitting, and show localized date errors.
+  - Updated the dashboard booking reschedule flow to use the same business date and guard against stale/past dates before sending the mutation request.
+  - Updated `BookingCalendar` so the earliest bookable date is visible, previous-month navigation cannot cross the business-date month, and disabled past days announce why they are unavailable.
+  - Added zh-CN, en, ja, and ko copy for the new date boundary and reschedule validation states.
+  - Added regression coverage for the business-date utility, frontend source contracts, and the rendered booking modal date boundary.
+- **Rendered validation**:
+  - Targeted Playwright confirmed the booking modal shows the studio business date, disables previous-month navigation, and disables prior-day buttons when applicable.
+  - Full Playwright covered the updated booking flow plus dashboard, gallery, login, photo detail, editor, and mobile navigation paths.
+  - In-app Browser confirmed the local preview page identity and zero console errors/warnings, but that browser session was controlled by an older service worker showing an update banner, so the new date-boundary UI evidence comes from clean Playwright contexts.
+- **Local verification**:
+  - Red/green: new business-date and source-regression tests first failed on missing utility/contracts, then passed 64/64 after implementation.
+  - Targeted booking-date Playwright — 1/1 passed after production rebuild.
+  - `npm run lint` — passed.
+  - `npm test` — 52 files / 333 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - Full Playwright e2e with one worker — 33/33 passed.
+- **Risk**: The frontend utility intentionally duplicates the server business-date logic instead of sharing code across Cloudflare Functions and the browser bundle. This keeps the blast radius small, but future server date-rule changes must update both layers.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: None; this completes the requested 6-stage loop. Recommended future focus is reducing duplicated booking date rules by extracting a safe shared validation package or adding an API-provided booking policy endpoint.
+- **Status**: LOCAL VERIFICATION COMPLETE; COMMIT / PUSH / CI PENDING

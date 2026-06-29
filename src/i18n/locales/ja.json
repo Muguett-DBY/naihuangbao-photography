@@ -427,6 +427,8 @@
     "gotIt": "確認しました",
     "error": "送信に失敗しました。再試行するか、小红书まで直接お問い合わせください。",
     "submitError": "送信に失敗しました。再試行してください",
+    "dateInvalid": "有効な予約日を選択してください。",
+    "datePast": "{{date}} 以降の日付を選択してください。",
     "next": "次へ",
     "back": "戻る",
     "stepNavigation": "予約ステップ",
@@ -464,6 +466,8 @@
     "partialDates": "一部空き",
     "bookedDates": "満席",
     "partial": "一部空き",
+    "earliestBookable": "最短予約可能日：{{date}}",
+    "unavailableBefore": "{{date}} より前は予約できません",
     "prevMonth": "前月",
     "nextMonth": "翌月",
     "weekdays": {
@@ -1078,6 +1082,7 @@
     "cancelError": "予約をキャンセルできませんでした。もう一度お試しください。",
     "rescheduleSuccess": "予約日を {{date}} に変更しました。",
     "rescheduleError": "日程を変更できませんでした。別の日付を選んでください。",
+    "rescheduleDatePast": "{{date}} 以降の日付を選択してください。",
     "workspaceNavigation": "ダッシュボードのセクション",
     "startHere": {
       "eyebrow": "ここから始める",
