@@ -248,6 +248,25 @@ export function BookingsTab() {
           const canManage = canManageBooking(b.status);
           const paymentStatus = b.payment_status || "not_started";
           const paymentAmount = formatPaymentAmount(b.payment_amount_cents, b.payment_currency);
+          const isRescheduling = rescheduleId === b.id;
+          const releasedTimeSlot = newDate === b.preferred_date ? b.preferred_time : undefined;
+          const selectedTimeUnavailable = isRescheduling
+            && isBookingTimeSlotUnavailable(selectedDateAvailability, newTime, releasedTimeSlot);
+          const scheduleIsUnchanged = newDate === b.preferred_date && newTime === b.preferred_time;
+          const canConfirmReschedule = Boolean(newDate)
+            && !scheduleIsUnchanged
+            && !selectedTimeUnavailable
+            && !rescheduleLoading;
+          const activeRescheduleError = isRescheduling && actionError?.bookingId === b.id ? actionError.message : "";
+          const rescheduleStatusTone = activeRescheduleError || selectedTimeUnavailable
+            ? "is-error"
+            : canConfirmReschedule ? "is-ready" : "is-muted";
+          const rescheduleStatusMessage = activeRescheduleError
+            || (selectedTimeUnavailable
+              ? t("dashboard.rescheduleTimeUnavailable")
+              : canConfirmReschedule
+                ? t("dashboard.rescheduleReadyHint", { date: newDate, time: formatTime(newTime) })
+                : t("dashboard.rescheduleNoChangeHint"));
           return (
             <div key={b.id} className="dashboard-card">
               <div className="dashboard-card-header">
@@ -337,75 +356,102 @@ export function BookingsTab() {
                     </div>
                   </div>
                 )}
-                {actionError?.bookingId === b.id && (
+                {actionError?.bookingId === b.id && !isRescheduling && (
                   <p className="dashboard-action-error" role="alert">{actionError.message}</p>
                 )}
-                {rescheduleId === b.id && (
-                  <div className="dashboard-confirm-panel dashboard-confirm-panel--default" aria-busy={rescheduleLoading}>
-                    <p className="dashboard-reschedule-label">
-                      {t("dashboard.selectNewDate")}
-                    </p>
-                    <p className="dashboard-reschedule-hint">
-                      {t("dashboard.rescheduleHint")}
-                    </p>
-                    <BookingCalendar
-                      selectedDate={newDate}
-                      minDate={earliestBookingDate}
-                      policyTimeZone={bookingPolicy.timeZone}
-                      capacityPerDay={bookingPolicy.capacityPerDay}
-                      onSelectDate={(nextDate) => {
-                        setNewDate(nextDate);
-                        setNewTime(nextDate === b.preferred_date ? b.preferred_time : "");
-                        setActionError(null);
-                      }}
-                      onSelectedDateInfoChange={setSelectedDateAvailability}
-                    />
-                    <BookingTimeSlotPicker
-                      id={`dashboard-reschedule-time-${b.id}`}
-                      label={t("dashboard.selectNewTime")}
-                      value={newTime}
-                      onChange={(nextTime) => {
-                        setNewTime(nextTime);
-                        setActionError(null);
-                      }}
-                      dateInfo={selectedDateAvailability}
-                      releasedSlot={newDate === b.preferred_date ? b.preferred_time : undefined}
-                      hint={t("dashboard.rescheduleTimeHint")}
-                    />
-                    <div className="dashboard-reschedule-summary" aria-label={t("dashboard.rescheduleSummary")}>
-                      <span>
-                        <small>{t("dashboard.currentSchedule")}</small>
-                        <strong>{b.preferred_date} · {formatTime(b.preferred_time)}</strong>
+                {isRescheduling && (
+                  <div className="dashboard-confirm-panel dashboard-confirm-panel--default dashboard-reschedule-panel" aria-busy={rescheduleLoading}>
+                    <div className="dashboard-reschedule-header">
+                      <span className="dashboard-reschedule-header-icon" aria-hidden="true">
+                        <RefreshCw size={18} />
                       </span>
-                      <ArrowRight size={18} aria-hidden="true" />
-                      <span>
-                        <small>{t("dashboard.newSchedule")}</small>
-                        <strong>{newDate || t("common.na", "N/A")} · {formatTime(newTime)}</strong>
-                      </span>
+                      <div>
+                        <p className="dashboard-reschedule-eyebrow">{t("dashboard.reschedulePanelEyebrow")}</p>
+                        <p className="dashboard-reschedule-label">
+                          {t("dashboard.reschedulePanelTitle")}
+                        </p>
+                        <p className="dashboard-reschedule-hint">
+                          {t("dashboard.rescheduleHint")}
+                        </p>
+                      </div>
                     </div>
-                    <div className="dashboard-reschedule-actions">
-                      <Button
-                        type="default"
-                        onClick={resetReschedule}
-                      >
-                        {t("dashboard.closeReschedule")}
-                      </Button>
-                      <Button
-                        type="primary"
-                        onClick={() => handleReschedule(b)}
-                        disabled={
-                          !newDate
-                          || (newDate === b.preferred_date && newTime === b.preferred_time)
-                          || isBookingTimeSlotUnavailable(
-                            selectedDateAvailability,
-                            newTime,
-                            newDate === b.preferred_date ? b.preferred_time : undefined,
-                          )
-                          || rescheduleLoading
-                        }
-                      >
-                        {rescheduleLoading ? t("common.loading") : t("dashboard.confirmReschedule")}
-                      </Button>
+                    <ol className="dashboard-reschedule-steps" aria-label={t("dashboard.rescheduleStepsLabel")}>
+                      <li className={newDate ? "is-complete" : ""}>
+                        <span>1</span>
+                        <strong>{t("dashboard.rescheduleStepDate")}</strong>
+                      </li>
+                      <li className={newDate && !selectedTimeUnavailable ? "is-complete" : ""}>
+                        <span>2</span>
+                        <strong>{t("dashboard.rescheduleStepTime")}</strong>
+                      </li>
+                      <li className={canConfirmReschedule ? "is-complete" : ""}>
+                        <span>3</span>
+                        <strong>{t("dashboard.rescheduleStepReview")}</strong>
+                      </li>
+                    </ol>
+                    <div className="dashboard-reschedule-workspace">
+                      <div className="dashboard-reschedule-calendar">
+                        <p className="dashboard-reschedule-section-title">{t("dashboard.selectNewDate")}</p>
+                        <BookingCalendar
+                          selectedDate={newDate}
+                          minDate={earliestBookingDate}
+                          policyTimeZone={bookingPolicy.timeZone}
+                          capacityPerDay={bookingPolicy.capacityPerDay}
+                          onSelectDate={(nextDate) => {
+                            setNewDate(nextDate);
+                            setNewTime(nextDate === b.preferred_date ? b.preferred_time : "");
+                            setActionError(null);
+                          }}
+                          onSelectedDateInfoChange={setSelectedDateAvailability}
+                        />
+                      </div>
+                      <div className="dashboard-reschedule-review">
+                        <BookingTimeSlotPicker
+                          id={`dashboard-reschedule-time-${b.id}`}
+                          label={t("dashboard.selectNewTime")}
+                          value={newTime}
+                          onChange={(nextTime) => {
+                            setNewTime(nextTime);
+                            setActionError(null);
+                          }}
+                          dateInfo={selectedDateAvailability}
+                          releasedSlot={releasedTimeSlot}
+                          hint={t("dashboard.rescheduleTimeHint")}
+                        />
+                        <div className="dashboard-reschedule-summary" aria-label={t("dashboard.rescheduleSummary")}>
+                          <span>
+                            <small>{t("dashboard.currentSchedule")}</small>
+                            <strong>{b.preferred_date} · {formatTime(b.preferred_time)}</strong>
+                          </span>
+                          <ArrowRight size={18} aria-hidden="true" />
+                          <span>
+                            <small>{t("dashboard.newSchedule")}</small>
+                            <strong>{newDate || t("common.na", "N/A")} · {formatTime(newTime)}</strong>
+                          </span>
+                        </div>
+                        <p
+                          className={`dashboard-reschedule-status ${rescheduleStatusTone}`}
+                          role={activeRescheduleError ? "alert" : undefined}
+                          aria-live="polite"
+                        >
+                          {rescheduleStatusMessage}
+                        </p>
+                        <div className="dashboard-reschedule-actions">
+                          <Button
+                            type="default"
+                            onClick={resetReschedule}
+                          >
+                            {t("dashboard.closeReschedule")}
+                          </Button>
+                          <Button
+                            type="primary"
+                            onClick={() => handleReschedule(b)}
+                            disabled={!canConfirmReschedule}
+                          >
+                            {rescheduleLoading ? t("common.loading") : t("dashboard.confirmReschedule")}
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}

@@ -503,20 +503,29 @@ test.describe("booking flow", () => {
     await page.getByRole("tab", { name: "My Bookings", exact: true }).click();
     await page.getByRole("button", { name: "Reschedule", exact: true }).click();
 
+    await expect(page.locator(".dashboard-reschedule-steps")).toContainText("Date");
+    await expect(page.locator(".dashboard-reschedule-steps")).toContainText("Time");
+    await expect(page.locator(".dashboard-reschedule-steps")).toContainText("Review");
+    await expect(page.locator(".dashboard-reschedule-status")).toContainText("Choose a different date or time");
+    await expect(page.getByRole("button", { name: "Confirm reschedule", exact: true })).toBeDisabled();
     await expect(page.locator(".dashboard-reschedule-summary")).toContainText("Morning");
     const timeSelect = page.getByLabel("New time window", { exact: true });
     await timeSelect.selectOption("afternoon");
     await expect(page.locator(".dashboard-reschedule-summary")).toContainText("Afternoon");
+    await expect(page.locator(".dashboard-reschedule-status")).toContainText("Ready to move to 2026-07-15 · Afternoon");
+    await expect(page.getByRole("button", { name: "Confirm reschedule", exact: true })).toBeEnabled();
 
     await page.setViewportSize({ width: 390, height: 844 });
     const layout = await page.locator(".dashboard-confirm-panel--default").evaluate((panel) => ({
       pageOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
       panelOverflow: panel.scrollWidth > panel.clientWidth,
       summaryColumns: getComputedStyle(panel.querySelector(".dashboard-reschedule-summary") as HTMLElement).gridTemplateColumns,
+      workspaceColumns: getComputedStyle(panel.querySelector(".dashboard-reschedule-workspace") as HTMLElement).gridTemplateColumns,
     }));
     expect(layout.pageOverflow).toBe(false);
     expect(layout.panelOverflow).toBe(false);
     expect(layout.summaryColumns.split(" ")).toHaveLength(1);
+    expect(layout.workspaceColumns.split(" ")).toHaveLength(1);
 
     await page.getByRole("button", { name: "Confirm reschedule", exact: true }).click();
 

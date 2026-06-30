@@ -1234,7 +1234,8 @@
 }
 
 body:has(.booking-modal-content) .mobile-bottom-nav,
-body:has(.booking-modal-content) .public-chat-widget {
+body:has(.booking-modal-content) .public-chat-widget,
+body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;

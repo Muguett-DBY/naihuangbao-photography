@@ -1541,3 +1541,43 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28438916217` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is a visible dashboard reschedule polish pass now that date/time conflict rules are shared.
 - **Status**: COMPLETE
+
+### Stage 3 / 6 — UIUX
+- **Prompt**: `AGENT_UIUX_MAIN.txt`
+- **Objective**: Upgrade the authenticated dashboard reschedule panel from a stacked technical form into a guided, mobile-safe schedule-change workspace with clearer hierarchy, readiness feedback, and review context.
+- **Start state**: `main` at `66be5d1`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories are present.
+- **Previous direction carried forward**: Stage 2 recommended visible dashboard reschedule polish after adding shared date/time conflict rules.
+- **UI/UX audit findings**:
+  - P1: The reschedule panel exposes calendar, time select, summary, and actions as a flat stack, so the user lacks a clear "date -> time -> review" path.
+  - P1: Disabled/no-change/conflict states are technically enforced, but the panel does not explain why confirmation is unavailable inside the workflow.
+  - P2: Desktop uses the same vertical form rhythm as mobile; the calendar and review controls should be visually separated for faster scanning.
+  - P2: Mobile avoids overflow but can still feel long and unstructured because the review and action state are not grouped.
+- **Impact choice**: A guided reschedule panel scores highest for this UIUX stage because it is user-visible, directly improves a core customer workflow, reuses Stage 2 data, includes responsive and state feedback improvements, and can be verified through source-contract and browser-flow tests.
+- **Planned flagship UI/UX change**: guided dashboard reschedule workspace with a header, three-step progress affordance, desktop split layout, mobile single-column layout, inline readiness/error status, and clearer review actions.
+- **Completed locally**:
+  - Rebuilt the dashboard reschedule panel into a guided schedule-change workspace with a header, three-step date/time/review progress affordance, and clearer current/new schedule review.
+  - Added inline readiness, unchanged-selection, and conflict/error status messaging with `aria-live` feedback.
+  - Added a responsive workspace layout that uses two columns only when the card has room, and collapses to one column in narrower dashboard cards and mobile viewports.
+  - Hid the mobile bottom navigation while the reschedule panel is open so it no longer overlays the long calendar workflow.
+  - Added zh-CN, en, ja, and ko copy for the guided panel, steps, and status messages.
+  - Added source-regression and Playwright coverage for the guided UI/UX contract.
+- **Rendered validation**:
+  - Desktop and mobile preview screenshots were captured at `C:\Users\12031\AppData\Local\Temp\campaign021-stage3-dashboard-desktop.png` and `C:\Users\12031\AppData\Local\Temp\campaign021-stage3-dashboard-mobile.png`.
+  - Render measurement confirmed no document-level horizontal overflow, no reschedule-panel overflow, the card-width layout collapses safely, mobile bottom nav opacity is `0`/visibility `hidden`, and console error/warn output is empty.
+  - Manual screenshot review first found mobile bottom-nav overlap; the CSS was fixed and the rendered measurement was rerun.
+- **Local verification**:
+  - Red/green: `npm test -- src/lib/audit-regressions.test.ts` first failed on missing guided panel/source contracts, then passed 74/74.
+  - Red/green: targeted Playwright first failed on missing `.dashboard-reschedule-steps`, then `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line --grep "reschedules a customer booking"` passed 1/1.
+  - `npm ci` passed with 456 packages installed and 0 vulnerabilities.
+  - `npm run lint` passed.
+  - `npm test` passed 58 files / 372 tests.
+  - CI-order `npm run build` passed.
+  - CI-order `npm run perf:budget` passed.
+  - `npm run build:full` passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - Full Playwright passed 40/40.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Risk**: On medium dashboard card widths the panel intentionally collapses to one column instead of forcing a cramped split view. This prioritizes readability over a persistent two-column desktop layout.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is a bounded booking reliability improvement that builds on the clearer reschedule UX, such as surfacing server-side conflict recovery details consistently.
+- **Status**: READY TO COMMIT

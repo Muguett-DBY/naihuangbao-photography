@@ -153,6 +153,25 @@ describe("audit regression coverage", () => {
     }
   });
 
+  it("keeps dashboard rescheduling guided, responsive, and stateful", () => {
+    expect(dashboardBookingsSource).toContain("dashboard-reschedule-workspace");
+    expect(dashboardBookingsSource).toContain("dashboard-reschedule-steps");
+    expect(dashboardBookingsSource).toContain("dashboard-reschedule-status");
+    expect(dashboardBookingsSource).toContain("aria-live=\"polite\"");
+    expect(editorCssSource).toContain(".dashboard-reschedule-workspace");
+    expect(editorCssSource).toContain(".dashboard-reschedule-steps");
+    expect(editorCssSource).toContain(".dashboard-reschedule-status");
+    expect(editorCssSource).toContain("grid-template-columns: minmax(0, 430px) minmax(280px, 1fr)");
+    expect(sectionsCssSource).toContain("body:has(.dashboard-reschedule-panel) .mobile-bottom-nav");
+    for (const locale of Object.values(locales)) {
+      expect(locale.dashboard.reschedulePanelTitle).toBeTruthy();
+      expect(locale.dashboard.rescheduleStepsLabel).toBeTruthy();
+      expect(locale.dashboard.rescheduleStepReview).toBeTruthy();
+      expect(locale.dashboard.rescheduleReadyHint).toBeTruthy();
+      expect(locale.dashboard.rescheduleNoChangeHint).toBeTruthy();
+    }
+  });
+
   it("keeps booking date boundaries aligned with the studio business date", () => {
     expect(existsSync(businessDatePath)).toBe(true);
     expect(existsSync(bookingPolicyHookPath)).toBe(true);
