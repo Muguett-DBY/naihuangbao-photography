@@ -51,6 +51,10 @@ describe("booking domain rules", () => {
     expect(slots.morning.status).toBe("booked");
     expect(slots.afternoon.status).toBe("booked");
     expect(slots.fullDay.status).toBe("booked");
+    expect(isBookingTimeUnavailable([
+      { preferred_time: "morning" },
+      { preferred_time: "afternoon" },
+    ], "")).toBe(true);
   });
 
   it("treats a full-day booking as blocking every time window", () => {

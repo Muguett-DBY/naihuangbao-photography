@@ -720,11 +720,23 @@ describe("Cloudflare Pages API behavior", () => {
           first: vi.fn(async () => {
             if (sql.includes("from users")) return { id: "user-12345678", email: "guest@example.com" };
             if (sql.includes("select id, contact, status")) {
-              return { id: "booking-12345678", contact: "guest@example.com", status: "confirmed" };
+              return {
+                id: "booking-12345678",
+                contact: "guest@example.com",
+                status: "confirmed",
+                preferred_date: "2098-12-31",
+                preferred_time: "morning",
+              };
             }
-            if (sql.includes("count(*) as count")) return { count: 3 };
             return null;
           }),
+          all: vi.fn(async () => ({
+            results: [
+              { preferred_time: "morning" },
+              { preferred_time: "afternoon" },
+              { preferred_time: "fullDay" },
+            ],
+          })),
           run: vi.fn(async () => ({ success: true })),
         };
         return statement;
@@ -748,6 +760,112 @@ describe("Cloudflare Pages API behavior", () => {
 
     expect(response.status).toBe(409);
     expect(body.error).toContain("已约满");
+  });
+
+  it("reschedules the time on the same date while excluding the current booking", async () => {
+    const secret = "test-auth-secret-with-32-characters";
+    const session = await createUserSession("user-12345678", secret);
+    const writes: Array<{ sql: string; values: unknown[] }> = [];
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          bind: vi.fn((...values: unknown[]) => {
+            if (sql.includes("update booking_requests")) writes.push({ sql, values });
+            return statement;
+          }),
+          first: vi.fn(async () => {
+            if (sql.includes("from users")) return { id: "user-12345678", email: "guest@example.com" };
+            if (sql.includes("from booking_requests where id")) {
+              return {
+                id: "booking-12345678",
+                contact: "guest@example.com",
+                status: "confirmed",
+                preferred_date: "2099-01-01",
+                preferred_time: "morning",
+              };
+            }
+            return null;
+          }),
+          all: vi.fn(async () => ({ results: [] })),
+          run: vi.fn(async () => ({ success: true })),
+        };
+        return statement;
+      }),
+    };
+
+    const response = await rescheduleUserBooking({
+      request: jsonRequest("https://shoot.custard.top/api/user/bookings/booking-12345678/reschedule", {
+        method: "POST",
+        headers: {
+          cookie: `nhb_user_session=${session}`,
+          "content-type": "application/json",
+          "x-nhb-public-action": "1",
+        },
+        body: JSON.stringify({ preferred_date: "2099-01-01", preferred_time: "afternoon" }),
+      }),
+      env: { DB: db, AUTH_SECRET: secret },
+      params: { id: "booking-12345678" },
+    } as never);
+    const body = (await response.json()) as { booking?: { preferred_date?: string; preferred_time?: string } };
+
+    expect(response.status).toBe(200);
+    expect(body.booking).toEqual({ preferred_date: "2099-01-01", preferred_time: "afternoon" });
+    expect(writes).toHaveLength(1);
+    expect(writes[0]?.sql).toContain("preferred_time = ?");
+    expect(writes[0]?.values).toEqual(["2099-01-01", "afternoon", "booking-12345678"]);
+    expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("id != ?"));
+  });
+
+  it("rejects rescheduling into an occupied time slot without updating the booking", async () => {
+    const secret = "test-auth-secret-with-32-characters";
+    const session = await createUserSession("user-12345678", secret);
+    const writes: string[] = [];
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          bind: vi.fn(() => statement),
+          first: vi.fn(async () => {
+            if (sql.includes("from users")) return { id: "user-12345678", email: "guest@example.com" };
+            if (sql.includes("from booking_requests where id")) {
+              return {
+                id: "booking-12345678",
+                contact: "guest@example.com",
+                status: "confirmed",
+                preferred_date: "2099-01-01",
+                preferred_time: "afternoon",
+              };
+            }
+            return null;
+          }),
+          all: vi.fn(async () => ({ results: [{ preferred_time: "fullDay" }] })),
+          run: vi.fn(async () => {
+            writes.push(sql);
+            return { success: true };
+          }),
+        };
+        return statement;
+      }),
+    };
+
+    const response = await rescheduleUserBooking({
+      request: jsonRequest("https://shoot.custard.top/api/user/bookings/booking-12345678/reschedule", {
+        method: "POST",
+        headers: {
+          cookie: `nhb_user_session=${session}`,
+          "content-type": "application/json",
+          "x-nhb-public-action": "1",
+        },
+        body: JSON.stringify({ preferred_date: "2099-01-02", preferred_time: "morning" }),
+      }),
+      env: { DB: db, AUTH_SECRET: secret },
+      params: { id: "booking-12345678" },
+    } as never);
+    const body = (await response.json()) as { error?: string; timeSlots?: { morning?: { status?: string } } };
+
+    expect(response.status).toBe(409);
+    expect(body.error).toBe("time_unavailable");
+    expect(body.timeSlots?.morning?.status).toBe("booked");
+    expect(writes.some((sql) => sql.includes("update booking_requests"))).toBe(false);
   });
 
   it("rejects direct booking into a fully booked date with a waitlist hint", async () => {

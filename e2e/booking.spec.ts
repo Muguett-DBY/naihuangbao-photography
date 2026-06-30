@@ -430,6 +430,103 @@ test.describe("booking flow", () => {
     await expect(page.getByText("CN¥20.00", { exact: false })).toBeVisible();
   });
 
+  test("reschedules a customer booking to an available time window", async ({ page }) => {
+    let reschedulePayload: Record<string, unknown> | null = null;
+    await page.route("**/api/auth/session", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        authenticated: true,
+        user: { id: "user-1", email: "guest@example.com", displayName: "Guest" },
+      }),
+    }));
+    await page.route("**/api/user/stats", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ bookings: 1, photos: 0, purchases: 0, courses: 0, workshops: 0 }),
+    }));
+    await page.route("**/api/availability**", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        capacityPerDay: 3,
+        dates: {
+          "2026-07-15": {
+            status: "partial",
+            count: 1,
+            capacity: 3,
+            remaining: 2,
+            timeSlots: {
+              morning: { status: "booked", count: 1, capacity: 1, remaining: 0 },
+              afternoon: { status: "available", count: 0, capacity: 1, remaining: 1 },
+              fullDay: { status: "booked", count: 1, capacity: 1, remaining: 0 },
+            },
+          },
+        },
+      }),
+    }));
+    await page.route("**/api/user/bookings**", async (route) => {
+      if (new URL(route.request().url()).pathname.endsWith("/reschedule")) {
+        reschedulePayload = route.request().postDataJSON() as Record<string, unknown>;
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            ok: true,
+            booking: { preferred_date: "2026-07-15", preferred_time: "afternoon" },
+          }),
+        });
+      }
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          bookings: [{
+            id: "booking-1",
+            package_name: "Portrait Session",
+            preferred_date: "2026-07-15",
+            preferred_time: "morning",
+            name: "Guest",
+            status: "confirmed",
+            created_at: "2026-06-26T00:00:00.000Z",
+            payment_intent_id: null,
+            payment_status: "not_started",
+            payment_provider: null,
+            payment_amount_cents: null,
+            payment_currency: null,
+          }],
+        }),
+      });
+    });
+
+    await page.goto("/dashboard");
+    await page.getByRole("tab", { name: "My Bookings", exact: true }).click();
+    await page.getByRole("button", { name: "Reschedule", exact: true }).click();
+
+    await expect(page.locator(".dashboard-reschedule-summary")).toContainText("Morning");
+    const timeSelect = page.getByLabel("New time window", { exact: true });
+    await timeSelect.selectOption("afternoon");
+    await expect(page.locator(".dashboard-reschedule-summary")).toContainText("Afternoon");
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const layout = await page.locator(".dashboard-confirm-panel--default").evaluate((panel) => ({
+      pageOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      panelOverflow: panel.scrollWidth > panel.clientWidth,
+      summaryColumns: getComputedStyle(panel.querySelector(".dashboard-reschedule-summary") as HTMLElement).gridTemplateColumns,
+    }));
+    expect(layout.pageOverflow).toBe(false);
+    expect(layout.panelOverflow).toBe(false);
+    expect(layout.summaryColumns.split(" ")).toHaveLength(1);
+
+    await page.getByRole("button", { name: "Confirm reschedule", exact: true }).click();
+
+    await expect.poll(() => reschedulePayload).toEqual({
+      preferred_date: "2026-07-15",
+      preferred_time: "afternoon",
+    });
+    await expect(page.getByText("Booking moved to 2026-07-15 · Afternoon.", { exact: true })).toBeVisible();
+  });
+
   test("keeps dashboard navigation and empty actions usable on desktop and mobile", async ({ page }) => {
     await page.route("**/api/auth/session", (route) => route.fulfill({
       status: 200,

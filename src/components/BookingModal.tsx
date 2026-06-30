@@ -1,5 +1,5 @@
 import { Button, Input, Modal } from "animal-island-ui";
-import { type FormEvent, useEffect, useId, useMemo, useState, useCallback } from "react";
+import { type FormEvent, useEffect, useId, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ExternalLink, LayoutDashboard } from "lucide-react";
@@ -8,7 +8,8 @@ import { useNotification } from "../hooks/useNotification";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import { useModalA11y } from "../hooks/useModalA11y";
 import { PaymentForm } from "./PaymentForm";
-import { BookingCalendar, type BookingTimeSlotKey, type DateInfo } from "./BookingCalendar";
+import { BookingCalendar, type DateInfo } from "./BookingCalendar";
+import { BookingTimeSlotPicker, isBookingTimeSlotUnavailable } from "./BookingTimeSlotPicker";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
 import { track } from "../utils/track";
@@ -35,8 +36,6 @@ type WaitlistResponse = {
     duplicate?: boolean;
   };
 };
-
-const BOOKING_TIME_SLOT_KEYS: BookingTimeSlotKey[] = ["morning", "afternoon", "fullDay"];
 
 export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const { t } = useTranslation();
@@ -72,23 +71,9 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const contentRef = useFocusTrap<HTMLDivElement>({ initialFocus: "first" });
   useModalA11y({ open: true, titleId, descriptionId });
 
-  const slotOptions = useMemo(() => BOOKING_TIME_SLOT_KEYS.map((slot) => {
-    const slotInfo = selectedDateAvailability?.timeSlots?.[slot];
-    const unavailable = slotInfo?.status === "booked";
-    return {
-      slot,
-      unavailable,
-      label: String(t(`bookingModal.${slot}` as never)),
-      statusLabel: unavailable
-        ? t("bookingModal.timeSlotUnavailable", "Unavailable")
-        : t("bookingModal.timeSlotAvailable", "Available"),
-    };
-  }), [selectedDateAvailability, t]);
-
   const isSelectedTimeUnavailable = useCallback((value: string) => {
-    if (!value) return false;
-    return slotOptions.some((option) => option.slot === value && option.unavailable);
-  }, [slotOptions]);
+    return isBookingTimeSlotUnavailable(selectedDateAvailability, value);
+  }, [selectedDateAvailability]);
 
   const validateField = useCallback((field: string, value: string): string | undefined => {
     switch (field) {
@@ -600,38 +585,16 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               )}
             </div>
 
-            <div className="booking-field">
-              <label htmlFor="booking-time">{t("bookingModal.time")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
-              <select
-                id="booking-time"
-                value={time}
-                onChange={(e) => handleTimeChange(e.target.value)}
-                aria-describedby={errors.time && touched.time ? "booking-time-error" : "booking-time-slots"}
-              >
-                <option value="">{t("bookingModal.any")}</option>
-                {slotOptions.map((option) => (
-                  <option key={option.slot} value={option.slot} disabled={option.unavailable}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              <div id="booking-time-slots" className="booking-time-slot-grid" role="list" aria-label={t("bookingModal.timeSlotStatusLabel", "Time availability")}>
-                {slotOptions.map((option) => (
-                  <span
-                    key={option.slot}
-                    className={`booking-time-slot-pill${option.unavailable ? " is-unavailable" : " is-available"}`}
-                    role="listitem"
-                  >
-                    <span>{option.label}</span>
-                    <small>{option.statusLabel}</small>
-                  </span>
-                ))}
-              </div>
-              <p className="booking-time-slot-hint">{t("bookingModal.timeSlotLimitedHint", "Choose an available window or leave Any if you can be flexible.")}</p>
-              {errors.time && touched.time && (
-                <span id="booking-time-error" className="booking-field-error">{errors.time}</span>
-              )}
-            </div>
+            <BookingTimeSlotPicker
+              id="booking-time"
+              label={t("bookingModal.time")}
+              optionalLabel={t("bookingModal.any")}
+              value={time}
+              onChange={handleTimeChange}
+              dateInfo={selectedDateAvailability}
+              hint={t("bookingModal.timeSlotLimitedHint", "Choose an available window or leave Any if you can be flexible.")}
+              error={errors.time && touched.time ? errors.time : undefined}
+            />
 
             <div className="booking-actions">
               <Button type="default" onClick={onClose}>{t("bookingModal.cancel")}</Button>

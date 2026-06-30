@@ -3,10 +3,13 @@ import { getUserFromRequest } from "../../../../_auth";
 import { getRequiredAuthSecret, requirePublicMutationRequest } from "../../../../_security";
 import { validateId } from "../../../../_validation";
 import {
+  getBookingTimeSlotAvailability,
   getBusinessDate,
   isBookingDateFull,
   isCancelledBookingStatus,
+  isBookingTimeUnavailable,
   validateBookingDate,
+  validateBookingTimeSlot,
 } from "../../../../_booking";
 
 type AuthEnv = Env & { AUTH_SECRET?: string };
@@ -15,6 +18,8 @@ type BookingRow = {
   id: string;
   contact: string;
   status: string;
+  preferred_date: string;
+  preferred_time: string;
 };
 
 type UserRow = {
@@ -43,6 +48,8 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
   const body = (await context.request.json().catch(() => ({}))) as Record<string, unknown>;
   const dateCheck = validateBookingDate(body.preferred_date, getBusinessDate());
   if (!dateCheck.valid) return badRequest(dateCheck.error);
+  const timeCheck = validateBookingTimeSlot(body.preferred_time);
+  if (!timeCheck.valid) return badRequest(timeCheck.error);
   const newDate = String(body.preferred_date);
 
   try {
@@ -54,7 +61,7 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     if (!userRow) return unauthorized("用户不存在");
 
     const booking = await context.env.DB.prepare(
-      `select id, contact, status from booking_requests where id = ?`,
+      `select id, contact, status, preferred_date, preferred_time from booking_requests where id = ?`,
     ).bind(bookingId).first<BookingRow>();
 
     if (!booking) {
@@ -69,23 +76,45 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
       return badRequest("该预约无法改期");
     }
 
-    const capacity = await context.env.DB.prepare(
-      `select count(*) as count
+    const newTime = body.preferred_time === undefined
+      ? booking.preferred_time
+      : body.preferred_time == null ? "" : String(body.preferred_time).trim();
+
+    if (newDate === booking.preferred_date && newTime === booking.preferred_time) {
+      return badRequest("请选择不同的日期或时段");
+    }
+
+    const { results: activeBookingsForDate } = await context.env.DB.prepare(
+      `select preferred_time
        from booking_requests
        where preferred_date = ?
          and id != ?
          and status not in ('cancelled', 'canceled')`,
-    ).bind(newDate, bookingId).first<{ count: number }>();
+    ).bind(newDate, bookingId).all<{ preferred_time: string }>();
+    const dateFull = isBookingDateFull(activeBookingsForDate.length);
 
-    if (isBookingDateFull(Number(capacity?.count ?? 0))) {
+    if (dateFull) {
       return jsonResponse({ error: "该日期已约满，请选择其他日期" }, 409);
     }
 
-    await context.env.DB.prepare(
-      `update booking_requests set preferred_date = ? where id = ?`,
-    ).bind(newDate, bookingId).run();
+    if (isBookingTimeUnavailable(activeBookingsForDate, newTime, dateFull)) {
+      return jsonResponse({
+        error: "time_unavailable",
+        message: "该时段已不可预约，请选择其他时段。",
+        preferredDate: newDate,
+        preferredTime: newTime,
+        timeSlots: getBookingTimeSlotAvailability(activeBookingsForDate, dateFull),
+      }, 409);
+    }
 
-    return jsonResponse({ ok: true });
+    await context.env.DB.prepare(
+      `update booking_requests set preferred_date = ?, preferred_time = ? where id = ?`,
+    ).bind(newDate, newTime, bookingId).run();
+
+    return jsonResponse({
+      ok: true,
+      booking: { preferred_date: newDate, preferred_time: newTime },
+    });
   } catch (error) {
     return unavailable("改期失败", error, { route: `/api/user/bookings/${bookingId}/reschedule`, method: "POST" });
   }

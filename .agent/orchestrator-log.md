@@ -1508,3 +1508,36 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28436973546` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; extend the shared time-window contract to authenticated booking rescheduling.
 - **Status**: COMPLETE
+
+### Stage 2 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Extend the time-slot availability contract into authenticated rescheduling so customers can move both date and time without self-conflicts or silent slot overbooking.
+- **Start state**: `main` at `aecde37`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories are present.
+- **Previous direction carried forward**: Stage 1 explicitly identified date-only dashboard rescheduling as the remaining bounded gap.
+- **Impact choice**: A date-and-time reschedule flow scores highest because it completes the same core booking contract, fixes same-day time changes, and is directly visible to authenticated customers. A reusable slot picker keeps first-booking and reschedule UI behavior aligned.
+- **Completed locally**:
+  - Added a shared `BookingTimeSlotPicker` so direct booking and dashboard rescheduling use the same unavailable-slot rules.
+  - Dashboard rescheduling now selects both date and time, shows current/new schedule context, and sends `preferred_time` to the authenticated API.
+  - The reschedule API validates time-slot input, excludes the current booking from conflict checks, rejects occupied replacement windows with structured `time_unavailable`, and updates `preferred_time` with the date.
+  - Same-day time changes now work without treating the current booking as its own conflict.
+  - Direct booking now also disables the flexible "Any" choice when both half-day windows are occupied.
+  - Added four-language dashboard copy plus API, rule, component, source-contract, and Playwright coverage.
+- **Browser-flow validation**:
+  - Targeted Playwright exercised the authenticated dashboard reschedule path, mobile layout, selected afternoon slot, API payload `{ preferred_date, preferred_time }`, and localized success toast.
+- **Local verification**:
+  - Red/green: `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts` first failed on the missing reschedule API/picker contracts, then targeted implementation tests passed 4 files / 118 tests.
+  - Targeted Playwright first exposed a dashboard time-select accessible-label issue, then `npx playwright test e2e/booking.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line --grep "reschedules a customer booking"` passed 1/1 after the label fix.
+  - `npm ci` passed with 456 packages installed and 0 vulnerabilities.
+  - `npm run lint` passed.
+  - `npm test` passed 58 files / 371 tests.
+  - CI-order `npm run build` passed.
+  - CI-order `npm run perf:budget` passed.
+  - `npm run build:full` passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - Full Playwright passed 40/40.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+  - `git diff --check` passed; sensitive/debug scan for staged-scope files found no matches.
+- **Risk**: Time-slot conflict protection remains application-level. A future production data migration could add a database-level uniqueness guard if simultaneous identical writes become a real operational risk.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is a visible dashboard reschedule polish pass now that date/time conflict rules are shared.
+- **Status**: READY TO COMMIT
