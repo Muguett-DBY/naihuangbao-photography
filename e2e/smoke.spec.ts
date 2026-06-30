@@ -60,10 +60,10 @@ test.describe("shoot.custard.top", () => {
     await page.goto("/");
     // Scroll to gallery
     await page.evaluate(() => document.getElementById("gallery")?.scrollIntoView());
-    await expect(page.locator(".gallery-masonry-item").first()).toBeVisible();
-    // Click first gallery item
-    const firstItem = page.locator(".gallery-masonry-item").first();
-    await firstItem.click();
+    // Click the actual interactive control so layout shifts cannot land on article whitespace.
+    const firstItemButton = page.locator(".gallery-masonry-item .gallery-masonry-btn").first();
+    await expect(firstItemButton).toBeVisible({ timeout: 10000 });
+    await firstItemButton.click();
     await expect(page.locator(".pswp")).toBeVisible();
     await page.locator(".pswp__button--close").click();
     await expect(page.locator(".pswp")).not.toBeVisible({ timeout: 10000 });

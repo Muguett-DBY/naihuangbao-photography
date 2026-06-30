@@ -143,7 +143,10 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
   };
 
   const handleBatchApprove = async () => {
-    if (selectedIds.size === 0) return;
+    const idsToApprove = selectedIds.size > 0
+      ? Array.from(selectedIds)
+      : pendingPhotos.map((photo) => photo.id);
+    if (idsToApprove.length === 0) return;
     setBatchProcessing(true);
     try {
       const response = await fetch("/api/admin/photos/batch", {
@@ -154,14 +157,15 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
           ...adminMutationHeaders,
         },
         body: JSON.stringify({
-          ids: Array.from(selectedIds),
+          ids: idsToApprove,
           action: "visibility",
           value: "public",
         }),
       });
       if (!response.ok) throw new Error("Batch approve failed");
-      setPendingPhotos((prev) => prev.filter((p) => !selectedIds.has(p.id)));
-      onShowToast(`${selectedIds.size} photos approved`, "success");
+      const approvedIds = new Set(idsToApprove);
+      setPendingPhotos((prev) => prev.filter((p) => !approvedIds.has(p.id)));
+      onShowToast(`${idsToApprove.length} photos approved`, "success");
       setSelectedIds(new Set());
     } catch (error) {
       onShowToast("Batch approve failed", "error");
@@ -175,15 +179,18 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
     setBatchProcessing(true);
     try {
       const ids = Array.from(selectedIds);
-      await Promise.all(ids.map((id) =>
+      const responses = await Promise.all(ids.map((id) =>
         fetch(`/api/admin/photos/${id}`, {
           method: "DELETE",
           credentials: "include",
           headers: adminMutationHeaders,
         })
       ));
-      setPendingPhotos((prev) => prev.filter((p) => !selectedIds.has(p.id)));
-      onShowToast(`${selectedIds.size} photos rejected`, "success");
+      const failedReject = responses.find((response) => !response.ok);
+      if (failedReject) throw new Error("Batch reject failed");
+      const rejectedIds = new Set(ids);
+      setPendingPhotos((prev) => prev.filter((p) => !rejectedIds.has(p.id)));
+      onShowToast(`${ids.length} photos rejected`, "success");
       setSelectedIds(new Set());
     } catch (error) {
       onShowToast("Batch reject failed", "error");
