@@ -13,6 +13,12 @@ export type BookingTimeSlotInfo = {
   capacity: number;
   remaining: number;
 };
+export type BookingTimeSlotRecovery = {
+  canKeepDate: boolean;
+  requestedTime: string;
+  suggestedTime: BookingTimeSlot | "";
+  availableTimeSlots: BookingTimeSlot[];
+};
 
 type BookingTimeRow = {
   preferred_time?: string | null;
@@ -81,6 +87,19 @@ export function isBookingTimeUnavailable(rows: BookingTimeRow[], preferredTime: 
   }
   if (!isKnownBookingTimeSlot(preferredTime)) return true;
   return slots[preferredTime].status === "booked";
+}
+
+export function getBookingTimeSlotRecovery(
+  timeSlots: Record<BookingTimeSlot, BookingTimeSlotInfo>,
+  requestedTime: string,
+): BookingTimeSlotRecovery {
+  const availableTimeSlots = BOOKING_TIME_SLOTS.filter((slot) => timeSlots[slot].status === "available");
+  return {
+    canKeepDate: availableTimeSlots.length > 0,
+    requestedTime,
+    suggestedTime: availableTimeSlots[0] ?? "",
+    availableTimeSlots,
+  };
 }
 
 export function validateBookingDate(value: unknown, today: string): ValidationResult {

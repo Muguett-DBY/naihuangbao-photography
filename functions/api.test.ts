@@ -837,7 +837,7 @@ describe("Cloudflare Pages API behavior", () => {
             }
             return null;
           }),
-          all: vi.fn(async () => ({ results: [{ preferred_time: "fullDay" }] })),
+          all: vi.fn(async () => ({ results: [{ preferred_time: "morning" }] })),
           run: vi.fn(async () => {
             writes.push(sql);
             return { success: true };
@@ -860,11 +860,21 @@ describe("Cloudflare Pages API behavior", () => {
       env: { DB: db, AUTH_SECRET: secret },
       params: { id: "booking-12345678" },
     } as never);
-    const body = (await response.json()) as { error?: string; timeSlots?: { morning?: { status?: string } } };
+    const body = (await response.json()) as {
+      error?: string;
+      timeSlots?: { morning?: { status?: string }; afternoon?: { status?: string } };
+      recovery?: { canKeepDate?: boolean; suggestedTime?: string; availableTimeSlots?: string[] };
+    };
 
     expect(response.status).toBe(409);
     expect(body.error).toBe("time_unavailable");
     expect(body.timeSlots?.morning?.status).toBe("booked");
+    expect(body.timeSlots?.afternoon?.status).toBe("available");
+    expect(body.recovery).toMatchObject({
+      canKeepDate: true,
+      suggestedTime: "afternoon",
+      availableTimeSlots: ["afternoon"],
+    });
     expect(writes.some((sql) => sql.includes("update booking_requests"))).toBe(false);
   });
 
@@ -931,7 +941,7 @@ describe("Cloudflare Pages API behavior", () => {
           bind: vi.fn(() => statement),
           all: vi.fn(async () => {
             if (sql.includes("preferred_time")) {
-              return { results: [{ preferred_time: "fullDay" }] };
+              return { results: [{ preferred_time: "morning" }] };
             }
             return { results: [] };
           }),
@@ -955,25 +965,31 @@ describe("Cloudflare Pages API behavior", () => {
           "content-type": "application/json",
           "x-nhb-public-action": "1",
         },
-        body: JSON.stringify({
-          packageName: "Portrait Session",
-          preferredDate: "2099-01-01",
-          preferredTime: "morning",
-          name: "Guest",
-          contact: "slot@example.com",
-        }),
+          body: JSON.stringify({
+            packageName: "Portrait Session",
+            preferredDate: "2099-01-01",
+            preferredTime: "fullDay",
+            name: "Guest",
+            contact: "slot@example.com",
+          }),
       }),
       env: { DB: db },
     } as never);
     const body = (await response.json()) as {
       error?: string;
       timeSlots?: { morning?: { status?: string }; afternoon?: { status?: string } };
+      recovery?: { canKeepDate?: boolean; suggestedTime?: string; availableTimeSlots?: string[] };
     };
 
     expect(response.status).toBe(409);
     expect(body.error).toBe("time_unavailable");
     expect(body.timeSlots?.morning?.status).toBe("booked");
-    expect(body.timeSlots?.afternoon?.status).toBe("booked");
+    expect(body.timeSlots?.afternoon?.status).toBe("available");
+    expect(body.recovery).toMatchObject({
+      canKeepDate: true,
+      suggestedTime: "afternoon",
+      availableTimeSlots: ["afternoon"],
+    });
     expect(writes.some((sql) => sql.includes("insert into booking_requests"))).toBe(false);
   });
 

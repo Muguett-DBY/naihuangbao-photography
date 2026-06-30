@@ -141,14 +141,22 @@ describe("audit regression coverage", () => {
     expect(bookingModalSource).toContain("BookingTimeSlotPicker");
     expect(dashboardBookingsSource).toContain("BookingTimeSlotPicker");
     expect(dashboardBookingsSource).toContain("preferred_time: newTime");
+    expect(dashboardBookingsSource).toContain("rescheduleRecoveryHint");
+    expect(dashboardBookingsSource).toContain("body.recovery");
+    expect(bookingModalSource).toContain("timeSlotRecoveryHint");
+    expect(bookingModalSource).toContain("data.recovery");
     expect(dashboardBookingsSource).toContain("dashboard-reschedule-summary");
     expect(rescheduleApiSource).toContain("validateBookingTimeSlot");
     expect(rescheduleApiSource).toContain("isBookingTimeUnavailable");
+    expect(rescheduleApiSource).toContain("recovery");
+    expect(bookingApiSource).toContain("recovery");
     expect(rescheduleApiSource).toContain("preferred_time = ?");
     expect(bookingTimeSlotPickerSource).toContain("booking-time-slot-grid");
     for (const locale of Object.values(locales)) {
       expect(locale.dashboard.selectNewTime).toBeTruthy();
       expect(locale.dashboard.rescheduleTimeUnavailable).toBeTruthy();
+      expect(locale.dashboard.rescheduleRecoveryHint).toBeTruthy();
+      expect(locale.bookingModal.timeSlotRecoveryHint).toBeTruthy();
       expect(locale.dashboard.rescheduleSummary).toBeTruthy();
     }
   });

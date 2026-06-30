@@ -39,6 +39,18 @@ type StatusHelpKey =
   | "dashboard.statusHelp.confirmed"
   | "dashboard.statusHelp.pending";
 
+type TimeSlotRecovery = {
+  canKeepDate?: boolean;
+  requestedTime?: string;
+  suggestedTime?: string;
+  availableTimeSlots?: string[];
+};
+
+type RescheduleRecoveryState = TimeSlotRecovery & {
+  bookingId: string;
+  preferredDate: string;
+};
+
 function getStatusHelpKey(status: string): StatusHelpKey {
   if (isCancelledBooking(status)) return "dashboard.statusHelp.cancelled";
   if (status === "done") return "dashboard.statusHelp.done";
@@ -115,6 +127,7 @@ export function BookingsTab() {
   const [rescheduleLoading, setRescheduleLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [actionError, setActionError] = useState<{ bookingId: string; message: string } | null>(null);
+  const [rescheduleRecovery, setRescheduleRecovery] = useState<RescheduleRecoveryState | null>(null);
   const { policy: bookingPolicy } = useBookingPolicy();
   const earliestBookingDate = bookingPolicy.earliestDate;
   const bookings = data?.bookings ?? [];
@@ -130,6 +143,7 @@ export function BookingsTab() {
     setNewDate("");
     setNewTime("");
     setSelectedDateAvailability(null);
+    setRescheduleRecovery(null);
   }, []);
 
   const handleCancel = useCallback(async (bookingId: string) => {
@@ -176,6 +190,7 @@ export function BookingsTab() {
 
     setRescheduleLoading(true);
     setActionError(null);
+    setRescheduleRecovery(null);
     try {
       const response = await fetch(`/api/user/bookings/${bookingId}/reschedule`, {
         method: "POST",
@@ -187,9 +202,11 @@ export function BookingsTab() {
         error?: string;
         message?: string;
         timeSlots?: DateInfo["timeSlots"];
+        recovery?: TimeSlotRecovery;
       }>(response);
       if (!response.ok) {
         if (body?.error === "time_unavailable") {
+          const suggestedTime = body.recovery?.suggestedTime ?? "";
           setSelectedDateAvailability((current) => ({
             status: current?.status ?? "partial",
             count: current?.count ?? 0,
@@ -197,8 +214,18 @@ export function BookingsTab() {
             remaining: current?.remaining,
             timeSlots: body.timeSlots,
           }));
-          setNewTime("");
-          throw new Error(t("dashboard.rescheduleTimeUnavailable"));
+          setRescheduleRecovery({
+            bookingId,
+            preferredDate: newDate,
+            ...body.recovery,
+            suggestedTime,
+          });
+          setNewTime(suggestedTime);
+          setActionError(null);
+          showToast(suggestedTime
+            ? t("dashboard.rescheduleRecoveryHint", { date: newDate, time: formatTime(suggestedTime) })
+            : t("dashboard.rescheduleTimeUnavailable"), "error");
+          return;
         }
         throw new Error(getApiError(body, t("dashboard.rescheduleError")));
       }
@@ -258,10 +285,20 @@ export function BookingsTab() {
             && !selectedTimeUnavailable
             && !rescheduleLoading;
           const activeRescheduleError = isRescheduling && actionError?.bookingId === b.id ? actionError.message : "";
+          const activeRescheduleRecovery = isRescheduling && rescheduleRecovery?.bookingId === b.id
+            ? rescheduleRecovery
+            : null;
+          const recoveryMessage = activeRescheduleRecovery?.suggestedTime
+            ? t("dashboard.rescheduleRecoveryHint", {
+                date: activeRescheduleRecovery.preferredDate,
+                time: formatTime(activeRescheduleRecovery.suggestedTime),
+              })
+            : "";
           const rescheduleStatusTone = activeRescheduleError || selectedTimeUnavailable
             ? "is-error"
             : canConfirmReschedule ? "is-ready" : "is-muted";
           const rescheduleStatusMessage = activeRescheduleError
+            || recoveryMessage
             || (selectedTimeUnavailable
               ? t("dashboard.rescheduleTimeUnavailable")
               : canConfirmReschedule
@@ -324,6 +361,7 @@ export function BookingsTab() {
                         setNewDate(nextId ? b.preferred_date : "");
                         setNewTime(nextId ? b.preferred_time : "");
                         setSelectedDateAvailability(null);
+                        setRescheduleRecovery(null);
                         setActionError(null);
                       }}
                     >
@@ -400,6 +438,7 @@ export function BookingsTab() {
                           onSelectDate={(nextDate) => {
                             setNewDate(nextDate);
                             setNewTime(nextDate === b.preferred_date ? b.preferred_time : "");
+                            setRescheduleRecovery(null);
                             setActionError(null);
                           }}
                           onSelectedDateInfoChange={setSelectedDateAvailability}
@@ -412,6 +451,7 @@ export function BookingsTab() {
                           value={newTime}
                           onChange={(nextTime) => {
                             setNewTime(nextTime);
+                            setRescheduleRecovery(null);
                             setActionError(null);
                           }}
                           dateInfo={selectedDateAvailability}

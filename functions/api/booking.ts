@@ -4,6 +4,7 @@ import { validateString, validateOptionalString } from "../_validation";
 import {
   BOOKING_CAPACITY_PER_DAY,
   getBookingTimeSlotAvailability,
+  getBookingTimeSlotRecovery,
   getBusinessDate,
   isBookingDateFull,
   isBookingTimeUnavailable,
@@ -123,12 +124,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
 
       if (isBookingTimeUnavailable(activeBookingsForDate, preferredTime, dateFull)) {
+        const timeSlots = getBookingTimeSlotAvailability(activeBookingsForDate, dateFull);
         return jsonResponse({
           error: "time_unavailable",
           message: "该时段已不可预约，请选择其他时段。",
           preferredDate,
           preferredTime,
-          timeSlots: getBookingTimeSlotAvailability(activeBookingsForDate, dateFull),
+          timeSlots,
+          recovery: getBookingTimeSlotRecovery(timeSlots, preferredTime),
         }, 409);
       }
     }
