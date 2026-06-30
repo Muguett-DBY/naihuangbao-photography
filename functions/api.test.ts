@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { onRequestPost as uploadPhoto } from "./api/admin/photos";
 import { onRequestDelete as deletePhoto } from "./api/admin/photos/[id]";
+import { onRequestPost as batchPhotos } from "./api/admin/photos/batch";
 import { onRequestGet as getPublicPhotos } from "./api/photos";
 import { onRequestPost as createPaymentIntent } from "./api/payment/create-intent";
 import { onRequestPost as confirmPayment } from "./api/payment/confirm";
@@ -1101,6 +1102,78 @@ describe("Cloudflare Pages API behavior", () => {
 
     expect(response.status).toBe(503);
     expect(body.error).toContain("删除失败");
+    expect(db.statement.run).not.toHaveBeenCalled();
+  });
+
+  it("deletes a validated photo batch with one R2 call and one D1 delete", async () => {
+    const deleteRun = vi.fn(async () => ({ success: true }));
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          bind: vi.fn(() => statement),
+          all: vi.fn(async () => ({
+            results: [
+              { id: "photo-a", object_key: "gallery/photo-a.webp" },
+              { id: "photo-b", object_key: "gallery/photo-b.webp" },
+            ],
+          })),
+          run: sql.toLowerCase().startsWith("delete from photos")
+            ? deleteRun
+            : vi.fn(async () => ({ success: true })),
+        };
+        return statement;
+      }),
+    };
+    const bucket = createBucket();
+
+    const response = await batchPhotos({
+      request: jsonRequest("https://shoot.custard.top/api/admin/photos/batch", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "cf-access-authenticated-user-email": "admin@example.com",
+          "x-nhb-admin-action": "1",
+        },
+        body: JSON.stringify({ ids: ["photo-a", "photo-b"], action: "delete" }),
+      }),
+      env: { DB: db, PHOTO_BUCKET: bucket, ...adminEnv },
+      waitUntil: vi.fn(),
+    } as never);
+    const body = (await response.json()) as { deleted?: number; ids?: string[] };
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({ deleted: 2, ids: ["photo-a", "photo-b"] });
+    expect(bucket.delete).toHaveBeenCalledTimes(1);
+    expect(bucket.delete).toHaveBeenCalledWith(["gallery/photo-a.webp", "gallery/photo-b.webp"]);
+    expect(deleteRun).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects a stale photo batch before deleting any R2 objects", async () => {
+    const db = createDb({
+      all: async () => ({
+        results: [{ id: "photo-a", object_key: "gallery/photo-a.webp" }],
+      }),
+    });
+    const bucket = createBucket();
+
+    const response = await batchPhotos({
+      request: jsonRequest("https://shoot.custard.top/api/admin/photos/batch", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "cf-access-authenticated-user-email": "admin@example.com",
+          "x-nhb-admin-action": "1",
+        },
+        body: JSON.stringify({ ids: ["photo-a", "photo-missing"], action: "delete" }),
+      }),
+      env: { DB: db, PHOTO_BUCKET: bucket, ...adminEnv },
+      waitUntil: vi.fn(),
+    } as never);
+    const body = (await response.json()) as { error?: string };
+
+    expect(response.status).toBe(409);
+    expect(body.error).toContain("刷新");
+    expect(bucket.delete).not.toHaveBeenCalled();
     expect(db.statement.run).not.toHaveBeenCalled();
   });
 

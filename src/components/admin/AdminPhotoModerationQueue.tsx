@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "animal-island-ui";
 import { adminMutationHeaders } from "../../lib/admin-helpers";
-import { CheckCircle, XCircle, Eye, Star, Square, CheckSquare } from "lucide-react";
+import { AlertTriangle, CheckCircle, XCircle, Eye, Star, Square, CheckSquare } from "lucide-react";
 
 type PhotoItem = {
   id: string;
@@ -28,6 +28,7 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [batchProcessing, setBatchProcessing] = useState(false);
+  const [confirmingBatchReject, setConfirmingBatchReject] = useState(false);
 
   useEffect(() => {
     fetchPendingPhotos();
@@ -52,6 +53,7 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
   };
 
   const toggleSelect = useCallback((id: string) => {
+    setConfirmingBatchReject(false);
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
@@ -64,6 +66,7 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
   }, []);
 
   const selectAll = useCallback(() => {
+    setConfirmingBatchReject(false);
     if (selectedIds.size === pendingPhotos.length) {
       setSelectedIds(new Set());
     } else {
@@ -179,21 +182,29 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
     setBatchProcessing(true);
     try {
       const ids = Array.from(selectedIds);
-      const responses = await Promise.all(ids.map((id) =>
-        fetch(`/api/admin/photos/${id}`, {
-          method: "DELETE",
-          credentials: "include",
-          headers: adminMutationHeaders,
-        })
-      ));
-      const failedReject = responses.find((response) => !response.ok);
-      if (failedReject) throw new Error("Batch reject failed");
-      const rejectedIds = new Set(ids);
+      const response = await fetch("/api/admin/photos/batch", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          ...adminMutationHeaders,
+        },
+        body: JSON.stringify({ ids, action: "delete" }),
+      });
+      const result = await response.json().catch(() => ({})) as { deleted?: number; ids?: string[] };
+      if (!response.ok || !Array.isArray(result.ids) || result.ids.length !== ids.length) {
+        throw new Error("Batch reject failed");
+      }
+      const rejectedIds = new Set(result.ids);
       setPendingPhotos((prev) => prev.filter((p) => !rejectedIds.has(p.id)));
-      onShowToast(`${ids.length} photos rejected`, "success");
+      onShowToast(t("admin.moderation.batchRejected", {
+        count: result.deleted ?? rejectedIds.size,
+        defaultValue: "{{count}} photos rejected",
+      }), "success");
       setSelectedIds(new Set());
+      setConfirmingBatchReject(false);
     } catch (error) {
-      onShowToast("Batch reject failed", "error");
+      onShowToast(t("admin.moderation.batchRejectFailed", "Batch reject failed"), "error");
     } finally {
       setBatchProcessing(false);
     }
@@ -207,7 +218,12 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
     <div className="admin-moderation-queue">
       <div className="admin-moderation-header">
         <h2>{t("admin.moderation.title", "Photo Moderation Queue")}</h2>
-        <span className="admin-moderation-count">{pendingPhotos.length} pending</span>
+        <span className="admin-moderation-count">
+          {t("admin.moderation.pendingCount", {
+            count: pendingPhotos.length,
+            defaultValue: "{{count}} pending",
+          })}
+        </span>
       </div>
 
       {pendingPhotos.length > 0 && (
@@ -222,13 +238,43 @@ export function AdminPhotoModerationQueue({ onShowToast }: PhotoModerationQueueP
           </button>
           {selectedIds.size > 0 && (
             <div className="admin-moderation-batch-actions">
-              <span className="admin-moderation-selected-count">{selectedIds.size} selected</span>
-              <Button type="primary" size="small" onClick={handleBatchApprove} disabled={batchProcessing}>
-                <CheckCircle size={14} /> {t("admin.moderation.batchApprove", "Batch approve")}
-              </Button>
-              <Button type="default" size="small" danger onClick={handleBatchReject} disabled={batchProcessing}>
-                <XCircle size={14} /> {t("admin.moderation.batchReject", "Batch reject")}
-              </Button>
+              {confirmingBatchReject ? (
+                <div className="admin-moderation-reject-confirmation" role="alert" aria-live="assertive">
+                  <AlertTriangle size={18} aria-hidden="true" />
+                  <span>
+                    {t("admin.moderation.batchRejectConfirm", {
+                      count: selectedIds.size,
+                      defaultValue: "Permanently reject and delete {{count}} selected photos?",
+                    })}
+                  </span>
+                  <div className="admin-moderation-reject-confirmation-actions">
+                    <Button type="default" size="small" onClick={() => setConfirmingBatchReject(false)} disabled={batchProcessing}>
+                      {t("admin.moderation.cancel", "Cancel")}
+                    </Button>
+                    <Button type="default" size="small" danger onClick={handleBatchReject} disabled={batchProcessing}>
+                      <XCircle size={14} />
+                      {batchProcessing
+                        ? t("admin.moderation.processing", "Deleting...")
+                        : t("admin.moderation.confirmReject", "Delete selected")}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <span className="admin-moderation-selected-count">
+                    {t("admin.moderation.selectedCount", {
+                      count: selectedIds.size,
+                      defaultValue: "{{count}} selected",
+                    })}
+                  </span>
+                  <Button type="primary" size="small" onClick={handleBatchApprove} disabled={batchProcessing}>
+                    <CheckCircle size={14} /> {t("admin.moderation.batchApprove", "Batch approve")}
+                  </Button>
+                  <Button type="default" size="small" danger onClick={() => setConfirmingBatchReject(true)} disabled={batchProcessing}>
+                    <XCircle size={14} /> {t("admin.moderation.batchReject", "Batch reject")}
+                  </Button>
+                </>
+              )}
             </div>
           )}
           {selectedIds.size === 0 && pendingPhotos.length > 0 && (

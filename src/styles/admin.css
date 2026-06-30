@@ -826,7 +826,8 @@
 }
 .audit-badge-batch_visibility,
 .audit-badge-batch_featured,
-.audit-badge-batch_album {
+.audit-badge-batch_album,
+.audit-badge-batch_delete {
   background: rgba(100, 181, 246, 0.15);
   color: #1976d2;
 }
@@ -2108,6 +2109,26 @@
   color: #666;
 }
 
+.admin-moderation-reject-confirmation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 680px;
+  color: #7f1d1d;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.admin-moderation-reject-confirmation > svg {
+  flex: 0 0 auto;
+}
+
+.admin-moderation-reject-confirmation-actions {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
 .admin-moderation-loading {
   text-align: center;
   padding: 40px;
@@ -2209,6 +2230,15 @@
   }
   .admin-moderation-batch-actions {
     margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .admin-moderation-reject-confirmation {
+    width: 100%;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .admin-moderation-reject-confirmation-actions {
     width: 100%;
     justify-content: flex-end;
   }

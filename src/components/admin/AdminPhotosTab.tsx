@@ -185,17 +185,27 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     if (selectedIds.size === 0) return;
     if (!confirm(`确定删除选中的 ${selectedIds.size} 张照片？删除后不可恢复。`)) return;
     setDeletingBatch(true);
-    let success = 0;
-    for (const id of selectedIds) {
-      try {
-        const r = await fetch(`/api/admin/photos/${id}`, { method: "DELETE", credentials: "include", headers: adminMutationHeaders });
-        if (r.ok) success++;
-      } catch { /* skip failed */ }
+    const ids = Array.from(selectedIds);
+    try {
+      const response = await fetch("/api/admin/photos/batch", {
+        method: "POST",
+        credentials: "include",
+        headers: { "content-type": "application/json", ...adminMutationHeaders },
+        body: JSON.stringify({ ids, action: "delete" }),
+      });
+      const result = await response.json().catch(() => ({})) as { deleted?: number; ids?: string[] };
+      if (!response.ok || !Array.isArray(result.ids) || result.ids.length !== ids.length) {
+        throw new Error("Batch delete failed");
+      }
+      const deletedIds = new Set(result.ids);
+      setPhotos((prev) => prev.filter((photo) => !deletedIds.has(photo.id)));
+      setSelectedIds((prev) => new Set(Array.from(prev).filter((id) => !deletedIds.has(id))));
+      showToast(`成功删除 ${result.deleted ?? deletedIds.size} 张照片`, "success");
+    } catch {
+      showToast("批量删除失败，请刷新后重试", "error");
+    } finally {
+      setDeletingBatch(false);
     }
-    setPhotos((prev) => prev.filter((p) => !selectedIds.has(p.id)));
-    setSelectedIds(new Set());
-    setDeletingBatch(false);
-    showToast(`成功删除 ${success} 张照片`, success > 0 ? "success" : "error");
   };
 
   const handleBatchVisibility = async (vis: "public" | "hidden") => {

@@ -113,3 +113,30 @@ export async function deletePhotoWithConsistency(env: Env, id: string) {
 
   return { ok: true as const };
 }
+
+export async function deletePhotosWithConsistency(env: Env, ids: string[]) {
+  const placeholders = ids.map(() => "?").join(", ");
+  const result = await env.DB.prepare(
+    `select id, object_key from photos where id in (${placeholders})`,
+  )
+    .bind(...ids)
+    .all<{ id: string; object_key: string }>();
+
+  const rowsById = new Map(result.results.map((row) => [row.id, row]));
+  const rows = ids.map((id) => rowsById.get(id));
+  if (rows.some((row) => !row?.object_key)) {
+    return {
+      ok: false as const,
+      status: 409,
+      error: "部分作品不存在，请刷新后重试",
+    };
+  }
+
+  const objectKeys = rows.map((row) => row!.object_key);
+  await env.PHOTO_BUCKET.delete(objectKeys);
+  await env.DB.prepare(`delete from photos where id in (${placeholders})`)
+    .bind(...ids)
+    .run();
+
+  return { ok: true as const, deleted: ids.length, ids };
+}

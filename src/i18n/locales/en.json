@@ -1068,7 +1068,15 @@
       "deselectAll": "Deselect all",
       "batchApprove": "Batch approve",
       "batchReject": "Batch reject",
-      "approveAll": "Approve all"
+      "approveAll": "Approve all",
+      "pendingCount": "{{count}} pending",
+      "selectedCount": "{{count}} selected",
+      "batchRejectConfirm": "Permanently reject and delete {{count}} selected photos?",
+      "cancel": "Cancel",
+      "confirmReject": "Delete selected",
+      "processing": "Deleting...",
+      "batchRejected": "{{count}} photos rejected",
+      "batchRejectFailed": "Batch reject failed"
     }
   },
   "chat": {

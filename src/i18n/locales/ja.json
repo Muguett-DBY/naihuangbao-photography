@@ -1064,7 +1064,15 @@
       "deselectAll": "選択解除",
       "batchApprove": "一括承認",
       "batchReject": "一括却下",
-      "approveAll": "すべて承認"
+      "approveAll": "すべて承認",
+      "pendingCount": "{{count}}件が審査待ち",
+      "selectedCount": "{{count}}件を選択中",
+      "batchRejectConfirm": "選択した{{count}}件の写真を却下して完全に削除しますか？",
+      "cancel": "キャンセル",
+      "confirmReject": "選択項目を削除",
+      "processing": "削除中...",
+      "batchRejected": "{{count}}件の写真を却下しました",
+      "batchRejectFailed": "一括却下に失敗しました。再読み込みしてお試しください"
     }
   },
   "chat": {
