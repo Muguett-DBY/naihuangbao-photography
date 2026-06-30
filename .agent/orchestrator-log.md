@@ -1439,7 +1439,7 @@ Beginning execution.
   - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 37/37 passed.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
 - **Risk**: Terminally failed IndexedDB records are intentionally retained, but the current UI does not expose or remove them; a user-visible recovery surface is the recommended next improvement.
-- **Commit**: pending.
-- **Push / CI**: pending.
+- **Commit**: `cbc2166` — `fix: stop retrying rejected offline bookings`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28419148049` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is making retained offline booking states visible and recoverable without broad booking architecture changes.
-- **Status**: PENDING COMMIT / CI
+- **Status**: COMPLETE
