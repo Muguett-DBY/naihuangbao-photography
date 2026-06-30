@@ -18,6 +18,7 @@ import { PresetPreview } from "../components/PresetPreview";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import { tPresetCategory } from "../lib/i18n-typed";
 import { siteOrigin } from "../lib/site-origin";
+import { publicMutationHeaders } from "../lib/admin-helpers";
 import type { Preset } from "../types/content";
 
 export function PresetDetailPage() {
@@ -100,7 +101,7 @@ export function PresetDetailPage() {
 
   const handleDownload = async () => {
     if (!id) return;
-    try { await fetch(`/api/presets/${id}/download`, { method: "POST" }); }
+    try { await fetch(`/api/presets/${id}/download`, { method: "POST", headers: publicMutationHeaders }); }
     catch { /* silent */ }
   };
 

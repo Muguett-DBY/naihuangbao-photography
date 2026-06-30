@@ -12,6 +12,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DataState } from "../components/shared/DataState";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import { tPresetCategory } from "../lib/i18n-typed";
+import { publicMutationHeaders } from "../lib/admin-helpers";
 import type { Preset } from "../types/content";
 
 type CategoryFilter = string | "all";
@@ -40,7 +41,7 @@ export function ProductsPage() {
   }, [presets, filter]);
 
   const handleDownload = async (id: string) => {
-    await fetch(`/api/presets/${id}/download`, { method: "POST" });
+    await fetch(`/api/presets/${id}/download`, { method: "POST", headers: publicMutationHeaders });
   };
 
   return (
