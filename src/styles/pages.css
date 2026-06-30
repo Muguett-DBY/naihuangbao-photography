@@ -2277,6 +2277,42 @@
   opacity: 0.6;
 }
 
+.login-context-notice {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  border: 1px solid rgba(185, 101, 77, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 247, 236, 0.72);
+  color: var(--caramel-ink);
+}
+
+.login-context-notice svg {
+  color: var(--peach-accent);
+  margin-top: 2px;
+}
+
+.login-context-notice span,
+.login-context-notice strong,
+.login-context-notice small {
+  display: block;
+}
+
+.login-context-notice strong {
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.login-context-notice small {
+  color: var(--caramel-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin-top: 3px;
+}
+
 .login-field {
   margin-bottom: 16px;
 }

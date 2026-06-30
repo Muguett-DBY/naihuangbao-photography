@@ -3,7 +3,9 @@
  * Stores pending bookings when offline and syncs when back online.
  */
 
-type PendingBooking = {
+import { publicMutationHeaders } from "../lib/admin-helpers";
+
+export type PendingBooking = {
   id: string;
   packageName: string;
   preferredDate: string;
@@ -101,6 +103,21 @@ export async function removePendingBooking(id: string): Promise<void> {
   });
 }
 
+export function createPendingBookingRequestInit(booking: PendingBooking): RequestInit {
+  return {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...publicMutationHeaders },
+    body: JSON.stringify({
+      packageName: booking.packageName,
+      preferredDate: booking.preferredDate,
+      preferredTime: booking.preferredTime,
+      name: booking.name,
+      contact: booking.contact,
+      notes: booking.notes,
+    }),
+  };
+}
+
 export async function syncPendingBookings(): Promise<{ synced: number; failed: number }> {
   const bookings = await getPendingBookings();
   const pending = bookings.filter((b) => b.status === "pending");
@@ -109,18 +126,7 @@ export async function syncPendingBookings(): Promise<{ synced: number; failed: n
 
   for (const booking of pending) {
     try {
-      const response = await fetch("/api/booking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          packageName: booking.packageName,
-          preferredDate: booking.preferredDate,
-          preferredTime: booking.preferredTime,
-          name: booking.name,
-          contact: booking.contact,
-          notes: booking.notes,
-        }),
-      });
+      const response = await fetch("/api/booking", createPendingBookingRequestInit(booking));
 
       if (response.ok) {
         await markBookingSynced(booking.id);

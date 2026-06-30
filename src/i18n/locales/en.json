@@ -1495,6 +1495,8 @@
     "hasAccount": "Already have an account?",
     "loginLink": "Log in",
     "backToHome": "Back to homepage",
+    "dashboardLoginNoticeTitle": "Log in to view your booking status",
+    "dashboardLoginNoticeDescription": "After login, you will return to your dashboard to check booking updates and deposit status.",
     "forgotPassword": "Forgot password?",
     "resetTitle": "Reset password",
     "resetDesc": "Enter your email address and we'll send you a reset token.",
