@@ -755,7 +755,18 @@ describe("Cloudflare Pages API behavior", () => {
       prepare: vi.fn((sql: string) => {
         const statement = {
           bind: vi.fn(() => statement),
-          all: vi.fn(async () => ({ results: [] })),
+          all: vi.fn(async () => {
+            if (sql.includes("preferred_time")) {
+              return {
+                results: [
+                  { preferred_time: "morning" },
+                  { preferred_time: "afternoon" },
+                  { preferred_time: "fullDay" },
+                ],
+              };
+            }
+            return { results: [] };
+          }),
           first: vi.fn(async () => {
             if (sql.includes("count(*) as count")) return { count: 3 };
             return null;
@@ -792,6 +803,60 @@ describe("Cloudflare Pages API behavior", () => {
     expect(body.error).toBe("fully_booked");
     expect(body.waitlist?.recommended).toBe(true);
     expect(body.waitlist?.preferredDate).toBe("2099-01-01");
+  });
+
+  it("rejects direct booking into an unavailable time slot while the date still has capacity", async () => {
+    const writes: string[] = [];
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          bind: vi.fn(() => statement),
+          all: vi.fn(async () => {
+            if (sql.includes("preferred_time")) {
+              return { results: [{ preferred_time: "fullDay" }] };
+            }
+            return { results: [] };
+          }),
+          first: vi.fn(async () => {
+            if (sql.includes("count(*) as count")) return { count: 1 };
+            return null;
+          }),
+          run: vi.fn(async () => {
+            writes.push(sql);
+            return { success: true };
+          }),
+        };
+        return statement;
+      }),
+    };
+
+    const response = await submitBooking({
+      request: jsonRequest("https://shoot.custard.top/api/booking", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-nhb-public-action": "1",
+        },
+        body: JSON.stringify({
+          packageName: "Portrait Session",
+          preferredDate: "2099-01-01",
+          preferredTime: "morning",
+          name: "Guest",
+          contact: "slot@example.com",
+        }),
+      }),
+      env: { DB: db },
+    } as never);
+    const body = (await response.json()) as {
+      error?: string;
+      timeSlots?: { morning?: { status?: string }; afternoon?: { status?: string } };
+    };
+
+    expect(response.status).toBe(409);
+    expect(body.error).toBe("time_unavailable");
+    expect(body.timeSlots?.morning?.status).toBe("booked");
+    expect(body.timeSlots?.afternoon?.status).toBe("booked");
+    expect(writes.some((sql) => sql.includes("insert into booking_requests"))).toBe(false);
   });
 
   it("returns a static public photo fallback when D1 is unavailable", async () => {

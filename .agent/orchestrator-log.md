@@ -1476,3 +1476,35 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28420698040` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: All 6 orchestrated stages are complete after this stage's commit and CI pass; no further stage is required by `03_LONG_6_STAGE_MAIN_V2.txt`.
 - **Status**: COMPLETE
+
+## Campaign 021
+
+### Stage 1 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Improve booking time-slot reliability by turning the existing morning/afternoon/full-day preference into a visible availability contract, so customers do not choose time windows already consumed by active bookings.
+- **Start state**: `main` at `2e379cd`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories are present.
+- **Previous direction carried forward**: Campaign 020 recommended moving toward a larger booking time-slot model as a new campaign. The existing booking form already asks for a time preference, but availability only reports whole-day capacity and does not prevent choosing a consumed window.
+- **Impact choice**: Time-slot availability was selected over another PWA/offline recovery pass because it is user-visible, business-critical, a direct continuation of the booking reliability roadmap, and can be verified at API, source-contract, and browser-flow levels without a broad database migration.
+- **Completed locally**:
+  - Added shared morning, afternoon, and full-day availability rules without a schema migration; full-day conflicts with either half-day and cancelled/canceled bookings remain excluded.
+  - Availability responses now expose per-time-window status alongside existing day capacity.
+  - Direct booking validates the time-window vocabulary and returns a structured `time_unavailable` 409 before insert when an active booking consumes that window.
+  - The booking modal displays localized time-window status, disables unavailable options, and clears a stale selection when the chosen date changes.
+  - Added rule, API, availability, source-contract, and Playwright regression coverage.
+- **Rendered validation**:
+  - In-app Browser preview at `http://127.0.0.1:4191/` confirmed the booking modal rendered all three availability states, the occupied morning option was disabled, there was no document-level horizontal overflow, and console error/warn output was empty.
+- **Local verification**:
+  - Red/green: targeted booking tests first failed on the absent slot helpers, response contract, conflict rejection, and UI contract, then passed 4 files / 115 tests after implementation.
+  - Targeted Playwright booking calendar scenario passed 1/1.
+  - `npm ci` passed with 456 packages installed and 0 vulnerabilities.
+  - `npm run lint` passed.
+  - `npm test` passed 57 files / 366 tests.
+  - `npm run build:full` passed, including SEO sync, sitemap generation, TypeScript, Vite build, performance budget, and bundle analysis.
+  - Full Playwright passed 39/39.
+  - Final CI-order `npm run build` and `npm run perf:budget` both passed after the clean install.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Risk**: Dashboard rescheduling still changes only the date, so it cannot yet choose or validate a replacement time window. That is the bounded next-stage continuation.
+- **Commit**: PENDING
+- **Push / CI**: PENDING
+- **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; extend the shared time-window contract to authenticated booking rescheduling.
+- **Status**: LOCAL COMPLETE

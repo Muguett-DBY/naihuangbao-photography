@@ -186,6 +186,11 @@ test.describe("booking flow", () => {
             count: 2,
             capacity: 3,
             remaining: 1,
+            timeSlots: {
+              morning: { status: "booked", count: 1, capacity: 1, remaining: 0 },
+              afternoon: { status: "available", count: 0, capacity: 1, remaining: 1 },
+              fullDay: { status: "booked", count: 1, capacity: 1, remaining: 0 },
+            },
           },
         },
       }),
@@ -208,6 +213,10 @@ test.describe("booking flow", () => {
     await expect(limitedDate).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator(".calendar-selection-summary")).toContainText("Selected date");
     await expect(page.locator(".calendar-selection-summary")).toContainText("Open spots: 1");
+    await expect(page.locator(".booking-time-slot-grid")).toContainText("Morning");
+    await expect(page.locator(".booking-time-slot-grid")).toContainText("Unavailable");
+    await expect(page.locator("#booking-time option[value='morning']")).toBeDisabled();
+    await expect(page.locator("#booking-time option[value='afternoon']")).toBeEnabled();
     await expect(page.getByRole("button", { name: "Previous month" })).toBeDisabled();
     await expect(page.getByRole("button", { name: /^19日 - Unavailable before/ })).toBeDisabled();
   });

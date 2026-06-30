@@ -1,7 +1,15 @@
 import { badRequest, jsonResponse, unavailable } from "../_responses";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../_security";
 import { validateString, validateOptionalString } from "../_validation";
-import { BOOKING_CAPACITY_PER_DAY, getBusinessDate, isBookingDateFull, validateBookingDate } from "../_booking";
+import {
+  BOOKING_CAPACITY_PER_DAY,
+  getBookingTimeSlotAvailability,
+  getBusinessDate,
+  isBookingDateFull,
+  isBookingTimeUnavailable,
+  validateBookingDate,
+  validateBookingTimeSlot,
+} from "../_booking";
 
 type BookingBody = {
   packageName?: string;
@@ -42,6 +50,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (!dateResult.valid) return badRequest(dateResult.error);
   }
 
+  const timeResult = validateBookingTimeSlot(body.preferredTime);
+  if (!timeResult.valid) return badRequest(timeResult.error);
+
   const name = body.name!.trim();
   const contact = body.contact!.trim();
   const notes = body.notes?.trim() ?? "";
@@ -53,7 +64,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (preferredDate) {
       const conflict = await context.env.DB.prepare(
         `select id, name, contact, status, created_at from booking_requests
-         where preferred_date = ? and preferred_time = ? and status != 'cancelled' and contact = ?
+         where preferred_date = ? and preferred_time = ? and status not in ('cancelled', 'canceled') and contact = ?
          order by created_at desc limit 1`,
       )
         .bind(preferredDate, preferredTime, contact)
@@ -88,16 +99,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     if (preferredDate) {
-      const capacity = await context.env.DB.prepare(
-        `select count(*) as count from booking_requests
+      const { results: activeBookingsForDate } = await context.env.DB.prepare(
+        `select preferred_time from booking_requests
          where preferred_date = ?
            and status not in ('cancelled', 'canceled')`,
       )
         .bind(preferredDate)
-        .first<{ count: number }>();
-      const activeBookings = Number(capacity?.count ?? 0);
+        .all<{ preferred_time: string }>();
+      const activeBookings = activeBookingsForDate.length;
+      const dateFull = isBookingDateFull(activeBookings);
 
-      if (isBookingDateFull(activeBookings)) {
+      if (dateFull) {
         return jsonResponse({
           error: "fully_booked",
           message: "该日期已约满，请加入候补名单。",
@@ -107,6 +119,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
             capacityPerDay: BOOKING_CAPACITY_PER_DAY,
             activeBookings,
           },
+        }, 409);
+      }
+
+      if (isBookingTimeUnavailable(activeBookingsForDate, preferredTime, dateFull)) {
+        return jsonResponse({
+          error: "time_unavailable",
+          message: "该时段已不可预约，请选择其他时段。",
+          preferredDate,
+          preferredTime,
+          timeSlots: getBookingTimeSlotAvailability(activeBookingsForDate, dateFull),
         }, 409);
       }
     }

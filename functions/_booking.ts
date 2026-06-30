@@ -3,6 +3,20 @@ import type { ValidationResult } from "./_validation";
 export const BOOKING_CAPACITY_PER_DAY = 3;
 export const BOOKING_TIME_ZONE = "Asia/Shanghai";
 export const BOOKING_DATE_FORMAT = "YYYY-MM-DD";
+export const BOOKING_TIME_SLOTS = ["morning", "afternoon", "fullDay"] as const;
+
+export type BookingTimeSlot = typeof BOOKING_TIME_SLOTS[number];
+export type BookingTimeSlotStatus = "available" | "booked";
+export type BookingTimeSlotInfo = {
+  status: BookingTimeSlotStatus;
+  count: number;
+  capacity: number;
+  remaining: number;
+};
+
+type BookingTimeRow = {
+  preferred_time?: string | null;
+};
 
 export type BookingPolicy = {
   earliestDate: string;
@@ -23,6 +37,50 @@ export function isCancelledBookingStatus(status: string) {
 
 export function isBookingDateFull(activeBookings: number) {
   return activeBookings >= BOOKING_CAPACITY_PER_DAY;
+}
+
+export function isKnownBookingTimeSlot(value: string): value is BookingTimeSlot {
+  return (BOOKING_TIME_SLOTS as readonly string[]).includes(value);
+}
+
+export function validateBookingTimeSlot(value: unknown): ValidationResult {
+  if (value === undefined || value === null || value === "") return { valid: true };
+  if (typeof value !== "string" || !isKnownBookingTimeSlot(value.trim())) {
+    return { valid: false, error: "预约时段只能选择 morning、afternoon、fullDay 或留空" };
+  }
+  return { valid: true };
+}
+
+export function getBookingTimeSlotAvailability(rows: BookingTimeRow[], dayFull = false): Record<BookingTimeSlot, BookingTimeSlotInfo> {
+  const morningCount = rows.filter((row) => row.preferred_time === "morning" || row.preferred_time === "fullDay").length;
+  const afternoonCount = rows.filter((row) => row.preferred_time === "afternoon" || row.preferred_time === "fullDay").length;
+  const fullDayConflictCount = rows.filter((row) => row.preferred_time === "morning" || row.preferred_time === "afternoon" || row.preferred_time === "fullDay").length;
+  const buildSlot = (count: number): BookingTimeSlotInfo => {
+    const booked = dayFull || count > 0;
+    return {
+      status: booked ? "booked" : "available",
+      count,
+      capacity: 1,
+      remaining: booked ? 0 : 1,
+    };
+  };
+
+  return {
+    morning: buildSlot(morningCount),
+    afternoon: buildSlot(afternoonCount),
+    fullDay: buildSlot(fullDayConflictCount),
+  };
+}
+
+export function isBookingTimeUnavailable(rows: BookingTimeRow[], preferredTime: string, dayFull = false) {
+  if (dayFull) return true;
+
+  const slots = getBookingTimeSlotAvailability(rows, dayFull);
+  if (!preferredTime) {
+    return slots.morning.status === "booked" && slots.afternoon.status === "booked";
+  }
+  if (!isKnownBookingTimeSlot(preferredTime)) return true;
+  return slots[preferredTime].status === "booked";
 }
 
 export function validateBookingDate(value: unknown, today: string): ValidationResult {
