@@ -1472,7 +1472,7 @@ Beginning execution.
   - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 39/39 passed.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
 - **Risk**: Failed terminal local records can be removed or used to restart booking, but they are not edited and resubmitted in place. A richer edit-resubmit flow can be considered later if production usage shows demand.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `20506ea` — `feat: add offline booking recovery`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28420698040` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: All 6 orchestrated stages are complete after this stage's commit and CI pass; no further stage is required by `03_LONG_6_STAGE_MAIN_V2.txt`.
-- **Status**: LOCAL VERIFICATION COMPLETE; COMMIT/CI PENDING
+- **Status**: COMPLETE
