@@ -1,8 +1,9 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { CalendarCheck, X, RefreshCw, CheckCircle2, Circle, Clock, WalletCards } from "lucide-react";
+import { ArrowRight, CalendarCheck, X, RefreshCw, CheckCircle2, Circle, Clock, WalletCards } from "lucide-react";
 import { Button } from "animal-island-ui";
-import { BookingCalendar } from "../BookingCalendar";
+import { BookingCalendar, type DateInfo } from "../BookingCalendar";
+import { BOOKING_TIME_SLOT_KEYS, BookingTimeSlotPicker, isBookingTimeSlotUnavailable } from "../BookingTimeSlotPicker";
 import { useFetch } from "../../hooks/useFetch";
 import { DashboardTabWrapper } from "./DashboardTabWrapper";
 import { StatusBadge } from "./StatusBadge";
@@ -108,12 +109,28 @@ export function BookingsTab() {
   const { data, loading, error, retry } = useFetch<{ bookings: Booking[] }>("/api/user/bookings");
   const [rescheduleId, setRescheduleId] = useState<string | null>(null);
   const [newDate, setNewDate] = useState("");
+  const [newTime, setNewTime] = useState("");
+  const [selectedDateAvailability, setSelectedDateAvailability] = useState<DateInfo | null>(null);
   const [confirmCancelId, setConfirmCancelId] = useState<string | null>(null);
   const [rescheduleLoading, setRescheduleLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
   const [actionError, setActionError] = useState<{ bookingId: string; message: string } | null>(null);
   const { policy: bookingPolicy } = useBookingPolicy();
   const earliestBookingDate = bookingPolicy.earliestDate;
+  const bookings = data?.bookings ?? [];
+  const formatTime = useCallback((value: string) => {
+    if (!value) return t("bookingModal.any");
+    return BOOKING_TIME_SLOT_KEYS.includes(value as (typeof BOOKING_TIME_SLOT_KEYS)[number])
+      ? String(t(`bookingModal.${value}` as never))
+      : value;
+  }, [t]);
+
+  const resetReschedule = useCallback(() => {
+    setRescheduleId(null);
+    setNewDate("");
+    setNewTime("");
+    setSelectedDateAvailability(null);
+  }, []);
 
   const handleCancel = useCallback(async (bookingId: string) => {
     setCancelLoading(true);
@@ -140,10 +157,18 @@ export function BookingsTab() {
     }
   }, [retry, showToast, t]);
 
-  const handleReschedule = useCallback(async (bookingId: string) => {
+  const handleReschedule = useCallback(async (booking: Booking) => {
+    const bookingId = booking.id;
     if (!newDate) return;
     if (!isBookableBusinessDate(newDate, earliestBookingDate)) {
       const message = t("dashboard.rescheduleDatePast", { date: earliestBookingDate });
+      setActionError({ bookingId, message });
+      showToast(message, "error");
+      return;
+    }
+    const releasedSlot = newDate === booking.preferred_date ? booking.preferred_time : undefined;
+    if (isBookingTimeSlotUnavailable(selectedDateAvailability, newTime, releasedSlot)) {
+      const message = t("dashboard.rescheduleTimeUnavailable");
       setActionError({ bookingId, message });
       showToast(message, "error");
       return;
@@ -156,15 +181,29 @@ export function BookingsTab() {
         method: "POST",
         headers: { "Content-Type": "application/json", ...publicMutationHeaders },
         credentials: "include",
-        body: JSON.stringify({ preferred_date: newDate }),
+        body: JSON.stringify({ preferred_date: newDate, preferred_time: newTime }),
       });
-      const body = await readJsonResponse(response);
+      const body = await readJsonResponse<{
+        error?: string;
+        message?: string;
+        timeSlots?: DateInfo["timeSlots"];
+      }>(response);
       if (!response.ok) {
+        if (body?.error === "time_unavailable") {
+          setSelectedDateAvailability((current) => ({
+            status: current?.status ?? "partial",
+            count: current?.count ?? 0,
+            capacity: current?.capacity,
+            remaining: current?.remaining,
+            timeSlots: body.timeSlots,
+          }));
+          setNewTime("");
+          throw new Error(t("dashboard.rescheduleTimeUnavailable"));
+        }
         throw new Error(getApiError(body, t("dashboard.rescheduleError")));
       }
-      setRescheduleId(null);
-      setNewDate("");
-      showToast(t("dashboard.rescheduleSuccess", { date: newDate }), "success");
+      resetReschedule();
+      showToast(t("dashboard.rescheduleSuccess", { date: newDate, time: formatTime(newTime) }), "success");
       retry();
     } catch (err) {
       const message = err instanceof Error ? err.message : t("dashboard.rescheduleError");
@@ -173,9 +212,8 @@ export function BookingsTab() {
     } finally {
       setRescheduleLoading(false);
     }
-  }, [earliestBookingDate, newDate, retry, showToast, t]);
+  }, [earliestBookingDate, formatTime, newDate, newTime, resetReschedule, retry, selectedDateAvailability, showToast, t]);
 
-  const bookings = data?.bookings ?? [];
   const activeCount = bookings.filter((booking) => canManageBooking(booking.status)).length;
   const completedCount = bookings.filter((booking) => booking.status === "done").length;
   const cancelledCount = bookings.filter((booking) => isCancelledBooking(booking.status)).length;
@@ -220,7 +258,7 @@ export function BookingsTab() {
                 <div className="dashboard-booking-schedule-item">
                   <span className="dashboard-booking-label">{t("dashboard.scheduledFor")}</span>
                   <strong>
-                    {[b.preferred_date, b.preferred_time].filter(Boolean).join(" · ") || t("common.na", "N/A")}
+                    {[b.preferred_date, formatTime(b.preferred_time)].filter(Boolean).join(" · ") || t("common.na", "N/A")}
                   </strong>
                 </div>
                 <div className="dashboard-booking-schedule-item">
@@ -250,8 +288,7 @@ export function BookingsTab() {
                       className="dashboard-action-btn dashboard-action-btn--cancel"
                       onClick={() => {
                         setConfirmCancelId(b.id);
-                        setRescheduleId(null);
-                        setNewDate("");
+                        resetReschedule();
                         setActionError(null);
                       }}
                     >
@@ -265,7 +302,9 @@ export function BookingsTab() {
                         const nextId = rescheduleId === b.id ? null : b.id;
                         setRescheduleId(nextId);
                         setConfirmCancelId(null);
-                        setNewDate("");
+                        setNewDate(nextId ? b.preferred_date : "");
+                        setNewTime(nextId ? b.preferred_time : "");
+                        setSelectedDateAvailability(null);
                         setActionError(null);
                       }}
                     >
@@ -314,22 +353,56 @@ export function BookingsTab() {
                       minDate={earliestBookingDate}
                       policyTimeZone={bookingPolicy.timeZone}
                       capacityPerDay={bookingPolicy.capacityPerDay}
-                      onSelectDate={setNewDate}
+                      onSelectDate={(nextDate) => {
+                        setNewDate(nextDate);
+                        setNewTime(nextDate === b.preferred_date ? b.preferred_time : "");
+                        setActionError(null);
+                      }}
+                      onSelectedDateInfoChange={setSelectedDateAvailability}
                     />
+                    <BookingTimeSlotPicker
+                      id={`dashboard-reschedule-time-${b.id}`}
+                      label={t("dashboard.selectNewTime")}
+                      value={newTime}
+                      onChange={(nextTime) => {
+                        setNewTime(nextTime);
+                        setActionError(null);
+                      }}
+                      dateInfo={selectedDateAvailability}
+                      releasedSlot={newDate === b.preferred_date ? b.preferred_time : undefined}
+                      hint={t("dashboard.rescheduleTimeHint")}
+                    />
+                    <div className="dashboard-reschedule-summary" aria-label={t("dashboard.rescheduleSummary")}>
+                      <span>
+                        <small>{t("dashboard.currentSchedule")}</small>
+                        <strong>{b.preferred_date} · {formatTime(b.preferred_time)}</strong>
+                      </span>
+                      <ArrowRight size={18} aria-hidden="true" />
+                      <span>
+                        <small>{t("dashboard.newSchedule")}</small>
+                        <strong>{newDate || t("common.na", "N/A")} · {formatTime(newTime)}</strong>
+                      </span>
+                    </div>
                     <div className="dashboard-reschedule-actions">
                       <Button
                         type="default"
-                        onClick={() => {
-                          setRescheduleId(null);
-                          setNewDate("");
-                        }}
+                        onClick={resetReschedule}
                       >
                         {t("dashboard.closeReschedule")}
                       </Button>
                       <Button
                         type="primary"
-                        onClick={() => handleReschedule(b.id)}
-                        disabled={!newDate || newDate === b.preferred_date || rescheduleLoading}
+                        onClick={() => handleReschedule(b)}
+                        disabled={
+                          !newDate
+                          || (newDate === b.preferred_date && newTime === b.preferred_time)
+                          || isBookingTimeSlotUnavailable(
+                            selectedDateAvailability,
+                            newTime,
+                            newDate === b.preferred_date ? b.preferred_time : undefined,
+                          )
+                          || rescheduleLoading
+                        }
                       >
                         {rescheduleLoading ? t("common.loading") : t("dashboard.confirmReschedule")}
                       </Button>

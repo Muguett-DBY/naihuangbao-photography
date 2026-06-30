@@ -84,6 +84,14 @@ export function BookingCalendar({ selectedDate, onSelectDate, onRequestWaitlist,
     }
   }, [minYear, minMonth, year, month]);
 
+  useEffect(() => {
+    if (!selectedDate || selectedDate < effectiveMinDate) return;
+    const [selectedYear, selectedMonth] = selectedDate.split("-").map(Number);
+    if (!selectedYear || !selectedMonth) return;
+    setYear(selectedYear);
+    setMonth(selectedMonth - 1);
+  }, [effectiveMinDate, selectedDate]);
+
   const goPrev = useCallback(() => {
     if (!canGoPrev) return;
     setMonth((m) => {

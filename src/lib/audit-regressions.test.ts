@@ -50,6 +50,9 @@ const presetDetailPageSource = readFileSync(resolve(root, "src/pages/PresetDetai
 const adminSessionApiSource = readFileSync(resolve(root, "functions/api/admin/session.ts"), "utf8");
 const dashboardBookingsSource = readFileSync(resolve(root, "src/components/dashboard/BookingsTab.tsx"), "utf8");
 const bookingModalSource = readFileSync(resolve(root, "src/components/BookingModal.tsx"), "utf8");
+const bookingTimeSlotPickerPath = resolve(root, "src/components/BookingTimeSlotPicker.tsx");
+const bookingTimeSlotPickerSource = existsSync(bookingTimeSlotPickerPath) ? readFileSync(bookingTimeSlotPickerPath, "utf8") : "";
+const rescheduleApiSource = readFileSync(resolve(root, "functions/api/user/bookings/[id]/reschedule.ts"), "utf8");
 const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
 const offlineFallbackSource = readFileSync(resolve(root, "src/components/OfflineFallback.tsx"), "utf8");
 const offlineRecoveryPath = resolve(root, "src/components/OfflineBookingRecovery.tsx");
@@ -133,6 +136,23 @@ describe("audit regression coverage", () => {
     expect(dashboardBookingsSource).toMatch(/role="alert"/);
   });
 
+  it("keeps dashboard rescheduling time-aware and aligned with direct booking", () => {
+    expect(existsSync(bookingTimeSlotPickerPath)).toBe(true);
+    expect(bookingModalSource).toContain("BookingTimeSlotPicker");
+    expect(dashboardBookingsSource).toContain("BookingTimeSlotPicker");
+    expect(dashboardBookingsSource).toContain("preferred_time: newTime");
+    expect(dashboardBookingsSource).toContain("dashboard-reschedule-summary");
+    expect(rescheduleApiSource).toContain("validateBookingTimeSlot");
+    expect(rescheduleApiSource).toContain("isBookingTimeUnavailable");
+    expect(rescheduleApiSource).toContain("preferred_time = ?");
+    expect(bookingTimeSlotPickerSource).toContain("booking-time-slot-grid");
+    for (const locale of Object.values(locales)) {
+      expect(locale.dashboard.selectNewTime).toBeTruthy();
+      expect(locale.dashboard.rescheduleTimeUnavailable).toBeTruthy();
+      expect(locale.dashboard.rescheduleSummary).toBeTruthy();
+    }
+  });
+
   it("keeps booking date boundaries aligned with the studio business date", () => {
     expect(existsSync(businessDatePath)).toBe(true);
     expect(existsSync(bookingPolicyHookPath)).toBe(true);
@@ -182,7 +202,7 @@ describe("audit regression coverage", () => {
     expect(bookingRulesSource).toContain("validateBookingTimeSlot");
     expect(availabilityApiSource).toContain("timeSlots");
     expect(bookingApiSource).toContain("time_unavailable");
-    expect(bookingModalSource).toContain("booking-time-slot-grid");
+    expect(bookingTimeSlotPickerSource).toContain("booking-time-slot-grid");
     expect(bookingModalSource).toContain("onSelectedDateInfoChange");
     expect(bookingModalSource).toContain("bookingModal.timeUnavailable");
     expect(sectionsCssSource).toContain(".booking-time-slot-grid");

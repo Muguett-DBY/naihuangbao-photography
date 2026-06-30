@@ -5599,6 +5599,48 @@
   border-radius: 14px;
 }
 
+.dashboard-confirm-panel--default .booking-time-slot-picker {
+  max-width: 430px;
+  margin-top: 14px;
+}
+
+.dashboard-confirm-panel--default .booking-time-slot-picker select {
+  width: 100%;
+}
+
+.dashboard-reschedule-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  max-width: 560px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid rgba(111, 78, 62, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.72);
+}
+
+.dashboard-reschedule-summary > span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.dashboard-reschedule-summary small {
+  color: var(--caramel-muted);
+  font-size: 0.72rem;
+}
+
+.dashboard-reschedule-summary strong {
+  overflow-wrap: anywhere;
+  font-size: 0.84rem;
+}
+
+.dashboard-reschedule-summary > svg {
+  color: var(--peach-accent);
+}
+
 .dashboard-reschedule-actions {
   display: flex;
   justify-content: flex-end;
@@ -5651,6 +5693,19 @@
     max-width: none;
     width: 100%;
     padding: 10px;
+  }
+
+  .dashboard-confirm-panel--default .booking-time-slot-picker {
+    max-width: none;
+  }
+
+  .dashboard-reschedule-summary {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .dashboard-reschedule-summary > svg {
+    transform: rotate(90deg);
   }
 
   .dashboard-reschedule-actions {
