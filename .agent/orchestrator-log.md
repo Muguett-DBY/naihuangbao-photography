@@ -1504,7 +1504,7 @@ Beginning execution.
   - Final CI-order `npm run build` and `npm run perf:budget` both passed after the clean install.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
 - **Risk**: Dashboard rescheduling still changes only the date, so it cannot yet choose or validate a replacement time window. That is the bounded next-stage continuation.
-- **Commit**: PENDING
-- **Push / CI**: PENDING
+- **Commit**: `ba0f147` — `feat: add booking time-slot availability`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28436973546` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 2 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; extend the shared time-window contract to authenticated booking rescheduling.
-- **Status**: LOCAL COMPLETE
+- **Status**: COMPLETE
