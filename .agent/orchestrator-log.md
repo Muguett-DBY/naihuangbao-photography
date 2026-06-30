@@ -1607,6 +1607,7 @@ Beginning execution.
   - Full Playwright passed 42/42.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
 - **Risk**: The recovery suggestion is still application-level conflict handling; a database-level uniqueness guard would be the next hardening step if production traffic shows simultaneous writes to the same slot.
-- **Commit / Push / CI**: pending stage commit, push, and GitHub Actions verification.
+- **Commit**: `00af6b7` — `feat: recover from booking slot conflicts`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28454599381` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a broad code/site verification pass now that the main booking reliability line has added both prevention and recovery.
-- **Status**: LOCAL VERIFICATION COMPLETE
+- **Status**: COMPLETE
