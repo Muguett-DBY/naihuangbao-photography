@@ -2615,6 +2615,64 @@ body:has(.booking-modal-content) .public-chat-widget {
   opacity: 0.5;
 }
 
+.booking-time-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.booking-time-slot-pill {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 8px 9px;
+  border: 1px solid var(--warm-border, rgba(139, 94, 74, 0.18));
+  border-radius: 8px;
+  background: var(--paper-white, #fffdf7);
+  color: var(--caramel-ink, #725d42);
+}
+
+.booking-time-slot-pill > span {
+  overflow: hidden;
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.booking-time-slot-pill > small {
+  color: var(--caramel-muted, #a89a85);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.booking-time-slot-pill.is-available {
+  border-color: #bfdfd3;
+  background: #eef8f4;
+}
+
+.booking-time-slot-pill.is-available > small {
+  color: #2f7d67;
+}
+
+.booking-time-slot-pill.is-unavailable {
+  border-color: #f3c7a9;
+  background: #fff7ed;
+}
+
+.booking-time-slot-pill.is-unavailable > small {
+  color: #9f1239;
+}
+
+.booking-time-slot-hint {
+  margin: 7px 0 0;
+  color: var(--caramel-muted, #a89a85);
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
 /* Mid-CTA button restyled as button element */
 .mid-cta-btn {
   border: 0;

@@ -4,11 +4,21 @@ import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, UsersRound } fro
 import { useFetch } from "../hooks/useFetch";
 import { getBusinessDate } from "../utils/businessDate";
 
-type DateInfo = {
+export type BookingTimeSlotKey = "morning" | "afternoon" | "fullDay";
+
+export type BookingTimeSlotInfo = {
+  status: "available" | "booked";
+  count: number;
+  capacity: number;
+  remaining: number;
+};
+
+export type DateInfo = {
   status: "available" | "booked" | "partial";
   count: number;
   capacity?: number;
   remaining?: number;
+  timeSlots?: Record<BookingTimeSlotKey, BookingTimeSlotInfo>;
 };
 
 type AvailabilityResponse = {
@@ -20,6 +30,7 @@ type BookingCalendarProps = {
   selectedDate: string;
   onSelectDate: (date: string) => void;
   onRequestWaitlist?: (date: string) => void;
+  onSelectedDateInfoChange?: (info: DateInfo | null) => void;
   minDate?: string;
   policyTimeZone?: string;
   capacityPerDay?: number;
@@ -43,7 +54,7 @@ function formatDateKey(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
-export function BookingCalendar({ selectedDate, onSelectDate, onRequestWaitlist, minDate, policyTimeZone, capacityPerDay }: BookingCalendarProps) {
+export function BookingCalendar({ selectedDate, onSelectDate, onRequestWaitlist, onSelectedDateInfoChange, minDate, policyTimeZone, capacityPerDay }: BookingCalendarProps) {
   const { t, i18n } = useTranslation();
   const calendarRef = useRef<HTMLDivElement>(null);
   const effectiveMinDate = useMemo(() => minDate || getBusinessDate(), [minDate]);
@@ -160,6 +171,9 @@ export function BookingCalendar({ selectedDate, onSelectDate, onRequestWaitlist,
     { available: 0, partial: 0, booked: 0 },
   );
   const selectedInfo = selectedDate.startsWith(`${monthKey}-`) ? availability[selectedDate] : undefined;
+  useEffect(() => {
+    onSelectedDateInfoChange?.(selectedInfo ?? null);
+  }, [onSelectedDateInfoChange, selectedInfo]);
   const selectedRemaining = selectedDate && calendarCapacity
     ? selectedInfo?.remaining ?? Math.max(calendarCapacity - (selectedInfo?.count ?? 0), 0)
     : undefined;

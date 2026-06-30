@@ -1,5 +1,5 @@
 import { badRequest, jsonResponse, unavailable } from "../_responses";
-import { BOOKING_CAPACITY_PER_DAY } from "../_booking";
+import { BOOKING_CAPACITY_PER_DAY, getBookingTimeSlotAvailability, isBookingDateFull, type BookingTimeSlotInfo } from "../_booking";
 
 type BookingRow = {
   preferred_date: string;
@@ -11,6 +11,7 @@ type DateInfo = {
   count: number;
   capacity: number;
   remaining: number;
+  timeSlots: Record<"morning" | "afternoon" | "fullDay", BookingTimeSlotInfo>;
 };
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
@@ -42,28 +43,27 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       .bind(startDate, endDate)
       .all<BookingRow>();
 
-    const dates: Record<string, DateInfo> = {};
+    const rowsByDate: Record<string, BookingRow[]> = {};
 
     for (const row of results) {
       if (!row.preferred_date) continue;
       const dateKey = row.preferred_date.slice(0, 10);
+      rowsByDate[dateKey] = [...(rowsByDate[dateKey] ?? []), row];
+    }
 
-      if (!dates[dateKey]) {
-        dates[dateKey] = {
-          status: "available",
-          count: 0,
-          capacity: BOOKING_CAPACITY_PER_DAY,
-          remaining: BOOKING_CAPACITY_PER_DAY,
-        };
-      }
-      dates[dateKey].count++;
-      dates[dateKey].remaining = Math.max(BOOKING_CAPACITY_PER_DAY - dates[dateKey].count, 0);
+    const dates: Record<string, DateInfo> = {};
 
-      if (dates[dateKey].count >= BOOKING_CAPACITY_PER_DAY) {
-        dates[dateKey].status = "booked";
-      } else {
-        dates[dateKey].status = "partial";
-      }
+    for (const [dateKey, rows] of Object.entries(rowsByDate)) {
+      const count = rows.length;
+      const dateFull = isBookingDateFull(count);
+
+      dates[dateKey] = {
+        status: dateFull ? "booked" : "partial",
+        count,
+        capacity: BOOKING_CAPACITY_PER_DAY,
+        remaining: Math.max(BOOKING_CAPACITY_PER_DAY - count, 0),
+        timeSlots: getBookingTimeSlotAvailability(rows, dateFull),
+      };
     }
 
     return jsonResponse({ dates, capacityPerDay: BOOKING_CAPACITY_PER_DAY });

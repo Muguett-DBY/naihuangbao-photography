@@ -106,6 +106,7 @@ const businessDatePath = resolve(root, "src/utils/businessDate.ts");
 const bookingPolicyHookPath = resolve(root, "src/hooks/useBookingPolicy.ts");
 const bookingPolicyApiPath = resolve(root, "functions/api/booking/policy.ts");
 const bookingApiSource = readFileSync(resolve(root, "functions/api/booking.ts"), "utf8");
+const bookingRulesSource = readFileSync(resolve(root, "functions/_booking.ts"), "utf8");
 const waitlistApiSource = readFileSync(resolve(root, "functions/api/booking/waitlist.ts"), "utf8");
 const availabilityApiSource = readFileSync(resolve(root, "functions/api/availability.ts"), "utf8");
 const offlineBookingSource = readFileSync(resolve(root, "src/utils/offlineBooking.ts"), "utf8");
@@ -172,6 +173,23 @@ describe("audit regression coverage", () => {
     for (const locale of Object.values(locales)) {
       expect(locale.calendar.remainingSlots).toBeTruthy();
       expect(locale.calendar.remainingShort).toBeTruthy();
+    }
+  });
+
+  it("keeps booking time-slot availability visible and enforced", () => {
+    expect(bookingRulesSource).toContain("getBookingTimeSlotAvailability");
+    expect(bookingRulesSource).toContain("isBookingTimeUnavailable");
+    expect(bookingRulesSource).toContain("validateBookingTimeSlot");
+    expect(availabilityApiSource).toContain("timeSlots");
+    expect(bookingApiSource).toContain("time_unavailable");
+    expect(bookingModalSource).toContain("booking-time-slot-grid");
+    expect(bookingModalSource).toContain("onSelectedDateInfoChange");
+    expect(bookingModalSource).toContain("bookingModal.timeUnavailable");
+    expect(sectionsCssSource).toContain(".booking-time-slot-grid");
+    for (const locale of Object.values(locales)) {
+      expect(locale.bookingModal.timeSlotAvailable).toBeTruthy();
+      expect(locale.bookingModal.timeSlotUnavailable).toBeTruthy();
+      expect(locale.bookingModal.timeUnavailable).toBeTruthy();
     }
   });
 
