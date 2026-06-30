@@ -812,6 +812,49 @@ describe("Cloudflare Pages API behavior", () => {
     expect(body.photos?.length).toBeGreaterThan(0);
   });
 
+  it("returns the created photo object after a successful admin upload", async () => {
+    const db = createDb();
+    const bucket = createBucket();
+    const file = new File([new Uint8Array([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50])], "photo.webp", { type: "image/webp" });
+
+    const response = await uploadPhoto({
+      request: formRequest({
+        photo: file,
+        title: "测试作品",
+        style: "jiangnan",
+        location: "南京",
+        featured: "true",
+        clientAuthorized: "true",
+      }),
+      env: { DB: db, PHOTO_BUCKET: bucket, ...adminEnv },
+      waitUntil: vi.fn(),
+    } as never);
+    const body = (await response.json()) as {
+      photo?: {
+        title?: string;
+        style?: string;
+        location?: string;
+        imageUrl?: string;
+        alt?: string;
+        featured?: boolean;
+        clientAuthorized?: boolean;
+        visibility?: string;
+      };
+    };
+
+    expect(response.status).toBe(201);
+    expect(body.photo).toMatchObject({
+      title: "测试作品",
+      style: "jiangnan",
+      location: "南京",
+      alt: "南京测试作品摄影作品",
+      featured: true,
+      clientAuthorized: true,
+      visibility: "public",
+    });
+    expect(body.photo?.imageUrl).toMatch(/^\/api\/photos\/.+\/image$/);
+  });
+
   it("deletes an uploaded R2 object when the D1 insert fails", async () => {
     const db = createDb({
       run: async () => {

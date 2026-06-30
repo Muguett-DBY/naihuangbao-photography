@@ -381,7 +381,7 @@ export function AdminPhotosTab({ showToast }: { showToast: (text: string, type: 
     try {
       const fd = new FormData(form);
       // Reset file input after upload
-      const r = await fetch("/api/admin/photos", { method: "POST", body: fd, credentials: "include" });
+      const r = await fetch("/api/admin/photos", { method: "POST", body: fd, credentials: "include", headers: adminMutationHeaders });
       if (!r.ok) { showToast("上传失败", "error"); return; }
       const data = await r.json();
       showToast("上传成功", "success");

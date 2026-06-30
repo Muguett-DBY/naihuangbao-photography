@@ -44,6 +44,10 @@ const paymentConfirmSource = readFileSync(resolve(root, "functions/api/payment/c
 const responsesSource = readFileSync(resolve(root, "functions/_responses.ts"), "utf8");
 const publicChatApiSource = readFileSync(resolve(root, "functions/api/chat.ts"), "utf8");
 const photoDownloadApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/download.ts"), "utf8");
+const presetDownloadApiSource = readFileSync(resolve(root, "functions/api/presets/[id]/download.ts"), "utf8");
+const productsPageSource = readFileSync(resolve(root, "src/pages/ProductsPage.tsx"), "utf8");
+const presetDetailPageSource = readFileSync(resolve(root, "src/pages/PresetDetailPage.tsx"), "utf8");
+const adminSessionApiSource = readFileSync(resolve(root, "functions/api/admin/session.ts"), "utf8");
 const dashboardBookingsSource = readFileSync(resolve(root, "src/components/dashboard/BookingsTab.tsx"), "utf8");
 const bookingModalSource = readFileSync(resolve(root, "src/components/BookingModal.tsx"), "utf8");
 const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
@@ -448,8 +452,19 @@ describe("audit regression coverage", () => {
     expect(adminPhotoApiSource).toContain("isAdminMutationRequest");
     expect(adminSource).toContain("adminMutationHeaders");
     expect(adminHelpersSource).toContain('"x-nhb-admin-action": "1"');
+    expect(adminSource).toContain('fetch("/api/admin/photos", { method: "POST", body: fd, credentials: "include", headers: adminMutationHeaders })');
+    expect(adminSource).toContain('fetch("/api/admin/session", { method: "DELETE", credentials: "include", headers: adminMutationHeaders })');
+    expect(adminSessionApiSource).toContain("isAdminMutationRequest");
     expect(adminSource).toContain("allowedPhotoTypes");
     expect(adminSource).toContain("maxPhotoUploadSize");
+  });
+
+  it("keeps preset download count writes behind the public page-action boundary", () => {
+    expect(presetDownloadApiSource).toContain("requirePublicMutationRequest");
+    expect(productsPageSource).toContain("publicMutationHeaders");
+    expect(productsPageSource).toContain("headers: publicMutationHeaders");
+    expect(presetDetailPageSource).toContain("publicMutationHeaders");
+    expect(presetDetailPageSource).toContain("headers: publicMutationHeaders");
   });
 
   it("fails closed for user auth secrets and Cloudflare Access admin headers", () => {

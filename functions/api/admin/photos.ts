@@ -94,6 +94,7 @@ export const onRequestPost: PagesFunction<AdminPhotosEnv> = async (context) => {
   const id = crypto.randomUUID();
   const objectKey = `gallery/${id}.${extension}`;
   const imageUrl = `/api/photos/${id}/image`;
+  const alt = `${location}${title}摄影作品`;
 
   try {
     await createPhotoWithCompensation(context.env, {
@@ -110,7 +111,20 @@ export const onRequestPost: PagesFunction<AdminPhotosEnv> = async (context) => {
     // Invalidate list cache
     context.waitUntil(context.env.CACHE?.delete("photos:public").catch(() => {}));
 
-    return jsonResponse({ id, imageUrl }, 201);
+    return jsonResponse({
+      photo: {
+        id,
+        title,
+        style,
+        location,
+        imageUrl,
+        alt,
+        featured,
+        clientAuthorized: true,
+        visibility: "public",
+        createdAt: new Date().toISOString(),
+      },
+    }, 201);
   } catch (error) {
     return unavailable("上传失败，请稍后重试。", error, { route: "/api/admin/photos", method: "POST" });
   }

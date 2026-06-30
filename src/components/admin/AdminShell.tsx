@@ -10,7 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Button, Input, Loading } from "animal-island-ui";
 import { useSiteContent } from "../../hooks/useSiteContent";
-import { isAbortError, type AdminTab, type ToastType } from "../../lib/admin-helpers";
+import { adminMutationHeaders, isAbortError, type AdminTab, type ToastType } from "../../lib/admin-helpers";
 import { AdminBookingsTab } from "./AdminBookingsTab";
 import { AdminCopyTab } from "./AdminCopyTab";
 import { AdminFaqTab } from "./AdminFaqTab";
@@ -163,7 +163,7 @@ export function AdminShell() {
   }
 
   async function handleLogout() {
-    try { await fetch("/api/admin/session", { method: "DELETE", credentials: "include" });
+    try { await fetch("/api/admin/session", { method: "DELETE", credentials: "include", headers: adminMutationHeaders });
     } catch { showToast(t("admin.logout.error"), "info"); }
     finally { setAuthenticated(false); }
   }

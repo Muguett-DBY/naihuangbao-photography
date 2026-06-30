@@ -4,6 +4,8 @@ import { onRequestPost as joinWaitlist } from "./api/booking/waitlist";
 import { onRequestPost as cancelUserBooking } from "./api/user/bookings/[id]/cancel";
 import { onRequestPost as rescheduleUserBooking } from "./api/user/bookings/[id]/reschedule";
 import { onRequestPut as updateUserProfile } from "./api/user/profile";
+import { onRequestPost as recordPresetDownload } from "./api/presets/[id]/download";
+import { onRequestDelete as deleteAdminSession } from "./api/admin/session";
 
 const authSecret = "test-auth-secret-with-32-characters";
 
@@ -80,5 +82,28 @@ describe("mutation request boundaries", () => {
 
     expect(response.status).toBe(400);
     expect(body.error).toContain("日期");
+  });
+
+  it("rejects preset download counter writes without the public action header", async () => {
+    const response = await recordPresetDownload({
+      request: new Request("https://shoot.custard.top/api/presets/preset-123/download", {
+        method: "POST",
+      }),
+      env: {},
+      params: { id: "preset-123" },
+    } as never);
+
+    expect(response.status).toBe(403);
+  });
+
+  it("rejects admin logout without the admin action header", async () => {
+    const response = await deleteAdminSession({
+      request: new Request("https://shoot.custard.top/api/admin/session", {
+        method: "DELETE",
+      }),
+      env: {},
+    } as never);
+
+    expect(response.status).toBe(403);
   });
 });

@@ -1,11 +1,14 @@
 import { jsonResponse, badRequest, unavailable } from "../../../_responses";
-import { enforceRateLimit, rateLimited } from "../../../_security";
+import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../../_security";
 import { validateId } from "../../../_validation";
 
 type ApiEnv = Env;
 
 // ── POST /api/presets/:id/download ──
 export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
+  const publicActionError = requirePublicMutationRequest(context.request);
+  if (publicActionError) return publicActionError;
+
   if (!context.env.DB) {
     return jsonResponse({ error: "服务不可用" }, 503);
   }
