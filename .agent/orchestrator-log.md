@@ -1611,3 +1611,31 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28454599381` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a broad code/site verification pass now that the main booking reliability line has added both prevention and recovery.
 - **Status**: COMPLETE
+
+### Stage 5 / 6 — CHECK
+- **Prompt**: `AGENT_CHECK_MAIN.txt`
+- **Objective**: Audit the full site after the booking reliability work, fix every reproducible issue found in the code, dependency, build, and browser checks, and verify the fixes before publication.
+- **Start state**: `main` at `7eee2b0`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories were present.
+- **Findings and fixes**:
+  - P1: The moderation queue displayed an "Approve all" action when no photos were selected, but the handler returned immediately. It now approves every pending photo when the selection is empty and keeps selected-only approval behavior otherwise.
+  - P1: Batch reject treated resolved HTTP 4xx/5xx responses as success because `Promise.all(fetch(...))` only rejects network failures. It now checks every response and preserves the queue with an error toast when any request fails.
+  - P2: The Lightbox smoke test clicked the non-interactive article container; concurrent layout shifts could land the click on article whitespace. It now waits for and clicks the actual gallery button with the same 10-second gallery-load budget used by the gallery suite.
+- **Audit coverage**:
+  - Reviewed application, API, test, workflow, package, and generated-artifact boundaries with targeted static searches and diff inspection.
+  - `npm audit --json` reported 0 vulnerabilities and `npm ls --depth=0` was clean.
+  - The ignored local `bun.lock` remains intentionally untracked; `package-lock.json` is the repository lockfile used by CI.
+- **Local verification**:
+  - Red/green moderation regression: the targeted audit test first failed on the missing all-pending approval and failed-response contracts, then passed 75/75 after implementation.
+  - Lightbox failure was reproduced under concurrency; click-target instrumentation proved failing attempts hit `ARTICLE` whitespace while successful attempts hit the image/button path.
+  - Lightbox stress rerun passed 12/12 with 6 workers after the locator fix.
+  - `npm ci` passed with 456 packages installed and 0 vulnerabilities.
+  - `npm run lint` passed.
+  - `npm test` passed 58 files / 373 tests.
+  - `npm run build`, `npm run perf:budget`, and `npm run build:full` passed.
+  - Full Playwright passed 42/42 after the Lightbox correction.
+  - Generated sitemap and Playwright result noise were restored before staging; `git diff --check` and sensitive/debug scans passed.
+- **Risk**: Batch reject still uses one DELETE request per photo. A mid-batch server failure can partially delete records even though the UI now correctly reports failure and retains its queue until refresh.
+- **Commit**: `1bea6b9` — `fix: harden admin photo moderation`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28456390852` passed `npm ci`, lint, tests, build, and performance budget.
+- **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; replace the multi-request moderation reject path with one server-side batch delete contract and regression coverage.
+- **Status**: COMPLETE
