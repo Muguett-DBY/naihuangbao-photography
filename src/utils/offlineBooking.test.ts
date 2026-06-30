@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { createPendingBookingRequestInit, getPendingBookingSyncDisposition, type PendingBooking } from "./offlineBooking";
+import {
+  createPendingBookingRequestInit,
+  getPendingBookingSyncDisposition,
+  summarizePendingBookingRecovery,
+  type PendingBooking,
+} from "./offlineBooking";
 
 const booking: PendingBooking = {
   id: "local-booking-1",
@@ -36,5 +41,16 @@ describe("offline booking sync", () => {
     expect(getPendingBookingSyncDisposition(409)).toBe("failed");
     expect(getPendingBookingSyncDisposition(429)).toBe("failed");
     expect(getPendingBookingSyncDisposition(503)).toBe("retry");
+  });
+
+  it("summarizes only bookings that still need user recovery", () => {
+    const failedBooking = { ...booking, id: "local-booking-2", status: "failed" as const };
+    const syncedBooking = { ...booking, id: "local-booking-3", status: "synced" as const };
+
+    expect(summarizePendingBookingRecovery([booking, failedBooking, syncedBooking])).toEqual({
+      pendingCount: 1,
+      failedCount: 1,
+      totalCount: 2,
+    });
   });
 });

@@ -1060,11 +1060,15 @@ a {
   left: 0;
   right: 0;
   z-index: 9999;
-  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  background: #9f341f;
   color: white;
   padding: 12px 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   animation: slideDown 0.3s ease-out;
+}
+
+.offline-banner--online {
+  background: #1f6b45;
 }
 
 .offline-banner-content {
@@ -1077,7 +1081,10 @@ a {
 }
 
 .offline-icon {
-  font-size: 18px;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
 }
 
 .offline-text {
@@ -1093,6 +1100,252 @@ a {
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+/* ── Offline booking recovery ── */
+.offline-booking-recovery {
+  margin-top: 80px;
+  border-bottom: 1px solid rgba(131, 77, 46, 0.2);
+  background: #fff7e8;
+  color: #3f2f27;
+}
+
+.offline-booking-recovery--failed {
+  border-color: rgba(159, 52, 31, 0.24);
+  background: #fff3ef;
+}
+
+.offline-booking-recovery--success {
+  border-color: rgba(31, 107, 69, 0.24);
+  background: #eef9f2;
+}
+
+.offline-booking-recovery-inner {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 14px 0;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+}
+
+.offline-booking-recovery-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #9a5d14;
+  box-shadow: 0 0 0 1px rgba(131, 77, 46, 0.12);
+}
+
+.offline-booking-recovery--failed .offline-booking-recovery-icon {
+  color: #9f341f;
+}
+
+.offline-booking-recovery--success .offline-booking-recovery-icon {
+  color: #1f6b45;
+}
+
+.offline-booking-recovery-copy {
+  min-width: 0;
+}
+
+.offline-booking-recovery-copy > strong {
+  display: block;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.offline-booking-recovery-copy > p {
+  margin: 2px 0 0;
+  color: #76584a;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.offline-booking-recovery-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(131, 77, 46, 0.12);
+}
+
+.offline-booking-recovery-list li {
+  min-width: 0;
+  min-height: 42px;
+  display: grid;
+  grid-template-columns: minmax(82px, auto) minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(131, 77, 46, 0.1);
+}
+
+.offline-booking-recovery-status {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #8b5e24;
+}
+
+.offline-booking-recovery-status--failed {
+  color: #9f341f;
+}
+
+.offline-booking-recovery-booking {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.offline-booking-recovery-booking strong,
+.offline-booking-recovery-booking small {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.offline-booking-recovery-booking strong {
+  font-size: 0.78rem;
+}
+
+.offline-booking-recovery-booking small {
+  color: #76584a;
+  font-size: 0.72rem;
+}
+
+.offline-booking-recovery-remove {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #76584a;
+  cursor: pointer;
+}
+
+.offline-booking-recovery-remove:hover,
+.offline-booking-recovery-remove:focus-visible {
+  background: rgba(159, 52, 31, 0.1);
+  color: #9f341f;
+}
+
+.offline-booking-recovery-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.offline-booking-recovery-actions button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 6px;
+  padding: 7px 12px;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.offline-booking-recovery-sync {
+  border: 1px solid #8b5e24;
+  background: #8b5e24;
+  color: #fff;
+}
+
+.offline-booking-recovery-sync:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.offline-booking-recovery-rebook {
+  border: 1px solid rgba(131, 77, 46, 0.28);
+  background: transparent;
+  color: #734326;
+}
+
+.offline-booking-recovery-actions button:hover:not(:disabled),
+.offline-booking-recovery-actions button:focus-visible {
+  filter: brightness(0.94);
+}
+
+.offline-booking-recovery .is-spinning {
+  animation: recoverySpin 0.8s linear infinite;
+}
+
+@keyframes recoverySpin {
+  to { transform: rotate(360deg); }
+}
+
+:root[data-theme="dark"] .offline-booking-recovery {
+  border-color: rgba(235, 198, 161, 0.18);
+  background: #2e2925;
+  color: #fff8ed;
+}
+
+:root[data-theme="dark"] .offline-booking-recovery--failed {
+  background: #392724;
+}
+
+:root[data-theme="dark"] .offline-booking-recovery--success {
+  background: #21352b;
+}
+
+:root[data-theme="dark"] .offline-booking-recovery-icon {
+  background: #171412;
+  box-shadow: 0 0 0 1px rgba(255, 248, 237, 0.12);
+}
+
+:root[data-theme="dark"] .offline-booking-recovery-copy > p,
+:root[data-theme="dark"] .offline-booking-recovery-booking small,
+:root[data-theme="dark"] .offline-booking-recovery-remove {
+  color: #d9c1b3;
+}
+
+@media (max-width: 720px) {
+  .offline-booking-recovery {
+    margin-top: 72px;
+  }
+
+  .offline-booking-recovery-inner {
+    width: min(100% - 28px, 1180px);
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+
+  .offline-booking-recovery-actions {
+    grid-column: 2;
+    flex-wrap: wrap;
+  }
+
+  .offline-booking-recovery-list li {
+    grid-template-columns: minmax(0, 1fr) 32px;
+    padding: 6px 0;
+  }
+
+  .offline-booking-recovery-status,
+  .offline-booking-recovery-booking {
+    grid-column: 1;
+  }
+
+  .offline-booking-recovery-remove {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .offline-booking-recovery .is-spinning {
+    animation-duration: 1.6s;
   }
 }
 

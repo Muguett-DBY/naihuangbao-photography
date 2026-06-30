@@ -418,6 +418,29 @@
     "desc": "你访问的页面不存在或已被移除。",
     "cta": "返回首页"
   },
+  "offlineStatus": {
+    "offline": "当前处于离线状态，未提交预约会保存在本设备。",
+    "online": "网络已恢复，正在检查本地预约。"
+  },
+  "offlineBookingRecovery": {
+    "title": "本地预约恢复",
+    "pendingOnline": "有 {{count}} 条本地预约等待同步。",
+    "pendingOffline": "有 {{count}} 条预约已安全保存在本设备。",
+    "pendingDetail": "工作室收到前，这条预约会继续保存在当前设备。",
+    "failed": "有 {{count}} 条本地预约需要处理。",
+    "failedDetail": "可移除被拒绝的记录，或修正信息后重新预约。",
+    "synced": "已成功发送 {{count}} 条本地预约。",
+    "syncNow": "立即同步",
+    "syncing": "同步中...",
+    "bookAgain": "重新预约",
+    "remove": "移除本地保存的 {{packageName}} 预约",
+    "unknownPackage": "摄影预约",
+    "noDate": "未选择日期",
+    "status": {
+      "pending": "等待同步",
+      "failed": "需要处理"
+    }
+  },
   "bookingModal": {
     "title": "预约拍摄",
     "subtitle": "留下信息，确认档期后锁定时间",
@@ -478,6 +501,7 @@
     "back": "返回",
     "stepNavigation": "预约步骤",
     "offlineSyncNotice": "预约已保存在当前设备，恢复联网后会自动提交。",
+    "offlineSaveError": "无法在当前设备保存预约，请恢复联网后重试。",
     "paymentClarityLabel": "支付状态后续步骤",
     "paymentClarityTitle": "定金接下来怎么处理",
     "paymentClarity": {

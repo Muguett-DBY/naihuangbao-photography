@@ -46,6 +46,10 @@ const publicChatApiSource = readFileSync(resolve(root, "functions/api/chat.ts"),
 const photoDownloadApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/download.ts"), "utf8");
 const dashboardBookingsSource = readFileSync(resolve(root, "src/components/dashboard/BookingsTab.tsx"), "utf8");
 const bookingModalSource = readFileSync(resolve(root, "src/components/BookingModal.tsx"), "utf8");
+const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
+const offlineFallbackSource = readFileSync(resolve(root, "src/components/OfflineFallback.tsx"), "utf8");
+const offlineRecoveryPath = resolve(root, "src/components/OfflineBookingRecovery.tsx");
+const offlineRecoverySource = existsSync(offlineRecoveryPath) ? readFileSync(offlineRecoveryPath, "utf8") : "";
 const adminBookingsSource = readFileSync(resolve(root, "src/components/admin/AdminBookingsTab.tsx"), "utf8");
 const adminBookingsApiSource = readFileSync(resolve(root, "functions/api/admin/bookings.ts"), "utf8");
 const photoImageApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/image.ts"), "utf8");
@@ -241,6 +245,28 @@ describe("audit regression coverage", () => {
     for (const locale of Object.values(locales)) {
       expect(locale.auth.dashboardLoginNoticeTitle).toBeTruthy();
       expect(locale.auth.dashboardLoginNoticeDescription).toBeTruthy();
+    }
+  });
+
+  it("keeps offline booking recovery global, actionable, localized, and outside the modal lifetime", () => {
+    expect(rootLayoutSource).toContain('lazy(() => import("../components/OfflineBookingRecovery"))');
+    expect(rootLayoutSource).toContain("<OfflineBookingRecovery isOnline={isOnline}");
+    expect(offlineRecoverySource).toContain("syncPendingBookings");
+    expect(offlineRecoverySource).toContain("PENDING_BOOKINGS_CHANGED_EVENT");
+    expect(offlineRecoverySource).toContain("removePendingBooking");
+    expect(offlineRecoverySource).toContain('aria-live="polite"');
+    expect(bookingModalSource).not.toContain('window.addEventListener("online", handleOnline)');
+    expect(bookingModalSource).toContain("offlineSaveError");
+    expect(offlineFallbackSource).toContain("offlineStatus.offline");
+    expect(cssSource).toContain(".offline-booking-recovery");
+    expect(cssSource).toContain(".offline-booking-recovery-list");
+    for (const locale of Object.values(locales)) {
+      expect(locale.offlineStatus.offline).toBeTruthy();
+      expect(locale.offlineStatus.online).toBeTruthy();
+      expect(locale.offlineBookingRecovery.title).toBeTruthy();
+      expect(locale.offlineBookingRecovery.syncNow).toBeTruthy();
+      expect(locale.offlineBookingRecovery.remove).toBeTruthy();
+      expect(locale.bookingModal.offlineSaveError).toBeTruthy();
     }
   });
 

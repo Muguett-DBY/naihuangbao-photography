@@ -398,6 +398,29 @@
     "desc": "お探しのページは存在しないか、削除されました。",
     "cta": "トップに戻る"
   },
+  "offlineStatus": {
+    "offline": "オフラインです。未送信の予約はこの端末に保存されます。",
+    "online": "オンラインに戻りました。保存済みの予約を確認しています。"
+  },
+  "offlineBookingRecovery": {
+    "title": "保存済み予約の復旧",
+    "pendingOnline": "{{count}} 件の予約が同期を待っています。",
+    "pendingOffline": "{{count}} 件の予約がこの端末に安全に保存されています。",
+    "pendingDetail": "スタジオに届くまで、この予約は端末に保存されます。",
+    "failed": "{{count}} 件の保存済み予約に対応が必要です。",
+    "failedDetail": "拒否された記録を削除するか、内容を修正して再予約してください。",
+    "synced": "{{count}} 件の保存済み予約を送信しました。",
+    "syncNow": "今すぐ同期",
+    "syncing": "同期中...",
+    "bookAgain": "再予約",
+    "remove": "保存済みの {{packageName}} 予約を削除",
+    "unknownPackage": "撮影予約",
+    "noDate": "日付未選択",
+    "status": {
+      "pending": "同期待ち",
+      "failed": "要確認"
+    }
+  },
   "bookingModal": {
     "title": "撮影予約",
     "subtitle": "情報をご入力ください。日程を確認の上ご連絡します",
@@ -451,6 +474,7 @@
     "back": "戻る",
     "stepNavigation": "予約ステップ",
     "offlineSyncNotice": "この端末に保存され、オンラインに戻ると自動送信されます。",
+    "offlineSaveError": "この端末に予約を保存できませんでした。オンラインに戻って再試行してください。",
     "paymentClarityLabel": "支払い状態の次の手順",
     "paymentClarityTitle": "デポジットの次の流れ",
     "paymentClarity": {

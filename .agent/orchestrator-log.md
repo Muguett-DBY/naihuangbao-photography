@@ -1443,3 +1443,36 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28419148049` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is making retained offline booking states visible and recoverable without broad booking architecture changes.
 - **Status**: COMPLETE
+
+### Stage 6 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Make retained offline booking states visible and recoverable after the booking modal closes, with a global recovery surface for pending and failed local records.
+- **Start state**: `main` at `e36ba5b`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories were present.
+- **Previous direction carried forward**: Stage 5 recommended exposing retained offline booking states so terminal failures and pending local submissions do not remain invisible in IndexedDB.
+- **Impact choice**: A global recovery band scored highest because it survives modal closure, is visible on every public route, and can own app-level online sync without broad booking architecture changes.
+- **Completed locally**:
+  - Added a lazy `OfflineBookingRecovery` surface below the header for public routes.
+  - Moved automatic online replay ownership out of `BookingModal` so pending offline bookings sync even after the modal closes.
+  - Shows pending and failed local bookings with localized status, date/package context, retry, rebooking, and remove actions.
+  - Successful offline sync now deletes the local record instead of leaving stale `synced` entries; legacy `synced` records are cleaned up on recovery mount.
+  - Offline booking save failures no longer claim success if IndexedDB cannot persist the local request.
+  - Localized the offline/online status banner and replaced text-only status markers with Lucide icons.
+  - Added unit, source-regression, Playwright, and visual layout coverage for the global recovery flow.
+- **Rendered validation**:
+  - Desktop and mobile screenshots confirmed the recovery band is visible below the fixed navigation and above page content.
+  - Browser layout checks confirmed no recovery/navigation overlap, no recovery/main overlap, and no document-level horizontal scrollbar at 1280x900 or 390x844.
+  - In-app Browser preview on `http://127.0.0.1:4190/` rendered the homepage with the expected title and no console error/warn entries.
+- **Local verification**:
+  - Red/green: `npm test -- src/utils/offlineBooking.test.ts src/lib/audit-regressions.test.ts` first failed on the missing recovery summary/global component contracts, then passed 2 files / 73 tests after implementation.
+  - Targeted Playwright: `npx playwright test e2e/offline-booking-recovery.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` passed 2/2.
+  - `npm ci` — first hit a local preview-process `EPERM` on the Rolldown native binding, then passed after stopping the current project preview process; 456 packages installed and 0 vulnerabilities.
+  - `npm run lint` — passed.
+  - `npm test` — 57 files / 356 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis. The recovery component is emitted as a separate lazy chunk.
+  - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 39/39 passed.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Risk**: Failed terminal local records can be removed or used to restart booking, but they are not edited and resubmitted in place. A richer edit-resubmit flow can be considered later if production usage shows demand.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: All 6 orchestrated stages are complete after this stage's commit and CI pass; no further stage is required by `03_LONG_6_STAGE_MAIN_V2.txt`.
+- **Status**: LOCAL VERIFICATION COMPLETE; COMMIT/CI PENDING
