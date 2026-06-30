@@ -1577,7 +1577,7 @@ Beginning execution.
   - Full Playwright passed 40/40.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
 - **Risk**: On medium dashboard card widths the panel intentionally collapses to one column instead of forcing a cramped split view. This prioritizes readability over a persistent two-column desktop layout.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `173117c` — `feat: guide dashboard reschedule experience`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28440697538` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is a bounded booking reliability improvement that builds on the clearer reschedule UX, such as surfacing server-side conflict recovery details consistently.
-- **Status**: READY TO COMMIT
+- **Status**: COMPLETE
