@@ -9,6 +9,8 @@ const adminSource = [
   "src/components/admin/AdminPhotosTab.tsx",
 ].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const adminModerationQueueSource = readFileSync(resolve(root, "src/components/admin/AdminPhotoModerationQueue.tsx"), "utf8");
+const adminPhotosSource = readFileSync(resolve(root, "src/components/admin/AdminPhotosTab.tsx"), "utf8");
+const adminPhotosBatchApiSource = readFileSync(resolve(root, "functions/api/admin/photos/batch.ts"), "utf8");
 const adminHelpersSource = readFileSync(resolve(root, "src/lib/admin-helpers.tsx"), "utf8");
 const cssSource = [
   "src/styles/global.css",
@@ -525,13 +527,20 @@ describe("audit regression coverage", () => {
     expect(adminSource).toContain("maxPhotoUploadSize");
   });
 
-  it("keeps admin moderation bulk actions wired to all pending ids and failed responses", () => {
+  it("keeps admin moderation bulk approval wired to all pending ids", () => {
     expect(adminModerationQueueSource).toContain("const idsToApprove = selectedIds.size > 0");
     expect(adminModerationQueueSource).toContain("pendingPhotos.map((photo) => photo.id)");
     expect(adminModerationQueueSource).toContain("ids: idsToApprove");
     expect(adminModerationQueueSource).toContain("if (idsToApprove.length === 0) return;");
-    expect(adminModerationQueueSource).toContain("const failedReject = responses.find((response) => !response.ok)");
-    expect(adminModerationQueueSource).toContain('if (failedReject) throw new Error("Batch reject failed")');
+  });
+
+  it("routes destructive photo batches through one confirmed server operation", () => {
+    expect(adminPhotosBatchApiSource).toContain('"visibility" | "featured" | "album" | "delete"');
+    expect(adminPhotosBatchApiSource).toContain("deletePhotosWithConsistency");
+    expect(adminModerationQueueSource).toContain('action: "delete"');
+    expect(adminModerationQueueSource).toContain("admin-moderation-reject-confirmation");
+    expect(adminPhotosSource).toContain('action: "delete"');
+    expect(adminPhotosSource).toContain("const deletedIds = new Set(result.ids)");
   });
 
   it("keeps preset download count writes behind the public page-action boundary", () => {

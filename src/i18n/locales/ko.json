@@ -1064,7 +1064,15 @@
       "deselectAll": "선택 해제",
       "batchApprove": "일괄 승인",
       "batchReject": "일괄 거부",
-      "approveAll": "모두 승인"
+      "approveAll": "모두 승인",
+      "pendingCount": "{{count}}개 검토 대기",
+      "selectedCount": "{{count}}개 선택됨",
+      "batchRejectConfirm": "선택한 사진 {{count}}개를 거부하고 영구 삭제할까요?",
+      "cancel": "취소",
+      "confirmReject": "선택 항목 삭제",
+      "processing": "삭제 중...",
+      "batchRejected": "사진 {{count}}개를 거부했습니다",
+      "batchRejectFailed": "일괄 거부에 실패했습니다. 새로고침 후 다시 시도해 주세요"
     }
   },
   "chat": {

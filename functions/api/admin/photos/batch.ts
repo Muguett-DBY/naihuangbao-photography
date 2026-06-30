@@ -1,4 +1,5 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../../_auth";
+import { deletePhotosWithConsistency } from "../../../_photos";
 import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../../_responses";
 import { logAuditEvent } from "../../../lib/audit-log";
 
@@ -6,7 +7,7 @@ type AdminPhotosBatchEnv = Env & { ADMIN_PASSWORD?: string };
 
 type BatchBody = {
   ids?: string[];
-  action?: "visibility" | "featured" | "album";
+  action?: "visibility" | "featured" | "album" | "delete";
   value?: boolean | string;
 };
 
@@ -36,11 +37,10 @@ export const onRequestPost: PagesFunction<AdminPhotosBatchEnv> = async (context)
     return jsonResponse({ error: "数据库未配置" }, 503);
   }
 
-  // Validate all IDs are non-empty strings
-  const validIds = body.ids.filter((id) => typeof id === "string" && id.trim());
-  if (validIds.length === 0) {
+  if (body.ids.some((id) => typeof id !== "string" || !id.trim())) {
     return badRequest("无效的照片 ID");
   }
+  const validIds = Array.from(new Set(body.ids.map((id) => id.trim())));
 
   const placeholders = validIds.map(() => "?").join(", ");
 
@@ -91,6 +91,26 @@ export const onRequestPost: PagesFunction<AdminPhotosBatchEnv> = async (context)
       });
 
       return jsonResponse({ ok: true, updated: validIds.length, album });
+    }
+
+    if (body.action === "delete") {
+      const result = await deletePhotosWithConsistency(context.env, validIds);
+      if (!result.ok) {
+        return jsonResponse({ error: result.error }, result.status);
+      }
+
+      await logAuditEvent(context, {
+        action: "batch_delete",
+        entity_type: "photo",
+        diff_json: JSON.stringify({ count: result.deleted }),
+      });
+
+      context.waitUntil(context.env.CACHE?.delete("photos:public").catch(() => {}));
+      return jsonResponse({
+        ok: true,
+        deleted: result.deleted,
+        ids: result.ids,
+      });
     }
 
     return badRequest("不支持的操作类型");
