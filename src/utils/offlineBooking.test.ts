@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createPendingBookingRequestInit, type PendingBooking } from "./offlineBooking";
+import { createPendingBookingRequestInit, getPendingBookingSyncDisposition, type PendingBooking } from "./offlineBooking";
 
 const booking: PendingBooking = {
   id: "local-booking-1",
@@ -29,5 +29,12 @@ describe("offline booking sync", () => {
       contact: booking.contact,
       notes: booking.notes,
     });
+  });
+
+  it("classifies offline replay failures so permanent client errors stop retrying", () => {
+    expect(getPendingBookingSyncDisposition(201)).toBe("synced");
+    expect(getPendingBookingSyncDisposition(409)).toBe("failed");
+    expect(getPendingBookingSyncDisposition(429)).toBe("failed");
+    expect(getPendingBookingSyncDisposition(503)).toBe("retry");
   });
 });

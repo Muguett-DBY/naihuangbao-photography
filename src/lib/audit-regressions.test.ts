@@ -229,6 +229,8 @@ describe("audit regression coverage", () => {
   it("keeps post-booking status recovery connected through offline sync and dashboard login", () => {
     expect(offlineBookingSource).toContain("publicMutationHeaders");
     expect(offlineBookingSource).toContain("createPendingBookingRequestInit");
+    expect(offlineBookingSource).toContain("getPendingBookingSyncDisposition");
+    expect(offlineBookingSource).toContain("markBookingFailed");
     expect(offlineBookingSource).toContain('headers: { "Content-Type": "application/json", ...publicMutationHeaders }');
     expect(dashboardPageSource).toContain('to="/login?from=dashboard"');
     expect(loginPageSource).toContain("useLocation");

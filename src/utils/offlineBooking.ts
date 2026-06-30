@@ -90,6 +90,26 @@ export async function markBookingSynced(id: string): Promise<void> {
   });
 }
 
+export async function markBookingFailed(id: string): Promise<void> {
+  const db = await openDB();
+  if (!db) return;
+
+  return new Promise((resolve) => {
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
+    const getReq = store.get(id);
+    getReq.onsuccess = () => {
+      const entry = getReq.result as PendingBooking | undefined;
+      if (entry) {
+        entry.status = "failed";
+        store.put(entry);
+      }
+      resolve();
+    };
+    getReq.onerror = () => resolve();
+  });
+}
+
 export async function removePendingBooking(id: string): Promise<void> {
   const db = await openDB();
   if (!db) return;
@@ -118,6 +138,14 @@ export function createPendingBookingRequestInit(booking: PendingBooking): Reques
   };
 }
 
+export type PendingBookingSyncDisposition = "synced" | "failed" | "retry";
+
+export function getPendingBookingSyncDisposition(status: number): PendingBookingSyncDisposition {
+  if (status >= 200 && status < 300) return "synced";
+  if (status >= 400 && status < 500) return "failed";
+  return "retry";
+}
+
 export async function syncPendingBookings(): Promise<{ synced: number; failed: number }> {
   const bookings = await getPendingBookings();
   const pending = bookings.filter((b) => b.status === "pending");
@@ -127,10 +155,14 @@ export async function syncPendingBookings(): Promise<{ synced: number; failed: n
   for (const booking of pending) {
     try {
       const response = await fetch("/api/booking", createPendingBookingRequestInit(booking));
+      const disposition = getPendingBookingSyncDisposition(response.status);
 
-      if (response.ok) {
+      if (disposition === "synced") {
         await markBookingSynced(booking.id);
         synced++;
+      } else if (disposition === "failed") {
+        await markBookingFailed(booking.id);
+        failed++;
       } else {
         failed++;
       }

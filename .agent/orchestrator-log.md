@@ -1414,3 +1414,32 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28418534404` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a security/stability sweep around booking status recovery, auth redirects, offline replay, generated PWA output, and CI parity.
 - **Status**: COMPLETE
+
+### Stage 5 / 6 — CHECK
+- **Prompt**: `AGENT_CHECK_MAIN.txt`
+- **Objective**: Audit booking/auth/offline/PWA recovery paths, dependency and CI parity, and production browser flows; fix the concrete offline replay failure found during the sweep.
+- **Start state**: `main` at `5714769`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories were present.
+- **Audit findings**:
+  - P0: none found. `npm audit --json` reported 0 vulnerabilities, `npm ls --depth=0` completed cleanly, and local install/lint/test/build commands remained aligned with GitHub Actions.
+  - P1: offline booking replay left permanent 4xx rejections in `pending`, so every later online event retried requests that the server had already rejected.
+  - P2: the existing `failed` offline-booking status was unreachable and the retry policy had no direct regression coverage.
+- **Completed locally**:
+  - Added an explicit response-disposition policy: 2xx is synced, 4xx is terminally failed, and 5xx/network errors remain retryable.
+  - Added `markBookingFailed` so terminal client errors stop replaying while retaining the local record for diagnosis.
+  - Kept transient server and network failures pending so later online events can retry them.
+  - Added focused unit and source-regression coverage for the replay classification and failed-state transition.
+- **Local verification**:
+  - Red/green: `npm test -- src/utils/offlineBooking.test.ts src/lib/audit-regressions.test.ts` first failed on the missing disposition/failed-state contracts, then passed 2 files / 71 tests after implementation.
+  - `npm audit --json` — 0 vulnerabilities.
+  - `npm ls --depth=0` — clean.
+  - `npm ci` — passed with 456 packages installed and 0 vulnerabilities.
+  - `npm run lint` — passed.
+  - `npm test` — 57 files / 354 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 37/37 passed.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Risk**: Terminally failed IndexedDB records are intentionally retained, but the current UI does not expose or remove them; a user-visible recovery surface is the recommended next improvement.
+- **Commit**: pending.
+- **Push / CI**: pending.
+- **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is making retained offline booking states visible and recoverable without broad booking architecture changes.
+- **Status**: PENDING COMMIT / CI
