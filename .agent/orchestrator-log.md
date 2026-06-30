@@ -1537,7 +1537,7 @@ Beginning execution.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
   - `git diff --check` passed; sensitive/debug scan for staged-scope files found no matches.
 - **Risk**: Time-slot conflict protection remains application-level. A future production data migration could add a database-level uniqueness guard if simultaneous identical writes become a real operational risk.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `ab14856` — `feat: add time-aware booking rescheduling`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28438916217` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 3 / 6 — UIUX using `AGENT_UIUX_MAIN.txt`; recommended focus is a visible dashboard reschedule polish pass now that date/time conflict rules are shared.
-- **Status**: READY TO COMMIT
+- **Status**: COMPLETE
