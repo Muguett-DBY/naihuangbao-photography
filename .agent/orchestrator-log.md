@@ -1410,7 +1410,7 @@ Beginning execution.
   - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 37/37 passed.
   - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
 - **Risk**: `/login?from=dashboard` intentionally only allows the fixed dashboard return target; broader arbitrary redirect support was avoided to prevent open-redirect risk.
-- **Commit**: pending
-- **Push / CI**: pending
+- **Commit**: `9e1d0cb` — `feat: improve booking status recovery`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28418534404` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a security/stability sweep around booking status recovery, auth redirects, offline replay, generated PWA output, and CI parity.
-- **Status**: LOCAL COMPLETE / CI PENDING
+- **Status**: COMPLETE
