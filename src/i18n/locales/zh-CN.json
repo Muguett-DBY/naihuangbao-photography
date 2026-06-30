@@ -1546,6 +1546,8 @@
     "hasAccount": "已有账户？",
     "loginLink": "登录",
     "backToHome": "返回首页",
+    "dashboardLoginNoticeTitle": "登录后查看预约状态",
+    "dashboardLoginNoticeDescription": "登录成功后会回到个人中心，继续查看预约进度和定金状态。",
     "forgotPassword": "忘记密码？",
     "resetTitle": "重置密码",
     "resetDesc": "输入您的邮箱地址，我们将向您发送一个重置令牌。",

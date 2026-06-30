@@ -1480,6 +1480,8 @@
     "hasAccount": "이미 계정이 있으신가요?",
     "loginLink": "로그인",
     "backToHome": "홈으로 돌아가기",
+    "dashboardLoginNoticeTitle": "로그인 후 예약 상태 확인",
+    "dashboardLoginNoticeDescription": "로그인 후 대시보드로 돌아가 예약 업데이트와 예약금 상태를 확인합니다.",
     "forgotPassword": "비밀번호를 잊으셨나요?",
     "resetTitle": "비밀번호 재설정",
     "resetDesc": "이메일 주소를 입력하시면 재설정 토큰을 보내드리겠습니다.",

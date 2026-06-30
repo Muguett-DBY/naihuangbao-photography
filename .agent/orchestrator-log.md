@@ -1385,3 +1385,32 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28410527355` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is another bounded customer-facing reliability improvement outside the just-completed completion bridge.
 - **Status**: COMPLETE
+
+### Stage 4 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Improve post-booking status reliability by making offline booking replay use the same mutation boundary as online booking and preserving the dashboard intent when anonymous users follow the booking-completion dashboard action.
+- **Start state**: `main` at `20c1c29`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories were present.
+- **Previous direction carried forward**: Stage 3 recommended improving booking-completion status reliability so users are less likely to feel that a submitted booking disappeared.
+- **Impact choice**: Offline booking replay and dashboard-auth context were selected because they are user-visible, directly connected to the Stage 3 completion bridge, and independently verifiable through unit, source-regression, and browser tests.
+- **Completed locally**:
+  - Fixed offline booking replay so pending bookings are resubmitted with `publicMutationHeaders`, matching the server-side `/api/booking` public mutation guard.
+  - Added a testable `createPendingBookingRequestInit` helper for offline booking replay payload/header construction.
+  - Changed unauthenticated dashboard access to redirect to `/login?from=dashboard` instead of a context-free login page.
+  - Added a login-page context notice explaining that the user will return to the dashboard to view booking updates and deposit status.
+  - Updated successful login/register navigation to return to the safe dashboard target when that intent is present.
+  - Added zh-CN, en, ja, and ko copy for the dashboard login notice.
+  - Added unit, source-regression, and Playwright coverage for offline replay headers and dashboard-login intent preservation.
+- **Local verification**:
+  - Red/green: `npm test -- src/utils/offlineBooking.test.ts src/lib/audit-regressions.test.ts` first failed on the missing offline replay helper/header and dashboard-login context contracts, then passed 70/70 after implementation.
+  - `npm run build` — passed before targeted Playwright because this repo's Playwright config serves `dist` through `vite preview`.
+  - `npx playwright test e2e/login.spec.ts --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 5/5 passed after tightening one assertion to the dashboard profile heading.
+  - `npm run lint` — passed.
+  - `npm test` — 57 files / 353 tests passed.
+  - `npm run build:full` — passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - `npx playwright test --config=e2e/playwright.config.ts --workers=1 --reporter=line` — 37/37 passed.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Risk**: `/login?from=dashboard` intentionally only allows the fixed dashboard return target; broader arbitrary redirect support was avoided to prevent open-redirect risk.
+- **Commit**: pending
+- **Push / CI**: pending
+- **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a security/stability sweep around booking status recovery, auth redirects, offline replay, generated PWA output, and CI parity.
+- **Status**: LOCAL COMPLETE / CI PENDING

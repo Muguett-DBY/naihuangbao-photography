@@ -43,7 +43,7 @@ export function DashboardPage() {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login?from=dashboard" replace />;
   }
 
   const tabItems = [

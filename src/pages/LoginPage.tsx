@@ -1,8 +1,8 @@
 import "../styles/pages.css";
 import { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LogIn, UserPlus, Mail, Lock, User, KeyRound, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
+import { CalendarCheck, LogIn, UserPlus, Mail, Lock, User, KeyRound, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
@@ -16,8 +16,11 @@ export function LoginPage() {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, register } = useAuth();
   const { showToast } = useToast();
+  const loginRedirectTarget = new URLSearchParams(location.search).get("from") === "dashboard" ? "/dashboard" : "/";
+  const shouldShowDashboardNotice = loginRedirectTarget === "/dashboard";
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -57,7 +60,7 @@ export function LoginPage() {
       if (result.error) {
         setError(result.error);
       } else {
-        navigate("/");
+        navigate(loginRedirectTarget, { replace: true });
       }
     } finally {
       setLoading(false);
@@ -292,6 +295,15 @@ export function LoginPage() {
       <section className="section-shell is-visible">
         <div className="login-box">
           <div className="login-card">
+            {shouldShowDashboardNotice && (
+              <div className="login-context-notice" role="status">
+                <CalendarCheck size={18} aria-hidden="true" />
+                <span>
+                  <strong>{t("auth.dashboardLoginNoticeTitle", "Log in to view your booking status")}</strong>
+                  <small>{t("auth.dashboardLoginNoticeDescription", "After login, you will return to your dashboard to check booking updates and deposit status.")}</small>
+                </span>
+              </div>
+            )}
             <form onSubmit={handleSubmit}>
               {mode === "register" && (
                 <div className="login-field">

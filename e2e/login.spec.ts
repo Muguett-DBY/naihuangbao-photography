@@ -58,19 +58,33 @@ test.describe("login and dashboard flow", () => {
 
   test("dashboard page requires authentication", async ({ page }) => {
     await page.goto("/dashboard");
-    
-    // Should redirect to login or show login form
-    const url = page.url();
-    const isLoginPage = url.includes("/login");
-    
-    // Wait for page to load
-    await page.waitForTimeout(2000);
-    
-    // Check if we're on login page or if the dashboard shows login form
-    const hasLoginForm = await page.locator('input[type="password"]').isVisible();
-    const hasDashboardContent = await page.locator('.dashboard-content, .dashboard-grid').isVisible();
-    
-    // Either we're on login page, or the dashboard shows a login form, or the dashboard loaded
-    expect(isLoginPage || hasLoginForm || hasDashboardContent).toBeTruthy();
+
+    await expect(page).toHaveURL(/\/login\?from=dashboard/);
+    await expect(page.locator(".login-context-notice")).toBeVisible();
+    await expect(page.getByText("Log in to view your booking status", { exact: true })).toBeVisible();
+  });
+
+  test("preserves dashboard intent after login", async ({ page }) => {
+    await page.route("**/api/auth/session", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ authenticated: false }),
+    }));
+    await page.route("**/api/auth/login", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        user: { id: "user-1", email: "guest@example.com", displayName: "Guest User" },
+      }),
+    }));
+
+    await page.goto("/dashboard");
+    await expect(page).toHaveURL(/\/login\?from=dashboard/);
+    await page.locator("#email").fill("guest@example.com");
+    await page.locator("#password").fill("password123");
+    await page.getByRole("button", { name: "Log in", exact: true }).click();
+
+    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page.getByRole("heading", { name: "Guest User", exact: true })).toBeVisible();
   });
 });

@@ -87,6 +87,7 @@ const paymentLiveReadinessSource = existsSync(paymentLiveReadinessPath) ? readFi
 const wranglerSource = readFileSync(resolve(root, "wrangler.toml"), "utf8");
 const htmlSource = readFileSync(resolve(root, "index.html"), "utf8");
 const loginPageSource = readFileSync(resolve(root, "src/pages/LoginPage.tsx"), "utf8");
+const dashboardPageSource = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
 const useAuthSource = readFileSync(resolve(root, "src/hooks/useAuth.tsx"), "utf8");
 const loginApiSource = readFileSync(resolve(root, "functions/api/auth/login.ts"), "utf8");
 const registerApiSource = readFileSync(resolve(root, "functions/api/auth/register.ts"), "utf8");
@@ -99,6 +100,7 @@ const bookingPolicyApiPath = resolve(root, "functions/api/booking/policy.ts");
 const bookingApiSource = readFileSync(resolve(root, "functions/api/booking.ts"), "utf8");
 const waitlistApiSource = readFileSync(resolve(root, "functions/api/booking/waitlist.ts"), "utf8");
 const availabilityApiSource = readFileSync(resolve(root, "functions/api/availability.ts"), "utf8");
+const offlineBookingSource = readFileSync(resolve(root, "src/utils/offlineBooking.ts"), "utf8");
 const jaLocaleSource = readFileSync(resolve(root, "src/i18n/locales/ja.json"), "utf8");
 const zhLocaleSource = readFileSync(resolve(root, "src/i18n/locales/zh-CN.json"), "utf8");
 const enLocaleSource = readFileSync(resolve(root, "src/i18n/locales/en.json"), "utf8");
@@ -221,6 +223,22 @@ describe("audit regression coverage", () => {
       expect(locale.bookingModal.successBridgeDashboardDetail).toBeTruthy();
       expect(locale.bookingModal.messageOnXiaohongshu).toBeTruthy();
       expect(locale.bookingModal.continueBrowsing).toBeTruthy();
+    }
+  });
+
+  it("keeps post-booking status recovery connected through offline sync and dashboard login", () => {
+    expect(offlineBookingSource).toContain("publicMutationHeaders");
+    expect(offlineBookingSource).toContain("createPendingBookingRequestInit");
+    expect(offlineBookingSource).toContain('headers: { "Content-Type": "application/json", ...publicMutationHeaders }');
+    expect(dashboardPageSource).toContain('to="/login?from=dashboard"');
+    expect(loginPageSource).toContain("useLocation");
+    expect(loginPageSource).toContain("loginRedirectTarget");
+    expect(loginPageSource).toContain("dashboardLoginNoticeTitle");
+    expect(loginPageSource).toContain("navigate(loginRedirectTarget, { replace: true })");
+    expect(editorCssSource).toContain(".login-context-notice");
+    for (const locale of Object.values(locales)) {
+      expect(locale.auth.dashboardLoginNoticeTitle).toBeTruthy();
+      expect(locale.auth.dashboardLoginNoticeDescription).toBeTruthy();
     }
   });
 
