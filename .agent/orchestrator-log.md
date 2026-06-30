@@ -1639,3 +1639,33 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28456390852` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 6 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; replace the multi-request moderation reject path with one server-side batch delete contract and regression coverage.
 - **Status**: COMPLETE
+
+### Stage 6 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Replace multi-request admin photo deletion with one server-side batch delete contract, add visible destructive confirmation UX, and close the six-stage campaign with full local and GitHub verification.
+- **Start state**: `main` at `c0e74ad`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories were present.
+- **Previous direction carried forward**: Stage 5 identified that batch reject still issued one DELETE per photo, leaving a partial-delete risk when the server failed mid-batch.
+- **Impact choice**: A server-side batch delete contract directly removes the largest remaining moderation reliability gap, fixes the same partial-success issue in the full admin photo grid, and gives the UI a clear destructive confirmation step.
+- **Completed locally**:
+  - Added `deletePhotosWithConsistency` to validate all selected photo rows before deleting any R2 objects, then delete all selected R2 objects in one call and remove the D1 rows in one statement.
+  - Extended `/api/admin/photos/batch` with `action: "delete"`, duplicate/blank ID normalization, `batch_delete` audit logging, cache invalidation, and structured `{ deleted, ids }` response data.
+  - Changed the moderation queue batch reject path to show an inline confirmation state before deletion and call the batch API instead of multiple per-photo DELETE requests.
+  - Changed the full admin photos tab batch delete path to call the batch API and remove only server-confirmed deleted IDs, fixing the previous "count failures but remove all selected" behavior.
+  - Added zh-CN, en, ja, and ko copy for pending/selected counts, destructive confirmation, processing, success, and failure states.
+  - Added audit-badge styling for `batch_delete`.
+  - Added API, source-contract, and Playwright coverage for the new batch delete contract and confirmation flow.
+- **Local verification**:
+  - Red/green: `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts` first failed on the missing batch delete API/source contracts, then passed 2 files / 114 tests after implementation.
+  - Targeted Playwright initially failed because `vite preview` served a stale `dist`; after running a fresh `npm run build`, `npx playwright test -c e2e/playwright.config.ts e2e/admin-moderation.spec.ts --workers=1` passed 1/1.
+  - `npm ci` passed with 456 packages installed, 0 vulnerabilities, and only dependency deprecation/allow-scripts warnings.
+  - `npm run lint` passed.
+  - `npm test` passed 58 files / 376 tests.
+  - `npm run build:full` passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - Full Playwright passed 43/43.
+  - Restored generated sitemap and Playwright result noise before staging.
+  - `git diff --check` passed with only existing CRLF normalization warnings for two touched files.
+- **Risk**: R2 and D1 remain separate services, so a rare failure after R2 deletion but before D1 deletion cannot be made fully atomic in a single local transaction. The new contract still reduces the previous N-request partial-delete surface by validating all rows first and doing one R2 bulk delete plus one D1 delete.
+- **Commit**: `3ec4be8` — `feat: batch photo moderation deletes`
+- **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28458867674` passed `npm ci`, lint, tests, build, and performance budget.
+- **Campaign result**: all six stages completed with implementation, local verification, push, and GitHub CI confirmation.
+- **Status**: COMPLETE
