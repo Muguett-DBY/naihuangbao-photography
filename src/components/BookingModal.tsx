@@ -37,6 +37,20 @@ type WaitlistResponse = {
   };
 };
 
+type TimeSlotRecovery = {
+  canKeepDate?: boolean;
+  requestedTime?: string;
+  suggestedTime?: string;
+  availableTimeSlots?: string[];
+};
+
+type BookingSubmitErrorResponse = {
+  error?: string;
+  message?: string;
+  timeSlots?: DateInfo["timeSlots"];
+  recovery?: TimeSlotRecovery;
+};
+
 export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const { t } = useTranslation();
   const { packages, siteConfig } = useSiteContent();
@@ -46,6 +60,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [selectedDateAvailability, setSelectedDateAvailability] = useState<DateInfo | null>(null);
+  const [recoveredDateAvailability, setRecoveredDateAvailability] = useState<{ date: string; info: DateInfo } | null>(null);
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
   const [notes, setNotes] = useState("");
@@ -74,6 +89,10 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const isSelectedTimeUnavailable = useCallback((value: string) => {
     return isBookingTimeSlotUnavailable(selectedDateAvailability, value);
   }, [selectedDateAvailability]);
+
+  const formatTimeLabel = useCallback((value: string) => {
+    return value ? String(t(`bookingModal.${value}` as any)) : String(t("bookingModal.any"));
+  }, [t]);
 
   const validateField = useCallback((field: string, value: string): string | undefined => {
     switch (field) {
@@ -130,10 +149,19 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
   const handleDateSelect = useCallback((nextDate: string) => {
     setWaitlistDate("");
+    setRecoveredDateAvailability(null);
     handleChange("date", nextDate);
     setTouched((prev) => ({ ...prev, date: true }));
     setErrors((prev) => ({ ...prev, date: validateField("date", nextDate) }));
   }, [handleChange, validateField]);
+
+  const handleSelectedDateInfoChange = useCallback((info: DateInfo | null) => {
+    if (recoveredDateAvailability?.date === date) {
+      setSelectedDateAvailability(recoveredDateAvailability.info);
+      return;
+    }
+    setSelectedDateAvailability(info);
+  }, [date, recoveredDateAvailability]);
 
   const handleTimeChange = useCallback((nextTime: string) => {
     setTime(nextTime);
@@ -144,6 +172,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const handleWaitlistDate = useCallback((nextDate: string) => {
     setDate(nextDate);
     setWaitlistDate(nextDate);
+    setRecoveredDateAvailability(null);
     setWaitlistAlreadyJoined(false);
     setTouched((prev) => ({ ...prev, date: true }));
     setErrors((prev) => ({ ...prev, date: validateField("date", nextDate) }));
@@ -273,10 +302,33 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       });
 
       if (!r.ok) {
-        const data = await readJsonResponse(r);
+        const data = await readJsonResponse<BookingSubmitErrorResponse>(r);
         if (data && typeof data === "object" && "error" in data && data.error === "fully_booked" && date) {
           setWaitlistDate(date);
           setError(t("bookingModal.fullDateWaitlistPrompt"));
+          return;
+        }
+        if (data?.error === "time_unavailable") {
+          const recoveredAvailability: DateInfo = {
+            status: selectedDateAvailability?.status ?? "partial",
+            count: selectedDateAvailability?.count ?? 0,
+            capacity: selectedDateAvailability?.capacity,
+            remaining: selectedDateAvailability?.remaining,
+            timeSlots: data.timeSlots,
+          };
+          setRecoveredDateAvailability({ date, info: recoveredAvailability });
+          setSelectedDateAvailability(recoveredAvailability);
+          const suggestedTime = data.recovery?.suggestedTime ?? "";
+          setTime(suggestedTime);
+          setTouched((prev) => ({ ...prev, time: true }));
+          setErrors((prev) => ({
+            ...prev,
+            time: suggestedTime ? undefined : t("bookingModal.timeUnavailable"),
+          }));
+          setStep(1);
+          setError(suggestedTime
+            ? t("bookingModal.timeSlotRecoveryHint", { time: formatTimeLabel(suggestedTime) })
+            : t("bookingModal.timeUnavailable"));
           return;
         }
         throw new Error(getApiError(data, t("bookingModal.submitError")));
@@ -438,7 +490,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   // ── Success state ──
   if (done) {
     const selectedPackageName = packages.find((p) => p.name === selectedPkg)?.name;
-    const timeLabel: string = time ? String(t(`bookingModal.${time}` as any)) : String(t("bookingModal.any"));
+    const timeLabel = formatTimeLabel(time);
     const bookingPaymentClaritySteps = [
       {
         key: "saved",
@@ -558,6 +610,8 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       </div>
 
       <form onSubmit={handleSubmit} noValidate>
+        {error && <p className="booking-error" role="alert">{error}</p>}
+
         {/* Step 1: Session details */}
         {step === 1 && (
           <div className="booking-step-content">
@@ -575,7 +629,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
                 selectedDate={date}
                 onSelectDate={handleDateSelect}
                 onRequestWaitlist={handleWaitlistDate}
-                onSelectedDateInfoChange={setSelectedDateAvailability}
+                onSelectedDateInfoChange={handleSelectedDateInfoChange}
                 minDate={earliestBookingDate}
                 policyTimeZone={bookingPolicy.timeZone}
                 capacityPerDay={bookingPolicy.capacityPerDay}
@@ -667,8 +721,6 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
                 rows={3}
               />
             </div>
-
-            {error && <p className="booking-error" role="alert">{error}</p>}
 
             <div className="booking-actions">
               <Button type="default" onClick={handleBack}>{t("bookingModal.back", "Back")}</Button>

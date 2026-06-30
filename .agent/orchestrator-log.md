@@ -1581,3 +1581,32 @@ Beginning execution.
 - **Push / CI**: pushed to `origin/main`; GitHub Actions CI run `28440697538` passed `npm ci`, lint, tests, build, and performance budget.
 - **Next stage**: Stage 4 / 6 — IMPROVE using `AGENT_IMPROVE_MAIN.txt`; recommended focus is a bounded booking reliability improvement that builds on the clearer reschedule UX, such as surfacing server-side conflict recovery details consistently.
 - **Status**: COMPLETE
+
+### Stage 4 / 6 — IMPROVE
+- **Prompt**: `AGENT_IMPROVE_MAIN.txt`
+- **Objective**: Make booking time-slot conflict recovery consistent across direct booking and authenticated rescheduling by returning actionable recovery suggestions from the API and using them in the UI.
+- **Start state**: `main` at `b7b166e`, synchronized with `origin/main`; only the protected untracked `campaign-015` and `campaign-016` history directories are present.
+- **Previous direction carried forward**: Stage 3 recommended continuing the booking/reschedule conflict recovery line so server-side `time_unavailable`, date capacity, and frontend status feedback share a clearer recovery path.
+- **Impact choice**: Shared conflict recovery scores highest because it fixes a real race-condition UX gap after another customer takes a slot, directly benefits both public booking and customer-dashboard rescheduling, and can be verified at API, source-contract, and browser-flow levels without a database migration.
+- **Completed locally**:
+  - Added a shared booking time-slot recovery contract that returns whether the selected date can be kept, the requested time, available replacement time windows, and a suggested replacement.
+  - Direct booking and authenticated reschedule APIs now return `recovery` alongside structured `time_unavailable` 409 responses.
+  - Direct booking now returns to the time-selection step, shows a cross-step recovery alert, selects the suggested replacement window, and keeps the server-returned conflict state from being overwritten by stale calendar availability after the calendar remounts.
+  - Dashboard rescheduling now keeps the guided panel open after a conflict, applies the suggested replacement window, updates the inline status/toast copy, and lets the customer immediately confirm the recovered schedule.
+  - Added zh-CN, en, ja, and ko copy for direct-booking and reschedule recovery hints.
+  - Added API, source-contract, and Playwright coverage for direct booking and dashboard reschedule recovery paths.
+- **Local verification**:
+  - Red/green: `npm test -- functions/api.test.ts src/lib/audit-regressions.test.ts` first failed on the missing API/UI recovery contracts, then passed 2 files / 110 tests after implementation.
+  - Targeted Playwright first exposed the direct-booking recovery alert/state overwrite gap; after fixing the cross-step alert and recovered availability preservation, `npx playwright test -c e2e/playwright.config.ts e2e/booking.spec.ts -g "recovers when"` passed 2/2.
+  - `npm ci` passed with 456 packages installed, 0 vulnerabilities, and only allow-scripts/deprecation warnings from dependencies.
+  - `npm run lint` passed.
+  - `npm test` passed 58 files / 372 tests.
+  - `npm run build` passed.
+  - `npm run perf:budget` passed.
+  - `npm run build:full` passed, including SEO sync, sitemap generation, AVIF check, TypeScript, Vite build, performance budget, and bundle analysis.
+  - Full Playwright passed 42/42.
+  - Reverted generated sitemap timestamp churn and Playwright `test-results` cleanup noise before staging.
+- **Risk**: The recovery suggestion is still application-level conflict handling; a database-level uniqueness guard would be the next hardening step if production traffic shows simultaneous writes to the same slot.
+- **Commit / Push / CI**: pending stage commit, push, and GitHub Actions verification.
+- **Next stage**: Stage 5 / 6 — CHECK using `AGENT_CHECK_MAIN.txt`; recommended focus is a broad code/site verification pass now that the main booking reliability line has added both prevention and recovery.
+- **Status**: LOCAL VERIFICATION COMPLETE

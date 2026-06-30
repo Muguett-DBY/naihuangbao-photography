@@ -221,6 +221,96 @@ test.describe("booking flow", () => {
     await expect(page.getByRole("button", { name: /^19日 - Unavailable before/ })).toBeDisabled();
   });
 
+  test("recovers when a direct booking time window is taken before submit", async ({ page }) => {
+    const policyDate = "2099-08-20";
+    const bookingDate = "2099-08-21";
+    const bookingPayloads: Record<string, unknown>[] = [];
+
+    await page.route("**/api/booking/policy", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        earliestDate: policyDate,
+        timeZone: "Asia/Shanghai",
+        capacityPerDay: 3,
+        dateFormat: "YYYY-MM-DD",
+        unavailableReasons: {
+          beforeEarliest: "before_earliest",
+          fullyBooked: "fully_booked",
+          invalidDate: "invalid_date",
+        },
+        generatedAt: "2099-08-19T16:00:00.000Z",
+      }),
+    }));
+    await page.route("**/api/availability**", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        capacityPerDay: 3,
+        dates: {
+          [bookingDate]: {
+            status: "partial",
+            count: 1,
+            capacity: 3,
+            remaining: 2,
+            timeSlots: {
+              morning: { status: "booked", count: 1, capacity: 1, remaining: 0 },
+              afternoon: { status: "available", count: 0, capacity: 1, remaining: 1 },
+              fullDay: { status: "available", count: 0, capacity: 1, remaining: 1 },
+            },
+          },
+        },
+      }),
+    }));
+    await page.route("**/api/booking", (route) => {
+      bookingPayloads.push(route.request().postDataJSON() as Record<string, unknown>);
+      return route.fulfill({
+        status: 409,
+        contentType: "application/json",
+        body: JSON.stringify({
+          error: "time_unavailable",
+          message: "The requested time window is no longer available.",
+          preferredDate: bookingDate,
+          preferredTime: "fullDay",
+          timeSlots: {
+            morning: { status: "booked", count: 1, capacity: 1, remaining: 0 },
+            afternoon: { status: "available", count: 0, capacity: 1, remaining: 1 },
+            fullDay: { status: "booked", count: 1, capacity: 1, remaining: 0 },
+          },
+          recovery: {
+            canKeepDate: true,
+            requestedTime: "fullDay",
+            suggestedTime: "afternoon",
+            availableTimeSlots: ["afternoon"],
+          },
+        }),
+      });
+    });
+
+    await page.goto("/");
+    await page.locator(".hero-cover-primary-btn").click();
+    await page.getByRole("button", { name: /^21日 - Open slots: 2/ }).click();
+    await page.locator("#booking-time").selectOption("fullDay");
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await page.locator("#booking-name").fill("Recovery Guest");
+    await page.locator("#booking-contact").fill("recovery@example.com");
+    await page.getByRole("button", { name: "Send Booking", exact: true }).click();
+
+    await expect(page.locator("#booking-time")).toBeVisible();
+    await expect(page.locator(".booking-error")).toContainText("That window was just taken");
+    await expect(page.locator("#booking-time")).toHaveValue("afternoon");
+    await expect(page.locator("#booking-time option[value='fullDay']")).toBeDisabled();
+    await expect(page.locator(".booking-time-slot-grid")).toContainText("Afternoon");
+    await expect(page.locator(".booking-time-slot-grid")).toContainText("Available");
+    expect(bookingPayloads).toHaveLength(1);
+    expect(bookingPayloads[0]).toMatchObject({
+      preferredDate: bookingDate,
+      preferredTime: "fullDay",
+      name: "Recovery Guest",
+      contact: "recovery@example.com",
+    });
+  });
+
   test("routes fully booked booking dates into the waitlist flow", async ({ page }) => {
     const policyDate = "2099-08-20";
     const fullDate = "2099-08-21";
@@ -533,6 +623,127 @@ test.describe("booking flow", () => {
       preferred_date: "2026-07-15",
       preferred_time: "afternoon",
     });
+    await expect(page.getByText("Booking moved to 2026-07-15 · Afternoon.", { exact: true })).toBeVisible();
+  });
+
+  test("recovers when a reschedule time window is taken before submit", async ({ page }) => {
+    const reschedulePayloads: Record<string, unknown>[] = [];
+    await page.route("**/api/auth/session", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        authenticated: true,
+        user: { id: "user-1", email: "guest@example.com", displayName: "Guest" },
+      }),
+    }));
+    await page.route("**/api/user/stats", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ bookings: 1, photos: 0, purchases: 0, courses: 0, workshops: 0 }),
+    }));
+    await page.route("**/api/availability**", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        capacityPerDay: 3,
+        dates: {
+          "2026-07-15": {
+            status: "partial",
+            count: 1,
+            capacity: 3,
+            remaining: 2,
+            timeSlots: {
+              morning: { status: "booked", count: 1, capacity: 1, remaining: 0 },
+              afternoon: { status: "available", count: 0, capacity: 1, remaining: 1 },
+              fullDay: { status: "available", count: 0, capacity: 1, remaining: 1 },
+            },
+          },
+        },
+      }),
+    }));
+    await page.route("**/api/user/bookings**", async (route) => {
+      if (new URL(route.request().url()).pathname.endsWith("/reschedule")) {
+        reschedulePayloads.push(route.request().postDataJSON() as Record<string, unknown>);
+        if (reschedulePayloads.length === 1) {
+          return route.fulfill({
+            status: 409,
+            contentType: "application/json",
+            body: JSON.stringify({
+              error: "time_unavailable",
+              message: "The requested time window is no longer available.",
+              preferredDate: "2026-07-15",
+              preferredTime: "fullDay",
+              timeSlots: {
+                morning: { status: "booked", count: 1, capacity: 1, remaining: 0 },
+                afternoon: { status: "available", count: 0, capacity: 1, remaining: 1 },
+                fullDay: { status: "booked", count: 1, capacity: 1, remaining: 0 },
+              },
+              recovery: {
+                canKeepDate: true,
+                requestedTime: "fullDay",
+                suggestedTime: "afternoon",
+                availableTimeSlots: ["afternoon"],
+              },
+            }),
+          });
+        }
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            ok: true,
+            booking: { preferred_date: "2026-07-15", preferred_time: "afternoon" },
+          }),
+        });
+      }
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          bookings: [{
+            id: "booking-1",
+            package_name: "Portrait Session",
+            preferred_date: "2026-07-15",
+            preferred_time: "morning",
+            name: "Guest",
+            status: "confirmed",
+            created_at: "2026-06-26T00:00:00.000Z",
+            payment_intent_id: null,
+            payment_status: "not_started",
+            payment_provider: null,
+            payment_amount_cents: null,
+            payment_currency: null,
+          }],
+        }),
+      });
+    });
+
+    await page.goto("/dashboard");
+    await page.getByRole("tab", { name: "My Bookings", exact: true }).click();
+    await page.getByRole("button", { name: "Reschedule", exact: true }).click();
+
+    const timeSelect = page.getByLabel("New time window", { exact: true });
+    await timeSelect.selectOption("fullDay");
+    await expect(page.locator(".dashboard-reschedule-status")).toContainText("Ready to move to 2026-07-15 · Full Day.");
+    await page.getByRole("button", { name: "Confirm reschedule", exact: true }).click();
+
+    await expect(page.locator(".dashboard-reschedule-status")).toContainText("That window was just taken");
+    await expect(timeSelect).toHaveValue("afternoon");
+    await expect(page.locator(".dashboard-reschedule-summary")).toContainText("Afternoon");
+    await expect(page.getByRole("button", { name: "Confirm reschedule", exact: true })).toBeEnabled();
+
+    await page.getByRole("button", { name: "Confirm reschedule", exact: true }).click();
+    await expect.poll(() => reschedulePayloads).toHaveLength(2);
+    expect(reschedulePayloads).toEqual([
+      {
+        preferred_date: "2026-07-15",
+        preferred_time: "fullDay",
+      },
+      {
+        preferred_date: "2026-07-15",
+        preferred_time: "afternoon",
+      },
+    ]);
     await expect(page.getByText("Booking moved to 2026-07-15 · Afternoon.", { exact: true })).toBeVisible();
   });
 

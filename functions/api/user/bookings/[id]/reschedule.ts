@@ -4,6 +4,7 @@ import { getRequiredAuthSecret, requirePublicMutationRequest } from "../../../..
 import { validateId } from "../../../../_validation";
 import {
   getBookingTimeSlotAvailability,
+  getBookingTimeSlotRecovery,
   getBusinessDate,
   isBookingDateFull,
   isCancelledBookingStatus,
@@ -98,12 +99,14 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     }
 
     if (isBookingTimeUnavailable(activeBookingsForDate, newTime, dateFull)) {
+      const timeSlots = getBookingTimeSlotAvailability(activeBookingsForDate, dateFull);
       return jsonResponse({
         error: "time_unavailable",
         message: "该时段已不可预约，请选择其他时段。",
         preferredDate: newDate,
         preferredTime: newTime,
-        timeSlots: getBookingTimeSlotAvailability(activeBookingsForDate, dateFull),
+        timeSlots,
+        recovery: getBookingTimeSlotRecovery(timeSlots, newTime),
       }, 409);
     }
 
