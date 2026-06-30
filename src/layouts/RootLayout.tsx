@@ -26,6 +26,7 @@ import { RouteHashScroller } from "../components/shared/RouteHashScroller";
 const GlobalEffects = lazy(() => import("../components/GlobalEffects"));
 
 const PublicChatWidget = lazy(() => import("../components/PublicChatWidget"));
+const OfflineBookingRecovery = lazy(() => import("../components/OfflineBookingRecovery"));
 
 export function RootLayout() {
   const { t } = useTranslation();
@@ -106,6 +107,11 @@ export function RootLayout() {
             <PublicPhotosProvider>
               <ToastProvider>
               <Header />
+              {!isEditor && (
+                <Suspense fallback={null}>
+                  <OfflineBookingRecovery isOnline={isOnline} />
+                </Suspense>
+              )}
               <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
                 <ErrorBoundary>
                   <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>

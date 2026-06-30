@@ -1,5 +1,5 @@
 import { Button, Input, Modal } from "animal-island-ui";
-import { type FormEvent, useId, useState, useCallback, useEffect } from "react";
+import { type FormEvent, useId, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ExternalLink, LayoutDashboard } from "lucide-react";
@@ -12,7 +12,7 @@ import { BookingCalendar } from "./BookingCalendar";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
 import { track } from "../utils/track";
-import { savePendingBooking, syncPendingBookings } from "../utils/offlineBooking";
+import { savePendingBooking } from "../utils/offlineBooking";
 import { isBookableBusinessDate, isRealDateKey } from "../utils/businessDate";
 import { useBookingPolicy } from "../hooks/useBookingPolicy";
 
@@ -67,18 +67,6 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const successBridgeTitleId = useId();
   const contentRef = useFocusTrap<HTMLDivElement>({ initialFocus: "first" });
   useModalA11y({ open: true, titleId, descriptionId });
-
-  // Sync pending bookings when back online
-  useEffect(() => {
-    const handleOnline = async () => {
-      const { synced } = await syncPendingBookings();
-      if (synced > 0) {
-        track("booking_offline_synced", { count: synced });
-      }
-    };
-    window.addEventListener("online", handleOnline);
-    return () => window.removeEventListener("online", handleOnline);
-  }, []);
 
   const validateField = useCallback((field: string, value: string): string | undefined => {
     switch (field) {
@@ -231,6 +219,9 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           contact: trimmedContact,
           notes: trimmedNotes,
         });
+        if (!bookingId) {
+          throw new Error(t("bookingModal.offlineSaveError", "This booking could not be saved on this device. Please reconnect and try again."));
+        }
         setBookingId(bookingId);
         setSavedOffline(true);
         setDepositOutcome("offline");

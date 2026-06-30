@@ -20,6 +20,13 @@ export type PendingBooking = {
 const DB_NAME = "nhb-bookings";
 const DB_VERSION = 1;
 const STORE_NAME = "pending-bookings";
+export const PENDING_BOOKINGS_CHANGED_EVENT = "nhb:pending-bookings-changed";
+
+function notifyPendingBookingsChanged() {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(PENDING_BOOKINGS_CHANGED_EVENT));
+  }
+}
 
 function openDB(): Promise<IDBDatabase | null> {
   if (typeof indexedDB === "undefined") return Promise.resolve(null);
@@ -52,7 +59,12 @@ export async function savePendingBooking(booking: Omit<PendingBooking, "id" | "c
     const tx = db.transaction(STORE_NAME, "readwrite");
     const store = tx.objectStore(STORE_NAME);
     const request = store.put(entry);
-    request.onsuccess = () => resolve(id);
+    tx.oncomplete = () => {
+      notifyPendingBookingsChanged();
+      resolve(id);
+    };
+    tx.onabort = () => resolve(null);
+    tx.onerror = () => resolve(null);
     request.onerror = () => resolve(null);
   });
 }
@@ -70,24 +82,26 @@ export async function getPendingBookings(): Promise<PendingBooking[]> {
   });
 }
 
-export async function markBookingSynced(id: string): Promise<void> {
-  const db = await openDB();
-  if (!db) return;
+export type PendingBookingRecoverySummary = {
+  pendingCount: number;
+  failedCount: number;
+  totalCount: number;
+};
 
-  return new Promise((resolve) => {
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    const store = tx.objectStore(STORE_NAME);
-    const getReq = store.get(id);
-    getReq.onsuccess = () => {
-      const entry = getReq.result as PendingBooking | undefined;
-      if (entry) {
-        entry.status = "synced";
-        store.put(entry);
-      }
-      resolve();
-    };
-    getReq.onerror = () => resolve();
-  });
+export function summarizePendingBookingRecovery(bookings: PendingBooking[]): PendingBookingRecoverySummary {
+  let pendingCount = 0;
+  let failedCount = 0;
+
+  for (const booking of bookings) {
+    if (booking.status === "pending") pendingCount++;
+    if (booking.status === "failed") failedCount++;
+  }
+
+  return {
+    pendingCount,
+    failedCount,
+    totalCount: pendingCount + failedCount,
+  };
 }
 
 export async function markBookingFailed(id: string): Promise<void> {
@@ -98,29 +112,55 @@ export async function markBookingFailed(id: string): Promise<void> {
     const tx = db.transaction(STORE_NAME, "readwrite");
     const store = tx.objectStore(STORE_NAME);
     const getReq = store.get(id);
+    let changed = false;
+    tx.oncomplete = () => {
+      if (changed) notifyPendingBookingsChanged();
+      resolve();
+    };
+    tx.onabort = () => resolve();
+    tx.onerror = () => resolve();
     getReq.onsuccess = () => {
       const entry = getReq.result as PendingBooking | undefined;
       if (entry) {
         entry.status = "failed";
         store.put(entry);
+        changed = true;
       }
-      resolve();
     };
     getReq.onerror = () => resolve();
   });
 }
 
-export async function removePendingBooking(id: string): Promise<void> {
+async function deleteBookingRecord(id: string): Promise<boolean> {
   const db = await openDB();
-  if (!db) return;
+  if (!db) return false;
 
   return new Promise((resolve) => {
     const tx = db.transaction(STORE_NAME, "readwrite");
     const store = tx.objectStore(STORE_NAME);
     const request = store.delete(id);
-    request.onsuccess = () => resolve();
-    request.onerror = () => resolve();
+    let deleted = false;
+    tx.oncomplete = () => resolve(deleted);
+    tx.onabort = () => resolve(false);
+    tx.onerror = () => resolve(false);
+    request.onsuccess = () => {
+      deleted = true;
+    };
+    request.onerror = () => resolve(false);
   });
+}
+
+export async function removePendingBooking(id: string): Promise<void> {
+  if (await deleteBookingRecord(id)) notifyPendingBookingsChanged();
+}
+
+export async function clearSyncedBookings(): Promise<number> {
+  const bookings = await getPendingBookings();
+  const syncedIds = bookings.filter((booking) => booking.status === "synced").map((booking) => booking.id);
+  const removed = await Promise.all(syncedIds.map((id) => deleteBookingRecord(id)));
+  const removedCount = removed.filter(Boolean).length;
+  if (removedCount > 0) notifyPendingBookingsChanged();
+  return removedCount;
 }
 
 export function createPendingBookingRequestInit(booking: PendingBooking): RequestInit {
@@ -158,7 +198,7 @@ export async function syncPendingBookings(): Promise<{ synced: number; failed: n
       const disposition = getPendingBookingSyncDisposition(response.status);
 
       if (disposition === "synced") {
-        await markBookingSynced(booking.id);
+        await removePendingBooking(booking.id);
         synced++;
       } else if (disposition === "failed") {
         await markBookingFailed(booking.id);

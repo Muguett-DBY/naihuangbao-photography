@@ -398,6 +398,29 @@
     "desc": "The page you're looking for doesn't exist or has been removed.",
     "cta": "Back to Home"
   },
+  "offlineStatus": {
+    "offline": "You're offline. Saved bookings stay on this device.",
+    "online": "You're back online. Checking saved bookings."
+  },
+  "offlineBookingRecovery": {
+    "title": "Saved booking recovery",
+    "pendingOnline": "{{count}} saved booking is waiting to sync.",
+    "pendingOffline": "{{count}} booking is safe on this device.",
+    "pendingDetail": "This request remains on this device until the studio receives it.",
+    "failed": "{{count}} saved booking needs attention.",
+    "failedDetail": "Remove a rejected request or start a fresh booking with corrected details.",
+    "synced": "{{count}} saved booking sent successfully.",
+    "syncNow": "Sync now",
+    "syncing": "Syncing...",
+    "bookAgain": "Book again",
+    "remove": "Remove saved {{packageName}} booking",
+    "unknownPackage": "Photography session",
+    "noDate": "Date not selected",
+    "status": {
+      "pending": "Waiting to sync",
+      "failed": "Needs attention"
+    }
+  },
   "bookingModal": {
     "title": "Book a Session",
     "subtitle": "Leave your info and I'll confirm the date",
@@ -454,6 +477,7 @@
     "back": "Back",
     "stepNavigation": "Booking steps",
     "offlineSyncNotice": "This request is saved on this device and will be sent automatically when you are back online.",
+    "offlineSaveError": "This booking could not be saved on this device. Please reconnect and try again.",
     "paymentClarityLabel": "Payment status next steps",
     "paymentClarityTitle": "What happens with the deposit",
     "paymentClarity": {
