@@ -930,6 +930,8 @@ describe("audit regression coverage", () => {
 
   it("keeps public account registration on the stronger minimum password policy", () => {
     expect(loginPageSource).toContain('minLength={mode === "register" ? 8 : undefined}');
+    expect(loginPageSource).toContain('autoComplete={mode === "register" ? "new-password" : "current-password"}');
+    expect(loginPageSource).toContain('autoComplete="new-password"');
     expect(registerApiSource).toContain("password.length < 8");
     expect(registerApiSource).toContain("密码至少需要8个字符");
     for (const locale of Object.values(locales)) {
