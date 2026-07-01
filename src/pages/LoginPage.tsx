@@ -172,6 +172,7 @@ export function LoginPage() {
                         required
                         placeholder={t("auth.emailPlaceholder")}
                         className="login-input"
+                        autoComplete="email"
                       />
                     </div>
                   </div>
@@ -240,6 +241,7 @@ export function LoginPage() {
                         minLength={8}
                         placeholder={t("auth.passwordPlaceholder")}
                         className="login-input"
+                        autoComplete="new-password"
                       />
                     </div>
                   </div>
@@ -319,6 +321,7 @@ export function LoginPage() {
                       onChange={(e) => setDisplayName(e.target.value)}
                       placeholder={t("auth.displayNamePlaceholder")}
                       className="login-input"
+                      autoComplete="name"
                       aria-invalid={!!error || undefined}
                       aria-describedby={error ? errorId : undefined}
                     />
@@ -340,6 +343,7 @@ export function LoginPage() {
                       required
                       placeholder={t("auth.emailPlaceholder")}
                       className="login-input"
+                      autoComplete="email"
                       aria-invalid={!!error || undefined}
                       aria-describedby={error ? errorId : undefined}
                     />
@@ -361,6 +365,7 @@ export function LoginPage() {
                       minLength={mode === "register" ? 8 : undefined}
                       placeholder={mode === "register" ? t("auth.passwordPlaceholder") : t("auth.password")}
                       className="login-input"
+                      autoComplete={mode === "register" ? "new-password" : "current-password"}
                       aria-invalid={!!error || undefined}
                       aria-describedby={error ? errorId : undefined}
                     />
