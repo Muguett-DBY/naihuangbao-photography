@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Bell, X } from "lucide-react";
 import { usePushNotification } from "../hooks/usePushNotification";
+import { logAndIgnore } from "../lib/errors";
 
 export function PushNotificationBanner() {
   const { t } = useTranslation();
@@ -9,7 +10,8 @@ export function PushNotificationBanner() {
   const [dismissed, setDismissed] = useState(() => {
     try {
       return localStorage.getItem("nhb-push-dismissed") === "true";
-    } catch {
+    } catch (error) {
+      logAndIgnore("Push notification dismissed state restore failed", error);
       return false;
     }
   });
@@ -24,7 +26,9 @@ export function PushNotificationBanner() {
       setDismissed(true);
       try {
         localStorage.setItem("nhb-push-dismissed", "true");
-      } catch {}
+      } catch (error) {
+        logAndIgnore("Push notification dismissed state save failed", error);
+      }
     }
   };
 
@@ -32,7 +36,9 @@ export function PushNotificationBanner() {
     setDismissed(true);
     try {
       localStorage.setItem("nhb-push-dismissed", "true");
-    } catch {}
+    } catch (error) {
+      logAndIgnore("Push notification dismissed state save failed", error);
+    }
   };
 
   return (

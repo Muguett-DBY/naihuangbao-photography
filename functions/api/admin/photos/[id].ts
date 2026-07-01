@@ -1,6 +1,6 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../../_auth";
 import { deletePhotoWithConsistency, flushQueuedPhotoObjectDeletes } from "../../../_photos";
-import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../../_responses";
+import { badRequest, forbidden, jsonResponse, logWorkerError, unauthorized, unavailable } from "../../../_responses";
 import { logAuditEvent } from "../../../lib/audit-log";
 import type { PhotoStyle } from "../../../../src/types/photo";
 
@@ -95,7 +95,9 @@ export const onRequestPatch: PagesFunction<AdminPhotoEnv> = async (context) => {
     });
 
     if (context.env.CACHE) {
-      context.waitUntil(context.env.CACHE.delete("photos:public").catch(() => {}));
+      context.waitUntil(context.env.CACHE.delete("photos:public").catch((error) => {
+        logWorkerError("作品缓存失效失败", error, { route: "/api/admin/photos/:id", method: "PATCH" });
+      }));
     }
     return jsonResponse({ ok: true });
   } catch (error) {
@@ -135,9 +137,13 @@ export const onRequestDelete: PagesFunction<AdminPhotoEnv> = async (context) => 
       diff_json: JSON.stringify({ title: photo?.title, style: photo?.style }),
     });
 
-    context.waitUntil(flushQueuedPhotoObjectDeletes(context.env).catch(() => undefined));
+    context.waitUntil(flushQueuedPhotoObjectDeletes(context.env).catch((error) => {
+      logWorkerError("照片 R2 清理队列冲刷失败", error, { route: "/api/admin/photos/:id", method: "DELETE" });
+    }));
     if (context.env.CACHE) {
-      context.waitUntil(context.env.CACHE.delete("photos:public").catch(() => {}));
+      context.waitUntil(context.env.CACHE.delete("photos:public").catch((error) => {
+        logWorkerError("作品缓存失效失败", error, { route: "/api/admin/photos/:id", method: "DELETE" });
+      }));
     }
     return jsonResponse({ ok: true, cleanupQueued: result.cleanupQueued });
   } catch (error) {

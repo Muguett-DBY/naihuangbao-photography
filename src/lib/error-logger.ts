@@ -2,6 +2,11 @@
  * Centralized error logging utility.
  * In development, logs to console. In production, sends to backend for monitoring.
  */
+function reportErrorLoggingFailure(context: string, error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.warn("[ErrorLogger]", context, message);
+}
+
 export function logError(context: string, error: unknown, extra?: Record<string, unknown>) {
   const message = error instanceof Error ? error.message : String(error);
   const stack = error instanceof Error ? error.stack : undefined;
@@ -34,10 +39,10 @@ export function logError(context: string, error: unknown, extra?: Record<string,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
           keepalive: true,
-        }).catch(() => {});
+        }).catch((reportError) => reportErrorLoggingFailure("fallback request failed", reportError));
       }
-    } catch {
-      // Silently fail - error logging should never break the app
+    } catch (loggingError) {
+      reportErrorLoggingFailure("payload creation failed", loggingError);
     }
   }
 }

@@ -1,6 +1,6 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../../_auth";
 import { deletePhotosWithConsistency, flushQueuedPhotoObjectDeletes } from "../../../_photos";
-import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../../_responses";
+import { badRequest, forbidden, jsonResponse, logWorkerError, unauthorized, unavailable } from "../../../_responses";
 import { logAuditEvent } from "../../../lib/audit-log";
 
 type AdminPhotosBatchEnv = Env & { ADMIN_PASSWORD?: string };
@@ -105,9 +105,13 @@ export const onRequestPost: PagesFunction<AdminPhotosBatchEnv> = async (context)
         diff_json: JSON.stringify({ count: result.deleted }),
       });
 
-      context.waitUntil(flushQueuedPhotoObjectDeletes(context.env).catch(() => undefined));
+      context.waitUntil(flushQueuedPhotoObjectDeletes(context.env).catch((error) => {
+        logWorkerError("照片 R2 清理队列冲刷失败", error, { route: "/api/admin/photos/batch", method: "POST" });
+      }));
       if (context.env.CACHE) {
-        context.waitUntil(context.env.CACHE.delete("photos:public").catch(() => {}));
+        context.waitUntil(context.env.CACHE.delete("photos:public").catch((error) => {
+          logWorkerError("作品缓存失效失败", error, { route: "/api/admin/photos/batch", method: "POST" });
+        }));
       }
       return jsonResponse({
         ok: true,

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { logAndIgnore } from "../lib/errors";
 
 type UserPreferences = {
   theme: "light" | "dark" | "system";
@@ -17,7 +18,9 @@ export function useUserPreferences() {
       if (stored) {
         return { ...getDefaultPreferences(), ...JSON.parse(stored) };
       }
-    } catch {}
+    } catch (error) {
+      logAndIgnore("User preferences restore failed", error);
+    }
     return getDefaultPreferences();
   });
 
@@ -28,7 +31,9 @@ export function useUserPreferences() {
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
-    } catch {}
+    } catch (error) {
+      logAndIgnore("User preferences save failed", error);
+    }
   }, [preferences]);
 
   const updateTheme = useCallback((theme: UserPreferences["theme"]) => {

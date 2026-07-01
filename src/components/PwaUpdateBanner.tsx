@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshCw, X } from "lucide-react";
+import { logAndIgnore } from "../lib/errors";
 
 const UPDATE_CHECK_INTERVAL_MS = 30 * 60 * 1000;
 
@@ -22,7 +23,9 @@ export function PwaUpdateBanner() {
     let updateTimer: number | null = null;
 
     const checkForUpdate = () => {
-      void registrationRef.current?.update().catch(() => undefined);
+      void registrationRef.current?.update().catch((error) => {
+        logAndIgnore("Service worker update check failed", error);
+      });
     };
 
     const handleUpdateFound = () => {
@@ -69,10 +72,14 @@ export function PwaUpdateBanner() {
       checkForUpdate();
     };
 
-    navigator.serviceWorker.getRegistration().then(attachRegistration).catch(() => undefined);
+    navigator.serviceWorker.getRegistration().then(attachRegistration).catch((error) => {
+      logAndIgnore("Service worker registration lookup failed", error);
+    });
     navigator.serviceWorker.ready.then((reg) => {
       attachRegistration(reg);
-    }).catch(() => undefined);
+    }).catch((error) => {
+      logAndIgnore("Service worker readiness wait failed", error);
+    });
 
     navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
     document.addEventListener("visibilitychange", handleVisibilityChange);

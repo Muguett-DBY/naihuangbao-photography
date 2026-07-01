@@ -164,7 +164,7 @@ npx wrangler d1 execute naihuangbao-photography --file=./scripts/seed-static-gal
 执行 D1 schema 和静态作品 seed：
 
 ```bash
-npx wrangler d1 execute naihuangbao-photography --file=./schema.sql --remote
+npx wrangler d1 execute naihuangbao-photography --file=./db/schema.sql --remote
 npx wrangler d1 execute naihuangbao-photography --file=./scripts/seed-static-gallery.sql --remote
 ```
 

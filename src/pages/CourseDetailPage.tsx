@@ -21,6 +21,7 @@ import { VideoPlayer } from "../components/VideoPlayer";
 import { PaymentForm } from "../components/PaymentForm";
 import { siteOrigin } from "../lib/site-origin";
 import { publicMutationHeaders } from "../lib/admin-helpers";
+import { logAndIgnore } from "../lib/errors";
 import type { Course, CourseModule } from "../types/content";
 
 const fetchWithCredentials: RequestInit = { credentials: "include" };
@@ -38,7 +39,9 @@ export function CourseDetailPage() {
     try {
       const saved = localStorage.getItem(`course-progress-${id}`);
       if (saved) return new Set(JSON.parse(saved));
-    } catch {}
+    } catch (error) {
+      logAndIgnore("Course progress restore failed", error);
+    }
     return new Set();
   });
   const [syncing, setSyncing] = useState(false);
@@ -81,7 +84,11 @@ export function CourseDetailPage() {
   // Persist completed modules to localStorage
   useEffect(() => {
     if (id) {
-      localStorage.setItem(`course-progress-${id}`, JSON.stringify(Array.from(completedModules)));
+      try {
+        localStorage.setItem(`course-progress-${id}`, JSON.stringify(Array.from(completedModules)));
+      } catch (error) {
+        logAndIgnore("Course progress save failed", error);
+      }
     }
   }, [id, completedModules]);
 
