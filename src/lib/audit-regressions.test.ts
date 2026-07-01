@@ -78,8 +78,15 @@ const customCursorSource = readFileSync(resolve(root, "src/components/CustomCurs
 const filmGrainSource = readFileSync(resolve(root, "src/components/FilmGrain.tsx"), "utf8");
 const bookingCalendarSource = readFileSync(resolve(root, "src/components/BookingCalendar.tsx"), "utf8");
 const loadingScreenSource = readFileSync(resolve(root, "src/components/LoadingScreen.tsx"), "utf8");
+const resilientClientStorageSources = [
+  "src/pages/CourseDetailPage.tsx",
+  "src/hooks/useUserPreferences.ts",
+  "src/components/PushNotificationBanner.tsx",
+].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const errorBoundarySource = readFileSync(resolve(root, "src/components/ErrorBoundary.tsx"), "utf8");
 const pwaUpdateBannerSource = readFileSync(resolve(root, "src/components/PwaUpdateBanner.tsx"), "utf8");
+const prefetchLinkSource = readFileSync(resolve(root, "src/components/shared/PrefetchLink.tsx"), "utf8");
+const errorLoggerSource = readFileSync(resolve(root, "src/lib/error-logger.ts"), "utf8");
 const themeToggleSource = readFileSync(resolve(root, "src/components/ThemeToggle.tsx"), "utf8");
 const errorTrackerSource = readFileSync(resolve(root, "src/lib/error-tracker.ts"), "utf8");
 const analyticsErrorApiSource = readFileSync(resolve(root, "functions/api/analytics/error.ts"), "utf8");
@@ -423,6 +430,29 @@ describe("audit regression coverage", () => {
     expect(adminSource).toContain("URL.revokeObjectURL");
     expect(adminSource).toContain("AbortController");
     expect(adminSource).not.toContain("} catch {}");
+  });
+
+  it("does not silently swallow client storage recovery failures", () => {
+    expect(resilientClientStorageSources).not.toContain("} catch {}");
+    expect(resilientClientStorageSources).toContain("logAndIgnore");
+  });
+
+  it("keeps diagnostics for non-critical async background failures", () => {
+    const backgroundFailureSources = [
+      errorLoggerSource,
+      photosMapperSource,
+      adminPhotosApiSource,
+      adminPhotoApiSource,
+      adminPhotosBatchApiSource,
+      pwaUpdateBannerSource,
+      prefetchLinkSource,
+    ].join("\n");
+
+    expect(backgroundFailureSources).not.toContain(".catch(() => {})");
+    expect(backgroundFailureSources).not.toContain(".catch(() => undefined)");
+    expect(backgroundFailureSources).not.toContain("Silently fail");
+    expect(backgroundFailureSources).toContain("logAndIgnore");
+    expect(backgroundFailureSources).toContain("logWorkerError");
   });
 
   it("continues non-stream chat reveal ticks until the reply is complete", () => {

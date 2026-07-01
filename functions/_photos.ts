@@ -1,5 +1,6 @@
 import { galleryItems } from "../src/data/gallery";
 import type { PhotoItem, PhotoStyle, PhotoVisibility } from "../src/types/photo";
+import { logWorkerError } from "./_responses";
 
 export type PhotoRow = {
   id: string;
@@ -200,7 +201,9 @@ export async function createPhotoWithCompensation(env: Env, input: PhotoCreateIn
       )
       .run();
   } catch (error) {
-    await env.PHOTO_BUCKET.delete(input.objectKey).catch(() => undefined);
+    await env.PHOTO_BUCKET.delete(input.objectKey).catch((cleanupError) => {
+      logWorkerError("上传失败后的 R2 清理失败", cleanupError, { objectKey: input.objectKey });
+    });
     throw error;
   }
 }

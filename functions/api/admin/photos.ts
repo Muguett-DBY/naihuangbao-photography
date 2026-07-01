@@ -1,6 +1,6 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../_auth";
 import { buildPhotoSelectList, createPhotoWithCompensation, mapPublicPhoto, type PhotoRow } from "../../_photos";
-import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../_responses";
+import { badRequest, forbidden, jsonResponse, logWorkerError, unauthorized, unavailable } from "../../_responses";
 import type { PhotoStyle } from "../../../src/types/photo";
 
 type AdminPhotosEnv = Env & {
@@ -109,7 +109,9 @@ export const onRequestPost: PagesFunction<AdminPhotosEnv> = async (context) => {
     });
 
     if (context.env.CACHE) {
-      context.waitUntil(context.env.CACHE.delete("photos:public").catch(() => {}));
+      context.waitUntil(context.env.CACHE.delete("photos:public").catch((error) => {
+        logWorkerError("作品缓存失效失败", error, { route: "/api/admin/photos", method: "POST" });
+      }));
     }
 
     return jsonResponse({
