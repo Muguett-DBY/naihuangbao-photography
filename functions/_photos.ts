@@ -28,6 +28,11 @@ export type PhotoCreateInput = {
   featured: boolean;
 };
 
+type PhotoDeleteRow = {
+  id: string;
+  object_key: string;
+};
+
 export function mapPublicPhoto(row: PhotoRow): PhotoItem {
   return {
     id: row.id,
@@ -51,6 +56,28 @@ export function publicPhotosFallback() {
 }
 
 const optionalPhotoColumns = ["album", "video_url", "note_url"] as const;
+const photoObjectDeleteQueueSchema = `
+  create table if not exists photo_object_delete_queue (
+    object_key text primary key,
+    photo_id text,
+    attempts integer not null default 0,
+    last_error text,
+    created_at text not null default (datetime('now')),
+    updated_at text not null default (datetime('now'))
+  )
+`;
+const photoObjectDeleteQueueIndex = `
+  create index if not exists idx_photo_object_delete_queue_updated
+    on photo_object_delete_queue (updated_at)
+`;
+
+function placeholders(count: number) {
+  return Array.from({ length: count }, () => "?").join(", ");
+}
+
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message.slice(0, 500) : String(error).slice(0, 500);
+}
 
 export async function buildPhotoSelectList(env: Env, baseColumns: readonly string[]) {
   try {
@@ -61,6 +88,85 @@ export async function buildPhotoSelectList(env: Env, baseColumns: readonly strin
   } catch {
     return baseColumns.join(", ");
   }
+}
+
+async function ensurePhotoObjectDeleteQueue(env: Env) {
+  await env.DB.prepare(photoObjectDeleteQueueSchema).run();
+  await env.DB.prepare(photoObjectDeleteQueueIndex).run();
+}
+
+async function removeQueuedPhotoObjects(env: Env, objectKeys: string[]) {
+  if (objectKeys.length === 0) return;
+  await env.DB.prepare(
+    `delete from photo_object_delete_queue where object_key in (${placeholders(objectKeys.length)})`,
+  )
+    .bind(...objectKeys)
+    .run();
+}
+
+async function recordQueuedPhotoObjectFailure(env: Env, objectKeys: string[], error: unknown) {
+  if (objectKeys.length === 0) return;
+  await env.DB.prepare(
+    `update photo_object_delete_queue
+       set attempts = attempts + 1,
+           last_error = ?,
+           updated_at = datetime('now')
+     where object_key in (${placeholders(objectKeys.length)})`,
+  )
+    .bind(errorMessage(error), ...objectKeys)
+    .run();
+}
+
+async function deleteQueuedPhotoObjects(env: Env, objectKeys: string[]) {
+  if (objectKeys.length === 0) return { cleanupQueued: 0 };
+
+  try {
+    await env.PHOTO_BUCKET.delete(objectKeys.length === 1 ? objectKeys[0] : objectKeys);
+    await removeQueuedPhotoObjects(env, objectKeys);
+    return { cleanupQueued: 0 };
+  } catch (error) {
+    await recordQueuedPhotoObjectFailure(env, objectKeys, error);
+    return { cleanupQueued: objectKeys.length };
+  }
+}
+
+export async function flushQueuedPhotoObjectDeletes(env: Env, limit = 100) {
+  await ensurePhotoObjectDeleteQueue(env);
+  const result = await env.DB.prepare(
+    `select object_key
+       from photo_object_delete_queue
+      order by updated_at asc
+      limit ?`,
+  )
+    .bind(limit)
+    .all<{ object_key: string }>();
+  const objectKeys = result.results.map((row) => row.object_key).filter(Boolean);
+  const cleanup = await deleteQueuedPhotoObjects(env, objectKeys);
+
+  return {
+    attempted: objectKeys.length,
+    cleanupQueued: cleanup.cleanupQueued,
+  };
+}
+
+async function commitPhotoRowsForDeletion(env: Env, ids: string[], rows: PhotoDeleteRow[]) {
+  await ensurePhotoObjectDeleteQueue(env);
+  const now = new Date().toISOString();
+  await env.DB.batch([
+    ...rows.map((row) =>
+      env.DB.prepare(
+        `insert into photo_object_delete_queue
+          (object_key, photo_id, created_at, updated_at)
+         values (?, ?, ?, ?)
+         on conflict(object_key) do update set
+           photo_id = excluded.photo_id,
+           updated_at = excluded.updated_at`,
+      )
+        .bind(row.object_key, row.id, now, now),
+    ),
+    env.DB.prepare(`delete from photos where id in (${placeholders(ids.length)})`)
+      .bind(...ids),
+  ]);
 }
 
 export async function createPhotoWithCompensation(env: Env, input: PhotoCreateInput) {
@@ -100,27 +206,26 @@ export async function createPhotoWithCompensation(env: Env, input: PhotoCreateIn
 }
 
 export async function deletePhotoWithConsistency(env: Env, id: string) {
-  const row = await env.DB.prepare("select object_key from photos where id = ?")
+  const row = await env.DB.prepare("select id, object_key from photos where id = ?")
     .bind(id)
-    .first<{ object_key: string }>();
+    .first<PhotoDeleteRow>();
 
   if (!row) {
     return { ok: false as const, status: 404, error: "作品不存在" };
   }
 
-  await env.PHOTO_BUCKET.delete(row.object_key);
-  await env.DB.prepare("delete from photos where id = ?").bind(id).run();
+  await commitPhotoRowsForDeletion(env, [id], [row]);
+  const cleanup = await deleteQueuedPhotoObjects(env, [row.object_key]);
 
-  return { ok: true as const };
+  return { ok: true as const, cleanupQueued: cleanup.cleanupQueued };
 }
 
 export async function deletePhotosWithConsistency(env: Env, ids: string[]) {
-  const placeholders = ids.map(() => "?").join(", ");
   const result = await env.DB.prepare(
-    `select id, object_key from photos where id in (${placeholders})`,
+    `select id, object_key from photos where id in (${placeholders(ids.length)})`,
   )
     .bind(...ids)
-    .all<{ id: string; object_key: string }>();
+    .all<PhotoDeleteRow>();
 
   const rowsById = new Map(result.results.map((row) => [row.id, row]));
   const rows = ids.map((id) => rowsById.get(id));
@@ -133,10 +238,8 @@ export async function deletePhotosWithConsistency(env: Env, ids: string[]) {
   }
 
   const objectKeys = rows.map((row) => row!.object_key);
-  await env.PHOTO_BUCKET.delete(objectKeys);
-  await env.DB.prepare(`delete from photos where id in (${placeholders})`)
-    .bind(...ids)
-    .run();
+  await commitPhotoRowsForDeletion(env, ids, rows as PhotoDeleteRow[]);
+  const cleanup = await deleteQueuedPhotoObjects(env, objectKeys);
 
-  return { ok: true as const, deleted: ids.length, ids };
+  return { ok: true as const, deleted: ids.length, ids, cleanupQueued: cleanup.cleanupQueued };
 }

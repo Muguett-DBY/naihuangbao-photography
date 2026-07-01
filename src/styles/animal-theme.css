@@ -54,6 +54,34 @@
     "Naihuangbao WenKai", "Kaiti SC",
     "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei",
     system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+
+  --animal-font-size-sm: 12px;
+  --animal-font-size-base: 14px;
+  --animal-font-size-lg: 16px;
+  --animal-line-height-base: 1.5715;
+  --animal-spacing-xs: 4px;
+  --animal-spacing-sm: 8px;
+  --animal-spacing-md: 12px;
+  --animal-spacing-lg: 16px;
+  --animal-spacing-xl: 24px;
+  --animal-border-width: 2px;
+  --animal-motion-duration-fast: 0.15s;
+  --animal-motion-duration-base: 0.25s;
+  --animal-motion-duration-slow: 0.35s;
+  --animal-motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --animal-height-sm: 32px;
+  --animal-height-base: 40px;
+  --animal-height-lg: 48px;
+}
+
+[class^="animal-"],
+[class*=" animal-"] {
+  color: var(--animal-text-color);
+  font-family: var(--animal-font-family);
+  font-size: var(--animal-font-size-base);
+  line-height: var(--animal-line-height-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ── Dark Mode ─────────────────────────────────────── */
