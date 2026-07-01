@@ -1,5 +1,5 @@
 import { isAdminMutationRequest, isAdminRequest } from "../../../_auth";
-import { deletePhotosWithConsistency } from "../../../_photos";
+import { deletePhotosWithConsistency, flushQueuedPhotoObjectDeletes } from "../../../_photos";
 import { badRequest, forbidden, jsonResponse, unauthorized, unavailable } from "../../../_responses";
 import { logAuditEvent } from "../../../lib/audit-log";
 
@@ -105,11 +105,15 @@ export const onRequestPost: PagesFunction<AdminPhotosBatchEnv> = async (context)
         diff_json: JSON.stringify({ count: result.deleted }),
       });
 
-      context.waitUntil(context.env.CACHE?.delete("photos:public").catch(() => {}));
+      context.waitUntil(flushQueuedPhotoObjectDeletes(context.env).catch(() => undefined));
+      if (context.env.CACHE) {
+        context.waitUntil(context.env.CACHE.delete("photos:public").catch(() => {}));
+      }
       return jsonResponse({
         ok: true,
         deleted: result.deleted,
         ids: result.ids,
+        cleanupQueued: result.cleanupQueued,
       });
     }
 

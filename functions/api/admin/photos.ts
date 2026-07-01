@@ -108,8 +108,9 @@ export const onRequestPost: PagesFunction<AdminPhotosEnv> = async (context) => {
       featured,
     });
 
-    // Invalidate list cache
-    context.waitUntil(context.env.CACHE?.delete("photos:public").catch(() => {}));
+    if (context.env.CACHE) {
+      context.waitUntil(context.env.CACHE.delete("photos:public").catch(() => {}));
+    }
 
     return jsonResponse({
       photo: {

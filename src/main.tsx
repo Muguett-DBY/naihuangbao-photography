@@ -4,7 +4,6 @@ import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
 import { initWebVitals } from "./utils/webVitals";
 import "./i18n";
-import "animal-island-ui/style";
 import "./styles/global.css";
 import "./styles/animal-theme.css";
 

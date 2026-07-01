@@ -3,6 +3,7 @@ import { onRequestPost as uploadPhoto } from "./api/admin/photos";
 import { onRequestDelete as deletePhoto } from "./api/admin/photos/[id]";
 import { onRequestPost as batchPhotos } from "./api/admin/photos/batch";
 import { onRequestGet as getPublicPhotos } from "./api/photos";
+import { deletePhotosWithConsistency } from "./_photos";
 import { onRequestPost as createPaymentIntent } from "./api/payment/create-intent";
 import { onRequestPost as confirmPayment } from "./api/payment/confirm";
 import { onRequestPost as paymentWebhook } from "./api/payment/webhook";
@@ -54,6 +55,7 @@ function createDb(overrides: {
 
   return {
     statement,
+    batch: vi.fn(async (statements: unknown[]) => statements.map(() => ({ success: true }))),
     prepare: vi.fn(() => statement),
   };
 }
@@ -64,6 +66,39 @@ function createBucket() {
     delete: vi.fn(async () => undefined),
     get: vi.fn(async () => null),
   };
+}
+
+function createPhotoDeleteDb(rows: Array<{ id: string; object_key: string }>) {
+  const statements: Array<{ sql: string; bound: unknown[] }> = [];
+  const db = {
+    statements,
+    batch: vi.fn(async (batchStatements: unknown[]) => batchStatements.map(() => ({ success: true }))),
+    prepare: vi.fn((sql: string) => {
+      const statement = {
+        sql,
+        bound: [] as unknown[],
+        bind: vi.fn((...args: unknown[]) => {
+          statement.bound = args;
+          statements.push({ sql, bound: args });
+          return statement;
+        }),
+        all: vi.fn(async () => {
+          if (sql.includes("from photos")) {
+            return { results: rows };
+          }
+          if (sql.includes("from photo_object_delete_queue")) {
+            return { results: rows.map((row) => ({ object_key: row.object_key })) };
+          }
+          return { results: [] };
+        }),
+        first: vi.fn(async () => rows[0] ?? null),
+        run: vi.fn(async () => ({ success: true })),
+      };
+      return statement;
+    }),
+  };
+
+  return db;
 }
 
 async function stripeSignature(payload: string, secret: string, timestamp = Math.floor(Date.now() / 1000)) {
@@ -1083,7 +1118,7 @@ describe("Cloudflare Pages API behavior", () => {
     expect(bucket.delete).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps the D1 photo row when R2 deletion fails", async () => {
+  it("queues R2 cleanup and completes photo deletion when object deletion fails", async () => {
     const db = createDb({
       first: async () => ({ object_key: "gallery/photo.webp" }),
     });
@@ -1097,29 +1132,110 @@ describe("Cloudflare Pages API behavior", () => {
       }),
       env: { DB: db, PHOTO_BUCKET: bucket, ...adminEnv },
       params: { id: "photo-id" },
+      waitUntil: vi.fn(),
     } as never);
-    const body = (await response.json()) as { error?: string };
+    const body = (await response.json()) as { cleanupQueued?: number };
 
-    expect(response.status).toBe(503);
-    expect(body.error).toContain("删除失败");
-    expect(db.statement.run).not.toHaveBeenCalled();
+    expect(response.status).toBe(200);
+    expect(body.cleanupQueued).toBe(1);
+    expect(bucket.delete).toHaveBeenCalledWith("gallery/photo.webp");
+    expect(db.batch).toHaveBeenCalledTimes(1);
   });
 
-  it("deletes a validated photo batch with one R2 call and one D1 delete", async () => {
-    const deleteRun = vi.fn(async () => ({ success: true }));
+  it("flushes older queued R2 cleanup work after a successful photo deletion", async () => {
+    const db = createDb({
+      first: async () => ({ id: "photo-id", object_key: "gallery/photo.webp" }),
+    });
+    const bucket = createBucket();
+    const waitUntil = vi.fn((promise: Promise<unknown>) => promise);
+
+    const response = await deletePhoto({
+      request: jsonRequest("https://shoot.custard.top/api/admin/photos/photo-id", {
+        method: "DELETE",
+        headers: { "cf-access-authenticated-user-email": "admin@example.com", "x-nhb-admin-action": "1" },
+      }),
+      env: { DB: db, PHOTO_BUCKET: bucket, ...adminEnv },
+      params: { id: "photo-id" },
+      waitUntil,
+    } as never);
+    await Promise.all(waitUntil.mock.calls.map(([promise]) => promise));
+
+    expect(response.status).toBe(200);
+    expect(waitUntil).toHaveBeenCalled();
+    expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("from photo_object_delete_queue"));
+  });
+
+  it("commits photo deletion and a durable R2 cleanup record in one D1 batch", async () => {
+    const db = createPhotoDeleteDb([
+      { id: "photo-a", object_key: "gallery/photo-a.webp" },
+      { id: "photo-b", object_key: "gallery/photo-b.webp" },
+    ]);
+    const bucket = createBucket();
+
+    const result = await deletePhotosWithConsistency(
+      { DB: db, PHOTO_BUCKET: bucket } as never,
+      ["photo-a", "photo-b"],
+    );
+
+    expect(result).toMatchObject({
+      ok: true,
+      deleted: 2,
+      ids: ["photo-a", "photo-b"],
+      cleanupQueued: 0,
+    });
+    expect(db.batch).toHaveBeenCalledTimes(1);
+    expect(db.batch.mock.calls[0][0]).toHaveLength(3);
+    expect(db.statements.map((statement) => statement.sql)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("insert into photo_object_delete_queue"),
+        expect.stringContaining("delete from photos"),
+        expect.stringContaining("delete from photo_object_delete_queue"),
+      ]),
+    );
+    expect(bucket.delete).toHaveBeenCalledWith(["gallery/photo-a.webp", "gallery/photo-b.webp"]);
+  });
+
+  it("keeps queued R2 cleanup work when object deletion fails after the D1 batch", async () => {
+    const db = createPhotoDeleteDb([
+      { id: "photo-a", object_key: "gallery/photo-a.webp" },
+      { id: "photo-b", object_key: "gallery/photo-b.webp" },
+    ]);
+    const bucket = createBucket();
+    bucket.delete.mockRejectedValueOnce(new Error("r2 failed"));
+
+    const result = await deletePhotosWithConsistency(
+      { DB: db, PHOTO_BUCKET: bucket } as never,
+      ["photo-a", "photo-b"],
+    );
+
+    expect(result).toMatchObject({
+      ok: true,
+      deleted: 2,
+      ids: ["photo-a", "photo-b"],
+      cleanupQueued: 2,
+    });
+    expect(db.batch).toHaveBeenCalledTimes(1);
+    expect(db.statements.map((statement) => statement.sql)).not.toContainEqual(
+      expect.stringContaining("delete from photo_object_delete_queue"),
+    );
+    expect(bucket.delete).toHaveBeenCalledWith(["gallery/photo-a.webp", "gallery/photo-b.webp"]);
+  });
+
+  it("deletes a validated photo batch with one R2 call and one D1 batch", async () => {
     const db = {
+      batch: vi.fn(async (statements: unknown[]) => statements.map(() => ({ success: true }))),
       prepare: vi.fn((sql: string) => {
         const statement = {
           bind: vi.fn(() => statement),
           all: vi.fn(async () => ({
-            results: [
-              { id: "photo-a", object_key: "gallery/photo-a.webp" },
-              { id: "photo-b", object_key: "gallery/photo-b.webp" },
-            ],
+            results: sql.includes("photo_object_delete_queue")
+              ? []
+              : [
+                  { id: "photo-a", object_key: "gallery/photo-a.webp" },
+                  { id: "photo-b", object_key: "gallery/photo-b.webp" },
+                ],
           })),
-          run: sql.toLowerCase().startsWith("delete from photos")
-            ? deleteRun
-            : vi.fn(async () => ({ success: true })),
+          run: vi.fn(async () => ({ success: true })),
         };
         return statement;
       }),
@@ -1145,7 +1261,7 @@ describe("Cloudflare Pages API behavior", () => {
     expect(body).toMatchObject({ deleted: 2, ids: ["photo-a", "photo-b"] });
     expect(bucket.delete).toHaveBeenCalledTimes(1);
     expect(bucket.delete).toHaveBeenCalledWith(["gallery/photo-a.webp", "gallery/photo-b.webp"]);
-    expect(deleteRun).toHaveBeenCalledTimes(1);
+    expect(db.batch).toHaveBeenCalledTimes(1);
   });
 
   it("rejects a stale photo batch before deleting any R2 objects", async () => {
