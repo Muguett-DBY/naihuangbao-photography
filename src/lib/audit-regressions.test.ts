@@ -1043,7 +1043,9 @@ describe("audit regression coverage", () => {
   it("keeps PWA updates user-visible and clears outdated app-shell caches", () => {
     expect(viteConfigSource).toContain('registerType: "prompt"');
     expect(viteConfigSource).toContain("cleanupOutdatedCaches: true");
-    expect(pwaUpdateBannerSource).toContain("registrationRef.current?.update()");
+    expect(pwaUpdateBannerSource).toContain("const registration = registrationRef.current");
+    expect(pwaUpdateBannerSource).toContain("!registration?.installing && !registration?.waiting && !registration?.active");
+    expect(pwaUpdateBannerSource).toContain("registration.update()");
     expect(pwaUpdateBannerSource).toContain("UPDATE_CHECK_INTERVAL_MS");
     expect(pwaUpdateBannerSource).toContain("navigator.serviceWorker.getRegistration()");
     expect(pwaUpdateBannerSource).toContain("window.setInterval(checkForUpdate");

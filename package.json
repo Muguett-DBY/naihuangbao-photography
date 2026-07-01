@@ -43,7 +43,7 @@
     "@cloudflare/workers-types": "^4.20260701.1",
     "@playwright/test": "^1.61.1",
     "@types/leaflet": "^1.9.21",
-    "@types/node": "^26.0.1",
+    "@types/node": "^26.1.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.3",
