@@ -23,7 +23,9 @@ export function PwaUpdateBanner() {
     let updateTimer: number | null = null;
 
     const checkForUpdate = () => {
-      void registrationRef.current?.update().catch((error) => {
+      const registration = registrationRef.current;
+      if (!registration?.installing && !registration?.waiting && !registration?.active) return;
+      void registration.update().catch((error) => {
         logAndIgnore("Service worker update check failed", error);
       });
     };
