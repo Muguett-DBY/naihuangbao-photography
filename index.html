@@ -346,6 +346,26 @@
         } catch(e) {}
       })();
     </script>
+    <script>
+      (function(){
+        if (!/\.pages\.dev$/.test(window.location.hostname)) return;
+        var rumEndpoint = "https://cloudflareinsights.com/cdn-cgi/rum";
+        var nativeOpen = XMLHttpRequest.prototype.open;
+        var nativeSend = XMLHttpRequest.prototype.send;
+        XMLHttpRequest.prototype.open = function(method, url) {
+          var target = String(url || "");
+          this.__nhbSkipCfRum = target.indexOf(rumEndpoint) === 0;
+          if (this.__nhbSkipCfRum) {
+            return nativeOpen.call(this, "GET", "/__nhb_suppressed_cf_rum", true);
+          }
+          return nativeOpen.apply(this, arguments);
+        };
+        XMLHttpRequest.prototype.send = function() {
+          if (this.__nhbSkipCfRum) return;
+          return nativeSend.apply(this, arguments);
+        };
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
