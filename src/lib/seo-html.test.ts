@@ -50,6 +50,12 @@ describe("static SEO shell", () => {
     expect(html).toContain('rel="manifest" href="/manifest.webmanifest"');
     expect(html).toContain('name="theme-color" content="#F5E6D3"');
   });
+
+  it("keeps Pages preview deployments free of Cloudflare RUM console errors", () => {
+    expect(html).toContain("\\.pages\\.dev");
+    expect(html).toContain("cloudflareinsights.com/cdn-cgi/rum");
+    expect(html).toContain("__nhbSkipCfRum");
+  });
 });
 
 describe("useSEO dynamic meta", () => {
