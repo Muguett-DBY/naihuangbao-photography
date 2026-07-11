@@ -118,6 +118,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   }, [modelError]);
 
   useEffect(() => {
+    mountedRef.current = true;
     return () => { mountedRef.current = false; };
   }, []);
 

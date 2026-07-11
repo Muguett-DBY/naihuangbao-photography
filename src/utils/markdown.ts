@@ -5,63 +5,121 @@
 export function parseMarkdown(content: string): string {
   if (!content) return "";
 
-  let html = content;
+  const lines = content.replace(/\r\n?/g, "\n").split("\n");
+  const blocks: string[] = [];
+  let index = 0;
 
-  // Escape HTML first to prevent XSS
-  html = escapeHtml(html);
+  while (index < lines.length) {
+    const line = lines[index];
+    if (!line.trim()) {
+      index += 1;
+      continue;
+    }
 
-  // Code blocks (```...```)
-  html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
-  
-  // Inline code (`...`)
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  
-  // Bold (**...**)
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  
-  // Italic (*...*)
-  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  
-  // Links [text](url)
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label: string, rawUrl: string) => {
-    const url = sanitizeMarkdownUrl(rawUrl);
-    if (!url) return label;
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`;
-  });
+    if (isFence(line)) {
+      const codeLines: string[] = [];
+      index += 1;
+      while (index < lines.length && !isFence(lines[index])) {
+        codeLines.push(lines[index]);
+        index += 1;
+      }
+      if (index < lines.length) index += 1;
+      blocks.push(`<pre><code>${escapeHtml(codeLines.join("\n"))}</code></pre>`);
+      continue;
+    }
 
-  // Headers
-  html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-  
-  // Unordered lists
-  html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
-  html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
-  
-  // Ordered lists
-  html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-  html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ol>$&</ol>');
-  
-  // Paragraphs (double newlines)
-  html = html.replace(/\n\n/g, '</p><p>');
-  html = `<p>${html}</p>`;
-  
-  // Single newlines to <br>
-  html = html.replace(/\n/g, '<br>');
-  
-  // Clean up empty paragraphs
-  html = html.replace(/<p><\/p>/g, '');
-  html = html.replace(/<p>(<h[1-6]>)/g, '$1');
-  html = html.replace(/(<\/h[1-6]>)<\/p>/g, '$1');
-  html = html.replace(/<p>(<ul>)/g, '$1');
-  html = html.replace(/(<\/ul>)<\/p>/g, '$1');
-  html = html.replace(/<p>(<ol>)/g, '$1');
-  html = html.replace(/(<\/ol>)<\/p>/g, '$1');
-  html = html.replace(/<p>(<pre>)/g, '$1');
-  html = html.replace(/(<\/pre>)<\/p>/g, '$1');
-  
-  return html;
+    const heading = line.match(/^(#{1,4}) (.+)$/);
+    if (heading) {
+      const level = heading[1].length;
+      blocks.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+      index += 1;
+      continue;
+    }
+
+    const unorderedItem = line.match(/^[\-*] (.+)$/);
+    if (unorderedItem) {
+      const items: string[] = [];
+      while (index < lines.length) {
+        const item = lines[index].match(/^[\-*] (.+)$/);
+        if (!item) break;
+        items.push(`<li>${renderInline(item[1])}</li>`);
+        index += 1;
+      }
+      blocks.push(`<ul>${items.join("")}</ul>`);
+      continue;
+    }
+
+    const orderedItem = line.match(/^\d+\. (.+)$/);
+    if (orderedItem) {
+      const items: string[] = [];
+      while (index < lines.length) {
+        const item = lines[index].match(/^\d+\. (.+)$/);
+        if (!item) break;
+        items.push(`<li>${renderInline(item[1])}</li>`);
+        index += 1;
+      }
+      blocks.push(`<ol>${items.join("")}</ol>`);
+      continue;
+    }
+
+    const paragraphLines: string[] = [];
+    while (index < lines.length && lines[index].trim()) {
+      if (paragraphLines.length > 0 && isBlockStart(lines[index])) break;
+      paragraphLines.push(lines[index]);
+      index += 1;
+    }
+    blocks.push(`<p>${paragraphLines.map(renderInline).join("<br>")}</p>`);
+  }
+
+  return blocks.join("");
+}
+
+function isFence(line: string): boolean {
+  return line.trimStart().startsWith("```");
+}
+
+function isBlockStart(line: string): boolean {
+  return isFence(line)
+    || /^(?:#{1,4}|[\-*]) .+$/.test(line)
+    || /^\d+\. .+$/.test(line);
+}
+
+function renderInline(value: string): string {
+  return value
+    .split(/(`[^`]*`)/g)
+    .map((segment) => {
+      if (segment.startsWith("`") && segment.endsWith("`")) {
+        return `<code>${escapeHtml(segment.slice(1, -1))}</code>`;
+      }
+      return renderInlineText(segment);
+    })
+    .join("");
+}
+
+function renderInlineText(value: string): string {
+  const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+  let html = "";
+  let cursor = 0;
+
+  for (const match of value.matchAll(linkPattern)) {
+    const start = match.index;
+    html += renderEmphasis(value.slice(cursor, start));
+
+    const label = renderEmphasis(match[1]);
+    const url = sanitizeMarkdownUrl(match[2]);
+    html += url
+      ? `<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`
+      : label;
+    cursor = start + match[0].length;
+  }
+
+  return html + renderEmphasis(value.slice(cursor));
+}
+
+function renderEmphasis(value: string): string {
+  return escapeHtml(value)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>");
 }
 
 function escapeHtml(value: string): string {

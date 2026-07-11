@@ -49,6 +49,30 @@ test.describe("shoot.custard.top", () => {
     await expect(page.locator(".site-nav")).toBeVisible();
   });
 
+  test("首页使用兼容 ScrollTrigger 的 GSAP 核心", async ({ page }) => {
+    const gsapWarnings: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "warning" && message.text().includes("Requires GSAP")) {
+        gsapWarnings.push(message.text());
+      }
+    });
+
+    await page.goto("/");
+    await expect(page.locator(".hero")).toBeVisible();
+    const runtime = await page.evaluate(() => {
+      const runtimeGsap = (window as Window & {
+        gsap?: { version?: string; matchMedia?: unknown };
+      }).gsap;
+      return {
+        version: runtimeGsap?.version ?? "missing",
+        matchMediaType: typeof runtimeGsap?.matchMedia,
+      };
+    });
+
+    expect(runtime.matchMediaType, `window.gsap ${runtime.version}`).toBe("function");
+    expect(gsapWarnings).toEqual([]);
+  });
+
   test("导航链接可点击跳转", async ({ page }) => {
     await page.goto("/");
     await openGalleryFromNav(page);
@@ -64,9 +88,11 @@ test.describe("shoot.custard.top", () => {
     const firstItemButton = page.locator(".gallery-masonry-item .gallery-masonry-btn").first();
     await expect(firstItemButton).toBeVisible({ timeout: 10000 });
     await firstItemButton.click();
-    await expect(page.locator(".pswp")).toBeVisible();
+    const lightbox = page.locator(".pswp");
+    await expect(lightbox).toHaveCount(1);
+    await expect(lightbox).toBeVisible();
     await page.locator(".pswp__button--close").click();
-    await expect(page.locator(".pswp")).not.toBeVisible({ timeout: 10000 });
+    await expect(lightbox).toHaveCount(0, { timeout: 10000 });
   });
 
   test("首页作品区和作品入口存在", async ({ page }) => {
@@ -74,6 +100,41 @@ test.describe("shoot.custard.top", () => {
     await expect(page.locator("#featured")).toBeVisible();
     await expect(page.locator(".gallery-masonry-item").first()).toBeVisible();
     await expect(page.locator('.home-page-link[href="/gallery"]')).toBeVisible();
+  });
+
+  test("首页作品卡片不嵌套交互控件", async ({ page }) => {
+    await page.goto("/");
+    const firstCard = page.locator(".gallery-masonry-item").first();
+    await expect(firstCard).toBeVisible();
+    await expect(firstCard.locator(".gallery-masonry-btn button, .gallery-masonry-btn a, .gallery-masonry-btn [tabindex]"))
+      .toHaveCount(0);
+  });
+
+  test("AI 聊天正确呈现列表与代码块", async ({ page }) => {
+    await page.goto("/");
+    await page.evaluate(() => {
+      localStorage.setItem("nhb-push-dismissed", "true");
+      localStorage.setItem("chat-history", JSON.stringify([{
+        id: "assistant-markdown-qa",
+        role: "assistant",
+        content: "Intro\n\n- First\n- Second\n\nOutro\n\n```\n- not a list\n**not bold**\n```",
+      }]));
+    });
+    await page.goto("/?preserve-pwa-state=1");
+    await page.locator(".public-chat-launcher").click();
+
+    const markdown = page.locator(".public-chat-markdown").first();
+    await expect(markdown.locator(":scope > p")).toHaveCount(2);
+    await expect(markdown.locator(":scope > ul > li")).toHaveCount(2);
+    await expect(markdown.locator("ul ol, ol ul, li + br, br + li")).toHaveCount(0);
+    await expect(markdown.locator(":scope > pre > code")).toHaveText("- not a list\n**not bold**");
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const widths = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      scroll: document.documentElement.scrollWidth,
+    }));
+    expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
   });
 
   test("深色模式切换", async ({ page }) => {
