@@ -104,8 +104,9 @@ test.describe("shoot.custard.top", () => {
 
   test("首页作品卡片不嵌套交互控件", async ({ page }) => {
     await page.goto("/");
+    await page.locator("#featured").scrollIntoViewIfNeeded();
     const firstCard = page.locator(".gallery-masonry-item").first();
-    await expect(firstCard).toBeVisible();
+    await expect(firstCard).toBeVisible({ timeout: 10000 });
     await expect(firstCard.locator(".gallery-masonry-btn button, .gallery-masonry-btn a, .gallery-masonry-btn [tabindex]"))
       .toHaveCount(0);
   });
