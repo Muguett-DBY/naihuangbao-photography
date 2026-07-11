@@ -1950,7 +1950,7 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
     transform: none !important;
   }
 
-  .gallery-masonry-btn:hover .gallery-masonry-overlay {
+  .gallery-masonry-item:hover .gallery-masonry-overlay {
     opacity: 0.7;
   }
 

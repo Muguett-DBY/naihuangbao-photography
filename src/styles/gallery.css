@@ -1031,6 +1031,11 @@
 }
 
 /* Masonry image button */
+.gallery-masonry-media {
+  position: relative;
+  border-radius: 12px;
+}
+
 .gallery-masonry-btn {
   display: block;
   width: 100%;
@@ -1062,6 +1067,10 @@
 .gallery-masonry--compact .gallery-masonry-overlay {
   opacity: 0 !important;
   pointer-events: none;
+}
+
+.gallery-masonry--compact .gallery-masonry-overlay-actions {
+  pointer-events: none !important;
 }
 
 .gallery-masonry--compact .gallery-masonry-caption {
@@ -1221,13 +1230,21 @@
   transform: translateY(8px);
   will-change: opacity, transform;
 }
-.gallery-masonry-btn:hover .gallery-masonry-overlay {
-  opacity: 1;
-  transform: translateY(0);
-}
+.gallery-masonry-item:hover .gallery-masonry-overlay,
+.gallery-masonry-item:focus-within .gallery-masonry-overlay,
 .gallery-masonry-item.is-touched .gallery-masonry-overlay {
   opacity: 1;
   transform: translateY(0);
+}
+
+.gallery-masonry-overlay-actions {
+  pointer-events: none;
+}
+
+.gallery-masonry-item:hover .gallery-masonry-overlay-actions,
+.gallery-masonry-item:focus-within .gallery-masonry-overlay-actions,
+.gallery-masonry-item.is-touched .gallery-masonry-overlay-actions {
+  pointer-events: auto;
 }
 
 /* Card-level hover: subtle scale + shadow lift */

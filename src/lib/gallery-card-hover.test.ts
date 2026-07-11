@@ -20,9 +20,10 @@ describe("gallery card hover polish", () => {
     expect(css).toContain(".gallery-masonry-btn:hover");
   });
 
-  it("preserves the existing hover-trigger contract (CSS hover + is-touched for mobile)", () => {
+  it("reveals sibling overlay actions for pointer, keyboard, and touch input", () => {
     const css = read("src/styles/gallery.css");
-    expect(css).toContain(".gallery-masonry-btn:hover .gallery-masonry-overlay");
+    expect(css).toContain(".gallery-masonry-item:hover .gallery-masonry-overlay");
+    expect(css).toContain(".gallery-masonry-item:focus-within .gallery-masonry-overlay");
     expect(css).toContain(".gallery-masonry-item.is-touched .gallery-masonry-overlay");
   });
 });

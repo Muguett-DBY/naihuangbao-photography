@@ -17,6 +17,13 @@ function escapeAttr(s: string): string {
   return s.replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
+function destroyPhotoSwipe(instance: PhotoSwipe) {
+  instance.options.showHideAnimationType = "none";
+  instance.animations.stopAll();
+  instance.isDestroying = true;
+  instance.destroy();
+}
+
 export default function Lightbox({ photos, currentIndex, onClose }: LightboxProps) {
   const pswpRef = useRef<PhotoSwipe | null>(null);
   const onCloseRef = useRef(onClose);
@@ -29,6 +36,8 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
 
   useEffect(() => {
     closeHandledRef.current = false;
+    let onFallbackClick: ((event: MouseEvent) => void) | null = null;
+    let onFallbackKeydown: ((event: KeyboardEvent) => void) | null = null;
     const dataSource = photos.map((p) => {
       if (p.videoUrl) {
         return {
@@ -56,106 +65,108 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
       };
     });
 
-    const pswp = new PhotoSwipe({
-      dataSource,
-      index: currentIndex,
-      bgOpacity: 0.92,
-      showHideAnimationType: "zoom",
-      wheelToZoom: true,
-      tapAction: "close",
-      doubleTapAction: "zoom",
-      preloaderDelay: 400,
-      padding: { top: 48, bottom: 64, left: 0, right: 0 },
+    const initializationFrame = window.requestAnimationFrame(() => {
+      const pswp = new PhotoSwipe({
+        dataSource,
+        index: currentIndex,
+        bgOpacity: 0.92,
+        showHideAnimationType: "zoom",
+        wheelToZoom: true,
+        tapAction: "close",
+        doubleTapAction: "zoom",
+        preloaderDelay: 400,
+        padding: { top: 48, bottom: 64, left: 0, right: 0 },
+      });
+
+      const lenis = window.__nhbLenis;
+      if (lenis) lenis.stop();
+
+      const finishClose = () => {
+        if (closeHandledRef.current) return;
+        closeHandledRef.current = true;
+        const l = window.__nhbLenis;
+        if (l) l.start();
+        onCloseRef.current();
+      };
+
+      const onSlideChange = () => {
+        const pswpEl = pswp.element;
+        if (!pswpEl) return;
+        pswpEl.querySelectorAll("video:not([paused])").forEach((v) => (v as HTMLVideoElement).pause());
+      };
+
+      pswp.on("close", () => {
+        finishClose();
+      });
+
+      pswp.on("change", onSlideChange);
+
+      pswp.init();
+      pswpRef.current = pswp;
+
+      const closeLightbox = () => {
+        const instance = pswpRef.current;
+        if (!instance) return;
+        instance.options.showHideAnimationType = "none";
+        instance.close();
+        closeFallbackTimerRef.current = window.setTimeout(() => {
+          closeFallbackTimerRef.current = null;
+          if (instance.element?.isConnected) {
+            destroyPhotoSwipe(instance);
+            pswpRef.current = null;
+          }
+          if (!closeHandledRef.current) {
+            finishClose();
+          }
+        }, 0);
+      };
+      onFallbackClick = (event: MouseEvent) => {
+        if ((event.target as Element | null)?.closest(".pswp__button--close")) {
+          closeLightbox();
+        }
+      };
+      onFallbackKeydown = (event: KeyboardEvent) => {
+        if (event.key === "Escape") {
+          closeLightbox();
+        }
+        // Arrow keys for navigation
+        if (event.key === "ArrowLeft") {
+          pswp.prev();
+        }
+        if (event.key === "ArrowRight") {
+          pswp.next();
+        }
+        // +/- for zoom (using zoomTo with current zoom level adjustment)
+        if (event.key === "+" || event.key === "=") {
+          const currentSlide = pswp.currSlide;
+          if (currentSlide) {
+            const currentZoom = currentSlide.currZoomLevel || 1;
+            currentSlide.zoomTo(Math.min(currentZoom + 0.5, 3));
+          }
+        }
+        if (event.key === "-" || event.key === "_") {
+          const currentSlide = pswp.currSlide;
+          if (currentSlide) {
+            const currentZoom = currentSlide.currZoomLevel || 1;
+            currentSlide.zoomTo(Math.max(currentZoom - 0.5, 0.5));
+          }
+        }
+      };
+
+      document.addEventListener("click", onFallbackClick, true);
+      document.addEventListener("keydown", onFallbackKeydown, true);
     });
-
-    const lenis = window.__nhbLenis;
-    if (lenis) lenis.stop();
-
-    const finishClose = () => {
-      if (closeHandledRef.current) return;
-      closeHandledRef.current = true;
-      const l = window.__nhbLenis;
-      if (l) l.start();
-      onCloseRef.current();
-    };
-
-    const onSlideChange = () => {
-      const pswpEl = pswp.element;
-      if (!pswpEl) return;
-      pswpEl.querySelectorAll("video:not([paused])").forEach((v) => (v as HTMLVideoElement).pause());
-    };
-
-    pswp.on("close", () => {
-      finishClose();
-    });
-
-    pswp.on("change", onSlideChange);
-
-    pswp.init();
-    pswpRef.current = pswp;
-
-    const closeLightbox = () => {
-      const instance = pswpRef.current;
-      if (!instance) return;
-      instance.options.showHideAnimationType = "none";
-      instance.close();
-      closeFallbackTimerRef.current = window.setTimeout(() => {
-        closeFallbackTimerRef.current = null;
-        if (instance.element?.isConnected) {
-          instance.destroy();
-          instance.element?.remove();
-          pswpRef.current = null;
-        }
-        if (!closeHandledRef.current) {
-          finishClose();
-        }
-      }, 0);
-    };
-    const onFallbackClick = (event: MouseEvent) => {
-      if ((event.target as Element | null)?.closest(".pswp__button--close")) {
-        closeLightbox();
-      }
-    };
-    const onFallbackKeydown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        closeLightbox();
-      }
-      // Arrow keys for navigation
-      if (event.key === "ArrowLeft") {
-        pswp.prev();
-      }
-      if (event.key === "ArrowRight") {
-        pswp.next();
-      }
-      // +/- for zoom (using zoomTo with current zoom level adjustment)
-      if (event.key === "+" || event.key === "=") {
-        const currentSlide = pswp.currSlide;
-        if (currentSlide) {
-          const currentZoom = currentSlide.currZoomLevel || 1;
-          currentSlide.zoomTo(Math.min(currentZoom + 0.5, 3));
-        }
-      }
-      if (event.key === "-" || event.key === "_") {
-        const currentSlide = pswp.currSlide;
-        if (currentSlide) {
-          const currentZoom = currentSlide.currZoomLevel || 1;
-          currentSlide.zoomTo(Math.max(currentZoom - 0.5, 0.5));
-        }
-      }
-    };
-
-    document.addEventListener("click", onFallbackClick, true);
-    document.addEventListener("keydown", onFallbackKeydown, true);
 
     return () => {
+      window.cancelAnimationFrame(initializationFrame);
       if (closeFallbackTimerRef.current !== null) {
         window.clearTimeout(closeFallbackTimerRef.current);
         closeFallbackTimerRef.current = null;
       }
-      document.removeEventListener("click", onFallbackClick, true);
-      document.removeEventListener("keydown", onFallbackKeydown, true);
+      if (onFallbackClick) document.removeEventListener("click", onFallbackClick, true);
+      if (onFallbackKeydown) document.removeEventListener("keydown", onFallbackKeydown, true);
       if (pswpRef.current) {
-        pswpRef.current.destroy();
+        destroyPhotoSwipe(pswpRef.current);
         pswpRef.current = null;
       }
       const l = window.__nhbLenis;

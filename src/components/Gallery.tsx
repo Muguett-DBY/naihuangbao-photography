@@ -855,45 +855,47 @@ export function Gallery() {
                       key={item.id}
                       style={{ transitionDelay: `${index * 0.06}s` }}
                     >
-                      <button
-                        className="gallery-masonry-btn"
-                        type="button"
-                        data-distort
-                        onClick={() => {
-                          const idx = photoIndexMap.get(item.id) ?? 0;
-                          setLightboxIndex(idx);
-                          track("lightbox_open", { photoId: item.id, style: item.style, source: "tap" });
-                        }}
-                        onTouchStart={(e) => handleTouchStart(item.id, e)}
-                        aria-label={`${t("gallery.viewLargeImage")}${item.title}`}
-                      >
-                        {isVideo && item.videoUrl ? (
-                          <VideoPreview
-                            videoUrl={item.videoUrl}
-                            posterUrl={item.imageUrl || ""}
-                            title={item.title}
-                          />
-                        ) : (
-                          <ImageWithFallback
-                            src={item.imageUrl || ""}
-                            alt={item.alt}
-                            title={item.title}
-                            tone={tones[(photoIndexMap.get(item.id) ?? 0) % tones.length]}
-                            load={true}
-                            priority={(photoIndexMap.get(item.id) ?? 0) < 6 || item.id === "gallery-daily-01"}
-                            sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
-                          />
-                        )}
-                        {isVideo && (
-                          <span className="gallery-play-overlay" aria-hidden="true">
-                            <Play size={32} />
-                          </span>
-                        )}
-                        {item.featured && (
-                          <span className="gallery-featured-badge" aria-label="Featured">
-                            ⭐
-                          </span>
-                        )}
+                      <div className="gallery-masonry-media">
+                        <button
+                          className="gallery-masonry-btn"
+                          type="button"
+                          data-distort
+                          onClick={() => {
+                            const idx = photoIndexMap.get(item.id) ?? 0;
+                            setLightboxIndex(idx);
+                            track("lightbox_open", { photoId: item.id, style: item.style, source: "tap" });
+                          }}
+                          onTouchStart={(e) => handleTouchStart(item.id, e)}
+                          aria-label={`${t("gallery.viewLargeImage")}${item.title}`}
+                        >
+                          {isVideo && item.videoUrl ? (
+                            <VideoPreview
+                              videoUrl={item.videoUrl}
+                              posterUrl={item.imageUrl || ""}
+                              title={item.title}
+                            />
+                          ) : (
+                            <ImageWithFallback
+                              src={item.imageUrl || ""}
+                              alt={item.alt}
+                              title={item.title}
+                              tone={tones[(photoIndexMap.get(item.id) ?? 0) % tones.length]}
+                              load={true}
+                              priority={(photoIndexMap.get(item.id) ?? 0) < 6 || item.id === "gallery-daily-01"}
+                              sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
+                            />
+                          )}
+                          {isVideo && (
+                            <span className="gallery-play-overlay" aria-hidden="true">
+                              <Play size={32} />
+                            </span>
+                          )}
+                          {item.featured && (
+                            <span className="gallery-featured-badge" aria-label="Featured">
+                              ⭐
+                            </span>
+                          )}
+                        </button>
                         <div className="gallery-masonry-overlay">
                           <span className="gallery-masonry-overlay-style">{t(`gallery.filters.${item.style}`, item.style)}</span>
                           <strong className="gallery-masonry-overlay-title">
@@ -943,7 +945,7 @@ export function Gallery() {
                             <ShareButton photo={item} />
                           </div>
                         </div>
-                      </button>
+                      </div>
                       <div className="gallery-masonry-caption">
                         <p>{t(`gallery.filters.${item.style}`, item.style)}</p>
                         <h3><HighlightText text={item.title} query={searchQuery} /></h3>
