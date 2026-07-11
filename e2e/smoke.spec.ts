@@ -102,6 +102,44 @@ test.describe("shoot.custard.top", () => {
     await expect(page.locator('.home-page-link[href="/gallery"]')).toBeVisible();
   });
 
+  test("首页过渡动画不会替换已呈现内容", async ({ page }) => {
+    await page.addInitScript(() => {
+      const state: { current: Element | null; detachments: number } = {
+        current: null,
+        detachments: 0,
+      };
+      const rememberFeatured = (node: Node) => {
+        if (!(node instanceof Element)) return;
+        const featured = node.id === "featured" ? node : node.querySelector("#featured");
+        if (!featured || featured === state.current) return;
+        state.current = featured;
+      };
+
+      new MutationObserver((records) => {
+        records.forEach((record) => {
+          record.removedNodes.forEach((node) => {
+            if (state.current && (node === state.current || (node instanceof Element && node.contains(state.current)))) {
+              state.detachments += 1;
+            }
+          });
+          record.addedNodes.forEach(rememberFeatured);
+        });
+      }).observe(document, { childList: true, subtree: true });
+
+      Object.defineProperty(window, "__featuredDomDetachments", {
+        configurable: true,
+        get: () => state.detachments,
+      });
+    });
+
+    await page.goto("/");
+    await expect(page.locator(".gallery-masonry-item").first()).toBeVisible({ timeout: 10000 });
+    const detachments = await page.evaluate(() => (
+      window as Window & { __featuredDomDetachments?: number }
+    ).__featuredDomDetachments ?? 0);
+    expect(detachments).toBe(0);
+  });
+
   test("首页作品卡片不嵌套交互控件", async ({ page }) => {
     await page.goto("/");
     await page.locator("#featured").scrollIntoViewIfNeeded();
