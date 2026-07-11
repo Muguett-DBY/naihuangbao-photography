@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { useAuth } from "../../hooks/useAuth";
 import { PrefetchLink } from "./PrefetchLink";
+import { safeLocalStorage } from "../../lib/browser-storage";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -38,7 +39,7 @@ export function Header() {
     const idx = LANG_CYCLE.indexOf(current as (typeof LANG_CYCLE)[number]);
     const next = LANG_CYCLE[(idx + 1) % LANG_CYCLE.length];
     i18n.changeLanguage(next);
-    localStorage.setItem("lang", next);
+    safeLocalStorage.setItem("lang", next);
   };
 
   useEffect(() => {
