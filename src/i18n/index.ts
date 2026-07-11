@@ -5,6 +5,7 @@ import en from "./locales/en.json";
 import ko from "./locales/ko.json";
 import ja from "./locales/ja.json";
 import "./types";
+import { safeLocalStorage } from "../lib/browser-storage";
 
 function detectBrowserLang(): string {
   if (typeof navigator === "undefined") return "en";
@@ -22,7 +23,8 @@ function getInitialLang() {
   if (queryLang && supportedLanguages.has(queryLang)) {
     return queryLang;
   }
-  return localStorage.getItem("lang") || detectBrowserLang();
+  const storedLang = safeLocalStorage.getItem("lang");
+  return storedLang && supportedLanguages.has(storedLang) ? storedLang : detectBrowserLang();
 }
 
 const savedLang = getInitialLang();

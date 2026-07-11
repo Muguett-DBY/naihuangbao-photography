@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { safeLocalStorage } from "../lib/browser-storage";
 
 type Theme = "light" | "dark" | "system";
+
+function getStoredTheme(): Theme {
+  const storedTheme = safeLocalStorage.getItem("theme");
+  return storedTheme === "light" || storedTheme === "dark" ? storedTheme : "system";
+}
 
 /* ══════════════════════════════════════════════
    Magazine (default) palettes
@@ -105,16 +111,14 @@ function watchSystem(handler: (isDark: boolean) => void) {
 
 export function ThemeToggle() {
   const { t } = useTranslation();
-  const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem("theme") as Theme) || "system";
-  });
+  const [theme, setTheme] = useState<Theme>(getStoredTheme);
   const systemCleanup = useRef<(() => void) | null>(null);
 
   // Re-apply when mood changes
   const reapply = useCallback(() => {
     const root = document.documentElement;
-    const storedTheme = localStorage.getItem("theme") as Theme | null;
-    if (!storedTheme || storedTheme === "system") {
+    const storedTheme = getStoredTheme();
+    if (storedTheme === "system") {
       clearVars(root);
       // Re-fire system handler
       if (systemCleanup.current) {
@@ -144,7 +148,7 @@ export function ThemeToggle() {
     }
 
     if (theme === "system") {
-      localStorage.removeItem("theme");
+      safeLocalStorage.removeItem("theme");
       clearVars(root);
       root.removeAttribute("data-theme");
       systemCleanup.current = watchSystem((isDark) => {
@@ -152,7 +156,7 @@ export function ThemeToggle() {
         root.setAttribute("data-theme", isDark ? "dark" : "light");
       });
     } else {
-      localStorage.setItem("theme", theme);
+      safeLocalStorage.setItem("theme", theme);
       applyVars(root, theme === "dark" ? pickPalette(true) : pickPalette(false));
       root.setAttribute("data-theme", theme === "dark" ? "dark" : "light");
     }
