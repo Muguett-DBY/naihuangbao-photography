@@ -500,6 +500,120 @@ test.describe("booking flow", () => {
     expect(waitlistRequests).toHaveLength(1);
   });
 
+  test("keeps non-email waitlist follow-up truthful", async ({ page }) => {
+    const policyDate = "2099-08-20";
+    const fullDate = "2099-08-21";
+
+    await page.route("**/api/booking/policy", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        earliestDate: policyDate,
+        timeZone: "Asia/Shanghai",
+        capacityPerDay: 3,
+        dateFormat: "YYYY-MM-DD",
+        unavailableReasons: {
+          beforeEarliest: "before_earliest",
+          fullyBooked: "fully_booked",
+          invalidDate: "invalid_date",
+        },
+        generatedAt: "2099-08-19T16:00:00.000Z",
+      }),
+    }));
+    await page.route("**/api/availability**", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        capacityPerDay: 3,
+        dates: {
+          [fullDate]: {
+            status: "booked",
+            count: 3,
+            capacity: 3,
+            remaining: 0,
+          },
+        },
+      }),
+    }));
+    await page.route("**/api/booking/waitlist", (route) => route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({
+        ok: true,
+        waitlist: {
+          id: "wl_non_email",
+          preferredDate: fullDate,
+          active: true,
+          createdAt: "2099-08-19T16:00:00.000Z",
+        },
+      }),
+    }));
+
+    await page.goto("/");
+    await page.locator(".hero-cover-primary-btn").click();
+    await page.getByRole("button", { name: /^21日 - Fully Booked, join waitlist/ }).click();
+    await page.locator("#booking-name").fill("Waitlist Guest");
+    await page.locator("#booking-contact").fill("xiaohongshu:waitlist-guest");
+    await page.getByRole("button", { name: "Join waitlist", exact: true }).click();
+
+    await expect(page.locator(".booking-waitlist-success")).toBeVisible();
+    await expect(page.getByRole("link", { name: "View My Bookings", exact: true })).toHaveCount(0);
+    await expect(page.getByText("Updates will go to the contact details you provided.", { exact: false })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Message on Xiaohongshu", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Continue browsing", exact: true })).toBeVisible();
+  });
+
+  test("shows an active waitlist entry instead of an empty bookings dashboard", async ({ page }) => {
+    await page.route("**/api/auth/session", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        authenticated: true,
+        user: { id: "user-1", email: "waitlist@example.com", displayName: "Waitlist Guest" },
+      }),
+    }));
+    await page.route("**/api/user/stats", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ bookings: 0, photos: 0, purchases: 0, courses: 0, workshops: 0 }),
+    }));
+    await page.route("**/api/user/bookings**", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        bookings: [],
+        waitlist: [{
+          id: "wl_customer_123",
+          package_name: "Portrait Session",
+          preferred_date: "2099-08-21",
+          name: "Waitlist Guest",
+          active: true,
+          notified: false,
+          created_at: "2026-07-13T00:00:00.000Z",
+        }],
+      }),
+    }));
+
+    await page.goto("/dashboard");
+    await page.getByRole("tab", { name: "My Bookings", exact: true }).click();
+
+    const waitlistCard = page.locator(".dashboard-waitlist-card");
+    await expect(waitlistCard).toBeVisible();
+    await expect(waitlistCard).toContainText("Portrait Session");
+    await expect(waitlistCard).toContainText("2099-08-21");
+    await expect(page.getByText("Waiting for availability", { exact: true })).toBeVisible();
+    await expect(page.getByText("No sessions booked yet", { exact: true })).toHaveCount(0);
+    await expect(page.locator(".dashboard-booking-overview")).toHaveCount(0);
+    await expect(waitlistCard.getByRole("button")).toHaveCount(0);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const overflow = await waitlistCard.evaluate((card) => ({
+      page: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+      card: card.scrollWidth > card.clientWidth,
+    }));
+    expect(overflow).toEqual({ page: false, card: false });
+  });
+
   test("shows the latest booking deposit state in the customer dashboard", async ({ page }) => {
     await page.route("**/api/auth/session", (route) => route.fulfill({
       status: 200,

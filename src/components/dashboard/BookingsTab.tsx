@@ -12,7 +12,7 @@ import { publicMutationHeaders } from "../../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../../lib/http";
 import { useBookingPolicy } from "../../hooks/useBookingPolicy";
 import { isBookableBusinessDate } from "../../utils/businessDate";
-import type { Booking } from "../../types/dashboard";
+import type { Booking, WaitlistEntry } from "../../types/dashboard";
 
 const timelineSteps = [
   { key: "pending", icon: Clock },
@@ -118,7 +118,7 @@ function BookingTimeline({ status }: { status: string }) {
 export function BookingsTab() {
   const { t } = useTranslation();
   const { showToast } = useToast();
-  const { data, loading, error, retry } = useFetch<{ bookings: Booking[] }>("/api/user/bookings");
+  const { data, loading, error, retry } = useFetch<{ bookings: Booking[]; waitlist: WaitlistEntry[] }>("/api/user/bookings");
   const [rescheduleId, setRescheduleId] = useState<string | null>(null);
   const [newDate, setNewDate] = useState("");
   const [newTime, setNewTime] = useState("");
@@ -131,6 +131,7 @@ export function BookingsTab() {
   const { policy: bookingPolicy } = useBookingPolicy();
   const earliestBookingDate = bookingPolicy.earliestDate;
   const bookings = data?.bookings ?? [];
+  const waitlist = data?.waitlist ?? [];
   const formatTime = useCallback((value: string) => {
     if (!value) return t("bookingModal.any");
     return BOOKING_TIME_SLOT_KEYS.includes(value as (typeof BOOKING_TIME_SLOT_KEYS)[number])
@@ -249,27 +250,65 @@ export function BookingsTab() {
     <DashboardTabWrapper
       loading={loading}
       error={error}
-      empty={bookings.length === 0}
+      empty={bookings.length === 0 && waitlist.length === 0}
       emptyIcon={<CalendarCheck size={40} strokeWidth={1.2} />}
       emptyTitle={t("dashboard.emptyStates.bookings.title")}
       emptyText={t("dashboard.emptyStates.bookings.description")}
       emptyAction={{ href: "/booking", label: t("dashboard.emptyStates.bookings.action") }}
       retry={retry}
     >
-      <div className="dashboard-booking-overview" aria-live="polite">
-        <div className="dashboard-booking-summary-card dashboard-booking-summary-card--active">
-          <span>{t("dashboard.bookingOverview.active")}</span>
-          <strong>{activeCount}</strong>
+      {waitlist.length > 0 && (
+        <section className="dashboard-waitlist-section" aria-labelledby="dashboard-waitlist-title">
+          <div className="dashboard-waitlist-heading">
+            <div>
+              <span>{t("dashboard.waitlist.eyebrow")}</span>
+              <h3 id="dashboard-waitlist-title">{t("dashboard.waitlist.title")}</h3>
+            </div>
+            <strong>{waitlist.length}</strong>
+          </div>
+          <div className="dashboard-waitlist-list">
+            {waitlist.map((entry) => (
+              <article key={entry.id} className="dashboard-card dashboard-waitlist-card">
+                <div className="dashboard-card-header">
+                  <h4>{entry.package_name}</h4>
+                  <span className={`dashboard-waitlist-status${entry.notified ? " is-notified" : ""}`}>
+                    {entry.notified ? t("dashboard.waitlist.notified") : t("dashboard.waitlist.waiting")}
+                  </span>
+                </div>
+                <div className="dashboard-booking-schedule">
+                  <div className="dashboard-booking-schedule-item">
+                    <span className="dashboard-booking-label">{t("dashboard.waitlist.preferredDate")}</span>
+                    <strong>{entry.preferred_date}</strong>
+                  </div>
+                  <div className="dashboard-booking-schedule-item">
+                    <span className="dashboard-booking-label">{t("dashboard.waitlist.requestedOn")}</span>
+                    <strong>{new Date(entry.created_at).toLocaleDateString()}</strong>
+                  </div>
+                </div>
+                <p className="dashboard-status-insight">
+                  {entry.notified ? t("dashboard.waitlist.notifiedDetail") : t("dashboard.waitlist.waitingDetail")}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+      {bookings.length > 0 && (
+        <div className="dashboard-booking-overview" aria-live="polite">
+          <div className="dashboard-booking-summary-card dashboard-booking-summary-card--active">
+            <span>{t("dashboard.bookingOverview.active")}</span>
+            <strong>{activeCount}</strong>
+          </div>
+          <div className="dashboard-booking-summary-card">
+            <span>{t("dashboard.bookingOverview.completed")}</span>
+            <strong>{completedCount}</strong>
+          </div>
+          <div className="dashboard-booking-summary-card">
+            <span>{t("dashboard.bookingOverview.cancelled")}</span>
+            <strong>{cancelledCount}</strong>
+          </div>
         </div>
-        <div className="dashboard-booking-summary-card">
-          <span>{t("dashboard.bookingOverview.completed")}</span>
-          <strong>{completedCount}</strong>
-        </div>
-        <div className="dashboard-booking-summary-card">
-          <span>{t("dashboard.bookingOverview.cancelled")}</span>
-          <strong>{cancelledCount}</strong>
-        </div>
-      </div>
+      )}
       <div className="dashboard-list">
         {bookings.map((b) => {
           const canManage = canManageBooking(b.status);

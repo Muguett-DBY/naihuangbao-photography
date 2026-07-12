@@ -500,8 +500,9 @@
     "waitlistSuccessHint": "如需紧急调整，也可以私信",
     "successBridgeEyebrow": "下一步",
     "successBridgeTitle": "继续跟进这次预约",
-    "successBridgeDashboardDetail": "可以在个人中心查看状态、日期变更和定金进度。",
-    "successBridgeWaitlistDetail": "候补状态已经保存；如果时间有变化，可以查看预约或直接私信我。",
+    "successBridgeDashboardDetail": "使用同一邮箱登录或注册后，可以在个人中心查看预约、日期和定金更新。",
+    "successBridgeWaitlistDetail": "使用同一邮箱登录或注册后，可以在个人中心查看候补状态。",
+    "successBridgeContactDetail": "后续更新会通过你留下的联系方式发送；如有变化，可以直接私信我。",
     "messageOnXiaohongshu": "小红书私信",
     "continueBrowsing": "继续浏览",
     "next": "下一步",
@@ -1167,6 +1168,16 @@
       "active": "可操作预约",
       "completed": "已完成",
       "cancelled": "已取消"
+    },
+    "waitlist": {
+      "eyebrow": "候补状态",
+      "title": "等待档期",
+      "waiting": "等待空位",
+      "notified": "档期有更新",
+      "preferredDate": "候补日期",
+      "requestedOn": "加入时间",
+      "waitingDetail": "该日期目前已满；如有空位，我会通过你留下的联系方式联系你。",
+      "notifiedDetail": "档期可能有空位，请留意你留下的联系方式；需要帮助时可以直接私信我。"
     },
     "noPurchases": "暂无购买",
     "noCourses": "暂无课程",

@@ -476,8 +476,9 @@
     "waitlistSuccessHint": "For urgent changes, DM me on",
     "successBridgeEyebrow": "Next steps",
     "successBridgeTitle": "Keep your session moving",
-    "successBridgeDashboardDetail": "Check status, date changes, and deposit updates in your dashboard.",
-    "successBridgeWaitlistDetail": "Your waitlist status is saved here. Check bookings or message me if timing changes.",
+    "successBridgeDashboardDetail": "Sign in or register with this same email to see booking, date, and deposit updates.",
+    "successBridgeWaitlistDetail": "Sign in or register with this same email to see your waitlist status here.",
+    "successBridgeContactDetail": "Updates will go to the contact details you provided. Message me if anything changes.",
     "messageOnXiaohongshu": "Message on Xiaohongshu",
     "continueBrowsing": "Continue browsing",
     "next": "Next",
@@ -1118,6 +1119,16 @@
       "active": "Active bookings",
       "completed": "Completed",
       "cancelled": "Cancelled"
+    },
+    "waitlist": {
+      "eyebrow": "Waitlist status",
+      "title": "Waiting for a date",
+      "waiting": "Waiting for availability",
+      "notified": "Availability update",
+      "preferredDate": "Preferred date",
+      "requestedOn": "Joined on",
+      "waitingDetail": "This date is full. I will contact you through the details you provided if space opens.",
+      "notifiedDetail": "A space may be available. Check your contact channel and message me if you need help."
     },
     "noPurchases": "No purchases yet",
     "noCourses": "No courses enrolled",
