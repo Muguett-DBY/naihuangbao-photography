@@ -13,6 +13,16 @@ export type Booking = {
   payment_currency: string | null;
 };
 
+export type WaitlistEntry = {
+  id: string;
+  package_name: string;
+  preferred_date: string;
+  name: string;
+  active: boolean;
+  notified: boolean;
+  created_at: string;
+};
+
 export type Purchase = {
   id: string;
   item_type: string;

@@ -473,8 +473,9 @@
     "waitlistSuccessHint": "急ぎの場合はDMでご連絡ください：",
     "successBridgeEyebrow": "次のステップ",
     "successBridgeTitle": "予約の状況を続けて確認",
-    "successBridgeDashboardDetail": "ダッシュボードでステータス、日程変更、デポジット状況を確認できます。",
-    "successBridgeWaitlistDetail": "キャンセル待ちの状況は保存済みです。予定が変わった場合は予約一覧を確認するかDMしてください。",
+    "successBridgeDashboardDetail": "同じメールアドレスでログインまたは登録すると、予約・日程・デポジットの更新を確認できます。",
+    "successBridgeWaitlistDetail": "同じメールアドレスでログインまたは登録すると、キャンセル待ち状況を確認できます。",
+    "successBridgeContactDetail": "更新はご登録の連絡先へお送りします。変更がある場合はDMしてください。",
     "messageOnXiaohongshu": "小紅書でDM",
     "continueBrowsing": "閲覧を続ける",
     "next": "次へ",
@@ -1112,6 +1113,16 @@
       "active": "対応中の予約",
       "completed": "完了",
       "cancelled": "キャンセル"
+    },
+    "waitlist": {
+      "eyebrow": "キャンセル待ち状況",
+      "title": "空き枠を待っています",
+      "waiting": "空き待ち",
+      "notified": "空き状況の更新",
+      "preferredDate": "希望日",
+      "requestedOn": "登録日",
+      "waitingDetail": "この日は満枠です。空きが出た場合は、ご登録の連絡先へご連絡します。",
+      "notifiedDetail": "空きが出た可能性があります。登録した連絡先を確認し、必要であればDMしてください。"
     },
     "noPurchases": "購入履歴はまだありません",
     "noCourses": "受講中のコースはありません",

@@ -4513,6 +4513,88 @@
   gap: 16px;
 }
 
+.dashboard-waitlist-section {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.dashboard-waitlist-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid rgba(139, 94, 74, 0.12);
+  border-radius: 14px;
+  background: rgba(237, 244, 234, 0.58);
+}
+
+.dashboard-waitlist-heading > div {
+  min-width: 0;
+}
+
+.dashboard-waitlist-heading span {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--caramel-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.dashboard-waitlist-heading h3 {
+  margin: 0;
+  color: var(--caramel-ink);
+  font-family: var(--font-heading-cn);
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+
+.dashboard-waitlist-heading > strong {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid rgba(72, 126, 105, 0.24);
+  border-radius: 50%;
+  color: #376b58;
+  background: rgba(255, 253, 247, 0.82);
+  font-size: 1rem;
+}
+
+.dashboard-waitlist-list {
+  display: grid;
+  gap: 12px;
+}
+
+.dashboard-waitlist-card {
+  border-color: rgba(72, 126, 105, 0.2);
+  background: linear-gradient(145deg, rgba(255, 253, 247, 0.92), rgba(237, 244, 234, 0.52));
+}
+
+.dashboard-waitlist-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid rgba(72, 126, 105, 0.24);
+  border-radius: 999px;
+  color: #376b58;
+  background: rgba(237, 244, 234, 0.82);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.dashboard-waitlist-status.is-notified {
+  border-color: rgba(14, 116, 144, 0.24);
+  color: #0e7490;
+  background: rgba(207, 250, 254, 0.58);
+}
+
 .dashboard-booking-overview {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -5812,6 +5894,15 @@
 
   .dashboard-booking-overview {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-waitlist-heading {
+    align-items: flex-start;
+    padding: 12px 14px;
+  }
+
+  .dashboard-waitlist-card {
+    padding: 18px;
   }
 
   .dashboard-booking-summary-card {

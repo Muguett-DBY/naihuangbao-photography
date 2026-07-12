@@ -661,7 +661,9 @@ describe("Cloudflare Pages API behavior", () => {
               ? { id: "user-12345678", email: "guest@example.com" }
               : null
           )),
-          all: vi.fn(async () => ({ results: [projectedBooking] })),
+          all: vi.fn(async () => ({
+            results: sql.includes("from booking_requests") ? [projectedBooking] : [],
+          })),
         };
         return statement;
       }),
@@ -681,6 +683,62 @@ describe("Cloudflare Pages API behavior", () => {
     expect(body.bookings?.[0]?.payment_status).toBe("cancelled");
     expect(body.bookings?.[0]?.payment_amount_cents).toBe(2000);
     expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("payment_intents"));
+  });
+
+  it("returns active same-email waitlist entries beside customer bookings", async () => {
+    const secret = "test-auth-secret-with-32-characters";
+    const session = await createUserSession("user-12345678", secret);
+    const statements: Array<{ sql: string; values: unknown[] }> = [];
+    const waitlistRow = {
+      id: "wl_customer_123",
+      package_name: "Portrait Session",
+      preferred_date: "2099-08-21",
+      name: "Guest",
+      active: 1,
+      notified: 0,
+      created_at: "2026-07-13T00:00:00.000Z",
+    };
+    const db = {
+      prepare: vi.fn((sql: string) => {
+        const statement = {
+          bind: vi.fn((...values: unknown[]) => {
+            statements.push({ sql, values });
+            return statement;
+          }),
+          first: vi.fn(async () => (
+            sql.includes("from users") ? { email: "Guest@Example.com" } : null
+          )),
+          all: vi.fn(async () => ({
+            results: sql.includes("from booking_waitlist") ? [waitlistRow] : [],
+          })),
+        };
+        return statement;
+      }),
+    };
+
+    const response = await getUserBookings({
+      request: jsonRequest("https://shoot.custard.top/api/user/bookings", {
+        headers: { cookie: `nhb_user_session=${session}` },
+      }),
+      env: { DB: db, AUTH_SECRET: secret },
+    } as never);
+    const body = (await response.json()) as {
+      bookings?: unknown[];
+      waitlist?: Array<{ id?: string; active?: boolean; notified?: boolean }>;
+    };
+
+    expect(response.status).toBe(200);
+    expect(body.bookings).toEqual([]);
+    expect(body.waitlist).toEqual([expect.objectContaining({
+      id: "wl_customer_123",
+      active: true,
+      notified: false,
+    })]);
+    const waitlistQuery = statements.find((entry) => entry.sql.includes("from booking_waitlist"));
+    expect(waitlistQuery?.sql).toContain("active = 1");
+    expect(waitlistQuery?.sql).toContain("lower(contact) = lower(?)");
+    expect(waitlistQuery?.values).toEqual(["Guest@Example.com"]);
+    expect(waitlistQuery?.sql).not.toContain("token");
   });
 
   it("writes the canonical cancelled status for customer cancellations", async () => {

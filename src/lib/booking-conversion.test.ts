@@ -29,4 +29,23 @@ describe("public booking conversion shell", () => {
     expect(existsSync(resolve(root, "src/components/PushNotificationBanner.tsx"))).toBe(false);
     expect(existsSync(resolve(root, "src/hooks/usePushNotification.ts"))).toBe(false);
   });
+
+  it("keeps dashboard follow-up compatible with the submitted contact", () => {
+    const bookingModal = read("src/components/BookingModal.tsx");
+    const locales = ["en", "zh-CN", "ja", "ko"].map((locale) => (
+      JSON.parse(read(`src/i18n/locales/${locale}.json`)) as {
+        bookingModal: { successBridgeContactDetail?: string };
+        dashboard: { waitlist?: { waiting?: string; notified?: string } };
+      }
+    ));
+
+    expect(bookingModal).toContain("isDashboardCompatibleContact");
+    expect(bookingModal).toContain("showDashboard");
+    expect(bookingModal).toContain("successBridgeContactDetail");
+    for (const locale of locales) {
+      expect(locale.bookingModal.successBridgeContactDetail).toBeTruthy();
+      expect(locale.dashboard.waitlist?.waiting).toBeTruthy();
+      expect(locale.dashboard.waitlist?.notified).toBeTruthy();
+    }
+  });
 });

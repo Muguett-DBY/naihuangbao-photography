@@ -51,6 +51,9 @@ type BookingSubmitErrorResponse = {
   recovery?: TimeSlotRecovery;
 };
 
+const DASHBOARD_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const isDashboardCompatibleContact = (value: string) => DASHBOARD_EMAIL_PATTERN.test(value.trim());
+
 export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const { t } = useTranslation();
   const { packages, siteConfig } = useSiteContent();
@@ -371,7 +374,9 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     return Math.max(deposit, 2000);
   };
 
-  const renderSuccessBridge = (detail: string) => (
+  const showDashboard = isDashboardCompatibleContact(contact);
+
+  const renderSuccessBridge = (detail: string, options: { showDashboard: boolean }) => (
     <section className="booking-success-bridge" aria-labelledby={successBridgeTitleId}>
       <div className="booking-success-bridge-copy">
         <span>{t("bookingModal.successBridgeEyebrow", "Next steps")}</span>
@@ -379,14 +384,16 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         <p>{detail}</p>
       </div>
       <div className="booking-success-bridge-actions">
-        <Link
-          to="/dashboard"
-          className="booking-success-bridge-action booking-success-bridge-action--primary booking-success-dashboard-btn"
-          onClick={onClose}
-        >
-          <LayoutDashboard size={16} aria-hidden="true" />
-          {t("bookingModal.viewDashboard")}
-        </Link>
+        {options.showDashboard && (
+          <Link
+            to="/dashboard"
+            className="booking-success-bridge-action booking-success-bridge-action--primary booking-success-dashboard-btn"
+            onClick={onClose}
+          >
+            <LayoutDashboard size={16} aria-hidden="true" />
+            {t("bookingModal.viewDashboard")}
+          </Link>
+        )}
         <a
           href={siteConfig.xiaohongshuProfile}
           target="_blank"
@@ -443,7 +450,12 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
                 </div>
               )}
             </div>
-            {renderSuccessBridge(t("bookingModal.successBridgeWaitlistDetail", "Your waitlist status is saved here; check bookings or message me if timing changes."))}
+            {renderSuccessBridge(
+              showDashboard
+                ? t("bookingModal.successBridgeWaitlistDetail", "Sign in or register with this same email to see your waitlist status here.")
+                : t("bookingModal.successBridgeContactDetail", "Updates will go to the contact details you provided. Message me if anything changes."),
+              { showDashboard },
+            )}
           </div>
         </div>
       </Modal>
@@ -569,7 +581,12 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               {t("bookingModal.offlineSyncNotice")}
             </p>
           )}
-          {renderSuccessBridge(t("bookingModal.successBridgeDashboardDetail", "Check status, date changes, and deposit updates in your dashboard."))}
+          {renderSuccessBridge(
+            showDashboard
+              ? t("bookingModal.successBridgeDashboardDetail", "Sign in or register with this same email to see booking, date, and deposit updates.")
+              : t("bookingModal.successBridgeContactDetail", "Updates will go to the contact details you provided. Message me if anything changes."),
+            { showDashboard },
+          )}
         </div>
         </div>
       </Modal>
