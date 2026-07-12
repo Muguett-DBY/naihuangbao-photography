@@ -24,6 +24,14 @@ function setMeta(property: string, content: string, isName?: boolean) {
   el.setAttribute("content", content);
 }
 
+export function formatSeoTitle(title: string, siteName: string) {
+  const normalizedTitle = title.trim();
+  const normalizedSiteName = siteName.trim();
+  if (!normalizedTitle) return normalizedSiteName;
+  if (!normalizedSiteName || normalizedTitle.includes(normalizedSiteName)) return normalizedTitle;
+  return `${normalizedTitle} | ${normalizedSiteName}`;
+}
+
 export function useSEO({
   title,
   titleKey,
@@ -41,7 +49,7 @@ export function useSEO({
     const shareImage = image || defaultShareImage;
     const url = path ? `${siteOrigin}${path}` : siteOrigin;
 
-    document.title = `${resolvedTitle} | ${t("seo.siteName")}`;
+    document.title = formatSeoTitle(resolvedTitle, t("seo.siteName"));
 
     setMeta("description", description, true);
     setMeta("og:title", resolvedTitle);
