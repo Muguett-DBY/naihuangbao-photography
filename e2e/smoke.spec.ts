@@ -58,6 +58,19 @@ test.describe("shoot.custard.top", () => {
     }
   });
 
+  test("非画廊页面不会下载作品图片", async ({ page }) => {
+    const galleryRequests: string[] = [];
+    page.on("request", (request) => {
+      const pathname = new URL(request.url()).pathname;
+      if (pathname.startsWith("/images/gallery/")) galleryRequests.push(pathname);
+    });
+
+    await page.goto("/booking");
+    await expect(page.locator(".booking-quick-cta")).toBeVisible();
+
+    expect(galleryRequests).toEqual([]);
+  });
+
   test("首页使用兼容 ScrollTrigger 的 GSAP 核心", async ({ page }) => {
     const gsapWarnings: string[] = [];
     page.on("console", (message) => {
