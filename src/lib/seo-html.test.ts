@@ -27,6 +27,15 @@ describe("static SEO shell", () => {
     expect(rootMatch?.[1]).toContain("小红书私信咨询");
   });
 
+  it("keeps fallback portfolio images inert while JavaScript is enabled", () => {
+    const fallback = html.match(/<div id="root">([\s\S]*?)<\/div>\s*<script/)?.[1] ?? "";
+    const noscript = fallback.match(/<noscript>([\s\S]*?)<\/noscript>/)?.[1] ?? "";
+    const activeFallback = fallback.replace(/<noscript>[\s\S]*?<\/noscript>/g, "");
+
+    expect(noscript.match(/<img\b/g)).toHaveLength(3);
+    expect(activeFallback).not.toContain("<img");
+  });
+
   it("uses ProfessionalService structured data for the photography brand", () => {
     expect(html).toContain('"@type": "ProfessionalService"');
     expect(html).toContain('"name": "奶黄包摄影"');

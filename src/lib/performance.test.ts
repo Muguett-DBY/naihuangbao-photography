@@ -63,9 +63,10 @@ describe("performance budgets", () => {
     }
   });
 
-  it("prefetches featured portfolio images without global render-blocking image preloads", () => {
-    expect(mainSource).toContain('"prefetch"');
-    expect(mainSource).toContain('"image"');
+  it("prefetches featured portfolio images only on the homepage", () => {
+    expect(mainSource).toContain('window.location.pathname === "/"');
+    expect(mainSource).toContain('link.rel = "prefetch"');
+    expect(mainSource).toContain('link.as = "image"');
     expect(mainSource).toContain("gallery-urban-01");
     expect(mainSource).toContain("gallery-garden-01");
     expect(mainSource).toContain("gallery-jiangnan-01");

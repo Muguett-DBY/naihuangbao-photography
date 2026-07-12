@@ -10,8 +10,8 @@ import "./styles/animal-theme.css";
 
 initWebVitals();
 
-// Idle-time prefetch of key gallery images
-if ("requestIdleCallback" in window) {
+// Idle-time prefetch of key gallery images on the page that presents them.
+if (window.location.pathname === "/" && "requestIdleCallback" in window) {
   requestIdleCallback(
     () => {
       const imgs = ["/images/gallery/640/gallery-urban-01.webp", "/images/gallery/640/gallery-garden-01.webp", "/images/gallery/640/gallery-jiangnan-01.webp"];
