@@ -2,7 +2,7 @@ import { Button, Input, Modal } from "animal-island-ui";
 import { type FormEvent, useEffect, useId, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ChevronLeft, ExternalLink, LayoutDashboard } from "lucide-react";
+import { ChevronLeft, ExternalLink, LayoutDashboard, X } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useNotification } from "../hooks/useNotification";
 import { useFocusTrap } from "../hooks/useFocusTrap";
@@ -586,17 +586,27 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     <Modal
       open
       onClose={onClose}
-      title={t("bookingModal.title")}
       typewriter={false}
       maskClosable={false}
       footer={null}
     >
-      <span id={titleId} className="sr-only">{t("bookingModal.title")}</span>
       <span id={descriptionId} className="sr-only">{t("bookingModal.subtitle")}</span>
       <div ref={contentRef} className="booking-modal-content">
-      <p className="booking-subtitle">
-        {t("bookingModal.subtitle")}
-      </p>
+        <div className="booking-modal-heading">
+          <h2 id={titleId}>{t("bookingModal.title")}</h2>
+          <button
+            type="button"
+            className="booking-modal-close"
+            onClick={onClose}
+            aria-label={t("bookingModal.cancel")}
+            title={t("bookingModal.cancel")}
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
+        </div>
+        <p className="booking-subtitle">
+          {t("bookingModal.subtitle")}
+        </p>
 
       {/* Step indicator */}
       <div className="booking-steps" role="navigation" aria-label={t("bookingModal.stepNavigation", "Booking steps")}>

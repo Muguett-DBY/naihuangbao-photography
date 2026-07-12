@@ -81,7 +81,6 @@ const loadingScreenSource = readFileSync(resolve(root, "src/components/LoadingSc
 const resilientClientStorageSources = [
   "src/pages/CourseDetailPage.tsx",
   "src/hooks/useUserPreferences.ts",
-  "src/components/PushNotificationBanner.tsx",
 ].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const errorBoundarySource = readFileSync(resolve(root, "src/components/ErrorBoundary.tsx"), "utf8");
 const pwaUpdateBannerSource = readFileSync(resolve(root, "src/components/PwaUpdateBanner.tsx"), "utf8");
