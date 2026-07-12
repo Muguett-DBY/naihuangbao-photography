@@ -49,6 +49,15 @@ test.describe("shoot.custard.top", () => {
     await expect(page.locator(".site-nav")).toBeVisible();
   });
 
+  test("公开页面标题不会重复品牌名", async ({ page }) => {
+    for (const path of ["/", "/gallery", "/booking", "/products", "/workshops", "/shop", "/courses", "/map"]) {
+      await page.goto(path);
+      await expect.poll(() => page.title()).toContain(" | ");
+      const segments = (await page.title()).split("|").map((segment) => segment.trim());
+      expect(new Set(segments).size, `${path}: ${segments.join(" | ")}`).toBe(segments.length);
+    }
+  });
+
   test("首页使用兼容 ScrollTrigger 的 GSAP 核心", async ({ page }) => {
     const gsapWarnings: string[] = [];
     page.on("console", (message) => {
