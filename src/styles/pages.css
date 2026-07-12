@@ -8597,7 +8597,7 @@
 /* ── Print-friendly styles ── */
 @media print {
   .site-nav, .mobile-bottom-nav, .skip-links, .public-chat-widget,
-  .pwa-install-banner, .pwa-update-banner, .push-notification-banner,
+  .pwa-install-banner, .pwa-update-banner,
   .offline-banner, .offline-booking-recovery, .scroll-progress-bar, .hero-scroll-indicator,
   .nhb-scroll-top, .custom-cursor, .film-grain-overlay,
   .photo-detail-adjacent, .photo-detail-cta, .footer-newsletter,

@@ -2489,6 +2489,50 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
 }
 
 /* Booking form improvements */
+.booking-modal-heading {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 8px;
+  padding: 2px 0 8px;
+  background: var(--animal-bg-color, var(--custard-cream));
+}
+
+.booking-modal-heading h2 {
+  margin: 0;
+  color: var(--animal-text-color, var(--caramel-text));
+  font-family: var(--font-heading);
+  font-size: 1.45rem;
+  line-height: 1.2;
+}
+
+.booking-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--warm-border);
+  border-radius: 50%;
+  background: var(--paper-white);
+  color: var(--caramel-text);
+  cursor: pointer;
+  box-shadow: var(--shadow-core);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.booking-modal-close:hover {
+  border-color: var(--peach-accent);
+  background: var(--peach-soft);
+  box-shadow: var(--shadow-mid);
+}
+
 .booking-subtitle {
   margin: 0 0 16px;
   color: var(--animal-text-color-secondary, var(--caramel-muted));

@@ -16,7 +16,6 @@ import { MobileBottomNav } from "../components/shared/MobileBottomNav";
 import { PwaInstallBanner } from "../components/PwaInstallBanner";
 import { PwaUpdateBanner } from "../components/PwaUpdateBanner";
 import { OfflineFallback } from "../components/OfflineFallback";
-import { PushNotificationBanner } from "../components/PushNotificationBanner";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
 import { RouteHashScroller } from "../components/shared/RouteHashScroller";
 
@@ -100,7 +99,6 @@ export function RootLayout() {
           </Suspense>
         </ErrorBoundary>
       )}
-      {!isEditor && <PushNotificationBanner />}
       <AuthProvider>
         <BookingProvider>
           <SiteContentProvider>

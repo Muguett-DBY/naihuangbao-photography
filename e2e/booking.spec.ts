@@ -7,6 +7,47 @@ test.describe("booking flow", () => {
     });
   });
 
+  test("keeps the public booking modal fixed inside desktop and mobile viewports", async ({ page }) => {
+    for (const viewport of [
+      { width: 1440, height: 900 },
+      { width: 390, height: 844 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      const bookingButton = page.locator(".hero-cover-primary-btn");
+      await expect(bookingButton).toBeVisible();
+
+      const initialScrollY = await page.evaluate(() => window.scrollY);
+      await bookingButton.evaluate((button: HTMLButtonElement) => button.click());
+      await expect(page.locator("#booking-package")).toBeVisible();
+
+      const dialog = page.getByRole("dialog").filter({ has: page.locator(".booking-modal-content") });
+      const mask = dialog.locator("..");
+      await expect(mask).toHaveCSS("position", "fixed");
+      await expect(page.locator(".push-notification-banner")).toHaveCount(0);
+
+      const [dialogBox, scrollY] = await Promise.all([
+        dialog.boundingBox(),
+        page.evaluate(() => window.scrollY),
+      ]);
+      expect(dialogBox).not.toBeNull();
+      expect(scrollY).toBeLessThanOrEqual(initialScrollY + 2);
+      expect(dialogBox!.x).toBeGreaterThanOrEqual(0);
+      expect(dialogBox!.y).toBeGreaterThanOrEqual(0);
+      expect(dialogBox!.x + dialogBox!.width).toBeLessThanOrEqual(viewport.width);
+      expect(dialogBox!.y + dialogBox!.height).toBeLessThanOrEqual(viewport.height);
+
+      const closeButton = dialog.locator(".booking-modal-close");
+      await expect(closeButton).toBeVisible();
+      const closeButtonBox = await closeButton.boundingBox();
+      expect(closeButtonBox).not.toBeNull();
+      expect(closeButtonBox!.width).toBeGreaterThanOrEqual(40);
+      expect(closeButtonBox!.height).toBeGreaterThanOrEqual(40);
+      await closeButton.click();
+      await expect(dialog).toBeHidden();
+    }
+  });
+
   test("opens booking modal, validates form, submits", async ({ page }) => {
     await page.goto("/booking");
 

@@ -21,22 +21,24 @@ The repository previously imported the full `animal-island-ui/style` sheet and s
 
 ## Chosen Design
 
-Import only the package-exported Modal CSS sidecar from `BookingModal.tsx`. The sidecar is about 2 KB and travels with the same package version and generated class names as the component implementation. Existing photography-theme overrides and booking-specific responsive rules remain responsible for visual adaptation.
+Import only the package-exported Modal CSS sidecar through the local `animal-theme.css` entrypoint. A direct TypeScript side-effect import is still removed because of the package metadata, while a CSS-to-CSS import stays in Vite's CSS dependency graph. The sidecar is about 2 KB and travels with the same package version and generated class names as the component implementation. Existing photography-theme overrides and booking-specific responsive rules remain responsible for visual adaptation.
 
 Remove `PushNotificationBanner` from `RootLayout`, delete its unused component and hook, and remove its dedicated fixed-strip CSS. Keep the PWA install and update prompts: those have real browser-backed outcomes, delayed eligibility, localized copy, and separate tests.
+
+Render the form-state title inside the booking content with a sticky, 44-pixel close button using the existing Lucide `X` icon and localized cancel label. The larger layout size preserves at least 40 pixels during the library's zoom-in animation. This keeps a discoverable exit in view while the long form scrolls internally, without making backdrop clicks dismiss partially entered data.
 
 ## Boundaries
 
 - Do not change booking form fields, validation, capacity rules, payment behavior, or API requests.
 - Do not restore the full `animal-island-ui` stylesheet or increase the CSS performance budget.
 - Do not add a replacement permission prompt until a real push subscription and delivery path exists.
-- Preserve modal focus trapping, Escape handling, scroll locking, ARIA labelling, mobile bottom-navigation suppression, and existing theme overrides.
+- Preserve modal focus trapping, Escape handling, scroll locking, ARIA labelling, mobile bottom-navigation suppression, and existing theme overrides; the visible heading remains the dialog label.
 - Preserve the unrelated `.agent/orchestrator-history` files outside the release commit.
 
 ## Verification
 
-- Add a source contract requiring the Modal CSS sidecar and forbidding the dead push prompt in the public root layout.
-- Extend the homepage booking Playwright flow to prove that opening the CTA keeps the page near its original scroll position, gives the mask fixed positioning, keeps the dialog within the viewport, and leaves the notification prompt absent.
+- Add a source contract requiring the Modal CSS sidecar in the local theme entrypoint and forbidding the dead push prompt in the public root layout.
+- Extend the homepage booking Playwright flow to prove that opening the CTA keeps the page near its original scroll position, gives the mask fixed positioning, keeps the dialog within the viewport, exposes a touch-sized close button, and leaves the notification prompt absent.
 - Run the focused source and browser tests through RED and GREEN.
 - Run lint, all Vitest tests, `build:full`, dependency audit, performance budget, and the full local Playwright suite.
 - Capture post-fix desktop and mobile booking screenshots at the same states and inspect them against the production evidence.
