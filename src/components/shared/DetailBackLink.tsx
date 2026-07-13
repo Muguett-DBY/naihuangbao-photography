@@ -11,17 +11,9 @@ export const DetailBackLink = memo(function DetailBackLink({ to, label }: Props)
   return (
     <Link
       to={to}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 6,
-        color: "var(--accent)",
-        marginBottom: 16,
-        fontSize: "0.9rem",
-        textDecoration: "none",
-      }}
+      className="detail-back-link"
     >
-      <ArrowLeft size={16} /> {label}
+      <ArrowLeft size={16} aria-hidden="true" /> {label}
     </Link>
   );
 });

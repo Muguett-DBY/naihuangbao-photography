@@ -27,7 +27,7 @@ type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
  * Usage: {tCourseCategory(t, course.category)}
  */
 export function tCourseCategory(t: TFunction, category: string): string {
-  return t(`courses.categories.${category}` as any) || category;
+  return t(`courses.categories.${category}` as any, { defaultValue: category });
 }
 
 /**
@@ -35,7 +35,7 @@ export function tCourseCategory(t: TFunction, category: string): string {
  * Usage: {tCourseDifficulty(t, course.difficulty)}
  */
 export function tCourseDifficulty(t: TFunction, difficulty: string): string {
-  return t(`courses.difficulty.${difficulty}` as any) || difficulty;
+  return t(`courses.difficulty.${difficulty}` as any, { defaultValue: difficulty });
 }
 
 /**
@@ -43,7 +43,7 @@ export function tCourseDifficulty(t: TFunction, difficulty: string): string {
  * Usage: {tPresetCategory(t, preset.category)}
  */
 export function tPresetCategory(t: TFunction, category: string): string {
-  return t(`presets.categories.${category}` as any) || category;
+  return t(`presets.categories.${category}` as any, { defaultValue: category });
 }
 
 /**
@@ -51,7 +51,7 @@ export function tPresetCategory(t: TFunction, category: string): string {
  * Usage: {tMerchandiseCategory(t, item.category)}
  */
 export function tMerchandiseCategory(t: TFunction, category: string): string {
-  return t(`merchandise.categories.${category}` as any) || category;
+  return t(`merchandise.categories.${category}` as any, { defaultValue: category });
 }
 
 /**
@@ -59,5 +59,5 @@ export function tMerchandiseCategory(t: TFunction, category: string): string {
  * Usage: {tWorkshopStatus(t, workshop.status)}
  */
 export function tWorkshopStatus(t: TFunction, status: string): string {
-  return t(`dashboard.status.${status}` as any) || status;
+  return t(`dashboard.status.${status}` as any, { defaultValue: status });
 }

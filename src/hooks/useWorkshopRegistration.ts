@@ -12,9 +12,49 @@ type RegistrationResult = {
 
 type AvailabilityResult = {
   available: boolean;
-  spotsLeft: number;
+  spotsLeft: number | null;
   error?: string;
 };
+
+type WorkshopCapacity = Partial<Pick<
+  Workshop,
+  "max_participants" | "current_participants" | "status"
+>>;
+type WorkshopAvailabilityPayload = WorkshopCapacity & {
+  workshop?: WorkshopCapacity;
+};
+
+export function getWorkshopAvailability(
+  payload: WorkshopAvailabilityPayload | null | undefined,
+): AvailabilityResult {
+  if (!payload) return { available: false, spotsLeft: 0 };
+
+  const capacity = payload.workshop ?? payload;
+  const maxParticipants = Number(capacity.max_participants ?? 0);
+  const currentParticipants = Number(capacity.current_participants ?? 0);
+
+  if (
+    !Number.isFinite(maxParticipants)
+    || !Number.isFinite(currentParticipants)
+    || maxParticipants < 0
+    || currentParticipants < 0
+  ) {
+    return { available: false, spotsLeft: 0 };
+  }
+
+  if (maxParticipants === 0) {
+    return {
+      available: !capacity.status || capacity.status === "upcoming",
+      spotsLeft: null,
+    };
+  }
+
+  const spotsLeft = Math.max(0, maxParticipants - currentParticipants);
+  return {
+    available: spotsLeft > 0 && (!capacity.status || capacity.status === "upcoming"),
+    spotsLeft,
+  };
+}
 
 /**
  * Shared workshop registration logic used by both WorkshopsPage and WorkshopDetailPage.
@@ -59,15 +99,8 @@ export function useWorkshopRegistration(workshop?: Workshop | null) {
         return result;
       }
 
-      const data = await readJsonResponse<{ max_participants?: number; current_participants?: number }>(r);
-      const maxParticipants = data?.max_participants || 0;
-      const currentParticipants = data?.current_participants || 0;
-      const spotsLeft = maxParticipants > 0 ? maxParticipants - currentParticipants : 999;
-
-      const result: AvailabilityResult = {
-        available: spotsLeft > 0,
-        spotsLeft,
-      };
+      const data = await readJsonResponse<WorkshopAvailabilityPayload>(r);
+      const result: AvailabilityResult = getWorkshopAvailability(data);
 
       setAvailability(result);
       setCheckingAvailability(false);
@@ -127,8 +160,6 @@ export function useWorkshopRegistration(workshop?: Workshop | null) {
             location: workshop?.location,
             name: formName.trim(),
           });
-
-          resetForm();
         }
 
         return { registrationId: data.id, requiresPayment };
@@ -144,7 +175,7 @@ export function useWorkshopRegistration(workshop?: Workshop | null) {
     } finally {
       setSubmitting(false);
     }
-  }, [formName, formContact, workshop, t, sendWorkshopRegistration, resetForm, checkAvailability]);
+  }, [formName, formContact, workshop, t, sendWorkshopRegistration, checkAvailability]);
 
   return {
     formName,

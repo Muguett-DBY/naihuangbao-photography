@@ -64,15 +64,6 @@ export function PresetDetailPage() {
         url: `${siteOrigin}/presets/${preset.id}`,
         seller: { "@type": "Organization", name: "Naihuangbao Photography" },
       },
-      aggregateRating: preset.download_count > 0
-        ? {
-            "@type": "AggregateRating",
-            ratingValue: "4.8",
-            reviewCount: Math.max(1, Math.round(preset.download_count / 3)),
-            bestRating: "5",
-            worstRating: "1",
-          }
-        : undefined,
     };
   }, [preset, lang, presetTitle]);
 
@@ -99,56 +90,76 @@ export function PresetDetailPage() {
     data: breadcrumb ?? {},
   });
 
-  const handleDownload = async () => {
+  const handleDownload = () => {
     if (!id) return;
-    try { await fetch(`/api/presets/${id}/download`, { method: "POST", headers: publicMutationHeaders }); }
-    catch { /* silent */ }
+    void fetch(`/api/presets/${id}/download`, {
+      method: "POST",
+      headers: publicMutationHeaders,
+      keepalive: true,
+    }).catch(() => undefined);
   };
 
   if (loading) return <DetailLoading label={t("loading")} />;
   if (error || !preset) return <DetailNotFound message={t("presetDetail.notFound")} backTo="/products" backLabel={t("presetDetail.backToList")} />;
 
   return (
-    <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading preset-detail-hero-heading">
-          <DetailBackLink to="/products" label={t("presetDetail.backToList")} />
-          <p className="section-eyebrow">{tPresetCategory(t, preset.category)}</p>
-          <h1>{getName(preset, lang)}</h1>
-          <div className="preset-detail-hero-meta">
-            {preset.price_display && <span className="preset-detail-hero-price">{preset.price_display}</span>}
-            <span className="preset-detail-hero-downloads">
-              <Download size={14} /> {preset.download_count} {t("presetDetail.downloads")}
-            </span>
-          </div>
-        </div>
-      </section>
-
-      <ErrorBoundary>
-      <section className="section-shell is-visible">
-        <div className="preset-detail-section">
-          {preset.preview_images && preset.preview_images.length > 0 && (
+    <PageTransition ref={rootRef} className="catalogue-detail-page catalogue-detail-page--preset">
+      <header className="catalogue-detail-stage" id="top">
+        <div className="catalogue-detail-media catalogue-detail-media--compare">
+          {preset.preview_images?.length ? (
             <CompareSlider
               beforeSrc={preset.preview_images[0]}
               afterSrc={preset.preview_images[preset.preview_images.length > 1 ? 1 : 0]}
               beforeAlt={`${getName(preset, lang)} — ${t("compare.before")}`}
               afterAlt={`${getName(preset, lang)} — ${t("compare.after")}`}
             />
+          ) : (
+            <div className="catalogue-detail-media-placeholder">
+              <Download size={44} aria-hidden="true" />
+            </div>
           )}
         </div>
-      </section>
+        <div className="catalogue-detail-summary">
+          <DetailBackLink to="/products" label={t("presetDetail.backToList")} />
+          <span className="catalogue-detail-marker">PRESET / DIGITAL</span>
+          <p className="section-eyebrow">{tPresetCategory(t, preset.category)}</p>
+          <h1>{getName(preset, lang)}</h1>
+          <p className="catalogue-detail-description">{getDesc(preset, lang)}</p>
+          <div className="preset-detail-hero-meta">
+            {preset.price_display && <span className="preset-detail-hero-price">{preset.price_display}</span>}
+            <span className="preset-detail-hero-downloads">
+              <Download size={14} aria-hidden="true" /> {preset.download_count} {t("presetDetail.downloads")}
+            </span>
+          </div>
+          {preset.download_url ? (
+            <a
+              href={preset.download_url}
+              onClick={handleDownload}
+              target="_blank"
+              rel="noreferrer"
+              className="preset-detail-download-btn"
+            >
+              <Download size={16} aria-hidden="true" /> {t("presetDetail.download")} {preset.price_display}
+            </a>
+          ) : (
+            <button type="button" className="preset-detail-download-btn" disabled>
+              <Download size={16} aria-hidden="true" /> {t("presets.unavailable")}
+            </button>
+          )}
+        </div>
+      </header>
 
-      <section className="section-shell is-visible">
+      <ErrorBoundary>
+      <section className="section-shell catalogue-detail-band is-visible">
         <div className="preset-detail-section">
           <h2>{t("presetDetail.preview")}</h2>
           <PresetPreview presetId={id} />
         </div>
       </section>
 
-      <section className="section-shell is-visible">
+      <section className="section-shell catalogue-detail-band is-visible">
         <div className="preset-detail-section">
           <h2>{t("presetDetail.about")}</h2>
-          <p className="preset-detail-description">{getDesc(preset, lang)}</p>
 
           <div className="preset-detail-includes">
             <h3>{t("presetDetail.includes")}</h3>
@@ -170,18 +181,10 @@ export function PresetDetailPage() {
             </div>
           </div>
 
-          <a
-            href={preset.download_url}
-            onClick={handleDownload}
-            target="_blank" rel="noreferrer"
-            className="preset-detail-download-btn"
-          >
-            <Download size={16} /> {t("presetDetail.download")} {preset.price_display}
-          </a>
         </div>
       </section>
 
-      <section className="section-shell is-visible">
+      <section className="section-shell catalogue-detail-band is-visible">
         <div className="preset-detail-section">
           <h2>{t("presetDetail.reviews")}</h2>
           <div className="preset-detail-reviews">
@@ -201,7 +204,7 @@ export function PresetDetailPage() {
       </section>
 
       {allPresets.length > 0 && (
-        <section className="section-shell is-visible">
+        <section className="section-shell catalogue-detail-band is-visible">
           <div className="preset-detail-related">
             <h2>{t("presetDetail.related")}</h2>
             <div className="preset-detail-related-grid">
