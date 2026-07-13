@@ -77,7 +77,7 @@ const presetPreviewSource = readFileSync(resolve(root, "src/components/PresetPre
 const customCursorSource = readFileSync(resolve(root, "src/components/CustomCursor.tsx"), "utf8");
 const filmGrainSource = readFileSync(resolve(root, "src/components/FilmGrain.tsx"), "utf8");
 const bookingCalendarSource = readFileSync(resolve(root, "src/components/BookingCalendar.tsx"), "utf8");
-const loadingScreenSource = readFileSync(resolve(root, "src/components/LoadingScreen.tsx"), "utf8");
+const routeLoadingStateSource = readFileSync(resolve(root, "src/components/shared/RouteLoadingState.tsx"), "utf8");
 const resilientClientStorageSources = [
   "src/pages/CourseDetailPage.tsx",
   "src/hooks/useUserPreferences.ts",
@@ -908,7 +908,9 @@ describe("audit regression coverage", () => {
     expect(presetPreviewSource).toContain("URL.revokeObjectURL");
     expect(customCursorSource).not.toContain("cursor: none");
     expect(bookingCalendarSource).toContain("calendarRef");
-    expect(loadingScreenSource).not.toContain("dangerouslySetInnerHTML");
+    expect(routeLoadingStateSource).not.toContain("dangerouslySetInnerHTML");
+    expect(routeLoadingStateSource).toContain('role="status"');
+    expect(routeLoadingStateSource).toContain('aria-live="polite"');
   });
 
   it("does not keep unused admin context architecture around", () => {

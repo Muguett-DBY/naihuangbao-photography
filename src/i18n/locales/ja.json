@@ -372,9 +372,9 @@
     "startBooking": "今すぐ予約する"
   },
   "themeToggle": {
-    "light": "☀️ ライト",
-    "dark": "🌙 ダーク",
-    "system": "💻 システム",
+    "light": "ライト",
+    "dark": "ダーク",
+    "system": "システム",
     "label": "現在：{{theme}}、クリックで切替"
   },
   "moodToggle": {
