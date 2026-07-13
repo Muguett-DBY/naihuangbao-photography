@@ -12,12 +12,12 @@ export const DetailLoading = memo(function DetailLoading({ label }: Props) {
 
   return (
     <PageTransition>
-      <main className="detail-state detail-state--loading" role="status" aria-live="polite" aria-busy="true">
+      <section className="detail-state detail-state--loading" role="status" aria-live="polite" aria-busy="true">
         <span className="detail-state-marker">OPENING / 00</span>
         <Loader2 className="detail-state-spinner" size={32} aria-hidden="true" />
         <h1>{label || t("common.loading")}</h1>
         <p>{t("common.detailLoadingHint")}</p>
-      </main>
+      </section>
     </PageTransition>
   );
 });

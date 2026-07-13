@@ -1081,42 +1081,39 @@
   opacity: 0.6;
 }
 
-.scroll-top {
+.nhb-scroll-top {
   position: fixed;
-  bottom: 28px;
-  right: 28px;
+  right: auto;
+  bottom: 24px;
+  left: 24px;
   z-index: 1300;
-  width: 46px;
-  height: 46px;
-  border: 0;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #8B5E4A, #FFB8A1);
-  color: #FFF9EC;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-control);
+  color: var(--paper);
+  background: var(--moss-dark);
+  box-shadow: var(--shadow-mid);
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--button-shadow);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(12px) scale(0.9);
-  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: nhbScrollTopIn 180ms ease-out both;
+  transition: background-color 180ms ease, transform 180ms ease;
   will-change: transform, opacity;
 }
 
-.scroll-top.is-visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0) scale(1);
+.nhb-scroll-top:hover {
+  background: var(--coral-dark);
+  transform: translateY(-2px);
 }
 
-.scroll-top:hover {
-  transform: translate3d(0, -4px, 0) scale(1.06);
-  box-shadow: var(--button-shadow-hover);
+.nhb-scroll-top:active {
+  transform: translateY(1px) scale(0.98);
 }
-.scroll-top:active {
-  transform: translate3d(0, 1px, 0) scale(0.96);
+
+@keyframes nhbScrollTopIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ══════════════════════════════════════════════
@@ -1863,9 +1860,10 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
     justify-content: center;
   }
 
-  .scroll-top {
-    right: 16px;
-    bottom: 20px;
+  .nhb-scroll-top {
+    right: auto;
+    bottom: calc(var(--mobile-bottom-nav-offset, 0px) + 12px);
+    left: max(12px, env(safe-area-inset-left));
   }
 
   .floating-booking-cta {
@@ -3828,19 +3826,6 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
   text-transform: uppercase;
 }
 
-.site-footer .scroll-top {
-  right: auto;
-  bottom: 24px;
-  left: 24px;
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-control);
-  color: var(--paper);
-  background: var(--moss-dark);
-  box-shadow: var(--shadow-mid);
-}
-
 @media (max-width: 980px) {
   .site-footer .footer-main {
     grid-template-columns: minmax(200px, 0.8fr) minmax(0, 1.4fr);
@@ -3872,11 +3857,6 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
     padding-block: 14px;
   }
 
-  .site-footer .scroll-top {
-    right: auto;
-    bottom: calc(var(--mobile-bottom-nav-offset) + 12px);
-    left: max(12px, env(safe-area-inset-left));
-  }
 }
 
 @media (max-width: 560px) {

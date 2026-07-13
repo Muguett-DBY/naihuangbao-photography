@@ -1,5 +1,4 @@
-import { ArrowUp, MessageCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { MessageCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { NewsletterForm } from "../NewsletterForm";
@@ -7,14 +6,7 @@ import { PrefetchLink } from "./PrefetchLink";
 
 export function Footer() {
   const { t } = useTranslation();
-  const [showTop, setShowTop] = useState(false);
   const { sectionCopy, siteConfig } = useSiteContent();
-
-  useEffect(() => {
-    const onScroll = () => setShowTop(window.scrollY > 400);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const currentYear = new Date().getFullYear();
 
@@ -73,14 +65,6 @@ export function Footer() {
         <p className="footer-tagline">{siteConfig.city} PORTRAIT FIELD NOTES / EST. {currentYear}</p>
       </div>
 
-      <button
-        type="button"
-        className={`scroll-top${showTop ? " is-visible" : ""}`}
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        aria-label={t("footer.backToTop")}
-      >
-        <ArrowUp size={18} aria-hidden="true" />
-      </button>
     </footer>
   );
 }

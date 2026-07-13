@@ -184,7 +184,7 @@ export function ComparePage() {
         </div>
       )}
 
-      <main className="compare-page-stage">
+      <section className="compare-page-stage" aria-label={t("photoCompare.title")}>
         {entries.length === 0 ? (
           <div className="compare-page-empty">
           <GitCompare size={28} aria-hidden="true" />
@@ -241,7 +241,7 @@ export function ComparePage() {
           ))}
         </div>
       )}
-      </main>
+      </section>
     </PageTransition>
   );
 }

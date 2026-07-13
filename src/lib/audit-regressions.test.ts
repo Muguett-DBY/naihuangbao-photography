@@ -483,7 +483,7 @@ describe("audit regression coverage", () => {
     expect(cssSource).not.toMatch(/\.public-chat-panel,\s*\.public-chat-message\s*\{[\s\S]*will-change:\s*transform/s);
     expect(cssSource).toMatch(/\.site-nav::after\s*\{[\s\S]*will-change:\s*transform/s);
     expect(cssSource).toMatch(/\.hero-contact-sheet\s*\{[\s\S]*position:\s*absolute/s);
-    expect(cssSource).toMatch(/\.scroll-top\s*\{[\s\S]*will-change:\s*transform,\s*opacity/s);
+    expect(cssSource).toMatch(/\.nhb-scroll-top\s*\{[\s\S]*will-change:\s*transform,\s*opacity/s);
   });
 
   it("does not keep duplicated global accessibility blocks", () => {
@@ -959,6 +959,7 @@ describe("audit regression coverage", () => {
     expect(photoWallSource).toContain("IntersectionObserver");
     expect(photoWallSource).toContain("document.hidden");
     expect(photoWallSource).toContain("visibilitychange");
+    expect(photoWallSource).toContain("useReducedMotion");
     expect(gallerySource).toContain("touchCleanupRef");
     expect(gallerySource).toContain('removeEventListener("touchend"');
     expect(gallerySource).toContain('removeEventListener("touchmove"');

@@ -290,15 +290,20 @@ test.describe("shoot.custard.top", () => {
     await expect(page.locator(".editor-canvas")).toBeVisible({ timeout: 15000 });
   });
 
-  test("移动端首页没有横向溢出", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
-    const widths = await page.evaluate(() => ({
-      viewport: document.documentElement.clientWidth,
-      scroll: document.documentElement.scrollWidth,
-    }));
-    expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
-    await expect(page.locator(".hamburger")).toBeVisible();
+  test("移动端首页在两档窄屏都没有横向溢出", async ({ page }) => {
+    for (const viewport of [
+      { width: 375, height: 812 },
+      { width: 430, height: 932 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      const widths = await page.evaluate(() => ({
+        viewport: document.documentElement.clientWidth,
+        scroll: document.documentElement.scrollWidth,
+      }));
+      expect(widths.scroll).toBeLessThanOrEqual(widths.viewport + 1);
+      await expect(page.locator(".hamburger")).toBeVisible();
+    }
   });
 
   test("PWA 安装提示跨访问出现并等待浏览器安装结果", async ({ page }) => {

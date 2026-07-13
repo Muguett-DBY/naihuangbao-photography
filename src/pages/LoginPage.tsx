@@ -183,7 +183,7 @@ export function LoginPage() {
     return (
       <ErrorBoundary>
         <PageTransition ref={rootRef} className="auth-page auth-page--reset">
-          <main className="auth-page-layout" id="top">
+          <div className="auth-page-layout" id="top">
             {renderAuthMedia()}
             <section className="auth-page-panel" aria-labelledby="auth-page-title">
               <div className="login-box">
@@ -322,7 +322,7 @@ export function LoginPage() {
             </div>
           </div>
             </section>
-          </main>
+          </div>
         </PageTransition>
       </ErrorBoundary>
     );
@@ -332,7 +332,7 @@ export function LoginPage() {
   return (
     <ErrorBoundary>
       <PageTransition ref={rootRef} className="auth-page">
-        <main className="auth-page-layout" id="top">
+        <div className="auth-page-layout" id="top">
           {renderAuthMedia()}
           <section className="auth-page-panel" aria-labelledby="auth-page-title">
             <div className="login-box">
@@ -508,7 +508,7 @@ export function LoginPage() {
           </div>
         </div>
           </section>
-        </main>
+        </div>
       </PageTransition>
     </ErrorBoundary>
   );

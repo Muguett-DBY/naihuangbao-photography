@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function ScrollToTop() {
+  const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -19,9 +21,9 @@ export function ScrollToTop() {
       type="button"
       className="nhb-scroll-top"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      aria-label="Scroll to top"
+      aria-label={t("footer.backToTop")}
     >
-      <ArrowUp size={20} />
+      <ArrowUp size={20} aria-hidden="true" />
     </button>
   );
 }
