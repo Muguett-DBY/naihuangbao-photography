@@ -1,6 +1,6 @@
 import { contentKeys, defaultSiteContent, mergeSiteContent } from "../src/data/content";
 import type { PartialSiteContent, SiteContent } from "../src/types/content";
-import { getRequiredRateLimitSecret, hashRateLimitKey } from "./_security";
+import { enforceRateLimit } from "./_security";
 
 type D1DatabaseLike = {
   prepare(query: string): {
@@ -312,48 +312,13 @@ export async function enforcePublicChatRateLimit(request: Request, env: ChatEnv)
     return { ok: false, retryAfter: publicChatWindowSeconds };
   }
 
-  const nowSeconds = Math.floor(Date.now() / 1000);
-  const windowStart = nowSeconds - (nowSeconds % publicChatWindowSeconds);
-  const previousWindowStart = windowStart - publicChatWindowSeconds;
-  const elapsedSeconds = nowSeconds - windowStart;
-  const previousWeight = Math.max(0, 1 - elapsedSeconds / publicChatWindowSeconds);
-  const retryAfter = Math.max(1, windowStart + publicChatWindowSeconds - nowSeconds);
-  const ipHash = await hashRateLimitKey(
-    `public-chat:${readClientIp(request)}`,
-    getRequiredRateLimitSecret(env) ?? undefined,
+  return enforceRateLimit(
+    request,
+    env,
+    "public-chat",
+    maxPublicChatMessagesPerHour,
+    publicChatWindowSeconds,
   );
-  const updatedAt = new Date(nowSeconds * 1000).toISOString();
-
-  await env.DB.prepare(
-    `insert into chat_rate_limits (ip_hash, window_start, count, updated_at)
-     values (?, ?, 1, ?)
-     on conflict(ip_hash, window_start)
-     do update set count = count + 1, updated_at = excluded.updated_at`,
-  )
-    .bind(ipHash, windowStart, updatedAt)
-    .run();
-
-  const rows = await env.DB.prepare(
-    `select window_start, count
-     from chat_rate_limits
-     where ip_hash = ? and window_start in (?, ?)`,
-  )
-    .bind(ipHash, windowStart, previousWindowStart)
-    .all<{ window_start: number; count: number }>();
-
-  const currentCount = Number(rows.results.find((row) => row.window_start === windowStart)?.count ?? 1);
-  const previousCount = Number(rows.results.find((row) => row.window_start === previousWindowStart)?.count ?? 0);
-  const weightedCount = currentCount + previousCount * previousWeight;
-
-  return weightedCount <= maxPublicChatMessagesPerHour
-    ? { ok: true }
-    : { ok: false, retryAfter };
-}
-
-function readClientIp(request: Request) {
-  return request.headers.get("cf-connecting-ip")
-    ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-    ?? "unknown";
 }
 
 export const __test_buildPublicSystemPrompt = buildPublicSystemPrompt;

@@ -18,6 +18,10 @@ type RateLimitEnv = {
 type RateLimitSecretEnv = Pick<RateLimitEnv, "RATE_LIMIT_SECRET" | "CHAT_RATE_LIMIT_SECRET">;
 
 const publicMutationHeaderName = "x-nhb-public-action";
+const rateLimitRetentionSeconds = 24 * 60 * 60;
+const rateLimitCleanupIntervalSeconds = 60 * 60;
+const rateLimitCleanupRetrySeconds = 60;
+const nextRateLimitCleanupAt = new WeakMap<D1DatabaseLike, number>();
 
 export function isPublicMutationRequest(request: Request) {
   return request.headers.get(publicMutationHeaderName) === "1";
@@ -73,6 +77,8 @@ export async function enforceRateLimit(
   );
   const updatedAt = new Date(nowSeconds * 1000).toISOString();
 
+  await pruneExpiredRateLimitRows(env.DB, nowSeconds);
+
   await env.DB.prepare(
     `insert into chat_rate_limits (ip_hash, window_start, count, updated_at)
      values (?, ?, 1, ?)
@@ -97,6 +103,26 @@ export async function enforceRateLimit(
   return weightedCount <= maxRequests
     ? { ok: true as const }
     : { ok: false as const, retryAfter };
+}
+
+async function pruneExpiredRateLimitRows(db: D1DatabaseLike, nowSeconds: number) {
+  if (nowSeconds < (nextRateLimitCleanupAt.get(db) ?? 0)) return;
+
+  // Set the next attempt before awaiting so concurrent requests do not duplicate cleanup work.
+  nextRateLimitCleanupAt.set(db, nowSeconds + rateLimitCleanupIntervalSeconds);
+  const cutoff = new Date((nowSeconds - rateLimitRetentionSeconds) * 1000).toISOString();
+
+  try {
+    await db.prepare(
+      `delete from chat_rate_limits
+       where updated_at < ?`,
+    )
+      .bind(cutoff)
+      .run();
+  } catch (error) {
+    nextRateLimitCleanupAt.set(db, nowSeconds + rateLimitCleanupRetrySeconds);
+    console.warn("Rate-limit cleanup failed", error);
+  }
 }
 
 export function rateLimited(retryAfter: number, limit?: number) {

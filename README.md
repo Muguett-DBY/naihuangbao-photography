@@ -105,7 +105,7 @@ npx wrangler pages secret put RESEND_API_KEY --project-name naihuangbao-photogra
 
 - `ADMIN_PASSWORD`：后台登录密码，必须通过 Pages secret 配置。
 - `AUTH_SECRET`：站内用户登录 session 签名密钥，至少 32 字符，必须通过 Pages secret 配置。
-- `RATE_LIMIT_SECRET`：公开接口限流 key 哈希密钥，至少 32 个字符，生产环境必须通过 Pages secret 配置；旧部署可暂时使用 `CHAT_RATE_LIMIT_SECRET` 兼容。
+- `RATE_LIMIT_SECRET`：公开接口限流 key 哈希密钥，至少 32 个字符，生产环境必须通过 Pages secret 配置；限流请求会按小时清理超过 24 小时的伪匿名记录，旧部署可暂时使用 `CHAT_RATE_LIMIT_SECRET` 兼容。
 - `RESEND_API_KEY`：密码重置邮件发送密钥；配置后 `/api/auth/forgot-password` 会通过 Resend 发送重置令牌。
 - `RESET_EMAIL_FROM`：密码重置邮件发件人，例如 `Naihuangbao <reset@shoot.custard.top>`；可作为 Pages 变量配置。
 - `EMAIL_FROM`：预约确认和付款回执等事务邮件发件人；可作为 Pages 变量配置。
