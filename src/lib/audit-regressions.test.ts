@@ -373,8 +373,8 @@ describe("audit regression coverage", () => {
     expect(cssSource).toContain("--font-display-cn");
     expect(cssSource).toContain('"Naihuangbao WenKai"');
     expect(bodyBlock).toContain("font-family: var(--font-body)");
-    expect(cssSource).toMatch(/\.hero-magazine-title\s*\{[^}]*font-family:\s*var\(--font-display-cn\)/s);
-    expect(cssSource).toMatch(/\.hero-cover-primary-btn\s*\{[^}]*font-family:\s*var\(--font-display-cn\)/s);
+    expect(cssSource).toMatch(/\.hero-title\s*\{[^}]*font-family:\s*var\(--font-display\)/s);
+    expect(cssSource).toMatch(/\.hero-field-note\s*\{[^}]*font-family:\s*var\(--font-display-cn\)/s);
     expect(chatTextareaBlock).not.toContain("var(--font-display-cn)");
     expect(cssSource).not.toMatch(/\.public-chat-form textarea\s*\{[\s\S]*Naihuangbao WenKai/s);
   });
@@ -482,7 +482,7 @@ describe("audit regression coverage", () => {
     expect(cssSource).not.toMatch(/\.section-shell,\s*\.section-body > \*,\s*\.package-card,\s*\.why-card/s);
     expect(cssSource).not.toMatch(/\.public-chat-panel,\s*\.public-chat-message\s*\{[\s\S]*will-change:\s*transform/s);
     expect(cssSource).toMatch(/\.site-nav::after\s*\{[\s\S]*will-change:\s*transform/s);
-    expect(cssSource).toMatch(/\.hero-cover-design\s*\{[\s\S]*position:\s*absolute/s);
+    expect(cssSource).toMatch(/\.hero-contact-sheet\s*\{[\s\S]*position:\s*absolute/s);
     expect(cssSource).toMatch(/\.scroll-top\s*\{[\s\S]*will-change:\s*transform,\s*opacity/s);
   });
 

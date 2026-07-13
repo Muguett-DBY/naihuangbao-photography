@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { reviews as fallbackReviews } from "../data/reviews";
 
 export function Reviews() {
@@ -39,9 +40,11 @@ export function Reviews() {
         onMouseLeave={startAuto}
         onTouchStart={stopAuto}
         onTouchEnd={startAuto}
+        onFocus={stopAuto}
+        onBlur={startAuto}
       >
         <button className="reviews-nav reviews-prev" onClick={prev} aria-label={t("reviews.prev")} type="button">
-          ‹
+          <ChevronLeft size={20} aria-hidden="true" />
         </button>
         <div className="reviews-card" key={index}>
           <p className="reviews-text">"{reviews[index].text}"</p>
@@ -51,7 +54,7 @@ export function Reviews() {
           </div>
         </div>
         <button className="reviews-nav reviews-next" onClick={next} aria-label={t("reviews.next")} type="button">
-          ›
+          <ChevronRight size={20} aria-hidden="true" />
         </button>
       </div>
       <div className="reviews-dots">

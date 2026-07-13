@@ -1,134 +1,60 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowUpRight } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
+import { ImageWithFallback } from "./ImageWithFallback";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const CAPTION_COUNT = 8;
+const NOTE_COUNT = 6;
 
 export function FilmStripStory() {
   const { t } = useTranslation();
   const { photos } = usePublicPhotos();
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const itemsRef = useRef<HTMLDivElement[]>([]);
 
-  const displayPhotos = useMemo(() => {
-    if (photos.length === 0) return [];
-    const selected = [];
-    const step = Math.max(1, Math.floor(photos.length / CAPTION_COUNT));
-    for (let i = 0; i < CAPTION_COUNT && i * step < photos.length; i++) {
-      selected.push(photos[i * step]);
-    }
-    return selected;
-  }, [photos]);
+  const displayPhotos = useMemo(
+    () => photos.filter((photo) => photo.visibility === "public").slice(0, NOTE_COUNT),
+    [photos],
+  );
 
-  const captions = useMemo(() => {
-    const result: string[] = [];
-    for (let i = 1; i <= CAPTION_COUNT; i++) {
-      result.push(t(`filmstrip.caption${i}` as never));
-    }
-    return result;
-  }, [t]);
+  const captions = useMemo(
+    () => Array.from({ length: NOTE_COUNT }, (_, index) => t(`filmstrip.caption${index + 1}` as never)),
+    [t],
+  );
 
-  useEffect(() => {
-    const section = sectionRef.current;
-    const track = trackRef.current;
-    if (!section || !track || displayPhotos.length === 0) return;
-
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
-
-    const ctx = gsap.context(() => {
-      const totalWidth = track.scrollWidth - window.innerWidth;
-
-      const scrollTween = gsap.to(track, {
-        x: -totalWidth,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: () => `+=${totalWidth}`,
-          pin: true,
-          scrub: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const bar = section.querySelector<HTMLElement>(".filmstrip-progress-bar");
-            if (bar) bar.style.width = `${(self.progress * 100).toFixed(1)}%`;
-          },
-        },
-      });
-
-      itemsRef.current.forEach((item, i) => {
-        if (!item) return;
-        gsap.fromTo(
-          item,
-          { opacity: 0, x: 80 },
-          {
-            opacity: 1,
-            x: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: item,
-              containerAnimation: scrollTween,
-              start: "left 85%",
-              end: "left 50%",
-              scrub: 0.5,
-            },
-          },
-        );
-      });
-    }, section);
-
-    return () => ctx.revert();
-  }, [displayPhotos]);
+  if (displayPhotos.length === 0) return null;
 
   return (
-    <section className="filmstrip-story" ref={sectionRef}>
-      <div className="filmstrip-heading">
-        <span className="filmstrip-eyebrow">Our Story</span>
-        <h2 className="filmstrip-title">{t("filmstrip.title" as never)}</h2>
-      </div>
+    <section
+      className="field-notes"
+      id="field-notes"
+      aria-labelledby="field-notes-title"
+    >
+      <header className="field-notes-heading">
+        <p>01 / {t("filmstrip.title" as never)}</p>
+        <h2 id="field-notes-title">{t("filmstrip.title" as never)}</h2>
+      </header>
 
-      <div className="filmstrip-container">
-        <div className="filmstrip-sticky">
-          <div className="filmstrip-track" ref={trackRef}>
-            {displayPhotos.map((photo, i) => (
-              <div
-                key={photo.id}
-                className="filmstrip-item"
-                ref={(el) => { itemsRef.current[i] = el!; }}
-              >
-                <div className="filmstrip-photo-frame">
-                  <img
-                    className="filmstrip-photo"
-                    src={photo.imageUrl}
-                    alt={photo.alt}
-                    width={400}
-                    height={533}
-                    loading={i < 3 ? "eager" : "lazy"}
-                  />
-                  <div className="filmstrip-photo-overlay" aria-hidden="true" />
-                </div>
-                <div className="filmstrip-caption">
-                  <span className="filmstrip-caption-number">
-                    {String(i + 1).padStart(2, "0")} / {String(CAPTION_COUNT).padStart(2, "0")}
-                  </span>
-                  <p className="filmstrip-caption-text">{captions[i]}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="field-notes-grid">
+        {displayPhotos.map((photo, index) => (
+          <Link className="field-note" key={photo.id} to={`/gallery/${photo.id}`}>
+            <div className="field-note-image">
+              <ImageWithFallback
+                src={photo.imageUrl}
+                alt={photo.alt}
+                title={photo.title}
+                tone="ink"
+                priority={index < 2}
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              />
+            </div>
+            <div className="field-note-caption">
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <p>{captions[index]}</p>
+              <ArrowUpRight size={18} aria-hidden="true" />
+            </div>
+          </Link>
+        ))}
       </div>
-
-      <div className="filmstrip-progress" aria-hidden="true">
-        <div className="filmstrip-progress-bar" />
-      </div>
-      <div className="filmstrip-grain" aria-hidden="true" />
     </section>
   );
 }

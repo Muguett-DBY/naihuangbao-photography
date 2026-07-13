@@ -1,9 +1,28 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, ArrowRight, RotateCcw, Share2, Sparkles } from "lucide-react";
-import { Button } from "animal-island-ui";
-import gsap from "gsap";
+import {
+  Aperture,
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  CakeSlice,
+  Flower2,
+  Heart,
+  Leaf,
+  Palette,
+  Ribbon,
+  RotateCcw,
+  Share2,
+  Snowflake,
+  Sparkles,
+  Sun,
+  UserRound,
+  UserRoundPlus,
+  UsersRound,
+  type LucideIcon,
+} from "lucide-react";
 import { packages } from "../data/packages";
+import { useBookingModal } from "../hooks/useBookingModal";
 
 type Answers = {
   occasion: string;
@@ -17,7 +36,7 @@ type StepKey = "occasion" | "style" | "season" | "people";
 interface QuizStep {
   key: StepKey;
   titleKey: string;
-  options: { value: string; emoji: string }[];
+  options: { value: string; icon: LucideIcon }[];
 }
 
 const STEPS: QuizStep[] = [
@@ -25,42 +44,42 @@ const STEPS: QuizStep[] = [
     key: "occasion",
     titleKey: "quiz.step1.title",
     options: [
-      { value: "birthday", emoji: "🎂" },
-      { value: "couple", emoji: "💑" },
-      { value: "family", emoji: "👨‍👩‍👧" },
-      { value: "personal", emoji: "🌸" },
-      { value: "friends", emoji: "👯" },
+      { value: "birthday", icon: CakeSlice },
+      { value: "couple", icon: Heart },
+      { value: "family", icon: UsersRound },
+      { value: "personal", icon: Flower2 },
+      { value: "friends", icon: UserRoundPlus },
     ],
   },
   {
     key: "style",
     titleKey: "quiz.step2.title",
     options: [
-      { value: "natural", emoji: "🌿" },
-      { value: "artistic", emoji: "🎨" },
-      { value: "vintage", emoji: "🎞️" },
-      { value: "modern", emoji: "🏙️" },
-      { value: "cute", emoji: "🎀" },
+      { value: "natural", icon: Leaf },
+      { value: "artistic", icon: Palette },
+      { value: "vintage", icon: Aperture },
+      { value: "modern", icon: Building2 },
+      { value: "cute", icon: Ribbon },
     ],
   },
   {
     key: "season",
     titleKey: "quiz.step3.title",
     options: [
-      { value: "spring", emoji: "🌷" },
-      { value: "summer", emoji: "☀️" },
-      { value: "autumn", emoji: "🍂" },
-      { value: "winter", emoji: "❄️" },
+      { value: "spring", icon: Flower2 },
+      { value: "summer", icon: Sun },
+      { value: "autumn", icon: Leaf },
+      { value: "winter", icon: Snowflake },
     ],
   },
   {
     key: "people",
     titleKey: "quiz.step4.title",
     options: [
-      { value: "solo", emoji: "🙋‍♀️" },
-      { value: "couplePeople", emoji: "💑" },
-      { value: "familyPeople", emoji: "👨‍👩‍👧‍👦" },
-      { value: "group", emoji: "👯‍♀️" },
+      { value: "solo", icon: UserRound },
+      { value: "couplePeople", icon: Heart },
+      { value: "familyPeople", icon: UsersRound },
+      { value: "group", icon: UserRoundPlus },
     ],
   },
 ];
@@ -112,60 +131,40 @@ function getGalleryTags(answers: Answers): string[] {
 
 export function StyleQuiz() {
   const { t } = useTranslation();
+  const { openBookingModal } = useBookingModal();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({ occasion: "", style: "", season: "", people: "" });
   const [result, setResult] = useState<ReturnType<typeof recommendPackage> | null>(null);
-  const stepRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const totalSteps = STEPS.length;
   const isComplete = currentStep >= totalSteps;
   const selectedValue = STEPS[currentStep]?.key ? answers[STEPS[currentStep].key] : "";
 
-  const animateTransition = useCallback((direction: "next" | "back") => {
-    if (!stepRef.current) return;
-    const xFrom = direction === "next" ? 60 : -60;
-    gsap.fromTo(
-      stepRef.current,
-      { opacity: 0, x: xFrom },
-      { opacity: 1, x: 0, duration: 0.45, ease: "power2.out" },
-    );
-  }, []);
-
-  useEffect(() => {
-    if (isComplete && !result) {
-      setResult(recommendPackage(answers, t));
-    }
-  }, [isComplete, answers, result, t]);
-
-  useEffect(() => {
-    if (containerRef.current && result) {
-      gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
-      );
-    }
-  }, [result]);
-
   const handleSelect = (value: string) => {
     if (isComplete) return;
     const step = STEPS[currentStep];
-    setAnswers((prev) => ({ ...prev, [step.key]: value }));
-    setTimeout(() => handleNext(), 300);
+    if (!step) return;
+    const nextAnswers = { ...answers, [step.key]: value };
+    setAnswers(nextAnswers);
+
+    if (currentStep === totalSteps - 1) {
+      setCurrentStep(totalSteps);
+      setResult(recommendPackage(nextAnswers, t));
+      return;
+    }
+
+    setCurrentStep((value) => value + 1);
   };
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
       setCurrentStep((s) => s + 1);
-      animateTransition("next");
     }
   };
 
   const handleBack = () => {
     if (currentStep > 0) {
       setCurrentStep((s) => s - 1);
-      animateTransition("back");
     }
   };
 
@@ -173,7 +172,6 @@ export function StyleQuiz() {
     setCurrentStep(0);
     setAnswers({ occasion: "", style: "", season: "", people: "", });
     setResult(null);
-    animateTransition("back");
   };
 
   const handleShare = async () => {
@@ -196,7 +194,7 @@ export function StyleQuiz() {
   if (result) {
     const tags = getGalleryTags(answers);
     return (
-      <div className="style-quiz" ref={containerRef}>
+      <div className="style-quiz">
         <div className="quiz-result">
           <div className="quiz-result-badge">
             <Sparkles size={14} />
@@ -220,9 +218,9 @@ export function StyleQuiz() {
             )}
           </div>
           <div className="quiz-result-actions">
-            <Button type="primary" size="large" onClick={() => {
-              document.getElementById("packages")?.scrollIntoView({ behavior: "smooth" });
-            }}>{t("quiz.bookNow")}</Button>
+            <button type="button" className="quiz-book-button" onClick={() => openBookingModal()}>
+              {t("quiz.bookNow")}
+            </button>
             <div className="quiz-result-secondary-actions">
               <button type="button" className="quiz-action-btn" onClick={handleShare}>
                 <Share2 size={14} /> {t("quiz.share")}
@@ -240,27 +238,31 @@ export function StyleQuiz() {
   const step = STEPS[currentStep];
 
   return (
-    <div className="style-quiz" ref={containerRef}>
+    <div className="style-quiz">
       <div className="quiz-progress">
         {STEPS.map((_, i) => (
           <div key={i} className={`quiz-progress-dot ${i < currentStep ? "is-done" : ""} ${i === currentStep ? "is-active" : ""}`} />
         ))}
       </div>
       <p className="quiz-progress-text">{t("quiz.progress", { current: currentStep + 1, total: totalSteps })}</p>
-      <div className="quiz-step" ref={stepRef}>
+      <div className="quiz-step">
         <h3 className="quiz-step-title">{t(step.titleKey as any)}</h3>
         <div className="quiz-options">
-          {step.options.map((opt) => (
-            <button
-              key={opt.value}
-              type="button"
-              className={`quiz-option ${selectedValue === opt.value ? "quiz-option--selected" : ""}`}
-              onClick={() => handleSelect(opt.value)}
-            >
-              <span className="quiz-option-emoji">{opt.emoji}</span>
-              <span className="quiz-option-label">{t(`quiz.options.${opt.value}` as any)}</span>
-            </button>
-          ))}
+          {step.options.map((opt) => {
+            const Icon = opt.icon;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                className={`quiz-option ${selectedValue === opt.value ? "quiz-option--selected" : ""}`}
+                onClick={() => handleSelect(opt.value)}
+                aria-pressed={selectedValue === opt.value}
+              >
+                <span className="quiz-option-icon"><Icon size={24} aria-hidden="true" /></span>
+                <span className="quiz-option-label">{t(`quiz.options.${opt.value}` as any)}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
       <div className="quiz-nav">
