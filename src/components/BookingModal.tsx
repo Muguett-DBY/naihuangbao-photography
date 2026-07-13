@@ -137,6 +137,15 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     }));
   }, [isSelectedTimeUnavailable, t, time]);
 
+  useEffect(() => {
+    const rail = contentRef.current?.querySelector<HTMLOListElement>(".booking-step-rail");
+    const current = rail?.querySelector<HTMLElement>("[aria-current='step']");
+    if (!rail || !current || rail.scrollWidth <= rail.clientWidth) return;
+
+    const centeredLeft = current.offsetLeft - ((rail.clientWidth - current.offsetWidth) / 2);
+    rail.scrollTo({ left: Math.max(0, centeredLeft), behavior: "auto" });
+  }, [bookingId, contentRef, done, showPayment, step, waitlistDone]);
+
   const handleBlur = useCallback((field: string, value: string) => {
     setTouched((prev) => ({ ...prev, [field]: true }));
     const error = validateField(field, value);
@@ -386,6 +395,34 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
   const showDashboard = accountLinked;
 
+  const renderStepRail = (currentStage: 1 | 2 | 3 | 4 | 5) => {
+    const stages = [
+      t("bookingModal.selectPackage"),
+      `${t("bookingModal.date")} / ${t("bookingModal.time")}`,
+      t("bookingModal.contact"),
+      t("payment.title"),
+      t("bookingModal.successTitle"),
+    ];
+
+    return (
+      <ol className="booking-step-rail" aria-label={t("bookingModal.stepNavigation")}>
+        {stages.map((label, index) => {
+          const stage = (index + 1) as 1 | 2 | 3 | 4 | 5;
+          return (
+            <li
+              key={label}
+              className={`${stage < currentStage ? "is-complete" : ""}${stage === currentStage ? " is-current" : ""}`.trim()}
+              aria-current={stage === currentStage ? "step" : undefined}
+            >
+              <span aria-hidden="true">{String(stage).padStart(2, "0")}</span>
+              <strong>{label}</strong>
+            </li>
+          );
+        })}
+      </ol>
+    );
+  };
+
   const renderSuccessBridge = (detail: string, options: { showDashboard: boolean }) => (
     <section className="booking-success-bridge" aria-labelledby={successBridgeTitleId}>
       <div className="booking-success-bridge-copy">
@@ -432,13 +469,18 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       <Modal open onClose={onClose} footer={null} typewriter={false}>
         <span id={titleId} className="sr-only">{waitlistTitle}</span>
         <div ref={contentRef} className="booking-modal-content">
-          <div className={`booking-modal-success booking-waitlist-success${waitlistAlreadyJoined ? " booking-waitlist-success--existing" : ""}`}>
+          {renderStepRail(5)}
+          <section className="booking-numbered-group booking-numbered-group--success" aria-labelledby="booking-waitlist-confirmation-title">
+            <header className="booking-numbered-group-heading">
+              <span className="booking-group-index">05</span>
+              <h2 id="booking-waitlist-confirmation-title">{waitlistTitle}</h2>
+            </header>
+            <div className={`booking-modal-success booking-waitlist-success${waitlistAlreadyJoined ? " booking-waitlist-success--existing" : ""}`}>
             <div className="booking-success-check">
               <svg viewBox="0 0 24 24" className="booking-success-check-svg" aria-hidden="true">
                 <path d="M20 6L9 17l-5-5" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h2>{waitlistTitle}</h2>
             <p className="booking-success-next">
               {waitlistDescription}
             </p>
@@ -466,7 +508,8 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
                 : t("bookingModal.successBridgeContactDetail", "Updates will go to the contact details you provided. Message me if anything changes."),
               { showDashboard },
             )}
-          </div>
+            </div>
+          </section>
         </div>
       </Modal>
     );
@@ -478,32 +521,39 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       <Modal open onClose={onClose} footer={null} typewriter={false}>
         <span id={titleId} className="sr-only">{t("bookingModal.paymentTitle", "Payment")}</span>
         <div ref={contentRef} className="booking-modal-content">
-          <PaymentForm
-            purpose="booking_deposit"
-            amountCents={calculateDepositCents()}
-            currency="cny"
-            referenceId={bookingId}
-            metadata={{ packageName: selectedPkg, name: name.trim() }}
-            onSuccess={() => {
-              setDepositOutcome(null);
-              setDone(true);
-              setShowPayment(false);
-            }}
-            onPending={() => {
-              setDepositOutcome("pending");
-              setDone(true);
-              setShowPayment(false);
-            }}
-            onError={(err) => {
-              setError(err);
-              setShowPayment(false);
-            }}
-            onCancel={() => {
-              setDepositOutcome("deferred");
-              setDone(true);
-              setShowPayment(false);
-            }}
-          />
+          {renderStepRail(4)}
+          <section className="booking-numbered-group booking-numbered-group--payment" aria-labelledby="booking-payment-title">
+            <header className="booking-numbered-group-heading">
+              <span className="booking-group-index">04</span>
+              <h2 id="booking-payment-title">{t("payment.title")}</h2>
+            </header>
+            <PaymentForm
+              purpose="booking_deposit"
+              amountCents={calculateDepositCents()}
+              currency="cny"
+              referenceId={bookingId}
+              metadata={{ packageName: selectedPkg, name: name.trim() }}
+              onSuccess={() => {
+                setDepositOutcome(null);
+                setDone(true);
+                setShowPayment(false);
+              }}
+              onPending={() => {
+                setDepositOutcome("pending");
+                setDone(true);
+                setShowPayment(false);
+              }}
+              onError={(err) => {
+                setError(err);
+                setShowPayment(false);
+              }}
+              onCancel={() => {
+                setDepositOutcome("deferred");
+                setDone(true);
+                setShowPayment(false);
+              }}
+            />
+          </section>
         </div>
       </Modal>
     );
@@ -534,13 +584,18 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       <Modal open onClose={onClose} footer={null} typewriter={false}>
         <span id={titleId} className="sr-only">{t("bookingModal.successTitle")}</span>
         <div ref={contentRef} className="booking-modal-content">
-        <div className="booking-modal-success">
+          {renderStepRail(5)}
+          <section className="booking-numbered-group booking-numbered-group--success" aria-labelledby="booking-confirmation-title">
+            <header className="booking-numbered-group-heading">
+              <span className="booking-group-index">05</span>
+              <h2 id="booking-confirmation-title">{t("bookingModal.successTitle")}</h2>
+            </header>
+            <div className="booking-modal-success">
           <div className="booking-success-check">
             <svg viewBox="0 0 24 24" className="booking-success-check-svg" aria-hidden="true">
               <path d="M20 6L9 17l-5-5" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <h2>{t("bookingModal.successTitle")}</h2>
 
           <div className="booking-success-details">
             <div className="booking-success-detail-item">
@@ -601,7 +656,8 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               : t("bookingModal.successBridgeContactDetail", "Updates will go to the contact details you provided. Message me if anything changes."),
             { showDashboard },
           )}
-        </div>
+            </div>
+          </section>
         </div>
       </Modal>
     );
@@ -639,81 +695,90 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           {t("bookingModal.subtitle")}
         </p>
 
-      {/* Step indicator */}
-      <div className="booking-steps" role="navigation" aria-label={t("bookingModal.stepNavigation", "Booking steps")}>
-        <div className={`booking-step-dot ${step === 1 ? "is-active" : step === 2 ? "is-done" : ""}`}>
-          <span>1</span>
-        </div>
-        <div className="booking-step-line" />
-        <div className={`booking-step-dot ${step === 2 ? "is-active" : ""}`}>
-          <span>2</span>
-        </div>
-      </div>
+        {renderStepRail(step === 1 ? 1 : 3)}
 
-      <form onSubmit={handleSubmit} noValidate>
-        {error && <p className="booking-error" role="alert">{error}</p>}
+        <form onSubmit={handleSubmit} noValidate>
+          {error && <p className="booking-error" role="alert">{error}</p>}
 
-        {/* Step 1: Session details */}
-        {step === 1 && (
-          <div className="booking-step-content">
-            <div className="booking-field">
-              <label htmlFor="booking-package">{t("bookingModal.selectPackage")}</label>
-              <select id="booking-package" value={selectedPkg} onChange={(e) => setSelectedPkg(e.target.value)}>
-                <option value="">{t("bookingModal.anyPackage")}</option>
-                {packageOptions}
-              </select>
-            </div>
+          {/* Step 1: Session details */}
+          {step === 1 && (
+            <div className="booking-step-content">
+              <section className="booking-numbered-group" aria-labelledby="booking-package-heading">
+                <header className="booking-numbered-group-heading">
+                  <span className="booking-group-index">01</span>
+                  <h3 id="booking-package-heading">{t("bookingModal.selectPackage")}</h3>
+                </header>
+                <div className="booking-field">
+                  <label htmlFor="booking-package">{t("bookingModal.selectPackage")}</label>
+                  <select id="booking-package" value={selectedPkg} onChange={(e) => setSelectedPkg(e.target.value)}>
+                    <option value="">{t("bookingModal.anyPackage")}</option>
+                    {packageOptions}
+                  </select>
+                </div>
+              </section>
 
-            <div className={`booking-field ${errors.date && touched.date ? "has-error" : ""}`}>
-              <label>{t("bookingModal.date")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
-              <BookingCalendar
-                selectedDate={date}
-                onSelectDate={handleDateSelect}
-                onRequestWaitlist={handleWaitlistDate}
-                onSelectedDateInfoChange={handleSelectedDateInfoChange}
-                minDate={earliestBookingDate}
-                policyTimeZone={bookingPolicy.timeZone}
-                capacityPerDay={bookingPolicy.capacityPerDay}
-              />
-              {errors.date && touched.date && (
-                <span className="booking-field-error">{errors.date}</span>
-              )}
-            </div>
+              <section className="booking-numbered-group" aria-labelledby="booking-schedule-heading">
+                <header className="booking-numbered-group-heading">
+                  <span className="booking-group-index">02</span>
+                  <h3 id="booking-schedule-heading">{t("bookingModal.date")} / {t("bookingModal.time")}</h3>
+                </header>
+                <div className={`booking-field ${errors.date && touched.date ? "has-error" : ""}`}>
+                  <label>{t("bookingModal.date")} <span className="booking-optional">{t("bookingModal.any")}</span></label>
+                  <BookingCalendar
+                    selectedDate={date}
+                    onSelectDate={handleDateSelect}
+                    onRequestWaitlist={handleWaitlistDate}
+                    onSelectedDateInfoChange={handleSelectedDateInfoChange}
+                    minDate={earliestBookingDate}
+                    policyTimeZone={bookingPolicy.timeZone}
+                    capacityPerDay={bookingPolicy.capacityPerDay}
+                  />
+                  {errors.date && touched.date && (
+                    <span className="booking-field-error">{errors.date}</span>
+                  )}
+                </div>
 
-            <BookingTimeSlotPicker
-              id="booking-time"
-              label={t("bookingModal.time")}
-              optionalLabel={t("bookingModal.any")}
-              value={time}
-              onChange={handleTimeChange}
-              dateInfo={selectedDateAvailability}
-              hint={t("bookingModal.timeSlotLimitedHint", "Choose an available window or leave Any if you can be flexible.")}
-              error={errors.time && touched.time ? errors.time : undefined}
-            />
+                <BookingTimeSlotPicker
+                  id="booking-time"
+                  label={t("bookingModal.time")}
+                  optionalLabel={t("bookingModal.any")}
+                  value={time}
+                  onChange={handleTimeChange}
+                  dateInfo={selectedDateAvailability}
+                  hint={t("bookingModal.timeSlotLimitedHint", "Choose an available window or leave Any if you can be flexible.")}
+                  error={errors.time && touched.time ? errors.time : undefined}
+                />
+              </section>
 
-            <div className="booking-actions">
-              <Button type="default" onClick={onClose}>{t("bookingModal.cancel")}</Button>
-              <Button type="primary" onClick={handleNext}>
-                {t("bookingModal.next", "Next")}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 2: Personal info */}
-        {step === 2 && (
-          <div className="booking-step-content">
-            <button type="button" className="booking-back-btn" onClick={handleBack}>
-              <ChevronLeft size={16} />
-              {t("bookingModal.back", "Back")}
-            </button>
-
-            {waitlistDate && (
-              <div className="booking-waitlist-notice" role="status">
-                <strong>{t("bookingModal.waitlistNoticeTitle")}</strong>
-                <span>{t("bookingModal.waitlistNoticeDescription", { date: waitlistDate })}</span>
+              <div className="booking-actions">
+                <Button type="default" onClick={onClose}>{t("bookingModal.cancel")}</Button>
+                <Button type="primary" onClick={handleNext}>
+                  {t("bookingModal.next", "Next")}
+                </Button>
               </div>
-            )}
+            </div>
+          )}
+
+          {/* Step 2: Personal info */}
+          {step === 2 && (
+            <div className="booking-step-content">
+              <button type="button" className="booking-back-btn" onClick={handleBack}>
+                <ChevronLeft size={16} aria-hidden="true" />
+                {t("bookingModal.back", "Back")}
+              </button>
+
+              <section className="booking-numbered-group" aria-labelledby="booking-contact-heading">
+                <header className="booking-numbered-group-heading">
+                  <span className="booking-group-index">03</span>
+                  <h3 id="booking-contact-heading">{t("bookingModal.contact")}</h3>
+                </header>
+
+                {waitlistDate && (
+                  <div className="booking-waitlist-notice" role="status">
+                    <strong>{t("bookingModal.waitlistNoticeTitle")}</strong>
+                    <span>{t("bookingModal.waitlistNoticeDescription", { date: waitlistDate })}</span>
+                  </div>
+                )}
 
             <div className={`booking-field ${errors.name && touched.name ? "has-error" : ""} ${touched.name && !errors.name && name.trim().length >= 2 ? "is-valid" : ""}`}>
               <label htmlFor="booking-name">{t("bookingModal.name")} <span className="booking-required">*</span></label>
@@ -763,25 +828,27 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
               />
             </div>
 
-            <div className="booking-actions">
-              <Button type="default" onClick={handleBack}>{t("bookingModal.back", "Back")}</Button>
-              <Button type="primary" htmlType="submit" disabled={actionBusy || !isFormValid}>
-                {actionBusy ? (
-                  <span className="booking-btn-loading">
-                    <span className="booking-btn-spinner" />
-                    {busyLabel}
-                  </span>
-                ) : actionLabel}
-              </Button>
-            </div>
+              </section>
 
-            <p className="booking-footer">
-              {t("bookingModal.agreement")}
-              <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">{t("bookingModal.contact")}</a>
-            </p>
-          </div>
-        )}
-      </form>
+              <div className="booking-actions">
+                <Button type="default" onClick={handleBack}>{t("bookingModal.back", "Back")}</Button>
+                <Button type="primary" htmlType="submit" disabled={actionBusy || !isFormValid}>
+                  {actionBusy ? (
+                    <span className="booking-btn-loading">
+                      <span className="booking-btn-spinner" />
+                      {busyLabel}
+                    </span>
+                  ) : actionLabel}
+                </Button>
+              </div>
+
+              <p className="booking-footer">
+                {t("bookingModal.agreement")}
+                <a href={siteConfig.xiaohongshuProfile} target="_blank" rel="noreferrer">{t("bookingModal.contact")}</a>
+              </p>
+            </div>
+          )}
+        </form>
       </div>
     </Modal>
   );

@@ -82,7 +82,7 @@ test.describe("login and dashboard flow", () => {
     await expect(page).toHaveURL(/\/login\?from=dashboard/);
     await page.locator("#email").fill("guest@example.com");
     await page.locator("#password").fill("password123");
-    await page.getByRole("button", { name: "Log in", exact: true }).click();
+    await page.locator('.login-card button[type="submit"]').click();
 
     await expect(page).toHaveURL(/\/dashboard$/);
     await expect(page.getByRole("heading", { name: "Guest User", exact: true })).toBeVisible();

@@ -257,7 +257,7 @@ test.describe("booking flow", () => {
     await expect(page.locator(".calendar-status-count--partial")).toContainText("1");
     await expect(page.locator(".calendar-status-count--booked")).toContainText("0");
     await expect(page.locator(".calendar-day-capacity")).toContainText("1 left");
-    const limitedDate = page.getByRole("button", { name: /^20日 - Open slots: 1/ });
+    const limitedDate = page.getByRole("button", { name: /^August 20, 2099 - Open slots: 1/ });
     await expect(limitedDate).toBeEnabled();
     await limitedDate.click();
     await expect(limitedDate).toHaveAttribute("aria-pressed", "true");
@@ -268,7 +268,7 @@ test.describe("booking flow", () => {
     await expect(page.locator("#booking-time option[value='morning']")).toBeDisabled();
     await expect(page.locator("#booking-time option[value='afternoon']")).toBeEnabled();
     await expect(page.getByRole("button", { name: "Previous month" })).toBeDisabled();
-    await expect(page.getByRole("button", { name: /^19日 - Unavailable before/ })).toBeDisabled();
+    await expect(page.getByRole("button", { name: /^August 19, 2099 - Unavailable before/ })).toBeDisabled();
   });
 
   test("recovers when a direct booking time window is taken before submit", async ({ page }) => {
@@ -339,7 +339,7 @@ test.describe("booking flow", () => {
 
     await page.goto("/");
     await page.locator(".hero-cover-primary-btn").click();
-    await page.getByRole("button", { name: /^21日 - Open slots: 2/ }).click();
+    await page.getByRole("button", { name: /^August 21, 2099 - Open slots: 2/ }).click();
     await page.locator("#booking-time").selectOption("fullDay");
     await page.getByRole("button", { name: "Next", exact: true }).click();
     await page.locator("#booking-name").fill("Recovery Guest");
@@ -418,7 +418,7 @@ test.describe("booking flow", () => {
     await page.goto("/");
     await page.locator(".hero-cover-primary-btn").click();
 
-    const fullDateButton = page.getByRole("button", { name: /^21日 - Fully Booked, join waitlist/ });
+    const fullDateButton = page.getByRole("button", { name: /^August 21, 2099 - Fully Booked, join waitlist/ });
     await expect(fullDateButton).toBeEnabled();
     await fullDateButton.click();
     await expect(page.locator(".booking-waitlist-notice")).toContainText("Join the waitlist");
@@ -499,14 +499,14 @@ test.describe("booking flow", () => {
     await page.goto("/");
     await page.locator(".hero-cover-primary-btn").click();
 
-    await page.getByRole("button", { name: /^21日 - Fully Booked, join waitlist/ }).click();
+    await page.getByRole("button", { name: /^August 21, 2099 - Fully Booked, join waitlist/ }).click();
     await page.locator("#booking-name").fill("Waitlist Guest");
     await page.locator("#booking-contact").fill("waitlist@example.com");
     await page.getByRole("button", { name: "Join waitlist", exact: true }).click();
 
     const existingPanel = page.locator(".booking-waitlist-success--existing");
     await expect(existingPanel).toBeVisible();
-    await expect(existingPanel).toContainText("Already on the waitlist");
+    await expect(page.getByRole("heading", { name: "Already on the waitlist", exact: true })).toBeVisible();
     await expect(existingPanel).toContainText("no duplicate was created");
     await expect(page.getByRole("link", { name: "View My Bookings", exact: true })).toHaveCount(0);
     await expect(page.getByText("Updates will go to the contact details you provided.", { exact: false })).toBeVisible();
@@ -566,7 +566,7 @@ test.describe("booking flow", () => {
 
     await page.goto("/");
     await page.locator(".hero-cover-primary-btn").click();
-    await page.getByRole("button", { name: /^21日 - Fully Booked, join waitlist/ }).click();
+    await page.getByRole("button", { name: /^August 21, 2099 - Fully Booked, join waitlist/ }).click();
     await page.locator("#booking-name").fill("Waitlist Guest");
     await page.locator("#booking-contact").fill("xiaohongshu:waitlist-guest");
     await page.getByRole("button", { name: "Join waitlist", exact: true }).click();

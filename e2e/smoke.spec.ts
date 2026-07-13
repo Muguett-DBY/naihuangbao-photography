@@ -58,7 +58,7 @@ test.describe("shoot.custard.top", () => {
     }
   });
 
-  test("非画廊页面不会下载作品图片", async ({ page }) => {
+  test("非画廊页面只加载当前 Hero 图", async ({ page }) => {
     const galleryRequests: string[] = [];
     page.on("request", (request) => {
       const pathname = new URL(request.url()).pathname;
@@ -67,8 +67,13 @@ test.describe("shoot.custard.top", () => {
 
     await page.goto("/booking");
     await expect(page.locator(".booking-quick-cta")).toBeVisible();
+    await expect(page.locator(".page-hero-media img")).toBeVisible();
 
-    expect(galleryRequests).toEqual([]);
+    expect(galleryRequests.length).toBeGreaterThan(0);
+    expect(galleryRequests.every((pathname) => (
+      /^\/images\/gallery\/gallery-flower-01\.(?:avif|webp)$/.test(pathname)
+    ))).toBe(true);
+    expect(new Set(galleryRequests).size).toBe(1);
   });
 
   test("首页使用兼容 ScrollTrigger 的 GSAP 核心", async ({ page }) => {

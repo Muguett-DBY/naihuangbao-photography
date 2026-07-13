@@ -37,7 +37,7 @@ export function CompareSlider({
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     dragging.current = true;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    e.currentTarget.setPointerCapture(e.pointerId);
     updatePos(e.clientX);
   }, [updatePos]);
 
@@ -86,6 +86,8 @@ export function CompareSlider({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(pos)}
+        aria-valuetext={t("compare.positionValue", { percent: Math.round(pos) })}
+        aria-orientation="horizontal"
         tabIndex={0}
         onKeyDown={onKeyDown}
       >
@@ -106,7 +108,7 @@ export function CompareSlider({
             draggable={false}
           />
         </div>
-        <div className="compare-slider-handle" style={{ left: `${pos}%` }}>
+        <div className="compare-slider-handle" style={{ left: `${pos}%` }} aria-hidden="true">
           <span className="compare-slider-handle-line" />
           <span className="compare-slider-handle-diamond" />
           <span className="compare-slider-handle-line" />
@@ -124,9 +126,10 @@ export function CompareSlider({
           type="button"
           className="compare-slider-reset"
           onClick={() => setPos(50)}
-          aria-label={t("compare.reset", "Reset position")}
+          aria-label={t("compare.reset")}
+          title={t("compare.reset")}
         >
-          <RotateCcw size={14} />
+          <RotateCcw size={16} aria-hidden="true" />
         </button>
       </div>
     </div>

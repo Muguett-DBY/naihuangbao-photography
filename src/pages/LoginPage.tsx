@@ -9,6 +9,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { useAuth } from "../hooks/useAuth";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { useToast } from "../components/shared/Toast";
+import { useSEO } from "../hooks/useSEO";
 
 type ResetStep = "forgot" | "token" | "done";
 
@@ -42,7 +43,41 @@ export function LoginPage() {
   const [resetLoading, setResetLoading] = useState(false);
   const [resetMessage, setResetMessage] = useState("");
 
+  const pageTitle = resetMode
+    ? t("auth.resetTitle")
+    : mode === "login"
+      ? t("auth.loginTitle")
+      : t("auth.registerTitle");
+
+  useSEO({
+    title: pageTitle,
+    descKey: "auth.visualDescription",
+    image: "/images/gallery/gallery-daily-01.webp",
+    imageAlt: t("auth.visualImageAlt"),
+    path: "/login",
+  });
   useGsapPageEffects(rootRef);
+
+  const renderAuthMedia = () => (
+    <aside className="auth-page-media" aria-label={t("auth.visualLabel")}>
+      <picture>
+        <source srcSet="/images/gallery/gallery-daily-01.avif" type="image/avif" />
+        <source srcSet="/images/gallery/gallery-daily-01.webp" type="image/webp" />
+        <img
+          src="/images/gallery/gallery-daily-01.webp"
+          alt={t("auth.visualImageAlt")}
+          width={1200}
+          height={1600}
+          fetchPriority="high"
+        />
+      </picture>
+      <div className="auth-page-media-copy">
+        <span>{t("auth.visualEyebrow")}</span>
+        <h2>{t("auth.visualTitle")}</h2>
+        <p>{t("auth.visualDescription")}</p>
+      </div>
+    </aside>
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,27 +182,26 @@ export function LoginPage() {
   if (resetMode) {
     return (
       <ErrorBoundary>
-      <PageTransition ref={rootRef}>
-        <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-          <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-            <h1>{t("auth.resetTitle")}</h1>
-          </div>
-        </section>
-
-        <section className="section-shell is-visible">
-          <div className="login-box">
+        <PageTransition ref={rootRef} className="auth-page auth-page--reset">
+          <main className="auth-page-layout" id="top">
+            {renderAuthMedia()}
+            <section className="auth-page-panel" aria-labelledby="auth-page-title">
+              <div className="login-box">
             <div className="login-card">
+              <header className="login-heading">
+                <span>{t("auth.accountAccessEyebrow")}</span>
+                <h1 id="auth-page-title">{t("auth.resetTitle")}</h1>
+                <p>{t("auth.resetDesc")}</p>
+              </header>
               {/* Step 1: Enter email */}
               {resetStep === "forgot" && (
                 <form onSubmit={handleForgotPassword}>
-                  <p className="login-reset-desc">{t("auth.resetDesc")}</p>
-
                   <div className="login-field">
                     <label htmlFor="reset-email" className="login-label">
                       {t("auth.email")}
                     </label>
                     <div className="login-input-wrap">
-                      <Mail size={16} className="login-input-icon" />
+                      <Mail size={16} className="login-input-icon" aria-hidden="true" />
                       <input
                         id="reset-email"
                         type="email"
@@ -186,7 +220,7 @@ export function LoginPage() {
                   )}
 
                   <button type="submit" disabled={resetLoading} className="login-button">
-                    {resetLoading ? "..." : <><KeyRound size={16} /> {t("auth.resetRequestButton")}</>}
+                    {resetLoading ? "..." : <><KeyRound size={16} aria-hidden="true" /> {t("auth.resetRequestButton")}</>}
                   </button>
                 </form>
               )}
@@ -197,14 +231,19 @@ export function LoginPage() {
                   {demoToken ? (
                     <div className="login-reset-demo">
                       <p className="login-reset-demo-label">{t("auth.resetDemoToken")}</p>
-                      <code className="login-reset-demo-code" onClick={() => {
-                        navigator.clipboard.writeText(demoToken).then(
-                          () => showToast(t("auth.resetTokenCopied", "Token copied"), "success"),
-                          () => showToast(t("auth.resetTokenCopyFailed", "Copy failed"), "error"),
-                        );
-                      }}>
-                        {demoToken}
-                      </code>
+                      <button
+                        type="button"
+                        className="login-reset-demo-code"
+                        onClick={() => {
+                          navigator.clipboard.writeText(demoToken).then(
+                            () => showToast(t("auth.resetTokenCopied", "Token copied"), "success"),
+                            () => showToast(t("auth.resetTokenCopyFailed", "Copy failed"), "error"),
+                          );
+                        }}
+                        aria-label={t("auth.copyResetToken")}
+                      >
+                        <code>{demoToken}</code>
+                      </button>
                       <p className="login-reset-demo-hint">{t("auth.resetDemoHint")}</p>
                     </div>
                   ) : (
@@ -216,7 +255,7 @@ export function LoginPage() {
                       {t("auth.resetTokenLabel")}
                     </label>
                     <div className="login-input-wrap">
-                      <KeyRound size={16} className="login-input-icon" />
+                      <KeyRound size={16} className="login-input-icon" aria-hidden="true" />
                       <input
                         id="reset-token"
                         type="text"
@@ -235,7 +274,7 @@ export function LoginPage() {
                       {t("auth.newPassword")}
                     </label>
                     <div className="login-input-wrap">
-                      <Lock size={16} className="login-input-icon" />
+                      <Lock size={16} className="login-input-icon" aria-hidden="true" />
                       <input
                         id="reset-new-password"
                         type="password"
@@ -255,7 +294,7 @@ export function LoginPage() {
                   )}
 
                   <button type="submit" disabled={resetLoading} className="login-button">
-                    {resetLoading ? "..." : <><CheckCircle2 size={16} /> {t("auth.resetSubmitButton")}</>}
+                    {resetLoading ? "..." : <><CheckCircle2 size={16} aria-hidden="true" /> {t("auth.resetSubmitButton")}</>}
                   </button>
                 </form>
               )}
@@ -263,17 +302,17 @@ export function LoginPage() {
               {/* Step 3: Done */}
               {resetStep === "done" && (
                 <div className="login-reset-done">
-                  <CheckCircle2 size={48} className="login-reset-done-icon" />
+                  <CheckCircle2 size={48} className="login-reset-done-icon" aria-hidden="true" />
                   <p>{t("auth.resetSuccess")}</p>
                   <button type="button" className="login-button" onClick={handleBackToLogin}>
-                    <LogIn size={16} /> {t("auth.loginButton")}
+                    <LogIn size={16} aria-hidden="true" /> {t("auth.loginButton")}
                   </button>
                 </div>
               )}
 
               <div className="login-footer">
-                <button onClick={handleBackToLogin} className="login-toggle">
-                  <ArrowLeft size={14} /> {t("auth.backToLogin")}
+                <button type="button" onClick={handleBackToLogin} className="login-toggle">
+                  <ArrowLeft size={14} aria-hidden="true" /> {t("auth.backToLogin")}
                 </button>
               </div>
 
@@ -282,8 +321,9 @@ export function LoginPage() {
               </div>
             </div>
           </div>
-        </section>
-      </PageTransition>
+            </section>
+          </main>
+        </PageTransition>
       </ErrorBoundary>
     );
   }
@@ -291,16 +331,39 @@ export function LoginPage() {
   // ── Login / Register Flow ──
   return (
     <ErrorBoundary>
-    <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
-          <h1>{mode === "login" ? t("auth.loginTitle") : t("auth.registerTitle")}</h1>
-        </div>
-      </section>
-
-      <section className="section-shell is-visible">
-        <div className="login-box">
+      <PageTransition ref={rootRef} className="auth-page">
+        <main className="auth-page-layout" id="top">
+          {renderAuthMedia()}
+          <section className="auth-page-panel" aria-labelledby="auth-page-title">
+            <div className="login-box">
           <div className="login-card">
+            <header className="login-heading">
+              <span>{t("auth.accountAccessEyebrow")}</span>
+              <h1 id="auth-page-title">{mode === "login" ? t("auth.loginTitle") : t("auth.registerTitle")}</h1>
+              <p>{mode === "login" ? t("auth.loginDescription") : t("auth.registerDescription")}</p>
+            </header>
+
+            <div className="login-mode-switch" role="group" aria-label={t("auth.modeLabel")}>
+              <button
+                type="button"
+                className={mode === "login" ? "is-active" : ""}
+                aria-pressed={mode === "login"}
+                onClick={() => { setMode("login"); setError(""); setShowPassword(false); }}
+              >
+                <LogIn size={16} aria-hidden="true" />
+                {t("auth.loginButton")}
+              </button>
+              <button
+                type="button"
+                className={mode === "register" ? "is-active" : ""}
+                aria-pressed={mode === "register"}
+                onClick={() => { setMode("register"); setError(""); setShowPassword(false); }}
+              >
+                <UserPlus size={16} aria-hidden="true" />
+                {t("auth.registerButton")}
+              </button>
+            </div>
+
             {shouldShowDashboardNotice && (
               <div className="login-context-notice" role="status">
                 <CalendarCheck size={18} aria-hidden="true" />
@@ -317,9 +380,10 @@ export function LoginPage() {
                     {t("auth.displayName")}
                   </label>
                   <div className="login-input-wrap">
-                    <User size={16} className="login-input-icon" />
+                    <User size={16} className="login-input-icon" aria-hidden="true" />
                     <input
                       id="displayName"
+                      name="displayName"
                       type="text"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
@@ -338,9 +402,10 @@ export function LoginPage() {
                   {t("auth.email")}
                 </label>
                   <div className="login-input-wrap">
-                    <Mail size={16} className="login-input-icon" />
+                    <Mail size={16} className="login-input-icon" aria-hidden="true" />
                     <input
                       id="email"
+                      name="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -359,9 +424,10 @@ export function LoginPage() {
                   {t("auth.password")}
                 </label>
                   <div className="login-input-wrap">
-                    <Lock size={16} className="login-input-icon" />
+                    <Lock size={16} className="login-input-icon" aria-hidden="true" />
                     <input
                       id="password"
+                      name="password"
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -377,10 +443,10 @@ export function LoginPage() {
                       type="button"
                       className="login-password-toggle"
                       onClick={() => setShowPassword(!showPassword)}
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                      tabIndex={-1}
+                      aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
+                      aria-pressed={showPassword}
                     >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showPassword ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
                     </button>
                   </div>
               </div>
@@ -404,7 +470,7 @@ export function LoginPage() {
                 disabled={loading}
                 className="login-button"
               >
-                {loading ? "..." : mode === "login" ? <><LogIn size={16} /> {t("auth.loginButton")}</> : <><UserPlus size={16} /> {t("auth.registerButton")}</>}
+                {loading ? "..." : mode === "login" ? <><LogIn size={16} aria-hidden="true" /> {t("auth.loginButton")}</> : <><UserPlus size={16} aria-hidden="true" /> {t("auth.registerButton")}</>}
               </button>
             </form>
 
@@ -413,6 +479,7 @@ export function LoginPage() {
                 <>
                   {t("auth.noAccount")}{" "}
                   <button
+                    type="button"
                     onClick={() => { setMode("register"); setError(""); }}
                     className="login-toggle"
                   >
@@ -423,6 +490,7 @@ export function LoginPage() {
                 <>
                   {t("auth.hasAccount")}{" "}
                   <button
+                    type="button"
                     onClick={() => { setMode("login"); setError(""); }}
                     className="login-toggle"
                   >
@@ -439,8 +507,9 @@ export function LoginPage() {
             </div>
           </div>
         </div>
-      </section>
-    </PageTransition>
+          </section>
+        </main>
+      </PageTransition>
     </ErrorBoundary>
   );
 }

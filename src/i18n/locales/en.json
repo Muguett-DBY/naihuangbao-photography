@@ -181,7 +181,19 @@
     "clickTitle": "📍 Distance from studio",
     "worksLabel": "works",
     "mapLabelFree": "2km — Free",
-    "mapLabelFee": "10km — Reachable"
+    "mapLabelFee": "10km — Reachable",
+    "heroImageAlt": "Urban portrait photographed in Nanjing",
+    "viewModeLabel": "Choose map or location list view",
+    "totalPhotos": "Photographs",
+    "locations": "Locations",
+    "freeZone": "Local zone",
+    "feeZone": "Travel zone",
+    "coverageSummary": "Service area summary",
+    "locationListLabel": "Portrait locations",
+    "searchLabel": "Find a portrait location",
+    "searchPlaceholder": "Search locations",
+    "clearSearch": "Clear location search",
+    "noSearchResults": "No matching locations"
   },
   "midCTA": {
     "eyebrow": "Book Now",
@@ -613,7 +625,14 @@
     "shortcutToggleMode": "Toggle view mode",
     "shortcutSwap": "Swap photos",
     "shortcutClear": "Clear comparison",
-    "shortcutHelp": "Toggle this help"
+    "shortcutHelp": "Toggle this help",
+    "eyebrow": "DARKROOM DESK / ISSUE 10",
+    "description": "Study framing, tone, and finish without losing sight of the photographs themselves.",
+    "viewModeLabel": "Comparison view mode",
+    "shortcutEyebrow": "DESK CONTROLS",
+    "shortcutDescription": "Use these keys while the comparison workspace is active.",
+    "closeShortcuts": "Close keyboard shortcuts",
+    "emptyTitle": "Start with a pair"
   },
   "quickView": {
     "label": "Quick view",
@@ -796,7 +815,8 @@
     "before": "Before",
     "after": "After",
     "dragHint": "Drag to compare",
-    "reset": "Reset position"
+    "reset": "Reset position",
+    "positionValue": "Divider at {{percent}} percent"
   },
   "presetDetail": {
     "backToList": "Back to Presets",
@@ -1596,7 +1616,19 @@
     "resetFailed": "Failed to reset password. The token may be invalid or expired.",
     "backToLogin": "Back to login",
     "resetTokenCopied": "Token copied to clipboard",
-    "resetTokenCopyFailed": "Failed to copy token"
+    "resetTokenCopyFailed": "Failed to copy token",
+    "visualLabel": "Private client portrait",
+    "visualImageAlt": "A quiet editorial portrait from the Naihuangbao portfolio",
+    "visualEyebrow": "PRIVATE CLIENT / ISSUE 08",
+    "visualTitle": "Your portrait story, kept in one place.",
+    "visualDescription": "Return to booking details, deposit updates, and the images that shaped your session.",
+    "accountAccessEyebrow": "CLIENT ACCESS",
+    "loginDescription": "Continue to your private booking space.",
+    "registerDescription": "Create an account to keep future session updates together.",
+    "modeLabel": "Account access mode",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "copyResetToken": "Copy reset token"
   },
   "payment": {
     "purpose": {

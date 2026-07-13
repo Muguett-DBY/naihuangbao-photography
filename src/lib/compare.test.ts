@@ -59,10 +59,26 @@ describe("photo compare system", () => {
 
   it("ships CompareSlider with reset button and percentage indicator", () => {
     const slider = read("src/components/CompareSlider.tsx");
+    const css = read("src/styles/pages.css");
     expect(slider).toContain("CompareSlider");
     expect(slider).toContain("compare-slider-percentage");
     expect(slider).toContain("compare-slider-reset");
     expect(slider).toContain("RotateCcw");
+    expect(slider).toContain("aria-valuetext");
+    expect(css).toMatch(/\.compare-slider\s*\{[^}]*aspect-ratio:/s);
+    expect(css).toMatch(/\.compare-slider-reset\s*\{[^}]*min-height:\s*44px/s);
+  });
+
+  it("exposes selected compare modes and an accessible shortcut dialog", () => {
+    const page = read("src/pages/ComparePage.tsx");
+
+    expect(page).toContain('className="compare-page-mode-switch"');
+    expect(page).toContain('aria-pressed={viewMode === "side-by-side"}');
+    expect(page).toContain('aria-pressed={viewMode === "overlay"}');
+    expect(page).toContain('role="dialog"');
+    expect(page).toContain("shortcutDialogRef");
+    expect(page).toContain("/images/gallery/960/");
+    expect(page).not.toContain("/images/gallery/1200/");
   });
 
   it("ships localized photoCompare labels in all four locales", () => {

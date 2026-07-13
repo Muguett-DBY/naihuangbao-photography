@@ -181,7 +181,19 @@
     "clickTitle": "📍 스튜디오 거리",
     "worksLabel": "작품",
     "mapLabelFree": "2km — 무료",
-    "mapLabelFee": "10km — 도달 가능"
+    "mapLabelFee": "10km — 도달 가능",
+    "heroImageAlt": "난징에서 촬영한 도심 인물 사진",
+    "viewModeLabel": "지도 또는 장소 목록 보기 선택",
+    "totalPhotos": "사진",
+    "locations": "장소",
+    "freeZone": "인근 구역",
+    "feeZone": "출장 구역",
+    "coverageSummary": "서비스 지역 요약",
+    "locationListLabel": "인물 촬영 장소",
+    "searchLabel": "촬영 장소 찾기",
+    "searchPlaceholder": "장소 검색",
+    "clearSearch": "장소 검색 지우기",
+    "noSearchResults": "일치하는 장소가 없습니다"
   },
   "midCTA": {
     "eyebrow": "지금 예약하세요",
@@ -612,7 +624,14 @@
     "shortcutToggleMode": "보기 모드 전환",
     "shortcutSwap": "사진 교환",
     "shortcutClear": "비교 지우기",
-    "shortcutHelp": "도움말 전환"
+    "shortcutHelp": "도움말 전환",
+    "eyebrow": "DARKROOM DESK / ISSUE 10",
+    "description": "사진 자체에 집중하면서 구도, 톤, 완성도를 비교합니다.",
+    "viewModeLabel": "사진 비교 보기 모드",
+    "shortcutEyebrow": "DESK CONTROLS",
+    "shortcutDescription": "비교 작업 공간에서 다음 키를 사용할 수 있습니다.",
+    "closeShortcuts": "키보드 단축키 닫기",
+    "emptyTitle": "두 장의 사진으로 시작하기"
   },
   "quickView": {
     "label": "빠른 미리보기",
@@ -795,7 +814,8 @@
     "before": "원본",
     "after": "수정본",
     "dragHint": "드래그하여 비교",
-    "reset": "위치 초기화"
+    "reset": "위치 초기화",
+    "positionValue": "구분선 위치 {{percent}}퍼센트"
   },
   "presetDetail": {
     "backToList": "프리셋 목록으로",
@@ -1584,7 +1604,19 @@
     "resetFailed": "비밀번호 재설정에 실패했습니다. 토큰이 유효하지 않거나 만료되었을 수 있습니다.",
     "backToLogin": "로그인으로 돌아가기",
     "resetTokenCopied": "토큰이 클립보드에 복사되었습니다",
-    "resetTokenCopyFailed": "토큰 복사에 실패했습니다"
+    "resetTokenCopyFailed": "토큰 복사에 실패했습니다",
+    "visualLabel": "프라이빗 고객 포트레이트",
+    "visualImageAlt": "나이황바오 포트폴리오의 차분한 에디토리얼 인물 사진",
+    "visualEyebrow": "PRIVATE CLIENT / ISSUE 08",
+    "visualTitle": "당신의 포트레이트 이야기를 한곳에.",
+    "visualDescription": "예약 정보, 예약금 업데이트, 촬영의 분위기를 만든 이미지를 프라이빗 공간에서 확인하세요.",
+    "accountAccessEyebrow": "CLIENT ACCESS",
+    "loginDescription": "프라이빗 예약 공간으로 계속합니다.",
+    "registerDescription": "계정을 만들어 앞으로의 촬영 업데이트를 한곳에서 관리하세요.",
+    "modeLabel": "계정 접근 방식",
+    "showPassword": "비밀번호 표시",
+    "hidePassword": "비밀번호 숨기기",
+    "copyResetToken": "재설정 토큰 복사"
   },
   "payment": {
     "purpose": {
