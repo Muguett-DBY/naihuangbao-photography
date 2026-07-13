@@ -1,6 +1,6 @@
 import "../styles/pages.css";
 import { useRef, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ShoppingCart } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
@@ -19,7 +19,6 @@ type CategoryFilter = string | "all";
 
 export function ShopPage() {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const { openBookingModal } = useBookingModal();
   const rootRef = useRef<HTMLDivElement>(null);
   const { items, loading, error, retry, empty } = useApiList<Merchandise>("/api/merchandise", "merchandise");
@@ -40,14 +39,17 @@ export function ShopPage() {
   }, [items, filter]);
 
   return (
-    <PageTransition ref={rootRef}>
+    <PageTransition ref={rootRef} className="catalogue-page catalogue-page--shop">
       <PageHero
         eyebrow="Shop"
         title={t("merchandise.title")}
         subtitle={t("merchandise.intro")}
+        image="/images/gallery/gallery-daily-01.webp"
+        imageAlt={t("merchandise.title")}
+        issue="ISSUE 06"
       />
 
-      <section className="section-shell is-visible">
+      <section className="section-shell catalogue-section is-visible">
         <ErrorBoundary>
         <DataState
           loading={loading}
@@ -57,8 +59,12 @@ export function ShopPage() {
           icon={<ShoppingCart size={40} strokeWidth={1.2} />}
           emptyText={t("merchandise.empty")}
         >
+          <header className="catalogue-section-heading">
+            <span>OBJECT ARCHIVE / {String(filteredItems.length).padStart(2, "0")}</span>
+            <p>{t("merchandise.intro")}</p>
+          </header>
           {categories.length > 1 && (
-            <div className="filter-row" role="group" aria-label={t("merchandise.title")}>
+            <div className="filter-row catalogue-toolbar" role="group" aria-label={t("merchandise.title")}>
               <button
                 type="button"
                 aria-pressed={filter === "all"}
@@ -84,43 +90,43 @@ export function ShopPage() {
           )}
 
           <div className="merchandise-grid">
-            {filteredItems.map((item) => (
-              <div
-                key={item.id}
-                className="merchandise-card"
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate(`/shop/${item.id}`)}
-              >
-                {item.images && item.images[0] ? (
-                  <div className="merchandise-cover-wrap">
-                    <img src={item.images[0]} alt={getName(item, i18n.language)} className="merchandise-cover" loading="lazy" />
-                    <span className="merchandise-cover-badge">{tMerchandiseCategory(t, item.category)}</span>
+            {filteredItems.map((item, index) => (
+              <article key={item.id} className="merchandise-card catalogue-card">
+                <Link to={`/shop/${item.id}`} className="catalogue-card-link">
+                  <span className="catalogue-card-index">{String(index + 1).padStart(2, "0")}</span>
+                  {item.images?.[0] ? (
+                    <div className="merchandise-cover-wrap catalogue-card-media">
+                      <img src={item.images[0]} alt={getName(item, i18n.language)} className="merchandise-cover" loading="lazy" />
+                      <span className="merchandise-cover-badge">{tMerchandiseCategory(t, item.category)}</span>
+                    </div>
+                  ) : (
+                    <div className="merchandise-cover-placeholder catalogue-card-media">
+                      <ShoppingCart size={32} aria-hidden="true" />
+                    </div>
+                  )}
+                  <div className="merchandise-info catalogue-card-copy">
+                    <span className="course-category">{tMerchandiseCategory(t, item.category)}</span>
+                    <h3>{getName(item, i18n.language)}</h3>
+                    <p>{getDesc(item, i18n.language)}</p>
                   </div>
-                ) : (
-                  <div className="merchandise-cover-placeholder">
-                    <ShoppingCart size={32} />
-                  </div>
-                )}
-                <div className="merchandise-info">
-                  <h3>{getName(item, i18n.language)}</h3>
-                  <p>{getDesc(item, i18n.language)}</p>
-                  <div className="merchandise-actions">
-                    <span className="merchandise-price">{item.price_display}</span>
-                    {item.available > 0 ? (
-                      <span className="merchandise-stock in-stock">{t("merchandise.inStock", "In Stock")}</span>
-                    ) : (
-                      <span className="merchandise-stock out-of-stock">{t("merchandise.outOfStock", "Sold Out")}</span>
-                    )}
-                    <button
-                      className="merchandise-inquire-btn"
-                      onClick={(e) => { e.stopPropagation(); openBookingModal(); }}
-                      disabled={item.available <= 0}
-                    >
-                      {t("merchandise.inquire")}
-                    </button>
-                  </div>
-                </div>
-              </div>
+                </Link>
+                <footer className="merchandise-actions catalogue-card-actions">
+                  <span className="merchandise-price">{item.price_display}</span>
+                  <span className={`merchandise-stock ${item.available > 0 ? "in-stock" : "out-of-stock"}`}>
+                    {item.available > 0
+                      ? t("merchandise.inStock")
+                      : t("merchandise.outOfStock")}
+                  </span>
+                  <button
+                    type="button"
+                    className="merchandise-inquire-btn"
+                    onClick={() => openBookingModal()}
+                    disabled={item.available <= 0}
+                  >
+                    {t("merchandise.inquire")}
+                  </button>
+                </footer>
+              </article>
             ))}
           </div>
         </DataState>

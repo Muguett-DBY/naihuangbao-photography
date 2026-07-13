@@ -54,13 +54,32 @@ export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
     }
 
     const participants = Math.max(1, body.participants || 1);
-    const spotsLeft = (workshop.max_participants || 0) - workshop.current_participants;
+    const maxParticipants = Number(workshop.max_participants ?? 0);
+    const currentParticipants = Number(workshop.current_participants ?? 0);
 
-    if (spotsLeft <= 0) {
+    if (
+      !Number.isInteger(maxParticipants)
+      || !Number.isInteger(currentParticipants)
+      || maxParticipants < 0
+      || currentParticipants < 0
+    ) {
+      return unavailable(
+        "活动名额配置异常，请稍后重试",
+        new Error("Invalid workshop capacity"),
+        { route: `/api/workshops/${id}/register`, method: "POST" },
+      );
+    }
+
+    const hasParticipantLimit = maxParticipants > 0;
+    const spotsLeft = hasParticipantLimit
+      ? Math.max(0, maxParticipants - currentParticipants)
+      : null;
+
+    if (hasParticipantLimit && spotsLeft === 0) {
       return jsonResponse({ error: "名额已满" }, 409);
     }
 
-    if (participants > spotsLeft) {
+    if (spotsLeft !== null && participants > spotsLeft) {
       return jsonResponse({ error: `最多可报 ${spotsLeft} 人` }, 409);
     }
 

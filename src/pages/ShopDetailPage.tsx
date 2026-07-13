@@ -1,5 +1,5 @@
 import "../styles/pages.css";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, Package, Truck, RotateCcw, MessageCircle } from "lucide-react";
@@ -26,6 +26,10 @@ export function ShopDetailPage() {
   const { related: allItems } = useRelatedItems<Merchandise>("/api/merchandise", "merchandise", id);
   const [activeImage, setActiveImage] = useState(0);
 
+  useEffect(() => {
+    setActiveImage(0);
+  }, [id]);
+
   useGsapPageEffects(rootRef);
 
   const lang = i18n.language;
@@ -43,57 +47,84 @@ export function ShopDetailPage() {
   const images = item.images || [];
 
   return (
-    <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading shop-detail-hero-heading">
-          <DetailBackLink to="/shop" label={t("shopDetail.backToList")} />
-          <p className="section-eyebrow">{tMerchandiseCategory(t, item.category)}</p>
-          <h1>{getName(item, lang)}</h1>
-          {item.price_display && <div className="shop-detail-price">{item.price_display}</div>}
-        </div>
-      </section>
-
-      <ErrorBoundary>
-      <section className="section-shell is-visible">
-        <div className="shop-detail-grid">
-          <div>
-            {images.length > 0 && (
+    <PageTransition ref={rootRef} className="catalogue-detail-page catalogue-detail-page--shop">
+      <header className="catalogue-detail-stage" id="top">
+        <div className="catalogue-detail-media">
+          {images.length > 0 ? (
+            <>
               <div className="shop-detail-image-stage">
-                <img src={images[activeImage]} alt={getName(item, lang)} width={800} height={800} loading="lazy" className="shop-detail-main-image" />
+                <img
+                  src={images[activeImage]}
+                  alt={getName(item, lang)}
+                  width={1000}
+                  height={1000}
+                  fetchPriority="high"
+                  className="shop-detail-main-image"
+                />
                 {images.length > 1 && (
                   <>
-                    <button onClick={() => setActiveImage((activeImage - 1 + images.length) % images.length)}
-                      aria-label="Previous image"
-                      className="shop-detail-nav-btn shop-detail-nav-btn--prev">
-                      <ChevronLeft size={16} />
+                    <button
+                      type="button"
+                      onClick={() => setActiveImage((activeImage - 1 + images.length) % images.length)}
+                      aria-label={t("shopDetail.previousImage")}
+                      className="shop-detail-nav-btn shop-detail-nav-btn--prev"
+                    >
+                      <ChevronLeft size={18} aria-hidden="true" />
                     </button>
-                    <button onClick={() => setActiveImage((activeImage + 1) % images.length)}
-                      aria-label="Next image"
-                      className="shop-detail-nav-btn shop-detail-nav-btn--next">
-                      <ChevronRight size={16} />
+                    <button
+                      type="button"
+                      onClick={() => setActiveImage((activeImage + 1) % images.length)}
+                      aria-label={t("shopDetail.nextImage")}
+                      className="shop-detail-nav-btn shop-detail-nav-btn--next"
+                    >
+                      <ChevronRight size={18} aria-hidden="true" />
                     </button>
                   </>
                 )}
               </div>
-            )}
-            {images.length > 1 && (
-              <div className="shop-detail-thumbnails">
-                {images.map((img, i) => (
-                  <button key={i} onClick={() => setActiveImage(i)}
-                    aria-label={`View image ${i + 1}`}
-                    aria-current={activeImage === i ? "true" : undefined}
-                    className={`shop-detail-thumb${activeImage === i ? " shop-detail-thumb--active" : ""}`}>
-                    <img src={img} alt="" width={120} height={120} loading="lazy" />
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+              {images.length > 1 && (
+                <div className="shop-detail-thumbnails">
+                  {images.map((image, index) => (
+                    <button
+                      type="button"
+                      key={`${image}-${index}`}
+                      onClick={() => setActiveImage(index)}
+                      aria-label={t("shopDetail.viewImage", { index: index + 1 })}
+                      aria-current={activeImage === index ? "true" : undefined}
+                      className={`shop-detail-thumb${activeImage === index ? " shop-detail-thumb--active" : ""}`}
+                    >
+                      <img src={image} alt="" width={120} height={120} loading="lazy" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="catalogue-detail-media-placeholder">
+              <Package size={44} aria-hidden="true" />
+            </div>
+          )}
+        </div>
+        <div className="catalogue-detail-summary">
+          <DetailBackLink to="/shop" label={t("shopDetail.backToList")} />
+          <span className="catalogue-detail-marker">OBJECT / {item.available > 0 ? "AVAILABLE" : "ARCHIVED"}</span>
+          <p className="section-eyebrow">{tMerchandiseCategory(t, item.category)}</p>
+          <h1>{getName(item, lang)}</h1>
+          <p className="catalogue-detail-description">{getDesc(item, lang)}</p>
+          {item.price_display && <strong className="catalogue-detail-price">{item.price_display}</strong>}
+          <span className={`merchandise-stock ${item.available > 0 ? "in-stock" : "out-of-stock"}`}>
+            {item.available > 0 ? t("shopDetail.inStock") : t("shopDetail.outOfStock")}
+          </span>
+          <button type="button" onClick={() => openBookingModal()} className="shop-detail-inquire-btn">
+            <MessageCircle size={16} aria-hidden="true" /> {t("merchandise.inquire")}
+          </button>
+        </div>
+      </header>
 
+      <ErrorBoundary>
+      <section className="section-shell catalogue-detail-band is-visible">
+        <div className="shop-detail-grid">
           <div className="shop-detail-about">
-            <h2>{t("shopDetail.about")}</h2>
-            <p className="shop-detail-description">{getDesc(item, lang)}</p>
-
             <div className="shop-detail-specs">
               <h3>{t("shopDetail.specs")}</h3>
               <div className="shop-detail-specs-grid">
@@ -123,17 +154,12 @@ export function ShopDetailPage() {
                 </div>
               ))}
             </div>
-
-            <button onClick={() => openBookingModal()}
-              className="shop-detail-inquire-btn">
-              <MessageCircle size={16} /> {t("merchandise.inquire")}
-            </button>
           </div>
         </div>
       </section>
 
       {allItems.length > 0 && (
-        <section className="section-shell is-visible">
+        <section className="section-shell catalogue-detail-band is-visible">
           <div className="shop-detail-related">
             <h2>{t("shopDetail.related")}</h2>
             <div className="shop-detail-related-grid">

@@ -2,7 +2,7 @@ import "../styles/pages.css";
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Clock, BarChart3, Lock, Play, FileText, Images, LogIn, ShoppingCart, CheckCircle } from "lucide-react";
+import { BarChart3, BookOpen, CheckCircle, Clock, FileText, Images, Lock, LogIn, Play, ShoppingCart } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useNotification } from "../hooks/useNotification";
@@ -210,45 +210,44 @@ export function CourseDetailPage() {
   const isPaidCourse = !!course.price_cents && course.price_cents > 0;
 
   return (
-    <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading" style={{ position: "relative", zIndex: 1 }}>
+    <PageTransition ref={rootRef} className="catalogue-detail-page catalogue-detail-page--course">
+      <header className="catalogue-detail-stage" id="top">
+        <div className="catalogue-detail-media">
+          {course.cover_image_url ? (
+            <img
+              src={course.cover_image_url}
+              alt={getTitle(course, lang)}
+              className="course-detail-cover"
+              width={1200}
+              height={900}
+              fetchPriority="high"
+            />
+          ) : (
+            <div className="catalogue-detail-media-placeholder">
+              <BookOpen size={44} aria-hidden="true" />
+            </div>
+          )}
+        </div>
+        <div className="catalogue-detail-summary">
           <DetailBackLink to="/courses" label={t("courseDetail.backToList")} />
+          <span className="catalogue-detail-marker">COURSE / {String(modules.length).padStart(2, "0")}</span>
           <p className="section-eyebrow">{tCourseCategory(t, course.category)}</p>
           <h1>{getTitle(course, lang)}</h1>
+          <p className="catalogue-detail-description">{getDesc(course, lang)}</p>
           <div className="course-detail-meta">
             <span className="course-difficulty">{tCourseDifficulty(t, course.difficulty)}</span>
             {course.duration_minutes && (
-              <span><Clock size={14} /> {t("courses.duration", { minutes: course.duration_minutes })}</span>
+              <span><Clock size={14} aria-hidden="true" /> {t("courses.duration", { minutes: course.duration_minutes })}</span>
             )}
-            <span><BarChart3 size={14} /> {modules.length} {t("courseDetail.modules")}</span>
+            <span><BarChart3 size={14} aria-hidden="true" /> {modules.length} {t("courseDetail.modules")}</span>
           </div>
+          {course.price_display && <strong className="catalogue-detail-price">{course.price_display}</strong>}
         </div>
-      </section>
+      </header>
 
       <ErrorBoundary>
-      {course.cover_image_url && (
-        <section className="section-shell is-visible" style={{ paddingTop: 0 }}>
-          <img
-            src={course.cover_image_url}
-            alt={getTitle(course, lang)}
-            className="course-detail-cover"
-            width={800}
-            height={400}
-            loading="lazy"
-          />
-        </section>
-      )}
-
-      <section className="section-shell is-visible">
-        <div className="course-detail-content">
-          <h2>{t("courseDetail.about")}</h2>
-          <p>{getDesc(course, lang)}</p>
-        </div>
-      </section>
-
       {course.video_url && (
-        <section className="section-shell is-visible">
+        <section className="section-shell catalogue-detail-band is-visible">
           <div className="course-detail-content">
             <h2>{t("courseDetail.preview")}</h2>
             <VideoPlayer src={course.video_url} title={getTitle(course, lang)} />
@@ -256,7 +255,7 @@ export function CourseDetailPage() {
         </section>
       )}
 
-      <section className="section-shell is-visible">
+      <section className="section-shell catalogue-detail-band is-visible">
         <div className="course-detail-content">
           <h2>{t("courseDetail.syllabus")}</h2>
 
@@ -265,8 +264,8 @@ export function CourseDetailPage() {
             <div className="course-detail-progress">
               <div className="course-detail-progress-header">
                 <span className="course-detail-progress-label">
-                  {t("courseDetail.progress", "Progress")}: {completedCount}/{totalModules}
-                  {syncing && <span className="course-detail-syncing"> ({t("courseDetail.syncing", "syncing...")})</span>}
+                  {t("courseDetail.progress")}: {completedCount}/{totalModules}
+                  {syncing && <span className="course-detail-syncing"> ({t("courseDetail.syncing")})</span>}
                 </span>
                 <span className="course-detail-progress-pct">
                   {progressPercent === 100 ? (
@@ -284,11 +283,11 @@ export function CourseDetailPage() {
           {!user && (
             <div className="course-detail-lock-gate">
               <Lock size={32} />
-              <h3>{t("courseDetail.loginRequired", "登录以访问课程内容")}</h3>
-              <p>{t("courseDetail.loginRequiredDesc", "请登录您的账户以查看完整课程内容")}</p>
+              <h3>{t("courseDetail.loginRequired")}</h3>
+              <p>{t("courseDetail.loginRequiredDesc")}</p>
               <Link to="/login" className="course-detail-login-btn">
                 <LogIn size={14} />
-                {t("auth.login", "登录")}
+                {t("auth.login")}
               </Link>
             </div>
           )}
@@ -296,12 +295,12 @@ export function CourseDetailPage() {
           {user && !unlocked && (
             <div className="course-detail-lock-gate">
               <Lock size={32} />
-              <h3>{t("courseDetail.purchaseRequired", "购买课程以解锁全部内容")}</h3>
-              <p>{t("courseDetail.purchaseRequiredDesc", "购买此课程后即可查看所有模块内容")}</p>
+              <h3>{t("courseDetail.purchaseRequired")}</h3>
+              <p>{t("courseDetail.purchaseRequiredDesc")}</p>
               {isPaidCourse && (
                 <Button type="primary" onClick={() => setShowPayment(true)}>
                   <ShoppingCart size={14} />
-                  {t("courseDetail.buyNow", "Buy Course")}
+                  {t("courseDetail.buyNow")}
                 </Button>
               )}
             </div>
@@ -341,8 +340,8 @@ export function CourseDetailPage() {
                       }}
                       className={`course-detail-module-check ${completedModules.has(mod.id) ? "is-completed" : ""}`}
                       title={completedModules.has(mod.id)
-                        ? t("courseDetail.markIncomplete", "Mark as incomplete")
-                        : t("courseDetail.markComplete", "Mark as complete")}
+                        ? t("courseDetail.markIncomplete")
+                        : t("courseDetail.markComplete")}
                     >
                       {completedModules.has(mod.id) ? "✓" : "○"}
                     </button>
@@ -357,9 +356,9 @@ export function CourseDetailPage() {
       </section>
 
       {isPaidCourse && !unlocked && (
-        <section className="section-shell is-visible">
+        <section className="section-shell catalogue-detail-band is-visible">
           <div className="course-detail-content">
-            <h2>{t("courseDetail.purchase", "Purchase Course")}</h2>
+            <h2>{t("courseDetail.purchase")}</h2>
             {showPayment ? (
               <PaymentForm
                 purpose="course_purchase"
@@ -394,17 +393,17 @@ export function CourseDetailPage() {
                   <div className="course-detail-price">{course.price_display}</div>
                 )}
                 <p className="course-detail-purchase-desc">
-                  {t("courseDetail.purchaseDesc", "Get full access to all course modules and materials.")}
+                  {t("courseDetail.purchaseDesc")}
                 </p>
                 {purchaseNotice === "pending" && (
                   <div className="course-payment-status-note" role="status">
-                    <strong>{t("courseDetail.paymentPendingTitle", "Payment pending")}</strong>
-                    <span>{t("courseDetail.paymentPendingDesc", "No charge was made. We will follow up before granting paid course access.")}</span>
+                    <strong>{t("courseDetail.paymentPendingTitle")}</strong>
+                    <span>{t("courseDetail.paymentPendingDesc")}</span>
                   </div>
                 )}
                 <Button type="primary" onClick={() => { setPurchaseNotice(null); setShowPayment(true); }}>
                   <ShoppingCart size={14} />
-                  {t("courseDetail.buyNow", "Buy Course")}
+                  {t("courseDetail.buyNow")}
                 </Button>
               </div>
             )}
@@ -412,7 +411,7 @@ export function CourseDetailPage() {
         </section>
       )}
 
-      <section className="section-shell is-visible course-detail-cta">
+      <section className="section-shell catalogue-detail-band is-visible course-detail-cta">
         <div className="course-detail-content">
           <h2>{t("courseDetail.ctaTitle")}</h2>
           <p>{t("courseDetail.ctaDesc")}</p>

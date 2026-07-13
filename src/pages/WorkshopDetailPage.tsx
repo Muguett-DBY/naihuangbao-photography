@@ -7,7 +7,8 @@ import { Button } from "animal-island-ui";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useApiItem } from "../hooks/useApiItem";
-import { useWorkshopRegistration } from "../hooks/useWorkshopRegistration";
+import { getWorkshopAvailability, useWorkshopRegistration } from "../hooks/useWorkshopRegistration";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DetailLoading } from "../components/shared/DetailLoading";
@@ -16,6 +17,7 @@ import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { WorkshopCountdown } from "../components/WorkshopCountdown";
 import { CapacityBar } from "../components/CapacityBar";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
+import { tWorkshopStatus } from "../lib/i18n-typed";
 import { PaymentForm } from "../components/PaymentForm";
 import type { Workshop } from "../types/content";
 
@@ -29,6 +31,11 @@ export function WorkshopDetailPage() {
   const [registrationId, setRegistrationId] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [paymentNotice, setPaymentNotice] = useState<"pending" | null>(null);
+  const confirmationTriggerRef = useRef<HTMLElement | null>(null);
+  const confirmationRef = useFocusTrap<HTMLDivElement>({
+    active: showConfirmation,
+    returnFocus: false,
+  });
 
   useGsapPageEffects(rootRef);
 
@@ -43,12 +50,9 @@ export function WorkshopDetailPage() {
 
   const handleRegister = async () => {
     if (!id) return;
-
-    // Check availability first
-    const avail = await registration.checkAvailability(id);
-    if (!avail.available) {
-      return;
-    }
+    confirmationTriggerRef.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
 
     const result = await registration.register(id);
     if (result) {
@@ -62,53 +66,93 @@ export function WorkshopDetailPage() {
     }
   };
 
+  const closeConfirmation = (resetForm = false) => {
+    setShowConfirmation(false);
+    setPaymentNotice(null);
+    if (resetForm) registration.resetForm();
+
+    window.setTimeout(() => {
+      const trigger = confirmationTriggerRef.current;
+      if (trigger && document.contains(trigger) && !trigger.matches(":disabled")) {
+        trigger.focus();
+        return;
+      }
+      document.getElementById("workshop-detail-name")?.focus();
+    }, 0);
+  };
+
   if (loading) return <DetailLoading label={t("loading")} />;
   if (error || !workshop) return <DetailNotFound message={t("workshopDetail.notFound")} backTo="/workshops" backLabel={t("workshopDetail.backToList")} />;
 
-  const spotsLeft = (workshop.max_participants || 0) - workshop.current_participants;
-  const isFull = spotsLeft <= 0;
+  const availability = getWorkshopAvailability(workshop);
+  const { spotsLeft } = availability;
+  const isClosed = !availability.available;
+  const isCapacityFull = workshop.status === "upcoming" && spotsLeft === 0;
+  const capacityLabel = workshop.status !== "upcoming"
+    ? tWorkshopStatus(t, workshop.status)
+    : spotsLeft === null
+      ? t("workshops.statusAvailable")
+      : spotsLeft === 0
+        ? t("workshops.full")
+        : `${t("workshops.spotsLeft")}: ${spotsLeft}`;
+  const closedMessage = isCapacityFull
+    ? t("workshopDetail.fullMessage")
+    : t("workshopDetail.registrationClosed", {
+        status: tWorkshopStatus(t, workshop.status),
+      });
 
   return (
-    <PageTransition ref={rootRef}>
-      <section className="hero" id="top" style={{ paddingTop: "var(--nav-h, 64px)" }}>
-        <div className="section-heading workshop-detail-hero-heading">
+    <PageTransition ref={rootRef} className="catalogue-detail-page catalogue-detail-page--workshop">
+      <header className="catalogue-detail-stage" id="top">
+        <div className="catalogue-detail-media">
+          {workshop.cover_image_url ? (
+            <img
+              src={workshop.cover_image_url}
+              alt={getTitle(workshop, lang)}
+              width={1200}
+              height={900}
+              fetchPriority="high"
+              className="workshop-detail-cover"
+            />
+          ) : (
+            <div className="catalogue-detail-media-placeholder">
+              <MapPin size={44} aria-hidden="true" />
+            </div>
+          )}
+        </div>
+        <div className="catalogue-detail-summary">
           <DetailBackLink to="/workshops" label={t("workshopDetail.backToList")} />
+          <span className="catalogue-detail-marker">FIELD SESSION / {workshop.event_date}</span>
           <h1>{getTitle(workshop, lang)}</h1>
+          <p className="catalogue-detail-description">{getDesc(workshop, lang)}</p>
           <div className="workshop-detail-meta">
             <span>
-              <Calendar size={14} /> {workshop.event_date} {workshop.event_time}
+              <Calendar size={14} aria-hidden="true" /> {workshop.event_date} {workshop.event_time}
             </span>
             {workshop.location && (
               <span>
-                <MapPin size={14} /> {workshop.location}
+                <MapPin size={14} aria-hidden="true" /> {workshop.location}
               </span>
             )}
-            <span style={{ color: isFull ? "#ef4444" : undefined }}>
-              <Users size={14} /> {isFull ? t("workshops.full") : `${t("workshops.spotsLeft")}: ${spotsLeft}`}
+            <span className={isClosed ? "is-full" : ""}>
+              <Users size={14} aria-hidden="true" /> {capacityLabel}
             </span>
           </div>
           <WorkshopCountdown eventDate={workshop.event_date} eventTime={workshop.event_time} />
           {workshop.max_participants != null && workshop.max_participants > 0 && (
             <CapacityBar current={workshop.current_participants} max={workshop.max_participants} />
           )}
+          {workshop.price_display && <strong className="catalogue-detail-price">{workshop.price_display}</strong>}
+          {!isClosed && (
+            <a className="catalogue-primary-button" href="#workshop-registration">
+              {t("workshops.register")}
+            </a>
+          )}
         </div>
-      </section>
+      </header>
 
       <ErrorBoundary>
-      {workshop.cover_image_url && (
-        <section className="section-shell is-visible" style={{ paddingTop: 0 }}>
-          <img src={workshop.cover_image_url} alt={getTitle(workshop, lang)} width={800} height={400} loading="lazy" className="workshop-detail-cover" />
-        </section>
-      )}
-
-      <section className="section-shell is-visible">
-        <div className="workshop-detail-section">
-          <h2>{t("workshopDetail.about")}</h2>
-          <p className="workshop-detail-description">{getDesc(workshop, lang)}</p>
-        </div>
-      </section>
-
-      <section className="section-shell is-visible">
+      <section className="section-shell catalogue-detail-band is-visible">
         <div className="workshop-detail-section">
           <h2>{t("workshopDetail.schedule")}</h2>
           <div className="workshop-detail-timeline">
@@ -131,7 +175,7 @@ export function WorkshopDetailPage() {
         </div>
       </section>
 
-      <section className="section-shell is-visible">
+      <section className="section-shell catalogue-detail-band is-visible">
         <div className="workshop-detail-section">
           <h2>{t("workshopDetail.guide")}</h2>
           <div className="workshop-detail-guide-grid">
@@ -156,7 +200,7 @@ export function WorkshopDetailPage() {
       </section>
 
       {workshop.location && (
-        <section className="section-shell is-visible">
+        <section className="section-shell catalogue-detail-band is-visible">
           <div className="workshop-detail-section">
             <h2>{t("workshopDetail.location")}</h2>
             <div className="workshop-detail-location-card">
@@ -170,13 +214,13 @@ export function WorkshopDetailPage() {
         </section>
       )}
 
-      <section className="section-shell is-visible">
+      <section id="workshop-registration" className="section-shell catalogue-detail-band is-visible">
         <div className="workshop-detail-section">
           <h2>{t("workshopDetail.register")}</h2>
           <div className="workshop-detail-register-card">
             {workshop.price_display && <div className="workshop-detail-register-price">{workshop.price_display}</div>}
-            {isFull ? (
-              <p className="workshop-detail-register-full">{t("workshopDetail.fullMessage")}</p>
+            {isClosed ? (
+              <p className="workshop-detail-register-full">{closedMessage}</p>
             ) : showPayment && registrationId && workshop?.price_cents ? (
               <PaymentForm
                 purpose="workshop_registration"
@@ -207,7 +251,7 @@ export function WorkshopDetailPage() {
                 )}
                 {registration.checkingAvailability && (
                   <div className="workshop-detail-availability-checking">
-                    {t("workshops.form.checkingAvailability", "Checking availability...")}
+                    {t("workshops.form.checkingAvailability")}
                   </div>
                 )}
                 <div className="workshop-detail-field">
@@ -226,7 +270,7 @@ export function WorkshopDetailPage() {
                     maxLength={50}
                   />
                   {registration.formName.length > 0 && registration.formName.length < 2 && (
-                    <span className="workshop-detail-field-error">{t("workshops.form.nameTooShort", "Name must be at least 2 characters")}</span>
+                    <span className="workshop-detail-field-error">{t("workshops.form.nameTooShort")}</span>
                   )}
                 </div>
                 <div className="workshop-detail-field">
@@ -245,7 +289,7 @@ export function WorkshopDetailPage() {
                     maxLength={100}
                   />
                   {registration.formContact.length > 0 && registration.formContact.length < 5 && (
-                    <span className="workshop-detail-field-error">{t("workshops.form.contactTooShort", "Contact must be at least 5 characters")}</span>
+                    <span className="workshop-detail-field-error">{t("workshops.form.contactTooShort")}</span>
                   )}
                 </div>
                 {registration.formMsg && <p className={`workshop-detail-form-msg${registration.formMsg === t("workshops.form.success") ? " workshop-detail-form-msg--success" : " workshop-detail-form-msg--error"}`}>{registration.formMsg}</p>}
@@ -257,9 +301,9 @@ export function WorkshopDetailPage() {
                   {registration.submitting
                     ? t("workshops.form.submitting")
                     : registration.checkingAvailability
-                      ? t("workshops.form.checkingAvailability", "Checking...")
+                      ? t("workshops.form.checkingAvailability")
                       : registration.availability?.available === false
-                        ? t("workshops.form.full", "Full")
+                        ? t("workshops.form.full")
                         : t("workshops.register")}
                 </Button>
               </>
@@ -269,13 +313,22 @@ export function WorkshopDetailPage() {
       </section>
 
       {showConfirmation && workshop && (
-        <div className="workshop-confirmation-overlay" onClick={() => setShowConfirmation(false)}>
-          <div className="workshop-confirmation-modal" onClick={(e) => e.stopPropagation()}>
-            <button type="button" className="workshop-confirmation-close" onClick={() => setShowConfirmation(false)}>
-              <X size={20} />
+        <div
+          className="workshop-confirmation-overlay"
+          onClick={() => closeConfirmation()}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              event.stopPropagation();
+              closeConfirmation();
+            }
+          }}
+        >
+          <div ref={confirmationRef} className="workshop-confirmation-modal" role="dialog" aria-modal="true" aria-labelledby="workshop-confirmation-title" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="workshop-confirmation-close" onClick={() => closeConfirmation()} aria-label={t("common.close")}>
+              <X size={20} aria-hidden="true" />
             </button>
             <CheckCircle size={48} className="workshop-confirmation-icon" />
-            <h2>{t("workshops.form.success")}</h2>
+            <h2 id="workshop-confirmation-title">{t("workshops.form.success")}</h2>
             <div className="workshop-confirmation-details">
               <p><strong>{t("workshops.title")}:</strong> {workshopTitle}</p>
               {workshop.event_date && <p><strong>{t("workshops.detail.date")}:</strong> {workshop.event_date}</p>}
@@ -286,13 +339,13 @@ export function WorkshopDetailPage() {
             </div>
             {paymentNotice === "pending" && (
               <div className="workshop-payment-status-note" role="status">
-                <strong>{t("workshopDetail.paymentPendingTitle", "Payment pending")}</strong>
-                <span>{t("workshopDetail.paymentPendingDesc", "No charge was made. We will confirm payment options before your workshop payment is collected.")}</span>
+                <strong>{t("workshopDetail.paymentPendingTitle")}</strong>
+                <span>{t("workshopDetail.paymentPendingDesc")}</span>
               </div>
             )}
-            <p className="workshop-confirmation-email">{t("workshops.confirmation.emailSent", "A confirmation email has been sent to your email address.")}</p>
-            <Button type="primary" onClick={() => { setShowConfirmation(false); setPaymentNotice(null); registration.resetForm(); }}>
-              {t("workshops.confirmation.close", "Close")}
+            <p className="workshop-confirmation-email">{t("workshops.confirmation.emailSent")}</p>
+            <Button type="primary" onClick={() => closeConfirmation(true)}>
+              {t("workshops.confirmation.close")}
             </Button>
           </div>
         </div>
