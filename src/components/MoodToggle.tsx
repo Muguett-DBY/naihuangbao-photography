@@ -1,18 +1,12 @@
 import { NotebookPen, Newspaper } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { readMoodPreference, type MoodPreference } from "../lib/appearance-preferences";
 import { safeLocalStorage } from "../lib/browser-storage";
-
-type Mood = "magazine" | "cute";
-
-function getInitialMood(): Mood {
-  const storedMood = safeLocalStorage.getItem("mood");
-  return storedMood === "cute" || storedMood === "magazine" ? storedMood : "magazine";
-}
 
 export function MoodToggle() {
   const { t } = useTranslation();
-  const [mood, setMood] = useState<Mood>(getInitialMood);
+  const [mood, setMood] = useState<MoodPreference>(readMoodPreference);
   const initialised = useRef(false);
 
   useEffect(() => {
@@ -28,7 +22,7 @@ export function MoodToggle() {
   }, [mood]);
 
   const toggle = () => {
-    const next: Mood = mood === "magazine" ? "cute" : "magazine";
+    const next: MoodPreference = mood === "magazine" ? "cute" : "magazine";
     setMood(next);
     safeLocalStorage.setItem("mood", next);
   };

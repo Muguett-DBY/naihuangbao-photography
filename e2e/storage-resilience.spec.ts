@@ -20,6 +20,7 @@ test("keeps the site usable when browser storage is blocked", async ({ page }) =
   await expect(page.locator(".hero")).toBeVisible();
   await expect(page.locator(".site-nav")).toBeVisible();
 
+  await page.locator(".nav-utility-trigger").click();
   await page.locator(".theme-toggle").click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 
@@ -42,5 +43,6 @@ test("ignores invalid persisted appearance and language values", async ({ page }
 
   await expect(page.locator("html")).toHaveAttribute("data-mood", "magazine");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("mood"))).toBeNull();
   await expect.poll(() => page.evaluate(() => localStorage.getItem("theme"))).toBeNull();
 });
