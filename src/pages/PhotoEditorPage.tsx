@@ -1,7 +1,7 @@
 import "../styles/pages.css";
 import { lazy, Suspense, useCallback, useRef, useState, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { ImagePlus, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import { ImagePlus, ShieldCheck, Sparkles, Zap, Upload, SlidersHorizontal } from "lucide-react";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { PageTransition } from "../components/shared/PageTransition";
 import { useSEO } from "../hooks/useSEO";
@@ -54,26 +54,30 @@ export default function PhotoEditorPage() {
     <PageTransition>
       <ErrorBoundary>
         <div className="editor-root editor-light-shell">
-          <header className="editor-header">
-            <h1>{t("editor.title")}</h1>
-            <p>{t("editor.subtitle")}</p>
+          <header className="editor-header editor-header--light">
+            <div>
+              <span className="editor-header-kicker">LOCAL STUDIO / WORKING FILE</span>
+              <h1>{t("editor.title")}</h1>
+              <p>{t("editor.subtitle")}</p>
+            </div>
+            <div className="editor-toolbar editor-toolbar--light" aria-label={t("editor.toolbarPrimary")}>
+              <button type="button" className="editor-btn editor-btn--primary" onClick={handleUploadClick}>
+                <Upload size={17} aria-hidden="true" />
+                <span>{t("editor.upload")}</span>
+              </button>
+              <button type="button" className="editor-btn" onClick={openStudio}>
+                <SlidersHorizontal size={17} aria-hidden="true" />
+                <span>{t("editor.openEditor", "Open editor")}</span>
+              </button>
+              <input
+                ref={uploadRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+              />
+            </div>
           </header>
-
-          <div className="editor-toolbar editor-toolbar--light">
-            <button type="button" className="editor-btn editor-btn--primary" onClick={handleUploadClick}>
-              {t("editor.upload")}
-            </button>
-            <input
-              ref={uploadRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              style={{ display: "none" }}
-            />
-            <button type="button" className="editor-btn" onClick={openStudio}>
-              {t("editor.openEditor", "Open editor")}
-            </button>
-          </div>
 
           <main className="editor-light-main" aria-labelledby="editor-light-title">
             <div className="editor-canvas--empty">

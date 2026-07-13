@@ -63,6 +63,10 @@ export function DashboardWorkspace({
   return (
     <div className="dashboard-workspace">
       <nav className="dashboard-workspace-nav" aria-label={ariaLabel}>
+        <div className="dashboard-workspace-rail-head">
+          <span>PRIVATE ARCHIVE</span>
+          <strong>{ariaLabel}</strong>
+        </div>
         <div
           className="dashboard-workspace-tablist"
           role="tablist"
@@ -85,7 +89,10 @@ export function DashboardWorkspace({
                 aria-controls={panelId}
                 tabIndex={active ? 0 : -1}
                 className={`dashboard-workspace-tab${active ? " is-active" : ""}`}
-                onClick={() => setActiveKey(item.key)}
+                onClick={(event) => {
+                  setActiveKey(item.key);
+                  event.currentTarget.scrollIntoView({ block: "nearest", inline: "nearest" });
+                }}
                 onKeyDown={(event) => handleKeyDown(event, index)}
               >
                 <span className="dashboard-workspace-tab-icon" aria-hidden="true">{item.icon}</span>
@@ -103,7 +110,14 @@ export function DashboardWorkspace({
         aria-labelledby={`dashboard-tab-${activeItem.key}`}
         tabIndex={0}
       >
-        {activeItem.content}
+        <header className="dashboard-workspace-panel-head">
+          <span>ACCOUNT FILE / {String(items.indexOf(activeItem) + 1).padStart(2, "0")}</span>
+          <div>
+            <span aria-hidden="true">{activeItem.icon}</span>
+            <h2>{activeItem.label}</h2>
+          </div>
+        </header>
+        <div className="dashboard-workspace-panel-body">{activeItem.content}</div>
       </section>
     </div>
   );

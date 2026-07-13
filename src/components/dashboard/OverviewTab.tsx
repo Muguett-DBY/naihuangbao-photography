@@ -50,27 +50,27 @@ export function OverviewTab() {
 
   const cards = [
     {
-      icon: <CalendarCheck size={28} />,
+      key: "bookings",
+      icon: <CalendarCheck size={22} aria-hidden="true" />,
       label: t("dashboard.bookings"),
       value: stats.bookings.total,
       sub: stats.bookings.upcoming > 0
         ? `${stats.bookings.upcoming} ${t("dashboard.upcoming")}`
         : undefined,
-      color: "#eab308",
       link: "/booking",
     },
     {
-      icon: <BookOpen size={28} />,
+      key: "courses",
+      icon: <BookOpen size={22} aria-hidden="true" />,
       label: t("dashboard.courses"),
       value: stats.courses.total,
-      color: "#3b82f6",
       link: "/courses",
     },
     {
-      icon: <MapPin size={28} />,
+      key: "workshops",
+      icon: <MapPin size={22} aria-hidden="true" />,
       label: t("dashboard.workshops"),
       value: stats.workshops.total,
-      color: "#a855f7",
       link: "/workshops",
     },
   ];
@@ -137,9 +137,9 @@ export function OverviewTab() {
       )}
 
       <div className="overview-grid">
-        {cards.map((card, i) => (
-          <div key={i} className="overview-card">
-            <div className="overview-card-icon" style={{ background: `${card.color}18`, color: card.color }}>
+        {cards.map((card) => (
+          <article key={card.key} className={`overview-card overview-card--${card.key}`}>
+            <div className="overview-card-icon">
               {card.icon}
             </div>
             <div className="overview-card-body">
@@ -149,19 +149,19 @@ export function OverviewTab() {
             </div>
             {card.link && (
               <Link to={card.link} className="overview-card-link" aria-label={card.label}>
-                <ArrowRight size={16} />
+                <ArrowRight size={16} aria-hidden="true" />
               </Link>
             )}
-          </div>
+          </article>
         ))}
       </div>
 
       <div className="overview-quick-actions">
         <h3>{t("dashboard.quickActions", "Quick Actions")}</h3>
         <div className="overview-quick-grid">
-          {quickActions.map((action, i) => (
-            <Link key={i} to={action.link} className="overview-quick-btn">
-              {action.icon}
+          {quickActions.map((action) => (
+            <Link key={action.link} to={action.link} className="overview-quick-btn">
+              <span aria-hidden="true">{action.icon}</span>
               <span>{action.label}</span>
             </Link>
           ))}

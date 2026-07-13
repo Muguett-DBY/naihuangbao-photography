@@ -294,4 +294,50 @@ describe("editor regression contracts", () => {
     expect(editor).toContain("Math.floor(Math.max(0, lipCY - 15))");
     expect(editor.match(/\/\/ 10\. Dark circles/g) ?? []).toHaveLength(1);
   });
+
+  it("uses one editorial operations system across dashboard, editor, admin, and boundary states", () => {
+    const dashboard = read("src/pages/DashboardPage.tsx");
+    const workspace = read("src/components/dashboard/DashboardWorkspace.tsx");
+    const overview = read("src/components/dashboard/OverviewTab.tsx");
+    const editor = read("src/pages/PhotoEditorWorkspace.tsx");
+    const admin = read("src/components/admin/AdminShell.tsx");
+    const notFound = read("src/components/NotFound.tsx");
+    const errorBoundary = read("src/components/ErrorBoundary.tsx");
+    const filmPlaceholder = read("src/components/FilmPlaceholder.tsx");
+    const pagesCss = read("src/styles/pages.css");
+    const adminCss = read("src/styles/admin.css");
+    const boundariesCss = read("src/styles/boundaries.css");
+
+    expect(dashboard).toContain("dashboard-command-header");
+    expect(dashboard).toContain("dashboard-account-meta");
+    expect(workspace).toContain("dashboard-workspace-panel-head");
+    expect(overview).toContain('key: "bookings"');
+    expect(overview).toContain('key: "courses"');
+    expect(overview).toContain('key: "workshops"');
+    expect(overview).toContain("overview-card--${card.key}");
+    expect(pagesCss).toContain("font-variant-numeric: tabular-nums");
+
+    for (const icon of ["Undo2", "Redo2", "WandSparkles", "ScanFace", "Split", "Download"]) {
+      expect(editor).toContain(icon);
+    }
+    expect(editor).toContain("editor-icon-btn");
+    expect(editor).toContain("editor-toolbar-group");
+
+    expect(admin).toContain("adm-bar-kicker");
+    expect(admin).toContain("adm-workspace");
+    expect(admin).toContain('key: "vitals"');
+    expect(admin).toContain('type="password"');
+    expect(adminCss).toMatch(/\.adm-shell\s*\{[\s\S]*grid-template-columns:/);
+    expect(adminCss).toContain("overflow-x: auto");
+
+    expect(notFound).toContain("not-found-actions");
+    expect(notFound).toContain('import "../styles/boundaries.css"');
+    expect(notFound).toContain('to="/gallery"');
+    expect(notFound).not.toMatch(/[✿✦♡]/);
+    expect(errorBoundary).toContain('role="alert"');
+    expect(filmPlaceholder).toContain('role="img"');
+    expect(boundariesCss).toContain(".not-found-page .not-found");
+    expect(boundariesCss).toContain(".error-boundary");
+    expect(boundariesCss).toContain(".film-placeholder");
+  });
 });

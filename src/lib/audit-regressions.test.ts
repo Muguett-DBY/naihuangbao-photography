@@ -837,20 +837,24 @@ describe("audit regression coverage", () => {
     expect(pageStyles).toContain("body:has(.dashboard-root) .nhb-scroll-top");
   });
 
-  it("keeps the mobile dashboard first viewport compact and action-oriented", () => {
+  it("keeps the dashboard command header compact and action-oriented", () => {
     const dashboardPage = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
     const pageStyles = readFileSync(resolve(root, "src/styles/pages.css"), "utf8");
 
-    expect(dashboardPage).toContain("dashboard-hero");
+    expect(dashboardPage).toContain("dashboard-command-header");
+    expect(dashboardPage).toContain("dashboard-command-inner");
+    expect(dashboardPage).toContain("dashboard-account-meta");
     expect(dashboardPage).toContain("dashboard-profile-shortcuts");
     expect(dashboardPage).toContain('aria-label={t("dashboard.profileShortcuts"');
     expect(dashboardPage).toContain('to="/booking"');
     expect(dashboardPage).toContain('to="/gallery"');
     expect(dashboardPage).toContain('to="/editor"');
-    expect(pageStyles).toMatch(/\.dashboard-hero\s*\{[\s\S]*min-height:\s*clamp\(190px,\s*32svh,\s*320px\)/);
+    expect(pageStyles).toMatch(/\.dashboard-command-inner\s*\{[\s\S]*grid-template-columns:\s*minmax\(0,\s*1fr\)\s*minmax\(280px,\s*0\.72fr\)/);
+    expect(pageStyles).toMatch(/\.dashboard-account-meta\s*\{[\s\S]*font-variant-numeric:\s*tabular-nums/);
     expect(pageStyles).toContain(".dashboard-profile-shortcuts");
     expect(pageStyles).toContain(".dashboard-profile-shortcut");
-    expect(pageStyles).toMatch(/@media\s*\(max-width:\s*768px\)\s*\{[\s\S]*\.dashboard-hero\s*\{[\s\S]*min-height:\s*clamp\(150px,\s*24svh,\s*220px\)/);
+    expect(pageStyles).toMatch(/@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*\.dashboard-command-inner\s*\{[\s\S]*grid-template-columns:\s*1fr/);
+    expect(pageStyles).toMatch(/@media\s*\(max-width:\s*620px\)\s*\{[\s\S]*\.dashboard-account-meta\s*\{[\s\S]*grid-template-columns:\s*1fr/);
   });
 
   it("documents required Cloudflare secrets without committing secret values", () => {
