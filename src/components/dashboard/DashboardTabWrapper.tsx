@@ -47,12 +47,12 @@ export function DashboardTabWrapper({
 
   if (error) {
     return (
-      <div className="dashboard-error">
-        <AlertCircle size={32} className="dashboard-error-icon" />
+      <div className="dashboard-error" role="alert">
+        <AlertCircle size={32} className="dashboard-error-icon" aria-hidden="true" />
         <p>{t("common.loadError", "加载失败，请重试")}</p>
         {retry && (
           <button type="button" className="dashboard-error-retry" onClick={retry}>
-            <RefreshCw size={14} />
+            <RefreshCw size={14} aria-hidden="true" />
             {t("common.retry", "重试")}
           </button>
         )}

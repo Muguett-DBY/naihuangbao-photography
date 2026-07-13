@@ -78,7 +78,11 @@ export const ImageWithFallback = memo(function ImageWithFallback({
   }
 
   return (
-    <div className={`img-blur-wrap ${loaded ? "is-loaded" : ""} ${className || ""}`}>
+    <div
+      className={`img-blur-wrap ${loaded ? "is-loaded" : ""} ${className || ""}`}
+      data-state={loaded ? "loaded" : "loading"}
+      aria-busy={!loaded}
+    >
       <div className="img-skeleton gallery-skeleton" aria-hidden="true" />
       {pictureAttrs ? (
         <picture>

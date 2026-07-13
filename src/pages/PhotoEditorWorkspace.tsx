@@ -1,10 +1,59 @@
 import "../styles/pages.css";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ImagePlus, ShieldCheck, Sparkles, Zap } from "lucide-react";
+import {
+  AlertTriangle,
+  Aperture,
+  Bandage,
+  Blend,
+  Brush,
+  Camera,
+  CircleCheck,
+  Columns2,
+  Contrast,
+  Copy,
+  Crosshair,
+  Download,
+  Droplets,
+  Eye,
+  Flame,
+  Flashlight,
+  Focus,
+  Frame,
+  Gauge,
+  Images,
+  ImagePlus,
+  Layers3,
+  MoveHorizontal,
+  MoveVertical,
+  Paintbrush,
+  Palette,
+  Printer,
+  Redo2,
+  RotateCcw,
+  ScanFace,
+  Scissors,
+  ShieldCheck,
+  SlidersHorizontal,
+  Smile,
+  Smartphone,
+  Sparkles,
+  Split,
+  Square,
+  SunMedium,
+  Thermometer,
+  Type,
+  Undo2,
+  Upload,
+  WandSparkles,
+  X,
+  Zap,
+  type LucideIcon,
+} from "lucide-react";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import type { BeautySettings, BeautyCategory, BeautyTool, TextOverlay, StickerOverlay, FrameId } from "../types/photo-editor";
 import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
 import {
@@ -47,16 +96,68 @@ const IMAGE_LOAD_ERROR_KEYS: Record<ImageLoadError, string> = {
 
 const EDITOR_WORKFLOW_GROUPS: Array<{
   key: EditorWorkflowKey;
-  icon: string;
+  icon: LucideIcon;
   labelKey: string;
   descKey: string;
   categories: BeautyCategory[];
 }> = [
-  { key: "quick", icon: "✨", labelKey: "editor.workflow.quick", descKey: "editor.workflow.quickDesc", categories: ["beauty", "reshape"] },
-  { key: "color", icon: "🎨", labelKey: "editor.workflow.color", descKey: "editor.workflow.colorDesc", categories: ["color", "filter"] },
-  { key: "compose", icon: "🖼", labelKey: "editor.workflow.compose", descKey: "editor.workflow.composeDesc", categories: ["tools", "bg", "makeup"] },
-  { key: "export", icon: "↓", labelKey: "editor.workflow.export", descKey: "editor.workflow.exportDesc", categories: [] },
+  { key: "quick", icon: WandSparkles, labelKey: "editor.workflow.quick", descKey: "editor.workflow.quickDesc", categories: ["beauty", "reshape"] },
+  { key: "color", icon: SlidersHorizontal, labelKey: "editor.workflow.color", descKey: "editor.workflow.colorDesc", categories: ["color", "filter"] },
+  { key: "compose", icon: Layers3, labelKey: "editor.workflow.compose", descKey: "editor.workflow.composeDesc", categories: ["tools", "bg", "makeup"] },
+  { key: "export", icon: Download, labelKey: "editor.workflow.export", descKey: "editor.workflow.exportDesc", categories: [] },
 ];
+
+const EDITOR_CATEGORY_ICONS: Record<BeautyCategory, LucideIcon> = {
+  beauty: Sparkles,
+  reshape: ScanFace,
+  color: Palette,
+  filter: Camera,
+  tools: SlidersHorizontal,
+  bg: Images,
+  makeup: Brush,
+};
+
+const EDITOR_TOOL_ICONS: Partial<Record<BeautyTool, LucideIcon>> = {
+  smooth: Sparkles,
+  whiten: SunMedium,
+  sharpen: Focus,
+  blemish: Bandage,
+  teeth: Smile,
+  slim: MoveHorizontal,
+  bigeye: Eye,
+  nose: ScanFace,
+  lip: Smile,
+  forehead: MoveVertical,
+  facelift: MoveVertical,
+  jawline: ScanFace,
+  faceWidth: MoveHorizontal,
+  faceLength: MoveVertical,
+  cheekbone: ScanFace,
+  chin: MoveVertical,
+  philtrum: MoveVertical,
+  eyeDistance: MoveHorizontal,
+  eyebag: Eye,
+  darkcircle: Eye,
+  temperature: Thermometer,
+  saturation: Droplets,
+  contrast: Contrast,
+  brightness: SunMedium,
+  vignette: Aperture,
+  grain: Gauge,
+  blur_bg: Blend,
+  bg_remove: Scissors,
+  bg_solid: Square,
+  bg_gradient: Palette,
+  local_bright: Flashlight,
+  local_warm: Flame,
+  local_sat: Droplets,
+  color_splash: Crosshair,
+  double_exposure: Copy,
+  lipstick: Smile,
+  blush: Brush,
+  eyeshadow: Eye,
+  eyeliner: Paintbrush,
+};
 
 export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditorWorkspaceProps) {
   const { t } = useTranslation();
@@ -80,6 +181,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const initialFileLoadedRef = useRef<File | null>(null);
   const imageLoadRequestRef = useRef(0);
   const modelLoadRequestRef = useRef(0);
+  const exportTitleId = useId();
 
   const [loading, setLoading] = useState(false);
   const [imageLoadError, setImageLoadError] = useState<ImageLoadError | null>(null);
@@ -108,6 +210,18 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
     state: "idle",
     messageKey: "editor.exportStatus.idle",
   });
+  const exportDialogRef = useFocusTrap<HTMLDivElement>({ active: showExport, initialFocus: "first" });
+
+  useEffect(() => {
+    if (!showExport) return undefined;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      setShowExport(false);
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [showExport]);
 
   useEffect(() => {
     modelsReadyRef.current = modelsReady;
@@ -864,6 +978,24 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
     setComparePos(Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100)));
   }, [compareDrag]);
 
+  const handleCompareKeyDown = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+    const steps: Record<string, number> = {
+      ArrowLeft: -2,
+      ArrowDown: -2,
+      ArrowRight: 2,
+      ArrowUp: 2,
+    };
+    if (event.key in steps) {
+      event.preventDefault();
+      setComparePos((current) => Math.max(0, Math.min(100, current + steps[event.key])));
+      return;
+    }
+    if (event.key === "Home" || event.key === "End") {
+      event.preventDefault();
+      setComparePos(event.key === "Home" ? 0 : 100);
+    }
+  }, []);
+
   const currentTools = TOOLS[cat];
   const activeWorkflow = EDITOR_WORKFLOW_GROUPS.find(group => group.key === activeWorkflowGroup) ?? EDITOR_WORKFLOW_GROUPS[0];
   const workflowCategories = CATEGORIES.filter(c => activeWorkflow.categories.includes(c.key));
@@ -883,8 +1015,11 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
       <ErrorBoundary>
       <div className={`editor-root ${isDragOver ? "editor-drag-over" : ""}`} onMouseMove={onCompareMove} onMouseUp={() => setCompareDrag(false)} onTouchMove={onCompareMove} onTouchEnd={() => setCompareDrag(false)} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
         <header className="editor-header">
-          <h1>{t("editor.title")}</h1>
-          <p>{t("editor.subtitle")}</p>
+          <div>
+            <span className="editor-header-kicker">LOCAL STUDIO / WORKING FILE</span>
+            <h1>{t("editor.title")}</h1>
+            <p>{t("editor.subtitle")}</p>
+          </div>
           {modelLoading && !modelsReady && !modelError && (
             <div className="editor-loading-models">
               <div className="editor-loading-bar">
@@ -904,33 +1039,47 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           )}
         </header>
 
-        <div className="editor-toolbar">
-          <button type="button" className="editor-btn editor-btn--primary" onClick={handleUploadClick} aria-label={t("editor.upload")} title={t("editor.upload")}>{t("editor.upload")}</button>
+        <div className="editor-toolbar" aria-label={t("editor.toolbarPrimary")}>
+          <div className="editor-toolbar-group editor-toolbar-group--primary">
+            <button type="button" className="editor-btn editor-btn--primary" onClick={handleUploadClick} aria-label={t("editor.upload")} title={t("editor.upload")}>
+              <Upload size={17} aria-hidden="true" /><span>{t("editor.upload")}</span>
+            </button>
+          </div>
           <input ref={uploadRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
           {originalRef.current && (
             <>
-              <button type="button" className="editor-btn" disabled={historyIdx <= 0} onClick={undo} aria-label={t("editor.undo")} title={t("editor.undo")}>↩</button>
-              <button type="button" className="editor-btn" disabled={historyIdx >= historyRef.current.length - 1} onClick={redo} aria-label={t("editor.redo")} title={t("editor.redo")}>↪</button>
-              <button type="button" className="editor-btn" onClick={handleAutoEnhance} aria-label={t("editor.auto")} title={t("editor.auto")}>⚡</button>
-              <button type="button" className={`editor-btn ${showMesh ? "active" : ""}`} onClick={() => setShowMesh(!showMesh)} aria-pressed={showMesh} aria-label="Face mesh" title="Face mesh">🗺</button>
-              <button type="button" className="editor-btn" onClick={() => setShowCompare(!showCompare)} aria-label={t("editor.compare")} title={t("editor.compare")}>⇔</button>
-              <button type="button" className="editor-btn" onClick={() => { setActiveWorkflowGroup("compose"); setShowTextPanel(!showTextPanel); }} aria-label={t("editor.addText")} title={t("editor.addText")}>T</button>
-              <button type="button" className="editor-btn" onClick={() => { setActiveWorkflowGroup("compose"); setShowStickerPanel(!showStickerPanel); }} aria-label={t("editor.uploadOverlay")} title={t("editor.uploadOverlay")}>😊</button>
-              <button type="button" className="editor-btn" onClick={() => { setActiveWorkflowGroup("compose"); setShowFramePanel(!showFramePanel); }} aria-label={t("editor.frame.none")} title={t("editor.frame.none")}>🖼</button>
-              <button type="button" className="editor-btn" onClick={handleReset} aria-label={t("editor.reset")} title={t("editor.reset")}>⟲</button>
-              <button type="button" className="editor-btn editor-btn--primary" onClick={() => { setActiveWorkflowGroup("export"); setShowExport(true); }} aria-label={t("editor.export")} title={t("editor.export")}>↓</button>
+              <div className="editor-toolbar-group" role="group" aria-label={t("editor.toolbarHistory")}>
+                <button type="button" className="editor-icon-btn" disabled={historyIdx <= 0} onClick={undo} aria-label={t("editor.undo")} title={t("editor.undo")}><Undo2 size={17} aria-hidden="true" /></button>
+                <button type="button" className="editor-icon-btn" disabled={historyIdx >= historyRef.current.length - 1} onClick={redo} aria-label={t("editor.redo")} title={t("editor.redo")}><Redo2 size={17} aria-hidden="true" /></button>
+                <button type="button" className="editor-icon-btn" onClick={handleAutoEnhance} aria-label={t("editor.auto")} title={t("editor.auto")}><WandSparkles size={17} aria-hidden="true" /></button>
+              </div>
+              <div className="editor-toolbar-group" role="group" aria-label={t("editor.toolbarInspect")}>
+                <button type="button" className={`editor-icon-btn ${showMesh ? "active" : ""}`} onClick={() => setShowMesh(!showMesh)} aria-pressed={showMesh} aria-label={t("editor.faceMesh")} title={t("editor.faceMesh")}><ScanFace size={17} aria-hidden="true" /></button>
+                <button type="button" className={`editor-icon-btn ${showCompare ? "active" : ""}`} onClick={() => setShowCompare(!showCompare)} aria-pressed={showCompare} aria-label={t("editor.compare")} title={t("editor.compare")}><Columns2 size={17} aria-hidden="true" /></button>
+              </div>
+              <div className="editor-toolbar-group" role="group" aria-label={t("editor.toolbarCompose")}>
+                <button type="button" className="editor-icon-btn" onClick={() => { setActiveWorkflowGroup("compose"); setShowTextPanel(!showTextPanel); }} aria-label={t("editor.addText")} title={t("editor.addText")}><Type size={17} aria-hidden="true" /></button>
+                <button type="button" className="editor-icon-btn" onClick={() => { setActiveWorkflowGroup("compose"); setShowStickerPanel(!showStickerPanel); }} aria-label={t("editor.uploadOverlay")} title={t("editor.uploadOverlay")}><Sparkles size={17} aria-hidden="true" /></button>
+                <button type="button" className="editor-icon-btn" onClick={() => { setActiveWorkflowGroup("compose"); setShowFramePanel(!showFramePanel); }} aria-label={t("editor.frame.none")} title={t("editor.frame.none")}><Frame size={17} aria-hidden="true" /></button>
+              </div>
+              <div className="editor-toolbar-group" role="group" aria-label={t("editor.toolbarOutput")}>
+                <button type="button" className="editor-icon-btn" onClick={handleReset} aria-label={t("editor.reset")} title={t("editor.reset")}><RotateCcw size={17} aria-hidden="true" /></button>
+                <button type="button" className="editor-icon-btn editor-icon-btn--primary" onClick={() => { setActiveWorkflowGroup("export"); setShowExport(true); }} aria-label={t("editor.export")} title={t("editor.export")}><Download size={17} aria-hidden="true" /></button>
+              </div>
             </>
           )}
           {detecting && <span className="editor-detecting" aria-live="polite">{t("editor.detecting")}</span>}
-          {faceOk && <span className="editor-face-ok" role="status" aria-label={t("editor.faceDetected")}>✓</span>}
+          {faceOk && <span className="editor-face-ok" role="status" aria-label={t("editor.faceDetected")}><CircleCheck size={17} aria-hidden="true" /></span>}
           {faceError && !detecting && <span className="editor-status-warning" role="status" aria-live="polite">{t("editor.noFaceDetected")}</span>}
         </div>
 
         {originalRef.current && (
           <section className="editor-workflow" aria-label={t("editor.workflow.label")}>
             <div className="editor-workflow-tabs" role="tablist" aria-label={t("editor.workflow.label")}>
-              {EDITOR_WORKFLOW_GROUPS.map(group => (
-                <button
+              {EDITOR_WORKFLOW_GROUPS.map(group => {
+                const WorkflowIcon = group.icon;
+                return (
+                  <button
                   key={group.key}
                   type="button"
                   role="tab"
@@ -938,10 +1087,11 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
                   aria-selected={activeWorkflowGroup === group.key}
                   onClick={() => handleWorkflowSelect(group.key)}
                 >
-                  <span>{group.icon}</span>
+                  <WorkflowIcon size={16} aria-hidden="true" />
                   <span>{t(group.labelKey as any)}</span>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
             <div className="editor-workflow-panel" role="tabpanel">
               <div>
@@ -950,7 +1100,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
               </div>
               {activeWorkflowGroup === "quick" && (
                 <button type="button" className="editor-workflow-action" onClick={handleAutoEnhance}>
-                  {t("editor.auto")}
+                  <WandSparkles size={16} aria-hidden="true" />{t("editor.auto")}
                 </button>
               )}
               {activeWorkflowGroup === "compose" && (
@@ -1085,12 +1235,12 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
               <div className={`editor-canvas--empty ${imageLoadError ? "editor-canvas--error" : ""}`}>
                 {isDragOver ? (
                   <div className="editor-drop-zone">
-                    <span className="editor-drop-icon">📸</span>
+                    <span className="editor-drop-icon" aria-hidden="true"><Camera size={32} /></span>
                     <p>{t("editor.dropHere", "Drop your photo here")}</p>
                   </div>
                 ) : imageLoadError && imageLoadErrorMessageKey ? (
                   <div className="editor-image-error editor-recovery-panel" role="alert" aria-live="assertive" tabIndex={-1} ref={recoveryRef}>
-                    <span className="editor-recovery-icon" aria-hidden="true">!</span>
+                    <span className="editor-recovery-icon" aria-hidden="true"><AlertTriangle size={20} /></span>
                     <span className="editor-empty-kicker">{t("editor.imageLoadFailed")}</span>
                     <h2>{t("editor.editorRecoveryTitle")}</h2>
                     <p>{t(imageLoadErrorMessageKey as any)}</p>
@@ -1151,9 +1301,24 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
             {showCompare && originalRef.current && (
               <>
                 <img src={originalRef.current.src} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", clipPath: `inset(0 0 0 ${comparePos}%)` }} />
-                <div className="editor-compare-line" style={{ left: `${comparePos}%` }} onMouseDown={() => setCompareDrag(true)} onTouchStart={() => setCompareDrag(true)}>
+                <div
+                  className="editor-compare-line"
+                  style={{ left: `${comparePos}%` }}
+                  onMouseDown={() => setCompareDrag(true)}
+                  onTouchStart={() => setCompareDrag(true)}
+                  onKeyDown={handleCompareKeyDown}
+                  role="slider"
+                  tabIndex={0}
+                  aria-label={t("editor.comparePosition")}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.round(comparePos)}
+                  aria-valuetext={t("editor.comparePositionValue", { percent: Math.round(comparePos) })}
+                  aria-orientation="horizontal"
+                >
                   <span className="editor-compare-label editor-compare-label--before">{t("editor.before")}</span>
                   <span className="editor-compare-label editor-compare-label--after">{t("editor.after")}</span>
+                  <span className="editor-compare-grip" aria-hidden="true"><Split size={15} /></span>
                 </div>
               </>
             )}
@@ -1165,13 +1330,16 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
               {workflowCategories.length > 0 ? (
                 <>
                   <div className="editor-categories">
-                    {workflowCategories.map(c => (
-                      <button key={c.key} type="button" className={`editor-cat-btn ${cat === c.key ? "active" : ""}`}
+                    {workflowCategories.map(c => {
+                      const CategoryIcon = EDITOR_CATEGORY_ICONS[c.key];
+                      return (
+                        <button key={c.key} type="button" className={`editor-cat-btn ${cat === c.key ? "active" : ""}`}
                         aria-pressed={cat === c.key}
                         onClick={() => { setCat(c.key); if (TOOLS[c.key]?.length) setTool(TOOLS[c.key][0].key); }}>
-                        <span>{c.icon}</span><span>{t(c.labelKey as any)}</span>
-                      </button>
-                    ))}
+                          <CategoryIcon size={16} aria-hidden="true" /><span>{t(c.labelKey as any)}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                   <p className="editor-cat-desc">{t(CATEGORY_DESCRIPTIONS[cat] as any)}</p>
                 </>
@@ -1187,7 +1355,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
                 <div className="editor-filter-grid">
                   {FILTERS.map((f, i) => (
                     <button key={i} type="button" className="editor-filter-btn" onClick={() => applyPreset(f.settings)}>
-                      <span className="editor-filter-icon">{f.icon}</span>
+                      <span className={`editor-filter-swatch editor-filter-swatch--${i % 6}`} aria-hidden="true" />
                       <span className="editor-filter-name">{t(f.name as any)}</span>
                     </button>
                   ))}
@@ -1195,14 +1363,17 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
               ) : (
                 <>
                   <div className="editor-tools">
-                    {currentTools?.map(tl => (
-                      <button key={tl.key} type="button" className={`editor-tool-btn ${tool === tl.key ? "active" : ""}`}
+                    {currentTools?.map(tl => {
+                      const ToolIcon = EDITOR_TOOL_ICONS[tl.key] ?? SlidersHorizontal;
+                      return (
+                        <button key={tl.key} type="button" className={`editor-tool-btn ${tool === tl.key ? "active" : ""}`}
                         aria-pressed={tool === tl.key}
                         onClick={() => { setTool(tl.key); setBlemishMode(tl.key === "blemish"); setLocalBrushActive(["local_bright", "local_warm", "local_sat"].includes(tl.key)); setLocalBrushTool(tl.key as typeof localBrushTool); }}>
-                        <span className="editor-tool-icon">{tl.icon}</span>
-                        <span className="editor-tool-label">{t(tl.labelKey as any)}</span>
-                      </button>
-                    ))}
+                          <span className="editor-tool-icon"><ToolIcon size={16} aria-hidden="true" /></span>
+                          <span className="editor-tool-label">{t(tl.labelKey as any)}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                   {tool === "blemish" && (
                     <div className="editor-slider-group">
@@ -1229,22 +1400,34 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
         </div>
 
         {showExport && (
-          <div className="editor-modal-overlay" onClick={() => setShowExport(false)}>
-            <div className="editor-modal" onClick={e => e.stopPropagation()}>
-              <h3>{t("editor.exportTitle")}</h3>
+          <div className="editor-modal-overlay" onMouseDown={() => setShowExport(false)}>
+            <div
+              ref={exportDialogRef}
+              className="editor-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={exportTitleId}
+              onMouseDown={e => e.stopPropagation()}
+            >
+              <header className="editor-modal-heading">
+                <h3 id={exportTitleId}>{t("editor.exportTitle")}</h3>
+                <button type="button" className="editor-modal-close" onClick={() => setShowExport(false)} aria-label={t("editor.cancel")} title={t("editor.cancel")}>
+                  <X size={18} aria-hidden="true" />
+                </button>
+              </header>
               <div className="editor-export-presets">
                 <button type="button" className={`editor-preset-btn ${exportFormat === "jpeg" && exportQuality === 85 ? "active" : ""}`} onClick={() => { setExportFormat("jpeg"); setExportQuality(85); }}>
-                  <span className="editor-preset-icon">📱</span>
+                  <span className="editor-preset-icon"><Smartphone size={20} aria-hidden="true" /></span>
                   <span className="editor-preset-label">{t("editor.presetSocial", "Social")}</span>
                   <span className="editor-preset-desc">JPEG 85%</span>
                 </button>
                 <button type="button" className={`editor-preset-btn ${exportFormat === "jpeg" && exportQuality === 75 ? "active" : ""}`} onClick={() => { setExportFormat("jpeg"); setExportQuality(75); }}>
-                  <span className="editor-preset-icon">⚡</span>
+                  <span className="editor-preset-icon"><Gauge size={20} aria-hidden="true" /></span>
                   <span className="editor-preset-label">{t("editor.presetQuick", "Quick")}</span>
                   <span className="editor-preset-desc">JPEG 75%</span>
                 </button>
                 <button type="button" className={`editor-preset-btn ${exportFormat === "png" ? "active" : ""}`} onClick={() => { setExportFormat("png"); setExportQuality(100); }}>
-                  <span className="editor-preset-icon">🖨</span>
+                  <span className="editor-preset-icon"><Printer size={20} aria-hidden="true" /></span>
                   <span className="editor-preset-label">{t("editor.presetPrint", "Print")}</span>
                   <span className="editor-preset-desc">PNG</span>
                 </button>
@@ -1263,7 +1446,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
               </div>
               <div className="editor-modal-actions">
                 <button type="button" className="editor-btn" onClick={() => setShowExport(false)}>{t("editor.cancel")}</button>
-                <button type="button" className="editor-btn editor-btn--primary" onClick={handleDownload}>{t("editor.download")}</button>
+                <button type="button" className="editor-btn editor-btn--primary" onClick={handleDownload}><Download size={16} aria-hidden="true" />{t("editor.download")}</button>
               </div>
             </div>
           </div>

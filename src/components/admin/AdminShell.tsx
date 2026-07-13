@@ -1,11 +1,26 @@
 import { type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
+  Activity,
+  BarChart3,
+  Bug,
+  CalendarDays,
   CalendarCheck,
+  CircleHelp,
+  FileBarChart,
+  GraduationCap,
   House,
   ImagePlus,
+  ListChecks,
   LockKeyhole,
   LogOut,
+  Package,
+  ScrollText,
+  ShieldCheck,
+  ShoppingBag,
+  SlidersHorizontal,
+  TextQuote,
   TrendingUp,
+  type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button, Input, Loading } from "animal-island-ui";
@@ -106,9 +121,10 @@ export function AdminShell() {
     }
   }, [activeTab]);
 
-  const adminTabItems: Array<{ key: AdminTab; label: ReactNode }> = useMemo(() => [
+  const adminTabItems: Array<{ key: AdminTab; label: ReactNode; icon: LucideIcon }> = useMemo(() => [
     {
       key: "bookings",
+      icon: CalendarCheck,
       label: (
         <span className="adm-tab-label-with-badge">
           {t("admin.tabs.bookings")}
@@ -116,20 +132,21 @@ export function AdminShell() {
         </span>
       ),
     },
-    { key: "photos", label: t("admin.tabs.photos") },
-    { key: "stats", label: t("admin.tabs.stats") },
-    { key: "errors", label: t("admin.tabs.errors") },
-    { key: "courses", label: t("admin.tabs.courses") },
-    { key: "presets", label: t("admin.tabs.presets") },
-    { key: "workshops", label: t("admin.tabs.workshops") },
-    { key: "merchandise", label: t("admin.tabs.merchandise") },
-    { key: "packages", label: t("admin.tabs.packages") },
-    { key: "services", label: t("admin.tabs.services") },
-    { key: "faq", label: t("admin.tabs.faq") },
-    { key: "copy", label: t("admin.tabs.copy") },
-    { key: "auditLog", label: t("admin.tabs.auditLog") },
-    { key: "moderation", label: t("admin.tabs.moderation") },
-    { key: "reports", label: t("admin.tabs.reports") },
+    { key: "photos", label: t("admin.tabs.photos"), icon: ImagePlus },
+    { key: "stats", label: t("admin.tabs.stats"), icon: BarChart3 },
+    { key: "vitals", label: t("admin.tabs.vitals"), icon: Activity },
+    { key: "errors", label: t("admin.tabs.errors"), icon: Bug },
+    { key: "courses", label: t("admin.tabs.courses"), icon: GraduationCap },
+    { key: "presets", label: t("admin.tabs.presets"), icon: SlidersHorizontal },
+    { key: "workshops", label: t("admin.tabs.workshops"), icon: CalendarDays },
+    { key: "merchandise", label: t("admin.tabs.merchandise"), icon: ShoppingBag },
+    { key: "packages", label: t("admin.tabs.packages"), icon: Package },
+    { key: "services", label: t("admin.tabs.services"), icon: ListChecks },
+    { key: "faq", label: t("admin.tabs.faq"), icon: CircleHelp },
+    { key: "copy", label: t("admin.tabs.copy"), icon: TextQuote },
+    { key: "auditLog", label: t("admin.tabs.auditLog"), icon: ScrollText },
+    { key: "moderation", label: t("admin.tabs.moderation"), icon: ShieldCheck },
+    { key: "reports", label: t("admin.tabs.reports"), icon: FileBarChart },
   ], [t, hasNewBookings]);
 
   useEffect(() => {
@@ -176,15 +193,17 @@ export function AdminShell() {
     return (
       <div className="adm-root">
         <div className="adm-login-box">
-          <LockKeyhole size={22} />
+          <span className="adm-login-kicker">PUBLICATION DESK / SECURE ACCESS</span>
+          <LockKeyhole size={22} aria-hidden="true" />
           <h1>{t("admin.login.title")}</h1>
           <p>{t("admin.login.subtitle")}</p>
           <form onSubmit={handleLogin}>
-            <Input value={password} onChange={(e) => setPassword(e.target.value)}
+            <label className="adm-login-label" htmlFor="admin-password">{t("admin.login.placeholder")}</label>
+            <Input id="admin-password" name="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)}
               placeholder={t("admin.login.placeholder")} autoComplete="current-password" required />
             <Button type="primary" htmlType="submit">{loginMessage || t("admin.login.submit")}</Button>
           </form>
-          {loginMessage ? <p className="adm-msg">{loginMessage}</p> : null}
+          {loginMessage ? <p className="adm-msg" role="status" aria-live="polite">{loginMessage}</p> : null}
           <a href="/">{t("admin.login.backToSite")}</a>
         </div>
       </div>
@@ -194,7 +213,10 @@ export function AdminShell() {
   return (
     <div className="adm-root">
       <header className="adm-bar">
-        <div className="adm-bar-brand">{t("admin.header.brand", { name: siteConfig.brandName })}</div>
+        <div className="adm-bar-brand">
+          <span className="adm-bar-kicker">PUBLICATION DESK / OPERATIONS</span>
+          <strong>{t("admin.header.brand", { name: siteConfig.brandName })}</strong>
+        </div>
         <AdminNotificationBell newBookingCount={newBookingIds.size} onDismiss={() => setHasNewBookings(false)} />
         <div className="adm-bar-actions">
           <select
@@ -221,8 +243,10 @@ export function AdminShell() {
 
       <div className="adm-shell">
         <nav className="adm-tabs" aria-label={t("admin.tabs.navigation", "Admin sections")}>
-          {adminTabItems.map((item) => (
-            <button
+          {adminTabItems.map((item) => {
+            const TabIcon = item.icon;
+            return (
+              <button
               key={item.key}
               type="button"
               className={activeTab === item.key ? "is-active" : undefined}
@@ -232,27 +256,31 @@ export function AdminShell() {
                 event.currentTarget.scrollIntoView({ block: "nearest", inline: "center" });
               }}
             >
+              <TabIcon size={16} aria-hidden="true" />
               {item.label}
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </nav>
 
-        {activeTab === "bookings" && <AdminBookingsTab showToast={showToast} newBookingIds={newBookingIds} />}
-        {activeTab === "photos" && <AdminPhotosTab showToast={showToast} />}
-        {activeTab === "packages" && <AdminPackagesTab showToast={showToast} />}
-        {activeTab === "services" && <AdminServicesTab showToast={showToast} />}
-        {activeTab === "faq" && <AdminFaqTab showToast={showToast} />}
-        {activeTab === "copy" && <AdminCopyTab showToast={showToast} />}
-        {activeTab === "stats" && <AdminStats />}
-        {activeTab === "vitals" && <AdminVitalsTab />}
-        {activeTab === "errors" && <AdminErrorReportsTab />}
-        {activeTab === "courses" && <AdminCoursesTab showToast={showToast} />}
-        {activeTab === "presets" && <AdminPresetsTab showToast={showToast} />}
-        {activeTab === "workshops" && <AdminWorkshopsTab showToast={showToast} />}
-        {activeTab === "merchandise" && <AdminMerchandiseTab showToast={showToast} />}
-        {activeTab === "auditLog" && <AdminAuditLogTab onShowToast={showToast} />}
-        {activeTab === "moderation" && <AdminPhotoModerationQueue onShowToast={showToast} />}
-        {activeTab === "reports" && <AdminReportsTab />}
+        <main className="adm-workspace" id={`admin-panel-${activeTab}`}>
+          {activeTab === "bookings" && <AdminBookingsTab showToast={showToast} newBookingIds={newBookingIds} />}
+          {activeTab === "photos" && <AdminPhotosTab showToast={showToast} />}
+          {activeTab === "packages" && <AdminPackagesTab showToast={showToast} />}
+          {activeTab === "services" && <AdminServicesTab showToast={showToast} />}
+          {activeTab === "faq" && <AdminFaqTab showToast={showToast} />}
+          {activeTab === "copy" && <AdminCopyTab showToast={showToast} />}
+          {activeTab === "stats" && <AdminStats />}
+          {activeTab === "vitals" && <AdminVitalsTab />}
+          {activeTab === "errors" && <AdminErrorReportsTab />}
+          {activeTab === "courses" && <AdminCoursesTab showToast={showToast} />}
+          {activeTab === "presets" && <AdminPresetsTab showToast={showToast} />}
+          {activeTab === "workshops" && <AdminWorkshopsTab showToast={showToast} />}
+          {activeTab === "merchandise" && <AdminMerchandiseTab showToast={showToast} />}
+          {activeTab === "auditLog" && <AdminAuditLogTab onShowToast={showToast} />}
+          {activeTab === "moderation" && <AdminPhotoModerationQueue onShowToast={showToast} />}
+          {activeTab === "reports" && <AdminReportsTab />}
+        </main>
       </div>
     </div>
   );
