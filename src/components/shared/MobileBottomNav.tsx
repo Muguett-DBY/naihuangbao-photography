@@ -1,4 +1,4 @@
-import { CalendarCheck, Home, Images, Sparkles, UserRound } from "lucide-react";
+import { Aperture, CalendarCheck, Home, Images, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
@@ -64,7 +64,7 @@ export function MobileBottomNav() {
         to="/editor"
         label={t("mobileNav.editor")}
         active={pathname === "/editor"}
-        icon={<Sparkles size={21} aria-hidden="true" />}
+        icon={<Aperture size={21} aria-hidden="true" />}
       />
       <MobileNavLink
         to={user ? "/dashboard" : "/login"}

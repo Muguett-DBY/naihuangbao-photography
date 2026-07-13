@@ -372,9 +372,9 @@
     "startBooking": "지금 예약하기"
   },
   "themeToggle": {
-    "light": "☀️ 라이트",
-    "dark": "🌙 다크",
-    "system": "💻 시스템",
+    "light": "라이트",
+    "dark": "다크",
+    "system": "시스템",
     "label": "현재: {{theme}}, 클릭하여 전환"
   },
   "moodToggle": {

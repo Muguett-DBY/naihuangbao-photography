@@ -1,104 +1,80 @@
+import { Monitor, Moon, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { safeLocalStorage } from "../lib/browser-storage";
 
 type Theme = "light" | "dark" | "system";
 
+const FIELD_NOTES_LIGHT = {
+  "--ink": "#17201b",
+  "--newsprint": "#f4f0e7",
+  "--paper": "#fffdf8",
+  "--moss": "#355c4b",
+  "--moss-dark": "#234336",
+  "--coral": "#d95f4b",
+  "--coral-dark": "#ad3f31",
+  "--sky-note": "#b9d7dc",
+  "--sun-note": "#e6c867",
+  "--text-muted": "#667069",
+  "--hairline": "rgba(23, 32, 27, 0.18)",
+} as const;
+
+const FIELD_NOTES_DARK = {
+  "--ink": "#f4f0e7",
+  "--newsprint": "#121915",
+  "--paper": "#1b2520",
+  "--moss": "#83a995",
+  "--moss-dark": "#b8d1c3",
+  "--coral": "#ef806e",
+  "--coral-dark": "#f29a8b",
+  "--sky-note": "#38565a",
+  "--sun-note": "#b29a4f",
+  "--text-muted": "#b6c0ba",
+  "--hairline": "rgba(244, 240, 231, 0.2)",
+} as const;
+
+const FIELD_NOTE_ACCENTS_LIGHT = {
+  "--sky-note": "#c8dfe2",
+  "--sun-note": "#ead276",
+} as const;
+
+const FIELD_NOTE_ACCENTS_DARK = {
+  "--sky-note": "#456367",
+  "--sun-note": "#bea75c",
+} as const;
+
 function getStoredTheme(): Theme {
   const storedTheme = safeLocalStorage.getItem("theme");
   return storedTheme === "light" || storedTheme === "dark" ? storedTheme : "system";
 }
 
-/* ══════════════════════════════════════════════
-   Magazine (default) palettes
-   ══════════════════════════════════════════════ */
-const MAGAZINE_DARK = {
-  "--custard-bg": "#2D201A",
-  "--custard-cream": "#3A2A22",
-  "--custard-soft": "#4A352C",
-  "--paper-white": "#33241E",
-  "--caramel-text": "#D4B8A8",
-  "--caramel-deep": "#E8D4C8",
-  "--caramel-muted": "#BFA392",
-  "--caramel-ink": "#F0E4DC",
-  "--warm-border": "rgba(255, 210, 184, 0.12)",
-  "--peach-accent": "#E89A80",
-  "--peach-soft": "#C47A60",
-  "--sage-mist": "#4A5A4A",
-  "--sage-text": "#A8BEA0",
-} as const;
-
-const MAGAZINE_LIGHT = {
-  "--custard-bg": "#FEF3DD",
-  "--custard-cream": "#FFF9EC",
-  "--custard-soft": "#FFE8C5",
-  "--paper-white": "#FFFDF7",
-  "--caramel-text": "#8B5E4A",
-  "--caramel-deep": "#5F3C31",
-  "--caramel-muted": "#9C7664",
-  "--caramel-ink": "#442B24",
-  "--warm-border": "rgba(139, 94, 74, 0.14)",
-  "--peach-accent": "#FFB8A1",
-  "--peach-soft": "#FFD2B8",
-  "--sage-mist": "#DDE7D7",
-  "--sage-text": "#65785F",
-} as const;
-
-/* ══════════════════════════════════════════════
-   Cute / Animal Island palettes
-   ══════════════════════════════════════════════ */
-const CUTE_DARK = {
-  "--custard-bg": "#2d2820",
-  "--custard-cream": "#3a342a",
-  "--custard-soft": "#4a4030",
-  "--paper-white": "#332c22",
-  "--caramel-text": "#D4C4B0",
-  "--caramel-deep": "#E0D4C0",
-  "--caramel-muted": "#A89A84",
-  "--caramel-ink": "#F0E8D8",
-  "--warm-border": "rgba(200, 184, 160, 0.12)",
-  "--peach-accent": "#3dd4c6",
-  "--peach-soft": "#5CE0D4",
-  "--sage-mist": "#5a7a6a",
-  "--sage-text": "#8ab8a0",
-} as const;
-
-const CUTE_LIGHT = {
-  "--custard-bg": "#f8f8f0",
-  "--custard-cream": "#fdfdf5",
-  "--custard-soft": "#f0e8d8",
-  "--paper-white": "#fffdf7",
-  "--caramel-text": "#794f27",
-  "--caramel-deep": "#5a3a1a",
-  "--caramel-muted": "#9f927d",
-  "--caramel-ink": "#4a3018",
-  "--warm-border": "rgba(121, 79, 39, 0.14)",
-  "--peach-accent": "#19c8b9",
-  "--peach-soft": "#3dd4c6",
-  "--sage-mist": "#82d5bb",
-  "--sage-text": "#5c8a7a",
-} as const;
-
 function getMood() {
   return document.documentElement.getAttribute("data-mood") as "cute" | "magazine" | null;
 }
 
-function pickPalette(isDark: boolean) {
-  const mood = getMood();
-  if (mood === "cute") return isDark ? CUTE_DARK : CUTE_LIGHT;
-  return isDark ? MAGAZINE_DARK : MAGAZINE_LIGHT;
+function pickPalette(isDark: boolean): Record<string, string> {
+  const base = isDark ? FIELD_NOTES_DARK : FIELD_NOTES_LIGHT;
+  if (getMood() !== "cute") return base;
+  return {
+    ...base,
+    ...(isDark ? FIELD_NOTE_ACCENTS_DARK : FIELD_NOTE_ACCENTS_LIGHT),
+  };
 }
 
 function applyVars(root: HTMLElement, vars: Record<string, string>) {
-  for (const [key, val] of Object.entries(vars)) {
-    root.style.setProperty(key, val);
+  for (const [key, value] of Object.entries(vars)) {
+    root.style.setProperty(key, value);
   }
-  root.style.setProperty("background", "var(--custard-bg)");
-  root.style.setProperty("color", "var(--caramel-text)");
+  root.style.setProperty("background", "var(--newsprint)");
+  root.style.setProperty("color", "var(--ink)");
 }
 
 function clearVars(root: HTMLElement) {
-  root.removeAttribute("style");
+  for (const key of Object.keys(FIELD_NOTES_LIGHT)) {
+    root.style.removeProperty(key);
+  }
+  root.style.removeProperty("background");
+  root.style.removeProperty("color");
 }
 
 function watchSystem(handler: (isDark: boolean) => void) {
@@ -114,19 +90,15 @@ export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(getStoredTheme);
   const systemCleanup = useRef<(() => void) | null>(null);
 
-  // Re-apply when mood changes
   const reapply = useCallback(() => {
     const root = document.documentElement;
     const storedTheme = getStoredTheme();
     if (storedTheme === "system") {
       clearVars(root);
-      // Re-fire system handler
-      if (systemCleanup.current) {
-        systemCleanup.current();
-        systemCleanup.current = null;
-      }
+      systemCleanup.current?.();
       systemCleanup.current = watchSystem((isDark) => {
         applyVars(root, pickPalette(isDark));
+        root.setAttribute("data-theme", isDark ? "dark" : "light");
       });
     } else {
       applyVars(root, storedTheme === "dark" ? pickPalette(true) : pickPalette(false));
@@ -140,17 +112,12 @@ export function ThemeToggle() {
 
   useEffect(() => {
     const root = document.documentElement;
-
-    // Clean up previous system listener
-    if (systemCleanup.current) {
-      systemCleanup.current();
-      systemCleanup.current = null;
-    }
+    systemCleanup.current?.();
+    systemCleanup.current = null;
 
     if (theme === "system") {
       safeLocalStorage.removeItem("theme");
       clearVars(root);
-      root.removeAttribute("data-theme");
       systemCleanup.current = watchSystem((isDark) => {
         applyVars(root, pickPalette(isDark));
         root.setAttribute("data-theme", isDark ? "dark" : "light");
@@ -158,29 +125,29 @@ export function ThemeToggle() {
     } else {
       safeLocalStorage.setItem("theme", theme);
       applyVars(root, theme === "dark" ? pickPalette(true) : pickPalette(false));
-      root.setAttribute("data-theme", theme === "dark" ? "dark" : "light");
+      root.setAttribute("data-theme", theme);
     }
 
-    return () => {
-      if (systemCleanup.current) systemCleanup.current();
-    };
+    return () => systemCleanup.current?.();
   }, [theme]);
 
   const cycle = () => {
-    setTheme((t) => (t === "light" ? "dark" : t === "dark" ? "system" : "light"));
+    setTheme((current) => (current === "light" ? "dark" : current === "dark" ? "system" : "light"));
   };
 
   const themeLabel =
     theme === "light" ? t("themeToggle.light") : theme === "dark" ? t("themeToggle.dark") : t("themeToggle.system");
+  const ThemeIcon = theme === "light" ? Sun : theme === "dark" ? Moon : Monitor;
 
   return (
     <button
       className="theme-toggle"
+      type="button"
       onClick={cycle}
       title={themeLabel}
       aria-label={t("themeToggle.label", { theme: themeLabel })}
     >
-      {theme === "light" ? "☀️" : theme === "dark" ? "🌙" : "💻"}
+      <ThemeIcon size={17} aria-hidden="true" />
     </button>
   );
 }

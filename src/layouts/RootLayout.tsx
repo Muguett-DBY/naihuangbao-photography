@@ -1,7 +1,6 @@
 import { Suspense, lazy, useCallback, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LoadingScreen } from "../components/LoadingScreen";
 import { PublicChatLauncher } from "../components/PublicChatLauncher";
 import { PublicPhotosProvider } from "../hooks/usePublicPhotos";
 import { SiteContentProvider } from "../hooks/useSiteContent";
@@ -18,6 +17,7 @@ import { PwaUpdateBanner } from "../components/PwaUpdateBanner";
 import { OfflineFallback } from "../components/OfflineFallback";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
 import { RouteHashScroller } from "../components/shared/RouteHashScroller";
+import { RouteLoadingState } from "../components/shared/RouteLoadingState";
 
 // Heavy visual effects and animations are split into a separate chunk
 // so the initial bundle only ships React + i18n + router. These activate
@@ -64,12 +64,22 @@ export function RootLayout() {
           className="skip-link skip-link--secondary"
           onClick={(e) => {
             e.preventDefault();
-            const target = document.getElementById("site-navigation-menu");
+            const drawerNavigation = document.getElementById("site-navigation-menu");
+            const hamburger = document.querySelector<HTMLElement>(".hamburger");
+            const inlineNavigation = document.querySelector<HTMLElement>(".nav-menu--inline");
+            const hamburgerIsVisible = hamburger !== null && window.getComputedStyle(hamburger).display !== "none";
+            const target = drawerNavigation ?? (hamburgerIsVisible ? hamburger : inlineNavigation);
             if (target) {
-              const focusable = target.querySelector<HTMLElement>("a[href]");
-              (focusable ?? target).setAttribute("tabindex", "-1");
-              (focusable ?? target).focus();
-              (focusable ?? target).removeAttribute("tabindex");
+              const focusable = target.matches("a[href], button:not([disabled])")
+                ? target
+                : target.querySelector<HTMLElement>("a[href], button:not([disabled])");
+              if (focusable) {
+                focusable.focus();
+              } else {
+                target.setAttribute("tabindex", "-1");
+                target.focus();
+                target.removeAttribute("tabindex");
+              }
             }
           }}
         >
@@ -91,7 +101,6 @@ export function RootLayout() {
           {t("common.skipToFooter", "跳转到页脚")}
         </a>
       </nav>
-      <LoadingScreen />
       {!isEditor && (
         <ErrorBoundary fallback={null}>
           <Suspense fallback={null}>
@@ -104,40 +113,40 @@ export function RootLayout() {
           <SiteContentProvider>
             <PublicPhotosProvider>
               <ToastProvider>
-              <Header />
-              {!isEditor && (
-                <Suspense fallback={null}>
-                  <OfflineBookingRecovery isOnline={isOnline} />
-                </Suspense>
-              )}
-              <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
-                <ErrorBoundary>
-                  <Suspense fallback={<div style={{ minHeight: "60vh" }} />}>
-                    <Outlet />
+                <Header onOpenChat={() => setChatOpen(true)} />
+                {!isEditor && (
+                  <Suspense fallback={null}>
+                    <OfflineBookingRecovery isOnline={isOnline} />
                   </Suspense>
-                </ErrorBoundary>
-              </main>
-              <Footer />
-              {!isEditor && <MobileBottomNav />}
-              {showPublicChat && (
-                <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
-                  <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
-                  {chatOpen ? (
-                    <Suspense
-                      fallback={
-                        <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
-                          {t("common.loading")}
-                        </div>
-                      }
-                    >
-                      <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
+                )}
+                <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
+                  <ErrorBoundary>
+                    <Suspense fallback={<RouteLoadingState />}>
+                      <Outlet />
                     </Suspense>
-                  ) : null}
-                </div>
-              )}
-      <ScrollToTop />
-      <PwaInstallBanner />
-      </ToastProvider>
+                  </ErrorBoundary>
+                </main>
+                {showPublicChat && (
+                  <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
+                    <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
+                    {chatOpen ? (
+                      <Suspense
+                        fallback={
+                          <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
+                            {t("common.loading")}
+                          </div>
+                        }
+                      >
+                        <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
+                      </Suspense>
+                    ) : null}
+                  </div>
+                )}
+                <Footer />
+                {!isEditor && <MobileBottomNav />}
+                <ScrollToTop />
+                <PwaInstallBanner />
+              </ToastProvider>
             </PublicPhotosProvider>
           </SiteContentProvider>
         </BookingProvider>

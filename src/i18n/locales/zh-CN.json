@@ -392,9 +392,9 @@
     "startBooking": "立即预约"
   },
   "themeToggle": {
-    "light": "🌞 浅色",
-    "dark": "🌙 深色",
-    "system": "🖥️ 跟随系统",
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统",
     "label": "当前：{{theme}}，点击切换"
   },
   "moodToggle": {

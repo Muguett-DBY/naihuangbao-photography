@@ -1,3 +1,4 @@
+import { NotebookPen, Newspaper } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { safeLocalStorage } from "../lib/browser-storage";
@@ -16,10 +17,8 @@ export function MoodToggle() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-mood", mood);
-    // Trigger theme re-apply so ThemeToggle picks the right palette
     window.dispatchEvent(new CustomEvent("moodchange", { detail: mood }));
 
-    // Add transition class after initial render (skip the first time)
     if (!initialised.current) {
       requestAnimationFrame(() => {
         document.documentElement.classList.add("style-transition");
@@ -34,14 +33,18 @@ export function MoodToggle() {
     safeLocalStorage.setItem("mood", next);
   };
 
+  const label = mood === "magazine" ? t("moodToggle.labelMagazine") : t("moodToggle.labelCute");
+  const MoodIcon = mood === "magazine" ? Newspaper : NotebookPen;
+
   return (
     <button
       className="mood-toggle"
+      type="button"
       onClick={toggle}
       title={mood === "magazine" ? t("moodToggle.magazine") : t("moodToggle.cute")}
-      aria-label={mood === "magazine" ? t("moodToggle.labelMagazine") : t("moodToggle.labelCute")}
+      aria-label={label}
     >
-      {mood === "magazine" ? "🎨" : "🌿"}
+      <MoodIcon size={17} aria-hidden="true" />
     </button>
   );
 }
