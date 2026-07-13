@@ -1,9 +1,8 @@
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { readThemePreference, type ThemePreference } from "../lib/appearance-preferences";
 import { safeLocalStorage } from "../lib/browser-storage";
-
-type Theme = "light" | "dark" | "system";
 
 const FIELD_NOTES_LIGHT = {
   "--ink": "#17201b",
@@ -42,11 +41,6 @@ const FIELD_NOTE_ACCENTS_DARK = {
   "--sky-note": "#456367",
   "--sun-note": "#bea75c",
 } as const;
-
-function getStoredTheme(): Theme {
-  const storedTheme = safeLocalStorage.getItem("theme");
-  return storedTheme === "light" || storedTheme === "dark" ? storedTheme : "system";
-}
 
 function getMood() {
   return document.documentElement.getAttribute("data-mood") as "cute" | "magazine" | null;
@@ -87,12 +81,12 @@ function watchSystem(handler: (isDark: boolean) => void) {
 
 export function ThemeToggle() {
   const { t } = useTranslation();
-  const [theme, setTheme] = useState<Theme>(getStoredTheme);
+  const [theme, setTheme] = useState<ThemePreference>(readThemePreference);
   const systemCleanup = useRef<(() => void) | null>(null);
 
   const reapply = useCallback(() => {
     const root = document.documentElement;
-    const storedTheme = getStoredTheme();
+    const storedTheme = readThemePreference();
     if (storedTheme === "system") {
       clearVars(root);
       systemCleanup.current?.();

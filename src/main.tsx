@@ -3,11 +3,13 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router";
+import { initializeAppearancePreferences } from "./lib/appearance-preferences";
 import { initWebVitals } from "./utils/webVitals";
 import "./i18n";
 import "./styles/global.css";
 import "./styles/animal-theme.css";
 
+initializeAppearancePreferences();
 initWebVitals();
 
 // Idle-time prefetch of key gallery images on the page that presents them.

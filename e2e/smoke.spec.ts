@@ -200,6 +200,7 @@ test.describe("shoot.custard.top", () => {
 
   test("深色模式切换", async ({ page }) => {
     await page.goto("/");
+    await page.locator(".nav-utility-trigger").click();
     await page.locator(".theme-toggle").click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await page.locator(".theme-toggle").click();
