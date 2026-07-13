@@ -109,9 +109,9 @@ Desktop navigation is a quiet publication masthead:
 - Language, theme, and mood controls move into one accessible utility menu.
 
 Mobile navigation uses a compact top masthead plus a five-destination bottom rail.
-The chat launcher is positioned above the rail without covering it. The full menu
-is a true drawer with focus trapping, current-route state, account actions, and
-utility controls.
+The chat action lives inside the full navigation drawer so it cannot cover the
+rail or a page action. The full menu is a true drawer with focus trapping,
+current-route state, account actions, chat access, and utility controls.
 
 ## Motion Language
 
@@ -244,4 +244,3 @@ Completion requires source tests, type checking, the full unit suite, production
 build and performance gates, Playwright end-to-end flows, six-width screenshots,
 keyboard and reduced-motion checks, console/network inspection, final diff review,
 push to `main`, successful GitHub Actions, and live Cloudflare verification.
-
