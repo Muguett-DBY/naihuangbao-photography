@@ -78,10 +78,10 @@ describe("editorial design system", () => {
     expect(shellCss).toMatch(/\.mobile-bottom-nav__item\s*\{[^{}]*min-width: 44px;[^{}]*min-height: 56px;/s);
   });
 
-  it("keeps desktop footer and chat utilities in distinct fixed footprints", () => {
+  it("keeps the shared scroll-to-top and chat utilities in distinct fixed footprints", () => {
     const shellCss = read("src/styles/sections.css");
 
-    expect(shellCss).toMatch(/\.site-footer \.scroll-top\s*\{[^{}]*right: auto;[^{}]*left: 24px;/s);
+    expect(shellCss).toMatch(/\.nhb-scroll-top\s*\{[^{}]*right: auto;[^{}]*left: 24px;/s);
   });
 
   it("renders the configured city in the editorial footer line", () => {

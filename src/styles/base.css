@@ -156,13 +156,15 @@
 }
 
 /* Smooth mood-switch transition */
-:root.style-transition *,
-:root.style-transition *::before,
-:root.style-transition *::after {
-  transition: background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-              color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-              border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
+@media (prefers-reduced-motion: no-preference) {
+  :root.style-transition *,
+  :root.style-transition *::before,
+  :root.style-transition *::after {
+    transition: background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
 }
 
 /* ══════════════════════════════════════════════

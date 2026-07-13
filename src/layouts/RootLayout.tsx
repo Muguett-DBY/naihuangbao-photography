@@ -27,6 +27,15 @@ const GlobalEffects = lazy(() => import("../components/GlobalEffects"));
 const PublicChatWidget = lazy(() => import("../components/PublicChatWidget"));
 const OfflineBookingRecovery = lazy(() => import("../components/OfflineBookingRecovery"));
 
+function focusWithTemporaryTabIndex(target: HTMLElement) {
+  const hadTabIndex = target.hasAttribute("tabindex");
+  if (!hadTabIndex) target.setAttribute("tabindex", "-1");
+  target.focus();
+  if (!hadTabIndex) {
+    target.addEventListener("blur", () => target.removeAttribute("tabindex"), { once: true });
+  }
+}
+
 export function RootLayout() {
   const { t } = useTranslation();
   const location = useLocation();
@@ -36,11 +45,7 @@ export function RootLayout() {
   const handleSkipClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     const main = document.getElementById("main-content");
-    if (main) {
-      main.setAttribute("tabindex", "-1");
-      main.focus();
-      main.removeAttribute("tabindex");
-    }
+    if (main) focusWithTemporaryTabIndex(main);
   }, []);
 
   const isEditor = location.pathname === "/editor";
@@ -76,9 +81,7 @@ export function RootLayout() {
               if (focusable) {
                 focusable.focus();
               } else {
-                target.setAttribute("tabindex", "-1");
-                target.focus();
-                target.removeAttribute("tabindex");
+                focusWithTemporaryTabIndex(target);
               }
             }
           }}
@@ -91,11 +94,7 @@ export function RootLayout() {
           onClick={(e) => {
             e.preventDefault();
             const target = document.getElementById("site-footer");
-            if (target) {
-              target.setAttribute("tabindex", "-1");
-              target.focus();
-              target.removeAttribute("tabindex");
-            }
+            if (target) focusWithTemporaryTabIndex(target);
           }}
         >
           {t("common.skipToFooter", "跳转到页脚")}

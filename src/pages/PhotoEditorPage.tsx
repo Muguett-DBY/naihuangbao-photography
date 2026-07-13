@@ -79,7 +79,7 @@ export default function PhotoEditorPage() {
             </div>
           </header>
 
-          <main className="editor-light-main" aria-labelledby="editor-light-title">
+          <section className="editor-light-main" aria-labelledby="editor-light-title">
             <div className="editor-canvas--empty">
               <div className="editor-empty-panel">
                 <span className="editor-empty-kicker">{t("editor.emptyKicker", "Local editing studio")}</span>
@@ -96,7 +96,7 @@ export default function PhotoEditorPage() {
                 </div>
               </div>
             </div>
-          </main>
+          </section>
         </div>
       </ErrorBoundary>
     </PageTransition>

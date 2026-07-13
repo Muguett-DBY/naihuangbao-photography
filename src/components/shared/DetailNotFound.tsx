@@ -15,13 +15,13 @@ export const DetailNotFound = memo(function DetailNotFound({ message, backTo, ba
 
   return (
     <PageTransition>
-      <main className="detail-state detail-state--not-found" role="status" aria-live="polite">
+      <section className="detail-state detail-state--not-found" role="status" aria-live="polite">
         <span className="detail-state-marker">ARCHIVE / 404</span>
         <FileQuestion size={36} aria-hidden="true" />
         <h1>{message}</h1>
         <p>{t("common.detailNotFoundHint")}</p>
         <DetailBackLink to={backTo} label={backLabel} />
-      </main>
+      </section>
     </PageTransition>
   );
 });

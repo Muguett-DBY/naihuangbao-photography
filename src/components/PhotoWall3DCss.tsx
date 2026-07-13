@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { X, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
@@ -17,6 +17,7 @@ const PhotoCard = memo(function PhotoCard({
   height,
   index,
   isFocused,
+  reduceMotion,
   onClick,
 }: {
   url: string | null;
@@ -27,6 +28,7 @@ const PhotoCard = memo(function PhotoCard({
   height: number;
   index: number;
   isFocused: boolean;
+  reduceMotion: boolean;
   onClick: () => void;
 }) {
   if (url) {
@@ -51,7 +53,7 @@ const PhotoCard = memo(function PhotoCard({
             ? "0 8px 32px rgba(0,0,0,0.35)"
             : "0 4px 16px rgba(0,0,0,0.15)",
           opacity: isFocused ? 1 : 0.92,
-          transition: "box-shadow 0.4s ease, opacity 0.3s ease",
+          transition: reduceMotion ? "none" : "box-shadow 0.4s ease, opacity 0.3s ease",
         }}
       >
         <img
@@ -98,9 +100,11 @@ const PhotoCard = memo(function PhotoCard({
    ══════════════════════════════════════════════ */
 const FocusOverlay = memo(function FocusOverlay({
   photo,
+  reduceMotion,
   onClose,
 }: {
   photo: PhotoItem;
+  reduceMotion: boolean;
   onClose: () => void;
 }) {
   const { t } = useTranslation();
@@ -123,10 +127,10 @@ const FocusOverlay = memo(function FocusOverlay({
   return (
     <motion.div
       className="photo-wall-3d-overlay"
-      initial={{ opacity: 0 }}
+      initial={reduceMotion ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
+      exit={reduceMotion ? undefined : { opacity: 0 }}
+      transition={{ duration: reduceMotion ? 0 : 0.3 }}
       onClick={handleBackdrop}
       style={{
         position: "absolute",
@@ -143,9 +147,9 @@ const FocusOverlay = memo(function FocusOverlay({
     >
       <motion.div
         className="photo-wall-3d-info"
-        initial={{ y: 20, opacity: 0 }}
+        initial={reduceMotion ? false : { y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.15, duration: 0.4 }}
+        transition={{ delay: reduceMotion ? 0 : 0.15, duration: reduceMotion ? 0 : 0.4 }}
         style={{
           display: "flex",
           flexDirection: "column",
@@ -225,6 +229,7 @@ const FocusOverlay = memo(function FocusOverlay({
    ══════════════════════════════════════════════ */
 export const PhotoWall3DCss = memo(function PhotoWall3DCss() {
   const { photos } = usePublicPhotos();
+  const reduceMotion = useReducedMotion();
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const [rotation, setRotation] = useState(0);
   const velocityRef = useRef(0);
@@ -265,6 +270,11 @@ export const PhotoWall3DCss = memo(function PhotoWall3DCss() {
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
+    if (reduceMotion) {
+      rotationRef.current = 0;
+      setRotation(0);
+      return;
+    }
 
     let lastTime = performance.now();
     let running = false;
@@ -335,7 +345,7 @@ export const PhotoWall3DCss = memo(function PhotoWall3DCss() {
       document.removeEventListener("visibilitychange", onVisibilityChange);
       stopLoop();
     };
-  }, [focusedIndex, count]);
+  }, [focusedIndex, count, reduceMotion]);
 
   /* ── Pointer handlers ── */
   const onPointerDown = useCallback(
@@ -374,10 +384,10 @@ export const PhotoWall3DCss = memo(function PhotoWall3DCss() {
   return (
     <motion.section
       className="photo-wall-3d"
-      initial={{ opacity: 0 }}
+      initial={reduceMotion ? false : { opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
-      transition={{ duration: 1 }}
+      transition={{ duration: reduceMotion ? 0 : 1 }}
     >
       <div
         ref={stageRef}
@@ -407,6 +417,7 @@ export const PhotoWall3DCss = memo(function PhotoWall3DCss() {
           }}
         >
           <div
+            className="photo-wall-3d-rotor"
             style={{
               position: "absolute",
               left: "50%",
@@ -429,6 +440,7 @@ export const PhotoWall3DCss = memo(function PhotoWall3DCss() {
                 height={item.h}
                 index={item.photoIdx}
                 isFocused={focusedIndex === i}
+                reduceMotion={Boolean(reduceMotion)}
                 onClick={() => handleFocusChange(i)}
               />
             ))}
@@ -438,6 +450,7 @@ export const PhotoWall3DCss = memo(function PhotoWall3DCss() {
         {focusedPhoto && (
           <FocusOverlay
             photo={focusedPhoto}
+            reduceMotion={Boolean(reduceMotion)}
             onClose={() => setFocusedIndex(null)}
           />
         )}
