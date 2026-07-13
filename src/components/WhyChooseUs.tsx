@@ -1,5 +1,4 @@
 import { Camera, Heart, MessageCircle, ShieldCheck } from "lucide-react";
-import { Card } from "animal-island-ui";
 import { useSiteContent } from "../hooks/useSiteContent";
 import type { WhyCardIcon } from "../types/content";
 import { Section } from "./Section";
@@ -25,11 +24,12 @@ export function WhyChooseUs() {
         {whyCards.map((card, index) => {
           const Icon = icons[card.icon];
           return (
-            <Card className="why-card" key={card.title} data-index={index + 1}>
+            <article className="why-card" key={card.title} data-index={index + 1}>
+              <span className="why-card-index">{String(index + 1).padStart(2, "0")}</span>
               <div className="why-icon"><Icon size={22} aria-hidden="true" /></div>
               <h3>{card.title}</h3>
               <p>{card.detail}</p>
-            </Card>
+            </article>
           );
         })}
       </div>

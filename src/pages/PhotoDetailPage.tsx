@@ -42,14 +42,13 @@ const relatedThumb = (src: string) => {
 
 export function PhotoDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const { photos } = usePublicPhotos();
-  const lang = i18n.language;
   const [showComparison, setShowComparison] = useState(false);
 
   const photo = useMemo(() => photos.find((p) => p.id === id), [photos, id]);
-  const { recordVisit, entries: recentlyViewed, clear: clearRecentlyViewed } = useRecentlyViewed();
+  const { recordVisit } = useRecentlyViewed();
   const navigate = useNavigate();
 
   // Adjacent photos for swipe navigation
@@ -170,35 +169,39 @@ export function PhotoDetailPage() {
   return (
     <PageTransition ref={rootRef}>
       <section className="photo-detail-hero" id="top">
-        <div className="photo-detail-heading">
-          <DetailBackLink to="/gallery" label={t("photoDetail.backToGallery")} />
-          <h1>{photo.title}</h1>
-        </div>
-        <div className="photo-detail-cover-shell" ref={swipeRef}>
-          {(adjacent.prev || adjacent.next) && (
-            <div className="photo-detail-nav-hint" aria-hidden="true">
-              {adjacent.prev && (
-                <span className="photo-detail-nav-arrow photo-detail-nav-arrow--prev">
-                  <ChevronLeft size={18} />
-                </span>
-              )}
-              {adjacent.next && (
-                <span className="photo-detail-nav-arrow photo-detail-nav-arrow--next">
-                  <ChevronRight size={18} />
-                </span>
-              )}
-            </div>
-          )}
-          <PinchZoom className="photo-detail-cover-frame">
-            <ImageWithFallback
-              src={galleryThumb(photo.imageUrl)}
-              alt={photo.alt}
-              title={photo.title}
-              tone="cream"
-              priority={true}
-              sizes="(max-width: 768px) 100vw, 960px"
-            />
-          </PinchZoom>
+        <div className="photo-detail-stage">
+          <div className="photo-detail-cover-shell" ref={swipeRef}>
+            {(adjacent.prev || adjacent.next) && (
+              <div className="photo-detail-nav-hint" aria-hidden="true">
+                {adjacent.prev && (
+                  <span className="photo-detail-nav-arrow photo-detail-nav-arrow--prev">
+                    <ChevronLeft size={18} />
+                  </span>
+                )}
+                {adjacent.next && (
+                  <span className="photo-detail-nav-arrow photo-detail-nav-arrow--next">
+                    <ChevronRight size={18} />
+                  </span>
+                )}
+              </div>
+            )}
+            <PinchZoom className="photo-detail-cover-frame">
+              <ImageWithFallback
+                src={galleryThumb(photo.imageUrl)}
+                alt={photo.alt}
+                title={photo.title}
+                tone="cream"
+                priority={true}
+                sizes="(max-width: 768px) 100vw, 68vw"
+              />
+            </PinchZoom>
+          </div>
+          <div className="photo-detail-heading">
+            <DetailBackLink to="/gallery" label={t("photoDetail.backToGallery")} />
+            <p className="photo-detail-kicker">01 / {photo.album || t(`gallery.filters.${photo.style}`, photo.style)}</p>
+            <h1>{photo.title}</h1>
+            <p className="photo-detail-heading-note">{photo.location}</p>
+          </div>
         </div>
         {(adjacent.prev || adjacent.next) && (
           <nav className="photo-detail-adjacent" aria-label={t("photoDetail.adjacentNav", "Adjacent photos")}>
@@ -340,7 +343,7 @@ export function PhotoDetailPage() {
         <section className="section-shell is-visible">
           <div className="photo-detail-related">
             <h2>{t("photoDetail.related")}</h2>
-            <div className="photo-detail-related-grid">
+            <div className="photo-detail-contact-sheet">
               {relatedPhotos.map((rp) => (
                 <Link
                   key={rp.id}

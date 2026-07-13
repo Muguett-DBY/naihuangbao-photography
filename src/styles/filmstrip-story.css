@@ -1,272 +1,174 @@
-/* ══════════════════════════════════════════════
-   Film Strip Storytelling Section
-   Scroll-driven horizontal photo narrative
-   ══════════════════════════════════════════════ */
-
-.filmstrip-story {
-  position: relative;
-  overflow: hidden;
-  background: var(--caramel-deep);
-  color: rgba(255, 253, 247, 0.88);
-  transition: background 0.45s ease;
+/* Field notes: editorial photo sequence in normal document flow. */
+.field-notes {
+  padding: clamp(56px, 8vw, 112px) var(--section-inline);
+  background: var(--ink);
+  color: var(--newsprint);
 }
 
-/* ── Section heading ── */
-.filmstrip-heading {
-  text-align: center;
-  padding: clamp(48px, 6vw, 80px) clamp(20px, 4vw, 56px) clamp(24px, 3vw, 40px);
+.field-notes-heading {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.32fr) minmax(0, 1fr);
+  gap: 24px;
+  width: min(1440px, 100%);
+  margin: 0 auto clamp(32px, 5vw, 64px);
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(244, 240, 231, 0.3);
 }
 
-.filmstrip-eyebrow {
-  display: inline-block;
-  margin-bottom: 10px;
-  font-family: var(--font-ui);
-  font-size: 11px;
+.field-notes-heading p {
+  margin: 8px 0 0;
+  color: var(--sun-note);
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 184, 161, 0.6);
 }
 
-.filmstrip-title {
+.field-notes-heading h2 {
+  max-width: 900px;
   margin: 0;
-  font-family: var(--font-display-cn);
-  font-size: clamp(28px, 4vw, 52px);
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: 0.02em;
-  color: #FFFDF7;
+  color: var(--newsprint);
+  font-family: var(--font-display);
+  font-size: 3.75rem;
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: 0;
+  text-wrap: balance;
 }
 
-/* ── Sticky scroll container ── */
-.filmstrip-container {
+.field-notes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 3vw, 44px) clamp(12px, 2vw, 28px);
+  width: min(1440px, 100%);
+  margin: 0 auto;
+}
+
+.field-note {
+  display: grid;
+  grid-template-rows: auto minmax(86px, auto);
+  min-width: 0;
+  color: inherit;
+}
+
+.field-note:nth-child(1),
+.field-note:nth-child(5) {
+  grid-column: span 2;
+}
+
+.field-note-image {
   position: relative;
-  width: 100%;
+  aspect-ratio: 4 / 5;
+  min-width: 0;
   overflow: hidden;
+  border: 1px solid rgba(244, 240, 231, 0.24);
+  background: var(--moss-dark);
 }
 
-.filmstrip-sticky {
-  position: sticky;
-  top: 0;
-  height: 100dvh;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
+.field-note:nth-child(1) .field-note-image,
+.field-note:nth-child(5) .field-note-image {
+  aspect-ratio: 16 / 10;
 }
 
-/* ── Horizontal track ── */
-.filmstrip-track {
-  display: flex;
-  gap: clamp(24px, 3vw, 48px);
-  padding: 0 clamp(20px, 5vw, 80px);
-  will-change: transform;
-}
-
-/* ── Individual filmstrip item ── */
-.filmstrip-item {
-  flex: 0 0 auto;
-  width: clamp(260px, 30vw, 400px);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  opacity: 0;
-  transform: translateX(80px);
-}
-
-.filmstrip-item.is-visible {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* ── Photo frame ── */
-.filmstrip-photo-frame {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow:
-    0 16px 48px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.06);
-  transform: perspective(800px) rotateY(-2deg);
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.filmstrip-item:hover .filmstrip-photo-frame {
-  transform: perspective(800px) rotateY(0deg);
-}
-
-.filmstrip-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.field-note-image .img-blur-wrap,
+.field-note-image picture,
+.field-note-image img {
   display: block;
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.filmstrip-item:hover .filmstrip-photo {
-  transform: scale(1.04);
-}
-
-/* Warm overlay gradient */
-.filmstrip-photo-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    transparent 40%,
-    rgba(95, 60, 49, 0.55) 100%
-  );
-  pointer-events: none;
-}
-
-/* Film strip sprocket holes decoration */
-.filmstrip-photo-frame::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 24px;
-  z-index: 2;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 18px,
-      rgba(0, 0, 0, 0.3) 18px,
-      rgba(0, 0, 0, 0.3) 22px,
-      transparent 22px,
-      transparent 40px
-    );
-  pointer-events: none;
-  opacity: 0.4;
-}
-
-.filmstrip-photo-frame::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 24px;
-  z-index: 2;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 18px,
-      rgba(0, 0, 0, 0.3) 18px,
-      rgba(0, 0, 0, 0.3) 22px,
-      transparent 22px,
-      transparent 40px
-    );
-  pointer-events: none;
-  opacity: 0.4;
-}
-
-/* ── Caption text ── */
-.filmstrip-caption {
-  padding: 0 4px;
-}
-
-.filmstrip-caption-number {
-  display: inline-block;
-  margin-bottom: 6px;
-  font-family: var(--font-ui);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 184, 161, 0.5);
-}
-
-.filmstrip-caption-text {
-  margin: 0;
-  font-family: var(--font-display-cn);
-  font-size: clamp(14px, 1.4vw, 18px);
-  font-weight: 600;
-  line-height: 1.55;
-  color: rgba(255, 253, 247, 0.82);
-}
-
-/* ── Film grain overlay ── */
-.filmstrip-grain {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  opacity: 0.12;
-  background: var(--paper-noise);
-  mix-blend-mode: overlay;
-}
-
-/* ── Scroll progress line ── */
-.filmstrip-progress {
-  position: absolute;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 4;
-  width: 120px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.filmstrip-progress-bar {
+  width: 100%;
   height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, rgba(255, 184, 161, 0.4), rgba(255, 184, 161, 0.8));
-  border-radius: 2px;
-  transition: width 0.1s linear;
 }
 
-/* ── Reduced motion ── */
+.field-note-image img {
+  object-fit: cover;
+  transition: transform 240ms ease;
+}
+
+.field-note:hover .field-note-image img {
+  transform: scale(1.015);
+}
+
+.field-note-caption {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 22px;
+  gap: 12px;
+  align-items: start;
+  padding: 14px 0 0;
+  border-top: 1px solid rgba(244, 240, 231, 0.2);
+}
+
+.field-note-caption span {
+  color: var(--sun-note);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.field-note-caption p {
+  margin: 0;
+  color: rgba(244, 240, 231, 0.86);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.field-note-caption svg {
+  color: var(--coral);
+}
+
+@media (max-width: 980px) {
+  .field-notes-heading h2 {
+    font-size: 3rem;
+  }
+
+  .field-notes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .field-note:nth-child(1),
+  .field-note:nth-child(5) {
+    grid-column: span 1;
+  }
+
+  .field-note:nth-child(1) .field-note-image,
+  .field-note:nth-child(5) .field-note-image {
+    aspect-ratio: 4 / 5;
+  }
+}
+
+@media (max-width: 640px) {
+  .field-notes {
+    padding-top: 52px;
+    padding-bottom: 64px;
+  }
+
+  .field-notes-heading {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .field-notes-heading h2 {
+    font-size: 2.45rem;
+  }
+
+  .field-notes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field-note {
+    grid-template-rows: auto auto;
+  }
+
+  .field-note-image,
+  .field-note:nth-child(1) .field-note-image,
+  .field-note:nth-child(5) .field-note-image {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .filmstrip-item {
-    opacity: 1;
-    transform: translateX(0);
+  .field-note-image img {
     transition: none;
   }
 
-  .filmstrip-photo-frame {
+  .field-note:hover .field-note-image img {
     transform: none;
-    transition: none;
-  }
-
-  .filmstrip-item:hover .filmstrip-photo-frame {
-    transform: none;
-  }
-
-  .filmstrip-photo {
-    transition: none;
-  }
-
-  .filmstrip-item:hover .filmstrip-photo {
-    transform: none;
-  }
-}
-
-/* ── Responsive ── */
-@media (max-width: 768px) {
-  .filmstrip-item {
-    width: clamp(220px, 65vw, 300px);
-  }
-
-  .filmstrip-heading {
-    padding: clamp(36px, 5vw, 56px) 20px clamp(16px, 2vw, 24px);
-  }
-
-  .filmstrip-progress {
-    bottom: 20px;
-    width: 80px;
-  }
-}
-
-@media (max-width: 480px) {
-  .filmstrip-item {
-    width: clamp(200px, 72vw, 280px);
   }
 }
