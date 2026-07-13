@@ -4,7 +4,10 @@ import { onRequestGet } from "./health";
 describe("GET /api/health", () => {
   it("returns an uncached JSON health response with API security headers", async () => {
     const response = await onRequestGet({
-      env: { AUTH_SECRET: "test-auth-secret-with-32-characters" },
+      env: {
+        AUTH_SECRET: "test-auth-secret-with-32-characters",
+        RATE_LIMIT_SECRET: "test-rate-limit-secret-with-32-characters",
+      },
     } as never);
     const body = await response.json();
 
@@ -23,7 +26,10 @@ describe("GET /api/health", () => {
     "reports degraded authentication readiness for %s AUTH_SECRET",
     async (authSecret) => {
       const response = await onRequestGet({
-        env: { AUTH_SECRET: authSecret },
+        env: {
+          AUTH_SECRET: authSecret,
+          RATE_LIMIT_SECRET: "test-rate-limit-secret-with-32-characters",
+        },
       } as never);
       const body = await response.json();
 
@@ -37,4 +43,41 @@ describe("GET /api/health", () => {
       });
     },
   );
+
+  it.each([undefined, "too-short"])(
+    "reports degraded rate-limit readiness for %s RATE_LIMIT_SECRET",
+    async (rateLimitSecret) => {
+      const response = await onRequestGet({
+        env: {
+          AUTH_SECRET: "test-auth-secret-with-32-characters",
+          RATE_LIMIT_SECRET: rateLimitSecret,
+        },
+      } as never);
+      const body = await response.json();
+
+      expect(response.status).toBe(503);
+      expect(response.headers.get("cache-control")).toBe("no-store");
+      expect(body).toEqual({
+        ok: false,
+        status: "degraded",
+        service: "naihuangbao-photography",
+        checks: { rateLimit: "misconfigured" },
+      });
+    },
+  );
+
+  it("reports every failed readiness check", async () => {
+    const response = await onRequestGet({ env: {} } as never);
+
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({
+      ok: false,
+      status: "degraded",
+      service: "naihuangbao-photography",
+      checks: {
+        auth: "misconfigured",
+        rateLimit: "misconfigured",
+      },
+    });
+  });
 });

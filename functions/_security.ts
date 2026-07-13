@@ -13,8 +13,9 @@ type RateLimitEnv = {
   DB?: D1DatabaseLike;
   RATE_LIMIT_SECRET?: string;
   CHAT_RATE_LIMIT_SECRET?: string;
-  OPENCODE_GO_API_KEY?: string;
 };
+
+type RateLimitSecretEnv = Pick<RateLimitEnv, "RATE_LIMIT_SECRET" | "CHAT_RATE_LIMIT_SECRET">;
 
 const publicMutationHeaderName = "x-nhb-public-action";
 
@@ -29,6 +30,15 @@ export function requirePublicMutationRequest(request: Request) {
 export function getRequiredAuthSecret(env: { AUTH_SECRET?: string }) {
   const secret = env.AUTH_SECRET?.trim();
   return secret && secret.length >= 32 ? secret : null;
+}
+
+export function getRequiredRateLimitSecret(env: RateLimitSecretEnv) {
+  for (const candidate of [env.RATE_LIMIT_SECRET, env.CHAT_RATE_LIMIT_SECRET]) {
+    const secret = candidate?.trim();
+    if (secret && secret.length >= 32) return secret;
+  }
+
+  return null;
 }
 
 export function authSecretUnavailable() {
@@ -59,7 +69,7 @@ export async function enforceRateLimit(
   const retryAfter = Math.max(1, windowStart + windowSeconds - nowSeconds);
   const ipHash = await hashRateLimitKey(
     `${namespace}:${readClientIp(request)}`,
-    env.RATE_LIMIT_SECRET ?? env.CHAT_RATE_LIMIT_SECRET ?? env.OPENCODE_GO_API_KEY,
+    getRequiredRateLimitSecret(env) ?? undefined,
   );
   const updatedAt = new Date(nowSeconds * 1000).toISOString();
 
@@ -114,11 +124,27 @@ function readClientIp(request: Request) {
 export async function hashRateLimitKey(value: string, secret?: string) {
   const encoder = new TextEncoder();
   const normalizedSecret = secret?.trim();
-  const bytes = encoder.encode(normalizedSecret ? `${normalizedSecret}:${value}` : value);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  const valueBytes = Uint8Array.from(encoder.encode(value)).buffer;
+  const digest = normalizedSecret
+    ? await signRateLimitKey(
+      valueBytes,
+      Uint8Array.from(encoder.encode(normalizedSecret)).buffer,
+    )
+    : await crypto.subtle.digest("SHA-256", valueBytes);
   return Array.from(new Uint8Array(digest))
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
+}
+
+async function signRateLimitKey(value: ArrayBuffer, secret: ArrayBuffer) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    secret,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  return crypto.subtle.sign("HMAC", key, value);
 }
 
 export function timingSafeEqual(a: string, b: string) {

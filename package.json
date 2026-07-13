@@ -16,6 +16,7 @@
     "bundle:analyze": "node scripts/analyze-bundle.mjs",
     "lint": "tsc -b --noEmit",
     "test": "vitest run",
+    "test:e2e": "playwright test -c e2e/playwright.config.ts",
     "cf:types": "wrangler types worker-configuration.d.ts",
     "seo:sync": "node --import tsx/esm scripts/sync-seo-shell.mjs",
     "perf:budget": "node scripts/check-performance-budget.mjs",

@@ -1,6 +1,6 @@
 import { contentKeys, defaultSiteContent, mergeSiteContent } from "../src/data/content";
 import type { PartialSiteContent, SiteContent } from "../src/types/content";
-import { hashRateLimitKey } from "./_security";
+import { getRequiredRateLimitSecret, hashRateLimitKey } from "./_security";
 
 type D1DatabaseLike = {
   prepare(query: string): {
@@ -15,6 +15,7 @@ type D1DatabaseLike = {
 
 export type ChatEnv = {
   OPENCODE_GO_API_KEY?: string;
+  RATE_LIMIT_SECRET?: string;
   CHAT_RATE_LIMIT_SECRET?: string;
   DB?: D1DatabaseLike;
 };
@@ -317,7 +318,10 @@ export async function enforcePublicChatRateLimit(request: Request, env: ChatEnv)
   const elapsedSeconds = nowSeconds - windowStart;
   const previousWeight = Math.max(0, 1 - elapsedSeconds / publicChatWindowSeconds);
   const retryAfter = Math.max(1, windowStart + publicChatWindowSeconds - nowSeconds);
-  const ipHash = await hashRateLimitKey(`public-chat:${readClientIp(request)}`, env.CHAT_RATE_LIMIT_SECRET ?? env.OPENCODE_GO_API_KEY);
+  const ipHash = await hashRateLimitKey(
+    `public-chat:${readClientIp(request)}`,
+    getRequiredRateLimitSecret(env) ?? undefined,
+  );
   const updatedAt = new Date(nowSeconds * 1000).toISOString();
 
   await env.DB.prepare(
