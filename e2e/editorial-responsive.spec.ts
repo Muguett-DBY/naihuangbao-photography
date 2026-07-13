@@ -198,17 +198,22 @@ async function expectNoOverflowOrLayerCollision(page: Page, path: string, action
   const topAudit = await page.evaluate(() => {
     const h1 = document.querySelector("h1");
     const masthead = document.querySelector(".site-nav");
-    if (!h1 || !masthead) return { titleOverlap: false };
+    if (!h1 || !masthead) return { titleOverlap: false, titleClipped: false };
     const heading = h1.getBoundingClientRect();
     const nav = masthead.getBoundingClientRect();
+    const textRange = document.createRange();
+    textRange.selectNodeContents(h1);
+    const textRects = [...textRange.getClientRects()];
     return {
       titleOverlap: heading.left < nav.right - 2
         && heading.right > nav.left + 2
         && heading.top < nav.bottom - 2
         && heading.bottom > nav.top + 2,
+      titleClipped: textRects.some((rect) => rect.left < -1 || rect.right > window.innerWidth + 1),
     };
   });
   expect(topAudit.titleOverlap, `${path}: h1 intersects the fixed masthead at route start`).toBe(false);
+  expect(topAudit.titleClipped, `${path}: h1 is clipped at route start`).toBe(false);
 
   const action = page.locator(actionSelector).first();
   await expect(action, `${path}: primary action ${actionSelector}`).toBeVisible();
@@ -274,11 +279,15 @@ async function expectNoOverflowOrLayerCollision(page: Page, path: string, action
       documentWidth: document.documentElement.scrollWidth,
       viewportWidth: window.innerWidth,
       overlaps,
+      actionClipped: !actionElement
+        || actionElement.scrollWidth > actionElement.clientWidth + 1
+        || actionElement.scrollHeight > actionElement.clientHeight + 1,
     };
   }, { selector: actionSelector });
 
   expect(audit.documentWidth, `${path}: horizontal overflow`).toBeLessThanOrEqual(audit.viewportWidth + 1);
   expect(audit.overlaps, `${path}: incoherent fixed-layer overlap`).toEqual([]);
+  expect(audit.actionClipped, `${path}: primary action content is clipped`).toBe(false);
 }
 
 async function expectVisibleKeyboardFocus(locator: Locator) {
@@ -377,6 +386,36 @@ test.describe("six-width public route contract", () => {
       }
     });
   }
+});
+
+test.describe("short desktop hero contract", () => {
+  test.use({ serviceWorkers: "block", viewport: { width: 1258, height: 622 } });
+
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.clear();
+      localStorage.setItem("lang", "en");
+      localStorage.setItem("nhb-pwa-install-dismissed-until", String(Date.now() + 86_400_000));
+    });
+    await mockPublicApi(page);
+  });
+
+  test("hero title and actions remain inside the cover while the next section stays visible", async ({ page }) => {
+    await page.goto("/");
+    await settleRoute(page);
+    const geometry = await page.evaluate(() => {
+      const hero = document.querySelector<HTMLElement>(".hero-home")!.getBoundingClientRect();
+      const title = document.querySelector<HTMLElement>(".hero-title")!;
+      const actions = document.querySelector<HTMLElement>(".hero-actions")!.getBoundingClientRect();
+      const index = document.querySelector<HTMLElement>(".home-index-strip")!.getBoundingClientRect();
+      return {
+        actionsInside: actions.top >= hero.top && actions.bottom <= hero.bottom,
+        titleClipped: title.scrollWidth > title.clientWidth + 1,
+        nextSectionVisible: index.top < window.innerHeight,
+      };
+    });
+    expect(geometry).toEqual({ actionsInside: true, titleClipped: false, nextSectionVisible: true });
+  });
 });
 
 test.describe("keyboard, focus, and dialog contracts", () => {
