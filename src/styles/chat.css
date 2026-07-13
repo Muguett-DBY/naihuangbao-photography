@@ -238,8 +238,8 @@
   bottom: 72px;
   z-index: 2;
   display: inline-flex;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--hairline);
@@ -266,7 +266,7 @@
 .public-chat-prompts button,
 .public-chat-retry {
   min-width: 44px;
-  min-height: 36px;
+  min-height: 44px;
   flex: 0 0 auto;
   border: 1px solid var(--hairline);
   border-radius: var(--radius-control);
@@ -433,7 +433,7 @@
   flex-wrap: wrap;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .scroll-top {
     right: auto;
     left: max(12px, env(safe-area-inset-left));

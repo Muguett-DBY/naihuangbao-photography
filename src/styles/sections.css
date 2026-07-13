@@ -1277,21 +1277,18 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
     padding: 7px 6px calc(7px + env(safe-area-inset-bottom, 0px));
     border: 1px solid rgba(139, 94, 74, 0.14);
     border-radius: 24px;
-    background:
-      linear-gradient(145deg, rgba(255, 253, 247, 0.97), rgba(255, 242, 220, 0.95)),
-      var(--paper-white);
+    background: var(--paper);
     box-shadow:
       var(--paper-inset),
       0 10px 28px rgba(95, 60, 49, 0.13),
       0 24px 60px rgba(255, 184, 161, 0.18);
-    backdrop-filter: blur(18px) saturate(1.1);
   }
 
   .mobile-bottom-nav__item {
     position: relative;
     display: flex;
-    min-width: 0;
-    min-height: 50px;
+    min-width: 44px;
+    min-height: 56px;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -3760,7 +3757,10 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
 }
 
 .site-footer a {
-  min-height: 28px;
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
   color: rgba(244, 240, 231, 0.72);
   letter-spacing: 0;
 }
@@ -3823,9 +3823,14 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
   margin: 0;
 }
 
+.site-footer .footer-tagline {
+  text-transform: uppercase;
+}
+
 .site-footer .scroll-top {
-  right: 24px;
+  right: auto;
   bottom: 24px;
+  left: 24px;
   width: 44px;
   height: 44px;
   border: 1px solid var(--hairline);
@@ -3999,7 +4004,7 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
 }
 
 .nav-drawer-utilities .nav-utility-controls > button {
-  min-width: 0;
+  min-width: 44px;
   justify-content: center;
   border-color: var(--hairline);
   padding-inline: 6px;
@@ -4021,7 +4026,7 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
 .nav-drawer-actions a,
 .nav-drawer-actions button {
   display: inline-flex;
-  min-width: 0;
+  min-width: 44px;
   min-height: 44px;
   align-items: center;
   justify-content: center;
@@ -4087,15 +4092,14 @@ body:has(.dashboard-reschedule-panel) .mobile-bottom-nav {
     border-top: 1px solid var(--hairline);
     border-radius: 0;
     padding: 4px 6px env(safe-area-inset-bottom, 0px);
-    background: color-mix(in srgb, var(--paper) 96%, transparent);
+    background: var(--paper);
     box-shadow: 0 -4px 18px rgba(23, 32, 27, 0.08);
-    backdrop-filter: blur(14px);
   }
 
   .mobile-bottom-nav__item {
     position: relative;
     display: flex;
-    min-width: 0;
+    min-width: 44px;
     min-height: 56px;
     align-items: center;
     justify-content: center;
