@@ -28,6 +28,8 @@
 **Files:**
 - Modify: `src/styles/base.css`
 - Modify: `src/styles/site.css`
+- Modify: `src/styles/hero.css` (masthead/navigation selectors only)
+- Modify: `src/styles/sections.css` (footer/mobile-bottom-navigation selectors only)
 - Modify: `src/styles/chat.css`
 - Modify: `src/styles/animal-theme.css`
 - Modify: `src/layouts/RootLayout.tsx`
@@ -526,4 +528,3 @@ needed, fix only real failures, and push again without force. Confirm the newest
 Cloudflare Pages deployment corresponds to HEAD; verify custom domain and fixed
 deployment URL health, then run desktop/mobile browser smoke with zero app-owned
 console, request, page, overflow, or overlap defects.
-
