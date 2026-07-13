@@ -31,6 +31,12 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     return badRequest("邮箱格式不正确");
   }
 
+  const resendKey = context.env.RESEND_API_KEY?.trim();
+  const isDemoMode = context.env.DEMO_MODE?.trim().toLowerCase() === "true";
+  if (!resendKey && !isDemoMode) {
+    return jsonResponse({ error: "email_delivery_unavailable" }, 503);
+  }
+
   const db = context.env.DB;
   if (!db) {
     return jsonResponse({ error: "数据库未配置" }, 503);
@@ -66,7 +72,6 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
      values (?, ?, ?, ?, 0, ?)`,
   ).bind(id, user.id, tokenHash, expiresAt, createdAt).run();
 
-  const resendKey = context.env.RESEND_API_KEY?.trim();
   if (resendKey) {
     try {
       await sendResetEmail({
@@ -82,15 +87,6 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
         method: "POST",
       });
     }
-    return jsonResponse({ ok: true, message: "如果该邮箱已注册，重置链接已发送" });
-  }
-
-  // Demo mode: return token in response only if explicitly enabled
-  // In production, this code path should never run (email provider should be configured)
-  const isDemoMode = context.env.DEMO_MODE?.trim().toLowerCase() === "true";
-  if (!isDemoMode) {
-    // Production without email — log warning but never return token
-    console.warn("[forgot-password] No email provider configured and DEMO_MODE not set. Token generated but not delivered.");
     return jsonResponse({ ok: true, message: "如果该邮箱已注册，重置链接已发送" });
   }
 

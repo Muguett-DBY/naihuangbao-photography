@@ -30,6 +30,7 @@ type FormErrors = {
 };
 
 type WaitlistResponse = {
+  accountLinked?: boolean;
   message?: string;
   waitlist?: {
     id?: string;
@@ -51,8 +52,10 @@ type BookingSubmitErrorResponse = {
   recovery?: TimeSlotRecovery;
 };
 
-const DASHBOARD_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const isDashboardCompatibleContact = (value: string) => DASHBOARD_EMAIL_PATTERN.test(value.trim());
+type BookingSubmitResponse = {
+  id?: string;
+  accountLinked?: boolean;
+};
 
 export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const { t } = useTranslation();
@@ -79,6 +82,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const [waitlistDone, setWaitlistDone] = useState(false);
   const [waitlistAlreadyJoined, setWaitlistAlreadyJoined] = useState(false);
   const [waitlistId, setWaitlistId] = useState<string | null>(null);
+  const [accountLinked, setAccountLinked] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const { policy: bookingPolicy } = useBookingPolicy();
@@ -177,6 +181,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     setWaitlistDate(nextDate);
     setRecoveredDateAvailability(null);
     setWaitlistAlreadyJoined(false);
+    setAccountLinked(false);
     setTouched((prev) => ({ ...prev, date: true }));
     setErrors((prev) => ({ ...prev, date: validateField("date", nextDate) }));
     setStep(2);
@@ -201,6 +206,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const handleBack = useCallback(() => {
     setStep(1);
     setWaitlistDate("");
+    setAccountLinked(false);
     setError("");
     track("booking_back_to_step1", { packageName: selectedPkg });
   }, [selectedPkg]);
@@ -213,6 +219,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     }
 
     setJoiningWaitlist(true);
+    setAccountLinked(false);
     setError("");
 
     try {
@@ -235,6 +242,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       const alreadyJoined = data?.message === "already_waitlisted" || data?.waitlist?.duplicate === true;
       setWaitlistId(data?.waitlist?.id ?? null);
       setWaitlistAlreadyJoined(alreadyJoined);
+      setAccountLinked(data?.accountLinked === true);
       setWaitlistDone(true);
       track(alreadyJoined ? "booking_waitlist_duplicate" : "booking_waitlist_joined", { packageName: selectedPkg, date: preferredDate });
     } catch (err) {
@@ -246,6 +254,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setAccountLinked(false);
 
     const nameError = validateField("name", name);
     const contactError = validateField("contact", contact);
@@ -337,9 +346,10 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
         throw new Error(getApiError(data, t("bookingModal.submitError")));
       }
 
-      const data = await readJsonResponse<{ id?: string }>(r);
+      const data = await readJsonResponse<BookingSubmitResponse>(r);
       if (!data?.id) throw new Error(t("bookingModal.submitError"));
       setBookingId(data.id);
+      setAccountLinked(data.accountLinked === true);
       setShowPayment(true);
       track("booking_submitted", { packageName: selectedPkg, bookingId: data.id, hasNotes: Boolean(trimmedNotes) });
 
@@ -374,7 +384,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     return Math.max(deposit, 2000);
   };
 
-  const showDashboard = isDashboardCompatibleContact(contact);
+  const showDashboard = accountLinked;
 
   const renderSuccessBridge = (detail: string, options: { showDashboard: boolean }) => (
     <section className="booking-success-bridge" aria-labelledby={successBridgeTitleId}>
@@ -452,7 +462,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
             </div>
             {renderSuccessBridge(
               showDashboard
-                ? t("bookingModal.successBridgeWaitlistDetail", "Sign in or register with this same email to see your waitlist status here.")
+                ? t("bookingModal.successBridgeWaitlistDetail", "This waitlist request is linked to your signed-in account. View its status in your dashboard.")
                 : t("bookingModal.successBridgeContactDetail", "Updates will go to the contact details you provided. Message me if anything changes."),
               { showDashboard },
             )}
@@ -555,7 +565,11 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
             </div>
           </div>
 
-          <p className="booking-success-next">{t("bookingModal.nextStep")}</p>
+          <p className="booking-success-next">
+            {accountLinked
+              ? t("bookingModal.nextStepLinked", "I'll review your booking and confirm via your contact info within 24 hours. This request is linked to your account.")
+              : t("bookingModal.nextStepContact", "I'll review your booking and confirm via your contact info within 24 hours.")}
+          </p>
           {depositOutcome && (
             <div className={`booking-deposit-outcome booking-deposit-outcome--${depositOutcome}`} role="status">
               <strong>{t(`bookingModal.depositOutcome.${depositOutcome}.title`)}</strong>
@@ -583,7 +597,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
           )}
           {renderSuccessBridge(
             showDashboard
-              ? t("bookingModal.successBridgeDashboardDetail", "Sign in or register with this same email to see booking, date, and deposit updates.")
+              ? t("bookingModal.successBridgeDashboardDetail", "This booking request is linked to your signed-in account. View booking, date, and deposit updates in your dashboard.")
               : t("bookingModal.successBridgeContactDetail", "Updates will go to the contact details you provided. Message me if anything changes."),
             { showDashboard },
           )}

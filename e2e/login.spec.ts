@@ -87,4 +87,21 @@ test.describe("login and dashboard flow", () => {
     await expect(page).toHaveURL(/\/dashboard$/);
     await expect(page.getByRole("heading", { name: "Guest User", exact: true })).toBeVisible();
   });
+
+  test("keeps password reset on the email step when delivery is unavailable", async ({ page }) => {
+    await page.route("**/api/auth/forgot-password", (route) => route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({ error: "email_delivery_unavailable" }),
+    }));
+
+    await page.goto("/login");
+    await page.getByRole("button", { name: "Forgot password?", exact: true }).click();
+    await page.locator("#reset-email").fill("guest@example.com");
+    await page.getByRole("button", { name: "Send reset token", exact: true }).click();
+
+    await expect(page.getByRole("alert")).toContainText("Password reset email is temporarily unavailable");
+    await expect(page.locator("#reset-email")).toBeVisible();
+    await expect(page.locator("#reset-token")).toHaveCount(0);
+  });
 });

@@ -22,18 +22,16 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
         `select
           count(*) as total,
           sum(case when status in ('pending','confirmed') then 1 else 0 end) as upcoming
-        from booking_requests where contact like ?`
-      ).bind(`%${userId}%`).first<{ total: number; upcoming: number }>(),
+        from booking_requests where user_id = ?`
+      ).bind(userId).first<{ total: number; upcoming: number }>(),
 
       context.env.DB.prepare(
         `select count(*) as total from course_purchases where user_id = ?`
       ).bind(userId).first<{ total: number }>(),
 
       context.env.DB.prepare(
-        `select count(*) as total from workshop_registrations r
-         join workshops w on r.workshop_id = w.id
-         where r.name = ? or r.contact = ?`
-      ).bind(userId, userId).first<{ total: number }>(),
+        `select count(*) as total from workshop_registrations where user_id = ?`
+      ).bind(userId).first<{ total: number }>(),
     ]);
 
     return jsonResponse({

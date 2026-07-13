@@ -1,8 +1,9 @@
 import { jsonResponse, badRequest, unavailable } from "../../../_responses";
+import { getOptionalUserId } from "../../../_auth";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../../_security";
 import { validateString, validateOptionalString, validatePositiveInt } from "../../../_validation";
 
-type ApiEnv = Env;
+type ApiEnv = Env & { AUTH_SECRET?: string };
 
 // ── POST /api/workshops/:id/register ──
 export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
@@ -41,6 +42,7 @@ export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
 
   const name = body.name!.trim();
   const contact = body.contact!.trim();
+  const userId = await getOptionalUserId(context.request, context.env);
 
   try {
     const workshop = await context.env.DB.prepare(
@@ -67,15 +69,15 @@ export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
 
     await context.env.DB.batch([
       context.env.DB.prepare(
-        `insert into workshop_registrations (id, workshop_id, name, contact, participants, notes, status, created_at)
-         values (?, ?, ?, ?, ?, ?, 'pending', ?)`,
-      ).bind(regId, id, name, contact, participants, body.notes ?? "", createdAt),
+        `insert into workshop_registrations (id, workshop_id, name, contact, user_id, participants, notes, status, created_at)
+         values (?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
+      ).bind(regId, id, name, contact, userId, participants, body.notes ?? "", createdAt),
       context.env.DB.prepare(
         `update workshops set current_participants = current_participants + ? where id = ?`,
       ).bind(participants, id),
     ]);
 
-    return jsonResponse({ ok: true, id: regId }, 201);
+    return jsonResponse({ ok: true, id: regId, accountLinked: userId !== null }, 201);
   } catch (error) {
     return unavailable("报名失败，请稍后重试", error, { route: `/api/workshops/${id}/register`, method: "POST" });
   }

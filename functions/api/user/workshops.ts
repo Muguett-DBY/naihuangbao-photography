@@ -32,7 +32,7 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
               wr.participants, wr.status, wr.created_at
        from workshop_registrations wr
        join workshops w on w.id = wr.workshop_id
-       where wr.contact = (select email from users where id = ?)
+       where wr.user_id = ?
        order by wr.created_at desc`,
     )
       .bind(user.userId)

@@ -81,7 +81,11 @@ export function LoginPage() {
       const data = await r.json();
 
       if (!r.ok) {
-        setResetError(data.error || t("auth.resetRequestFailed"));
+        setResetError(
+          data.error === "email_delivery_unavailable"
+            ? t("auth.resetEmailUnavailable")
+            : data.error || t("auth.resetRequestFailed"),
+        );
         return;
       }
 

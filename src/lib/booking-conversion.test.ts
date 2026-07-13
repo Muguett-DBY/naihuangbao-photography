@@ -30,19 +30,34 @@ describe("public booking conversion shell", () => {
     expect(existsSync(resolve(root, "src/hooks/usePushNotification.ts"))).toBe(false);
   });
 
-  it("keeps dashboard follow-up compatible with the submitted contact", () => {
+  it("uses server-confirmed account linkage for dashboard follow-up", () => {
     const bookingModal = read("src/components/BookingModal.tsx");
     const locales = ["en", "zh-CN", "ja", "ko"].map((locale) => (
       JSON.parse(read(`src/i18n/locales/${locale}.json`)) as {
-        bookingModal: { successBridgeContactDetail?: string };
+        bookingModal: {
+          nextStepLinked?: string;
+          nextStepContact?: string;
+          successBridgeDashboardDetail?: string;
+          successBridgeWaitlistDetail?: string;
+          successBridgeContactDetail?: string;
+        };
         dashboard: { waitlist?: { waiting?: string; notified?: string } };
       }
     ));
 
-    expect(bookingModal).toContain("isDashboardCompatibleContact");
-    expect(bookingModal).toContain("showDashboard");
+    expect(bookingModal).toContain("accountLinked");
+    expect(bookingModal).toContain("setAccountLinked");
+    expect(bookingModal).toContain("const showDashboard = accountLinked");
+    expect(bookingModal).not.toContain("DASHBOARD_EMAIL_PATTERN");
+    expect(bookingModal).not.toContain("isDashboardCompatibleContact");
+    expect(bookingModal).toContain("nextStepLinked");
+    expect(bookingModal).toContain("nextStepContact");
     expect(bookingModal).toContain("successBridgeContactDetail");
     for (const locale of locales) {
+      expect(locale.bookingModal.nextStepLinked).toBeTruthy();
+      expect(locale.bookingModal.nextStepContact).toBeTruthy();
+      expect(locale.bookingModal.successBridgeDashboardDetail).toBeTruthy();
+      expect(locale.bookingModal.successBridgeWaitlistDetail).toBeTruthy();
       expect(locale.bookingModal.successBridgeContactDetail).toBeTruthy();
       expect(locale.dashboard.waitlist?.waiting).toBeTruthy();
       expect(locale.dashboard.waitlist?.notified).toBeTruthy();

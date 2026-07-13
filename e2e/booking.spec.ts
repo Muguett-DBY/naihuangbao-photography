@@ -140,6 +140,14 @@ test.describe("booking flow", () => {
 
   test("records a placeholder deposit without fake card fields or mobile overlay collisions", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.route("**/api/auth/session", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        authenticated: true,
+        user: { id: "deposit-user", email: "deposit@example.com", displayName: "Deposit Guest" },
+      }),
+    }));
     await page.route("**/api/availability**", (route) => route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -148,7 +156,7 @@ test.describe("booking flow", () => {
     await page.route("**/api/booking", (route) => route.fulfill({
       status: 201,
       contentType: "application/json",
-      body: JSON.stringify({ id: "booking-placeholder-1" }),
+      body: JSON.stringify({ id: "booking-placeholder-1", accountLinked: true }),
     }));
     await page.route("**/api/notifications/send", (route) => route.fulfill({
       status: 200,
@@ -193,6 +201,7 @@ test.describe("booking flow", () => {
     await expect(page.getByText("No deposit charged", { exact: true })).toBeVisible();
     await expect(page.locator(".booking-success-bridge")).toBeVisible();
     await expect(page.getByText("Next steps", { exact: true })).toBeVisible();
+    await expect(page.getByText("linked to your signed-in account", { exact: false })).toBeVisible();
     await expect(page.getByRole("link", { name: "View My Bookings", exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: "Message on Xiaohongshu", exact: true })).toBeVisible();
   });
@@ -352,7 +361,7 @@ test.describe("booking flow", () => {
     });
   });
 
-  test("routes fully booked booking dates into the waitlist flow", async ({ page }) => {
+  test("routes fully booked dates into an account-linked waitlist flow", async ({ page }) => {
     const policyDate = "2099-08-20";
     const fullDate = "2099-08-21";
     const waitlistRequests: Array<Record<string, unknown>> = [];
@@ -395,6 +404,7 @@ test.describe("booking flow", () => {
         contentType: "application/json",
         body: JSON.stringify({
           ok: true,
+          accountLinked: true,
           waitlist: {
             id: "wl_full_date",
             preferredDate: fullDate,
@@ -421,6 +431,7 @@ test.describe("booking flow", () => {
     await expect(page.locator(".booking-waitlist-success")).toContainText(fullDate);
     await expect(page.locator(".booking-success-bridge")).toBeVisible();
     await expect(page.getByRole("link", { name: "View My Bookings", exact: true })).toBeVisible();
+    await expect(page.getByText("linked to your signed-in account", { exact: false })).toBeVisible();
     await expect(page.getByRole("link", { name: "Message on Xiaohongshu", exact: true })).toBeVisible();
     expect(waitlistRequests[0]).toMatchObject({
       preferredDate: fullDate,
@@ -429,7 +440,7 @@ test.describe("booking flow", () => {
     });
   });
 
-  test("shows an existing waitlist confirmation without creating a duplicate", async ({ page }) => {
+  test("keeps an anonymous email waitlist confirmation unlinked without creating a duplicate", async ({ page }) => {
     const policyDate = "2099-08-20";
     const fullDate = "2099-08-21";
     const waitlistRequests: Array<Record<string, unknown>> = [];
@@ -472,6 +483,7 @@ test.describe("booking flow", () => {
         contentType: "application/json",
         body: JSON.stringify({
           ok: true,
+          accountLinked: false,
           message: "already_waitlisted",
           waitlist: {
             id: "wl_existing_123456",
@@ -496,6 +508,8 @@ test.describe("booking flow", () => {
     await expect(existingPanel).toBeVisible();
     await expect(existingPanel).toContainText("Already on the waitlist");
     await expect(existingPanel).toContainText("no duplicate was created");
+    await expect(page.getByRole("link", { name: "View My Bookings", exact: true })).toHaveCount(0);
+    await expect(page.getByText("Updates will go to the contact details you provided.", { exact: false })).toBeVisible();
     await expect(page.locator(".booking-error")).toHaveCount(0);
     expect(waitlistRequests).toHaveLength(1);
   });
@@ -540,6 +554,7 @@ test.describe("booking flow", () => {
       contentType: "application/json",
       body: JSON.stringify({
         ok: true,
+        accountLinked: false,
         waitlist: {
           id: "wl_non_email",
           preferredDate: fullDate,

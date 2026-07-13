@@ -39,20 +39,10 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
   if (!user) return unauthorized("请先登录");
 
   if (!context.env.DB) {
-    return jsonResponse({ bookings: [] }, 503);
+    return jsonResponse({ bookings: [], waitlist: [] }, 503);
   }
 
   try {
-    const account = await context.env.DB.prepare(
-      "select email from users where id = ?",
-    )
-      .bind(user.userId)
-      .first<{ email: string }>();
-
-    if (!account?.email) {
-      return jsonResponse({ bookings: [], waitlist: [] });
-    }
-
     const [bookingResult, waitlistResult] = await Promise.all([
       context.env.DB.prepare(
         `select b.id, b.package_name, b.preferred_date, b.preferred_time, b.name, b.contact, b.notes,
@@ -73,18 +63,18 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
              order by latest.created_at desc
              limit 1
            )
-         where lower(b.contact) = lower(?)
+         where b.user_id = ?
          order by b.created_at desc`,
       )
-        .bind(account.email)
+        .bind(user.userId)
         .all<BookingRow>(),
       context.env.DB.prepare(
         `select id, package_name, preferred_date, name, active, notified, created_at
          from booking_waitlist
-         where active = 1 and lower(contact) = lower(?)
+         where active = 1 and user_id = ?
          order by created_at desc`,
       )
-        .bind(account.email)
+        .bind(user.userId)
         .all<WaitlistRow>(),
     ]);
 
