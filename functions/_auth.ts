@@ -94,6 +94,15 @@ export async function getUserFromRequest(request: Request, secret: string): Prom
   return null;
 }
 
+export async function getOptionalUserId(
+  request: Request,
+  env: { AUTH_SECRET?: string },
+): Promise<string | null> {
+  const secret = env.AUTH_SECRET?.trim();
+  if (!secret || secret.length < 32) return null;
+  return (await getUserFromRequest(request, secret))?.userId ?? null;
+}
+
 async function validateUserSession(session: string, secret: string): Promise<string | null> {
   const parts = session.split(".");
   if (parts.length !== 3) return null;

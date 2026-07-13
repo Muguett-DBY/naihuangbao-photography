@@ -685,7 +685,7 @@ describe("Cloudflare Pages API behavior", () => {
     expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("payment_intents"));
   });
 
-  it("returns active same-email waitlist entries beside customer bookings", async () => {
+  it("returns active session-owned waitlist entries beside customer bookings", async () => {
     const secret = "test-auth-secret-with-32-characters";
     const session = await createUserSession("user-12345678", secret);
     const statements: Array<{ sql: string; values: unknown[] }> = [];
@@ -705,9 +705,7 @@ describe("Cloudflare Pages API behavior", () => {
             statements.push({ sql, values });
             return statement;
           }),
-          first: vi.fn(async () => (
-            sql.includes("from users") ? { email: "Guest@Example.com" } : null
-          )),
+          first: vi.fn(async () => null),
           all: vi.fn(async () => ({
             results: sql.includes("from booking_waitlist") ? [waitlistRow] : [],
           })),
@@ -736,8 +734,8 @@ describe("Cloudflare Pages API behavior", () => {
     })]);
     const waitlistQuery = statements.find((entry) => entry.sql.includes("from booking_waitlist"));
     expect(waitlistQuery?.sql).toContain("active = 1");
-    expect(waitlistQuery?.sql).toContain("lower(contact) = lower(?)");
-    expect(waitlistQuery?.values).toEqual(["Guest@Example.com"]);
+    expect(waitlistQuery?.sql).toContain("user_id = ?");
+    expect(waitlistQuery?.values).toEqual(["user-12345678"]);
     expect(waitlistQuery?.sql).not.toContain("token");
   });
 
@@ -755,7 +753,7 @@ describe("Cloudflare Pages API behavior", () => {
           first: vi.fn(async () => {
             if (sql.includes("from users")) return { id: "user-12345678", email: "guest@example.com" };
             if (sql.includes("from booking_requests")) {
-              return { id: "booking-12345678", contact: "guest@example.com", status: "confirmed" };
+              return { id: "booking-12345678", user_id: "user-12345678", status: "confirmed" };
             }
             return null;
           }),
@@ -813,10 +811,10 @@ describe("Cloudflare Pages API behavior", () => {
           bind: vi.fn(() => statement),
           first: vi.fn(async () => {
             if (sql.includes("from users")) return { id: "user-12345678", email: "guest@example.com" };
-            if (sql.includes("select id, contact, status")) {
+            if (sql.includes("select id, user_id, status")) {
               return {
                 id: "booking-12345678",
-                contact: "guest@example.com",
+                user_id: "user-12345678",
                 status: "confirmed",
                 preferred_date: "2098-12-31",
                 preferred_time: "morning",
@@ -872,7 +870,7 @@ describe("Cloudflare Pages API behavior", () => {
             if (sql.includes("from booking_requests where id")) {
               return {
                 id: "booking-12345678",
-                contact: "guest@example.com",
+                user_id: "user-12345678",
                 status: "confirmed",
                 preferred_date: "2099-01-01",
                 preferred_time: "morning",
@@ -923,7 +921,7 @@ describe("Cloudflare Pages API behavior", () => {
             if (sql.includes("from booking_requests where id")) {
               return {
                 id: "booking-12345678",
-                contact: "guest@example.com",
+                user_id: "user-12345678",
                 status: "confirmed",
                 preferred_date: "2099-01-01",
                 preferred_time: "afternoon",

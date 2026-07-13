@@ -1,4 +1,5 @@
 import { badRequest, jsonResponse, unavailable } from "../_responses";
+import { getOptionalUserId } from "../_auth";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../_security";
 import { validateString, validateOptionalString } from "../_validation";
 import {
@@ -23,7 +24,9 @@ type BookingBody = {
 
 const RECENT_BOOKING_WINDOW_MS = 5 * 60 * 1000;
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+type BookingEnv = Env & { AUTH_SECRET?: string };
+
+export const onRequestPost: PagesFunction<BookingEnv> = async (context) => {
   const publicActionError = requirePublicMutationRequest(context.request);
   if (publicActionError) return publicActionError;
 
@@ -60,6 +63,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const preferredDate = body.preferredDate?.trim() ?? "";
   const preferredTime = body.preferredTime?.trim() ?? "";
   const packageName = body.packageName?.trim() ?? "";
+  const userId = await getOptionalUserId(context.request, context.env);
 
   try {
     if (preferredDate) {
@@ -140,8 +144,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const createdAt = new Date().toISOString();
 
     await context.env.DB.prepare(
-      `insert into booking_requests (id, package_name, preferred_date, preferred_time, name, contact, notes, status, created_at)
-       values (?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
+      `insert into booking_requests (id, package_name, preferred_date, preferred_time, name, contact, notes, user_id, status, created_at)
+       values (?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)`,
     )
       .bind(
         id,
@@ -151,11 +155,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         name,
         contact,
         notes,
+        userId,
         createdAt,
       )
       .run();
 
-    return jsonResponse({ ok: true, id }, 201);
+    return jsonResponse({ ok: true, id, accountLinked: userId !== null }, 201);
   } catch (error) {
     return unavailable("提交失败，请稍后重试。", error, { route: "/api/booking", method: "POST" });
   }

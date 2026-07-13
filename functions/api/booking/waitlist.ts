@@ -1,4 +1,5 @@
 import { badRequest, jsonResponse, unavailable } from "../../_responses";
+import { getOptionalUserId } from "../../_auth";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../_security";
 import { validateString } from "../../_validation";
 import { BOOKING_CAPACITY_PER_DAY, getBusinessDate, isBookingDateFull, validateBookingDate } from "../../_booking";
@@ -19,7 +20,9 @@ type ExistingWaitlistRow = {
 
 const MAX_WAITLIST_PER_DAY = 50;
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+type WaitlistEnv = Env & { AUTH_SECRET?: string };
+
+export const onRequestPost: PagesFunction<WaitlistEnv> = async (context) => {
   const publicActionError = requirePublicMutationRequest(context.request);
   if (publicActionError) return publicActionError;
 
@@ -49,6 +52,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return jsonResponse({ error: "服务暂时不可用" }, 503);
   }
 
+  const userId = await getOptionalUserId(context.request, context.env);
+
   try {
     const active = await context.env.DB.prepare(
       `select count(*) as count from booking_requests
@@ -72,17 +77,26 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }, 409);
     }
 
-    const existingForContact = await context.env.DB.prepare(
-      `select id, preferred_date, active, created_at
-       from booking_waitlist
-       where preferred_date = ?
-         and lower(contact) = ?
-         and active = 1
-       order by created_at desc
-       limit 1`,
-    )
-      .bind(preferredDate, normalizedContact)
-      .first<ExistingWaitlistRow>();
+    const existingQuery = userId
+      ? context.env.DB.prepare(
+        `select id, preferred_date, active, created_at
+         from booking_waitlist
+         where preferred_date = ?
+           and user_id = ?
+           and active = 1
+         order by created_at desc
+         limit 1`,
+      ).bind(preferredDate, userId)
+      : context.env.DB.prepare(
+        `select id, preferred_date, active, created_at
+         from booking_waitlist
+         where preferred_date = ?
+           and lower(contact) = ?
+           and active = 1
+         order by created_at desc
+         limit 1`,
+      ).bind(preferredDate, normalizedContact);
+    const existingForContact = await existingQuery.first<ExistingWaitlistRow>();
 
     if (existingForContact) {
       return jsonResponse({
@@ -100,6 +114,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           activeBookings,
           remaining: 0,
         },
+        accountLinked: userId !== null,
       });
     }
 
@@ -118,8 +133,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const token = crypto.randomUUID().replace(/-/g, "").slice(0, 24);
 
     await context.env.DB.prepare(
-      `insert into booking_waitlist (id, token, preferred_date, contact, name, package_name, active, notified, created_at)
-       values (?, ?, ?, ?, ?, ?, 1, 0, ?)`,
+      `insert into booking_waitlist (id, token, preferred_date, contact, name, user_id, package_name, active, notified, created_at)
+       values (?, ?, ?, ?, ?, ?, ?, 1, 0, ?)`,
     )
       .bind(
         id,
@@ -127,6 +142,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         preferredDate,
         contact,
         name,
+        userId,
         packageName,
         createdAt,
       )
@@ -147,6 +163,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         activeBookings,
         remaining: 0,
       },
+      accountLinked: userId !== null,
     }, 201);
   } catch (error) {
     return unavailable("加入候补名单失败", error, { route: "/api/booking/waitlist", method: "POST" });

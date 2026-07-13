@@ -94,22 +94,21 @@ describe("password reset email delivery", () => {
     expect(warning).toHaveBeenCalled();
   });
 
-  it("does not expose reset tokens when DEMO_MODE is the string false", async () => {
-    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
-
+  it("rejects uniformly before database access when email delivery is unavailable", async () => {
+    const db = createPasswordResetDb();
     const response = await forgotPassword({
       request: jsonRequest({ email: "guest@example.com" }),
       env: {
-        DB: createPasswordResetDb(),
+        DB: db,
         DEMO_MODE: "false",
       },
     } as never);
-    const body = (await response.json()) as { ok?: boolean; demo_token?: string };
+    const body = (await response.json()) as { error?: string };
 
-    expect(response.status).toBe(200);
-    expect(body.ok).toBe(true);
-    expect(body.demo_token).toBeUndefined();
-    expect(warning).toHaveBeenCalled();
+    expect(response.status).toBe(503);
+    expect(body.error).toBe("email_delivery_unavailable");
+    expect(db.prepare).not.toHaveBeenCalledWith(expect.stringContaining("from users"));
+    expect(db.prepare).not.toHaveBeenCalledWith(expect.stringContaining("password_reset_tokens"));
   });
 
   it("exposes reset tokens only when demo mode is explicitly enabled", async () => {

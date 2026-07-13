@@ -54,13 +54,18 @@ create table if not exists booking_requests (
   preferred_time text,
   name text not null,
   contact text not null,
+  user_id text,
   notes text not null default '',
   status text not null default 'pending',
-  created_at text not null
+  created_at text not null,
+  foreign key (user_id) references users(id) on delete set null
 );
 
 create index if not exists idx_booking_status
   on booking_requests (status, created_at);
+
+create index if not exists idx_booking_requests_user
+  on booking_requests (user_id, created_at);
 
 -- ── New business line tables ──
 
@@ -164,15 +169,20 @@ create table if not exists workshop_registrations (
   workshop_id text not null,
   name text not null,
   contact text not null,
+  user_id text,
   participants integer default 1,
   notes text,
   status text default 'pending',
   created_at text not null,
-  foreign key (workshop_id) references workshops(id) on delete cascade
+  foreign key (workshop_id) references workshops(id) on delete cascade,
+  foreign key (user_id) references users(id) on delete set null
 );
 
 create index if not exists idx_workshop_registrations
   on workshop_registrations (workshop_id, status);
+
+create index if not exists idx_workshop_registrations_user
+  on workshop_registrations (user_id, created_at);
 
 create table if not exists merchandise (
   id text primary key,
@@ -427,11 +437,16 @@ create table if not exists booking_waitlist (
   preferred_date text not null,
   contact text not null,
   name text not null,
+  user_id text,
   package_name text,
   active integer not null default 1,
   notified integer not null default 0,
-  created_at text not null default (datetime('now'))
+  created_at text not null default (datetime('now')),
+  foreign key (user_id) references users(id) on delete set null
 );
 
 create index if not exists idx_booking_waitlist_date
   on booking_waitlist (preferred_date, active);
+
+create index if not exists idx_booking_waitlist_user
+  on booking_waitlist (user_id, active, created_at);

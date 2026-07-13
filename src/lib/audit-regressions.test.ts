@@ -871,6 +871,17 @@ describe("audit regression coverage", () => {
     expect(forgotPasswordApiSource).not.toContain("TODO: Send email");
   });
 
+  it("reports unavailable password reset delivery before account lookup", () => {
+    expect(forgotPasswordApiSource).toContain("email_delivery_unavailable");
+    expect(forgotPasswordApiSource.indexOf("email_delivery_unavailable"))
+      .toBeLessThan(forgotPasswordApiSource.indexOf("select id, email from users"));
+    expect(loginPageSource).toContain('data.error === "email_delivery_unavailable"');
+    expect(loginPageSource).toContain('t("auth.resetEmailUnavailable")');
+    for (const locale of Object.values(locales)) {
+      expect(locale.auth.resetEmailUnavailable).toBeTruthy();
+    }
+  });
+
   it("applies shared security headers to API JSON and photo object responses", () => {
     for (const header of [
       "x-content-type-options",

@@ -17,15 +17,10 @@ type AuthEnv = Env & { AUTH_SECRET?: string };
 
 type BookingRow = {
   id: string;
-  contact: string;
+  user_id: string | null;
   status: string;
   preferred_date: string;
   preferred_time: string;
-};
-
-type UserRow = {
-  id: string;
-  email: string;
 };
 
 export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
@@ -54,22 +49,15 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
   const newDate = String(body.preferred_date);
 
   try {
-    // Verify the booking belongs to this user (via email match)
-    const userRow = await context.env.DB.prepare(
-      `select id, email from users where id = ?`,
-    ).bind(user.userId).first<UserRow>();
-
-    if (!userRow) return unauthorized("用户不存在");
-
     const booking = await context.env.DB.prepare(
-      `select id, contact, status, preferred_date, preferred_time from booking_requests where id = ?`,
+      `select id, user_id, status, preferred_date, preferred_time from booking_requests where id = ?`,
     ).bind(bookingId).first<BookingRow>();
 
     if (!booking) {
       return jsonResponse({ error: "预约不存在" }, 404);
     }
 
-    if (booking.contact !== userRow.email) {
+    if (booking.user_id !== user.userId) {
       return jsonResponse({ error: "无权操作此预约" }, 403);
     }
 

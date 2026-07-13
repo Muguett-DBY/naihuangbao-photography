@@ -81,6 +81,8 @@ test.describe("offline booking recovery", () => {
     await page.getByRole("button", { name: "Send Booking", exact: true }).click();
 
     await expect(page.locator(".booking-success-offline-note")).toBeVisible();
+    await expect(page.getByRole("link", { name: "View My Bookings", exact: true })).toHaveCount(0);
+    await expect(page.getByText("Updates will go to the contact details you provided.", { exact: false })).toBeVisible();
     await page.getByRole("button", { name: "Continue browsing", exact: true }).click();
     await expect(page.locator(".booking-modal-content")).toBeHidden();
     await expect(page.locator(".offline-booking-recovery")).toBeVisible();
