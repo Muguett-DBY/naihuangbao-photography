@@ -429,6 +429,9 @@ create index if not exists idx_share_links_token
 create index if not exists idx_share_links_resource
   on share_links (resource_type, resource_id, created_at);
 
+create index if not exists idx_share_links_expires
+  on share_links (expires_at);
+
 -- ---- Booking waitlist ----
 
 create table if not exists booking_waitlist (
@@ -447,6 +450,9 @@ create table if not exists booking_waitlist (
 
 create index if not exists idx_booking_waitlist_date
   on booking_waitlist (preferred_date, active);
+
+create index if not exists idx_booking_waitlist_token
+  on booking_waitlist (token);
 
 create index if not exists idx_booking_waitlist_user
   on booking_waitlist (user_id, active, created_at);
