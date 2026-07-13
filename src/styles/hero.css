@@ -13,15 +13,13 @@
   align-items: center;
   gap: 18px;
   padding: 18px clamp(20px, 4vw, 56px);
-  background: rgba(68, 43, 36, 0.45);
-  backdrop-filter: blur(12px) saturate(1.1);
+  background: var(--newsprint);
   border-bottom: 1px solid rgba(255, 249, 236, 0.08);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   transition: background 0.45s ease,
               padding 0.45s cubic-bezier(0.22, 1, 0.36, 1),
               border-color 0.45s ease,
-              box-shadow 0.45s ease,
-              backdrop-filter 0.45s ease;
+              box-shadow 0.45s ease;
   backface-visibility: hidden;
 }
 
@@ -93,8 +91,7 @@
 .site-nav.is-scrolled {
   padding-top: 10px;
   padding-bottom: 10px;
-  background: rgba(255, 249, 236, 0.92);
-  backdrop-filter: blur(20px) saturate(1.06);
+  background: var(--paper);
   border-bottom: 1px solid rgba(139, 94, 74, 0.06);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.5),
@@ -116,8 +113,7 @@
 }
 
 body.nav-lock .site-nav {
-  background: rgba(255, 249, 236, 0.98);
-  backdrop-filter: blur(24px) saturate(1.1);
+  background: var(--paper);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.7),
     0 8px 22px rgba(95, 60, 49, 0.06),
@@ -278,15 +274,14 @@ body.nav-lock .site-nav {
   border: 0;
   border-bottom: 1px solid var(--hairline);
   color: var(--ink);
-  background: color-mix(in srgb, var(--newsprint) 94%, transparent);
+  background: var(--newsprint);
   box-shadow: none;
-  backdrop-filter: blur(14px);
   transition: background-color 180ms ease, min-height 180ms ease;
 }
 
 .site-nav.is-scrolled {
   min-height: 64px;
-  background: color-mix(in srgb, var(--paper) 97%, transparent);
+  background: var(--paper);
 }
 
 .site-nav::after,
@@ -298,6 +293,7 @@ body.nav-lock .site-nav {
 .site-nav.is-scrolled .brand-mark {
   grid-column: 1;
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   gap: 10px;
   min-width: 0;
@@ -367,6 +363,7 @@ body.nav-lock .site-nav {
 .site-nav.is-scrolled .nav-menu--inline a {
   position: relative;
   display: inline-flex;
+  min-width: 44px;
   min-height: 44px;
   align-items: center;
   gap: 5px;
@@ -464,6 +461,7 @@ body.nav-lock .site-nav {
 .site-nav .nav-cta,
 .site-nav.is-scrolled .nav-cta {
   display: inline-flex;
+  min-width: 44px;
   min-height: 44px;
   align-items: center;
   gap: 7px;
@@ -548,6 +546,7 @@ body.nav-lock .site-nav {
 }
 
 .nav-user-link {
+  min-width: 44px;
   min-height: 44px;
   border-radius: var(--radius-control);
   color: var(--ink);
@@ -1161,23 +1160,22 @@ body.nav-lock .site-nav {
    Cute Theme Overrides — Nav & Hero
    ══════════════════════════════════════════════ */
 :root[data-mood="cute"] .site-nav.is-scrolled {
-  background: rgba(248, 248, 240, 0.94);
-  backdrop-filter: blur(20px) saturate(1.12);
+  background: var(--paper);
 }
 
 :root[data-mood="cute"] .nav-cta {
-  border-radius: 999px;
-  background: linear-gradient(135deg, #19c8b9, #3dd4c6);
-  box-shadow: 0 4px 0 0 #bdaea0;
+  border-radius: var(--radius-control);
+  background: var(--moss-dark);
+  box-shadow: none;
 }
 :root[data-mood="cute"] .nav-cta:hover {
-  transform: translate3d(0, -3px, 0) scale(1.02);
-  background: linear-gradient(135deg, #15b0a2, #4dd8ca);
-  box-shadow: 0 5px 0 0 #bdaea0;
+  transform: translateY(-1px);
+  background: var(--coral-dark);
+  box-shadow: none;
 }
 :root[data-mood="cute"] .nav-cta:active {
-  transform: translate3d(0, 2px, 0) scale(0.98);
-  box-shadow: 0 1px 0 0 #bdaea0;
+  transform: translateY(1px);
+  box-shadow: none;
 }
 
 :root[data-mood="cute"] .hero-cover-primary-btn {

@@ -70,7 +70,7 @@ export function Footer() {
         <p className="footer-copyright">
           {t("footer.copyright", { year: currentYear, brand: siteConfig.brandName })}
         </p>
-        <p className="footer-tagline">NANJING PORTRAIT FIELD NOTES / EST. {currentYear}</p>
+        <p className="footer-tagline">{siteConfig.city} PORTRAIT FIELD NOTES / EST. {currentYear}</p>
       </div>
 
       <button

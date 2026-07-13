@@ -24,6 +24,7 @@ import { ThemeToggle } from "../ThemeToggle";
 import { PrefetchLink } from "./PrefetchLink";
 
 const LANG_CYCLE = ["en", "zh-CN", "ko", "ja"] as const;
+const COMPACT_NAVIGATION_QUERY = "(max-width: 980px)";
 const FOCUSABLE =
   'a[href]:not([tabindex="-1"]), button:not([disabled]):not([tabindex="-1"]), [tabindex]:not([tabindex="-1"])';
 
@@ -36,6 +37,10 @@ type UtilityControlsProps = {
 type HeaderProps = {
   onOpenChat: () => void;
 };
+
+function getCompactNavigation() {
+  return typeof window !== "undefined" && window.matchMedia(COMPACT_NAVIGATION_QUERY).matches;
+}
 
 function UtilityControls({ onLanguageChange, languageLabel, menuLabel }: UtilityControlsProps) {
   const { t } = useTranslation();
@@ -63,6 +68,7 @@ export function Header({ onOpenChat }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [utilityOpen, setUtilityOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [compactNavigation, setCompactNavigation] = useState(getCompactNavigation);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
   const utilityButtonRef = useRef<HTMLButtonElement>(null);
@@ -114,9 +120,34 @@ export function Header({ onOpenChat }: HeaderProps) {
   }, []);
 
   useEffect(() => {
-    document.body.classList.toggle("nav-lock", drawerOpen);
+    const mediaQuery = window.matchMedia(COMPACT_NAVIGATION_QUERY);
+    const onChange = (event: MediaQueryListEvent) => {
+      const activeElement = document.activeElement;
+      const focusWasInUtility =
+        utilityButtonRef.current === activeElement || utilityMenuRef.current?.contains(activeElement) === true;
+      const focusWasInDrawer =
+        hamburgerRef.current === activeElement || drawerRef.current?.contains(activeElement) === true;
+
+      setCompactNavigation(event.matches);
+      setDrawerOpen(false);
+      setUtilityOpen(false);
+      setUserMenuOpen(false);
+
+      if (focusWasInUtility || focusWasInDrawer) {
+        window.requestAnimationFrame(() => {
+          (event.matches ? hamburgerRef.current : utilityButtonRef.current)?.focus();
+        });
+      }
+    };
+
+    mediaQuery.addEventListener("change", onChange);
+    return () => mediaQuery.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("nav-lock", drawerOpen && compactNavigation);
     return () => document.body.classList.remove("nav-lock");
-  }, [drawerOpen]);
+  }, [compactNavigation, drawerOpen]);
 
   useEffect(() => {
     setDrawerOpen(false);
@@ -125,7 +156,7 @@ export function Header({ onOpenChat }: HeaderProps) {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!drawerOpen) return;
+    if (!drawerOpen || !compactNavigation) return;
     const previouslyFocused = document.activeElement as HTMLElement | null;
     const drawer = drawerRef.current;
     const focusable = Array.from(drawer?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? []);
@@ -152,12 +183,15 @@ export function Header({ onOpenChat }: HeaderProps) {
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
-      (hamburgerRef.current ?? previouslyFocused)?.focus();
+      const returnTarget = window.matchMedia(COMPACT_NAVIGATION_QUERY).matches
+        ? hamburgerRef.current
+        : utilityButtonRef.current;
+      (returnTarget ?? previouslyFocused)?.focus();
     };
-  }, [drawerOpen]);
+  }, [compactNavigation, drawerOpen]);
 
   useEffect(() => {
-    if (!utilityOpen) return;
+    if (!utilityOpen || compactNavigation) return;
     utilityMenuRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
     const onPointerDown = (event: MouseEvent) => {
       if (
@@ -186,10 +220,10 @@ export function Header({ onOpenChat }: HeaderProps) {
       document.removeEventListener("mousedown", onPointerDown);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [utilityOpen]);
+  }, [compactNavigation, utilityOpen]);
 
   useEffect(() => {
-    if (!userMenuOpen) return;
+    if (!userMenuOpen || compactNavigation) return;
     userMenuRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
     const onPointerDown = (event: MouseEvent) => {
       if (!userMenuRef.current?.contains(event.target as Node) && !userButtonRef.current?.contains(event.target as Node)) {
@@ -209,7 +243,7 @@ export function Header({ onOpenChat }: HeaderProps) {
       document.removeEventListener("mousedown", onPointerDown);
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [userMenuOpen]);
+  }, [compactNavigation, userMenuOpen]);
 
   const languageLabel = t(`langToggle.languages.${i18n.language}` as never);
   const utilityLabel = t("nav.utilityMenu", "Display and language settings");
@@ -262,7 +296,7 @@ export function Header({ onOpenChat }: HeaderProps) {
             >
               <Settings2 size={18} aria-hidden="true" />
             </button>
-            {utilityOpen ? (
+            {utilityOpen && !compactNavigation ? (
               <div ref={utilityMenuRef} id="nav-utility-panel" className="nav-popover nav-utility-panel">
                 <span className="nav-popover-label">NHB / UTILITIES</span>
                 <UtilityControls onLanguageChange={toggleLang} languageLabel={languageLabel} menuLabel={utilityLabel} />
@@ -289,7 +323,7 @@ export function Header({ onOpenChat }: HeaderProps) {
                   <span>{user.displayName}</span>
                   <ChevronDown size={14} aria-hidden="true" />
                 </button>
-                {userMenuOpen ? (
+                {userMenuOpen && !compactNavigation ? (
                   <div ref={userMenuRef} id="nav-account-panel" className="nav-popover nav-user-dropdown">
                     <span className="nav-user-email">{user.email}</span>
                     <PrefetchLink to="/dashboard" onClick={() => setUserMenuOpen(false)} className="nav-user-link">
@@ -338,7 +372,7 @@ export function Header({ onOpenChat }: HeaderProps) {
       </header>
 
       {createPortal(
-        drawerOpen ? (
+        drawerOpen && compactNavigation ? (
           <aside
             ref={drawerRef}
             id="site-navigation-menu"

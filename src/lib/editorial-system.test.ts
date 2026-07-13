@@ -47,7 +47,56 @@ describe("editorial design system", () => {
 
     expect(header).toContain("onOpenChat");
     expect(layout).toContain("<Header onOpenChat=");
-    expect(chatCss).toMatch(/@media \(max-width: 640px\)[\s\S]*\.public-chat-launcher \{\s*display: none;/);
+    expect(chatCss).toMatch(/@media \(max-width: 768px\)[\s\S]*\.public-chat-launcher \{\s*display: none;/);
     expect(shellCss).toContain("padding-bottom: var(--mobile-bottom-nav-offset)");
+  });
+
+  it("uses opaque masthead and mobile rail surfaces without backdrop blur", () => {
+    const mastheadCss = read("src/styles/hero.css");
+    const shellCss = read("src/styles/sections.css");
+
+    expect(mastheadCss).not.toMatch(/[^{}]*\.site-nav[^{}]*\{[^{}]*backdrop-filter/s);
+    expect(shellCss).not.toMatch(/[^{}]*\.mobile-bottom-nav[^{}]*\{[^{}]*backdrop-filter/s);
+    expect(mastheadCss).toMatch(/\/\* Editorial masthead[\s\S]*background: var\(--newsprint\);/);
+    expect(shellCss).toMatch(/\.mobile-bottom-nav\s*\{[^{}]*background: var\(--paper\);/s);
+  });
+
+  it("keeps task-owned shell and chat touch targets at least 44px", () => {
+    const chatCss = read("src/styles/chat.css");
+    const mastheadCss = read("src/styles/hero.css");
+    const shellCss = read("src/styles/sections.css");
+
+    expect(mastheadCss).toMatch(/\.brand-mark,\s*\.site-nav\.is-scrolled \.brand-mark\s*\{[^{}]*min-height: 44px;/s);
+    expect(mastheadCss).toMatch(/\.site-nav \.nav-menu--inline a,\s*\.site-nav\.is-scrolled \.nav-menu--inline a\s*\{[^{}]*min-width: 44px;[^{}]*min-height: 44px;/s);
+    expect(mastheadCss).toMatch(/\.site-nav \.nav-cta,\s*\.site-nav\.is-scrolled \.nav-cta\s*\{[^{}]*min-width: 44px;[^{}]*min-height: 44px;/s);
+    expect(mastheadCss).toMatch(/\.nav-user-link\s*\{[^{}]*min-width: 44px;[^{}]*min-height: 44px;/s);
+    expect(chatCss).toMatch(/\.public-chat-scroll-down\s*\{[^{}]*width: 44px;[^{}]*height: 44px;/s);
+    expect(chatCss).toMatch(/\.public-chat-prompts button,\s*\.public-chat-retry\s*\{[^{}]*min-width: 44px;[^{}]*min-height: 44px;/s);
+    expect(shellCss).toMatch(/\.site-footer a\s*\{[^{}]*min-width: 44px;[^{}]*min-height: 44px;/s);
+    expect(shellCss).toMatch(/\.nav-drawer-utilities \.nav-utility-controls > button\s*\{[^{}]*min-width: 44px;/s);
+    expect(shellCss).toMatch(/\.nav-drawer-actions a,\s*\.nav-drawer-actions button\s*\{[^{}]*min-width: 44px;[^{}]*min-height: 44px;/s);
+    expect(shellCss).toMatch(/\.mobile-bottom-nav__item\s*\{[^{}]*min-width: 44px;[^{}]*min-height: 56px;/s);
+  });
+
+  it("keeps desktop footer and chat utilities in distinct fixed footprints", () => {
+    const shellCss = read("src/styles/sections.css");
+
+    expect(shellCss).toMatch(/\.site-footer \.scroll-top\s*\{[^{}]*right: auto;[^{}]*left: 24px;/s);
+  });
+
+  it("renders the configured city in the editorial footer line", () => {
+    const footer = read("src/components/shared/Footer.tsx");
+
+    expect(footer).toContain("{siteConfig.city} PORTRAIT FIELD NOTES");
+    expect(footer).not.toContain("NANJING PORTRAIT FIELD NOTES");
+  });
+
+  it("mounts appearance controls only in the active responsive navigation surface", () => {
+    const header = read("src/components/shared/Header.tsx");
+
+    expect(header).toContain('COMPACT_NAVIGATION_QUERY = "(max-width: 980px)"');
+    expect(header).toContain("window.matchMedia(COMPACT_NAVIGATION_QUERY)");
+    expect(header).toContain("utilityOpen && !compactNavigation");
+    expect(header).toContain("drawerOpen && compactNavigation");
   });
 });
