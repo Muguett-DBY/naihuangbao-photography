@@ -160,9 +160,14 @@ git commit -m "feat: establish editorial portrait design system"
 - Modify: `src/components/FilmStripStory.tsx`
 - Modify: `src/components/PhotoOfTheDay.tsx`
 - Modify: `src/components/RecentlyViewedStrip.tsx`
+- Modify: `src/components/StyleQuiz.tsx`
+- Modify: `src/components/WhyChooseUs.tsx`
+- Modify: `src/components/Reviews.tsx`
 - Modify: `src/styles/hero.css`
 - Modify: `src/styles/gallery.css`
 - Modify: `src/styles/filmstrip-story.css`
+- Modify: `src/styles/pages.css` (home and style-quiz selectors only)
+- Modify: `src/styles/sections.css` (home story/review selectors only)
 - Test: `src/lib/gallery-uiux.test.ts`
 - Test: `src/lib/gallery-card-hover.test.ts`
 
@@ -189,7 +194,9 @@ as a secondary contact sheet. Render brand name as H1, issue/location metadata,
 one-line positioning copy, booking CTA, and gallery CTA directly over the hero.
 Remove glow orbs, float elements, SVG decoration, and scroll-linked drifting
 photos. Convert service links, reviews, quiz, and final CTA into alternating
-unframed paper/ink bands with asymmetric editorial grids.
+unframed paper/ink bands with asymmetric editorial grids. Replace the style quiz's
+Emoji option markers with semantically mapped Lucide icons while preserving all
+answers, package recommendation behavior, sharing, restart, and navigation.
 
 - [ ] **Step 4: Rebuild gallery and detail styles**
 
@@ -210,7 +217,7 @@ Expected: all tests PASS.
 - [ ] **Step 6: Commit the storytelling task**
 
 ```bash
-git add src/pages/HomePage.tsx src/pages/GalleryPage.tsx src/pages/PhotoDetailPage.tsx src/components/Gallery.tsx src/components/FilmStripStory.tsx src/components/PhotoOfTheDay.tsx src/components/RecentlyViewedStrip.tsx src/styles/hero.css src/styles/gallery.css src/styles/filmstrip-story.css src/lib/gallery-uiux.test.ts src/lib/gallery-card-hover.test.ts
+git add src/pages/HomePage.tsx src/pages/GalleryPage.tsx src/pages/PhotoDetailPage.tsx src/components/Gallery.tsx src/components/FilmStripStory.tsx src/components/PhotoOfTheDay.tsx src/components/RecentlyViewedStrip.tsx src/components/StyleQuiz.tsx src/components/WhyChooseUs.tsx src/components/Reviews.tsx src/styles/hero.css src/styles/gallery.css src/styles/filmstrip-story.css src/styles/pages.css src/styles/sections.css src/lib/gallery-uiux.test.ts src/lib/gallery-card-hover.test.ts
 git commit -m "feat: recompose portrait stories and gallery"
 ```
 
