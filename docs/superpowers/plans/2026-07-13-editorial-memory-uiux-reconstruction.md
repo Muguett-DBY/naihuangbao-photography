@@ -36,6 +36,8 @@
 - Modify: `src/components/shared/Header.tsx`
 - Modify: `src/components/shared/Footer.tsx`
 - Modify: `src/components/shared/MobileBottomNav.tsx`
+- Modify: `src/components/ThemeToggle.tsx`
+- Modify: `src/components/MoodToggle.tsx`
 - Delete: `src/components/LoadingScreen.tsx`
 - Create: `src/components/shared/RouteLoadingState.tsx`
 - Create: `src/lib/editorial-system.test.ts`
