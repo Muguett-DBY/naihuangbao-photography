@@ -181,7 +181,19 @@
     "clickTitle": "📍 スタジオからの距離",
     "worksLabel": "作品",
     "mapLabelFree": "2km — 無料",
-    "mapLabelFee": "10km — 到達可能"
+    "mapLabelFee": "10km — 到達可能",
+    "heroImageAlt": "南京で撮影したアーバンポートレート",
+    "viewModeLabel": "地図またはロケーション一覧を選択",
+    "totalPhotos": "写真",
+    "locations": "ロケーション",
+    "freeZone": "近隣エリア",
+    "feeZone": "出張エリア",
+    "coverageSummary": "対応エリア概要",
+    "locationListLabel": "ポートレート撮影地",
+    "searchLabel": "撮影ロケーションを探す",
+    "searchPlaceholder": "ロケーションを検索",
+    "clearSearch": "ロケーション検索をクリア",
+    "noSearchResults": "一致するロケーションはありません"
   },
   "midCTA": {
     "eyebrow": "今すぐ予約",
@@ -612,7 +624,14 @@
     "shortcutToggleMode": "表示モード切替",
     "shortcutSwap": "写真を入れ替え",
     "shortcutClear": "比較をクリア",
-    "shortcutHelp": "ヘルプを切替"
+    "shortcutHelp": "ヘルプを切替",
+    "eyebrow": "DARKROOM DESK / ISSUE 10",
+    "description": "写真そのものを主役にしたまま、構図、トーン、仕上がりを見比べます。",
+    "viewModeLabel": "比較表示モード",
+    "shortcutEyebrow": "DESK CONTROLS",
+    "shortcutDescription": "比較ワークスペースでは次のキーを使用できます。",
+    "closeShortcuts": "キーボードショートカットを閉じる",
+    "emptyTitle": "2枚の写真から始める"
   },
   "quickView": {
     "label": "クイックビュー",
@@ -795,7 +814,8 @@
     "before": "元画像",
     "after": "加工後",
     "dragHint": "ドラッグで比較",
-    "reset": "位置をリセット"
+    "reset": "位置をリセット",
+    "positionValue": "仕切り位置 {{percent}} パーセント"
   },
   "presetDetail": {
     "backToList": "プリセット一覧に戻る",
@@ -1584,7 +1604,19 @@
     "resetFailed": "パスワードのリセットに失敗しました。トークンが無効または期限切れの可能性があります。",
     "backToLogin": "ログインに戻る",
     "resetTokenCopied": "トークンがクリップボードにコピーされました",
-    "resetTokenCopyFailed": "トークンのコピーに失敗しました"
+    "resetTokenCopyFailed": "トークンのコピーに失敗しました",
+    "visualLabel": "プライベートクライアントのポートレート",
+    "visualImageAlt": "奶黄包フォトポートフォリオの静かなエディトリアルポートレート",
+    "visualEyebrow": "PRIVATE CLIENT / ISSUE 08",
+    "visualTitle": "あなたのポートレートストーリーを、ひとつの場所に。",
+    "visualDescription": "予約内容、デポジットの更新、撮影を形づくる写真をプライベートな空間で確認できます。",
+    "accountAccessEyebrow": "CLIENT ACCESS",
+    "loginDescription": "プライベートな予約スペースへ進みます。",
+    "registerDescription": "アカウントを作成して、今後の撮影更新をまとめて管理します。",
+    "modeLabel": "アカウントアクセス方法",
+    "showPassword": "パスワードを表示",
+    "hidePassword": "パスワードを非表示",
+    "copyResetToken": "リセットトークンをコピー"
   },
   "payment": {
     "purpose": {

@@ -73,6 +73,10 @@ export function BookingCalendar({ selectedDate, onSelectDate, onRequestWaitlist,
 
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfWeek(year, month);
+  const dayLabelFormatter = useMemo(
+    () => new Intl.DateTimeFormat(i18n.language, { year: "numeric", month: "long", day: "numeric" }),
+    [i18n.language],
+  );
 
   const canGoPrev = year > minYear || (year === minYear && month > minMonth);
 
@@ -131,6 +135,36 @@ export function BookingCalendar({ selectedDate, onSelectDate, onRequestWaitlist,
     [year, month, availability, effectiveMinDate, onSelectDate, onRequestWaitlist],
   );
 
+  const isDayDisabled = useCallback((day: number) => {
+    const key = formatDateKey(year, month, day);
+    const info = availability[key];
+    const isPast = key < effectiveMinDate;
+    const canRequestWaitlist = info?.status === "booked" && Boolean(onRequestWaitlist) && !isPast;
+    return isPast || (info?.status === "booked" && !canRequestWaitlist);
+  }, [availability, effectiveMinDate, month, onRequestWaitlist, year]);
+
+  const findFocusableDay = useCallback((start: number, step: number) => {
+    let candidate = start;
+    while (candidate >= 1 && candidate <= daysInMonth) {
+      if (!isDayDisabled(candidate)) return candidate;
+      candidate += step;
+    }
+    return null;
+  }, [daysInMonth, isDayDisabled]);
+
+  useEffect(() => {
+    if (focusedDay === null) return undefined;
+    const frame = window.requestAnimationFrame(() => {
+      const dayButton = calendarRef.current?.querySelector<HTMLButtonElement>(
+        `[data-calendar-day="${focusedDay}"]`,
+      );
+      if (dayButton && !dayButton.disabled && document.activeElement !== dayButton) {
+        dayButton.focus();
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [focusedDay, month, year]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const cal = calendarRef.current;
@@ -140,25 +174,35 @@ export function BookingCalendar({ selectedDate, onSelectDate, onRequestWaitlist,
       if (focusedDay === null) {
         if (e.key === "ArrowLeft") { e.preventDefault(); goPrev(); }
         if (e.key === "ArrowRight") { e.preventDefault(); goNext(); }
-        if (e.key === "ArrowDown") { e.preventDefault(); setFocusedDay(1); }
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          setFocusedDay(findFocusableDay(1, 1));
+        }
         return;
       }
 
       // Day navigation
-      let newDay = focusedDay;
-      if (e.key === "ArrowLeft") { e.preventDefault(); newDay = Math.max(1, focusedDay - 1); }
-      else if (e.key === "ArrowRight") { e.preventDefault(); newDay = Math.min(daysInMonth, focusedDay + 1); }
-      else if (e.key === "ArrowUp") { e.preventDefault(); newDay = Math.max(1, focusedDay - 7); }
-      else if (e.key === "ArrowDown") { e.preventDefault(); newDay = Math.min(daysInMonth, focusedDay + 7); }
+      let newDay: number | null = focusedDay;
+      if (e.key === "ArrowLeft") { e.preventDefault(); newDay = findFocusableDay(focusedDay - 1, -1); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); newDay = findFocusableDay(focusedDay + 1, 1); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); newDay = findFocusableDay(focusedDay - 7, -7); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); newDay = findFocusableDay(focusedDay + 7, 7); }
+      else if (e.key === "Home") { e.preventDefault(); newDay = findFocusableDay(1, 1); }
+      else if (e.key === "End") { e.preventDefault(); newDay = findFocusableDay(daysInMonth, -1); }
       else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleDayClick(focusedDay); return; }
-      else if (e.key === "Escape") { e.preventDefault(); setFocusedDay(null); return; }
+      else if (e.key === "Escape") {
+        e.preventDefault();
+        setFocusedDay(null);
+        calendarRef.current?.querySelector<HTMLButtonElement>(".calendar-nav-btn:not(:disabled)")?.focus();
+        return;
+      }
       else return;
 
-      setFocusedDay(newDay);
+      if (newDay !== null) setFocusedDay(newDay);
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [focusedDay, daysInMonth, goPrev, goNext, handleDayClick]);
+  }, [focusedDay, daysInMonth, findFocusableDay, goPrev, goNext, handleDayClick]);
 
   const monthLabel = new Intl.DateTimeFormat(i18n.language, { year: "numeric", month: "long" }).format(new Date(year, month, 1));
 
@@ -279,9 +323,10 @@ export function BookingCalendar({ selectedDate, onSelectDate, onRequestWaitlist,
               key={cell.key}
               type="button"
               className={classNames}
+              data-calendar-day={cell.day}
               onClick={() => handleDayClick(cell.day)}
               disabled={isDisabled}
-              aria-label={`${cell.day}日 - ${statusLabel}`}
+              aria-label={`${dayLabelFormatter.format(new Date(year, month, cell.day))} - ${statusLabel}`}
               aria-pressed={isSelected}
               aria-current={isSelected ? "date" : undefined}
               onFocus={() => setFocusedDay(cell.day)}

@@ -224,7 +224,7 @@ function buildClickPopupContent(title: string, distance: string, zoneText: strin
 /* ══════════════════════════════════════════════
    Component
    ══════════════════════════════════════════════ */
-export function PhotoMap() {
+export function PhotoMap({ showHeading = true }: { showHeading?: boolean } = {}) {
   const { t } = useTranslation();
   const { photos } = usePublicPhotos();
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
@@ -253,11 +253,13 @@ export function PhotoMap() {
         viewport={{ once: true, margin: "-8% 0px" }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
-      <div className="section-heading">
-        <p>{t("photoMap.eyebrow")}</p>
-        <h2>{t("photoMap.title")}</h2>
-        <span>{t("photoMap.intro")}</span>
-      </div>
+      {showHeading && (
+        <div className="section-heading">
+          <p>{t("photoMap.eyebrow")}</p>
+          <h2>{t("photoMap.title")}</h2>
+          <span>{t("photoMap.intro")}</span>
+        </div>
+      )}
 
       {/* ── Location Search ── */}
       <LocationSearch locations={uniqueLocs} onLocationSelect={setSelectedLocation} />
@@ -311,7 +313,7 @@ export function PhotoMap() {
               dashArray: "8 6",
             }}
           >
-            <Tooltip direction="top" permanent>
+            <Tooltip direction="bottom" offset={[0, 28]} permanent>
               <span className="travel-map-label travel-map-label--fee">
                 {t("photoMap.mapLabelFee")}
               </span>
@@ -329,7 +331,7 @@ export function PhotoMap() {
               fillOpacity: 0.10,
             }}
           >
-            <Tooltip direction="top" permanent>
+            <Tooltip direction="top" offset={[0, -12]} permanent>
               <span className="travel-map-label travel-map-label--free">
                 {t("photoMap.mapLabelFree")}
               </span>

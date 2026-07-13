@@ -6,11 +6,14 @@ import { useCompare } from "../hooks/useCompare";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { CompareSlider } from "../components/CompareSlider";
 import { useState, useEffect, useCallback } from "react";
+import { PageTransition } from "../components/shared/PageTransition";
+import { useFocusTrap } from "../hooks/useFocusTrap";
+import { useSEO } from "../hooks/useSEO";
 
 const fullSrc = (src: string) => {
   const base = src.replace(/\?.*$/, "");
   const fileName = base.split("/").pop();
-  return fileName ? `/images/gallery/1200/${fileName}` : src;
+  return fileName ? `/images/gallery/960/${fileName}` : src;
 };
 
 export function ComparePage() {
@@ -19,6 +22,9 @@ export function ComparePage() {
   const [viewMode, setViewMode] = useState<"side-by-side" | "overlay">("side-by-side");
   const [swapped, setSwapped] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const shortcutDialogRef = useFocusTrap<HTMLDivElement>({ active: showShortcuts, initialFocus: "first" });
+
+  useSEO({ titleKey: "photoCompare.title", descKey: "photoCompare.description", path: "/compare" });
 
   const photos = swapped ? [...entries].reverse() : entries;
   const hasBoth = entries.length === 2;
@@ -31,18 +37,39 @@ export function ComparePage() {
     setSwapped((prev) => !prev);
   }, []);
 
+  const closeShortcuts = useCallback(() => {
+    setShowShortcuts(false);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (
+        e.target instanceof HTMLInputElement
+        || e.target instanceof HTMLTextAreaElement
+        || e.target instanceof HTMLSelectElement
+        || (e.target instanceof HTMLElement && e.target.isContentEditable)
+      ) return;
+
+      if (showShortcuts) {
+        if (e.key === "Escape" || e.key === "?") {
+          e.preventDefault();
+          closeShortcuts();
+        }
+        return;
+      }
 
       switch (e.key) {
         case "v":
-          e.preventDefault();
-          toggleViewMode();
+          if (hasBoth) {
+            e.preventDefault();
+            toggleViewMode();
+          }
           break;
         case "s":
-          e.preventDefault();
-          toggleSwap();
+          if (hasBoth) {
+            e.preventDefault();
+            toggleSwap();
+          }
           break;
         case "Escape":
           if (entries.length > 0) {
@@ -51,87 +78,125 @@ export function ComparePage() {
           break;
         case "?":
           e.preventDefault();
-          setShowShortcuts((prev) => !prev);
+          setShowShortcuts(true);
           break;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleViewMode, toggleSwap, clear, entries.length]);
+  }, [toggleViewMode, toggleSwap, clear, closeShortcuts, entries.length, hasBoth, showShortcuts]);
 
   return (
-    <div className="compare-page">
+    <PageTransition className="compare-page compare-page--editorial">
       <header className="compare-page-header">
-        <Link to="/gallery" className="compare-page-back">
-          <ArrowLeft size={16} />
-          {t("photoCompare.backToGallery", "Back to gallery")}
-        </Link>
-        <h1>
-          <GitCompare size={22} />
-          {t("photoCompare.title", "Compare photos")}
-        </h1>
+        <div className="compare-page-heading">
+          <Link to="/gallery" className="compare-page-back">
+            <ArrowLeft size={16} aria-hidden="true" />
+            {t("photoCompare.backToGallery")}
+          </Link>
+          <span className="compare-page-kicker">{t("photoCompare.eyebrow")}</span>
+          <h1>
+            <GitCompare size={22} aria-hidden="true" />
+            {t("photoCompare.title")}
+          </h1>
+          <p>{t("photoCompare.description")}</p>
+        </div>
         <div className="compare-page-actions">
           {hasBoth && (
             <>
-              <button
-                type="button"
-                className="compare-page-mode-btn"
-                onClick={toggleViewMode}
-                aria-label={t("photoCompare.toggleMode", "Toggle view mode")}
-              >
-                <Layers size={14} />
-                {viewMode === "side-by-side" ? t("photoCompare.overlay", "Overlay") : t("photoCompare.sideBySide", "Side by side")}
-              </button>
+              <div className="compare-page-mode-switch" role="group" aria-label={t("photoCompare.viewModeLabel")}>
+                <button
+                  type="button"
+                  className="compare-page-mode-btn"
+                  onClick={() => setViewMode("side-by-side")}
+                  aria-pressed={viewMode === "side-by-side"}
+                >
+                  <GitCompare size={15} aria-hidden="true" />
+                  {t("photoCompare.sideBySide")}
+                </button>
+                <button
+                  type="button"
+                  className="compare-page-mode-btn"
+                  onClick={() => setViewMode("overlay")}
+                  aria-pressed={viewMode === "overlay"}
+                >
+                  <Layers size={15} aria-hidden="true" />
+                  {t("photoCompare.overlay")}
+                </button>
+              </div>
               <button
                 type="button"
                 className="compare-page-mode-btn"
                 onClick={toggleSwap}
-                aria-label={t("photoCompare.swap", "Swap photos")}
+                aria-label={t("photoCompare.swap")}
               >
-                <Repeat size={14} />
-                {t("photoCompare.swap", "Swap")}
+                <Repeat size={15} aria-hidden="true" />
+                {t("photoCompare.swap")}
               </button>
             </>
           )}
           {entries.length > 0 && (
             <button type="button" className="compare-page-clear" onClick={clear}>
-              <X size={14} /> {t("photoCompare.clear", "Clear all")}
+              <X size={15} aria-hidden="true" /> {t("photoCompare.clearAll")}
             </button>
           )}
           <button
             type="button"
             className="compare-page-shortcuts-btn"
-            onClick={() => setShowShortcuts(!showShortcuts)}
-            aria-label={t("photoCompare.keyboardShortcuts", "Keyboard shortcuts")}
+            onClick={() => setShowShortcuts(true)}
+            aria-label={t("photoCompare.keyboardShortcuts")}
+            aria-expanded={showShortcuts}
           >
-            <Keyboard size={14} />
+            <Keyboard size={16} aria-hidden="true" />
           </button>
         </div>
       </header>
 
       {showShortcuts && (
-        <div className="compare-page-shortcuts">
-          <h3>{t("photoCompare.keyboardShortcuts", "Keyboard Shortcuts")}</h3>
-          <ul>
-            <li><kbd>V</kbd> {t("photoCompare.shortcutToggleMode", "Toggle view mode")}</li>
-            <li><kbd>S</kbd> {t("photoCompare.shortcutSwap", "Swap photos")}</li>
-            <li><kbd>Esc</kbd> {t("photoCompare.shortcutClear", "Clear comparison")}</li>
-            <li><kbd>?</kbd> {t("photoCompare.shortcutHelp", "Toggle this help")}</li>
-          </ul>
+        <div className="compare-page-dialog-backdrop" onMouseDown={closeShortcuts}>
+          <div
+            ref={shortcutDialogRef}
+            className="compare-page-shortcuts"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="compare-shortcuts-title"
+            aria-describedby="compare-shortcuts-description"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <div className="compare-page-shortcuts-heading">
+              <div>
+                <span>{t("photoCompare.shortcutEyebrow")}</span>
+                <h2 id="compare-shortcuts-title">{t("photoCompare.keyboardShortcuts")}</h2>
+              </div>
+              <button type="button" onClick={closeShortcuts} aria-label={t("photoCompare.closeShortcuts")}>
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+            <p id="compare-shortcuts-description">{t("photoCompare.shortcutDescription")}</p>
+            <ul>
+              <li><kbd>V</kbd> {t("photoCompare.shortcutToggleMode")}</li>
+              <li><kbd>S</kbd> {t("photoCompare.shortcutSwap")}</li>
+              <li><kbd>Esc</kbd> {t("photoCompare.shortcutClear")}</li>
+              <li><kbd>?</kbd> {t("photoCompare.shortcutHelp")}</li>
+            </ul>
+          </div>
         </div>
       )}
 
-      {entries.length === 0 ? (
-        <div className="compare-page-empty">
-          <p>{t("photoCompare.empty", "Add up to 2 photos to compare side by side.")}</p>
+      <main className="compare-page-stage">
+        {entries.length === 0 ? (
+          <div className="compare-page-empty">
+          <GitCompare size={28} aria-hidden="true" />
+          <h2>{t("photoCompare.emptyTitle")}</h2>
+          <p>{t("photoCompare.empty")}</p>
           <Link to="/gallery" className="compare-page-cta">
-            {t("photoCompare.browseGallery", "Browse gallery")}
+            {t("photoCompare.browseGallery")}
           </Link>
         </div>
       ) : entries.length === 1 ? (
-        <div className="compare-page-hint">
-          {t("photoCompare.needTwo", "Add one more photo to compare side by side.")}
+        <div className="compare-page-hint" role="status">
+          {t("photoCompare.needTwo")}
         </div>
       ) : null}
 
@@ -156,9 +221,9 @@ export function ComparePage() {
                   type="button"
                   className="compare-page-card-remove"
                   onClick={() => remove(entry.id)}
-                  aria-label={t("photoCompare.removeOne", "Remove this photo from compare")}
+                  aria-label={t("photoCompare.removeOne")}
                 >
-                  <X size={14} />
+                  <X size={15} aria-hidden="true" />
                 </button>
               </header>
               <div className="compare-page-image-wrap">
@@ -176,6 +241,7 @@ export function ComparePage() {
           ))}
         </div>
       )}
-    </div>
+      </main>
+    </PageTransition>
   );
 }

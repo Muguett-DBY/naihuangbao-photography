@@ -6,6 +6,42 @@ const root = process.cwd();
 const read = (path: string) => readFileSync(resolve(root, path), "utf8");
 
 describe("public booking conversion shell", () => {
+  it("organizes the complete booking journey as numbered semantic groups", () => {
+    const bookingPage = read("src/pages/BookingPage.tsx");
+    const bookingModal = read("src/components/BookingModal.tsx");
+
+    expect(bookingPage).toContain('className="booking-page booking-page--editorial"');
+    expect(bookingPage).toContain('image="/images/gallery/');
+    expect(bookingModal).toContain('<ol className="booking-step-rail"');
+    expect(bookingModal).toContain('className="booking-numbered-group"');
+    expect(bookingModal).toContain('booking-group-index">01');
+    expect(bookingModal).toContain('booking-group-index">05');
+  });
+
+  it("gives authentication modes and location search complete keyboard semantics", () => {
+    const login = read("src/pages/LoginPage.tsx");
+    const locationSearch = read("src/components/LocationSearch.tsx");
+
+    expect(login).toContain('className="auth-page-media"');
+    expect(login).toContain('className="login-mode-switch"');
+    expect(login).toContain("aria-pressed={mode === \"login\"}");
+    expect(login).not.toContain("tabIndex={-1}");
+    expect(login).not.toContain("/images/gallery/1200/");
+    expect(locationSearch).toContain('htmlFor="location-search-input"');
+    expect(locationSearch).toContain('role="combobox"');
+    expect(locationSearch).toContain("aria-activedescendant");
+    expect(locationSearch).not.toContain("<li\n              key={loc}\n              className=\"location-search-item\"\n              onClick");
+  });
+
+  it("keeps the map toolbar labeled and reports selected view state", () => {
+    const map = read("src/pages/MapPage.tsx");
+
+    expect(map).toContain('className="map-page map-page--editorial"');
+    expect(map).toContain('role="group"');
+    expect(map).toContain('aria-pressed={view === "map"}');
+    expect(map).toContain('aria-pressed={view === "list"}');
+  });
+
   it("loads only the Modal structural CSS sidecar", () => {
     const bookingModal = read("src/components/BookingModal.tsx");
     const animalTheme = read("src/styles/animal-theme.css");
