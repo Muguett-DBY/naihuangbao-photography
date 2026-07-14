@@ -22,10 +22,14 @@ describe("scroll reveal", () => {
     expect(css).toContain("cubic-bezier(0.22, 1, 0.36, 1)");
   });
 
-  it("wires the hook into the home services grid for a real fade-up reveal", () => {
+  it("wires the home service journal into scoped motion groups", () => {
     const home = read("src/pages/HomePage.tsx");
-    expect(home).toContain("useReveal");
-    expect(home).toContain("servicesRef");
-    expect(home).toContain("ref={servicesRef}");
+    const services = read("src/components/ServiceJournal.tsx");
+
+    expect(home).toContain("useGsapPageEffects(rootRef)");
+    expect(home).toContain("<ServiceJournal />");
+    expect(home).not.toContain("useReveal");
+    expect(services).toContain("data-motion-group");
+    expect(services).toContain("data-motion-item");
   });
 });

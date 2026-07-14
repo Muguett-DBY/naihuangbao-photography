@@ -3,18 +3,14 @@ import { Suspense, lazy, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
-  BookOpen,
   CalendarCheck,
-  Camera,
-  Download,
-  MapPinned,
   ShieldCheck,
 } from "lucide-react";
 import { useBookingModal } from "../hooks/useBookingModal";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
+import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
 import { useSEO } from "../hooks/useSEO";
-import { useReveal } from "../hooks/useReveal";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import { ErrorBoundary } from "../components/ErrorBoundary";
@@ -22,6 +18,7 @@ import { ImageWithFallback } from "../components/ImageWithFallback";
 import { PhotoOfTheDay } from "../components/PhotoOfTheDay";
 import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import { SectionSkeleton } from "../components/SectionSkeleton";
+import { ServiceJournal } from "../components/ServiceJournal";
 
 const Gallery = lazy(() => import("../components/Gallery").then((module) => ({ default: module.Gallery })));
 const WhyChooseUs = lazy(() => import("../components/WhyChooseUs").then((module) => ({ default: module.WhyChooseUs })));
@@ -36,15 +33,16 @@ export function HomePage() {
   const { siteConfig } = useSiteContent();
   const { openBookingModal } = useBookingModal();
   const rootRef = useRef<HTMLDivElement>(null);
-  const servicesRef = useReveal<HTMLDivElement>();
   const { photos } = usePublicPhotos();
 
   const coverPhotos = useMemo(
     () => photos.filter((photo) => photo.visibility === "public").slice(0, 3),
     [photos],
   );
+  const finalCtaPhoto = coverPhotos[2] ?? coverPhotos[0];
 
   useSEO({ titleKey: "seo.homeTitle", descKey: "seo.homeDesc", path: "/" });
+  useGsapPageEffects(rootRef);
 
   return (
     <PageTransition ref={rootRef}>
@@ -150,36 +148,7 @@ export function HomePage() {
             <p>{t("hero.intro")}</p>
           </div>
         </header>
-        <div className="home-services-grid" ref={servicesRef}>
-          <PrefetchLink to="/courses" className="home-service-card">
-            <BookOpen size={25} aria-hidden="true" />
-            <span className="home-service-number">01</span>
-            <h3>{t("nav.courses")}</h3>
-            <p>{t("courses.intro")}</p>
-            <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={15} /></span>
-          </PrefetchLink>
-          <PrefetchLink to="/products" className="home-service-card">
-            <Download size={25} aria-hidden="true" />
-            <span className="home-service-number">02</span>
-            <h3>{t("nav.presets")}</h3>
-            <p>{t("presets.intro")}</p>
-            <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={15} /></span>
-          </PrefetchLink>
-          <PrefetchLink to="/workshops" className="home-service-card">
-            <MapPinned size={25} aria-hidden="true" />
-            <span className="home-service-number">03</span>
-            <h3>{t("nav.workshops")}</h3>
-            <p>{t("workshops.intro")}</p>
-            <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={15} /></span>
-          </PrefetchLink>
-          <PrefetchLink to="/shop" className="home-service-card">
-            <Camera size={25} aria-hidden="true" />
-            <span className="home-service-number">04</span>
-            <h3>{t("nav.shop")}</h3>
-            <p>{t("merchandise.intro")}</p>
-            <span className="home-service-link">{t("common.learnMore")} <ArrowRight size={15} /></span>
-          </PrefetchLink>
-        </div>
+        <ServiceJournal />
       </section>
 
       <div className="home-editorial-band home-editorial-band--why">
@@ -206,21 +175,35 @@ export function HomePage() {
         </header>
         <ErrorBoundary>
           <Suspense fallback={<SectionSkeleton lines={3} />}>
-            <StyleQuiz />
+            <StyleQuiz showPreview />
           </Suspense>
         </ErrorBoundary>
       </section>
 
-      <section className="home-editorial-band home-final-cta">
-        <p className="home-band-index">05 / {t("midCTA.cta")}</p>
-        <div>
-          <h2>{t("midCTA.title")}</h2>
-          <p>{t("midCTA.desc")}</p>
+      <section className="home-final-cta" data-motion-group>
+        <div className="home-final-cta-media" data-motion-item>
+          {finalCtaPhoto ? (
+            <ImageWithFallback
+              src={finalCtaPhoto.imageUrl}
+              alt={finalCtaPhoto.alt}
+              title={finalCtaPhoto.title}
+              tone="ink"
+              sizes="100vw"
+            />
+          ) : null}
+          <span aria-hidden="true" />
         </div>
-        <button type="button" className="home-final-cta-button" onClick={() => openBookingModal()}>
-          <CalendarCheck size={18} aria-hidden="true" />
-          {t("midCTA.cta")}
-        </button>
+        <div className="home-final-cta-content" data-motion-item>
+          <p className="home-band-index">05 / {t("midCTA.cta")}</p>
+          <div>
+            <h2>{t("midCTA.title")}</h2>
+            <p>{t("midCTA.desc")}</p>
+          </div>
+          <button type="button" className="home-final-cta-button" onClick={() => openBookingModal()}>
+            <CalendarCheck size={18} aria-hidden="true" />
+            {t("midCTA.cta")}
+          </button>
+        </div>
       </section>
     </PageTransition>
   );

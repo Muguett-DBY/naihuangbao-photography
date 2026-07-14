@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Aperture,
   ArrowLeft,
@@ -23,6 +24,8 @@ import {
 } from "lucide-react";
 import { packages } from "../data/packages";
 import { useBookingModal } from "../hooks/useBookingModal";
+import { usePublicPhotos } from "../hooks/usePublicPhotos";
+import { ImageWithFallback } from "./ImageWithFallback";
 
 type Answers = {
   occasion: string;
@@ -129,9 +132,11 @@ function getGalleryTags(answers: Answers): string[] {
   return [...new Set(tags)];
 }
 
-export function StyleQuiz() {
+export function StyleQuiz({ showPreview = false }: { showPreview?: boolean }) {
   const { t } = useTranslation();
   const { openBookingModal } = useBookingModal();
+  const { photos } = usePublicPhotos();
+  const reduceMotion = useReducedMotion();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({ occasion: "", style: "", season: "", people: "" });
   const [result, setResult] = useState<ReturnType<typeof recommendPackage> | null>(null);
@@ -139,6 +144,10 @@ export function StyleQuiz() {
   const totalSteps = STEPS.length;
   const isComplete = currentStep >= totalSteps;
   const selectedValue = STEPS[currentStep]?.key ? answers[STEPS[currentStep].key] : "";
+  const previewPhotos = useMemo(
+    () => photos.filter((photo) => photo.visibility === "public").slice(0, totalSteps),
+    [photos, totalSteps],
+  );
 
   const handleSelect = (value: string) => {
     if (isComplete) return;
@@ -191,91 +200,133 @@ export function StyleQuiz() {
     }
   };
 
-  if (result) {
-    const tags = getGalleryTags(answers);
-    return (
-      <div className="style-quiz">
-        <div className="quiz-result">
-          <div className="quiz-result-badge">
-            <Sparkles size={14} />
-            <span>{t("quiz.result.title")}</span>
-          </div>
-          <div className="quiz-result-package">
-            <h3>{result.package.name}</h3>
-            <p className="quiz-result-price">{result.package.price} <span>{result.package.duration}</span></p>
-            <p className="quiz-result-reason">{result.reason}</p>
-            <ul className="quiz-result-includes">
-              {result.package.includes.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-            {tags.length > 0 && (
-              <div className="quiz-result-tags">
-                {tags.map((tag) => (
-                  <span key={tag} className="quiz-result-tag">{t(`gallery.filters.${tag}` as any)}</span>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="quiz-result-actions">
-            <button type="button" className="quiz-book-button" onClick={() => openBookingModal()}>
-              {t("quiz.bookNow")}
-            </button>
-            <div className="quiz-result-secondary-actions">
-              <button type="button" className="quiz-action-btn" onClick={handleShare}>
-                <Share2 size={14} /> {t("quiz.share")}
-              </button>
-              <button type="button" className="quiz-action-btn" onClick={handleRestart}>
-                <RotateCcw size={14} /> {t("quiz.restart")}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const step = STEPS[currentStep];
+  const step = STEPS[Math.min(currentStep, totalSteps - 1)] ?? STEPS[0];
+  const previewIndex = Math.min(currentStep, totalSteps - 1);
+  const previewPhoto = previewPhotos[previewIndex] ?? previewPhotos[0];
+  const previewLabel = result ? result.package.name : t(step.titleKey as never);
+  const tags = result ? getGalleryTags(answers) : [];
 
   return (
-    <div className="style-quiz">
-      <div className="quiz-progress">
-        {STEPS.map((_, i) => (
-          <div key={i} className={`quiz-progress-dot ${i < currentStep ? "is-done" : ""} ${i === currentStep ? "is-active" : ""}`} />
-        ))}
-      </div>
-      <p className="quiz-progress-text">{t("quiz.progress", { current: currentStep + 1, total: totalSteps })}</p>
-      <div className="quiz-step">
-        <h3 className="quiz-step-title">{t(step.titleKey as any)}</h3>
-        <div className="quiz-options">
-          {step.options.map((opt) => {
-            const Icon = opt.icon;
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                className={`quiz-option ${selectedValue === opt.value ? "quiz-option--selected" : ""}`}
-                onClick={() => handleSelect(opt.value)}
-                aria-pressed={selectedValue === opt.value}
+    <div className={showPreview ? "style-quiz style-quiz--with-preview" : "style-quiz"} data-motion-group>
+      {showPreview ? (
+        <div className="quiz-preview" data-motion-item>
+          <AnimatePresence initial={false} mode="wait">
+            {previewPhoto ? (
+              <motion.div
+                className="quiz-preview-frame"
+                key={previewPhoto.id}
+                initial={reduceMotion ? false : { opacity: 0, scale: 1.015 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={reduceMotion ? undefined : { opacity: 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span className="quiz-option-icon"><Icon size={24} aria-hidden="true" /></span>
-                <span className="quiz-option-label">{t(`quiz.options.${opt.value}` as any)}</span>
-              </button>
-            );
-          })}
+                <ImageWithFallback
+                  src={previewPhoto.imageUrl}
+                  alt={previewPhoto.alt}
+                  title={previewPhoto.title}
+                  tone="ink"
+                  sizes="(max-width: 980px) 100vw, 46vw"
+                />
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+          <div className="quiz-preview-caption">
+            <span>{String(previewIndex + 1).padStart(2, "0")} / {String(totalSteps).padStart(2, "0")}</span>
+            <p>{previewLabel}</p>
+          </div>
         </div>
-      </div>
-      <div className="quiz-nav">
-        {currentStep > 0 && (
-          <button type="button" className="quiz-nav-btn quiz-nav-btn--back" onClick={handleBack}>
-            <ArrowLeft size={16} /> {t("quiz.back")}
-          </button>
-        )}
-        {selectedValue && currentStep < totalSteps - 1 && (
-          <button type="button" className="quiz-nav-btn quiz-nav-btn--next" onClick={handleNext}>
-            {t("quiz.next")} <ArrowRight size={16} />
-          </button>
-        )}
+      ) : null}
+
+      <div className="quiz-workbench" data-motion-item>
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={result ? "result" : currentStep}
+            initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -10 }}
+            transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {result ? (
+              <div className="quiz-result">
+                <div className="quiz-result-badge">
+                  <Sparkles size={14} aria-hidden="true" />
+                  <span>{t("quiz.result.title")}</span>
+                </div>
+                <div className="quiz-result-package">
+                  <h3>{result.package.name}</h3>
+                  <p className="quiz-result-price">{result.package.price} <span>{result.package.duration}</span></p>
+                  <p className="quiz-result-reason">{result.reason}</p>
+                  <ul className="quiz-result-includes">
+                    {result.package.includes.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                  {tags.length > 0 ? (
+                    <div className="quiz-result-tags">
+                      {tags.map((tag) => (
+                        <span key={tag} className="quiz-result-tag">{t(`gallery.filters.${tag}` as never)}</span>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+                <div className="quiz-result-actions">
+                  <button type="button" className="quiz-book-button" onClick={() => openBookingModal()}>
+                    {t("quiz.bookNow")}
+                  </button>
+                  <div className="quiz-result-secondary-actions">
+                    <button type="button" className="quiz-action-btn" onClick={handleShare}>
+                      <Share2 size={14} aria-hidden="true" /> {t("quiz.share")}
+                    </button>
+                    <button type="button" className="quiz-action-btn" onClick={handleRestart}>
+                      <RotateCcw size={14} aria-hidden="true" /> {t("quiz.restart")}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="quiz-progress" aria-hidden="true">
+                  {STEPS.map((_, stepIndex) => (
+                    <div key={stepIndex} className={`quiz-progress-dot ${stepIndex < currentStep ? "is-done" : ""} ${stepIndex === currentStep ? "is-active" : ""}`} />
+                  ))}
+                </div>
+                <p className="quiz-progress-text">{t("quiz.progress", { current: currentStep + 1, total: totalSteps })}</p>
+                <div className="quiz-step">
+                  <h3 className="quiz-step-title">{t(step.titleKey as never)}</h3>
+                  <div className="quiz-options">
+                    {step.options.map((option) => {
+                      const Icon = option.icon;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          className={`quiz-option ${selectedValue === option.value ? "quiz-option--selected" : ""}`}
+                          onClick={() => handleSelect(option.value)}
+                          aria-pressed={selectedValue === option.value}
+                        >
+                          <span className="quiz-option-icon"><Icon size={24} aria-hidden="true" /></span>
+                          <span className="quiz-option-label">{t(`quiz.options.${option.value}` as never)}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="quiz-nav">
+                  {currentStep > 0 ? (
+                    <button type="button" className="quiz-nav-btn quiz-nav-btn--back" onClick={handleBack}>
+                      <ArrowLeft size={16} aria-hidden="true" /> {t("quiz.back")}
+                    </button>
+                  ) : null}
+                  {selectedValue && currentStep < totalSteps - 1 ? (
+                    <button type="button" className="quiz-nav-btn quiz-nav-btn--next" onClick={handleNext}>
+                      {t("quiz.next")} <ArrowRight size={16} aria-hidden="true" />
+                    </button>
+                  ) : null}
+                </div>
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
