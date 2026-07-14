@@ -14,3 +14,4 @@ source-assets/gallery/raw/*
 opencode.json
 .reasonix/
 bun.lock
+.worktrees/
