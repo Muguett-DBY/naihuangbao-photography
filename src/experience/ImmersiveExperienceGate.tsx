@@ -10,7 +10,7 @@ export function ImmersiveExperienceGate() {
     let active = true;
     void import("./ImmersiveExperience").then(({ ImmersiveExperience }) => {
       if (active) setExperience(() => ImmersiveExperience);
-    });
+    }).catch(() => undefined);
 
     return () => {
       active = false;

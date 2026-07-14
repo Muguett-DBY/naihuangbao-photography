@@ -118,6 +118,7 @@ describe("architecture optimization contracts", () => {
     const packageJson = read("package.json");
     const viteConfig = read("vite.config.ts");
     const rootLayout = read("src/layouts/RootLayout.tsx");
+    const gate = read("src/experience/ImmersiveExperienceGate.tsx");
 
     expect(packageJson).toContain('"three"');
     expect(viteConfig).toContain('return "immersive-vendor"');
@@ -125,5 +126,13 @@ describe("architecture optimization contracts", () => {
     expect(rootLayout).toContain("<ImmersiveExperienceGate");
     expect(rootLayout).not.toContain('from "three"');
     expect(existsSync(resolve(root, "src/experience/ImmersiveExperience.tsx"))).toBe(true);
+    expect(gate).toContain(".catch(() => undefined)");
+  });
+
+  it("keeps the temporary immersive dependency retention outside React renders", () => {
+    const immersiveExperience = read("src/experience/ImmersiveExperience.tsx");
+
+    expect(immersiveExperience).toContain("const placeholderColor = new Color();");
+    expect(immersiveExperience).not.toContain("new Color();\n  return null;");
   });
 });
