@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { selectExperienceTier } from "./capability-tier";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { readCapabilitySignals, selectExperienceTier } from "./capability-tier";
 
 const capable = {
   reducedMotion: false,
@@ -13,6 +13,10 @@ const capable = {
 };
 
 describe("selectExperienceTier", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it.each([
     ["reduced motion", { reducedMotion: true }],
     ["data saver", { saveData: true }],
@@ -29,5 +33,30 @@ describe("selectExperienceTier", () => {
 
   it("selects high only for a capable desktop", () => {
     expect(selectExperienceTier(capable)).toBe("high");
+  });
+
+  it("fails closed when the WebGL probe throws", () => {
+    const getContext = vi.fn(() => {
+      throw new Error("WebGL blocked");
+    });
+    const remove = vi.fn();
+
+    vi.stubGlobal("window", {
+      innerWidth: capable.viewportWidth,
+      matchMedia: vi.fn(() => ({ matches: false })),
+    });
+    vi.stubGlobal("navigator", {
+      connection: { saveData: false },
+      hardwareConcurrency: capable.hardwareConcurrency,
+      deviceMemory: capable.deviceMemory,
+    });
+    vi.stubGlobal("document", {
+      createElement: vi.fn(() => ({ getContext, remove })),
+    });
+    vi.stubGlobal("sessionStorage", { getItem: vi.fn(() => null) });
+
+    expect(readCapabilitySignals().webglAvailable).toBe(false);
+    expect(getContext).toHaveBeenCalledWith("webgl2");
+    expect(remove).toHaveBeenCalledOnce();
   });
 });

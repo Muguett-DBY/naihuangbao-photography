@@ -1,6 +1,8 @@
 import { Color } from "three";
 
+const placeholderColor = new Color();
+
 export function ImmersiveExperience() {
-  new Color();
+  void placeholderColor;
   return null;
 }
