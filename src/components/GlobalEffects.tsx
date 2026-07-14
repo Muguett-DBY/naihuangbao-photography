@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useGsapGlobalEffects } from "../hooks/useGsapGlobalEffects";
 import { CustomCursor } from "./CustomCursor";
 import { FilmGrain } from "./FilmGrain";
@@ -14,8 +14,7 @@ import { ScrollProgress } from "./ScrollProgress";
  * once this chunk arrives.
  */
 export default function GlobalEffects() {
-  const rootRef = useRef<HTMLDivElement | null>(null);
-  useGsapGlobalEffects(rootRef);
+  useGsapGlobalEffects();
 
   useEffect(() => {
     // Trigger the body class without re-entering Lenis (the hook handles that).

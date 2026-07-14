@@ -1,11 +1,11 @@
-import { useEffect, useRef, type RefObject } from "react";
+import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 gsap.registerPlugin(ScrollTrigger);
 
-let _globalInitialized = false;
+let globalInitialized = false;
 
 declare global {
   interface Window {
@@ -13,45 +13,44 @@ declare global {
   }
 }
 
-export function useGsapGlobalEffects(rootRef?: RefObject<HTMLElement | null>) {
-  const guardRef = useRef(false);
-  const lenisRef = useRef<Lenis | null>(null);
-
+export function useGsapGlobalEffects() {
   useEffect(() => {
-    if (_globalInitialized) return;
-    if (guardRef.current) return;
-    guardRef.current = true;
-    _globalInitialized = true;
-
-    // Lenis smooth scroll
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: "vertical",
-      smoothWheel: true,
-      syncTouch: true,
-      touchMultiplier: 1.5,
-      wheelMultiplier: 1.0,
-      infinite: false,
-    });
-
-    lenisRef.current = lenis;
-    window.__nhbLenis = lenis;
-    lenis.on("scroll", () => ScrollTrigger.update());
-    gsap.ticker.add((time) => lenis.raf(time * 1000));
-    gsap.ticker.lagSmoothing(0);
-
-    // Custom cursor global styles
+    if (globalInitialized) return;
+    globalInitialized = true;
     document.body.classList.add("is-loaded");
 
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+
+    if (reduceMotion || coarsePointer) {
+      return () => {
+        globalInitialized = false;
+      };
+    }
+
+    const lenis = new Lenis({
+      duration: 1,
+      easing: (t: number) => Math.min(1, 1.001 - 2 ** (-10 * t)),
+      orientation: "vertical",
+      smoothWheel: true,
+      syncTouch: false,
+      wheelMultiplier: 0.9,
+      infinite: false,
+    });
+    const syncScroll = () => ScrollTrigger.update();
+    const tickerFrame = (time: number) => lenis.raf(time * 1000);
+
+    window.__nhbLenis = lenis;
+    lenis.on("scroll", syncScroll);
+    gsap.ticker.add(tickerFrame);
+    gsap.ticker.lagSmoothing(500, 33);
+
     return () => {
-      lenisRef.current?.destroy();
-      lenisRef.current = null;
-      if (window.__nhbLenis === lenis) {
-        delete window.__nhbLenis;
-      }
-      _globalInitialized = false;
-      guardRef.current = false;
+      gsap.ticker.remove(tickerFrame);
+      lenis.off("scroll", syncScroll);
+      lenis.destroy();
+      if (window.__nhbLenis === lenis) delete window.__nhbLenis;
+      globalInitialized = false;
     };
-  }, [guardRef, lenisRef]);
+  }, []);
 }
