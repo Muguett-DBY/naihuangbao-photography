@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { createImageUrlStabilizer } from "./experience-controller";
 import type { ScenePresetId } from "./scene-presets";
-import { useExperienceStore } from "./ExperienceProvider";
+import { useExperienceRuntimeBridge, useExperienceStore } from "./ExperienceProvider";
 
 type ImmersiveAnchorOptions = {
   id: string;
@@ -17,11 +18,15 @@ function normalizedProgress(element: HTMLElement): number {
 
 export function useImmersiveAnchor({ id, preset, imageUrls }: ImmersiveAnchorOptions) {
   const store = useExperienceStore();
+  const runtimeBridge = useExperienceRuntimeBridge();
   const teardownRef = useRef<(() => void) | null>(null);
   const elementRef = useRef<HTMLElement | null>(null);
+  const stabilizeRef = useRef<ReturnType<typeof createImageUrlStabilizer> | null>(null);
+  if (stabilizeRef.current === null) stabilizeRef.current = createImageUrlStabilizer();
+  const stableImageUrls = stabilizeRef.current(imageUrls);
   const descriptor = useMemo(
-    () => ({ id, preset, imageUrls: [...imageUrls] }),
-    [id, imageUrls, preset],
+    () => ({ id, preset, imageUrls: stableImageUrls }),
+    [id, preset, stableImageUrls],
   );
 
   const anchorRef = useCallback((element: HTMLElement | null) => {
@@ -32,7 +37,8 @@ export function useImmersiveAnchor({ id, preset, imageUrls }: ImmersiveAnchorOpt
     elementRef.current = element;
     if (element === null) return;
 
-    const unregister = store.registerAnchor({ ...descriptor, element });
+    runtimeBridge.setAnchorIntersecting(false);
+    const unregister = store.registerAnchor({ ...descriptor, imageUrls: [...descriptor.imageUrls], element });
     let frame: number | null = null;
     const publishProgress = () => store.setScrollProgress(normalizedProgress(element));
     const onScroll = () => {
@@ -45,7 +51,7 @@ export function useImmersiveAnchor({ id, preset, imageUrls }: ImmersiveAnchorOpt
     const observer = typeof IntersectionObserver === "undefined"
       ? null
       : new IntersectionObserver(([entry]) => {
-        if (entry) store.setVisible(entry.isIntersecting && document.visibilityState === "visible");
+        if (entry) runtimeBridge.setAnchorIntersecting(entry.isIntersecting);
       }, { threshold: 0.01 });
 
     observer?.observe(element);
@@ -60,9 +66,10 @@ export function useImmersiveAnchor({ id, preset, imageUrls }: ImmersiveAnchorOpt
       observer?.disconnect();
       window.removeEventListener("scroll", onScroll);
       unregister();
+      runtimeBridge.setAnchorIntersecting(false);
       if (elementRef.current === element) elementRef.current = null;
     };
-  }, [descriptor, store]);
+  }, [descriptor, runtimeBridge, store]);
 
   useEffect(() => () => teardownRef.current?.(), []);
 

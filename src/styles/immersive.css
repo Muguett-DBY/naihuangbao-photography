@@ -32,7 +32,8 @@ html[data-immersive-ready="true"] .immersive-experience {
   z-index: 1;
 }
 
-main > :not(.page-hero) {
+#main-content .page-hero ~ section,
+#main-content .page-hero ~ .section-shell {
   background: var(--newsprint);
 }
 

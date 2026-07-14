@@ -1,4 +1,4 @@
-import { memo, useMemo, type ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 import type { ScenePresetId } from "../../experience/scene-presets";
 import { useImmersiveAnchor } from "../../experience/useImmersiveAnchor";
 
@@ -11,8 +11,10 @@ type PageHeroProps = {
   imageAlt?: string;
   issue?: string;
   immersivePreset?: ScenePresetId;
-  immersiveImages?: string[];
+  immersiveImages?: readonly string[];
 };
+
+const EMPTY_IMMERSIVE_IMAGES: readonly string[] = Object.freeze([]);
 
 function alternateImageSource(image: string, extension: "avif" | "webp") {
   return image.replace(/\.(?:avif|webp)(\?.*)?$/i, `.${extension}$1`);
@@ -29,11 +31,10 @@ export const PageHero = memo(function PageHero({
   immersivePreset,
   immersiveImages,
 }: PageHeroProps) {
-  const imageUrls = useMemo(() => immersiveImages ? [...immersiveImages] : [], [immersiveImages]);
   const immersiveAnchor = useImmersiveAnchor({
     id: `page-hero:${immersivePreset ?? "boundary"}`,
     preset: immersivePreset ?? "boundary",
-    imageUrls,
+    imageUrls: immersiveImages ?? EMPTY_IMMERSIVE_IMAGES,
   });
   const shouldRegisterImmersiveAnchor = immersivePreset !== undefined && immersiveImages !== undefined;
 
