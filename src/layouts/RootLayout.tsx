@@ -18,6 +18,7 @@ import { OfflineFallback } from "../components/OfflineFallback";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
 import { RouteHashScroller } from "../components/shared/RouteHashScroller";
 import { RouteLoadingState } from "../components/shared/RouteLoadingState";
+import { ImmersiveExperienceGate } from "../experience/ImmersiveExperienceGate";
 
 // Heavy visual effects and animations are split into a separate chunk
 // so the initial bundle only ships React + i18n + router. These activate
@@ -107,6 +108,7 @@ export function RootLayout() {
           </Suspense>
         </ErrorBoundary>
       )}
+      <ImmersiveExperienceGate />
       <AuthProvider>
         <BookingProvider>
           <SiteContentProvider>

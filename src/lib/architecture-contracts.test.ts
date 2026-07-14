@@ -114,26 +114,16 @@ describe("architecture optimization contracts", () => {
     expect(mainSource).not.toMatch(/^\s*ScrollTrigger\./m);
   });
 
-  it("removes the unused cinematic WebGL gallery from the public architecture", () => {
+  it("isolates the immersive Three.js runtime behind one lazy boundary", () => {
     const packageJson = read("package.json");
-    const gallerySource = read("src/components/Gallery.tsx");
     const viteConfig = read("vite.config.ts");
-    const cssSource = [
-      "src/styles/hero.css",
-      "src/styles/gallery.css",
-      "src/styles/sections.css",
-    ].map((path) => read(path)).join("\n");
+    const rootLayout = read("src/layouts/RootLayout.tsx");
 
-    expect(packageJson).not.toContain('"three"');
-    expect(packageJson).toContain('"@fontsource/nunito"');
-    expect(existsSync(resolve(root, "src/components/CinematicGalleryScene.tsx"))).toBe(false);
-    expect(existsSync(resolve(root, "src/lib/cinematic-gallery.ts"))).toBe(false);
-    expect(existsSync(resolve(root, "src/data/cinematic.ts"))).toBe(false);
-    expect(existsSync(resolve(root, "public/images/cinematic"))).toBe(false);
-    expect(viteConfig).not.toContain("images/cinematic");
-    expect(cssSource).not.toContain("cinematic");
-    expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
-    expect(gallerySource).not.toContain("<CinematicGalleryScene");
-    expect(gallerySource).toContain('t("gallery.description")');
+    expect(packageJson).toContain('"three"');
+    expect(viteConfig).toContain('return "immersive-vendor"');
+    expect(viteConfig).toContain("**/immersive-vendor-*.js");
+    expect(rootLayout).toContain("<ImmersiveExperienceGate");
+    expect(rootLayout).not.toContain('from "three"');
+    expect(existsSync(resolve(root, "src/experience/ImmersiveExperience.tsx"))).toBe(true);
   });
 });
