@@ -1,0 +1,44 @@
+.immersive-experience {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+html[data-immersive-ready="true"] .immersive-experience {
+  opacity: 1;
+}
+
+.immersive-experience-canvas {
+  display: block;
+  width: 100%;
+  height: 100dvh;
+  pointer-events: none;
+}
+
+.site-shell:has(.immersive-experience) {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+}
+
+.site-shell > :not(.immersive-experience) {
+  position: relative;
+  z-index: 1;
+}
+
+main > :not(.page-hero) {
+  background: var(--newsprint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .immersive-experience {
+    display: none;
+    transition: none;
+  }
+}
