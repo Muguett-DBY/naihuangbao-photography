@@ -63,6 +63,15 @@ type IdleWork<T> = {
   onReady(candidate: MorphCandidate, value: T): void;
 };
 
+type CommitResult =
+  | { committed: true }
+  | { committed: false; error: unknown; preservesStagedLeases: boolean };
+
+type MorphSettlement = {
+  resolve(): void;
+  reject(error: unknown): void;
+};
+
 function isBudgetAdmissionFailure(error: unknown): boolean {
   if (error instanceof RangeError) return true;
   return error instanceof AggregateError && error.errors.some((entry) => entry instanceof RangeError);
@@ -96,7 +105,8 @@ export class TextureMorphCoordinator<T> {
   private stagedLease: TextureLease | null = null;
   private backgroundLease: TextureLease | null = null;
   private visibleResources: VisibleResource[] = [];
-  private settleCurrent: (() => void) | null = null;
+  private conservativeLeases: TextureLease[] = [];
+  private settleCurrent: MorphSettlement | null = null;
   private disposed = false;
 
   constructor(options: TextureMorphCoordinatorOptions<T>) {
@@ -130,8 +140,8 @@ export class TextureMorphCoordinator<T> {
     });
 
     if (candidates.length === 0) {
-      this.commitFallback(version, slots);
-      return Promise.resolve();
+      const result = this.commitFallback(version, slots);
+      return result.committed ? Promise.resolve() : Promise.reject(result.error);
     }
 
     const candidateUrls = candidates.map((candidate) => candidate.url);
@@ -144,31 +154,33 @@ export class TextureMorphCoordinator<T> {
       this.release(this.stagedLease);
       this.stagedLease = null;
       this.report(error);
-      this.commitFallback(version, slots);
-      return Promise.resolve();
+      const result = this.commitFallback(version, slots);
+      return result.committed ? Promise.resolve() : Promise.reject(result.error);
     }
 
-    return new Promise<void>((resolve) => {
-      this.settleCurrent = resolve;
+    return new Promise<void>((resolve, reject) => {
+      this.settleCurrent = { resolve, reject };
       const critical = candidates.slice(0, 3);
       let completedCritical = 0;
       let committed = false;
       let budgetHandedOff = false;
 
-      const abandonMorph = () => {
+      const rejectMorph = (error: unknown, releaseStagedLease: boolean) => {
         if (version !== this.generation) return;
         this.generation += 1;
         this.cancelIdle();
         this.idleWork = null;
-        this.releaseStagedLease(stagedLease);
+        if (releaseStagedLease) this.releaseStagedLease(stagedLease);
         this.retain(this.visibleResources.map((resource) => resource.url));
+        this.rejectCurrent(error);
       };
 
       const handoffForBudget = () => {
         if (budgetHandedOff || this.visibleResources.length === 0) return true;
         const inkSlots = slots.map(() => null);
-        if (!this.commitFallback(version, inkSlots, candidateUrls, true)) {
-          abandonMorph();
+        const result = this.commitFallback(version, inkSlots, candidateUrls, true);
+        if (!result.committed) {
+          rejectMorph(result.error, !result.preservesStagedLeases);
           return false;
         }
         budgetHandedOff = true;
@@ -179,10 +191,13 @@ export class TextureMorphCoordinator<T> {
         if (committed || this.disposed || version !== this.generation) return;
         committed = true;
         const hasTexture = slots.some((slot) => slot !== null);
-        const committedSlots = hasTexture
+        const result = hasTexture
           ? this.commitSlots(version, slots, candidates, stagedLease)
           : this.commitFallback(version, slots);
-        if (!committedSlots) abandonMorph();
+        if (!result.committed) {
+          rejectMorph(result.error, !result.preservesStagedLeases);
+          return;
+        }
         else if (!hasTexture) this.releaseStagedLease(stagedLease);
         this.finishCurrent();
       };
@@ -242,6 +257,7 @@ export class TextureMorphCoordinator<T> {
     this.release(this.stagedLease);
     this.release(this.backgroundLease);
     this.releaseMany(this.visibleResources.map((resource) => resource.lease));
+    this.releaseConservativeLeases();
     this.stagedLease = null;
     this.backgroundLease = null;
     this.visibleResources = [];
@@ -281,14 +297,19 @@ export class TextureMorphCoordinator<T> {
     slots: Array<T | null>,
     retainedUrls: string[] = [],
     discardUnretained = false,
-  ): boolean {
-    if (this.disposed || version !== this.generation || !this.callCommit(slots)) return false;
+  ): CommitResult {
+    if (this.disposed || version !== this.generation) {
+      return { committed: false, error: new Error("Texture morph is no longer active."), preservesStagedLeases: false };
+    }
+    const commit = this.callCommit(slots);
+    if (!commit.committed) return commit;
     const oldVisibleResources = this.visibleResources;
     this.visibleResources = [];
     this.releaseMany(oldVisibleResources.map((resource) => resource.lease));
+    this.releaseConservativeLeases();
     this.retain(retainedUrls);
     if (discardUnretained) this.discardUnretained(retainedUrls);
-    return true;
+    return { committed: true };
   }
 
   private commitSlots(
@@ -296,8 +317,10 @@ export class TextureMorphCoordinator<T> {
     slots: Array<T | null>,
     candidates: MorphCandidate[],
     stagedLease: TextureLease,
-  ): boolean {
-    if (this.disposed || version !== this.generation) return false;
+  ): CommitResult {
+    if (this.disposed || version !== this.generation) {
+      return { committed: false, error: new Error("Texture morph is no longer active."), preservesStagedLeases: false };
+    }
     const successful = candidates.filter((candidate) => slots[candidate.index] !== null);
     const successfulUrls = successful.map((candidate) => candidate.url);
     const nextVisibleResources: VisibleResource[] = [];
@@ -315,12 +338,11 @@ export class TextureMorphCoordinator<T> {
       }
     }
 
-    if (!this.callCommit(slots)) {
-      this.releaseMany(nextVisibleResources.map((resource) => resource.lease));
-      this.releaseStagedLease(stagedLease);
-      this.retain(this.visibleResources.map((resource) => resource.url));
-      this.discardUnretained(this.visibleResources.map((resource) => resource.url));
-      return false;
+    const commit = this.callCommit(slots);
+    if (!commit.committed) {
+      this.preserveStagedLease(stagedLease);
+      this.preserveLeases(nextVisibleResources.map((resource) => resource.lease));
+      return { ...commit, preservesStagedLeases: true };
     }
 
     const oldVisibleResources = this.visibleResources;
@@ -328,8 +350,9 @@ export class TextureMorphCoordinator<T> {
     this.backgroundLease = stagedLease;
     if (this.stagedLease === stagedLease) this.stagedLease = null;
     this.releaseMany(oldVisibleResources.map((resource) => resource.lease));
+    this.releaseConservativeLeases();
     this.retain(candidates.map((candidate) => candidate.url));
-    return true;
+    return { committed: true };
   }
 
   private beginIdleWork(
@@ -386,7 +409,13 @@ export class TextureMorphCoordinator<T> {
   private finishCurrent(): void {
     const settle = this.settleCurrent;
     this.settleCurrent = null;
-    settle?.();
+    settle?.resolve();
+  }
+
+  private rejectCurrent(error: unknown): void {
+    const settle = this.settleCurrent;
+    this.settleCurrent = null;
+    settle?.reject(error);
   }
 
   private cancelIdle(): void {
@@ -405,13 +434,27 @@ export class TextureMorphCoordinator<T> {
     this.release(lease);
   }
 
-  private callCommit(slots: ReadonlyArray<T | null>): boolean {
+  private preserveStagedLease(lease: TextureLease): void {
+    if (this.stagedLease === lease) this.stagedLease = null;
+    this.conservativeLeases.push(lease);
+  }
+
+  private preserveLeases(leases: TextureLease[]): void {
+    this.conservativeLeases.push(...leases);
+  }
+
+  private releaseConservativeLeases(): void {
+    const leases = this.conservativeLeases;
+    this.conservativeLeases = [];
+    this.releaseMany(leases);
+  }
+
+  private callCommit(slots: ReadonlyArray<T | null>): CommitResult {
     try {
       this.onCommit(slots);
-      return true;
+      return { committed: true };
     } catch (error) {
-      this.report(error);
-      return false;
+      return { committed: false, error, preservesStagedLeases: false };
     }
   }
 

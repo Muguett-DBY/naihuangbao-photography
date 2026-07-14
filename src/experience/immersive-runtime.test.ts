@@ -317,10 +317,10 @@ describe("ImmersiveRuntime", () => {
     expect(harness.commits.at(-1)).toEqual([replacement.value]);
   });
 
-  it("keeps old visible ownership when a replacement commit callback throws", async () => {
+  it("rejects a partial commit, retries the scene, and releases conservative leases once", async () => {
     const loads = new Map<string, MorphLoad[]>();
     const pool = new TexturePool<MorphTexture>({
-      maxBytes: 8,
+      maxBytes: 16,
       load: (url, signal) => new Promise<TextureLoadResult<MorphTexture>>((resolve, reject) => {
         const entries = loads.get(url) ?? [];
         entries.push({ signal, resolve, reject });
@@ -329,32 +329,72 @@ describe("ImmersiveRuntime", () => {
       dispose: (value) => value.dispose(),
     });
     const commitFailure = new Error("commit failed");
-    const onCommit = vi.fn(() => {
-      if (onCommit.mock.calls.length === 2) throw commitFailure;
+    const mapped: Array<MorphTexture | null> = [null, null];
+    let failCommit = false;
+    const onCommit = vi.fn((slots: ReadonlyArray<MorphTexture | null>) => {
+      if (failCommit) {
+        mapped[0] = slots[0] ?? null;
+        throw commitFailure;
+      }
+      mapped.splice(0, mapped.length, ...slots);
     });
-    const errors: unknown[] = [];
     const coordinator = new TextureMorphCoordinator({
       pool,
       idleScheduler: createIdleScheduler(),
       onCommit,
-      onUpdate: vi.fn(),
-      onError: (error) => errors.push(error),
+      onUpdate: (index, value) => {
+        mapped[index] = value;
+      },
     });
-    const firstMorph = coordinator.morph(["/old.avif"], 1);
-    const old = morphTexture("old");
-    loads.get("http://localhost/old.avif")?.[0]?.resolve(old);
-    await firstMorph;
+    const store = createExperienceStore();
+    const scheduler = createScheduler();
+    const fake = createDriver();
+    const runtimeError = vi.fn();
+    vi.mocked(fake.driver.morphTo).mockImplementation((_, imageUrls) => coordinator.morph(imageUrls, 2));
+    const runtime = new ImmersiveRuntime({
+      store,
+      tier: "high",
+      createDriver: () => fake.driver,
+      scheduler,
+      onError: runtimeError,
+    });
 
-    const secondMorph = coordinator.morph(["/replacement.webp"], 1);
+    store.registerAnchor({ id: "old", preset: "home", imageUrls: ["/old.avif", "/old-two.webp"] });
+    const old = morphTexture("old");
+    const oldTwo = morphTexture("old-two");
+    loads.get("http://localhost/old.avif")?.[0]?.resolve(old);
+    loads.get("http://localhost/old-two.webp")?.[0]?.resolve(oldTwo);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    failCommit = true;
+    store.registerAnchor({ id: "replacement", preset: "home", imageUrls: ["/replacement.webp", "/replacement-two.avif"] });
     const replacement = morphTexture("replacement");
     loads.get("http://localhost/replacement.webp")?.[0]?.resolve(replacement);
-    await secondMorph;
+    const failedMorph = vi.mocked(fake.driver.morphTo).mock.results[1]?.value as Promise<void>;
 
-    expect(errors).toContain(commitFailure);
-    expect(old.value.dispose).not.toHaveBeenCalled();
-    expect(replacement.value.dispose).toHaveBeenCalledOnce();
+    await expect(failedMorph).rejects.toBe(commitFailure);
+    await Promise.resolve();
+    expect(mapped).toEqual([replacement.value, oldTwo.value]);
+    expect(replacement.value.dispose).not.toHaveBeenCalled();
+    expect(oldTwo.value.dispose).not.toHaveBeenCalled();
+    expect(runtimeError).toHaveBeenCalledWith(commitFailure);
+
+    failCommit = false;
+    store.setPointer(0.25, 0);
+    const retryMorph = vi.mocked(fake.driver.morphTo).mock.results[2]?.value as Promise<void>;
+    await retryMorph;
+
+    expect(fake.driver.morphTo).toHaveBeenCalledTimes(3);
+    expect(runtime.state).toBe("active");
     pool.setMaxBytes(4);
-    expect(old.value.dispose).not.toHaveBeenCalled();
+    expect(old.value.dispose).toHaveBeenCalledOnce();
+    expect(oldTwo.value.dispose).toHaveBeenCalledOnce();
+    expect(replacement.value.dispose).not.toHaveBeenCalled();
+
+    coordinator.dispose();
+    pool.setMaxBytes(0);
+    expect(replacement.value.dispose).toHaveBeenCalledOnce();
   });
 
   it("retains a visible slot lease when budget clearing onUpdate throws", async () => {
