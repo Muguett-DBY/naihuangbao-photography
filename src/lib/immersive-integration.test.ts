@@ -49,13 +49,17 @@ describe("immersive experience integration", () => {
     expect(css).toContain(".immersive-experience");
   });
 
-  it("keeps document visibility publication in the layout and anchor intersection in the runtime bridge", () => {
+  it("keeps document visibility publication in the layout and explicit anchor ownership in the runtime bridge", () => {
     const rootLayout = read("src/layouts/RootLayout.tsx");
     const anchor = read("src/experience/useImmersiveAnchor.ts");
+    const immersiveExperience = read("src/experience/ImmersiveExperience.tsx");
 
     expect(rootLayout).toContain("store.setVisible(document.visibilityState === \"visible\")");
     expect(anchor).not.toContain("setVisible(");
-    expect(anchor).toContain("runtimeBridge.setAnchorIntersecting(entry.isIntersecting)");
+    expect(anchor).toContain("runtimeBridge.registerAnchor(");
+    expect(anchor).toContain("anchorRegistration.setIntersecting(entry.isIntersecting)");
+    expect(anchor).toContain("anchorRegistration.unregister()");
+    expect(immersiveExperience).toContain("runtimeBridge.registerRuntime(runtime)");
   });
 
   it("starts lazy loading at the hard deadline and cleans every pending handle once", () => {
@@ -95,7 +99,7 @@ describe("immersive experience integration", () => {
     expect(unsubscribeTrigger).toHaveBeenCalledOnce();
   });
 
-  it("lets the first input win and replays deterministic anchor state to the latest runtime", () => {
+  it("lets the first input win", () => {
     const load = vi.fn();
     const triggerUnsubscribe = vi.fn();
     let triggerCallback: (() => void) | undefined;
@@ -114,22 +118,44 @@ describe("immersive experience integration", () => {
     expect(load).toHaveBeenCalledOnce();
     expect(triggerUnsubscribe).toHaveBeenCalledOnce();
 
-    const bridge = new ExperienceRuntimeBridge();
-    bridge.setAnchorIntersecting(true);
-    const firstRuntime = { setAnchorIntersecting: vi.fn() };
-    const unregisterFirst = bridge.registerRuntime(firstRuntime);
-    expect(firstRuntime.setAnchorIntersecting).toHaveBeenCalledWith(true);
+  });
 
-    bridge.setAnchorIntersecting(false);
-    expect(firstRuntime.setAnchorIntersecting).toHaveBeenLastCalledWith(false);
-    unregisterFirst();
-    bridge.setAnchorIntersecting(true);
-    expect(firstRuntime.setAnchorIntersecting).toHaveBeenCalledTimes(2);
+  it("replays no-anchor route rendering and anchor intersection state to lazy runtimes", () => {
+    type AnchorLease = { setIntersecting(intersecting: boolean): void; unregister(): void };
+    type AnchorAwareBridge = ExperienceRuntimeBridge & { registerAnchor(intersecting: boolean): AnchorLease };
+    const bridge = new ExperienceRuntimeBridge() as AnchorAwareBridge;
 
-    const secondRuntime = { setAnchorIntersecting: vi.fn() };
-    const unregisterSecond = bridge.registerRuntime(secondRuntime);
-    expect(secondRuntime.setAnchorIntersecting).toHaveBeenCalledWith(true);
-    unregisterSecond();
+    const routeRuntime = { setAnchorIntersecting: vi.fn() };
+    bridge.registerRuntime(routeRuntime);
+    expect(routeRuntime.setAnchorIntersecting).toHaveBeenCalledWith(true);
+
+    const beforeRuntimeBridge = new ExperienceRuntimeBridge() as AnchorAwareBridge;
+    const beforeRuntimeAnchor = beforeRuntimeBridge.registerAnchor(false);
+    const lazyRuntime = { setAnchorIntersecting: vi.fn() };
+    beforeRuntimeBridge.registerRuntime(lazyRuntime);
+    expect(lazyRuntime.setAnchorIntersecting).toHaveBeenCalledWith(false);
+
+    beforeRuntimeAnchor.setIntersecting(true);
+    expect(lazyRuntime.setAnchorIntersecting).toHaveBeenLastCalledWith(true);
+  });
+
+  it("clears only the current anchor and resumes route rendering after exact cleanup", () => {
+    type AnchorLease = { setIntersecting(intersecting: boolean): void; unregister(): void };
+    type AnchorAwareBridge = ExperienceRuntimeBridge & { registerAnchor(intersecting: boolean): AnchorLease };
+    const bridge = new ExperienceRuntimeBridge() as AnchorAwareBridge;
+    const runtime = { setAnchorIntersecting: vi.fn() };
+    bridge.registerRuntime(runtime);
+
+    const first = bridge.registerAnchor(false);
+    expect(runtime.setAnchorIntersecting).toHaveBeenLastCalledWith(false);
+    const second = bridge.registerAnchor(false);
+    first.unregister();
+    expect(runtime.setAnchorIntersecting).toHaveBeenLastCalledWith(false);
+
+    second.setIntersecting(true);
+    second.setIntersecting(false);
+    second.unregister();
+    expect(runtime.setAnchorIntersecting).toHaveBeenLastCalledWith(true);
   });
 
   it("keeps static runtime readiness hidden and stabilizes equal image descriptor values", () => {
