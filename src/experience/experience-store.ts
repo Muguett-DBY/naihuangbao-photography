@@ -9,9 +9,13 @@ export type ExperienceAnchor = {
   element?: HTMLElement | null;
 };
 
+type RegisteredExperienceAnchor = Readonly<Omit<ExperienceAnchor, "imageUrls">> & {
+  readonly imageUrls: readonly string[];
+};
+
 export type ExperienceSnapshot = {
   route: ScenePresetId | null;
-  anchor: ExperienceAnchor | null;
+  anchor: RegisteredExperienceAnchor | null;
   pointerX: number;
   pointerY: number;
   scrollProgress: number;
@@ -32,11 +36,46 @@ export type ExperienceStore = {
 };
 
 function clamp(value: number, minimum: number, maximum: number): number {
+  if (!Number.isFinite(value)) return 0;
   return Math.min(maximum, Math.max(minimum, value));
 }
 
-function createSnapshot(values: ExperienceSnapshot): ExperienceSnapshot {
-  return Object.freeze(values);
+function createReadonlyPauseReasons(reasons: Iterable<ExperiencePauseReason>): ReadonlySet<ExperiencePauseReason> {
+  const values = new Set(reasons);
+  const view: ReadonlySet<ExperiencePauseReason> = {
+    get size() {
+      return values.size;
+    },
+    has(value) {
+      return values.has(value);
+    },
+    entries: () => values.entries(),
+    keys: () => values.keys(),
+    values: () => values.values(),
+    forEach(callback, thisArg) {
+      for (const value of values) callback.call(thisArg, value, value, view);
+    },
+    [Symbol.iterator]: () => values.values(),
+  };
+  return Object.freeze(view);
+}
+
+function createRegisteredAnchor(anchor: ExperienceAnchor): RegisteredExperienceAnchor {
+  return Object.freeze({
+    ...anchor,
+    imageUrls: Object.freeze([...anchor.imageUrls]),
+  }) as RegisteredExperienceAnchor;
+}
+
+type SnapshotValues = Omit<ExperienceSnapshot, "pauseReasons"> & {
+  pauseReasons: Iterable<ExperiencePauseReason>;
+};
+
+function createSnapshot(values: SnapshotValues): ExperienceSnapshot {
+  return Object.freeze({
+    ...values,
+    pauseReasons: createReadonlyPauseReasons(values.pauseReasons),
+  });
 }
 
 export function createExperienceStore(): ExperienceStore {
@@ -70,10 +109,7 @@ export function createExperienceStore(): ExperienceStore {
     },
     registerAnchor(anchor) {
       const token = ++registrationToken;
-      const registeredAnchor: ExperienceAnchor = {
-        ...anchor,
-        imageUrls: [...anchor.imageUrls],
-      };
+      const registeredAnchor = createRegisteredAnchor(anchor);
       publish(createSnapshot({ ...snapshot, anchor: registeredAnchor }));
 
       return () => {
