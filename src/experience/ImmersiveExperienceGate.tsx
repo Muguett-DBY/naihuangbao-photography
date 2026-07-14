@@ -1,9 +1,22 @@
 import { useEffect, useState, type ComponentType } from "react";
 import { scheduleIdleTask } from "../lib/idle";
 import { readCapabilitySignals, selectExperienceTier, type ExperienceTier } from "./capability-tier";
+import { createDeferredExperienceLoad } from "./experience-controller";
 
 type RenderedTier = Exclude<ExperienceTier, "static">;
 type ExperienceComponent = ComponentType<{ tier: RenderedTier }>;
+
+function subscribeToFirstInput(callback: () => void): () => void {
+  const onInput = () => callback();
+  window.addEventListener("pointerdown", onInput, { passive: true });
+  window.addEventListener("focusin", onInput, true);
+  window.addEventListener("scroll", onInput, { passive: true });
+  return () => {
+    window.removeEventListener("pointerdown", onInput);
+    window.removeEventListener("focusin", onInput, true);
+    window.removeEventListener("scroll", onInput);
+  };
+}
 
 export function ImmersiveExperienceGate() {
   const [Experience, setExperience] = useState<ExperienceComponent | null>(null);
@@ -14,35 +27,25 @@ export function ImmersiveExperienceGate() {
     if (resolvedTier === "static") return;
 
     let active = true;
-    let started = false;
-    let cancelIdleTask: () => void = () => undefined;
-    const cleanupTriggers = () => {
-      window.removeEventListener("pointerdown", load);
-      window.removeEventListener("focusin", load, true);
-      window.removeEventListener("scroll", load);
-    };
-    const load = () => {
-      if (!active || started) return;
-      started = true;
-      cancelIdleTask();
-      cleanupTriggers();
-
-      void import("./ImmersiveExperience").then(({ ImmersiveExperience }) => {
-        if (!active) return;
-        setTier(resolvedTier);
-        setExperience(() => ImmersiveExperience);
-      }).catch(() => undefined);
-    };
-
-    cancelIdleTask = scheduleIdleTask(load, 120);
-    window.addEventListener("pointerdown", load, { passive: true, once: true });
-    window.addEventListener("focusin", load, { capture: true, once: true });
-    window.addEventListener("scroll", load, { passive: true, once: true });
+    const disposeDeferredLoad = createDeferredExperienceLoad({
+      load: () => {
+        void import("./ImmersiveExperience").then(({ ImmersiveExperience }) => {
+          if (!active) return;
+          setTier(resolvedTier);
+          setExperience(() => ImmersiveExperience);
+        }).catch(() => undefined);
+      },
+      scheduleIdle: (callback) => scheduleIdleTask(callback, 0),
+      scheduleDeadline: (callback, delayMs) => {
+        const timeout = window.setTimeout(callback, delayMs);
+        return () => window.clearTimeout(timeout);
+      },
+      subscribeImmediateTrigger: subscribeToFirstInput,
+    });
 
     return () => {
       active = false;
-      cancelIdleTask();
-      cleanupTriggers();
+      disposeDeferredLoad();
     };
   }, []);
 

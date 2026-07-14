@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Color } from "three";
 import type { ExperienceTier } from "./capability-tier";
-import { useExperienceStore } from "./ExperienceProvider";
+import { isImmersiveCanvasReady } from "./experience-controller";
+import { useExperienceRuntimeBridge, useExperienceStore } from "./ExperienceProvider";
 import { ImmersiveRuntime } from "./immersive-runtime";
 import { createThreeSceneDriver } from "./three-scene-driver";
 
@@ -15,6 +16,7 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const runtimeRef = useRef<ImmersiveRuntime | null>(null);
   const store = useExperienceStore();
+  const runtimeBridge = useExperienceRuntimeBridge();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -31,21 +33,31 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
       },
     });
     runtimeRef.current = runtime;
+    const unregisterRuntime = runtimeBridge.registerRuntime(runtime);
+
+    const syncReadiness = () => {
+      if (isImmersiveCanvasReady(runtime.tier)) document.documentElement.dataset.immersiveReady = "true";
+      else delete document.documentElement.dataset.immersiveReady;
+    };
 
     const resize = () => runtime.setSize(canvas.clientWidth, canvas.clientHeight);
     const resizeObserver = new ResizeObserver(resize);
     const onContextLost = (event: Event) => {
       event.preventDefault();
       runtime.handleContextLost();
+      syncReadiness();
     };
-    const onContextRestored = () => runtime.handleContextRestored();
+    const onContextRestored = () => {
+      runtime.handleContextRestored();
+      syncReadiness();
+    };
     let disposed = false;
 
     resizeObserver.observe(canvas);
     canvas.addEventListener("webglcontextlost", onContextLost);
     canvas.addEventListener("webglcontextrestored", onContextRestored);
     resize();
-    if (runtime.tier !== "static") document.documentElement.dataset.immersiveReady = "true";
+    syncReadiness();
 
     return () => {
       if (disposed) return;
@@ -53,11 +65,12 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
       resizeObserver.disconnect();
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);
+      unregisterRuntime();
       runtime.dispose();
       if (runtimeRef.current === runtime) runtimeRef.current = null;
       delete document.documentElement.dataset.immersiveReady;
     };
-  }, [store, tier]);
+  }, [runtimeBridge, store, tier]);
 
   void placeholderColor;
   return (
