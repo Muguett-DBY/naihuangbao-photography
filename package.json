@@ -39,7 +39,7 @@
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.18.1",
     "swiper": "^14.0.5",
-    "three": "^0.185.1"
+    "three": "0.175.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260713.1",
