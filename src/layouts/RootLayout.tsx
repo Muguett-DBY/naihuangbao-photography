@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { PublicChatLauncher } from "../components/PublicChatLauncher";
@@ -19,6 +19,9 @@ import { useOnlineStatus } from "../hooks/useOnlineStatus";
 import { RouteHashScroller } from "../components/shared/RouteHashScroller";
 import { RouteLoadingState } from "../components/shared/RouteLoadingState";
 import { ImmersiveExperienceGate } from "../experience/ImmersiveExperienceGate";
+import { ExperienceProvider, useExperienceStore } from "../experience/ExperienceProvider";
+import { useExperiencePause } from "../experience/useExperiencePause";
+import { resolveRoutePreset } from "../experience/scene-presets";
 
 // Heavy visual effects and animations are split into a separate chunk
 // so the initial bundle only ships React + i18n + router. These activate
@@ -37,6 +40,29 @@ function focusWithTemporaryTabIndex(target: HTMLElement) {
   }
 }
 
+function ExperienceStateBridge({ pathname, chatOpen, isEditor }: {
+  pathname: string;
+  chatOpen: boolean;
+  isEditor: boolean;
+}) {
+  const store = useExperienceStore();
+  useExperiencePause("chat", chatOpen);
+  useExperiencePause("editor", isEditor);
+
+  useEffect(() => {
+    store.setRoute(resolveRoutePreset(pathname));
+  }, [pathname, store]);
+
+  useEffect(() => {
+    const publishVisibility = () => store.setVisible(document.visibilityState === "visible");
+    publishVisibility();
+    document.addEventListener("visibilitychange", publishVisibility);
+    return () => document.removeEventListener("visibilitychange", publishVisibility);
+  }, [store]);
+
+  return null;
+}
+
 export function RootLayout() {
   const { t } = useTranslation();
   const location = useLocation();
@@ -51,6 +77,7 @@ export function RootLayout() {
 
   const isEditor = location.pathname === "/editor";
   const showPublicChat = !isEditor;
+  const routePreset = resolveRoutePreset(location.pathname);
 
   return (
     <div className={isEditor ? "site-shell is-editor" : "site-shell"}>
@@ -108,46 +135,49 @@ export function RootLayout() {
           </Suspense>
         </ErrorBoundary>
       )}
-      <ImmersiveExperienceGate />
       <AuthProvider>
         <BookingProvider>
           <SiteContentProvider>
             <PublicPhotosProvider>
-              <ToastProvider>
-                <Header onOpenChat={() => setChatOpen(true)} />
-                {!isEditor && (
-                  <Suspense fallback={null}>
-                    <OfflineBookingRecovery isOnline={isOnline} />
-                  </Suspense>
-                )}
-                <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
-                  <ErrorBoundary>
-                    <Suspense fallback={<RouteLoadingState />}>
-                      <Outlet />
+              <ExperienceProvider>
+                <ExperienceStateBridge pathname={location.pathname} chatOpen={chatOpen} isEditor={isEditor} />
+                {routePreset && <ImmersiveExperienceGate />}
+                <ToastProvider>
+                  <Header onOpenChat={() => setChatOpen(true)} />
+                  {!isEditor && (
+                    <Suspense fallback={null}>
+                      <OfflineBookingRecovery isOnline={isOnline} />
                     </Suspense>
-                  </ErrorBoundary>
-                </main>
-                {showPublicChat && (
-                  <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
-                    <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
-                    {chatOpen ? (
-                      <Suspense
-                        fallback={
-                          <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
-                            {t("common.loading")}
-                          </div>
-                        }
-                      >
-                        <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
+                  )}
+                  <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
+                    <ErrorBoundary>
+                      <Suspense fallback={<RouteLoadingState />}>
+                        <Outlet />
                       </Suspense>
-                    ) : null}
-                  </div>
-                )}
-                <Footer />
-                {!isEditor && <MobileBottomNav />}
-                <ScrollToTop />
-                <PwaInstallBanner />
-              </ToastProvider>
+                    </ErrorBoundary>
+                  </main>
+                  {showPublicChat && (
+                    <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
+                      <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
+                      {chatOpen ? (
+                        <Suspense
+                          fallback={
+                            <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
+                              {t("common.loading")}
+                            </div>
+                          }
+                        >
+                          <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
+                        </Suspense>
+                      ) : null}
+                    </div>
+                  )}
+                  <Footer />
+                  {!isEditor && <MobileBottomNav />}
+                  <ScrollToTop />
+                  <PwaInstallBanner />
+                </ToastProvider>
+              </ExperienceProvider>
             </PublicPhotosProvider>
           </SiteContentProvider>
         </BookingProvider>
