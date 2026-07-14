@@ -4,15 +4,21 @@ export type AnchorIntersectionRuntime = {
   setAnchorIntersecting(intersecting: boolean): void;
 };
 
+export type AnchorRegistration = {
+  setIntersecting(intersecting: boolean): void;
+  unregister(): void;
+};
+
 type Cancel = () => void;
 
 export class ExperienceRuntimeBridge {
   private runtime: AnchorIntersectionRuntime | null = null;
-  private anchorIntersecting = false;
+  private anchorToken: symbol | null = null;
+  private anchorIntersecting = true;
 
   registerRuntime(runtime: AnchorIntersectionRuntime): Cancel {
     this.runtime = runtime;
-    runtime.setAnchorIntersecting(this.anchorIntersecting);
+    runtime.setAnchorIntersecting(this.effectiveAnchorIntersection());
 
     let registered = true;
     return () => {
@@ -22,10 +28,36 @@ export class ExperienceRuntimeBridge {
     };
   }
 
-  setAnchorIntersecting(intersecting: boolean): void {
-    if (this.anchorIntersecting === intersecting) return;
+  registerAnchor(intersecting: boolean): AnchorRegistration {
+    const token = Symbol("immersive-anchor");
+    this.anchorToken = token;
     this.anchorIntersecting = intersecting;
-    this.runtime?.setAnchorIntersecting(intersecting);
+    this.publishAnchorIntersection();
+
+    let active = true;
+    return {
+      setIntersecting: (nextIntersecting) => {
+        if (!active || this.anchorToken !== token || this.anchorIntersecting === nextIntersecting) return;
+        this.anchorIntersecting = nextIntersecting;
+        this.publishAnchorIntersection();
+      },
+      unregister: () => {
+        if (!active) return;
+        active = false;
+        if (this.anchorToken !== token) return;
+        this.anchorToken = null;
+        this.anchorIntersecting = true;
+        this.publishAnchorIntersection();
+      },
+    };
+  }
+
+  private effectiveAnchorIntersection(): boolean {
+    return this.anchorToken === null || this.anchorIntersecting;
+  }
+
+  private publishAnchorIntersection(): void {
+    this.runtime?.setAnchorIntersecting(this.effectiveAnchorIntersection());
   }
 }
 

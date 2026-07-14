@@ -16,6 +16,14 @@ function normalizedProgress(element: HTMLElement): number {
   return Math.min(1, Math.max(0, progress));
 }
 
+function isElementIntersecting(element: HTMLElement): boolean {
+  const bounds = element.getBoundingClientRect();
+  return bounds.bottom > 0
+    && bounds.right > 0
+    && bounds.top < window.innerHeight
+    && bounds.left < window.innerWidth;
+}
+
 export function useImmersiveAnchor({ id, preset, imageUrls }: ImmersiveAnchorOptions) {
   const store = useExperienceStore();
   const runtimeBridge = useExperienceRuntimeBridge();
@@ -37,7 +45,7 @@ export function useImmersiveAnchor({ id, preset, imageUrls }: ImmersiveAnchorOpt
     elementRef.current = element;
     if (element === null) return;
 
-    runtimeBridge.setAnchorIntersecting(false);
+    const anchorRegistration = runtimeBridge.registerAnchor(isElementIntersecting(element));
     const unregister = store.registerAnchor({ ...descriptor, imageUrls: [...descriptor.imageUrls], element });
     let frame: number | null = null;
     const publishProgress = () => store.setScrollProgress(normalizedProgress(element));
@@ -51,7 +59,7 @@ export function useImmersiveAnchor({ id, preset, imageUrls }: ImmersiveAnchorOpt
     const observer = typeof IntersectionObserver === "undefined"
       ? null
       : new IntersectionObserver(([entry]) => {
-        if (entry) runtimeBridge.setAnchorIntersecting(entry.isIntersecting);
+        if (entry) anchorRegistration.setIntersecting(entry.isIntersecting);
       }, { threshold: 0.01 });
 
     observer?.observe(element);
@@ -66,7 +74,7 @@ export function useImmersiveAnchor({ id, preset, imageUrls }: ImmersiveAnchorOpt
       observer?.disconnect();
       window.removeEventListener("scroll", onScroll);
       unregister();
-      runtimeBridge.setAnchorIntersecting(false);
+      anchorRegistration.unregister();
       if (elementRef.current === element) elementRef.current = null;
     };
   }, [descriptor, runtimeBridge, store]);
