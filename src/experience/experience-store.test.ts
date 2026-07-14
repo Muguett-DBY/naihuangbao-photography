@@ -70,6 +70,44 @@ describe("experience store", () => {
     store.setVisible(true);
 
     expect(store.getSnapshot()).toMatchObject({ visible: true, paused: true });
-    expect(store.getSnapshot().pauseReasons).toEqual(new Set(["chat"]));
+    expect(new Set(store.getSnapshot().pauseReasons)).toEqual(new Set(["chat"]));
+  });
+
+  it("keeps pause reasons and anchors runtime-immutable for subscribers", () => {
+    const store = createExperienceStore();
+    const listener = vi.fn();
+    store.subscribe(listener);
+    store.registerAnchor({ id: "home", preset: "home", imageUrls: ["/one.webp"] });
+    listener.mockClear();
+    const snapshot = store.getSnapshot();
+    const mutablePauseReasons = snapshot.pauseReasons as unknown as { add(reason: string): void };
+    const anchor = snapshot.anchor as unknown as { id: string; imageUrls: string[] };
+
+    expect(() => mutablePauseReasons.add("chat")).toThrow(TypeError);
+    expect(() => { anchor.id = "gallery"; }).toThrow(TypeError);
+    expect(() => anchor.imageUrls.push("/two.webp")).toThrow(TypeError);
+    expect([...snapshot.pauseReasons]).toEqual([]);
+    expect(new Set(snapshot.pauseReasons)).toEqual(new Set());
+    expect(store.getSnapshot()).toBe(snapshot);
+    expect(store.getSnapshot()).toMatchObject({ paused: false, anchor: { id: "home", imageUrls: ["/one.webp"] } });
+    expect(listener).not.toHaveBeenCalled();
+
+    store.setPaused("chat", true);
+    expect(listener).toHaveBeenCalledOnce();
+    expect(store.getSnapshot().paused).toBe(true);
+  });
+
+  it("normalizes repeated non-finite pointer and scroll input", () => {
+    const store = createExperienceStore();
+    const listener = vi.fn();
+    store.subscribe(listener);
+
+    store.setPointer(Number.NaN, Number.POSITIVE_INFINITY);
+    store.setPointer(Number.NaN, Number.POSITIVE_INFINITY);
+    store.setScrollProgress(Number.NaN);
+    store.setScrollProgress(Number.NaN);
+
+    expect(store.getSnapshot()).toMatchObject({ pointerX: 0, pointerY: 0, scrollProgress: 0 });
+    expect(listener).not.toHaveBeenCalled();
   });
 });
