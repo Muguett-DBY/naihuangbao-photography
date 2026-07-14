@@ -397,6 +397,127 @@ describe("ImmersiveRuntime", () => {
     expect(replacement.value.dispose).toHaveBeenCalledOnce();
   });
 
+  it("clears conservative partial maps for the medium budget and reloads oversized textures", async () => {
+    const mib = 1024 * 1024;
+    const loads = new Map<string, MorphLoad[]>();
+    const pool = new TexturePool<MorphTexture>({
+      maxBytes: 48 * mib,
+      load: (url, signal) => new Promise<TextureLoadResult<MorphTexture>>((resolve, reject) => {
+        const entries = loads.get(url) ?? [];
+        entries.push({ signal, resolve, reject });
+        loads.set(url, entries);
+      }),
+      dispose: (value) => value.dispose(),
+    });
+    const mapped: Array<MorphTexture | null> = [null];
+    let failCommit = false;
+    const coordinator = new TextureMorphCoordinator({
+      pool,
+      idleScheduler: createIdleScheduler(),
+      onCommit: (slots) => {
+        mapped[0] = slots[0] ?? null;
+        if (failCommit) throw new Error("partial commit");
+      },
+      onUpdate: (index, value) => {
+        mapped[index] = value;
+      },
+    });
+    const oldMorph = coordinator.morph(["/old.avif"], 1);
+    const old = morphTexture("old", 4 * mib);
+    loads.get("http://localhost/old.avif")?.[0]?.resolve(old);
+    await oldMorph;
+
+    failCommit = true;
+    const failedMorph = coordinator.morph(["/oversized.webp"], 1);
+    const oversized = morphTexture("oversized", 32 * mib);
+    loads.get("http://localhost/oversized.webp")?.[0]?.resolve(oversized);
+    await expect(failedMorph).rejects.toThrow("partial commit");
+    expect(mapped[0]).toBe(oversized.value);
+
+    coordinator.enforceBudget(24 * mib);
+
+    expect(mapped[0]).toBeNull();
+    expect(oversized.value.dispose).toHaveBeenCalledOnce();
+    expect(pool.totalBytes).toBeLessThanOrEqual(24 * mib);
+
+    failCommit = false;
+    const retry = coordinator.morph(["/oversized.webp"], 1);
+    expect(loads.get("http://localhost/oversized.webp")).toHaveLength(2);
+    const retryValue = morphTexture("oversized-retry", 4 * mib);
+    loads.get("http://localhost/oversized.webp")?.[1]?.resolve(retryValue);
+    await retry;
+    expect(retryValue.value.dispose).not.toHaveBeenCalled();
+  });
+
+  it("locks static when conservative budget cleanup throws during downgrade", async () => {
+    const mib = 1024 * 1024;
+    const loads = new Map<string, MorphLoad[]>();
+    const pool = new TexturePool<MorphTexture>({
+      maxBytes: 48 * mib,
+      load: (url, signal) => new Promise<TextureLoadResult<MorphTexture>>((resolve, reject) => {
+        const entries = loads.get(url) ?? [];
+        entries.push({ signal, resolve, reject });
+        loads.set(url, entries);
+      }),
+      dispose: (value) => value.dispose(),
+    });
+    let failCommit = false;
+    let failClear = false;
+    const coordinator = new TextureMorphCoordinator({
+      pool,
+      idleScheduler: createIdleScheduler(),
+      onCommit: (slots) => {
+        if (failCommit) throw new Error("partial commit");
+        void slots;
+      },
+      onUpdate: (_, value) => {
+        if (value === null && failClear) throw new Error("clear failed");
+      },
+    });
+    const oldMorph = coordinator.morph(["/old.avif"], 1);
+    loads.get("http://localhost/old.avif")?.[0]?.resolve(morphTexture("old", 4 * mib));
+    await oldMorph;
+    failCommit = true;
+    const failedMorph = coordinator.morph(["/oversized.webp"], 1);
+    loads.get("http://localhost/oversized.webp")?.[0]?.resolve(morphTexture("oversized", 32 * mib));
+    await expect(failedMorph).rejects.toThrow("partial commit");
+
+    failClear = true;
+    const store = createExperienceStore();
+    const scheduler = createScheduler();
+    const fake = createDriver();
+    const runtimeError = vi.fn();
+    vi.mocked(fake.driver.setTier).mockImplementation(() => coordinator.enforceBudget(24 * mib));
+    vi.mocked(fake.driver.dispose).mockImplementation(() => {
+      coordinator.dispose();
+      pool.dispose();
+    });
+    const runtime = new ImmersiveRuntime({
+      store,
+      tier: "high",
+      createDriver: () => fake.driver,
+      scheduler,
+      onError: runtimeError,
+    });
+    let time = 0;
+    for (let index = 0; index < 45; index += 1) {
+      time += 35;
+      scheduler.flush(time);
+    }
+    for (let index = 0; index < 75; index += 1) {
+      time += 16;
+      scheduler.flush(time);
+    }
+
+    expect(runtime.state).toBe("static");
+    expect(scheduler.pending.size).toBe(0);
+    expect(runtimeError).toHaveBeenCalledWith(expect.any(Error));
+    expect(pool.totalBytes).toBe(0);
+    const rendersAtLock = vi.mocked(fake.driver.render).mock.calls.length;
+    scheduler.flush(time + 100);
+    expect(fake.driver.render).toHaveBeenCalledTimes(rendersAtLock);
+  });
+
   it("retains a visible slot lease when budget clearing onUpdate throws", async () => {
     const loads = new Map<string, MorphLoad[]>();
     const pool = new TexturePool<MorphTexture>({

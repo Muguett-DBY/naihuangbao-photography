@@ -72,6 +72,18 @@ type MorphSettlement = {
   reject(error: unknown): void;
 };
 
+type ConservativeLease = {
+  lease: TextureLease;
+  resources: VisibleResource[];
+};
+
+export class TextureBudgetEnforcementError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TextureBudgetEnforcementError";
+  }
+}
+
 function isBudgetAdmissionFailure(error: unknown): boolean {
   if (error instanceof RangeError) return true;
   return error instanceof AggregateError && error.errors.some((entry) => entry instanceof RangeError);
@@ -105,7 +117,7 @@ export class TextureMorphCoordinator<T> {
   private stagedLease: TextureLease | null = null;
   private backgroundLease: TextureLease | null = null;
   private visibleResources: VisibleResource[] = [];
-  private conservativeLeases: TextureLease[] = [];
+  private conservativeLeases: ConservativeLease[] = [];
   private settleCurrent: MorphSettlement | null = null;
   private disposed = false;
 
@@ -270,6 +282,7 @@ export class TextureMorphCoordinator<T> {
     this.release(this.backgroundLease);
     this.backgroundLease = null;
     this.retain(this.visibleResources.map((resource) => resource.url));
+    this.clearConservativeBudgetOwnership();
     this.setBudget(maxBytes);
 
     while (this.pool.totalBytes > maxBytes && this.visibleResources.length > 0) {
@@ -340,8 +353,8 @@ export class TextureMorphCoordinator<T> {
 
     const commit = this.callCommit(slots);
     if (!commit.committed) {
-      this.preserveStagedLease(stagedLease);
-      this.preserveLeases(nextVisibleResources.map((resource) => resource.lease));
+      this.preserveStagedLease(stagedLease, nextVisibleResources);
+      this.preserveResourceLeases(nextVisibleResources);
       return { ...commit, preservesStagedLeases: true };
     }
 
@@ -434,19 +447,36 @@ export class TextureMorphCoordinator<T> {
     this.release(lease);
   }
 
-  private preserveStagedLease(lease: TextureLease): void {
+  private preserveStagedLease(lease: TextureLease, resources: VisibleResource[]): void {
     if (this.stagedLease === lease) this.stagedLease = null;
-    this.conservativeLeases.push(lease);
+    this.conservativeLeases.push({ lease, resources: [...resources] });
   }
 
-  private preserveLeases(leases: TextureLease[]): void {
-    this.conservativeLeases.push(...leases);
+  private preserveResourceLeases(resources: VisibleResource[]): void {
+    for (const resource of resources) this.conservativeLeases.push({ lease: resource.lease, resources: [resource] });
   }
 
   private releaseConservativeLeases(): void {
     const leases = this.conservativeLeases;
     this.conservativeLeases = [];
-    this.releaseMany(leases);
+    this.releaseMany(leases.map((entry) => entry.lease));
+  }
+
+  private clearConservativeBudgetOwnership(): void {
+    if (this.conservativeLeases.length === 0) return;
+    const resources = new Map<number, VisibleResource>();
+    for (const entry of this.conservativeLeases) {
+      for (const resource of entry.resources) resources.set(resource.index, resource);
+    }
+
+    try {
+      for (const resource of resources.values()) this.onUpdate(resource.index, null);
+    } catch {
+      throw new TextureBudgetEnforcementError("Unable to clear conservatively retained texture slots for the new byte budget.");
+    }
+
+    this.releaseConservativeLeases();
+    this.discardUnretained(this.visibleResources.map((resource) => resource.url));
   }
 
   private callCommit(slots: ReadonlyArray<T | null>): CommitResult {
