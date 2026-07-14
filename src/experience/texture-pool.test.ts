@@ -1,4 +1,5 @@
 import { describe, expect, it, vi, type Mock } from "vitest";
+import { validateTextureResponse } from "./three-scene-driver";
 import { TexturePool, type TextureLoadResult } from "./texture-pool";
 
 type TextureLike = {
@@ -131,6 +132,23 @@ describe("TexturePool", () => {
     expect(() => pool.acquire("data:image/webp;base64,AAAA")).toThrow(TypeError);
     expect(() => pool.acquire("/gallery/portrait.jpg")).toThrow(TypeError);
     expect(() => pool.acquire("/gallery/portrait.png")).toThrow(TypeError);
+  });
+
+  it("rejects redirected or non-image texture responses before bitmap creation", () => {
+    const requestedUrl = "http://localhost/gallery/portrait.avif";
+    const response = (overrides: Partial<Response> = {}) => ({
+      ok: true,
+      redirected: false,
+      url: requestedUrl,
+      headers: new Headers({ "content-type": "image/avif; charset=binary" }),
+      ...overrides,
+    }) as Pick<Response, "ok" | "redirected" | "url" | "headers">;
+
+    expect(() => validateTextureResponse(requestedUrl, response())).not.toThrow();
+    expect(() => validateTextureResponse(requestedUrl, response({ redirected: true }))).toThrow(/redirect/i);
+    expect(() => validateTextureResponse(requestedUrl, response({ url: "https://cdn.example.com/portrait.avif" }))).toThrow(/same-origin/i);
+    expect(() => validateTextureResponse(requestedUrl, response({ headers: new Headers() }))).toThrow(/content-type/i);
+    expect(() => validateTextureResponse(requestedUrl, response({ headers: new Headers({ "content-type": "image/jpeg" }) }))).toThrow(/content-type/i);
   });
 
   it("never evicts pinned visible or staged textures under budget pressure", async () => {

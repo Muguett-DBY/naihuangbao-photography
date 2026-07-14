@@ -64,6 +64,13 @@ export class TexturePool<T> {
     return this.byteLimit;
   }
 
+  bytesFor(urls: Iterable<string>): number {
+    const keys = new Set(Array.from(urls, (url) => this.normalize(url)));
+    let total = 0;
+    for (const key of keys) total += this.entries.get(key)?.bytes ?? 0;
+    return total;
+  }
+
   normalize(url: string): string {
     let normalized: URL;
     try {
@@ -183,6 +190,25 @@ export class TexturePool<T> {
     }
 
     const error = aggregate(this.evictToBudget(), "Failed to evict textures while retaining a route set.");
+    if (error) throw error;
+  }
+
+  discardUnretained(urls: Iterable<string>): void {
+    if (this.disposed) return;
+    const retained = new Set(Array.from(urls, (url) => this.normalize(url)));
+    const errors: unknown[] = [];
+
+    for (const [key, entry] of this.entries) {
+      if (retained.has(key) || this.isPinned(key)) continue;
+      if (entry.value === undefined) {
+        this.entries.delete(key);
+        entry.controller.abort();
+      } else {
+        this.removeFulfilledEntry(key, entry, errors);
+      }
+    }
+
+    const error = aggregate(errors, "Failed to discard unretained textures.");
     if (error) throw error;
   }
 
