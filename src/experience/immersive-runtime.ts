@@ -250,7 +250,12 @@ export class ImmersiveRuntime {
     this.tierValue = "medium";
     this.frameDurations = [];
     this.frameAccumulator = 0;
-    this.driver.setTier("medium");
+    try {
+      this.driver.setTier("medium");
+    } catch (error) {
+      this.report(error);
+      this.lockStatic();
+    }
   }
 
   private suspendDriver(): void {
