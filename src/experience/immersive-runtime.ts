@@ -19,6 +19,7 @@ export type ImmersiveRuntimeOptions = {
   createDriver(tier: RenderedTier): SceneDriver;
   scheduler: FrameScheduler;
   presets?: Readonly<Record<string, ScenePreset>>;
+  onError?: (error: unknown) => void;
 };
 
 const FRAME_WINDOW_SIZE = 120;
@@ -30,13 +31,16 @@ export class ImmersiveRuntime {
   private readonly store: ExperienceStore;
   private readonly scheduler: FrameScheduler;
   private readonly presets: Readonly<Record<string, ScenePreset>>;
+  private readonly onError: (error: unknown) => void;
   private driver: SceneDriver | null = null;
   private unsubscribe: (() => void) | null = null;
   private pendingFrame: number | null = null;
   private frameDurations: number[] = [];
   private frameAccumulator = 0;
   private lastFrameTime: number;
-  private lastSceneKey = "";
+  private committedSceneKey = "";
+  private pendingSceneKey = "";
+  private sceneRequest = 0;
   private stateValue: ImmersiveRuntimeState = "booting";
   private tierValue: ExperienceTier;
   private anchorIntersecting = true;
@@ -48,6 +52,7 @@ export class ImmersiveRuntime {
     this.store = options.store;
     this.scheduler = options.scheduler;
     this.presets = options.presets ?? SCENE_PRESETS;
+    this.onError = options.onError ?? ((error) => console.error("Immersive runtime error.", error));
     this.tierValue = options.tier;
     this.lastFrameTime = this.scheduler.now();
 
@@ -58,9 +63,10 @@ export class ImmersiveRuntime {
 
     try {
       this.driver = options.createDriver(options.tier);
-    } catch {
+    } catch (error) {
       this.stateValue = "static";
       this.tierValue = "static";
+      this.report(error);
       return;
     }
 
@@ -112,10 +118,8 @@ export class ImmersiveRuntime {
 
   dispose(): void {
     if (this.stateValue === "disposed") return;
-    this.cancelFrame();
-    this.releaseSubscription();
-    this.releaseDriver();
     this.stateValue = "disposed";
+    this.cleanupTerminal();
   }
 
   private handleStoreChange(): void {
@@ -134,9 +138,30 @@ export class ImmersiveRuntime {
     if (!preset) return;
     const imageUrls = snapshot.anchor ? [...snapshot.anchor.imageUrls] : [];
     const sceneKey = `${presetId}\u0000${imageUrls.join("\u0000")}`;
-    if (sceneKey === this.lastSceneKey) return;
-    this.lastSceneKey = sceneKey;
-    void this.driver.morphTo(preset, imageUrls).catch(() => undefined);
+    if (sceneKey === this.committedSceneKey || sceneKey === this.pendingSceneKey) return;
+    const request = ++this.sceneRequest;
+    this.pendingSceneKey = sceneKey;
+
+    let morph: Promise<void>;
+    try {
+      morph = this.driver.morphTo(preset, imageUrls);
+    } catch (error) {
+      if (request === this.sceneRequest) this.pendingSceneKey = "";
+      this.report(error);
+      return;
+    }
+
+    void morph.then(
+      () => {
+        if (request !== this.sceneRequest || this.isTerminal()) return;
+        this.committedSceneKey = sceneKey;
+        this.pendingSceneKey = "";
+      },
+      (error) => {
+        if (request === this.sceneRequest) this.pendingSceneKey = "";
+        this.report(error);
+      },
+    );
   }
 
   private updateActivity(): void {
@@ -181,12 +206,16 @@ export class ImmersiveRuntime {
     this.pendingFrame = null;
     if (!this.driver || (this.stateValue !== "active" && this.stateValue !== "idle")) return;
     const snapshot = this.store.getSnapshot();
-    const delta = Math.max(0, time - this.lastFrameTime);
+    const frameState = this.stateValue;
+    const elapsed = Math.max(0, time - this.lastFrameTime);
     this.lastFrameTime = time;
+    const delta = frameState === "idle" ? 0 : elapsed;
 
-    const cadenceLimited = this.tierValue === "medium" && this.stateValue === "active";
+    const cadenceLimited = this.tierValue === "medium" && frameState === "active";
     if (cadenceLimited) {
-      this.frameAccumulator += delta;
+      this.frameAccumulator = delta > MEDIUM_FRAME_TARGET_MS * 2
+        ? MEDIUM_FRAME_TARGET_MS
+        : this.frameAccumulator + delta;
       if (this.frameAccumulator < MEDIUM_FRAME_TARGET_MS) {
         if (this.stateValue === "active") this.requestFrame();
         return;
@@ -203,7 +232,7 @@ export class ImmersiveRuntime {
       scrollProgress: snapshot.scrollProgress,
     });
 
-    if (this.tierValue === "high") this.recordFrameDuration(delta);
+    if (this.tierValue === "high" && frameState === "active") this.recordFrameDuration(delta);
     if (this.stateValue === "active") this.requestFrame();
   }
 
@@ -237,26 +266,60 @@ export class ImmersiveRuntime {
 
   private cancelFrame(): void {
     if (this.pendingFrame === null) return;
-    this.scheduler.cancel(this.pendingFrame);
+    const frame = this.pendingFrame;
     this.pendingFrame = null;
+    try {
+      this.scheduler.cancel(frame);
+    } catch (error) {
+      this.report(error);
+    }
   }
 
   private lockStatic(): void {
-    this.cancelFrame();
-    this.releaseSubscription();
-    this.releaseDriver();
     this.tierValue = "static";
     this.stateValue = "static";
+    this.cleanupTerminal();
   }
 
-  private releaseSubscription(): void {
-    this.unsubscribe?.();
+  private cleanupTerminal(): void {
+    const errors: unknown[] = [];
+    this.sceneRequest += 1;
+    this.pendingSceneKey = "";
+    if (this.pendingFrame !== null) {
+      const frame = this.pendingFrame;
+      this.pendingFrame = null;
+      try {
+        this.scheduler.cancel(frame);
+      } catch (error) {
+        errors.push(error);
+      }
+    }
+
+    const unsubscribe = this.unsubscribe;
     this.unsubscribe = null;
+    try {
+      unsubscribe?.();
+    } catch (error) {
+      errors.push(error);
+    }
+
+    const driver = this.driver;
+    this.driver = null;
+    try {
+      driver?.dispose();
+    } catch (error) {
+      errors.push(error);
+    }
+
+    if (errors.length > 0) this.report(new AggregateError(errors, "Immersive runtime cleanup failed."));
   }
 
-  private releaseDriver(): void {
-    this.driver?.dispose();
-    this.driver = null;
+  private report(error: unknown): void {
+    try {
+      this.onError(error);
+    } catch {
+      // Reporting is deliberately non-fatal to runtime ownership.
+    }
   }
 
   private isTerminal(): boolean {
