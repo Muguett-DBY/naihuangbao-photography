@@ -17,6 +17,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          if (id.includes("node_modules/three")) {
+            return "immersive-vendor";
+          }
           if (id.includes("node_modules/face-api.js")) {
             return "face-api-vendor";
           }
@@ -71,6 +74,7 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html}"],
         globIgnores: [
           "**/images/gallery/**/*",
+          "**/immersive-vendor-*.js",
         ],
         runtimeCaching: [
           {
