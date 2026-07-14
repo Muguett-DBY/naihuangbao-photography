@@ -168,6 +168,22 @@ describe("ImmersiveRuntime", () => {
     harness.pool.dispose();
   });
 
+  it("starts idle candidates independently when every critical texture hangs", async () => {
+    const harness = createMorphHarness();
+    const morph = harness.coordinator.morph(["/one.avif", "/two.webp", "/three.avif", "/idle.webp"], 4);
+
+    expect(harness.load).toHaveBeenCalledTimes(3);
+    expect(harness.idleScheduler.pending.size).toBe(1);
+    harness.idleScheduler.flushOne();
+    expect(harness.load).toHaveBeenLastCalledWith("http://localhost/idle.webp", expect.any(AbortSignal));
+
+    const idle = morphTexture("idle");
+    harness.loads.get("http://localhost/idle.webp")?.[0]?.resolve(idle);
+    await morph;
+
+    expect(harness.commits).toEqual([[null, null, null, idle.value]]);
+  });
+
   it("commits visible ink slots for empty and all-failed morphs", async () => {
     const emptyHarness = createMorphHarness();
     await emptyHarness.coordinator.morph([], 4);
@@ -267,6 +283,116 @@ describe("ImmersiveRuntime", () => {
     expect(harness.updates).toContainEqual({ index: 1, value: null });
     expect(second.value.dispose).toHaveBeenCalledOnce();
     expect(first.value.dispose).not.toHaveBeenCalled();
+  });
+
+  it("restarts queued idle work after budget enforcement", async () => {
+    const harness = createMorphHarness(16);
+    const morph = harness.coordinator.morph(["/one.avif", "/two.webp", "/three.avif", "/idle.webp"], 4);
+    harness.loads.get("http://localhost/one.avif")?.[0]?.resolve(morphTexture("one"));
+    await morph;
+
+    expect(harness.idleScheduler.pending.size).toBe(1);
+    harness.coordinator.enforceBudget(16);
+    expect(harness.idleScheduler.pending.size).toBe(1);
+
+    harness.idleScheduler.flushOne();
+    expect(harness.load).toHaveBeenLastCalledWith("http://localhost/idle.webp", expect.any(AbortSignal));
+  });
+
+  it("hands off a full visible budget before admitting replacement textures", async () => {
+    const harness = createMorphHarness(8);
+    const oldMorph = harness.coordinator.morph(["/old.avif"], 1);
+    const old = morphTexture("old", 8);
+    harness.loads.get("http://localhost/old.avif")?.[0]?.resolve(old);
+    await oldMorph;
+
+    const replacementMorph = harness.coordinator.morph(["/replacement.webp"], 1);
+    const replacement = morphTexture("replacement", 8);
+    harness.loads.get("http://localhost/replacement.webp")?.[0]?.resolve(replacement);
+    await replacementMorph;
+
+    expect(harness.pool.totalBytes).toBe(8);
+    expect(old.value.dispose).toHaveBeenCalledOnce();
+    expect(replacement.value.dispose).not.toHaveBeenCalled();
+    expect(harness.commits.at(-1)).toEqual([replacement.value]);
+  });
+
+  it("keeps old visible ownership when a replacement commit callback throws", async () => {
+    const loads = new Map<string, MorphLoad[]>();
+    const pool = new TexturePool<MorphTexture>({
+      maxBytes: 8,
+      load: (url, signal) => new Promise<TextureLoadResult<MorphTexture>>((resolve, reject) => {
+        const entries = loads.get(url) ?? [];
+        entries.push({ signal, resolve, reject });
+        loads.set(url, entries);
+      }),
+      dispose: (value) => value.dispose(),
+    });
+    const commitFailure = new Error("commit failed");
+    const onCommit = vi.fn(() => {
+      if (onCommit.mock.calls.length === 2) throw commitFailure;
+    });
+    const errors: unknown[] = [];
+    const coordinator = new TextureMorphCoordinator({
+      pool,
+      idleScheduler: createIdleScheduler(),
+      onCommit,
+      onUpdate: vi.fn(),
+      onError: (error) => errors.push(error),
+    });
+    const firstMorph = coordinator.morph(["/old.avif"], 1);
+    const old = morphTexture("old");
+    loads.get("http://localhost/old.avif")?.[0]?.resolve(old);
+    await firstMorph;
+
+    const secondMorph = coordinator.morph(["/replacement.webp"], 1);
+    const replacement = morphTexture("replacement");
+    loads.get("http://localhost/replacement.webp")?.[0]?.resolve(replacement);
+    await secondMorph;
+
+    expect(errors).toContain(commitFailure);
+    expect(old.value.dispose).not.toHaveBeenCalled();
+    expect(replacement.value.dispose).toHaveBeenCalledOnce();
+    pool.setMaxBytes(4);
+    expect(old.value.dispose).not.toHaveBeenCalled();
+  });
+
+  it("retains a visible slot lease when budget clearing onUpdate throws", async () => {
+    const loads = new Map<string, MorphLoad[]>();
+    const pool = new TexturePool<MorphTexture>({
+      maxBytes: 8,
+      load: (url, signal) => new Promise<TextureLoadResult<MorphTexture>>((resolve, reject) => {
+        const entries = loads.get(url) ?? [];
+        entries.push({ signal, resolve, reject });
+        loads.set(url, entries);
+      }),
+      dispose: (value) => value.dispose(),
+    });
+    const updateFailure = new Error("slot clear failed");
+    const onUpdate = vi.fn((_: number, value: MorphTexture | null) => {
+      if (value === null) throw updateFailure;
+    });
+    const errors: unknown[] = [];
+    const coordinator = new TextureMorphCoordinator({
+      pool,
+      idleScheduler: createIdleScheduler(),
+      onCommit: vi.fn(),
+      onUpdate,
+      onError: (error) => errors.push(error),
+    });
+    const morph = coordinator.morph(["/one.avif", "/two.webp"], 2);
+    const first = morphTexture("one");
+    const second = morphTexture("two");
+    loads.get("http://localhost/one.avif")?.[0]?.resolve(first);
+    loads.get("http://localhost/two.webp")?.[0]?.resolve(second);
+    await morph;
+    await Promise.resolve();
+
+    coordinator.enforceBudget(4);
+
+    expect(errors).toContain(updateFailure);
+    expect(pool.totalBytes).toBe(8);
+    expect(second.value.dispose).not.toHaveBeenCalled();
   });
 
   it("creates one driver, morphs presets, and never recreates it for route changes", () => {
@@ -448,6 +574,24 @@ describe("ImmersiveRuntime", () => {
     scheduler.flush(1001);
     expect(fake.driver.render).toHaveBeenCalledOnce();
     scheduler.flush(1023);
+    expect(fake.driver.render).toHaveBeenCalledTimes(2);
+  });
+
+  it("resynchronizes medium backlog across 40ms, 80ms, and 81ms callbacks", () => {
+    const scheduler = createScheduler();
+    const fake = createDriver();
+    new ImmersiveRuntime({
+      store: createExperienceStore(),
+      tier: "medium",
+      createDriver: () => fake.driver,
+      scheduler,
+    });
+
+    scheduler.flush(40);
+    scheduler.flush(80);
+    scheduler.flush(81);
+
+    expect(fake.driver.render).not.toHaveBeenCalledTimes(3);
     expect(fake.driver.render).toHaveBeenCalledTimes(2);
   });
 

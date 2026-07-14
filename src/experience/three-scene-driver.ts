@@ -56,6 +56,18 @@ type VisibleResource = MorphCandidate & {
   lease: TextureLease;
 };
 
+type IdleWork<T> = {
+  version: number;
+  candidates: MorphCandidate[];
+  slots: Array<T | null>;
+  onReady(candidate: MorphCandidate, value: T): void;
+};
+
+function isBudgetAdmissionFailure(error: unknown): boolean {
+  if (error instanceof RangeError) return true;
+  return error instanceof AggregateError && error.errors.some((entry) => entry instanceof RangeError);
+}
+
 function createDefaultIdleScheduler(): IdleScheduler {
   const host = globalThis as typeof globalThis & {
     requestIdleCallback?: (callback: () => void) => number;
@@ -80,6 +92,7 @@ export class TextureMorphCoordinator<T> {
   private readonly onError: (error: unknown) => void;
   private generation = 0;
   private idleTask: number | null = null;
+  private idleWork: IdleWork<T> | null = null;
   private stagedLease: TextureLease | null = null;
   private backgroundLease: TextureLease | null = null;
   private visibleResources: VisibleResource[] = [];
@@ -99,6 +112,7 @@ export class TextureMorphCoordinator<T> {
     const version = ++this.generation;
     this.finishCurrent();
     this.cancelIdle();
+    this.idleWork = null;
     this.release(this.stagedLease);
     this.release(this.backgroundLease);
     this.stagedLease = null;
@@ -139,40 +153,82 @@ export class TextureMorphCoordinator<T> {
       const critical = candidates.slice(0, 3);
       let completedCritical = 0;
       let committed = false;
+      let budgetHandedOff = false;
+
+      const abandonMorph = () => {
+        if (version !== this.generation) return;
+        this.generation += 1;
+        this.cancelIdle();
+        this.idleWork = null;
+        this.releaseStagedLease(stagedLease);
+        this.retain(this.visibleResources.map((resource) => resource.url));
+      };
+
+      const handoffForBudget = () => {
+        if (budgetHandedOff || this.visibleResources.length === 0) return true;
+        const inkSlots = slots.map(() => null);
+        if (!this.commitFallback(version, inkSlots, candidateUrls, true)) {
+          abandonMorph();
+          return false;
+        }
+        budgetHandedOff = true;
+        return true;
+      };
 
       const commit = () => {
         if (committed || this.disposed || version !== this.generation) return;
         committed = true;
-        this.commitSlots(version, slots, candidates, stagedLease);
+        const hasTexture = slots.some((slot) => slot !== null);
+        const committedSlots = hasTexture
+          ? this.commitSlots(version, slots, candidates, stagedLease)
+          : this.commitFallback(version, slots);
+        if (!committedSlots) abandonMorph();
+        else if (!hasTexture) this.releaseStagedLease(stagedLease);
         this.finishCurrent();
-        this.scheduleIdle(version, candidates.slice(3), slots);
       };
 
-      for (const candidate of critical) {
+      const receiveTexture = (candidate: MorphCandidate, value: T) => {
+        if (this.disposed || version !== this.generation) return;
+        slots[candidate.index] = value;
+        if (!committed) commit();
+        else this.update(candidate, value);
+      };
+
+      this.beginIdleWork(version, candidates.slice(3), slots, receiveTexture);
+
+      const visibleBytes = this.pool.bytesFor(this.visibleResources.map((resource) => resource.url));
+      if (visibleBytes >= this.pool.maxBytes && !handoffForBudget()) {
+        this.finishCurrent();
+        return;
+      }
+
+      const acquireCritical = (candidate: MorphCandidate) => {
         let pending: Promise<T>;
         try {
           pending = this.pool.acquire(candidate.url);
         } catch {
           completedCritical += 1;
           if (completedCritical === critical.length) commit();
-          continue;
+          return;
         }
 
         void pending.then(
           (value) => {
-            if (this.disposed || version !== this.generation) return;
-            slots[candidate.index] = value;
-            completedCritical += 1;
-            if (!committed) commit();
-            else this.update(candidate, value);
+            receiveTexture(candidate, value);
           },
-          () => {
+          (error: unknown) => {
             if (this.disposed || version !== this.generation) return;
+            if (!budgetHandedOff && isBudgetAdmissionFailure(error) && handoffForBudget()) {
+              acquireCritical(candidate);
+              return;
+            }
             completedCritical += 1;
             if (!committed && completedCritical === critical.length) commit();
           },
         );
-      }
+      };
+
+      for (const candidate of critical) acquireCritical(candidate);
     });
   }
 
@@ -182,6 +238,7 @@ export class TextureMorphCoordinator<T> {
     this.generation += 1;
     this.finishCurrent();
     this.cancelIdle();
+    this.idleWork = null;
     this.release(this.stagedLease);
     this.release(this.backgroundLease);
     this.releaseMany(this.visibleResources.map((resource) => resource.lease));
@@ -193,8 +250,6 @@ export class TextureMorphCoordinator<T> {
 
   enforceBudget(maxBytes: number): void {
     if (this.disposed) return;
-    this.generation += 1;
-    this.finishCurrent();
     this.cancelIdle();
     this.release(this.backgroundLease);
     this.backgroundLease = null;
@@ -202,13 +257,15 @@ export class TextureMorphCoordinator<T> {
     this.setBudget(maxBytes);
 
     while (this.pool.totalBytes > maxBytes && this.visibleResources.length > 0) {
-      const resource = this.visibleResources.pop();
+      const resource = this.visibleResources.at(-1);
       if (!resource) break;
       try {
         this.onUpdate(resource.index, null);
       } catch (error) {
         this.report(error);
+        break;
       }
+      this.visibleResources.pop();
       this.release(resource.lease);
       this.setBudget(maxBytes);
     }
@@ -216,19 +273,22 @@ export class TextureMorphCoordinator<T> {
     if (this.pool.totalBytes > maxBytes) {
       this.report(new RangeError("Unable to satisfy the texture budget after releasing visible slots."));
     }
+    this.requestIdleWork();
   }
 
-  private commitFallback(version: number, slots: Array<T | null>): void {
-    if (this.disposed || version !== this.generation) return;
-    try {
-      this.onCommit(slots);
-    } catch (error) {
-      this.report(error);
-    }
+  private commitFallback(
+    version: number,
+    slots: Array<T | null>,
+    retainedUrls: string[] = [],
+    discardUnretained = false,
+  ): boolean {
+    if (this.disposed || version !== this.generation || !this.callCommit(slots)) return false;
     const oldVisibleResources = this.visibleResources;
     this.visibleResources = [];
     this.releaseMany(oldVisibleResources.map((resource) => resource.lease));
-    this.retain([]);
+    this.retain(retainedUrls);
+    if (discardUnretained) this.discardUnretained(retainedUrls);
+    return true;
   }
 
   private commitSlots(
@@ -236,8 +296,8 @@ export class TextureMorphCoordinator<T> {
     slots: Array<T | null>,
     candidates: MorphCandidate[],
     stagedLease: TextureLease,
-  ): void {
-    if (this.disposed || version !== this.generation) return;
+  ): boolean {
+    if (this.disposed || version !== this.generation) return false;
     const successful = candidates.filter((candidate) => slots[candidate.index] !== null);
     const successfulUrls = successful.map((candidate) => candidate.url);
     const nextVisibleResources: VisibleResource[] = [];
@@ -255,10 +315,12 @@ export class TextureMorphCoordinator<T> {
       }
     }
 
-    try {
-      this.onCommit(slots);
-    } catch (error) {
-      this.report(error);
+    if (!this.callCommit(slots)) {
+      this.releaseMany(nextVisibleResources.map((resource) => resource.lease));
+      this.releaseStagedLease(stagedLease);
+      this.retain(this.visibleResources.map((resource) => resource.url));
+      this.discardUnretained(this.visibleResources.map((resource) => resource.url));
+      return false;
     }
 
     const oldVisibleResources = this.visibleResources;
@@ -267,27 +329,41 @@ export class TextureMorphCoordinator<T> {
     if (this.stagedLease === stagedLease) this.stagedLease = null;
     this.releaseMany(oldVisibleResources.map((resource) => resource.lease));
     this.retain(candidates.map((candidate) => candidate.url));
+    return true;
   }
 
-  private scheduleIdle(version: number, candidates: MorphCandidate[], slots: Array<T | null>): void {
-    if (this.disposed || version !== this.generation || candidates.length === 0) return;
+  private beginIdleWork(
+    version: number,
+    candidates: MorphCandidate[],
+    slots: Array<T | null>,
+    onReady: IdleWork<T>["onReady"],
+  ): void {
+    if (candidates.length === 0) return;
+    this.idleWork = { version, candidates: [...candidates], slots, onReady };
+    this.requestIdleWork();
+  }
+
+  private requestIdleWork(): void {
+    const work = this.idleWork;
+    if (!work || this.idleTask !== null || this.disposed || work.version !== this.generation || work.candidates.length === 0) return;
     this.idleTask = this.idleScheduler.request(() => {
       this.idleTask = null;
-      if (this.disposed || version !== this.generation) return;
-      const [candidate, ...remaining] = candidates;
+      if (this.disposed || work !== this.idleWork || work.version !== this.generation) return;
+      const candidate = work.candidates.shift();
+      if (!candidate) return;
       try {
         void this.pool.acquire(candidate.url).then(
           (value) => {
-            if (this.disposed || version !== this.generation) return;
-            slots[candidate.index] = value;
-            this.update(candidate, value);
+            if (this.disposed || work !== this.idleWork || work.version !== this.generation) return;
+            work.slots[candidate.index] = value;
+            work.onReady(candidate, value);
           },
           () => undefined,
         );
       } catch {
         // Invalidated or disposed pools make the slot remain an ink frame.
       }
-      this.scheduleIdle(version, remaining, slots);
+      this.requestIdleWork();
     });
   }
 
@@ -324,6 +400,21 @@ export class TextureMorphCoordinator<T> {
     }
   }
 
+  private releaseStagedLease(lease: TextureLease): void {
+    if (this.stagedLease === lease) this.stagedLease = null;
+    this.release(lease);
+  }
+
+  private callCommit(slots: ReadonlyArray<T | null>): boolean {
+    try {
+      this.onCommit(slots);
+      return true;
+    } catch (error) {
+      this.report(error);
+      return false;
+    }
+  }
+
   private release(lease: TextureLease | null): void {
     if (!lease) return;
     try {
@@ -340,6 +431,14 @@ export class TextureMorphCoordinator<T> {
   private retain(urls: string[]): void {
     try {
       this.pool.retain(urls);
+    } catch (error) {
+      this.report(error);
+    }
+  }
+
+  private discardUnretained(urls: string[]): void {
+    try {
+      this.pool.discardUnretained(urls);
     } catch (error) {
       this.report(error);
     }
@@ -369,12 +468,34 @@ const TIER_LIMITS: Record<RenderedTier, { dpr: number; planes: number; textureBy
 
 type CloseableImage = { width: number; height: number; close?: () => void };
 
+export function validateTextureResponse(
+  requestedUrl: string,
+  response: Pick<Response, "ok" | "redirected" | "url" | "headers">,
+): void {
+  if (!response.ok) throw new Error("Texture request did not return a successful response.");
+  if (response.redirected) throw new Error("Texture requests must not follow redirects.");
+
+  const requested = new URL(requestedUrl);
+  let received: URL;
+  try {
+    received = new URL(response.url);
+  } catch {
+    throw new TypeError("Texture response URL must be present and same-origin.");
+  }
+  if (received.origin !== requested.origin) throw new TypeError("Texture response URL must remain same-origin.");
+
+  const contentType = response.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
+  if (contentType !== "image/avif" && contentType !== "image/webp") {
+    throw new TypeError("Texture response Content-Type must be image/avif or image/webp.");
+  }
+}
+
 function createTexturePool(tier: RenderedTier): TexturePool<THREE.Texture> {
   return new TexturePool({
     maxBytes: TIER_LIMITS[tier].textureBytes,
     async load(url, signal) {
       const response = await fetch(url, { signal, credentials: "same-origin" });
-      if (!response.ok) throw new Error(`Texture request failed with status ${response.status}.`);
+      validateTextureResponse(url, response);
       const image = await createImageBitmap(await response.blob());
       if (signal.aborted) {
         image.close();
@@ -448,13 +569,9 @@ export class ThreeSceneDriver implements SceneDriver {
     if (this.disposed || this.tierValue === tier) return;
     this.tierValue = tier;
     this.applyRendererTier();
+    this.applyTextureBudget();
     if (this.currentPreset) {
-      void this.morphTo(this.currentPreset, this.currentUrls).then(
-        () => this.applyTextureBudget(),
-        (error) => this.report(error),
-      );
-    } else {
-      this.applyTextureBudget();
+      void this.morphTo(this.currentPreset, this.currentUrls).catch((error: unknown) => this.report(error));
     }
   }
 

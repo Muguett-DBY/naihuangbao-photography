@@ -26,6 +26,7 @@ const FRAME_WINDOW_SIZE = 120;
 const SLOW_FRAME_THRESHOLD_MS = 34;
 const SLOW_FRAME_COUNT = 45;
 const MEDIUM_FRAME_TARGET_MS = 1000 / 45;
+const MEDIUM_RESYNC_THRESHOLD_MS = MEDIUM_FRAME_TARGET_MS * 1.5;
 
 export class ImmersiveRuntime {
   private readonly store: ExperienceStore;
@@ -213,7 +214,7 @@ export class ImmersiveRuntime {
 
     const cadenceLimited = this.tierValue === "medium" && frameState === "active";
     if (cadenceLimited) {
-      this.frameAccumulator = delta > MEDIUM_FRAME_TARGET_MS * 2
+      this.frameAccumulator = delta >= MEDIUM_RESYNC_THRESHOLD_MS
         ? MEDIUM_FRAME_TARGET_MS
         : this.frameAccumulator + delta;
       if (this.frameAccumulator < MEDIUM_FRAME_TARGET_MS) {
