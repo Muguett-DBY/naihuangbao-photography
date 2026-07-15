@@ -34,6 +34,23 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
     });
     runtimeRef.current = runtime;
     const unregisterRuntime = runtimeBridge.registerRuntime(runtime);
+    let scenePreset: string | null = null;
+    let highlightedId: string | null = null;
+    const syncCanvasState = () => {
+      const snapshot = store.getSnapshot();
+      const nextPreset = snapshot.anchor?.preset ?? snapshot.route;
+      if (scenePreset !== nextPreset) {
+        scenePreset = nextPreset;
+        if (nextPreset) canvas.dataset.scenePreset = nextPreset;
+        else delete canvas.dataset.scenePreset;
+      }
+      if (highlightedId !== snapshot.highlightedId) {
+        highlightedId = snapshot.highlightedId;
+        if (highlightedId) canvas.dataset.highlightedId = highlightedId;
+        else delete canvas.dataset.highlightedId;
+      }
+    };
+    const unsubscribeCanvasState = store.subscribe(syncCanvasState);
 
     const syncReadiness = () => {
       if (isImmersiveCanvasReady(runtime.tier)) document.documentElement.dataset.immersiveReady = "true";
@@ -57,6 +74,7 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
     canvas.addEventListener("webglcontextlost", onContextLost);
     canvas.addEventListener("webglcontextrestored", onContextRestored);
     resize();
+    syncCanvasState();
     syncReadiness();
 
     return () => {
@@ -65,6 +83,7 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
       resizeObserver.disconnect();
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);
+      unsubscribeCanvasState();
       unregisterRuntime();
       runtime.dispose();
       if (runtimeRef.current === runtime) runtimeRef.current = null;

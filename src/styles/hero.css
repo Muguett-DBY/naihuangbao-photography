@@ -778,6 +778,21 @@ body.is-loaded .hero-contact-sheet {
   pointer-events: none;
 }
 
+html[data-immersive-ready="true"] .hero-home[data-immersive-anchor="home"],
+html[data-immersive-ready="true"] .hero-home[data-immersive-anchor="home"] .hero-contact-sheet,
+html[data-immersive-ready="true"] .hero-home[data-immersive-anchor="home"] .hero-contact-sheet-frame {
+  background: transparent;
+}
+
+html[data-immersive-ready="true"] body.is-loaded .hero-home[data-immersive-anchor="home"] .hero-contact-sheet {
+  opacity: 0.26;
+  transition: opacity 420ms ease-out;
+}
+
+html[data-immersive-ready="true"] .hero-home[data-immersive-anchor="home"] .hero-solid-scrim {
+  background: rgba(10, 18, 14, 0.58);
+}
+
 .hero-editorial-copy {
   position: relative;
   z-index: 2;

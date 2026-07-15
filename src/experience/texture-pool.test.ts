@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, type Mock } from "vitest";
-import { validateTextureResponse } from "./three-scene-driver";
+import { createTextureBitmap, validateTextureResponse } from "./three-scene-driver";
 import { TexturePool, type TextureLoadResult } from "./texture-pool";
 
 type TextureLike = {
@@ -20,6 +20,58 @@ function texture(id: string, bytes = 4): TextureLoadResult<TextureLike> {
     height: 1,
     bytes,
   };
+}
+
+function pngBlob(width: number, height: number): Blob {
+  const bytes = new Uint8Array(24);
+  bytes.set([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const view = new DataView(bytes.buffer);
+  view.setUint32(8, 13);
+  bytes.set([0x49, 0x48, 0x44, 0x52], 12);
+  view.setUint32(16, width);
+  view.setUint32(20, height);
+  return new Blob([bytes], { type: "image/png" });
+}
+
+function jpegBlob(width: number, height: number): Blob {
+  const bytes = new Uint8Array([
+    0xff, 0xd8,
+    0xff, 0xe0, 0x00, 0x04, 0x00, 0x00,
+    0xff, 0xc0, 0x00, 0x11, 0x08,
+    (height >>> 8) & 0xff, height & 0xff,
+    (width >>> 8) & 0xff, width & 0xff,
+    0x03, 0x01, 0x11, 0x00, 0x02, 0x11, 0x00, 0x03, 0x11, 0x00,
+  ]);
+  return new Blob([bytes], { type: "image/jpeg" });
+}
+
+function jpegBlobAfterSegments(segmentCount: number, width: number, height: number): Blob {
+  const bytes = new Uint8Array(2 + segmentCount * 4 + 19);
+  bytes.set([0xff, 0xd8]);
+  for (let index = 0; index < segmentCount; index += 1) {
+    bytes.set([0xff, 0xe0, 0x00, 0x02], 2 + index * 4);
+  }
+  const frameOffset = 2 + segmentCount * 4;
+  bytes.set([
+    0xff, 0xc0, 0x00, 0x11, 0x08,
+    (height >>> 8) & 0xff, height & 0xff,
+    (width >>> 8) & 0xff, width & 0xff,
+    0x03, 0x01, 0x11, 0x00, 0x02, 0x11, 0x00, 0x03, 0x11, 0x00,
+  ], frameOffset);
+  return new Blob([bytes], { type: "image/jpeg" });
+}
+
+function webpBlob(width: number, height: number): Blob {
+  const bytes = new Uint8Array(30);
+  bytes.set([0x52, 0x49, 0x46, 0x46], 0);
+  bytes.set([0x57, 0x45, 0x42, 0x50], 8);
+  bytes.set([0x56, 0x50, 0x38, 0x58], 12);
+  new DataView(bytes.buffer).setUint32(16, 10, true);
+  const widthMinusOne = width - 1;
+  const heightMinusOne = height - 1;
+  bytes.set([widthMinusOne & 0xff, (widthMinusOne >>> 8) & 0xff, (widthMinusOne >>> 16) & 0xff], 24);
+  bytes.set([heightMinusOne & 0xff, (heightMinusOne >>> 8) & 0xff, (heightMinusOne >>> 16) & 0xff], 27);
+  return new Blob([bytes], { type: "image/webp" });
 }
 
 function createDeferredPool(maxBytes = 24 * 1024 * 1024) {
@@ -134,6 +186,20 @@ describe("TexturePool", () => {
     expect(() => pool.acquire("/gallery/portrait.png")).toThrow(TypeError);
   });
 
+  it("accepts only the same-origin public photo image endpoint without an extension", () => {
+    const { pool, load } = createDeferredPool();
+
+    void pool.acquire("/api/photos/7c89df68-4f32-46a7-9cb9-b47ec62c78b8/image?variant=full#ignored");
+
+    expect(load).toHaveBeenCalledWith(
+      "http://localhost/api/photos/7c89df68-4f32-46a7-9cb9-b47ec62c78b8/image?variant=full",
+      expect.any(AbortSignal),
+    );
+    expect(() => pool.acquire("/api/photos/7c89df68-4f32-46a7-9cb9-b47ec62c78b8/download")).toThrow(TypeError);
+    expect(() => pool.acquire("/api/photos/id/image/extra")).toThrow(TypeError);
+    expect(() => pool.acquire("https://cdn.example.com/api/photos/id/image")).toThrow(TypeError);
+  });
+
   it("rejects redirected or non-image texture responses before bitmap creation", () => {
     const requestedUrl = "http://localhost/gallery/portrait.avif";
     const response = (overrides: Partial<Response> = {}) => ({
@@ -149,6 +215,72 @@ describe("TexturePool", () => {
     expect(() => validateTextureResponse(requestedUrl, response({ url: "https://cdn.example.com/portrait.avif" }))).toThrow(/same-origin/i);
     expect(() => validateTextureResponse(requestedUrl, response({ headers: new Headers() }))).toThrow(/content-type/i);
     expect(() => validateTextureResponse(requestedUrl, response({ headers: new Headers({ "content-type": "image/jpeg" }) }))).toThrow(/content-type/i);
+  });
+
+  it("accepts uploaded JPEG, PNG, and WebP responses only for the public photo endpoint", () => {
+    const requestedUrl = "http://localhost/api/photos/7c89df68-4f32-46a7-9cb9-b47ec62c78b8/image";
+    const response = (contentType: string) => ({
+      ok: true,
+      redirected: false,
+      url: requestedUrl,
+      headers: new Headers({ "content-type": contentType }),
+    }) as Pick<Response, "ok" | "redirected" | "url" | "headers">;
+
+    expect(() => validateTextureResponse(requestedUrl, response("image/jpeg"))).not.toThrow();
+    expect(() => validateTextureResponse(requestedUrl, response("image/png"))).not.toThrow();
+    expect(() => validateTextureResponse(requestedUrl, response("image/webp"))).not.toThrow();
+    expect(() => validateTextureResponse(requestedUrl, response("image/svg+xml"))).toThrow(/content-type/i);
+  });
+
+  it("flips portrait bitmaps during decode for upright WebGL textures", async () => {
+    const source = new Blob(["portrait"]);
+    const bitmap = { width: 1, height: 1, close: vi.fn() } as unknown as ImageBitmap;
+    const createBitmap = vi.fn(async () => bitmap);
+
+    await expect(createTextureBitmap(source, { factory: createBitmap })).resolves.toBe(bitmap);
+    expect(createBitmap).toHaveBeenCalledWith(source, { imageOrientation: "flipY" });
+  });
+
+  it.each([
+    ["PNG landscape", pngBlob(8000, 6000), 1280, 960],
+    ["JPEG landscape", jpegBlob(8000, 6000), 1280, 960],
+    ["WebP portrait", webpBlob(6000, 8000), 960, 1280],
+  ])("downscales a large uploaded %s before bitmap allocation", async (_name, source, width, height) => {
+    const bitmap = { width, height, close: vi.fn() } as unknown as ImageBitmap;
+    const createBitmap = vi.fn(async () => bitmap);
+
+    await expect(createTextureBitmap(source, { factory: createBitmap, maxDimension: 1280 })).resolves.toBe(bitmap);
+    expect(createBitmap).toHaveBeenCalledWith(source, {
+      imageOrientation: "flipY",
+      resizeHeight: height,
+      resizeQuality: "high",
+      resizeWidth: width,
+    });
+  });
+
+  it("does not upscale a small uploaded bitmap", async () => {
+    const source = pngBlob(640, 480);
+    const bitmap = { width: 640, height: 480, close: vi.fn() } as unknown as ImageBitmap;
+    const createBitmap = vi.fn(async () => bitmap);
+
+    await createTextureBitmap(source, { factory: createBitmap, maxDimension: 1280 });
+    expect(createBitmap).toHaveBeenCalledWith(source, { imageOrientation: "flipY" });
+  });
+
+  it("rejects an uploaded bitmap whose encoded dimensions cannot be read", async () => {
+    const source = new Blob(["not-an-image"], { type: "image/jpeg" });
+    const createBitmap = vi.fn();
+
+    await expect(createTextureBitmap(source, { factory: createBitmap, maxDimension: 1280 })).rejects.toThrow(/dimensions/i);
+    expect(createBitmap).not.toHaveBeenCalled();
+  });
+
+  it("bounds encoded-header scanning before bitmap creation", async () => {
+    const source = jpegBlobAfterSegments(257, 8000, 6000);
+    const createBitmap = vi.fn();
+
+    await expect(createTextureBitmap(source, { factory: createBitmap, maxDimension: 1280 })).rejects.toThrow(/dimensions/i);
+    expect(createBitmap).not.toHaveBeenCalled();
   });
 
   it("never evicts pinned visible or staged textures under budget pressure", async () => {

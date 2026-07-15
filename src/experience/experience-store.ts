@@ -16,6 +16,7 @@ type RegisteredExperienceAnchor = Readonly<Omit<ExperienceAnchor, "imageUrls">> 
 export type ExperienceSnapshot = {
   route: ScenePresetId | null;
   anchor: RegisteredExperienceAnchor | null;
+  highlightedId: string | null;
   pointerX: number;
   pointerY: number;
   scrollProgress: number;
@@ -29,6 +30,7 @@ export type ExperienceStore = {
   subscribe(listener: () => void): () => void;
   setRoute(preset: ScenePresetId | null): void;
   registerAnchor(anchor: ExperienceAnchor): () => void;
+  setHighlightedId(id: string | null): void;
   setPointer(x: number, y: number): void;
   setScrollProgress(progress: number): void;
   setPaused(reason: ExperiencePauseReason, active: boolean): void;
@@ -82,6 +84,7 @@ export function createExperienceStore(): ExperienceStore {
   let snapshot = createSnapshot({
     route: null,
     anchor: null,
+    highlightedId: null,
     pointerX: 0,
     pointerY: 0,
     scrollProgress: 0,
@@ -117,6 +120,10 @@ export function createExperienceStore(): ExperienceStore {
         registrationToken += 1;
         publish(createSnapshot({ ...snapshot, anchor: null }));
       };
+    },
+    setHighlightedId(id) {
+      if (snapshot.highlightedId === id) return;
+      publish(createSnapshot({ ...snapshot, highlightedId: id }));
     },
     setPointer(x, y) {
       const pointerX = clamp(x, -1, 1);
