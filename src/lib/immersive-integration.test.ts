@@ -190,4 +190,27 @@ describe("immersive experience integration", () => {
     expect(gallery).toContain("onFocusCapture");
     expect(canvas).toContain("scenePreset");
   });
+
+  it("registers every catalogue index and detail page with its exact scene preset", () => {
+    const coverage = {
+      "src/pages/CoursesPage.tsx": "courses",
+      "src/pages/CourseDetailPage.tsx": "course-detail",
+      "src/pages/ProductsPage.tsx": "presets",
+      "src/pages/PresetDetailPage.tsx": "preset-detail",
+      "src/pages/WorkshopsPage.tsx": "workshops",
+      "src/pages/WorkshopDetailPage.tsx": "workshop-detail",
+      "src/pages/ShopPage.tsx": "shop",
+      "src/pages/ShopDetailPage.tsx": "shop-detail",
+    } as const;
+
+    for (const [file, preset] of Object.entries(coverage)) {
+      const source = read(file);
+      expect(
+        source.includes(`immersivePreset="${preset}"`)
+          || source.includes(`preset: "${preset}"`),
+        `${file} must register ${preset}`,
+      ).toBe(true);
+      expect(source).not.toContain('from "three"');
+    }
+  });
 });

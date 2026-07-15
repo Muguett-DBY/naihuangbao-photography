@@ -12,6 +12,8 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DataState } from "../components/shared/DataState";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import { tCourseCategory, tCourseDifficulty } from "../lib/i18n-typed";
+import { selectImmersiveImageUrls } from "../experience/immersive-images";
+import { useImmersiveHighlight } from "../experience/useImmersiveHighlight";
 import type { Course } from "../types/content";
 
 type CategoryFilter = string | "all";
@@ -21,6 +23,7 @@ export function CoursesPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const { items: courses, loading, error, retry, empty } = useApiList<Course>("/api/courses", "courses");
   const [filter, setFilter] = useState<CategoryFilter>("all");
+  const bindImmersiveHighlight = useImmersiveHighlight();
 
   useSEO({ titleKey: "seo.coursesTitle", descKey: "seo.coursesDesc", path: "/courses" });
   useGsapPageEffects(rootRef);
@@ -35,6 +38,10 @@ export function CoursesPage() {
     if (filter === "all") return courses;
     return courses.filter((c) => c.category === filter);
   }, [courses, filter]);
+  const courseCoverUrls = useMemo(() => selectImmersiveImageUrls([
+    ...courses.map((course) => course.cover_image_url),
+    "/images/gallery/gallery-garden-01.webp",
+  ]), [courses]);
 
   return (
     <PageTransition ref={rootRef} className="catalogue-page catalogue-page--courses">
@@ -45,6 +52,8 @@ export function CoursesPage() {
         image="/images/gallery/gallery-garden-01.webp"
         imageAlt={t("courses.title")}
         issue="ISSUE 03"
+        immersivePreset="courses"
+        immersiveImages={courseCoverUrls}
       />
 
       <section className="section-shell catalogue-section is-visible">
@@ -89,7 +98,7 @@ export function CoursesPage() {
 
           <div className="courses-grid">
             {filteredCourses.map((course, index) => (
-              <article key={course.id} className="course-card catalogue-card">
+              <article key={course.id} className="course-card catalogue-card" {...bindImmersiveHighlight(course.id)}>
                 <Link to={`/courses/${course.id}`} className="catalogue-card-link">
                   <span className="catalogue-card-index">{String(index + 1).padStart(2, "0")}</span>
                   {course.cover_image_url ? (

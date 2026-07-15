@@ -41,6 +41,7 @@ export class ImmersiveRuntime {
   private lastFrameTime: number;
   private committedSceneKey = "";
   private pendingSceneKey = "";
+  private highlightedId: string | null = null;
   private sceneRequest = 0;
   private stateValue: ImmersiveRuntimeState = "booting";
   private tierValue: ExperienceTier;
@@ -72,7 +73,9 @@ export class ImmersiveRuntime {
     }
 
     this.unsubscribe = this.store.subscribe(() => this.handleStoreChange());
-    this.syncScene(this.store.getSnapshot());
+    const snapshot = this.store.getSnapshot();
+    this.syncScene(snapshot);
+    this.syncHighlight(snapshot);
     this.updateActivity();
   }
 
@@ -127,6 +130,7 @@ export class ImmersiveRuntime {
     if (this.isTerminal()) return;
     const snapshot = this.store.getSnapshot();
     this.syncScene(snapshot);
+    this.syncHighlight(snapshot);
     this.updateActivity();
     if (this.stateValue === "idle" && snapshot.visible && !snapshot.paused) this.requestFrame();
   }
@@ -163,6 +167,16 @@ export class ImmersiveRuntime {
         this.report(error);
       },
     );
+  }
+
+  private syncHighlight(snapshot: ExperienceSnapshot): void {
+    if (!this.driver || snapshot.highlightedId === this.highlightedId) return;
+    try {
+      this.driver.setHighlightedId(snapshot.highlightedId);
+      this.highlightedId = snapshot.highlightedId;
+    } catch (error) {
+      this.report(error);
+    }
   }
 
   private updateActivity(): void {

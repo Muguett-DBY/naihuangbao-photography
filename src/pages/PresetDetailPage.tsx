@@ -19,6 +19,9 @@ import { getName, getDesc } from "../lib/i18n-helpers";
 import { tPresetCategory } from "../lib/i18n-typed";
 import { siteOrigin } from "../lib/site-origin";
 import { publicMutationHeaders } from "../lib/admin-helpers";
+import { selectImmersiveImageUrls } from "../experience/immersive-images";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
+import { useImmersiveHighlight } from "../experience/useImmersiveHighlight";
 import type { Preset } from "../types/content";
 
 export function PresetDetailPage() {
@@ -27,6 +30,7 @@ export function PresetDetailPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const { item: preset, loading, error } = useApiItem<Preset>(id ? `/api/presets/${id}` : null);
   const { related: allPresets } = useRelatedItems<Preset>("/api/presets", "presets", id);
+  const bindImmersiveHighlight = useImmersiveHighlight();
 
   useGsapPageEffects(rootRef);
 
@@ -98,13 +102,22 @@ export function PresetDetailPage() {
       keepalive: true,
     }).catch(() => undefined);
   };
+  const immersiveImages = useMemo(
+    () => selectImmersiveImageUrls(preset?.preview_images ?? []),
+    [preset?.preview_images],
+  );
+  const immersiveAnchor = useImmersiveAnchor({
+    id: `preset-detail:${id ?? "pending"}`,
+    preset: "preset-detail",
+    imageUrls: immersiveImages,
+  });
 
   if (loading) return <DetailLoading label={t("loading")} />;
   if (error || !preset) return <DetailNotFound message={t("presetDetail.notFound")} backTo="/products" backLabel={t("presetDetail.backToList")} />;
 
   return (
     <PageTransition ref={rootRef} className="catalogue-detail-page catalogue-detail-page--preset">
-      <header className="catalogue-detail-stage" id="top">
+      <header ref={immersiveAnchor} className="catalogue-detail-stage" id="top" data-immersive-anchor="preset-detail">
         <div className="catalogue-detail-media catalogue-detail-media--compare">
           {preset.preview_images?.length ? (
             <CompareSlider
@@ -212,6 +225,7 @@ export function PresetDetailPage() {
                 <Link
                   key={p.id} to={`/presets/${p.id}`}
                   className="preset-detail-related-card"
+                  {...bindImmersiveHighlight(p.id)}
                 >
                   {p.preview_images?.[0] && <img src={p.preview_images[0]} alt={getName(p, lang)} />}
                   <div className="preset-detail-related-card-info">

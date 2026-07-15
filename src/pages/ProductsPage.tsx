@@ -13,6 +13,8 @@ import { DataState } from "../components/shared/DataState";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import { tPresetCategory } from "../lib/i18n-typed";
 import { publicMutationHeaders } from "../lib/admin-helpers";
+import { selectImmersiveImageUrls } from "../experience/immersive-images";
+import { useImmersiveHighlight } from "../experience/useImmersiveHighlight";
 import type { Preset } from "../types/content";
 
 type CategoryFilter = string | "all";
@@ -22,6 +24,7 @@ export function ProductsPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const { items: presets, loading, error, retry, empty } = useApiList<Preset>("/api/presets", "presets");
   const [filter, setFilter] = useState<CategoryFilter>("all");
+  const bindImmersiveHighlight = useImmersiveHighlight();
 
   useSEO({ titleKey: "seo.presetsTitle", descKey: "seo.presetsDesc", path: "/products" });
   useGsapPageEffects(rootRef);
@@ -38,6 +41,10 @@ export function ProductsPage() {
     if (filter === "all") return presets;
     return presets.filter((p) => p.category === filter);
   }, [presets, filter]);
+  const presetPreviewUrls = useMemo(() => selectImmersiveImageUrls([
+    ...presets.flatMap((preset) => preset.preview_images ?? []),
+    "/images/gallery/gallery-urban-01.webp",
+  ]), [presets]);
 
   const handleDownload = (id: string) => {
     void fetch(`/api/presets/${id}/download`, {
@@ -56,6 +63,8 @@ export function ProductsPage() {
         image="/images/gallery/gallery-urban-01.webp"
         imageAlt={t("presets.title")}
         issue="ISSUE 04"
+        immersivePreset="presets"
+        immersiveImages={presetPreviewUrls}
       />
 
       <section className="section-shell catalogue-section is-visible">
@@ -98,7 +107,7 @@ export function ProductsPage() {
 
           <div className="presets-grid">
             {filteredPresets.map((preset, index) => (
-              <article key={preset.id} className="preset-card catalogue-card">
+              <article key={preset.id} className="preset-card catalogue-card" {...bindImmersiveHighlight(preset.id)}>
                 <Link to={`/presets/${preset.id}`} className="catalogue-card-link">
                   <span className="catalogue-card-index">{String(index + 1).padStart(2, "0")}</span>
                   {preset.preview_images?.[0] ? (

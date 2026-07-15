@@ -16,6 +16,8 @@ import { WorkshopCountdown } from "../components/WorkshopCountdown";
 import { CapacityBar } from "../components/CapacityBar";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import { tWorkshopStatus } from "../lib/i18n-typed";
+import { selectImmersiveImageUrls } from "../experience/immersive-images";
+import { useImmersiveHighlight } from "../experience/useImmersiveHighlight";
 import type { Workshop } from "../types/content";
 
 type ViewMode = "grid" | "calendar";
@@ -30,6 +32,7 @@ export function WorkshopsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const filterSheetRef = useFocusTrap<HTMLDivElement>({ active: filterSheetOpen });
+  const bindImmersiveHighlight = useImmersiveHighlight();
 
   useSEO({ titleKey: "seo.workshopsTitle", descKey: "seo.workshopsDesc", path: "/workshops" });
   useGsapPageEffects(rootRef);
@@ -54,6 +57,10 @@ export function WorkshopsPage() {
     (groups[key] ??= []).push(workshop);
     return groups;
   }, {}), [filteredWorkshops]);
+  const workshopCoverUrls = useMemo(() => selectImmersiveImageUrls([
+    ...workshops.map((workshop) => workshop.cover_image_url),
+    "/images/gallery/gallery-jiangnan-01.webp",
+  ]), [workshops]);
 
   const handleRegister = async (workshopId: string) => {
     setRegisteringId(workshopId);
@@ -95,7 +102,7 @@ export function WorkshopsPage() {
           : `${t("workshops.spotsLeft")}: ${spotsLeft}`;
 
     return (
-      <article key={workshop.id} className="workshop-card catalogue-card">
+      <article key={workshop.id} className="workshop-card catalogue-card" {...bindImmersiveHighlight(workshop.id)}>
         <span className="catalogue-card-index">{String(index + 1).padStart(2, "0")}</span>
         <Link to={`/workshops/${workshop.id}`} className="catalogue-card-link">
           {workshop.cover_image_url ? (
@@ -214,6 +221,8 @@ export function WorkshopsPage() {
         image="/images/gallery/gallery-jiangnan-01.webp"
         imageAlt={t("workshops.title")}
         issue="ISSUE 05"
+        immersivePreset="workshops"
+        immersiveImages={workshopCoverUrls}
       />
 
       <section className="section-shell catalogue-section is-visible">

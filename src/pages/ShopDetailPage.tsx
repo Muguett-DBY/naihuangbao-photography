@@ -1,5 +1,5 @@
 import "../styles/pages.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, Package, Truck, RotateCcw, MessageCircle } from "lucide-react";
@@ -15,6 +15,9 @@ import { DetailNotFound } from "../components/shared/DetailNotFound";
 import { DetailBackLink } from "../components/shared/DetailBackLink";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import { tMerchandiseCategory } from "../lib/i18n-typed";
+import { selectImmersiveImageUrls } from "../experience/immersive-images";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
+import { useImmersiveHighlight } from "../experience/useImmersiveHighlight";
 import type { Merchandise } from "../types/content";
 
 export function ShopDetailPage() {
@@ -25,6 +28,7 @@ export function ShopDetailPage() {
   const { item, loading, error } = useApiItem<Merchandise>(id ? `/api/merchandise/${id}` : null);
   const { related: allItems } = useRelatedItems<Merchandise>("/api/merchandise", "merchandise", id);
   const [activeImage, setActiveImage] = useState(0);
+  const bindImmersiveHighlight = useImmersiveHighlight();
 
   useEffect(() => {
     setActiveImage(0);
@@ -40,6 +44,15 @@ export function ShopDetailPage() {
     descKey: "seo.shopDetailDesc",
     path: id ? `/shop/${id}` : undefined,
   });
+  const immersiveImages = useMemo(
+    () => selectImmersiveImageUrls(item?.images ?? []),
+    [item?.images],
+  );
+  const immersiveAnchor = useImmersiveAnchor({
+    id: `shop-detail:${id ?? "pending"}`,
+    preset: "shop-detail",
+    imageUrls: immersiveImages,
+  });
 
   if (loading) return <DetailLoading label={t("loading")} />;
   if (error || !item) return <DetailNotFound message={t("shopDetail.notFound")} backTo="/shop" backLabel={t("shopDetail.backToList")} />;
@@ -48,7 +61,7 @@ export function ShopDetailPage() {
 
   return (
     <PageTransition ref={rootRef} className="catalogue-detail-page catalogue-detail-page--shop">
-      <header className="catalogue-detail-stage" id="top">
+      <header ref={immersiveAnchor} className="catalogue-detail-stage" id="top" data-immersive-anchor="shop-detail">
         <div className="catalogue-detail-media">
           {images.length > 0 ? (
             <>
@@ -165,7 +178,7 @@ export function ShopDetailPage() {
             <div className="shop-detail-related-grid">
               {allItems.slice(0, 4).map((m) => (
                 <Link key={m.id} to={`/shop/${m.id}`}
-                  className="shop-detail-related-card">
+                  className="shop-detail-related-card" {...bindImmersiveHighlight(m.id)}>
                   {m.images?.[0] && <img src={m.images[0]} alt={getName(m, lang)} />}
                   <div className="shop-detail-related-card-info">
                     <h4>{getName(m, lang)}</h4>

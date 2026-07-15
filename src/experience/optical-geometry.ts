@@ -66,6 +66,38 @@ export function createFocusRailGroup(): THREE.Group {
   return group;
 }
 
+export function createCoordinateMarkerGroup(): THREE.Group {
+  const { group, resources } = createOwnedGroup();
+  group.name = "coordinate-date-markers";
+  const positions = [
+    -4.2, -2.05, 0, 4.2, -2.05, 0,
+    -4.2, 2.05, 0, -4.2, -2.05, 0,
+  ];
+  for (let index = 0; index < 7; index += 1) {
+    const x = -3.6 + index * 1.2;
+    const height = index % 2 === 0 ? 0.34 : 0.2;
+    positions.push(x, -2.05 - height, 0, x, -2.05 + height, 0);
+  }
+  const geometry = resources.register(new THREE.BufferGeometry());
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  const material = resources.register(new THREE.LineBasicMaterial({ color: PAPER, transparent: true, opacity: 0.34 }));
+  const markers = new THREE.LineSegments(geometry, material);
+  markers.userData.opticalKind = "coordinate-date-markers";
+  markers.userData.dateMarkerCount = 7;
+  group.add(markers);
+  return group;
+}
+
+export function presetUsesFocusRails(preset: ScenePreset): boolean {
+  return preset.id === "courses"
+    || preset.composition === "focus"
+    || preset.composition === "calibration";
+}
+
+export function presetUsesCoordinateMarkers(preset: ScenePreset): boolean {
+  return preset.id === "workshops" || preset.id === "workshop-detail";
+}
+
 export function createShutterGroup(bladeCount = 8): THREE.Group {
   const { group, resources } = createOwnedGroup();
   group.name = "shutter";
@@ -94,7 +126,7 @@ export function applyPresetGeometry(group: THREE.Group, preset: ScenePreset, pro
   const amount = clampProgress(progress);
   const planes: THREE.Object3D[] = [];
   group.traverse((object) => {
-    if (object.userData.opticalKind === "contact-plane") planes.push(object);
+    if (object.userData.opticalKind === "contact-plane" && object.visible) planes.push(object);
   });
 
   planes.forEach((plane, index) => {
@@ -116,7 +148,12 @@ export function applyPresetGeometry(group: THREE.Group, preset: ScenePreset, pro
         plane.rotation.set(0, centered * -0.035, 0);
         break;
       case "machine":
-        plane.position.set(centered * 1.72, index % 2 === 0 ? 0.32 : -0.32, -Math.abs(centered) * 0.34);
+        if (preset.id === "shop") {
+          const spacing = Math.min(1.72, 8.4 / Math.max(1, planes.length - 1));
+          plane.position.set(centered * spacing, index % 2 === 0 ? 0.24 : -0.24, -Math.abs(centered) * 0.26);
+        } else {
+          plane.position.set(centered * 1.72, index % 2 === 0 ? 0.32 : -0.32, -Math.abs(centered) * 0.34);
+        }
         plane.rotation.set(0, centered * -0.04, 0);
         break;
       case "shutter":
@@ -124,7 +161,11 @@ export function applyPresetGeometry(group: THREE.Group, preset: ScenePreset, pro
         plane.rotation.set(0, 0, centered * 0.025);
         break;
       case "calibration":
-        plane.position.set(centered * 1.1 + ((index % 3) - 1) * 0.018, Math.sin(index) * 0.12, -index * 0.16);
+        plane.position.set(
+          centered * 1.1 + (preset.id === "presets" || preset.id === "preset-detail" ? ((index % 3) - 1) * 0.018 : 0),
+          Math.sin(index) * 0.12,
+          -index * 0.16,
+        );
         plane.rotation.set(0, 0, 0);
         break;
       case "boundary":
