@@ -10135,6 +10135,19 @@
   max-height: calc(100svh - 132px);
 }
 
+html[data-immersive-ready="true"] .photo-detail-stage[data-immersive-anchor="photo-detail"] {
+  background: rgba(247, 244, 236, 0.18);
+}
+
+html[data-immersive-ready="true"] .photo-detail-stage[data-immersive-anchor="photo-detail"] .photo-detail-cover-frame {
+  background: rgba(247, 244, 236, 0.7);
+}
+
+html[data-immersive-ready="true"] .photo-detail-stage[data-immersive-anchor="photo-detail"] .photo-detail-cover-frame img {
+  opacity: 0.92;
+  transition: opacity 420ms ease-out;
+}
+
 .photo-detail-heading {
   max-width: none;
   margin: 0;

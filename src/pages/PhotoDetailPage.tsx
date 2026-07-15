@@ -23,6 +23,7 @@ import { PinchZoom } from "../components/PinchZoom";
 import { siteOrigin } from "../lib/site-origin";
 import { getRelatedPhotos } from "../utils/relatedPhotos";
 import type { PhotoItem } from "../types/photo";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 
 const CompareSlider = lazy(() =>
   import("../components/CompareSlider").then((m) => ({ default: m.CompareSlider }))
@@ -81,6 +82,15 @@ export function PhotoDetailPage() {
     if (!photo) return [];
     return getRelatedPhotos(photo, photos, 6);
   }, [photos, photo]);
+  const immersiveImages = useMemo(
+    () => photo ? [photo.imageUrl, ...relatedPhotos.map((related) => related.imageUrl)] : [],
+    [photo, relatedPhotos],
+  );
+  const immersiveStageRef = useImmersiveAnchor({
+    id: `photo-detail:${id ?? "missing"}`,
+    preset: "photo-detail",
+    imageUrls: immersiveImages,
+  });
 
   const imageObject = useMemo(() => {
     if (!photo) return null;
@@ -169,7 +179,11 @@ export function PhotoDetailPage() {
   return (
     <PageTransition ref={rootRef}>
       <section className="photo-detail-hero" id="top">
-        <div className="photo-detail-stage">
+        <div
+          ref={immersiveStageRef}
+          className="photo-detail-stage"
+          data-immersive-anchor="photo-detail"
+        >
           <div className="photo-detail-cover-shell" ref={swipeRef}>
             {(adjacent.prev || adjacent.next) && (
               <div className="photo-detail-nav-hint" aria-hidden="true">

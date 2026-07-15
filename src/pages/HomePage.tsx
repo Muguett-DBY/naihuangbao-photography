@@ -19,6 +19,7 @@ import { PhotoOfTheDay } from "../components/PhotoOfTheDay";
 import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import { SectionSkeleton } from "../components/SectionSkeleton";
 import { ServiceJournal } from "../components/ServiceJournal";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 
 const Gallery = lazy(() => import("../components/Gallery").then((module) => ({ default: module.Gallery })));
 const WhyChooseUs = lazy(() => import("../components/WhyChooseUs").then((module) => ({ default: module.WhyChooseUs })));
@@ -39,6 +40,12 @@ export function HomePage() {
     () => photos.filter((photo) => photo.visibility === "public").slice(0, 3),
     [photos],
   );
+  const immersiveImages = useMemo(() => coverPhotos.map((photo) => photo.imageUrl), [coverPhotos]);
+  const immersiveHeroRef = useImmersiveAnchor({
+    id: "home-hero",
+    preset: "home",
+    imageUrls: immersiveImages,
+  });
   const finalCtaPhoto = coverPhotos[2] ?? coverPhotos[0];
 
   useSEO({ titleKey: "seo.homeTitle", descKey: "seo.homeDesc", path: "/" });
@@ -46,7 +53,12 @@ export function HomePage() {
 
   return (
     <PageTransition ref={rootRef}>
-      <section className="hero hero-home" id="top">
+      <section
+        ref={immersiveHeroRef}
+        className="hero hero-home"
+        id="top"
+        data-immersive-anchor="home"
+      >
         <div className="hero-contact-sheet">
           {coverPhotos.map((photo, index) => (
             <div

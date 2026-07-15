@@ -137,7 +137,7 @@ describe("editorial public-page reconstruction contracts", () => {
 
   it("puts the searchable gallery before optional immersive views", () => {
     const page = read("src/pages/GalleryPage.tsx");
-    const galleryIndex = page.indexOf("<Gallery />");
+    const galleryIndex = page.indexOf("<Gallery");
     const wallIndex = page.indexOf("<PhotoWall3DCss />");
 
     expect(page).toContain('className="gallery-page-hero"');

@@ -2004,6 +2004,21 @@
   pointer-events: none;
 }
 
+html[data-immersive-ready="true"] .gallery-page-hero[data-immersive-anchor="gallery"],
+html[data-immersive-ready="true"] .gallery-page-hero[data-immersive-anchor="gallery"] .gallery-page-contact-sheet,
+html[data-immersive-ready="true"] .gallery-page-hero[data-immersive-anchor="gallery"] .gallery-page-cover {
+  background: transparent;
+}
+
+html[data-immersive-ready="true"] .gallery-page-hero[data-immersive-anchor="gallery"] .gallery-page-contact-sheet {
+  opacity: 0.24;
+  transition: opacity 420ms ease-out;
+}
+
+html[data-immersive-ready="true"] .gallery-page-hero[data-immersive-anchor="gallery"] .gallery-page-hero-scrim {
+  background: rgba(10, 18, 14, 0.6);
+}
+
 .gallery-page-hero-copy {
   position: relative;
   z-index: 2;

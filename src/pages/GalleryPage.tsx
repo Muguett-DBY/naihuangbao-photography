@@ -1,5 +1,5 @@
 import "../styles/pages.css";
-import { Suspense, lazy, useRef, useEffect } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
@@ -8,6 +8,7 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { SectionSkeleton } from "../components/SectionSkeleton";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 
 const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
 const PhotoWall3DCss = lazy(() => import("../components/PhotoWall3DCss").then((m) => ({ default: m.PhotoWall3DCss })));
@@ -22,6 +23,25 @@ export function GalleryPage() {
   const { photos } = usePublicPhotos();
   const { siteConfig } = useSiteContent();
   const rootRef = useRef<HTMLDivElement>(null);
+  const publicImageUrls = useMemo(
+    () => photos.filter((photo) => photo.visibility === "public").slice(0, 6).map((photo) => photo.imageUrl),
+    [photos],
+  );
+  const [immersiveImages, setImmersiveImages] = useState<readonly string[]>(publicImageUrls);
+  const publishImmersiveImages = useCallback((nextImages: readonly string[]) => {
+    setImmersiveImages((currentImages) => {
+      if (currentImages.length === nextImages.length
+        && currentImages.every((image, index) => image === nextImages[index])) return currentImages;
+      return [...nextImages];
+    });
+  }, []);
+  const immersiveHeroRef = useImmersiveAnchor({
+    id: "gallery-hero",
+    preset: "gallery",
+    imageUrls: immersiveImages,
+  });
+
+  useEffect(() => publishImmersiveImages(publicImageUrls), [publicImageUrls, publishImmersiveImages]);
 
   useSEO({ titleKey: "seo.galleryTitle", descKey: "seo.galleryDesc", path: "/gallery" });
 
@@ -52,7 +72,12 @@ export function GalleryPage() {
 
   return (
     <PageTransition ref={rootRef}>
-      <section className="gallery-page-hero" id="top">
+      <section
+        ref={immersiveHeroRef}
+        className="gallery-page-hero"
+        id="top"
+        data-immersive-anchor="gallery"
+      >
         <div className="gallery-page-contact-sheet">
           {photos.filter((photo) => photo.visibility === "public").slice(0, 3).map((photo, index) => (
             <div className={`gallery-page-cover gallery-page-cover--${index + 1}`} key={photo.id}>
@@ -79,7 +104,7 @@ export function GalleryPage() {
       <section className="gallery-page-archive" id="gallery-archive">
         <ErrorBoundary>
           <Suspense fallback={<SectionSkeleton hasCards={3} />}>
-            <Gallery />
+            <Gallery onImmersivePhotosChange={publishImmersiveImages} />
           </Suspense>
         </ErrorBoundary>
       </section>

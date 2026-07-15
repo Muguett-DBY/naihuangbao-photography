@@ -38,6 +38,10 @@ function aggregate(errors: unknown[], message: string): AggregateError | null {
   return errors.length > 0 ? new AggregateError(errors, message) : null;
 }
 
+export function isPublicPhotoImagePath(pathname: string): boolean {
+  return /^\/api\/photos\/[^/]+\/image$/.test(pathname);
+}
+
 export class TexturePool<T> {
   private readonly entries = new Map<string, TextureEntry<T>>();
   private readonly pinCounts = new Map<string, number>();
@@ -81,14 +85,15 @@ export class TexturePool<T> {
 
     const supportedProtocol = normalized.protocol === "http:" || normalized.protocol === "https:";
     const supportedExtension = /\.(?:avif|webp)$/i.test(normalized.pathname);
+    const supportedPhotoEndpoint = isPublicPhotoImagePath(normalized.pathname);
     if (
       !supportedProtocol
       || normalized.origin !== this.baseUrl.origin
       || normalized.username !== ""
       || normalized.password !== ""
-      || !supportedExtension
+      || (!supportedExtension && !supportedPhotoEndpoint)
     ) {
-      throw new TypeError("Texture URLs must be same-origin AVIF or WebP resources.");
+      throw new TypeError("Texture URLs must be same-origin AVIF, WebP, or public photo image resources.");
     }
 
     normalized.hash = "";

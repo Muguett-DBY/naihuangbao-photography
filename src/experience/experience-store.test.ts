@@ -63,6 +63,20 @@ describe("experience store", () => {
     expect(store.getSnapshot().pauseReasons.has("hidden")).toBe(true);
   });
 
+  it("publishes highlighted photo identity only when it changes", () => {
+    const store = createExperienceStore();
+    const listener = vi.fn();
+    store.subscribe(listener);
+
+    store.setHighlightedId("gallery-urban-01");
+    expect(store.getSnapshot().highlightedId).toBe("gallery-urban-01");
+    store.setHighlightedId("gallery-urban-01");
+    expect(listener).toHaveBeenCalledTimes(1);
+    store.setHighlightedId(null);
+    expect(store.getSnapshot().highlightedId).toBeNull();
+    expect(listener).toHaveBeenCalledTimes(2);
+  });
+
   it("uses visibility to pause without clearing another active reason", () => {
     const store = createExperienceStore();
     store.setPaused("chat", true);

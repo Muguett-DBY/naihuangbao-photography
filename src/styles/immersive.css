@@ -27,7 +27,8 @@ html[data-immersive-ready="true"] .immersive-experience {
   background: transparent;
 }
 
-.site-shell > :not(.immersive-experience) {
+.site-shell > #main-content,
+.site-shell > #site-footer {
   position: relative;
   z-index: 1;
 }

@@ -27,6 +27,7 @@ import { CompareBar } from "./CompareBar";
 import { QuickView } from "./QuickView";
 import { RecentlyViewedStrip } from "./RecentlyViewedStrip";
 import { ShareMenu } from "./ShareMenu";
+import { useExperienceStore } from "../experience/ExperienceProvider";
 
 type StyleFilter = PhotoStyle | "all";
 type ViewMode = "masonry" | "compact";
@@ -212,8 +213,26 @@ function ShareButton({ photo }: { photo: PhotoItem }) {
   );
 }
 
-export function Gallery() {
+type GalleryProps = {
+  onImmersivePhotosChange?: (imageUrls: readonly string[]) => void;
+};
+
+export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
   const { t } = useTranslation();
+  const experienceStore = useExperienceStore();
+  const interactionIdsRef = useRef<{ hovered: string | null; focused: string | null }>({
+    hovered: null,
+    focused: null,
+  });
+  const publishHighlightedId = useCallback(() => {
+    const { hovered, focused } = interactionIdsRef.current;
+    experienceStore.setHighlightedId(hovered ?? focused);
+  }, [experienceStore]);
+  const resetHighlightedId = useCallback(() => {
+    interactionIdsRef.current.hovered = null;
+    interactionIdsRef.current.focused = null;
+    experienceStore.setHighlightedId(null);
+  }, [experienceStore]);
   const { sectionCopy } = useSiteContent();
   const { photos: sourcePhotos, remoteLoaded } = usePublicPhotos();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -283,6 +302,13 @@ export function Gallery() {
     }
     return copy;
   }, [searched, sortMode]);
+
+  useEffect(() => {
+    onImmersivePhotosChange?.(photos.slice(0, 6).map((photo) => photo.imageUrl));
+    resetHighlightedId();
+  }, [onImmersivePhotosChange, photos, resetHighlightedId]);
+
+  useEffect(() => () => resetHighlightedId(), [resetHighlightedId]);
 
   // Virtualization for large galleries
   const { visibleItems, totalHeight, offsetY, onScroll } = useVirtualization(photos, {
@@ -854,6 +880,29 @@ export function Gallery() {
                       data-gallery-photo-id={item.id}
                       key={item.id}
                       style={{ transitionDelay: `${index * 0.06}s` }}
+                      onPointerEnter={() => {
+                        interactionIdsRef.current.hovered = item.id;
+                        publishHighlightedId();
+                      }}
+                      onPointerLeave={() => {
+                        if (interactionIdsRef.current.hovered === item.id) {
+                          interactionIdsRef.current.hovered = null;
+                        }
+                        publishHighlightedId();
+                      }}
+                      onFocusCapture={() => {
+                        interactionIdsRef.current.focused = item.id;
+                        publishHighlightedId();
+                      }}
+                      onBlurCapture={(event) => {
+                        const nextTarget = event.relatedTarget;
+                        if (!(nextTarget instanceof Node) || !event.currentTarget.contains(nextTarget)) {
+                          if (interactionIdsRef.current.focused === item.id) {
+                            interactionIdsRef.current.focused = null;
+                          }
+                          publishHighlightedId();
+                        }
+                      }}
                     >
                       <div className="gallery-masonry-media">
                         <button

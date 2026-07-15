@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { resolveRoutePreset, SCENE_PRESETS } from "./scene-presets";
+import { resolveCameraDepth } from "./three-scene-driver";
 
 describe("immersive route presets", () => {
   it.each([
@@ -43,5 +44,20 @@ describe("immersive route presets", () => {
   it("uses idle scenes only for the map and editor", () => {
     expect(SCENE_PRESETS.map.idleAfterHero).toBe(true);
     expect(SCENE_PRESETS.editor.idleAfterHero).toBe(true);
+  });
+
+  it("maps bounded scroll progress to a smooth camera-depth move", () => {
+    const preset = SCENE_PRESETS.home;
+    const start = resolveCameraDepth(preset, 0);
+    const middle = resolveCameraDepth(preset, 0.5);
+    const end = resolveCameraDepth(preset, 1);
+
+    expect(start).toBe(preset.cameraZ);
+    expect(middle).toBeLessThan(start);
+    expect(end).toBeLessThan(middle);
+    expect(start - end).toBeLessThanOrEqual(0.9);
+    expect(resolveCameraDepth(preset, -1)).toBe(start);
+    expect(resolveCameraDepth(preset, 2)).toBe(end);
+    expect(resolveCameraDepth(preset, Number.NaN)).toBe(start);
   });
 });
