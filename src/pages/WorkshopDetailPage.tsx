@@ -1,5 +1,5 @@
 import "../styles/pages.css";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, Users, Clock, CheckCircle, X } from "lucide-react";
@@ -19,6 +19,8 @@ import { CapacityBar } from "../components/CapacityBar";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
 import { tWorkshopStatus } from "../lib/i18n-typed";
 import { PaymentForm } from "../components/PaymentForm";
+import { selectImmersiveImageUrls } from "../experience/immersive-images";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 import type { Workshop } from "../types/content";
 
 export function WorkshopDetailPage() {
@@ -80,6 +82,15 @@ export function WorkshopDetailPage() {
       document.getElementById("workshop-detail-name")?.focus();
     }, 0);
   };
+  const immersiveImages = useMemo(
+    () => selectImmersiveImageUrls([workshop?.cover_image_url]),
+    [workshop?.cover_image_url],
+  );
+  const immersiveAnchor = useImmersiveAnchor({
+    id: `workshop-detail:${id ?? "pending"}`,
+    preset: "workshop-detail",
+    imageUrls: immersiveImages,
+  });
 
   if (loading) return <DetailLoading label={t("loading")} />;
   if (error || !workshop) return <DetailNotFound message={t("workshopDetail.notFound")} backTo="/workshops" backLabel={t("workshopDetail.backToList")} />;
@@ -103,7 +114,7 @@ export function WorkshopDetailPage() {
 
   return (
     <PageTransition ref={rootRef} className="catalogue-detail-page catalogue-detail-page--workshop">
-      <header className="catalogue-detail-stage" id="top">
+      <header ref={immersiveAnchor} className="catalogue-detail-stage" id="top" data-immersive-anchor="workshop-detail">
         <div className="catalogue-detail-media">
           {workshop.cover_image_url ? (
             <img

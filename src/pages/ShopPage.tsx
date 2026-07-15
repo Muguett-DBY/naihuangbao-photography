@@ -13,6 +13,8 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DataState } from "../components/shared/DataState";
 import { getName, getDesc } from "../lib/i18n-helpers";
 import { tMerchandiseCategory } from "../lib/i18n-typed";
+import { selectImmersiveImageUrls } from "../experience/immersive-images";
+import { useImmersiveHighlight } from "../experience/useImmersiveHighlight";
 import type { Merchandise } from "../types/content";
 
 type CategoryFilter = string | "all";
@@ -23,6 +25,7 @@ export function ShopPage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const { items, loading, error, retry, empty } = useApiList<Merchandise>("/api/merchandise", "merchandise");
   const [filter, setFilter] = useState<CategoryFilter>("all");
+  const bindImmersiveHighlight = useImmersiveHighlight();
 
   useSEO({ titleKey: "seo.shopTitle", descKey: "seo.shopDesc", path: "/shop" });
   useGsapPageEffects(rootRef);
@@ -37,6 +40,10 @@ export function ShopPage() {
     if (filter === "all") return items;
     return items.filter((item) => item.category === filter);
   }, [items, filter]);
+  const merchandiseImageUrls = useMemo(() => selectImmersiveImageUrls([
+    ...items.flatMap((item) => item.images ?? []),
+    "/images/gallery/gallery-daily-01.webp",
+  ]), [items]);
 
   return (
     <PageTransition ref={rootRef} className="catalogue-page catalogue-page--shop">
@@ -47,6 +54,8 @@ export function ShopPage() {
         image="/images/gallery/gallery-daily-01.webp"
         imageAlt={t("merchandise.title")}
         issue="ISSUE 06"
+        immersivePreset="shop"
+        immersiveImages={merchandiseImageUrls}
       />
 
       <section className="section-shell catalogue-section is-visible">
@@ -91,7 +100,7 @@ export function ShopPage() {
 
           <div className="merchandise-grid">
             {filteredItems.map((item, index) => (
-              <article key={item.id} className="merchandise-card catalogue-card">
+              <article key={item.id} className="merchandise-card catalogue-card" {...bindImmersiveHighlight(item.id)}>
                 <Link to={`/shop/${item.id}`} className="catalogue-card-link">
                   <span className="catalogue-card-index">{String(index + 1).padStart(2, "0")}</span>
                   {item.images?.[0] ? (

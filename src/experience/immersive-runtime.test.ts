@@ -111,6 +111,7 @@ function createDriver() {
   const driver: SceneDriver = {
     setTier: vi.fn(),
     setSize: vi.fn(),
+    setHighlightedId: vi.fn(),
     morphTo: vi.fn(async () => undefined),
     render: vi.fn(),
     suspend: vi.fn(),
@@ -124,6 +125,23 @@ function createDriver() {
 }
 
 describe("ImmersiveRuntime", () => {
+  it("forwards pointer and keyboard highlight identity without rebuilding the scene", () => {
+    const store = createExperienceStore();
+    const scheduler = createScheduler();
+    const fake = createDriver();
+    const runtime = new ImmersiveRuntime({ store, tier: "high", createDriver: () => fake.driver, scheduler });
+    store.setRoute("courses");
+    const morphCalls = vi.mocked(fake.driver.morphTo).mock.calls.length;
+
+    store.setHighlightedId("course-immersive");
+    expect(fake.driver.setHighlightedId).toHaveBeenLastCalledWith("course-immersive");
+    expect(fake.driver.morphTo).toHaveBeenCalledTimes(morphCalls);
+
+    store.setHighlightedId(null);
+    expect(fake.driver.setHighlightedId).toHaveBeenLastCalledWith(null);
+    runtime.dispose();
+  });
+
   it("admits at most three valid route-critical textures before idle loading", async () => {
     const harness = createMorphHarness();
     const morph = harness.coordinator.morph([

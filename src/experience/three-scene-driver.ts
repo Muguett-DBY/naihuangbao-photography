@@ -1,6 +1,15 @@
 import * as THREE from "three";
 import type { ExperienceTier } from "./capability-tier";
-import { applyPresetGeometry, createContactSheetGroup, createFocusRailGroup, createShutterGroup, disposeOpticalGroup } from "./optical-geometry";
+import {
+  applyPresetGeometry,
+  createContactSheetGroup,
+  createCoordinateMarkerGroup,
+  createFocusRailGroup,
+  createShutterGroup,
+  disposeOpticalGroup,
+  presetUsesCoordinateMarkers,
+  presetUsesFocusRails,
+} from "./optical-geometry";
 import { ResourceRegistry } from "./resource-registry";
 import type { ScenePreset } from "./scene-presets";
 import { isPublicPhotoImagePath, TexturePool, type TextureLease } from "./texture-pool";
@@ -18,6 +27,7 @@ export type SceneFrame = {
 export type SceneDriver = {
   setTier(tier: RenderedTier): void;
   setSize(width: number, height: number): void;
+  setHighlightedId(id: string | null): void;
   morphTo(preset: ScenePreset, imageUrls: string[]): Promise<void>;
   render(frame: SceneFrame): void;
   suspend(): void;
@@ -788,6 +798,17 @@ export function resolveCameraDepth(preset: ScenePreset, scrollProgress: number):
   return preset.cameraZ - travel * easedProgress;
 }
 
+export function resolveHighlightedPlaneIndex(id: string, planeCount: number): number | null {
+  const count = Math.max(0, Math.floor(planeCount));
+  if (count === 0 || id === "") return null;
+  let hash = 2166136261;
+  for (const character of id.slice(0, 256)) {
+    hash ^= character.codePointAt(0) ?? 0;
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) % count;
+}
+
 export class ThreeSceneDriver implements SceneDriver {
   private readonly renderer: THREE.WebGLRenderer;
   private readonly scene = new THREE.Scene();
@@ -795,6 +816,7 @@ export class ThreeSceneDriver implements SceneDriver {
   private readonly root = new THREE.Group();
   private readonly contactSheet = createContactSheetGroup(TIER_LIMITS.high.planes);
   private readonly focusRails = createFocusRailGroup();
+  private readonly coordinateMarkers = createCoordinateMarkerGroup();
   private readonly shutter = createShutterGroup();
   private readonly resources = new ResourceRegistry();
   private readonly texturePool: TexturePool<THREE.Texture>;
@@ -803,6 +825,7 @@ export class ThreeSceneDriver implements SceneDriver {
   private tierValue: RenderedTier;
   private currentPreset: ScenePreset | null = null;
   private currentUrls: string[] = [];
+  private highlightedId: string | null = null;
   private suspended = false;
   private disposed = false;
 
@@ -831,9 +854,10 @@ export class ThreeSceneDriver implements SceneDriver {
     this.resources.register(this.texturePool);
     this.resources.register(this.contactSheet, disposeOpticalGroup);
     this.resources.register(this.focusRails, disposeOpticalGroup);
+    this.resources.register(this.coordinateMarkers, disposeOpticalGroup);
     this.resources.register(this.shutter, disposeOpticalGroup);
 
-    this.root.add(this.contactSheet, this.focusRails, this.shutter);
+    this.root.add(this.contactSheet, this.focusRails, this.coordinateMarkers, this.shutter);
     this.scene.add(this.root);
     this.camera.position.z = 6;
     this.applyRendererTier();
@@ -859,12 +883,19 @@ export class ThreeSceneDriver implements SceneDriver {
     this.renderer.setSize(safeWidth, safeHeight, false);
   }
 
+  setHighlightedId(id: string | null): void {
+    if (this.disposed) return;
+    this.highlightedId = id && id.trim() !== "" ? id : null;
+    this.applyHighlightState();
+  }
+
   morphTo(preset: ScenePreset, imageUrls: string[]): Promise<void> {
     if (this.disposed) return Promise.resolve();
     const planeLimit = Math.min(TIER_LIMITS[this.tierValue].planes, preset.maxPlanes[this.tierValue]);
     this.currentPreset = preset;
     this.currentUrls = [...imageUrls];
-    this.focusRails.visible = preset.composition === "focus" || preset.composition === "calibration";
+    this.focusRails.visible = presetUsesFocusRails(preset);
+    this.coordinateMarkers.visible = presetUsesCoordinateMarkers(preset);
     this.shutter.visible = preset.composition === "shutter";
     applyPresetGeometry(this.contactSheet, preset, 0);
     this.camera.position.z = preset.cameraZ;
@@ -880,6 +911,7 @@ export class ThreeSceneDriver implements SceneDriver {
     if (this.currentPreset) {
       this.camera.position.z = resolveCameraDepth(this.currentPreset, frame.scrollProgress);
       applyPresetGeometry(this.contactSheet, this.currentPreset, frame.scrollProgress);
+      this.applyHighlightState();
     }
     this.renderer.render(this.scene, this.camera);
   }
@@ -923,6 +955,17 @@ export class ThreeSceneDriver implements SceneDriver {
     return this.contactSheet.children.filter(
       (child): child is THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial> => child instanceof THREE.Mesh,
     );
+  }
+
+  private applyHighlightState(): void {
+    const planes = this.contactPlanes().filter((plane) => plane.visible);
+    const highlightedIndex = this.highlightedId
+      ? resolveHighlightedPlaneIndex(this.highlightedId, planes.length)
+      : null;
+    planes.forEach((plane, index) => {
+      const selected = highlightedIndex === index;
+      plane.scale.setScalar(highlightedIndex === null ? 1 : selected ? 1.055 : 0.97);
+    });
   }
 
   private applyTextures(

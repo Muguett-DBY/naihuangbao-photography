@@ -22,6 +22,8 @@ import { PaymentForm } from "../components/PaymentForm";
 import { siteOrigin } from "../lib/site-origin";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { logAndIgnore } from "../lib/errors";
+import { selectImmersiveImageUrls } from "../experience/immersive-images";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 import type { Course, CourseModule } from "../types/content";
 
 const fetchWithCredentials: RequestInit = { credentials: "include" };
@@ -193,6 +195,15 @@ export function CourseDetailPage() {
   });
 
   useGsapPageEffects(rootRef);
+  const immersiveImages = useMemo(
+    () => selectImmersiveImageUrls([data?.course?.cover_image_url]),
+    [data?.course?.cover_image_url],
+  );
+  const immersiveAnchor = useImmersiveAnchor({
+    id: `course-detail:${id ?? "pending"}`,
+    preset: "course-detail",
+    imageUrls: immersiveImages,
+  });
 
   if (loading) return <DetailLoading label={t("loading")} />;
   if (error || !data?.course) return <DetailNotFound message={t("courseDetail.notFound")} backTo="/courses" backLabel={t("courseDetail.backToList")} />;
@@ -211,7 +222,7 @@ export function CourseDetailPage() {
 
   return (
     <PageTransition ref={rootRef} className="catalogue-detail-page catalogue-detail-page--course">
-      <header className="catalogue-detail-stage" id="top">
+      <header ref={immersiveAnchor} className="catalogue-detail-stage" id="top" data-immersive-anchor="course-detail">
         <div className="catalogue-detail-media">
           {course.cover_image_url ? (
             <img
