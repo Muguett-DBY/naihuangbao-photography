@@ -9,8 +9,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "avif": "node scripts/convert-to-avif.mjs",
-    "build": "npm run avif && tsc -b && vite build",
-    "build:full": "npm run seo:sync && npm run sitemap:build && npm run avif && tsc -b && vite build && npm run perf:budget && npm run bundle:analyze",
+    "build": "npm run avif && tsc -b && vite build && npm run spa:404",
+    "build:full": "npm run seo:sync && npm run sitemap:build && npm run avif && tsc -b && vite build && npm run spa:404 && npm run perf:budget && npm run bundle:analyze",
     "preview": "vite preview --host 0.0.0.0",
     "sitemap:build": "node --import tsx/esm scripts/build-sitemap.ts",
     "bundle:analyze": "node scripts/analyze-bundle.mjs",
@@ -19,6 +19,7 @@
     "test:e2e": "playwright test -c e2e/playwright.config.ts",
     "cf:types": "wrangler types worker-configuration.d.ts",
     "seo:sync": "node --import tsx/esm scripts/sync-seo-shell.mjs",
+    "spa:404": "node scripts/sync-spa-404.mjs",
     "perf:budget": "node scripts/check-performance-budget.mjs",
     "assets:crop": "node scripts/crop-gallery-assets.mjs"
   },

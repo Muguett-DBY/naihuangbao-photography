@@ -30,6 +30,7 @@ const galleryPageSource = readFileSync(resolve(root, "src/pages/GalleryPage.tsx"
 const reviewsSource = readFileSync(resolve(root, "src/components/Reviews.tsx"), "utf8");
 const headersSource = readFileSync(resolve(root, "public/_headers"), "utf8");
 const redirectsSource = readFileSync(resolve(root, "public/_redirects"), "utf8");
+const spa404Source = readFileSync(resolve(root, "scripts/sync-spa-404.mjs"), "utf8");
 const ciWorkflowSource = readFileSync(resolve(root, ".github/workflows/ci.yml"), "utf8");
 const useInViewSource = readFileSync(resolve(root, "src/hooks/useInView.ts"), "utf8");
 const gsapAnimationsSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
@@ -501,8 +502,11 @@ describe("audit regression coverage", () => {
     expect(headersSource).not.toContain("/assets/*");
     expect(headersSource).not.toContain("Cache-Control: public, max-age=31536000");
     expect(redirectsSource).toContain("/admin /admin/ 301");
-    expect(redirectsSource).not.toContain("/index.html 200");
-    expect(redirectsSource).not.toContain("/* /index.html");
+    expect(redirectsSource).toContain("/booking / 200");
+    expect(redirectsSource).toContain("/gallery/:id / 200");
+    expect(redirectsSource).not.toMatch(/^\/\*\s+\/\s+200$/m);
+    expect(packageSource.match(/npm run spa:404/g)).toHaveLength(2);
+    expect(spa404Source).toContain("copyFile(indexPath, notFoundPath)");
     expect(e2eConfigSource).toContain('testDir: "."');
     expect(e2eConfigSource).toContain("webServer");
     expect(e2eConfigSource).toContain("127.0.0.1:4174");
