@@ -11291,7 +11291,7 @@ html[data-immersive-ready="true"] .editor-light-shell .editor-canvas--empty {
       background 220ms ease;
   }
 
-  .catalogue-card:is(:hover, :focus-within) {
+  .catalogue-page .catalogue-card:is(:hover, :focus-within) {
     z-index: 4;
     border-color: color-mix(in srgb, var(--coral) 62%, var(--hairline));
     background: #f4f0e8;
@@ -13423,7 +13423,7 @@ html[data-immersive-ready="true"] .editor-light-shell .editor-canvas--empty {
     transition: none;
   }
 
-  .catalogue-card:is(:hover, :focus-within),
+  .catalogue-page .catalogue-card:is(:hover, :focus-within),
   .catalogue-card:is(:hover, :focus-within) .course-cover,
   .catalogue-card:is(:hover, :focus-within) .preset-cover,
   .catalogue-card:is(:hover, :focus-within) .workshop-cover,

@@ -200,6 +200,26 @@ test.describe("editorial catalogue routes", () => {
     }
   });
 
+  test("desktop catalogue cards deliver the intended optical hover response", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/courses");
+
+    const card = page.locator(".catalogue-card").first();
+    const cover = card.locator("img").first();
+    await expect(card).toBeVisible();
+    expect(await page.evaluate(() => (
+      matchMedia("(min-width: 981px) and (hover: hover) and (pointer: fine)").matches
+    ))).toBe(true);
+
+    await card.hover();
+    await expect.poll(() => card.evaluate((element) => getComputedStyle(element).transform))
+      .not.toBe("none");
+    await expect.poll(() => card.evaluate((element) => getComputedStyle(element).boxShadow))
+      .not.toBe("none");
+    await expect.poll(() => cover.evaluate((element) => getComputedStyle(element).transform))
+      .not.toBe("none");
+  });
+
   test("missing catalogue artwork becomes an image-led visual study", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.route("**/api/courses", (route) => fulfillJson(route, {
