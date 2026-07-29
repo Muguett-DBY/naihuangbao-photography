@@ -11,6 +11,7 @@ type ExperienceDiagnostics = {
   status: "booting" | "active" | "idle" | "suspended" | "static" | "disposed";
   tier: "high" | "medium" | "static";
   frameCount: number;
+  frameP95Ms: number;
   contextCount: number;
   textureBytes: number;
   preset: string | null;
@@ -26,6 +27,7 @@ async function diagnostics(page: Page): Promise<ExperienceDiagnostics | null> {
       status: value.status,
       tier: value.tier,
       frameCount: value.frameCount,
+      frameP95Ms: value.frameP95Ms,
       contextCount: value.contextCount,
       textureBytes: value.textureBytes,
       preset: value.preset,
@@ -39,6 +41,12 @@ async function expectExperienceStatus(page: Page, status: ExperienceDiagnostics[
 
 async function expectExperienceResumed(page: Page): Promise<void> {
   await expect.poll(async () => (await diagnostics(page))?.status).not.toBe("suspended");
+}
+
+async function immersiveResourceNames(page: Page): Promise<string[]> {
+  return page.evaluate(() => performance.getEntriesByType("resource")
+    .map((entry) => entry.name)
+    .filter((name) => /(?:ImmersiveExperience|immersive-vendor)-/.test(name)));
 }
 
 const catalogueFixtures = {
@@ -332,5 +340,117 @@ test.describe("immersive portrait archive", () => {
     await expectExperienceStatus(page, "suspended");
     await expect.poll(async () => (await diagnostics(page))?.textureBytes).toBe(0);
     expect((await diagnostics(page))?.contextCount).toBe(1);
+  });
+
+  test("keeps measured hero cadence within budget or adaptively downgrades", async ({ page }) => {
+    test.setTimeout(30_000);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/");
+    await expect.poll(async () => (await diagnostics(page))?.tier).toBe("high");
+    await page.waitForTimeout(6_000);
+
+    const highTrace = await diagnostics(page);
+    expect(highTrace).not.toBeNull();
+    expect(
+      highTrace!.frameP95Ms <= 34 || highTrace!.tier === "medium",
+      `high trace p95 ${highTrace!.frameP95Ms}ms at ${highTrace!.tier} tier`,
+    ).toBe(true);
+
+    await page.setViewportSize({ width: 430, height: 932 });
+    await page.reload();
+    await expect.poll(async () => (await diagnostics(page))?.tier).toBe("medium");
+    await page.waitForTimeout(6_000);
+
+    const mediumTrace = await diagnostics(page);
+    expect(mediumTrace).not.toBeNull();
+    expect(mediumTrace!.frameP95Ms).toBeGreaterThan(0);
+    expect(mediumTrace!.frameP95Ms).toBeLessThanOrEqual(40);
+  });
+
+  test("reuses one context while cycling every public scene twice", async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await mockCatalogueApi(page);
+    const routes = [
+      ["/", "home"],
+      ["/gallery", "gallery"],
+      ["/gallery/gallery-urban-01", "photo-detail"],
+      ["/courses", "courses"],
+      [`/courses/${catalogueFixtures.course.id}`, "course-detail"],
+      ["/products", "presets"],
+      [`/presets/${catalogueFixtures.preset.id}`, "preset-detail"],
+      ["/workshops", "workshops"],
+      [`/workshops/${catalogueFixtures.workshop.id}`, "workshop-detail"],
+      ["/shop", "shop"],
+      [`/shop/${catalogueFixtures.merchandise.id}`, "shop-detail"],
+      ["/booking", "booking"],
+      ["/map", "map"],
+      ["/compare", "compare"],
+      ["/login", "login"],
+      ["/editor", "editor"],
+      ["/missing-immersive-frame", "boundary"],
+    ] as const;
+
+    await page.goto("/");
+    const canvas = page.locator(".immersive-experience-canvas");
+    await expect(canvas).toHaveCount(1);
+    const originalCanvas = await canvas.elementHandle();
+
+    for (let cycle = 0; cycle < 2; cycle += 1) {
+      for (const [path, preset] of routes) {
+        await page.evaluate((nextPath) => {
+          history.pushState({}, "", nextPath);
+          window.dispatchEvent(new PopStateEvent("popstate"));
+        }, path);
+        await expect.poll(async () => (await diagnostics(page))?.preset).toBe(preset);
+        await expect(canvas).toHaveCount(1);
+        expect(await canvas.evaluate((node, original) => node === original, originalCanvas)).toBe(true);
+        expect((await diagnostics(page))?.contextCount).toBe(1);
+      }
+    }
+  });
+
+  test("keeps reduced-motion visitors on the complete static hero", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    await page.evaluate(() => window.dispatchEvent(new PointerEvent("pointerdown")));
+    await page.waitForTimeout(1_000);
+
+    await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
+    await expect(page.locator(".hero-contact-sheet img").first()).toBeVisible();
+    expect(await page.locator(".hero-contact-sheet").evaluate((element) => Number.parseFloat(getComputedStyle(element).opacity))).toBeGreaterThan(0.95);
+    expect(await page.evaluate(() => document.documentElement.dataset.immersiveReady)).toBeUndefined();
+    expect(await immersiveResourceNames(page)).toEqual([]);
+  });
+
+  test("honors the session WebGL override without hiding DOM media", async ({ page }) => {
+    await page.addInitScript(() => sessionStorage.setItem("nhb-disable-webgl", "1"));
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/");
+    await page.evaluate(() => window.dispatchEvent(new PointerEvent("pointerdown")));
+    await page.waitForTimeout(1_000);
+
+    await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
+    await expect(page.locator(".hero-contact-sheet img").first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.dataset.immersiveReady)).toBeUndefined();
+    expect(await immersiveResourceNames(page)).toEqual([]);
+  });
+
+  test("honors Data Saver without loading the immersive canvas", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "connection", {
+        configurable: true,
+        value: { saveData: true },
+      });
+    });
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/");
+    await page.evaluate(() => window.dispatchEvent(new PointerEvent("pointerdown")));
+    await page.waitForTimeout(1_000);
+
+    await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
+    await expect(page.locator(".hero-contact-sheet img").first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.dataset.immersiveReady)).toBeUndefined();
+    expect(await immersiveResourceNames(page)).toEqual([]);
   });
 });

@@ -135,6 +135,17 @@ describe("performance budgets", () => {
     expect(budgetSource).toContain("Lazy JS budget exceeded");
   });
 
+  it("enforces compressed initial and immersive bundle budgets", () => {
+    expect(budgetSource).toContain("baselineMainGzipBytes");
+    expect(budgetSource).toContain("maxInitialGrowthGzipBytes");
+    expect(budgetSource).toContain("maxImmersiveGzipBytes");
+    expect(budgetSource).toContain("29_560");
+    expect(budgetSource).toContain("5 * 1024");
+    expect(budgetSource).toContain("190 * 1024");
+    expect(budgetSource).toContain("immersive-vendor");
+    expect(budgetSource).toContain("gzipSync");
+  });
+
   it("shims node-only face-api filesystem fallback out of the browser build", () => {
     expect(viteConfig).toContain("empty-node-module");
     expect(viteConfig).toContain("chunkSizeWarningLimit: 700");

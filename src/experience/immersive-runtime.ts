@@ -25,8 +25,11 @@ export type ImmersiveRuntimeOptions = {
 const FRAME_WINDOW_SIZE = 120;
 const SLOW_FRAME_THRESHOLD_MS = 34;
 const SLOW_FRAME_COUNT = 45;
-const MEDIUM_FRAME_TARGET_MS = 1000 / 45;
-const MEDIUM_RESYNC_THRESHOLD_MS = MEDIUM_FRAME_TARGET_MS * 1.5;
+const MEDIUM_PRESSURE_THRESHOLD_MS = 20;
+const MEDIUM_PRESSURE_MIN_SAMPLES = 60;
+const MEDIUM_PRESSURE_RATIO = 0.35;
+const MEDIUM_RECOVERY_RATIO = 0.1;
+const MEDIUM_RESYNC_THRESHOLD_MS = 50;
 
 export class ImmersiveRuntime {
   private readonly store: ExperienceStore;
@@ -36,7 +39,13 @@ export class ImmersiveRuntime {
   private driver: SceneDriver | null = null;
   private unsubscribe: (() => void) | null = null;
   private pendingFrame: number | null = null;
-  private frameDurations: number[] = [];
+  private readonly frameDurations = new Float64Array(FRAME_WINDOW_SIZE);
+  private frameDurationCount = 0;
+  private frameDurationCursor = 0;
+  private slowFrameCount = 0;
+  private mediumPressureFrameCount = 0;
+  private mediumCadenceLimited = false;
+  private mediumSkipNextFrame = false;
   private frameAccumulator = 0;
   private renderedFrameCount = 0;
   private lastFrameTime: number;
@@ -90,6 +99,14 @@ export class ImmersiveRuntime {
 
   get frameCount(): number {
     return this.renderedFrameCount;
+  }
+
+  get frameP95Ms(): number {
+    if (this.frameDurationCount === 0) return 0;
+    const samples = Array.from(this.frameDurations.subarray(0, this.frameDurationCount));
+    samples.sort((left, right) => left - right);
+    const index = Math.max(0, Math.ceil(samples.length * 0.95) - 1);
+    return Math.round((samples[index] ?? 0) * 100) / 100;
   }
 
   get textureBytes(): number {
@@ -208,6 +225,7 @@ export class ImmersiveRuntime {
       this.suspendDriver();
       this.cancelFrame();
       this.frameAccumulator = 0;
+      this.mediumSkipNextFrame = false;
       return;
     }
 
@@ -218,6 +236,8 @@ export class ImmersiveRuntime {
       this.stateValue = "idle";
       this.resumeDriver();
       this.cancelFrame();
+      this.frameAccumulator = 0;
+      this.mediumSkipNextFrame = false;
       return;
     }
 
@@ -228,6 +248,7 @@ export class ImmersiveRuntime {
       if (!wasBooting) this.resumeDriver();
       this.lastFrameTime = this.scheduler.now();
       this.frameAccumulator = 0;
+      this.mediumSkipNextFrame = false;
     }
     this.requestFrame();
   }
@@ -246,20 +267,27 @@ export class ImmersiveRuntime {
     const elapsed = Math.max(0, time - this.lastFrameTime);
     this.lastFrameTime = time;
     const delta = frameState === "idle" ? 0 : elapsed;
+    if (frameState === "active") this.recordFrameDuration(delta);
+    if (!this.driver || this.isTerminal()) return;
 
-    const cadenceLimited = this.tierValue === "medium" && frameState === "active";
+    const cadenceLimited = this.tierValue === "medium"
+      && frameState === "active"
+      && this.mediumCadenceLimited;
     if (cadenceLimited) {
-      this.frameAccumulator = delta >= MEDIUM_RESYNC_THRESHOLD_MS
-        ? MEDIUM_FRAME_TARGET_MS
-        : this.frameAccumulator + delta;
-      if (this.frameAccumulator < MEDIUM_FRAME_TARGET_MS) {
+      this.frameAccumulator += delta;
+      if (delta < MEDIUM_RESYNC_THRESHOLD_MS) {
+        this.mediumSkipNextFrame = !this.mediumSkipNextFrame;
+      } else {
+        this.mediumSkipNextFrame = false;
+      }
+      if (this.mediumSkipNextFrame) {
         if (this.stateValue === "active") this.requestFrame();
         return;
       }
     }
 
     const renderDelta = cadenceLimited ? this.frameAccumulator : delta;
-    if (cadenceLimited) this.frameAccumulator -= MEDIUM_FRAME_TARGET_MS;
+    this.frameAccumulator = 0;
     this.driver.render({
       time,
       delta: renderDelta,
@@ -269,29 +297,67 @@ export class ImmersiveRuntime {
     });
     this.renderedFrameCount += 1;
 
-    if (this.tierValue === "high" && frameState === "active") this.recordFrameDuration(delta);
     if (this.stateValue === "active") this.requestFrame();
   }
 
   private recordFrameDuration(duration: number): void {
-    this.frameDurations.push(duration);
-    if (this.frameDurations.length > FRAME_WINDOW_SIZE) this.frameDurations.shift();
-    if (this.frameDurations.length < FRAME_WINDOW_SIZE) return;
-    const slowFrames = this.frameDurations.reduce(
-      (count, frameDuration) => count + Number(frameDuration > SLOW_FRAME_THRESHOLD_MS),
-      0,
-    );
-    if (slowFrames < SLOW_FRAME_COUNT || !this.driver) return;
-
-    this.tierValue = "medium";
-    this.frameDurations = [];
-    this.frameAccumulator = 0;
-    try {
-      this.driver.setTier("medium");
-    } catch (error) {
-      this.report(error);
-      this.lockStatic();
+    if (!Number.isFinite(duration) || duration <= 0) return;
+    if (this.frameDurationCount === FRAME_WINDOW_SIZE) {
+      const previous = this.frameDurations[this.frameDurationCursor] ?? 0;
+      if (previous > SLOW_FRAME_THRESHOLD_MS) this.slowFrameCount -= 1;
+      if (previous > MEDIUM_PRESSURE_THRESHOLD_MS) this.mediumPressureFrameCount -= 1;
+    } else {
+      this.frameDurationCount += 1;
     }
+
+    this.frameDurations[this.frameDurationCursor] = duration;
+    this.frameDurationCursor = (this.frameDurationCursor + 1) % FRAME_WINDOW_SIZE;
+    if (duration > SLOW_FRAME_THRESHOLD_MS) this.slowFrameCount += 1;
+    if (duration > MEDIUM_PRESSURE_THRESHOLD_MS) this.mediumPressureFrameCount += 1;
+
+    if (
+      this.tierValue === "high"
+      && this.frameDurationCount === FRAME_WINDOW_SIZE
+      && this.slowFrameCount >= SLOW_FRAME_COUNT
+      && this.driver
+    ) {
+      this.tierValue = "medium";
+      this.mediumCadenceLimited = true;
+      this.mediumSkipNextFrame = false;
+      this.frameAccumulator = 0;
+      this.resetFrameSamples();
+      try {
+        this.driver.setTier("medium");
+      } catch (error) {
+        this.report(error);
+        this.lockStatic();
+      }
+      return;
+    }
+
+    if (this.tierValue !== "medium" || this.frameDurationCount < MEDIUM_PRESSURE_MIN_SAMPLES) return;
+    const pressureRatio = this.mediumPressureFrameCount / this.frameDurationCount;
+    if (!this.mediumCadenceLimited && pressureRatio >= MEDIUM_PRESSURE_RATIO) {
+      this.mediumCadenceLimited = true;
+      this.mediumSkipNextFrame = false;
+      this.frameAccumulator = 0;
+    } else if (
+      this.mediumCadenceLimited
+      && this.frameDurationCount === FRAME_WINDOW_SIZE
+      && pressureRatio <= MEDIUM_RECOVERY_RATIO
+    ) {
+      this.mediumCadenceLimited = false;
+      this.mediumSkipNextFrame = false;
+      this.frameAccumulator = 0;
+    }
+  }
+
+  private resetFrameSamples(): void {
+    this.frameDurations.fill(0);
+    this.frameDurationCount = 0;
+    this.frameDurationCursor = 0;
+    this.slowFrameCount = 0;
+    this.mediumPressureFrameCount = 0;
   }
 
   private suspendDriver(): void {

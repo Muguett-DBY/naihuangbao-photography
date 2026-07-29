@@ -16,6 +16,7 @@ export type ExperienceDiagnostics = {
   readonly status: ImmersiveRuntime["state"];
   readonly tier: ExperienceTier;
   readonly frameCount: number;
+  readonly frameP95Ms: number;
   readonly contextCount: number;
   readonly textureBytes: number;
   readonly preset: string | null;
@@ -106,6 +107,7 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
       get status() { return runtime.state; },
       get tier() { return runtime.tier; },
       get frameCount() { return runtime.frameCount; },
+      get frameP95Ms() { return runtime.frameP95Ms; },
       get contextCount() { return activeContextCount; },
       get textureBytes() { return runtime.textureBytes; },
       get preset() {

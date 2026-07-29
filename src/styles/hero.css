@@ -1009,6 +1009,13 @@ html[data-immersive-ready="true"] .hero-home[data-immersive-anchor="home"] .hero
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html[data-immersive-ready="true"] body.is-loaded .hero-home[data-immersive-anchor="home"] .hero-contact-sheet {
+    opacity: 1;
+    transition: none;
+  }
+}
+
 @media (max-width: 380px) {
   .hero-title {
     font-size: 3.05rem;

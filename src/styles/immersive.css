@@ -43,4 +43,15 @@ html[data-immersive-ready="true"] .immersive-experience {
     display: none;
     transition: none;
   }
+
+  html[data-immersive-ready="true"] .hero-contact-sheet,
+  html[data-immersive-ready="true"] .gallery-page-contact-sheet,
+  html[data-immersive-ready="true"] .page-hero-media img,
+  html[data-immersive-ready="true"] .auth-page-media img,
+  html[data-immersive-ready="true"] .catalogue-detail-media > img,
+  html[data-immersive-ready="true"] .photo-detail-cover-frame img {
+    opacity: 1;
+    filter: none;
+    transition: none;
+  }
 }

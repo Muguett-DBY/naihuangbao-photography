@@ -10561,6 +10561,17 @@ html[data-immersive-ready="true"] .editor-light-shell .editor-canvas--empty {
   min-height: min(68vh, 680px);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html[data-immersive-ready="true"] .catalogue-page .page-hero-media img,
+  html[data-immersive-ready="true"] .booking-page--editorial .page-hero-media img,
+  html[data-immersive-ready="true"] .map-page--editorial .page-hero-media img,
+  html[data-immersive-ready="true"] .auth-page-media img {
+    opacity: 1;
+    filter: none;
+    transition: none;
+  }
+}
+
 .catalogue-section {
   width: min(1440px, 100%);
   max-width: none;

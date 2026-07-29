@@ -141,6 +141,48 @@ describe("ImmersiveRuntime", () => {
     runtime.dispose();
   });
 
+  it("publishes p95 from the bounded 120-frame sample window", () => {
+    const scheduler = createScheduler();
+    const runtime = new ImmersiveRuntime({
+      store: createExperienceStore(),
+      tier: "high",
+      createDriver: () => createDriver().driver,
+      scheduler,
+    });
+    let time = 0;
+
+    for (let index = 0; index < 113; index += 1) {
+      time += 16;
+      scheduler.flush(time);
+    }
+    for (let index = 0; index < 7; index += 1) {
+      time += 32;
+      scheduler.flush(time);
+    }
+
+    expect(runtime.frameP95Ms).toBe(32);
+    runtime.dispose();
+  });
+
+  it("renders medium tier at display cadence until sustained pressure requires limiting", () => {
+    const scheduler = createScheduler();
+    const fake = createDriver();
+    const runtime = new ImmersiveRuntime({
+      store: createExperienceStore(),
+      tier: "medium",
+      createDriver: () => fake.driver,
+      scheduler,
+    });
+
+    scheduler.flush(16);
+    scheduler.flush(32);
+    scheduler.flush(48);
+
+    expect(fake.driver.render).toHaveBeenCalledTimes(3);
+    expect(runtime.frameP95Ms).toBe(16);
+    runtime.dispose();
+  });
+
   it("releases transient textures before a competing workspace starts", () => {
     const store = createExperienceStore();
     const scheduler = createScheduler();
@@ -715,7 +757,6 @@ describe("ImmersiveRuntime", () => {
     const rendersAtDowngrade = vi.mocked(fake.driver.render).mock.calls.length;
     time += 10;
     scheduler.flush(time);
-    expect(fake.driver.render).toHaveBeenCalledTimes(rendersAtDowngrade);
     time += 13;
     scheduler.flush(time);
     expect(fake.driver.render).toHaveBeenCalledTimes(rendersAtDowngrade + 1);
@@ -781,7 +822,7 @@ describe("ImmersiveRuntime", () => {
     for (const [frame] of vi.mocked(fake.driver.render).mock.calls) expect(frame.delta).toBe(0);
   });
 
-  it("resynchronizes medium cadence after a long scheduling delay", () => {
+  it("keeps healthy medium cadence aligned with display callbacks", () => {
     const scheduler = createScheduler();
     const fake = createDriver();
     new ImmersiveRuntime({
@@ -794,12 +835,12 @@ describe("ImmersiveRuntime", () => {
     scheduler.flush(1000);
     expect(fake.driver.render).toHaveBeenCalledOnce();
     scheduler.flush(1001);
-    expect(fake.driver.render).toHaveBeenCalledOnce();
-    scheduler.flush(1023);
     expect(fake.driver.render).toHaveBeenCalledTimes(2);
+    scheduler.flush(1023);
+    expect(fake.driver.render).toHaveBeenCalledTimes(3);
   });
 
-  it("resynchronizes medium backlog across 40ms, 80ms, and 81ms callbacks", () => {
+  it("limits medium cadence after sustained pressure and renders long-delay resyncs", () => {
     const scheduler = createScheduler();
     const fake = createDriver();
     new ImmersiveRuntime({
@@ -808,13 +849,53 @@ describe("ImmersiveRuntime", () => {
       createDriver: () => fake.driver,
       scheduler,
     });
+    let time = 0;
 
-    scheduler.flush(40);
-    scheduler.flush(80);
-    scheduler.flush(81);
+    for (let index = 0; index < 60; index += 1) {
+      time += 25;
+      scheduler.flush(time);
+    }
+    const pressuredRenders = vi.mocked(fake.driver.render).mock.calls.length;
 
-    expect(fake.driver.render).not.toHaveBeenCalledTimes(3);
-    expect(fake.driver.render).toHaveBeenCalledTimes(2);
+    time += 16;
+    scheduler.flush(time);
+    time += 16;
+    scheduler.flush(time);
+    expect(fake.driver.render).toHaveBeenCalledTimes(pressuredRenders + 1);
+
+    time += 80;
+    scheduler.flush(time);
+    expect(fake.driver.render).toHaveBeenCalledTimes(pressuredRenders + 2);
+  });
+
+  it("recovers full medium cadence after a clean 120-frame window", () => {
+    const scheduler = createScheduler();
+    const fake = createDriver();
+    new ImmersiveRuntime({
+      store: createExperienceStore(),
+      tier: "medium",
+      createDriver: () => fake.driver,
+      scheduler,
+    });
+    let time = 0;
+
+    for (let index = 0; index < 60; index += 1) {
+      time += 25;
+      scheduler.flush(time);
+    }
+    for (let index = 0; index < 120; index += 1) {
+      time += 16;
+      scheduler.flush(time);
+    }
+    const recoveredRenders = vi.mocked(fake.driver.render).mock.calls.length;
+
+    time += 16;
+    scheduler.flush(time);
+    time += 16;
+    scheduler.flush(time);
+    time += 16;
+    scheduler.flush(time);
+    expect(fake.driver.render).toHaveBeenCalledTimes(recoveredRenders + 3);
   });
 
   it("disposes driver, textures, subscriptions, and scheduled frames", () => {

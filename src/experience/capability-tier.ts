@@ -41,7 +41,8 @@ function isWebglAvailable() {
 
 function isWebglDisabled() {
   try {
-    return sessionStorage.getItem("nhb-disable-webgl") === "true";
+    const override = sessionStorage.getItem("nhb-disable-webgl");
+    return override === "1" || override === "true";
   } catch {
     return false;
   }
