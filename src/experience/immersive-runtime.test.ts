@@ -109,9 +109,11 @@ function createScheduler(): FakeScheduler {
 function createDriver() {
   let textureDisposals = 0;
   const driver: SceneDriver = {
+    textureBytes: 0,
     setTier: vi.fn(),
     setSize: vi.fn(),
     setHighlightedId: vi.fn(),
+    releaseTransientTextures: vi.fn(),
     morphTo: vi.fn(async () => undefined),
     render: vi.fn(),
     suspend: vi.fn(),
@@ -125,6 +127,32 @@ function createDriver() {
 }
 
 describe("ImmersiveRuntime", () => {
+  it("publishes rendered-frame and texture diagnostics", () => {
+    const store = createExperienceStore();
+    const scheduler = createScheduler();
+    const fake = createDriver();
+    Object.defineProperty(fake.driver, "textureBytes", { configurable: true, get: () => 24 });
+    const runtime = new ImmersiveRuntime({ store, tier: "high", createDriver: () => fake.driver, scheduler });
+
+    expect(runtime.frameCount).toBe(0);
+    expect(runtime.textureBytes).toBe(24);
+    scheduler.flush(16);
+    expect(runtime.frameCount).toBe(1);
+    runtime.dispose();
+  });
+
+  it("releases transient textures before a competing workspace starts", () => {
+    const store = createExperienceStore();
+    const scheduler = createScheduler();
+    const fake = createDriver();
+    const runtime = new ImmersiveRuntime({ store, tier: "high", createDriver: () => fake.driver, scheduler });
+
+    runtime.releaseTransientTextures();
+
+    expect(fake.driver.releaseTransientTextures).toHaveBeenCalledOnce();
+    runtime.dispose();
+  });
+
   it("forwards pointer and keyboard highlight identity without rebuilding the scene", () => {
     const store = createExperienceStore();
     const scheduler = createScheduler();
@@ -214,6 +242,21 @@ describe("ImmersiveRuntime", () => {
     await failedMorph;
     expect(failedHarness.commits).toEqual([[null, null]]);
     expect(failedHarness.errors).toHaveLength(0);
+  });
+
+  it("synchronously clears visible and pending transient texture ownership", async () => {
+    const harness = createMorphHarness(8);
+    const morph = harness.coordinator.morph(["/visible.avif", "/pending.webp"], 2);
+    const visible = morphTexture("visible");
+    harness.loads.get("http://localhost/visible.avif")?.[0]?.resolve(visible);
+    await morph;
+
+    harness.coordinator.releaseTransientTextures();
+
+    expect(harness.commits.at(-1)).toEqual([]);
+    expect(harness.loads.get("http://localhost/pending.webp")?.[0]?.signal.aborted).toBe(true);
+    expect(harness.pool.totalBytes).toBe(0);
+    expect(visible.value.dispose).toHaveBeenCalledOnce();
   });
 
   it("keeps old visible textures pinned until replacement commit", async () => {

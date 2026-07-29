@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { PublicChatLauncher } from "../components/PublicChatLauncher";
 import { PublicPhotosProvider } from "../hooks/usePublicPhotos";
 import { SiteContentProvider } from "../hooks/useSiteContent";
-import { BookingProvider } from "../hooks/useBookingModal";
+import { BookingProvider, useBookingModal } from "../hooks/useBookingModal";
 import { AuthProvider } from "../hooks/useAuth";
 import { Header } from "../components/shared/Header";
 import { Footer } from "../components/shared/Footer";
@@ -40,14 +40,14 @@ function focusWithTemporaryTabIndex(target: HTMLElement) {
   }
 }
 
-function ExperienceStateBridge({ pathname, chatOpen, isEditor }: {
+function ExperienceStateBridge({ pathname, chatOpen }: {
   pathname: string;
   chatOpen: boolean;
-  isEditor: boolean;
 }) {
   const store = useExperienceStore();
+  const { isBookingOpen } = useBookingModal();
   useExperiencePause("chat", chatOpen);
-  useExperiencePause("editor", isEditor);
+  useExperiencePause("booking", isBookingOpen);
 
   useEffect(() => {
     store.setRoute(resolveRoutePreset(pathname));
@@ -140,7 +140,7 @@ export function RootLayout() {
           <SiteContentProvider>
             <PublicPhotosProvider>
               <ExperienceProvider>
-                <ExperienceStateBridge pathname={location.pathname} chatOpen={chatOpen} isEditor={isEditor} />
+                <ExperienceStateBridge pathname={location.pathname} chatOpen={chatOpen} />
                 {routePreset && <ImmersiveExperienceGate />}
                 <ToastProvider>
                   <Header onOpenChat={() => setChatOpen(true)} />

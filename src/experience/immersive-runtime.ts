@@ -38,6 +38,7 @@ export class ImmersiveRuntime {
   private pendingFrame: number | null = null;
   private frameDurations: number[] = [];
   private frameAccumulator = 0;
+  private renderedFrameCount = 0;
   private lastFrameTime: number;
   private committedSceneKey = "";
   private pendingSceneKey = "";
@@ -87,6 +88,14 @@ export class ImmersiveRuntime {
     return this.tierValue;
   }
 
+  get frameCount(): number {
+    return this.renderedFrameCount;
+  }
+
+  get textureBytes(): number {
+    return this.driver?.textureBytes ?? 0;
+  }
+
   setSize(width: number, height: number): void {
     if (!this.driver || this.isTerminal()) return;
     this.driver.setSize(width, height);
@@ -97,6 +106,18 @@ export class ImmersiveRuntime {
     if (this.anchorIntersecting === intersecting || this.isTerminal()) return;
     this.anchorIntersecting = intersecting;
     this.updateActivity();
+  }
+
+  releaseTransientTextures(): void {
+    if (!this.driver || this.isTerminal()) return;
+    this.sceneRequest += 1;
+    this.pendingSceneKey = "";
+    this.committedSceneKey = "";
+    try {
+      this.driver.releaseTransientTextures();
+    } catch (error) {
+      this.report(error);
+    }
   }
 
   handleContextLost(): void {
@@ -246,6 +267,7 @@ export class ImmersiveRuntime {
       pointerY: snapshot.pointerY,
       scrollProgress: snapshot.scrollProgress,
     });
+    this.renderedFrameCount += 1;
 
     if (this.tierValue === "high" && frameState === "active") this.recordFrameDuration(delta);
     if (this.stateValue === "active") this.requestFrame();

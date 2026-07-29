@@ -10514,6 +10514,53 @@ html[data-immersive-ready="true"] .catalogue-detail-stage[data-immersive-anchor]
   outline-offset: -2px;
 }
 
+html[data-immersive-ready="true"] .booking-page--editorial,
+html[data-immersive-ready="true"] .map-page--editorial,
+html[data-immersive-ready="true"] .auth-page {
+  background: transparent;
+}
+
+html[data-immersive-ready="true"] .booking-page--editorial .page-hero--media,
+html[data-immersive-ready="true"] .map-page--editorial .page-hero--media {
+  background: transparent;
+}
+
+html[data-immersive-ready="true"] .booking-page--editorial .page-hero-media img,
+html[data-immersive-ready="true"] .map-page--editorial .page-hero-media img {
+  opacity: 0.34;
+  filter: saturate(0.72) contrast(1.08);
+  transition: opacity 420ms ease-out;
+}
+
+html[data-immersive-ready="true"] .booking-page--editorial .page-hero--media::after,
+html[data-immersive-ready="true"] .map-page--editorial .page-hero--media::after {
+  background: rgba(10, 18, 14, 0.58);
+}
+
+html[data-immersive-ready="true"] .auth-page-media {
+  background: rgba(24, 37, 31, 0.46);
+}
+
+html[data-immersive-ready="true"] .auth-page-media img {
+  opacity: 0.32;
+  filter: saturate(0.76) contrast(1.08);
+  transition: opacity 420ms ease-out;
+}
+
+html[data-immersive-ready="true"] .compare-page--editorial,
+html[data-immersive-ready="true"] .editor-root.editor-light-shell {
+  background: color-mix(in srgb, var(--newsprint) 84%, transparent);
+}
+
+html[data-immersive-ready="true"] .editor-light-shell .editor-canvas--empty {
+  background: rgba(247, 244, 236, 0.78);
+}
+
+.photo-map-stage {
+  position: relative;
+  min-height: min(68vh, 680px);
+}
+
 .catalogue-section {
   width: min(1440px, 100%);
   max-width: none;

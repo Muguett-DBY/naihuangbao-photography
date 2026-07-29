@@ -54,6 +54,8 @@ import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { useFocusTrap } from "../hooks/useFocusTrap";
+import { useExperienceRuntimeBridge } from "../experience/ExperienceProvider";
+import { useExperiencePause } from "../experience/useExperiencePause";
 import type { BeautySettings, BeautyCategory, BeautyTool, TextOverlay, StickerOverlay, FrameId } from "../types/photo-editor";
 import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
 import {
@@ -161,7 +163,12 @@ const EDITOR_TOOL_ICONS: Partial<Record<BeautyTool, LucideIcon>> = {
 
 export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditorWorkspaceProps) {
   const { t } = useTranslation();
+  const runtimeBridge = useExperienceRuntimeBridge();
   useSEO({ titleKey: "editor.title", descKey: "editor.desc", path: "/editor" });
+  useExperiencePause("editor", true);
+  useEffect(() => {
+    runtimeBridge.releaseTransientTextures();
+  }, [runtimeBridge]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const originalRef = useRef<HTMLImageElement | null>(null);
@@ -599,6 +606,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   }, []);
 
   const loadImageFile = useCallback((file: File) => {
+    runtimeBridge.releaseTransientTextures();
     const requestId = imageLoadRequestRef.current + 1;
     imageLoadRequestRef.current = requestId;
     const isCurrentImageLoad = () => imageLoadRequestRef.current === requestId;
@@ -715,7 +723,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
       failImageLoad("read");
     };
     reader.readAsDataURL(file);
-  }, [waitForFaceModels]);
+  }, [runtimeBridge, waitForFaceModels]);
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

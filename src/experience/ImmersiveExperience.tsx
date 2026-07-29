@@ -12,6 +12,29 @@ type ImmersiveExperienceProps = {
   tier: Exclude<ExperienceTier, "static">;
 };
 
+export type ExperienceDiagnostics = {
+  readonly status: ImmersiveRuntime["state"];
+  readonly tier: ExperienceTier;
+  readonly frameCount: number;
+  readonly contextCount: number;
+  readonly textureBytes: number;
+  readonly preset: string | null;
+};
+
+declare global {
+  interface Window {
+    __nhbExperience?: ExperienceDiagnostics;
+  }
+}
+
+let activeContextCount = 0;
+
+function shouldExposeExperienceDiagnostics(): boolean {
+  const hostname = window.location.hostname;
+  const loopback = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+  return loopback && navigator.webdriver;
+}
+
 export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const runtimeRef = useRef<ImmersiveRuntime | null>(null);
@@ -32,6 +55,8 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
         now: () => performance.now(),
       },
     });
+    const ownsContext = runtime.tier !== "static";
+    if (ownsContext) activeContextCount += 1;
     runtimeRef.current = runtime;
     const unregisterRuntime = runtimeBridge.registerRuntime(runtime);
     let scenePreset: string | null = null;
@@ -77,6 +102,19 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
     syncCanvasState();
     syncReadiness();
 
+    const diagnostics: ExperienceDiagnostics = {
+      get status() { return runtime.state; },
+      get tier() { return runtime.tier; },
+      get frameCount() { return runtime.frameCount; },
+      get contextCount() { return activeContextCount; },
+      get textureBytes() { return runtime.textureBytes; },
+      get preset() {
+        const snapshot = store.getSnapshot();
+        return snapshot.anchor?.preset ?? snapshot.route;
+      },
+    };
+    if (shouldExposeExperienceDiagnostics()) window.__nhbExperience = diagnostics;
+
     return () => {
       if (disposed) return;
       disposed = true;
@@ -86,7 +124,9 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
       unsubscribeCanvasState();
       unregisterRuntime();
       runtime.dispose();
+      if (ownsContext) activeContextCount = Math.max(0, activeContextCount - 1);
       if (runtimeRef.current === runtime) runtimeRef.current = null;
+      if (window.__nhbExperience === diagnostics) delete window.__nhbExperience;
       delete document.documentElement.dataset.immersiveReady;
     };
   }, [runtimeBridge, store, tier]);

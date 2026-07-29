@@ -1,5 +1,5 @@
 import "../styles/pages.css";
-import { Suspense, lazy, useMemo, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { List, Map as MapIcon } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
@@ -9,14 +9,18 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SectionSkeleton } from "../components/SectionSkeleton";
+import { selectImmersiveImageUrls } from "../experience/immersive-images";
+import { useExperiencePause } from "../experience/useExperiencePause";
 
 const PhotoMap = lazy(() => import("../components/PhotoMap").then((m) => ({ default: m.PhotoMap })));
 
 export function MapPage() {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
+  const mapStageRef = useRef<HTMLDivElement>(null);
   const { photos } = usePublicPhotos();
   const [view, setView] = useState<"map" | "list">("map");
+  const [mapStageVisible, setMapStageVisible] = useState(false);
 
   useGsapPageEffects(rootRef);
   useSEO({ titleKey: "seo.mapTitle", descKey: "seo.mapDesc", path: "/map" });
@@ -47,6 +51,39 @@ export function MapPage() {
       zoneStats: zones,
     };
   }, [photos]);
+  const mapImages = useMemo(
+    () => selectImmersiveImageUrls([
+      ...photos.map((photo) => photo.imageUrl),
+      "/images/gallery/gallery-urban-01.webp",
+    ], 4),
+    [photos],
+  );
+
+  useExperiencePause("map", mapStageVisible);
+  useEffect(() => {
+    if (view !== "map") {
+      setMapStageVisible(false);
+      return undefined;
+    }
+    const stage = mapStageRef.current;
+    if (!stage) return undefined;
+
+    const publishBounds = () => {
+      const bounds = stage.getBoundingClientRect();
+      setMapStageVisible(bounds.bottom > 0 && bounds.top < window.innerHeight);
+    };
+    if (typeof IntersectionObserver === "undefined") {
+      publishBounds();
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setMapStageVisible(Boolean(entry?.isIntersecting));
+    }, { threshold: 0.08 });
+    observer.observe(stage);
+    publishBounds();
+    return () => observer.disconnect();
+  }, [view]);
 
   return (
     <PageTransition ref={rootRef} className="map-page map-page--editorial">
@@ -57,6 +94,8 @@ export function MapPage() {
         image="/images/gallery/gallery-urban-01.webp"
         imageAlt={t("photoMap.heroImageAlt")}
         issue="FIELD NOTES 09"
+        immersivePreset="map"
+        immersiveImages={mapImages}
       />
 
       <section className="section-shell map-page-workspace is-visible">
@@ -88,9 +127,11 @@ export function MapPage() {
 
         <ErrorBoundary>
         {view === "map" ? (
-          <Suspense fallback={<SectionSkeleton hasImage lines={2} />}>
-            <PhotoMap showHeading={false} />
-          </Suspense>
+          <div ref={mapStageRef} className="photo-map-stage">
+            <Suspense fallback={<SectionSkeleton hasImage lines={2} />}>
+              <PhotoMap showHeading={false} />
+            </Suspense>
+          </div>
         ) : (
           <ul className="map-location-list" aria-label={t("photoMap.locationListLabel")}>
             {locations.map((loc) => (

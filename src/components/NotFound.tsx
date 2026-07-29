@@ -4,14 +4,26 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "./shared/PageTransition";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 
 export function NotFound() {
   const { t } = useTranslation();
   useSEO({ title: "404", descKey: "notFound.desc" });
+  const immersiveAnchor = useImmersiveAnchor({
+    id: "boundary-frame",
+    preset: "boundary",
+    imageUrls: [],
+  });
 
   return (
     <PageTransition className="not-found-page">
-      <section className="not-found" id="top" aria-labelledby="not-found-title">
+      <section
+        ref={immersiveAnchor}
+        className="not-found"
+        id="top"
+        aria-labelledby="not-found-title"
+        data-immersive-anchor="boundary"
+      >
         <span className="not-found-kicker">LOST FRAME / 404</span>
         <ArchiveX size={36} strokeWidth={1.5} aria-hidden="true" />
         <p className="not-found-code" aria-hidden="true">404</p>

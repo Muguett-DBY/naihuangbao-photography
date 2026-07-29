@@ -213,4 +213,43 @@ describe("immersive experience integration", () => {
       expect(source).not.toContain('from "three"');
     }
   });
+
+  it("coordinates task routes and blocking workflows without importing Three.js", () => {
+    const coverage = {
+      "src/pages/BookingPage.tsx": "booking",
+      "src/pages/MapPage.tsx": "map",
+      "src/pages/ComparePage.tsx": "compare",
+      "src/pages/LoginPage.tsx": "login",
+      "src/pages/PhotoEditorPage.tsx": "editor",
+      "src/components/NotFound.tsx": "boundary",
+    } as const;
+
+    for (const [file, preset] of Object.entries(coverage)) {
+      const source = read(file);
+      expect(
+        source.includes(`immersivePreset="${preset}"`)
+          || source.includes(`preset: "${preset}"`),
+        `${file} must register ${preset}`,
+      ).toBe(true);
+      expect(source).not.toContain('from "three"');
+    }
+
+    const booking = read("src/hooks/useBookingModal.tsx");
+    const lightbox = read("src/components/Lightbox.tsx");
+    const map = read("src/pages/MapPage.tsx");
+    const editor = read("src/pages/PhotoEditorWorkspace.tsx");
+    const root = read("src/layouts/RootLayout.tsx");
+    const canvas = read("src/experience/ImmersiveExperience.tsx");
+
+    expect(booking).toContain("isBookingOpen: boolean");
+    expect(lightbox).toContain('useExperiencePause("lightbox", true)');
+    expect(map).toContain('useExperiencePause("map", mapStageVisible)');
+    expect(map).toContain('className="photo-map-stage"');
+    expect(editor).toContain('useExperiencePause("editor", true)');
+    expect(editor).toContain("releaseTransientTextures");
+    expect(root).toContain('useExperiencePause("booking", isBookingOpen)');
+    expect(root).toContain('useExperiencePause("chat", chatOpen)');
+    expect(root).toContain("store.setVisible");
+    expect(canvas).toContain("window.__nhbExperience");
+  });
 });

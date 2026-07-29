@@ -22,6 +22,24 @@ describe("experience store", () => {
     expect(store.getSnapshot().paused).toBe(false);
   });
 
+  it("keeps booking, chat, and hidden ownership independent", () => {
+    const store = createExperienceStore();
+    store.setPaused("booking", true);
+    store.setPaused("chat", true);
+    store.setVisible(false);
+
+    store.setPaused("booking", false);
+    expect(store.getSnapshot().paused).toBe(true);
+    expect(new Set(store.getSnapshot().pauseReasons)).toEqual(new Set(["chat", "hidden"]));
+
+    store.setVisible(true);
+    expect(store.getSnapshot().paused).toBe(true);
+    expect(new Set(store.getSnapshot().pauseReasons)).toEqual(new Set(["chat"]));
+
+    store.setPaused("chat", false);
+    expect(store.getSnapshot().paused).toBe(false);
+  });
+
   it("notifies subscribers only when a snapshot field changes", () => {
     const store = createExperienceStore();
     const listener = vi.fn();

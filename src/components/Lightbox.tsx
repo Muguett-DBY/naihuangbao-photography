@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import PhotoSwipe from "photoswipe";
 import "photoswipe/style.css";
+import { useExperiencePause } from "../experience/useExperiencePause";
 import type { PhotoItem } from "../types/photo";
 
 type LightboxProps = {
@@ -25,6 +26,7 @@ function destroyPhotoSwipe(instance: PhotoSwipe) {
 }
 
 export default function Lightbox({ photos, currentIndex, onClose }: LightboxProps) {
+  useExperiencePause("lightbox", true);
   const pswpRef = useRef<PhotoSwipe | null>(null);
   const onCloseRef = useRef(onClose);
   const closeHandledRef = useRef(false);

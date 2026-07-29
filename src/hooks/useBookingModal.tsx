@@ -3,10 +3,12 @@ import { BookingModal } from "../components/BookingModal";
 
 type BookingContextValue = {
   openBookingModal: (packageName?: string) => void;
+  isBookingOpen: boolean;
 };
 
 const BookingContext = createContext<BookingContextValue>({
   openBookingModal: () => {},
+  isBookingOpen: false,
 });
 
 export function BookingProvider({ children }: { children: ReactNode }) {
@@ -17,15 +19,19 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     setSelectedPkg(packageName ?? "");
     setIsOpen(true);
   }, []);
+  const closeBookingModal = useCallback(() => setIsOpen(false), []);
 
-  const value = useMemo(() => ({ openBookingModal }), [openBookingModal]);
+  const value = useMemo(
+    () => ({ openBookingModal, isBookingOpen: isOpen }),
+    [isOpen, openBookingModal],
+  );
   return (
     <BookingContext.Provider value={value}>
       {children}
       {isOpen && (
         <BookingModal
           initialPackage={selectedPkg}
-          onClose={() => setIsOpen(false)}
+          onClose={closeBookingModal}
         />
       )}
     </BookingContext.Provider>

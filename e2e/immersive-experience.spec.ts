@@ -1,10 +1,45 @@
 import { expect, test, type Page } from "@playwright/test";
+import { resolve } from "node:path";
 import sharp from "sharp";
 
 type CanvasSample = {
   changedPixels: number;
   sampledPixels: number;
 };
+
+type ExperienceDiagnostics = {
+  status: "booting" | "active" | "idle" | "suspended" | "static" | "disposed";
+  tier: "high" | "medium" | "static";
+  frameCount: number;
+  contextCount: number;
+  textureBytes: number;
+  preset: string | null;
+};
+
+const editorTestImage = resolve("public/images/gallery/gallery-urban-01.webp");
+
+async function diagnostics(page: Page): Promise<ExperienceDiagnostics | null> {
+  return page.evaluate(() => {
+    const value = (window as typeof window & { __nhbExperience?: ExperienceDiagnostics }).__nhbExperience;
+    if (!value) return null;
+    return {
+      status: value.status,
+      tier: value.tier,
+      frameCount: value.frameCount,
+      contextCount: value.contextCount,
+      textureBytes: value.textureBytes,
+      preset: value.preset,
+    };
+  });
+}
+
+async function expectExperienceStatus(page: Page, status: ExperienceDiagnostics["status"]): Promise<void> {
+  await expect.poll(async () => (await diagnostics(page))?.status).toBe(status);
+}
+
+async function expectExperienceResumed(page: Page): Promise<void> {
+  await expect.poll(async () => (await diagnostics(page))?.status).not.toBe("suspended");
+}
 
 const catalogueFixtures = {
   course: {
@@ -228,5 +263,74 @@ test.describe("immersive portrait archive", () => {
       await expect.poll(async () => (await sampleCanvas(page)).changedPixels).toBeGreaterThan(500);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
     }
+  });
+
+  test("covers every task route with a nonblank workflow-owned scene", async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.addInitScript((entries) => {
+      window.localStorage.setItem("nhb-compare-photos", JSON.stringify(entries));
+    }, [
+      { id: "compare-one", title: "Garden study", href: "/gallery/gallery-garden-01", imageUrl: "/images/gallery/gallery-garden-01.webp", addedAt: 1 },
+      { id: "compare-two", title: "Urban study", href: "/gallery/gallery-urban-01", imageUrl: "/images/gallery/gallery-urban-01.webp", addedAt: 2 },
+    ]);
+    const routes = [
+      { path: "/booking", preset: "booking", anchor: "[data-immersive-anchor='booking']" },
+      { path: "/map", preset: "map", anchor: "[data-immersive-anchor='map']" },
+      { path: "/compare", preset: "compare", anchor: "[data-immersive-anchor='compare']" },
+      { path: "/login", preset: "login", anchor: "[data-immersive-anchor='login']" },
+      { path: "/editor", preset: "editor", anchor: "[data-immersive-anchor='editor']" },
+      { path: "/missing-immersive-frame", preset: "boundary", anchor: "[data-immersive-anchor='boundary']" },
+    ];
+    const canvas = page.locator(".immersive-experience-canvas");
+
+    for (const route of routes) {
+      await page.goto(route.path);
+      await expect(page.locator(route.anchor)).toBeVisible();
+      await expect(canvas).toHaveCount(1);
+      await expect(canvas).toHaveAttribute("data-scene-preset", route.preset);
+      await expect.poll(async () => (await diagnostics(page))?.preset).toBe(route.preset);
+      await expect.poll(async () => (await sampleCanvas(page)).changedPixels).toBeGreaterThan(500);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+    }
+  });
+
+  test("suspends for booking, lightbox, map, and editor ownership without losing its context", async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+
+    await page.goto("/booking");
+    await expectExperienceStatus(page, "active");
+    await page.locator(".booking-quick-cta-btn").click();
+    await expect(page.locator(".booking-modal-content")).toBeVisible();
+    await expectExperienceStatus(page, "suspended");
+    await page.keyboard.press("Escape");
+    await expect(page.locator(".booking-modal-content")).toHaveCount(0);
+    await expectExperienceResumed(page);
+
+    await page.goto("/gallery");
+    await page.locator(".gallery-masonry-btn").first().click();
+    await expect(page.locator(".pswp")).toBeVisible();
+    await expectExperienceStatus(page, "suspended");
+    await page.locator(".pswp__button--close").click();
+    await expect(page.locator(".pswp")).toHaveCount(0);
+    await expectExperienceResumed(page);
+
+    await page.goto("/map");
+    const mapStage = page.locator(".photo-map-stage");
+    await mapStage.scrollIntoViewIfNeeded();
+    await expectExperienceStatus(page, "suspended");
+    await page.locator(".map-view-btn").nth(1).click();
+    await expect(mapStage).toHaveCount(0);
+    await expectExperienceResumed(page);
+
+    await page.goto("/editor");
+    await expectExperienceStatus(page, "active");
+    await expect.poll(async () => (await diagnostics(page))?.textureBytes ?? 0).toBeGreaterThan(0);
+    await page.locator('.editor-toolbar input[type="file"]').setInputFiles(editorTestImage);
+    await expect(page.locator(".editor-canvas")).toBeVisible({ timeout: 15_000 });
+    await expectExperienceStatus(page, "suspended");
+    await expect.poll(async () => (await diagnostics(page))?.textureBytes).toBe(0);
+    expect((await diagnostics(page))?.contextCount).toBe(1);
   });
 });
