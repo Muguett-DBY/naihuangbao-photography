@@ -5,8 +5,10 @@ import { ImagePlus, ShieldCheck, Sparkles, Zap, Upload, SlidersHorizontal } from
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { PageTransition } from "../components/shared/PageTransition";
 import { useSEO } from "../hooks/useSEO";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 
 const PhotoEditorWorkspace = lazy(() => import("./PhotoEditorWorkspace"));
+const EDITOR_IMMERSIVE_IMAGES = ["/images/gallery/gallery-urban-01.webp"];
 
 function EditorStudioFallback() {
   const { t } = useTranslation();
@@ -25,6 +27,11 @@ export default function PhotoEditorPage() {
   const uploadRef = useRef<HTMLInputElement>(null);
 
   useSEO({ titleKey: "editor.title", descKey: "editor.desc", path: "/editor" });
+  const immersiveAnchor = useImmersiveAnchor({
+    id: "editor-entrance",
+    preset: "editor",
+    imageUrls: EDITOR_IMMERSIVE_IMAGES,
+  });
 
   const openStudio = useCallback(() => {
     setStudioReady(true);
@@ -53,7 +60,11 @@ export default function PhotoEditorPage() {
   return (
     <PageTransition>
       <ErrorBoundary>
-        <div className="editor-root editor-light-shell">
+        <div
+          ref={immersiveAnchor}
+          className="editor-root editor-light-shell"
+          data-immersive-anchor="editor"
+        >
           <header className="editor-header editor-header--light">
             <div>
               <span className="editor-header-kicker">LOCAL STUDIO / WORKING FILE</span>

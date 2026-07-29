@@ -44,6 +44,7 @@ export const PageHero = memo(function PageHero({
       className={`page-hero${image ? " page-hero--media" : ""}`}
       id="top"
       aria-labelledby="page-hero-title"
+      data-immersive-anchor={shouldRegisterImmersiveAnchor ? immersivePreset : undefined}
     >
       {image && (
         <picture className="page-hero-media">

@@ -15,6 +15,7 @@ const Packages = lazy(() => import("../components/Packages").then((m) => ({ defa
 const ServiceDetails = lazy(() => import("../components/ServiceDetails").then((m) => ({ default: m.ServiceDetails })));
 const ProcessAndFaq = lazy(() => import("../components/ProcessAndFaq").then((m) => ({ default: m.ProcessAndFaq })));
 const StyleQuiz = lazy(() => import("../components/StyleQuiz").then((m) => ({ default: m.StyleQuiz })));
+const BOOKING_IMMERSIVE_IMAGES = ["/images/gallery/gallery-flower-01.avif"];
 
 export function BookingPage() {
   const { t } = useTranslation();
@@ -36,6 +37,8 @@ export function BookingPage() {
         image="/images/gallery/gallery-flower-01.webp"
         imageAlt={t("nav.booking")}
         issue="ISSUE 07"
+        immersivePreset="booking"
+        immersiveImages={BOOKING_IMMERSIVE_IMAGES}
       />
 
       <section className="section-shell booking-conversion-band is-visible">

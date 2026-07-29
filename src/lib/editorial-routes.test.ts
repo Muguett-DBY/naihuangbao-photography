@@ -105,7 +105,7 @@ describe("editorial catalogue routes", () => {
       /\.workshop-filter-overlay\s*\{[^}]*z-index:\s*(?:[1-9]\d{3,})/s,
     );
     expect(css).toMatch(
-      /\.workshop-filter-sheet\s*\{[^}]*padding-bottom:\s*calc\(20px \+ env\(safe-area-inset-bottom\)\)/s,
+      /\.workshop-filter-sheet\s*\{[^}]*padding-bottom:\s*calc\(20px \+ env\(safe-area-inset-bottom(?:,\s*0px)?\)\)/s,
     );
   });
 

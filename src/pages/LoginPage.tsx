@@ -10,8 +10,10 @@ import { useAuth } from "../hooks/useAuth";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { useToast } from "../components/shared/Toast";
 import { useSEO } from "../hooks/useSEO";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 
 type ResetStep = "forgot" | "token" | "done";
+const LOGIN_IMMERSIVE_IMAGES = ["/images/gallery/gallery-daily-01.webp"];
 
 export function LoginPage() {
   const { t } = useTranslation();
@@ -57,9 +59,19 @@ export function LoginPage() {
     path: "/login",
   });
   useGsapPageEffects(rootRef);
+  const authMediaAnchor = useImmersiveAnchor({
+    id: "login-media",
+    preset: "login",
+    imageUrls: LOGIN_IMMERSIVE_IMAGES,
+  });
 
   const renderAuthMedia = () => (
-    <aside className="auth-page-media" aria-label={t("auth.visualLabel")}>
+    <aside
+      ref={authMediaAnchor}
+      className="auth-page-media"
+      aria-label={t("auth.visualLabel")}
+      data-immersive-anchor="login"
+    >
       <picture>
         <source srcSet="/images/gallery/gallery-daily-01.avif" type="image/avif" />
         <source srcSet="/images/gallery/gallery-daily-01.webp" type="image/webp" />

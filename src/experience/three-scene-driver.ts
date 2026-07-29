@@ -25,9 +25,11 @@ export type SceneFrame = {
 };
 
 export type SceneDriver = {
+  readonly textureBytes: number;
   setTier(tier: RenderedTier): void;
   setSize(width: number, height: number): void;
   setHighlightedId(id: string | null): void;
+  releaseTransientTextures(): void;
   morphTo(preset: ScenePreset, imageUrls: string[]): Promise<void>;
   render(frame: SceneFrame): void;
   suspend(): void;
@@ -313,6 +315,32 @@ export class TextureMorphCoordinator<T> {
       this.report(new RangeError("Unable to satisfy the texture budget after releasing visible slots."));
     }
     this.requestIdleWork();
+  }
+
+  releaseTransientTextures(): void {
+    if (this.disposed) return;
+    this.generation += 1;
+    this.finishCurrent();
+    this.cancelIdle();
+    this.idleWork = null;
+
+    const commit = this.callCommit([]);
+    if (!commit.committed) {
+      this.report(commit.error);
+      return;
+    }
+
+    const stagedLease = this.stagedLease;
+    const backgroundLease = this.backgroundLease;
+    const visibleLeases = this.visibleResources.map((resource) => resource.lease);
+    this.stagedLease = null;
+    this.backgroundLease = null;
+    this.visibleResources = [];
+    this.release(stagedLease);
+    this.release(backgroundLease);
+    this.releaseMany(visibleLeases);
+    this.releaseConservativeLeases();
+    this.discardUnretained([]);
   }
 
   private commitFallback(
@@ -883,10 +911,21 @@ export class ThreeSceneDriver implements SceneDriver {
     this.renderer.setSize(safeWidth, safeHeight, false);
   }
 
+  get textureBytes(): number {
+    return this.texturePool.totalBytes;
+  }
+
   setHighlightedId(id: string | null): void {
     if (this.disposed) return;
     this.highlightedId = id && id.trim() !== "" ? id : null;
     this.applyHighlightState();
+  }
+
+  releaseTransientTextures(): void {
+    if (this.disposed) return;
+    this.currentUrls = [];
+    this.highlightedId = null;
+    this.morphCoordinator.releaseTransientTextures();
   }
 
   morphTo(preset: ScenePreset, imageUrls: string[]): Promise<void> {

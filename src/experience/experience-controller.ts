@@ -2,6 +2,7 @@ import type { ExperienceTier } from "./capability-tier";
 
 export type AnchorIntersectionRuntime = {
   setAnchorIntersecting(intersecting: boolean): void;
+  releaseTransientTextures?(): void;
 };
 
 export type AnchorRegistration = {
@@ -50,6 +51,10 @@ export class ExperienceRuntimeBridge {
         this.publishAnchorIntersection();
       },
     };
+  }
+
+  releaseTransientTextures(): void {
+    this.runtime?.releaseTransientTextures?.();
   }
 
   private effectiveAnchorIntersection(): boolean {

@@ -2,6 +2,10 @@
   background: var(--newsprint);
 }
 
+html[data-immersive-ready="true"] .not-found-page {
+  background: rgba(247, 244, 236, 0.84);
+}
+
 .not-found-page .not-found {
   display: grid;
   min-height: min(70svh, 700px);

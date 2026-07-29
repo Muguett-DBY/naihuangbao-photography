@@ -5,10 +5,12 @@ import { ArrowLeft, GitCompare, Layers, Repeat, X, Keyboard } from "lucide-react
 import { useCompare } from "../hooks/useCompare";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { CompareSlider } from "../components/CompareSlider";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { PageTransition } from "../components/shared/PageTransition";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import { useSEO } from "../hooks/useSEO";
+import { selectImmersiveImageUrls } from "../experience/immersive-images";
+import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 
 const fullSrc = (src: string) => {
   const base = src.replace(/\?.*$/, "");
@@ -28,6 +30,15 @@ export function ComparePage() {
 
   const photos = swapped ? [...entries].reverse() : entries;
   const hasBoth = entries.length === 2;
+  const immersiveImages = useMemo(
+    () => selectImmersiveImageUrls(entries.map((entry) => entry.imageUrl)),
+    [entries],
+  );
+  const immersiveAnchor = useImmersiveAnchor({
+    id: "compare-stage",
+    preset: "compare",
+    imageUrls: immersiveImages,
+  });
 
   const toggleViewMode = useCallback(() => {
     setViewMode((prev) => prev === "side-by-side" ? "overlay" : "side-by-side");
@@ -184,7 +195,12 @@ export function ComparePage() {
         </div>
       )}
 
-      <section className="compare-page-stage" aria-label={t("photoCompare.title")}>
+      <section
+        ref={immersiveAnchor}
+        className="compare-page-stage"
+        aria-label={t("photoCompare.title")}
+        data-immersive-anchor="compare"
+      >
         {entries.length === 0 ? (
           <div className="compare-page-empty">
           <GitCompare size={28} aria-hidden="true" />
