@@ -211,9 +211,10 @@ test.describe("editorial catalogue routes", () => {
       matchMedia("(min-width: 981px) and (hover: hover) and (pointer: fine)").matches
     ))).toBe(true);
 
+    const restingTransform = await card.evaluate((element) => getComputedStyle(element).transform);
     await card.hover();
     await expect.poll(() => card.evaluate((element) => getComputedStyle(element).transform))
-      .not.toBe("none");
+      .not.toBe(restingTransform);
     await expect.poll(() => card.evaluate((element) => getComputedStyle(element).boxShadow))
       .not.toBe("none");
     await expect.poll(() => cover.evaluate((element) => getComputedStyle(element).transform))

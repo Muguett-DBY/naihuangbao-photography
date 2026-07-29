@@ -498,6 +498,8 @@ describe("audit regression coverage", () => {
     expect(headersSource).toContain("https://cloudflareinsights.com");
     expect(headersSource).toContain("frame-ancestors 'none'");
     expect(headersSource).toContain("object-src 'none'");
+    expect(headersSource).not.toContain("/assets/*");
+    expect(headersSource).not.toContain("Cache-Control: public, max-age=31536000");
     expect(redirectsSource).toContain("/admin /admin/ 301");
     expect(redirectsSource).not.toContain("/index.html 200");
     expect(redirectsSource).not.toContain("/* /index.html");
