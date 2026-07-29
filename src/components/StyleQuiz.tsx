@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { packages } from "../data/packages";
 import { useBookingModal } from "../hooks/useBookingModal";
+import { useInView } from "../hooks/useInView";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { ImageWithFallback } from "./ImageWithFallback";
 
@@ -132,10 +133,17 @@ function getGalleryTags(answers: Answers): string[] {
   return [...new Set(tags)];
 }
 
-export function StyleQuiz({ showPreview = false }: { showPreview?: boolean }) {
+export function StyleQuiz({
+  showPreview = false,
+  deferPreview = false,
+}: {
+  showPreview?: boolean;
+  deferPreview?: boolean;
+}) {
   const { t } = useTranslation();
   const { openBookingModal } = useBookingModal();
   const { photos } = usePublicPhotos();
+  const { ref: previewGateRef, inView: previewInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
   const reduceMotion = useReducedMotion();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({ occasion: "", style: "", season: "", people: "" });
@@ -205,13 +213,18 @@ export function StyleQuiz({ showPreview = false }: { showPreview?: boolean }) {
   const previewPhoto = previewPhotos[previewIndex] ?? previewPhotos[0];
   const previewLabel = result ? result.package.name : t(step.titleKey as never);
   const tags = result ? getGalleryTags(answers) : [];
+  const previewActive = showPreview && (!deferPreview || previewInView);
 
   return (
-    <div className={showPreview ? "style-quiz style-quiz--with-preview" : "style-quiz"} data-motion-group>
+    <div
+      ref={previewGateRef}
+      className={showPreview ? "style-quiz style-quiz--with-preview" : "style-quiz"}
+      data-motion-group
+    >
       {showPreview ? (
         <div className="quiz-preview" data-motion-item>
           <AnimatePresence initial={false} mode="wait">
-            {previewPhoto ? (
+            {previewActive && previewPhoto ? (
               <motion.div
                 className="quiz-preview-frame"
                 key={previewPhoto.id}
@@ -228,7 +241,12 @@ export function StyleQuiz({ showPreview = false }: { showPreview?: boolean }) {
                   sizes="(max-width: 980px) 100vw, 46vw"
                 />
               </motion.div>
-            ) : null}
+            ) : (
+              <div className="quiz-preview-pending" aria-hidden="true">
+                <span>FRAME QUEUED</span>
+                <i />
+              </div>
+            )}
           </AnimatePresence>
           <div className="quiz-preview-caption">
             <span>{String(previewIndex + 1).padStart(2, "0")} / {String(totalSteps).padStart(2, "0")}</span>

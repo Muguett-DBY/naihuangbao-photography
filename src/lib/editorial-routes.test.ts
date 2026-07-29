@@ -84,6 +84,28 @@ describe("editorial catalogue routes", () => {
     }
   });
 
+  it("replaces missing catalogue artwork with deterministic editorial contact sheets", () => {
+    const media = read("src/components/shared/CatalogueCardMedia.tsx");
+    const css = read("src/styles/pages.css");
+
+    expect(media).toContain("CATALOGUE_FALLBACK_IMAGES");
+    expect(media).toContain('data-fallback="true"');
+    expect(media).toContain("VISUAL STUDY");
+    expect(media).toContain('loading="lazy"');
+    expect(media).not.toContain("Math.random");
+
+    for (const path of indexRoutes) {
+      expect(read(path)).toContain("<CatalogueCardMedia");
+    }
+
+    expect(css).toMatch(
+      /@media\s*\(min-width:\s*981px\)\s*and\s*\(hover:\s*hover\)\s*and\s*\(pointer:\s*fine\)/s,
+    );
+    expect(css).toMatch(
+      /\.catalogue-card:is\(:hover,\s*:focus-within\)[\s\S]*transform:\s*translate3d/s,
+    );
+  });
+
   it("applies workshop status filters and switches between grid and calendar views", () => {
     const source = read("src/pages/WorkshopsPage.tsx");
     const detail = read("src/pages/WorkshopDetailPage.tsx");
