@@ -8835,8 +8835,9 @@
    Editorial home and photo detail surfaces
    ══════════════════════════════════════════════ */
 .home-index-strip {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   border-top: 1px solid var(--hairline);
   border-bottom: 1px solid var(--hairline);
   background: var(--newsprint);
@@ -8845,6 +8846,7 @@
 
 .home-index-strip a {
   position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
   gap: 10px;
@@ -8905,6 +8907,80 @@
   padding: clamp(56px, 8vw, 112px) var(--section-inline);
   background: var(--newsprint);
   color: var(--ink);
+}
+
+#field-notes,
+#featured,
+#services-preview,
+#style-finder,
+#book {
+  scroll-margin-top: calc(var(--nav-h, 64px) + 74px);
+}
+
+@media (min-width: 981px) {
+  .home-index-strip {
+    position: sticky;
+    top: var(--nav-h, 64px);
+    z-index: 72;
+    min-height: 72px;
+    border-top-color: rgba(19, 36, 29, 0.16);
+    background: color-mix(in srgb, var(--newsprint) 94%, transparent);
+    box-shadow: 0 12px 32px rgba(12, 20, 16, 0.1);
+    backdrop-filter: blur(14px);
+  }
+
+  .home-index-strip::before {
+    position: absolute;
+    z-index: 2;
+    right: auto;
+    bottom: -1px;
+    left: 0;
+    width: var(--home-index-progress, 20%);
+    height: 2px;
+    background: var(--coral);
+    content: "";
+    pointer-events: none;
+    transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .home-index-strip a {
+    min-height: 72px;
+  }
+
+  .home-index-strip a.is-active {
+    color: var(--newsprint);
+    background: var(--moss-dark);
+  }
+
+  .home-index-strip a.is-active span {
+    color: var(--sun-note);
+  }
+
+  .home-index-strip a.is-active::after {
+    transform: scaleX(1);
+  }
+
+  .home-editorial-band[data-chapter] {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+  }
+
+  .home-editorial-band[data-chapter]::before {
+    position: absolute;
+    z-index: -1;
+    top: -0.08em;
+    right: var(--section-inline);
+    color: currentColor;
+    content: attr(data-chapter);
+    font-family: var(--font-display);
+    font-size: clamp(10rem, 18vw, 18rem);
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    line-height: 1;
+    opacity: 0.035;
+    pointer-events: none;
+  }
 }
 
 .home-editorial-band--paper {

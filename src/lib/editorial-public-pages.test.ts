@@ -50,6 +50,36 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(home).toContain("useGsapPageEffects(rootRef)");
   });
 
+  it("keeps a desktop chapter console in sync without a continuous scroll listener", () => {
+    const home = read("src/pages/HomePage.tsx");
+    const chapterIndex = read("src/components/shared/HomeChapterIndex.tsx");
+    const header = read("src/components/shared/Header.tsx");
+    const css = read("src/styles/pages.css");
+
+    expect(home).toContain('from "../components/shared/HomeChapterIndex"');
+    expect(home).toContain("<HomeChapterIndex");
+    expect(home).toContain('id="book"');
+    expect(chapterIndex).toContain("IntersectionObserver");
+    expect(chapterIndex).toContain('const DESKTOP_INDEX_QUERY = "(min-width: 981px)"');
+    expect(chapterIndex).toContain("matchMedia(DESKTOP_INDEX_QUERY)");
+    expect(chapterIndex).toContain('aria-current={isActive ? "location" : undefined}');
+    expect(chapterIndex).not.toContain('addEventListener("scroll"');
+    expect(header).toContain("new ResizeObserver(syncNavigationHeight)");
+    expect(header).toContain('style.setProperty("--nav-h"');
+    expect(css).toMatch(/@media \(min-width: 981px\)[\s\S]*?\.home-index-strip\s*\{[^}]*position:\s*sticky[^}]*top:\s*var\(--nav-h,\s*64px\)/s);
+    expect(css).toContain(".home-index-strip a.is-active");
+    expect(css).toContain("scroll-margin-top: calc(var(--nav-h, 64px) + 74px)");
+  });
+
+  it("adds a desktop-only optical focus response to gallery photographs", () => {
+    const css = read("src/styles/gallery.css");
+
+    expect(css).toMatch(/@media \(min-width: 981px\) and \(hover: hover\) and \(pointer: fine\)/);
+    expect(css).toContain(".gallery-masonry-media::after");
+    expect(css).toContain(".gallery-masonry-item:hover .gallery-masonry-media::after");
+    expect(css).toContain(".gallery-masonry-item:focus-within .gallery-masonry-media::after");
+  });
+
   it("turns the home services into an image-led interactive journal", () => {
     const home = read("src/pages/HomePage.tsx");
     const services = read("src/components/ServiceJournal.tsx");

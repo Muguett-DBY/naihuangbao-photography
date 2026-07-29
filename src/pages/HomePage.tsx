@@ -21,6 +21,7 @@ import { SectionSkeleton } from "../components/SectionSkeleton";
 import { ServiceJournal } from "../components/ServiceJournal";
 import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 import { OpticalSceneChrome } from "../components/shared/OpticalSceneChrome";
+import { HomeChapterIndex, type HomeChapter } from "../components/shared/HomeChapterIndex";
 
 const Gallery = lazy(() => import("../components/Gallery").then((module) => ({ default: module.Gallery })));
 const WhyChooseUs = lazy(() => import("../components/WhyChooseUs").then((module) => ({ default: module.WhyChooseUs })));
@@ -48,6 +49,16 @@ export function HomePage() {
     imageUrls: immersiveImages,
   });
   const finalCtaPhoto = coverPhotos[2] ?? coverPhotos[0];
+  const homeChapters = useMemo<HomeChapter[]>(
+    () => [
+      { id: "field-notes", index: "01", label: t("filmstrip.title" as never) },
+      { id: "featured", index: "02", label: t("gallery.title") },
+      { id: "services-preview", index: "03", label: t("home.servicesTitle") },
+      { id: "style-finder", index: "04", label: t("home.styleQuizTitle") },
+      { id: "book", index: "05", label: t("midCTA.cta") },
+    ],
+    [t],
+  );
 
   useSEO({ titleKey: "seo.homeTitle", descKey: "seo.homeDesc", path: "/" });
   useGsapPageEffects(rootRef);
@@ -114,12 +125,7 @@ export function HomePage() {
 
       </section>
 
-      <nav className="home-index-strip" aria-label={t("nav.home")}>
-        <a href="#field-notes"><span>01</span><strong>{t("filmstrip.title" as never)}</strong></a>
-        <a href="#featured"><span>02</span><strong>{t("gallery.title")}</strong></a>
-        <a href="#services-preview"><span>03</span><strong>{t("home.servicesTitle")}</strong></a>
-        <a href="#style-finder"><span>04</span><strong>{t("home.styleQuizTitle")}</strong></a>
-      </nav>
+      <HomeChapterIndex ariaLabel={t("nav.home")} chapters={homeChapters} />
 
       <ErrorBoundary>
         <Suspense fallback={<SectionSkeleton lines={3} hasImage />}>
@@ -133,10 +139,10 @@ export function HomePage() {
 
       <RecentlyViewedStrip />
 
-      <section className="home-editorial-band home-editorial-band--gallery" id="featured">
-        <header className="home-band-heading">
-          <p className="home-band-index">02 / {t("gallery.eyebrow")}</p>
-          <div>
+      <section className="home-editorial-band home-editorial-band--gallery" id="featured" data-chapter="02">
+        <header className="home-band-heading" data-motion-group>
+          <p className="home-band-index" data-motion-item>02 / {t("gallery.eyebrow")}</p>
+          <div data-motion-item>
             <h2>{t("gallery.title")}</h2>
             <p>{t("gallery.description")}</p>
           </div>
@@ -153,10 +159,10 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="home-editorial-band home-editorial-band--services" id="services-preview">
-        <header className="home-band-heading">
-          <p className="home-band-index">03 / {t("home.servicesTitle")}</p>
-          <div>
+      <section className="home-editorial-band home-editorial-band--services" id="services-preview" data-chapter="03">
+        <header className="home-band-heading" data-motion-group>
+          <p className="home-band-index" data-motion-item>03 / {t("home.servicesTitle")}</p>
+          <div data-motion-item>
             <h2>{t("home.servicesTitle")}</h2>
             <p>{t("hero.intro")}</p>
           </div>
@@ -178,10 +184,10 @@ export function HomePage() {
         </Suspense>
       </ErrorBoundary>
 
-      <section className="home-editorial-band home-editorial-band--quiz" id="style-finder">
-        <header className="home-band-heading home-band-heading--light">
-          <p className="home-band-index">04 / {t("home.styleQuizTitle")}</p>
-          <div>
+      <section className="home-editorial-band home-editorial-band--quiz" id="style-finder" data-chapter="04">
+        <header className="home-band-heading home-band-heading--light" data-motion-group>
+          <p className="home-band-index" data-motion-item>04 / {t("home.styleQuizTitle")}</p>
+          <div data-motion-item>
             <h2>{t("home.styleQuizTitle")}</h2>
             <p>{t("quiz.result.desc")}</p>
           </div>
@@ -193,7 +199,7 @@ export function HomePage() {
         </ErrorBoundary>
       </section>
 
-      <section className="home-final-cta" data-motion-group>
+      <section className="home-final-cta" id="book" data-motion-group>
         <div className="home-final-cta-media" data-motion-item>
           {finalCtaPhoto ? (
             <ImageWithFallback
