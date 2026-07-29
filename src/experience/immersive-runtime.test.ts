@@ -726,7 +726,7 @@ describe("ImmersiveRuntime", () => {
     expect(create).not.toHaveBeenCalled();
   });
 
-  it("downgrades high to medium after the 34ms sustained threshold", () => {
+  it("downgrades high when more than five percent of a full window exceeds 34ms", () => {
     const scheduler = createScheduler();
     const fake = createDriver();
     const runtime = new ImmersiveRuntime({
@@ -737,11 +737,11 @@ describe("ImmersiveRuntime", () => {
     });
     let time = 0;
 
-    for (let index = 0; index < 44; index += 1) {
+    for (let index = 0; index < 6; index += 1) {
       time += 35;
       scheduler.flush(time);
     }
-    for (let index = 0; index < 75; index += 1) {
+    for (let index = 0; index < 113; index += 1) {
       time += 16;
       scheduler.flush(time);
     }
