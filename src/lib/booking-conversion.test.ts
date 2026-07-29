@@ -9,9 +9,21 @@ describe("public booking conversion shell", () => {
   it("organizes the complete booking journey as numbered semantic groups", () => {
     const bookingPage = read("src/pages/BookingPage.tsx");
     const bookingModal = read("src/components/BookingModal.tsx");
+    const pagesCss = read("src/styles/pages.css");
 
     expect(bookingPage).toContain('className="booking-page booking-page--editorial"');
     expect(bookingPage).toContain('image="/images/gallery/');
+    expect(bookingPage).toContain('className="booking-content-surface"');
+    expect(bookingPage).toContain("<StyleQuiz showPreview deferPreview />");
+    expect(pagesCss).toMatch(
+      /\.booking-content-surface\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*1;[^}]*background:\s*var\(--newsprint\)/s,
+    );
+    expect(pagesCss).toMatch(
+      /@media\s*\(min-width:\s*981px\)[\s\S]*\.booking-content-surface\s*>\s*\.style-quiz\s*\{[^}]*width:\s*min\(900px,\s*calc\(100%\s*-\s*2\s*\*\s*var\(--section-inline\)\)\)/s,
+    );
+    expect(pagesCss).toMatch(
+      /\.booking-content-surface\s*>\s*\.style-quiz--with-preview\s*\{[^}]*grid-template-columns:/s,
+    );
     expect(bookingModal).toContain('<ol className="booking-step-rail"');
     expect(bookingModal).toContain('className="booking-numbered-group"');
     expect(bookingModal).toContain('booking-group-index">01');

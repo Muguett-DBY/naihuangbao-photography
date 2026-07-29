@@ -8,6 +8,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { CatalogueCardMedia } from "../components/shared/CatalogueCardMedia";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DataState } from "../components/shared/DataState";
 import { getName, getDesc } from "../lib/i18n-helpers";
@@ -110,21 +111,21 @@ export function ProductsPage() {
               <article key={preset.id} className="preset-card catalogue-card" {...bindImmersiveHighlight(preset.id)}>
                 <Link to={`/presets/${preset.id}`} className="catalogue-card-link">
                   <span className="catalogue-card-index">{String(index + 1).padStart(2, "0")}</span>
-                  {preset.preview_images?.[0] ? (
-                    <div className="preset-cover-wrap catalogue-card-media">
-                      <img src={preset.preview_images[0]} alt={getName(preset, i18n.language)} className="preset-cover" loading="lazy" />
-                      <span className="preset-cover-badge">{tPresetCategory(t, preset.category)}</span>
-                      {preset.download_count != null && (
-                        <span className="preset-download-count">
-                          <Download size={12} aria-hidden="true" /> {preset.download_count}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="preset-cover-placeholder catalogue-card-media">
-                      <Download size={32} aria-hidden="true" />
-                    </div>
-                  )}
+                  <CatalogueCardMedia
+                    alt={getName(preset, i18n.language)}
+                    className="preset-cover-wrap"
+                    imageClassName="preset-cover"
+                    imageUrl={preset.preview_images?.[0]}
+                    index={index}
+                    kind="preset"
+                  >
+                    <span className="preset-cover-badge">{tPresetCategory(t, preset.category)}</span>
+                    {preset.download_count != null && (
+                      <span className="preset-download-count">
+                        <Download size={12} aria-hidden="true" /> {preset.download_count}
+                      </span>
+                    )}
+                  </CatalogueCardMedia>
                   <div className="preset-info catalogue-card-copy">
                     <span className="course-category">{tPresetCategory(t, preset.category)}</span>
                     <h3>{getName(preset, i18n.language)}</h3>

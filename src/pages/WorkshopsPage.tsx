@@ -10,6 +10,7 @@ import { getWorkshopAvailability, useWorkshopRegistration } from "../hooks/useWo
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { CatalogueCardMedia } from "../components/shared/CatalogueCardMedia";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DataState } from "../components/shared/DataState";
 import { WorkshopCountdown } from "../components/WorkshopCountdown";
@@ -105,18 +106,18 @@ export function WorkshopsPage() {
       <article key={workshop.id} className="workshop-card catalogue-card" {...bindImmersiveHighlight(workshop.id)}>
         <span className="catalogue-card-index">{String(index + 1).padStart(2, "0")}</span>
         <Link to={`/workshops/${workshop.id}`} className="catalogue-card-link">
-          {workshop.cover_image_url ? (
-            <div className="workshop-cover-wrap catalogue-card-media">
-              <img src={workshop.cover_image_url} alt={title} className="workshop-cover" loading="lazy" />
-              <span className={`workshop-cover-badge${isClosed ? " is-full" : ""}`}>
-                {capacityLabel}
-              </span>
-            </div>
-          ) : (
-            <div className="workshop-cover-placeholder catalogue-card-media">
-              <MapPin size={32} aria-hidden="true" />
-            </div>
-          )}
+          <CatalogueCardMedia
+            alt={title}
+            className="workshop-cover-wrap"
+            imageClassName="workshop-cover"
+            imageUrl={workshop.cover_image_url}
+            index={index}
+            kind="workshop"
+          >
+            <span className={`workshop-cover-badge${isClosed ? " is-full" : ""}`}>
+              {capacityLabel}
+            </span>
+          </CatalogueCardMedia>
           <div className="workshop-info catalogue-card-copy">
             <span className="course-category">{workshop.event_date}</span>
             <h3>{title}</h3>

@@ -8,6 +8,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { CatalogueCardMedia } from "../components/shared/CatalogueCardMedia";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DataState } from "../components/shared/DataState";
 import { getTitle, getDesc } from "../lib/i18n-helpers";
@@ -101,16 +102,16 @@ export function CoursesPage() {
               <article key={course.id} className="course-card catalogue-card" {...bindImmersiveHighlight(course.id)}>
                 <Link to={`/courses/${course.id}`} className="catalogue-card-link">
                   <span className="catalogue-card-index">{String(index + 1).padStart(2, "0")}</span>
-                  {course.cover_image_url ? (
-                    <div className="course-cover-wrap catalogue-card-media">
-                      <img src={course.cover_image_url} alt={getTitle(course, i18n.language)} className="course-cover" loading="lazy" />
-                      <span className="course-cover-badge">{tCourseDifficulty(t, course.difficulty)}</span>
-                    </div>
-                  ) : (
-                    <div className="course-cover-placeholder catalogue-card-media">
-                      <BookOpen size={32} aria-hidden="true" />
-                    </div>
-                  )}
+                  <CatalogueCardMedia
+                    alt={getTitle(course, i18n.language)}
+                    className="course-cover-wrap"
+                    imageClassName="course-cover"
+                    imageUrl={course.cover_image_url}
+                    index={index}
+                    kind="course"
+                  >
+                    <span className="course-cover-badge">{tCourseDifficulty(t, course.difficulty)}</span>
+                  </CatalogueCardMedia>
                   <div className="course-info catalogue-card-copy">
                     <span className="course-category">{tCourseCategory(t, course.category)}</span>
                     <h3>{getTitle(course, i18n.language)}</h3>

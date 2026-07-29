@@ -9,6 +9,7 @@ import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
+import { CatalogueCardMedia } from "../components/shared/CatalogueCardMedia";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { DataState } from "../components/shared/DataState";
 import { getName, getDesc } from "../lib/i18n-helpers";
@@ -103,16 +104,16 @@ export function ShopPage() {
               <article key={item.id} className="merchandise-card catalogue-card" {...bindImmersiveHighlight(item.id)}>
                 <Link to={`/shop/${item.id}`} className="catalogue-card-link">
                   <span className="catalogue-card-index">{String(index + 1).padStart(2, "0")}</span>
-                  {item.images?.[0] ? (
-                    <div className="merchandise-cover-wrap catalogue-card-media">
-                      <img src={item.images[0]} alt={getName(item, i18n.language)} className="merchandise-cover" loading="lazy" />
-                      <span className="merchandise-cover-badge">{tMerchandiseCategory(t, item.category)}</span>
-                    </div>
-                  ) : (
-                    <div className="merchandise-cover-placeholder catalogue-card-media">
-                      <ShoppingCart size={32} aria-hidden="true" />
-                    </div>
-                  )}
+                  <CatalogueCardMedia
+                    alt={getName(item, i18n.language)}
+                    className="merchandise-cover-wrap"
+                    imageClassName="merchandise-cover"
+                    imageUrl={item.images?.[0]}
+                    index={index}
+                    kind="object"
+                  >
+                    <span className="merchandise-cover-badge">{tMerchandiseCategory(t, item.category)}</span>
+                  </CatalogueCardMedia>
                   <div className="merchandise-info catalogue-card-copy">
                     <span className="course-category">{tMerchandiseCategory(t, item.category)}</span>
                     <h3>{getName(item, i18n.language)}</h3>

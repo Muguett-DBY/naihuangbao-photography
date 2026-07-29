@@ -129,9 +129,10 @@ describe("editorial public-page reconstruction contracts", () => {
     const css = read("src/styles/pages.css");
 
     expect(home).toContain("<StyleQuiz showPreview />");
-    expect(booking).toContain("<StyleQuiz />");
-    expect(booking).not.toContain("showPreview");
+    expect(booking).toContain("<StyleQuiz showPreview deferPreview />");
     expect(quiz).toContain("showPreview = false");
+    expect(quiz).toContain("deferPreview = false");
+    expect(quiz).toContain("useInView");
     expect(quiz).toContain("AnimatePresence");
     expect(quiz).toContain("useReducedMotion");
     expect(quiz).toContain("usePublicPhotos");

@@ -69,29 +69,36 @@ export function BookingPage() {
         </div>
       </section>
 
-      <ErrorBoundary>
-        <Suspense fallback={<SectionSkeleton lines={3} />}>
-          <StyleQuiz />
-        </Suspense>
-      </ErrorBoundary>
+      <div className="booking-content-surface">
+        <div className="booking-content-ledger" aria-hidden="true">
+          <span>SESSION CONFIGURATOR</span>
+          <span>ISSUE 07 / LIVE DESK</span>
+        </div>
 
-      <ErrorBoundary>
-        <Suspense fallback={<SectionSkeleton hasCards={3} />}>
-          <Packages />
-        </Suspense>
-      </ErrorBoundary>
+        <ErrorBoundary>
+          <Suspense fallback={<SectionSkeleton lines={3} />}>
+            <StyleQuiz showPreview deferPreview />
+          </Suspense>
+        </ErrorBoundary>
 
-      <ErrorBoundary>
-        <Suspense fallback={<SectionSkeleton hasCards={3} />}>
-          <ServiceDetails />
-        </Suspense>
-      </ErrorBoundary>
+        <ErrorBoundary>
+          <Suspense fallback={<SectionSkeleton hasCards={3} />}>
+            <Packages />
+          </Suspense>
+        </ErrorBoundary>
 
-      <ErrorBoundary>
-        <Suspense fallback={<SectionSkeleton lines={6} />}>
-          <ProcessAndFaq />
-        </Suspense>
-      </ErrorBoundary>
+        <ErrorBoundary>
+          <Suspense fallback={<SectionSkeleton hasCards={3} />}>
+            <ServiceDetails />
+          </Suspense>
+        </ErrorBoundary>
+
+        <ErrorBoundary>
+          <Suspense fallback={<SectionSkeleton lines={6} />}>
+            <ProcessAndFaq />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
     </PageTransition>
   );
 }

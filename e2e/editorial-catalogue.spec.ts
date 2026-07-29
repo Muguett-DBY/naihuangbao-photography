@@ -200,6 +200,51 @@ test.describe("editorial catalogue routes", () => {
     }
   });
 
+  test("missing catalogue artwork becomes an image-led visual study", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.route("**/api/courses", (route) => fulfillJson(route, {
+      courses: [{ ...course, cover_image_url: null }],
+    }));
+    await page.route("**/api/presets", (route) => fulfillJson(route, {
+      presets: [{ ...preset, preview_images: [] }],
+    }));
+    await page.route("**/api/workshops", (route) => fulfillJson(route, {
+      workshops: [{ ...workshop, cover_image_url: null }],
+    }));
+    await page.route("**/api/merchandise", (route) => fulfillJson(route, {
+      merchandise: [{ ...merchandise, images: [] }],
+    }));
+
+    for (const path of ["/courses", "/products", "/workshops", "/shop"]) {
+      await page.goto(path);
+      const fallback = page.locator('.catalogue-card-media[data-fallback="true"]').first();
+      await expect(fallback).toBeVisible();
+      await expect(fallback.locator("img")).toHaveCount(2);
+      await expect(fallback).toContainText("VISUAL STUDY");
+      await expectNoHorizontalOverflow(page);
+    }
+  });
+
+  test("booking content owns an opaque surface below the immersive hero", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/booking");
+
+    const surface = page.locator(".booking-content-surface");
+    await expect(surface).toBeVisible();
+    const presentation = await surface.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        background: style.backgroundColor,
+        position: style.position,
+        zIndex: style.zIndex,
+      };
+    });
+
+    expect(presentation.background).not.toBe("rgba(0, 0, 0, 0)");
+    expect(presentation.position).toBe("relative");
+    expect(Number(presentation.zIndex)).toBeGreaterThanOrEqual(1);
+  });
+
   test("mobile workshop filtering stays above the persistent nav and applies normally", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/workshops");
