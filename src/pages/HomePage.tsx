@@ -20,6 +20,7 @@ import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import { SectionSkeleton } from "../components/SectionSkeleton";
 import { ServiceJournal } from "../components/ServiceJournal";
 import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
+import { OpticalSceneChrome } from "../components/shared/OpticalSceneChrome";
 
 const Gallery = lazy(() => import("../components/Gallery").then((module) => ({ default: module.Gallery })));
 const WhyChooseUs = lazy(() => import("../components/WhyChooseUs").then((module) => ({ default: module.WhyChooseUs })));
@@ -77,6 +78,7 @@ export function HomePage() {
           ))}
         </div>
         <div className="hero-solid-scrim" aria-hidden="true" />
+        <OpticalSceneChrome preset="home" chapter="01" />
 
         <div className="hero-editorial-copy">
           <p className="hero-issue-line">
@@ -110,14 +112,13 @@ export function HomePage() {
           </div>
         </div>
 
-        <p className="hero-folio" aria-hidden="true">01 / 06</p>
       </section>
 
       <nav className="home-index-strip" aria-label={t("nav.home")}>
-        <a href="#field-notes"><span>01</span>{t("filmstrip.title" as never)}</a>
-        <a href="#featured"><span>02</span>{t("gallery.title")}</a>
-        <a href="#services-preview"><span>03</span>{t("home.servicesTitle")}</a>
-        <a href="#style-finder"><span>04</span>{t("home.styleQuizTitle")}</a>
+        <a href="#field-notes"><span>01</span><strong>{t("filmstrip.title" as never)}</strong></a>
+        <a href="#featured"><span>02</span><strong>{t("gallery.title")}</strong></a>
+        <a href="#services-preview"><span>03</span><strong>{t("home.servicesTitle")}</strong></a>
+        <a href="#style-finder"><span>04</span><strong>{t("home.styleQuizTitle")}</strong></a>
       </nav>
 
       <ErrorBoundary>

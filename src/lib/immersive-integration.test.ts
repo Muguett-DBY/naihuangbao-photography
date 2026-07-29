@@ -25,6 +25,37 @@ describe("immersive experience integration", () => {
     expect(read("src/styles/immersive.css")).toContain("pointer-events: none");
   });
 
+  it("adds a zero-runtime optical viewfinder to immersive public heroes", () => {
+    const chrome = read("src/components/shared/OpticalSceneChrome.tsx");
+    const home = read("src/pages/HomePage.tsx");
+    const gallery = read("src/pages/GalleryPage.tsx");
+    const pageHero = read("src/components/shared/PageHero.tsx");
+    const css = read("src/styles/immersive.css");
+
+    expect(chrome).toContain('aria-hidden="true"');
+    expect(chrome).toContain("SCENE_PRESETS[preset]");
+    expect(chrome).not.toMatch(/useEffect|requestAnimationFrame|addEventListener/);
+    expect(home).toContain('<OpticalSceneChrome preset="home"');
+    expect(gallery).toContain('<OpticalSceneChrome preset="gallery"');
+    expect(pageHero).toContain("<OpticalSceneChrome");
+    expect(css).toMatch(/\.optical-scene-chrome\s*\{[^}]*pointer-events:\s*none/s);
+    expect(css).toContain(".optical-scene-focus");
+    expect(css).toMatch(/@media\s*\(max-width:\s*640px\)[\s\S]*\.optical-scene-chrome/s);
+    expect(css).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*\.optical-scene-chrome/s);
+  });
+
+  it("keeps route exposure transitions decorative and motion-safe", () => {
+    const transition = read("src/components/shared/PageTransition.tsx");
+    const css = read("src/styles/immersive.css");
+
+    expect(transition).toContain('className={`page-transition');
+    expect(transition).toContain('className="page-transition-exposure"');
+    expect(transition).toContain('aria-hidden="true"');
+    expect(css).toMatch(/\.page-transition-exposure\s*\{[^}]*position:\s*fixed/s);
+    expect(css).toMatch(/\.page-transition-exposure\s*\{[^}]*pointer-events:\s*none/s);
+    expect(css).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*\.page-transition-exposure/s);
+  });
+
   it("keeps Three.js behind the dynamic immersive branch", () => {
     const rootLayout = read("src/layouts/RootLayout.tsx");
     const gate = read("src/experience/ImmersiveExperienceGate.tsx");

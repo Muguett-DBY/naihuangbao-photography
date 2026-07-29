@@ -67,6 +67,24 @@ describe("editor regression contracts", () => {
     expect(pagesCss).toContain("var(--mobile-bottom-nav-offset");
   });
 
+  it("gives mobile destinations stable viewfinder feedback without moving labels", () => {
+    const mobileNav = read("src/components/shared/MobileBottomNav.tsx");
+    const sectionsCss = read("src/styles/sections.css");
+
+    expect(mobileNav).toContain('className="mobile-bottom-nav__icon"');
+    expect(mobileNav).toContain('mobile-bottom-nav__icon mobile-bottom-nav__booking-icon');
+    expect(sectionsCss).toMatch(
+      /\.mobile-bottom-nav__icon\s*\{[^}]*width:\s*30px[^}]*height:\s*30px/s,
+    );
+    expect(sectionsCss).toMatch(
+      /\.mobile-bottom-nav__item\s*\{[^}]*min-height:\s*56px/s,
+    );
+    expect(sectionsCss).toContain(".mobile-bottom-nav__item:active .mobile-bottom-nav__icon");
+    expect(sectionsCss).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*\.mobile-bottom-nav__icon/s,
+    );
+  });
+
   it("does not parse Vite HTML fallbacks as JSON API data", () => {
     const photosHook = read("src/hooks/usePublicPhotos.tsx");
     const contentHook = read("src/hooks/useSiteContent.tsx");
