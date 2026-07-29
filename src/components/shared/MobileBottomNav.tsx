@@ -21,7 +21,7 @@ function MobileNavLink({ to, label, active, icon }: MobileNavLinkProps) {
       aria-current={active ? "page" : undefined}
       aria-label={label}
     >
-      {icon}
+      <span className="mobile-bottom-nav__icon">{icon}</span>
       <span>{label}</span>
     </PrefetchLink>
   );
@@ -55,7 +55,7 @@ export function MobileBottomNav() {
         aria-current={pathname === "/booking" ? "page" : undefined}
         aria-label={t("mobileNav.booking")}
       >
-        <span className="mobile-bottom-nav__booking-icon">
+        <span className="mobile-bottom-nav__icon mobile-bottom-nav__booking-icon">
           <CalendarCheck size={23} aria-hidden="true" />
         </span>
         <span>{t("mobileNav.booking")}</span>

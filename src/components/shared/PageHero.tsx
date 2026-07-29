@@ -1,6 +1,7 @@
 import { memo, type ReactNode } from "react";
 import type { ScenePresetId } from "../../experience/scene-presets";
 import { useImmersiveAnchor } from "../../experience/useImmersiveAnchor";
+import { OpticalSceneChrome } from "./OpticalSceneChrome";
 
 type PageHeroProps = {
   eyebrow: string;
@@ -53,6 +54,7 @@ export const PageHero = memo(function PageHero({
           <img src={image} alt={imageAlt || title} width={1920} height={1280} fetchPriority="high" />
         </picture>
       )}
+      {immersivePreset && <OpticalSceneChrome preset={immersivePreset} />}
       <div className="page-hero-heading">
         {backLink}
         <div className="page-hero-ledger">

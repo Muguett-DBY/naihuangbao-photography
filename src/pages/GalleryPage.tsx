@@ -9,6 +9,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { SectionSkeleton } from "../components/SectionSkeleton";
 import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
+import { OpticalSceneChrome } from "../components/shared/OpticalSceneChrome";
 
 const Gallery = lazy(() => import("../components/Gallery").then((m) => ({ default: m.Gallery })));
 const PhotoWall3DCss = lazy(() => import("../components/PhotoWall3DCss").then((m) => ({ default: m.PhotoWall3DCss })));
@@ -93,6 +94,7 @@ export function GalleryPage() {
           ))}
         </div>
         <div className="gallery-page-hero-scrim" aria-hidden="true" />
+        <OpticalSceneChrome preset="gallery" chapter="02" />
         <div className="gallery-page-hero-copy">
           <p className="section-eyebrow">{t("gallery.eyebrow")} / {siteConfig.city}</p>
           <h1>{t("gallery.title")}</h1>

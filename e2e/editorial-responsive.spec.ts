@@ -436,6 +436,88 @@ test.describe("short desktop hero contract", () => {
   });
 });
 
+test.describe("optical scene and mobile dock contract", () => {
+  test.use({ serviceWorkers: "block" });
+
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.clear();
+      localStorage.setItem("lang", "en");
+      localStorage.setItem("nhb-pwa-install-dismissed-until", String(Date.now() + 86_400_000));
+    });
+    await mockPublicApi(page);
+  });
+
+  for (const viewport of [
+    { width: 375, height: 812 },
+    { width: 430, height: 932 },
+    { width: 1440, height: 900 },
+  ]) {
+    test(`${viewport.width}px keeps optical chrome bounded and non-interactive`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+
+      for (const route of [
+        { path: "/", host: ".hero-home", scene: "home" },
+        { path: "/gallery", host: ".gallery-page-hero", scene: "gallery" },
+        { path: "/courses", host: ".page-hero", scene: "courses" },
+      ]) {
+        await page.goto(route.path);
+        await settleRoute(page);
+        const chrome = page.locator(`[data-optical-scene="${route.scene}"]`);
+        await expect(chrome).toHaveCount(1);
+        await expect(chrome).toHaveAttribute("aria-hidden", "true");
+
+        const geometry = await chrome.evaluate((scene, hostSelector) => {
+          const host = document.querySelector<HTMLElement>(hostSelector);
+          if (!host) return { contained: false, pointerEvents: getComputedStyle(scene).pointerEvents };
+          const hostRect = host.getBoundingClientRect();
+          const chromeRect = scene.getBoundingClientRect();
+          return {
+            contained:
+              chromeRect.left >= hostRect.left
+              && chromeRect.top >= hostRect.top
+              && chromeRect.right <= hostRect.right
+              && chromeRect.bottom <= hostRect.bottom,
+            pointerEvents: getComputedStyle(scene).pointerEvents,
+          };
+        }, route.host);
+        expect(geometry).toEqual({ contained: true, pointerEvents: "none" });
+
+        if (route.path === "/") {
+          const heroText = await page.locator(".hero-title").evaluate((title) => ({
+            clipped: title.scrollWidth > title.clientWidth + 1,
+            insideViewport: title.getBoundingClientRect().right <= window.innerWidth,
+          }));
+          expect(heroText).toEqual({ clipped: false, insideViewport: true });
+        }
+      }
+
+      if (viewport.width <= 768) {
+        await page.goto("/");
+        await settleRoute(page);
+        const dock = await page.locator(".mobile-bottom-nav").evaluate((nav) => {
+          const navRect = nav.getBoundingClientRect();
+          const items = Array.from(nav.querySelectorAll<HTMLElement>(".mobile-bottom-nav__item"));
+          const icons = Array.from(nav.querySelectorAll<HTMLElement>(".mobile-bottom-nav__icon"));
+          return {
+            navInsideViewport: navRect.left >= 0 && navRect.right <= window.innerWidth && navRect.bottom <= window.innerHeight,
+            stableTargets: items.every((item) => item.getBoundingClientRect().height >= 56),
+            stableIcons: icons.every((icon) => {
+              const rect = icon.getBoundingClientRect();
+              return rect.width === 30 && rect.height === 30;
+            }),
+          };
+        });
+        expect(dock).toEqual({
+          navInsideViewport: true,
+          stableTargets: true,
+          stableIcons: true,
+        });
+      }
+    });
+  }
+});
+
 test.describe("keyboard, focus, and dialog contracts", () => {
   test.use({ serviceWorkers: "block" });
 
