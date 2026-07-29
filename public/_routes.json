@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "include": [
+    "/api/*",
+    "/baidu_verify_codeva-XrPQbInHz7.html"
+  ],
+  "exclude": []
+}
