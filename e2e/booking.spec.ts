@@ -691,6 +691,7 @@ test.describe("booking flow", () => {
   });
 
   test("reschedules a customer booking to an available time window", async ({ page }) => {
+    const rescheduleDate = "2099-08-20";
     let reschedulePayload: Record<string, unknown> | null = null;
     await page.route("**/api/auth/session", (route) => route.fulfill({
       status: 200,
@@ -711,7 +712,7 @@ test.describe("booking flow", () => {
       body: JSON.stringify({
         capacityPerDay: 3,
         dates: {
-          "2026-07-15": {
+          [rescheduleDate]: {
             status: "partial",
             count: 1,
             capacity: 3,
@@ -733,7 +734,7 @@ test.describe("booking flow", () => {
           contentType: "application/json",
           body: JSON.stringify({
             ok: true,
-            booking: { preferred_date: "2026-07-15", preferred_time: "afternoon" },
+            booking: { preferred_date: rescheduleDate, preferred_time: "afternoon" },
           }),
         });
       }
@@ -744,7 +745,7 @@ test.describe("booking flow", () => {
           bookings: [{
             id: "booking-1",
             package_name: "Portrait Session",
-            preferred_date: "2026-07-15",
+            preferred_date: rescheduleDate,
             preferred_time: "morning",
             name: "Guest",
             status: "confirmed",
@@ -772,7 +773,7 @@ test.describe("booking flow", () => {
     const timeSelect = page.getByLabel("New time window", { exact: true });
     await timeSelect.selectOption("afternoon");
     await expect(page.locator(".dashboard-reschedule-summary")).toContainText("Afternoon");
-    await expect(page.locator(".dashboard-reschedule-status")).toContainText("Ready to move to 2026-07-15 · Afternoon");
+    await expect(page.locator(".dashboard-reschedule-status")).toContainText(`Ready to move to ${rescheduleDate} · Afternoon`);
     await expect(page.getByRole("button", { name: "Confirm reschedule", exact: true })).toBeEnabled();
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -790,13 +791,14 @@ test.describe("booking flow", () => {
     await page.getByRole("button", { name: "Confirm reschedule", exact: true }).click();
 
     await expect.poll(() => reschedulePayload).toEqual({
-      preferred_date: "2026-07-15",
+      preferred_date: rescheduleDate,
       preferred_time: "afternoon",
     });
-    await expect(page.getByText("Booking moved to 2026-07-15 · Afternoon.", { exact: true })).toBeVisible();
+    await expect(page.getByText(`Booking moved to ${rescheduleDate} · Afternoon.`, { exact: true })).toBeVisible();
   });
 
   test("recovers when a reschedule time window is taken before submit", async ({ page }) => {
+    const rescheduleDate = "2099-08-20";
     const reschedulePayloads: Record<string, unknown>[] = [];
     await page.route("**/api/auth/session", (route) => route.fulfill({
       status: 200,
@@ -817,7 +819,7 @@ test.describe("booking flow", () => {
       body: JSON.stringify({
         capacityPerDay: 3,
         dates: {
-          "2026-07-15": {
+          [rescheduleDate]: {
             status: "partial",
             count: 1,
             capacity: 3,
@@ -841,7 +843,7 @@ test.describe("booking flow", () => {
             body: JSON.stringify({
               error: "time_unavailable",
               message: "The requested time window is no longer available.",
-              preferredDate: "2026-07-15",
+              preferredDate: rescheduleDate,
               preferredTime: "fullDay",
               timeSlots: {
                 morning: { status: "booked", count: 1, capacity: 1, remaining: 0 },
@@ -862,7 +864,7 @@ test.describe("booking flow", () => {
           contentType: "application/json",
           body: JSON.stringify({
             ok: true,
-            booking: { preferred_date: "2026-07-15", preferred_time: "afternoon" },
+            booking: { preferred_date: rescheduleDate, preferred_time: "afternoon" },
           }),
         });
       }
@@ -873,7 +875,7 @@ test.describe("booking flow", () => {
           bookings: [{
             id: "booking-1",
             package_name: "Portrait Session",
-            preferred_date: "2026-07-15",
+            preferred_date: rescheduleDate,
             preferred_time: "morning",
             name: "Guest",
             status: "confirmed",
@@ -894,7 +896,7 @@ test.describe("booking flow", () => {
 
     const timeSelect = page.getByLabel("New time window", { exact: true });
     await timeSelect.selectOption("fullDay");
-    await expect(page.locator(".dashboard-reschedule-status")).toContainText("Ready to move to 2026-07-15 · Full Day.");
+    await expect(page.locator(".dashboard-reschedule-status")).toContainText(`Ready to move to ${rescheduleDate} · Full Day.`);
     await page.getByRole("button", { name: "Confirm reschedule", exact: true }).click();
 
     await expect(page.locator(".dashboard-reschedule-status")).toContainText("That window was just taken");
@@ -906,15 +908,15 @@ test.describe("booking flow", () => {
     await expect.poll(() => reschedulePayloads).toHaveLength(2);
     expect(reschedulePayloads).toEqual([
       {
-        preferred_date: "2026-07-15",
+        preferred_date: rescheduleDate,
         preferred_time: "fullDay",
       },
       {
-        preferred_date: "2026-07-15",
+        preferred_date: rescheduleDate,
         preferred_time: "afternoon",
       },
     ]);
-    await expect(page.getByText("Booking moved to 2026-07-15 · Afternoon.", { exact: true })).toBeVisible();
+    await expect(page.getByText(`Booking moved to ${rescheduleDate} · Afternoon.`, { exact: true })).toBeVisible();
   });
 
   test("keeps dashboard navigation and empty actions usable on desktop and mobile", async ({ page }) => {
