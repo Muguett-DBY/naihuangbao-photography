@@ -391,7 +391,8 @@ body::after {
 
 main {
   position: relative;
-  overflow: hidden;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 /* ── Button press micro-interaction ── */

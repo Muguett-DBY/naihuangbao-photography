@@ -69,6 +69,7 @@ export function Header({ onOpenChat }: HeaderProps) {
   const [utilityOpen, setUtilityOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [compactNavigation, setCompactNavigation] = useState(getCompactNavigation);
+  const headerRef = useRef<HTMLElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
   const utilityButtonRef = useRef<HTMLButtonElement>(null);
@@ -116,6 +117,23 @@ export function Header({ onOpenChat }: HeaderProps) {
     return () => {
       window.removeEventListener("scroll", schedule);
       if (frameId !== null) window.cancelAnimationFrame(frameId);
+    };
+  }, []);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+
+    const syncNavigationHeight = () => {
+      document.documentElement.style.setProperty("--nav-h", `${Math.ceil(header.getBoundingClientRect().height)}px`);
+    };
+    const observer = new ResizeObserver(syncNavigationHeight);
+    observer.observe(header);
+    syncNavigationHeight();
+
+    return () => {
+      observer.disconnect();
+      document.documentElement.style.removeProperty("--nav-h");
     };
   }, []);
 
@@ -255,7 +273,7 @@ export function Header({ onOpenChat }: HeaderProps) {
 
   return (
     <>
-      <header className={`site-nav${scrolled ? " is-scrolled" : ""}`}>
+      <header ref={headerRef} className={`site-nav${scrolled ? " is-scrolled" : ""}`}>
         <PrefetchLink className="brand-mark" to="/" aria-label={t("nav.backToHome")}>
           <span className="brand-seal" aria-hidden="true">
             <Camera size={18} />

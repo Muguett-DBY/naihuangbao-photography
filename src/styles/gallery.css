@@ -2123,6 +2123,79 @@ html[data-immersive-ready="true"] .gallery-page-hero[data-immersive-anchor="gall
   transform: scale(1.015);
 }
 
+@media (min-width: 981px) and (hover: hover) and (pointer: fine) {
+  .gallery-masonry-item {
+    transition:
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .gallery-masonry-media {
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .gallery-masonry-media::before,
+  .gallery-masonry-media::after {
+    position: absolute;
+    z-index: 4;
+    opacity: 0;
+    content: "";
+    pointer-events: none;
+    transition:
+      opacity 240ms ease,
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .gallery-masonry-media::before {
+    inset: 12px;
+    border: 1px solid rgba(255, 253, 248, 0.54);
+    transform: scale(0.985);
+  }
+
+  .gallery-masonry-media::after {
+    top: 50%;
+    left: 50%;
+    width: 72px;
+    height: 52px;
+    border: 1px solid rgba(255, 253, 248, 0.76);
+    box-shadow:
+      13px 0 0 -12px var(--sun-note),
+      -13px 0 0 -12px var(--sun-note),
+      0 13px 0 -12px var(--sun-note),
+      0 -13px 0 -12px var(--sun-note);
+    transform: translate(-50%, -50%) scale(0.76);
+  }
+
+  .gallery-masonry-item:hover,
+  .gallery-masonry-item:focus-within {
+    transform: translate3d(0, -6px, 0);
+    box-shadow: 0 20px 46px rgba(12, 20, 16, 0.16);
+  }
+
+  .gallery-masonry-item:hover .gallery-masonry-media::before,
+  .gallery-masonry-item:hover .gallery-masonry-media::after,
+  .gallery-masonry-item:focus-within .gallery-masonry-media::before,
+  .gallery-masonry-item:focus-within .gallery-masonry-media::after {
+    opacity: 1;
+  }
+
+  .gallery-masonry-item:hover .gallery-masonry-media::before,
+  .gallery-masonry-item:focus-within .gallery-masonry-media::before {
+    transform: scale(1);
+  }
+
+  .gallery-masonry-item:hover .gallery-masonry-media::after,
+  .gallery-masonry-item:focus-within .gallery-masonry-media::after {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .gallery-masonry-item:hover .gallery-masonry-btn img,
+  .gallery-masonry-item:focus-within .gallery-masonry-btn img {
+    transform: scale(1.035);
+  }
+}
+
 .filter-row button,
 .gallery-active-chips span,
 .gallery-active-chips button,

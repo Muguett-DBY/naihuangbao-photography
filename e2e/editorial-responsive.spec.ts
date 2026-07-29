@@ -436,6 +436,56 @@ test.describe("short desktop hero contract", () => {
   });
 });
 
+test.describe("desktop chapter console contract", () => {
+  test.use({ serviceWorkers: "block", viewport: { width: 1440, height: 900 } });
+
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.clear();
+      localStorage.setItem("lang", "en");
+      localStorage.setItem("nhb-pwa-install-dismissed-until", String(Date.now() + 86_400_000));
+    });
+    await mockPublicApi(page);
+  });
+
+  test("sticks below the masthead and reports the active home chapter", async ({ page }) => {
+    await page.goto("/");
+    await settleRoute(page);
+
+    const chapterConsole = page.locator(".home-index-strip");
+    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "field-notes");
+    await page.locator("#services-preview").scrollIntoViewIfNeeded();
+    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "services-preview");
+    await expect(chapterConsole.locator('a[href="#services-preview"]')).toHaveAttribute("aria-current", "location");
+    await expect(page.locator(".site-nav")).toHaveClass(/is-scrolled/);
+
+    const geometry = await page.evaluate(() => {
+      const masthead = document.querySelector<HTMLElement>(".site-nav")!.getBoundingClientRect();
+      const chapterIndex = document.querySelector<HTMLElement>(".home-index-strip")!.getBoundingClientRect();
+      return {
+        chapterTop: Math.round(chapterIndex.top),
+        mastheadBottom: Math.round(masthead.bottom),
+      };
+    });
+    expect(
+      Math.abs(geometry.chapterTop - geometry.mastheadBottom),
+      `chapter console geometry: ${JSON.stringify(geometry)}`,
+    ).toBeLessThanOrEqual(2);
+
+    await chapterConsole.locator('a[href="#style-finder"]').click();
+    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "style-finder");
+    const anchorGeometry = await page.evaluate(() => {
+      const chapterIndex = document.querySelector<HTMLElement>(".home-index-strip")!.getBoundingClientRect();
+      const section = document.querySelector<HTMLElement>("#style-finder")!.getBoundingClientRect();
+      return {
+        chapterBottom: Math.round(chapterIndex.bottom),
+        sectionTop: Math.round(section.top),
+      };
+    });
+    expect(anchorGeometry.sectionTop).toBeGreaterThanOrEqual(anchorGeometry.chapterBottom - 2);
+  });
+});
+
 test.describe("optical scene and mobile dock contract", () => {
   test.use({ serviceWorkers: "block" });
 

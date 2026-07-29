@@ -410,7 +410,8 @@ describe("audit regression coverage", () => {
   });
 
   it("renders PhotoSwipe as a self-contained modal outside the DOM tree", () => {
-    expect(cssSource).toMatch(/main\s*\{[^}]*overflow:\s*hidden/s);
+    expect(cssSource).toMatch(/main\s*\{[^}]*overflow-x:\s*clip/s);
+    expect(cssSource).toMatch(/main\s*\{[^}]*overflow-y:\s*visible/s);
     expect(cssSource).toMatch(/\.section-shell\s*\{[^}]*transform:\s*translateY/s);
     expect(lightboxSource).not.toContain("createPortal");
     expect(lightboxSource).not.toContain('from "react-dom"');
