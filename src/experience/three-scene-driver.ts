@@ -574,7 +574,7 @@ export class TextureMorphCoordinator<T> {
 
 const TIER_LIMITS: Record<RenderedTier, { dpr: number; planes: number; textureBytes: number; textureDimension: number }> = {
   high: { dpr: 1.5, planes: 10, textureBytes: 48 * 1024 * 1024, textureDimension: 1280 },
-  medium: { dpr: 1.25, planes: 6, textureBytes: 24 * 1024 * 1024, textureDimension: 960 },
+  medium: { dpr: 1.25, planes: 2, textureBytes: 24 * 1024 * 1024, textureDimension: 960 },
 };
 
 type CloseableImage = { width: number; height: number; close?: () => void };
@@ -948,7 +948,10 @@ export class ThreeSceneDriver implements SceneDriver {
     this.root.rotation.x = frame.pointerY * 0.022;
     this.root.position.y = (frame.scrollProgress - 0.5) * 0.18 + Math.sin(seconds * 0.22) * 0.025;
     if (this.currentPreset) {
-      this.camera.position.z = resolveCameraDepth(this.currentPreset, frame.scrollProgress);
+      const resolvedDepth = resolveCameraDepth(this.currentPreset, frame.scrollProgress);
+      this.camera.position.z = this.tierValue === "medium"
+        ? this.currentPreset.cameraZ + (resolvedDepth - this.currentPreset.cameraZ) * 0.55
+        : resolvedDepth;
       applyPresetGeometry(this.contactSheet, this.currentPreset, frame.scrollProgress);
       this.applyHighlightState();
     }

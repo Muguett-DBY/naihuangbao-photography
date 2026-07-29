@@ -380,6 +380,24 @@ test.describe("six-width public route contract", () => {
         runtime.setPath(route.path);
         await page.goto(route.path, { waitUntil: "domcontentloaded" });
         await settleRoute(page);
+        if (route.path === "/") {
+          const canvas = page.locator(".immersive-experience");
+          await expect(canvas).toHaveCount(1);
+          const canvasLayer = await canvas.evaluate((element) => {
+            const rect = element.getBoundingClientRect();
+            const style = getComputedStyle(element);
+            const masthead = document.querySelector(".site-nav");
+            return {
+              rect: [rect.left, rect.top, rect.width, rect.height],
+              pointerEvents: style.pointerEvents,
+              zIndex: Number.parseInt(style.zIndex, 10),
+              mastheadZIndex: masthead ? Number.parseInt(getComputedStyle(masthead).zIndex, 10) : 0,
+            };
+          });
+          expect(canvasLayer.rect).toEqual([0, 0, viewport.width, viewport.height]);
+          expect(canvasLayer.pointerEvents).toBe("none");
+          expect(canvasLayer.zIndex).toBeLessThan(canvasLayer.mastheadZIndex);
+        }
         await expect(page.locator("main"), `${route.path}: exactly one main landmark`).toHaveCount(1);
         await expectNoOverflowOrLayerCollision(page, route.path, route.action);
         expect(runtime.failures, `${route.path}: browser/runtime failures`).toEqual([]);

@@ -59,4 +59,25 @@ describe("selectExperienceTier", () => {
     expect(getContext).toHaveBeenCalledWith("webgl2");
     expect(remove).toHaveBeenCalledOnce();
   });
+
+  it("honors the documented numeric session override", () => {
+    const getContext = vi.fn(() => ({}));
+    const remove = vi.fn();
+    vi.stubGlobal("window", {
+      innerWidth: capable.viewportWidth,
+      matchMedia: vi.fn(() => ({ matches: false })),
+    });
+    vi.stubGlobal("navigator", {
+      connection: { saveData: false },
+      hardwareConcurrency: capable.hardwareConcurrency,
+      deviceMemory: capable.deviceMemory,
+    });
+    vi.stubGlobal("document", {
+      createElement: vi.fn(() => ({ getContext, remove })),
+    });
+    vi.stubGlobal("sessionStorage", { getItem: vi.fn(() => "1") });
+
+    expect(readCapabilitySignals().gpuDisabled).toBe(true);
+    expect(selectExperienceTier(readCapabilitySignals())).toBe("static");
+  });
 });
