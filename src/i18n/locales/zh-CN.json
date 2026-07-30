@@ -41,6 +41,20 @@
     "ctaBooking": "预约",
     "scroll": "SCROLL"
   },
+  "premiere": {
+    "chapter": "首映",
+    "label": "NHB 概念影像 / 2026",
+    "disclosure": "品牌概念影像，不代替真实客片",
+    "assetTitle": "奶黄包摄影品牌概念影像",
+    "frames": {
+      "openingAlt": "晨光帘幕后的人像摄影品牌概念影像",
+      "silkAlt": "薄纱与花影中的概念电影静帧",
+      "glassAlt": "雾化玻璃与植物光影的概念电影静帧",
+      "stillLifeAlt": "相机、木椅与薄纱组成的概念电影静物",
+      "mirrorAlt": "镜面与暖灯中的模糊概念影像",
+      "lensAlt": "镜头、花瓣与薄纱的概念微距影像"
+    }
+  },
   "gallery": {
     "eyebrow": "Portfolio",
     "title": "作品集",

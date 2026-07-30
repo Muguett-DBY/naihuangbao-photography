@@ -41,6 +41,20 @@
     "ctaBooking": "Book",
     "scroll": "SCROLL"
   },
+  "premiere": {
+    "chapter": "Premiere",
+    "label": "NHB CONCEPT FILM / 2026",
+    "disclosure": "Brand concept visuals, not client portfolio work",
+    "assetTitle": "Naihuangbao Photography brand concept visual",
+    "frames": {
+      "openingAlt": "Portrait photography brand concept image behind a sunlit curtain",
+      "silkAlt": "Concept-film still with silk and floral shadow",
+      "glassAlt": "Concept-film still with frosted glass and botanical light",
+      "stillLifeAlt": "Concept-film still life with a camera, wooden chair, and silk",
+      "mirrorAlt": "Soft concept image with a mirror and warm lamp",
+      "lensAlt": "Concept macro image with a lens, petal, and silk"
+    }
+  },
   "gallery": {
     "eyebrow": "Portfolio",
     "title": "Gallery",
