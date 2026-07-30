@@ -8837,7 +8837,7 @@
 .home-index-strip {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--home-index-chapter-count, 5), minmax(0, 1fr));
   border-top: 1px solid var(--hairline);
   border-bottom: 1px solid var(--hairline);
   background: var(--newsprint);
@@ -8909,6 +8909,7 @@
   color: var(--ink);
 }
 
+#premiere,
 #field-notes,
 #featured,
 #services-preview,

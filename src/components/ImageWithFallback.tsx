@@ -27,8 +27,8 @@ export const ImageWithFallback = memo(function ImageWithFallback({
   const [loaded, setLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const usePicture = sizes && src.startsWith("/images/gallery/") && !useDirectImg;
-  const pictureAttrs = usePicture ? getResponsivePictureAttrs(src, sizes) : null;
+  const pictureAttrs = !useDirectImg ? getResponsivePictureAttrs(src, sizes) : null;
+  const usePicture = Boolean(pictureAttrs && pictureAttrs.sources.length > 0);
   const imageAttrs = !usePicture ? getResponsiveImageAttrs(src, sizes) : null;
 
   const handleError = () => {
@@ -84,7 +84,7 @@ export const ImageWithFallback = memo(function ImageWithFallback({
       aria-busy={!loaded}
     >
       <div className="img-skeleton gallery-skeleton" aria-hidden="true" />
-      {pictureAttrs ? (
+      {usePicture && pictureAttrs ? (
         <picture>
           {pictureAttrs.sources.map((source) => (
             <source key={source.type} type={source.type} srcSet={source.srcSet} sizes={source.sizes} />

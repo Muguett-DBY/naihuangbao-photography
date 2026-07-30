@@ -74,13 +74,15 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html}"],
         globIgnores: [
           "**/images/gallery/**/*",
+          "**/images/concept-premiere/**/*",
           "**/immersive-vendor-*.js",
         ],
         runtimeCaching: [
           {
             urlPattern: ({ request, url }) => {
               const imageRequest = request as unknown as { destination?: string };
-              return imageRequest.destination === "image" && url.pathname.startsWith("/images/gallery/");
+              return imageRequest.destination === "image"
+                && (url.pathname.startsWith("/images/gallery/") || url.pathname.startsWith("/images/concept-premiere/"));
             },
             handler: "CacheFirst",
             options: {
@@ -168,6 +170,6 @@ export default defineConfig({
     }),
   ],
   test: {
-    exclude: ["**/node_modules/**", "**/dist/**", "e2e/**"],
+    exclude: ["**/node_modules/**", "**/dist/**", "e2e/**", ".worktrees/**"],
   },
 });

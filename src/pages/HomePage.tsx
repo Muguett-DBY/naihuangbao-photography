@@ -19,6 +19,8 @@ import { PhotoOfTheDay } from "../components/PhotoOfTheDay";
 import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import { SectionSkeleton } from "../components/SectionSkeleton";
 import { ServiceJournal } from "../components/ServiceJournal";
+import { CinematicPremiere } from "../components/CinematicPremiere";
+import { conceptPremiereFrames } from "../data/concept-premiere";
 import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 import { OpticalSceneChrome } from "../components/shared/OpticalSceneChrome";
 import { HomeChapterIndex, type HomeChapter } from "../components/shared/HomeChapterIndex";
@@ -42,7 +44,19 @@ export function HomePage() {
     () => photos.filter((photo) => photo.visibility === "public").slice(0, 3),
     [photos],
   );
-  const immersiveImages = useMemo(() => coverPhotos.map((photo) => photo.imageUrl), [coverPhotos]);
+  const immersiveImages = useMemo(() => {
+    const conceptImages = conceptPremiereFrames.map((frame) => frame.imageUrl);
+    const photoImages = coverPhotos.map((photo) => photo.imageUrl);
+    return [
+      conceptImages[0],
+      photoImages[0],
+      conceptImages[1],
+      photoImages[1],
+      conceptImages[2],
+      photoImages[2],
+      ...conceptImages.slice(3),
+    ].filter((imageUrl): imageUrl is string => Boolean(imageUrl));
+  }, [coverPhotos]);
   const immersiveHeroRef = useImmersiveAnchor({
     id: "home-hero",
     preset: "home",
@@ -51,6 +65,7 @@ export function HomePage() {
   const finalCtaPhoto = coverPhotos[2] ?? coverPhotos[0];
   const homeChapters = useMemo<HomeChapter[]>(
     () => [
+      { id: "premiere", index: "00", label: t("premiere.chapter") },
       { id: "field-notes", index: "01", label: t("filmstrip.title" as never) },
       { id: "featured", index: "02", label: t("gallery.title") },
       { id: "services-preview", index: "03", label: t("home.servicesTitle") },
@@ -68,9 +83,10 @@ export function HomePage() {
       <section
         ref={immersiveHeroRef}
         className="hero hero-home"
-        id="top"
+        id="premiere"
         data-immersive-anchor="home"
       >
+        <CinematicPremiere />
         <div className="hero-contact-sheet">
           {coverPhotos.map((photo, index) => (
             <div
@@ -92,6 +108,10 @@ export function HomePage() {
         <OpticalSceneChrome preset="home" chapter="01" />
 
         <div className="hero-editorial-copy">
+          <p className="hero-concept-label">
+            <span>{t("premiere.label")}</span>
+            <span>{t("premiere.disclosure")}</span>
+          </p>
           <p className="hero-issue-line">
             <span>{t("hero.volBadge")}</span>
             <span>{siteConfig.city}</span>

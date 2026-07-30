@@ -453,7 +453,7 @@ test.describe("desktop chapter console contract", () => {
     await settleRoute(page);
 
     const chapterConsole = page.locator(".home-index-strip");
-    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "field-notes");
+    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "premiere");
     await page.locator("#services-preview").scrollIntoViewIfNeeded();
     await expect(chapterConsole).toHaveAttribute("data-active-chapter", "services-preview");
     await expect(chapterConsole.locator('a[href="#services-preview"]')).toHaveAttribute("aria-current", "location");

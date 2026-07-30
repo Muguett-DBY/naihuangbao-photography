@@ -24,6 +24,7 @@ export function HomeChapterIndex({ ariaLabel, chapters }: HomeChapterIndexProps)
   const activeIndex = Math.max(0, chapters.findIndex((chapter) => chapter.id === activeId));
   const style = {
     "--home-index-progress": `${((activeIndex + 1) / Math.max(chapters.length, 1)) * 100}%`,
+    "--home-index-chapter-count": chapters.length,
   } as CSSProperties;
 
   useEffect(() => {

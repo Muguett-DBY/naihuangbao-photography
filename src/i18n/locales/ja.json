@@ -41,6 +41,20 @@
     "ctaBooking": "予約",
     "scroll": "SCROLL"
   },
+  "premiere": {
+    "chapter": "プレミア",
+    "label": "NHB CONCEPT FILM / 2026",
+    "disclosure": "ブランドコンセプト映像であり、実際の顧客作品ではありません",
+    "assetTitle": "ナイホアンバオ写真のブランドコンセプト映像",
+    "frames": {
+      "openingAlt": "朝の光とカーテンによる写真ブランドのコンセプト映像",
+      "silkAlt": "シルクと花影のコンセプトフィルム静止画",
+      "glassAlt": "曇りガラスと植物光のコンセプトフィルム静止画",
+      "stillLifeAlt": "カメラ、木製椅子、シルクのコンセプト静物",
+      "mirrorAlt": "鏡と暖かな灯りの柔らかなコンセプト映像",
+      "lensAlt": "レンズ、花びら、シルクのコンセプトマクロ映像"
+    }
+  },
   "gallery": {
     "eyebrow": "ポートフォリオ",
     "title": "ギャラリー",

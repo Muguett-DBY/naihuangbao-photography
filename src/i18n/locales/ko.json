@@ -41,6 +41,20 @@
     "ctaBooking": "예약",
     "scroll": "SCROLL"
   },
+  "premiere": {
+    "chapter": "프리미어",
+    "label": "NHB CONCEPT FILM / 2026",
+    "disclosure": "브랜드 콘셉트 영상이며 실제 고객 포트폴리오가 아닙니다",
+    "assetTitle": "나이황바오 사진 브랜드 콘셉트 영상",
+    "frames": {
+      "openingAlt": "아침 빛과 커튼으로 구성된 사진 브랜드 콘셉트 이미지",
+      "silkAlt": "실크와 꽃 그림자가 있는 콘셉트 필름 스틸",
+      "glassAlt": "반투명 유리와 식물 빛이 있는 콘셉트 필름 스틸",
+      "stillLifeAlt": "카메라, 나무 의자, 실크로 구성된 콘셉트 정물",
+      "mirrorAlt": "거울과 따뜻한 램프가 있는 부드러운 콘셉트 이미지",
+      "lensAlt": "렌즈, 꽃잎, 실크가 있는 콘셉트 매크로 이미지"
+    }
+  },
   "gallery": {
     "eyebrow": "포트폴리오",
     "title": "갤러리",
