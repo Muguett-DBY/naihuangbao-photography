@@ -4,11 +4,15 @@ import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
+const projectRoot = dirname(fileURLToPath(import.meta.url));
+const animalIslandRuntime = resolve(projectRoot, "src/vendor/animal-island-ui-runtime.mjs");
+
 export default defineConfig({
   resolve: {
-    alias: {
-      fs: resolve(dirname(fileURLToPath(import.meta.url)), "src/lib/empty-node-module.ts"),
-    },
+    alias: [
+      { find: /^animal-island-ui$/, replacement: animalIslandRuntime },
+      { find: /^fs$/, replacement: resolve(projectRoot, "src/lib/empty-node-module.ts") },
+    ],
   },
   build: {
     assetsInlineLimit: 0,

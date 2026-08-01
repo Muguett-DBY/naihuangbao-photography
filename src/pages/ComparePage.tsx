@@ -245,7 +245,7 @@ export function ComparePage() {
               <div className="compare-page-image-wrap">
                 {entry.imageUrl ? (
                   <ImageWithFallback
-                    src={fullSrc(entry.imageUrl)}
+                    src={entry.imageUrl}
                     alt={entry.title ?? entry.id}
                     title={entry.title ?? entry.id}
                     tone="cream"

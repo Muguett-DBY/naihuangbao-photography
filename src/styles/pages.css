@@ -1681,37 +1681,6 @@
   margin: 0 0 16px;
 }
 
-.photo-detail-comparison-toggle {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.photo-detail-comparison-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--caramel-muted);
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.photo-detail-comparison-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-.photo-detail-comparison-btn.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
 .photo-detail-comparison-container {
   border-radius: 12px;
   overflow: hidden;
@@ -8341,16 +8310,6 @@
     padding: 16px;
   }
 
-  .photo-detail-comparison-toggle {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .photo-detail-comparison-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
   /* Booking calendar touch targets — fit within 300px container */
   .calendar-day {
     min-width: 0;
@@ -10362,7 +10321,6 @@ html[data-immersive-ready="true"] .photo-detail-stage[data-immersive-anchor="pho
   background: var(--paper);
 }
 
-.photo-detail-comparison-btn,
 .photo-detail-cta-link,
 .photo-detail-style-badge {
   min-height: 44px;

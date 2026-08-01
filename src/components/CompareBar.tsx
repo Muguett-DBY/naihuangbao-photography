@@ -4,12 +4,6 @@ import { ArrowRight, GitCompare, X } from "lucide-react";
 import { useCompare } from "../hooks/useCompare";
 import { ImageWithFallback } from "./ImageWithFallback";
 
-const relatedThumb = (src: string) => {
-  const base = src.replace(/\?.*$/, "");
-  const fileName = base.split("/").pop();
-  return fileName ? `/images/gallery/640/${fileName}` : src;
-};
-
 export function CompareBar() {
   const { t } = useTranslation();
   const { entries, clear } = useCompare();
@@ -50,7 +44,7 @@ export function CompareBar() {
           <li key={entry.id} className="compare-bar-item">
             {entry.imageUrl ? (
               <ImageWithFallback
-                src={relatedThumb(entry.imageUrl)}
+                src={entry.imageUrl}
                 alt={entry.title ?? entry.id}
                 title={entry.title ?? entry.id}
                 tone="cream"

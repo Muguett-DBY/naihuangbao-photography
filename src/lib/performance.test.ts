@@ -25,6 +25,8 @@ const scrollProgressSource = readFileSync(resolve(root, "src/components/ScrollPr
 const html = readFileSync(resolve(root, "index.html"), "utf8");
 const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
+const quickViewSource = readFileSync(resolve(root, "src/components/QuickView.tsx"), "utf8");
+const photoDetailSource = readFileSync(resolve(root, "src/pages/PhotoDetailPage.tsx"), "utf8");
 const headerSource = readFileSync(resolve(root, "src/components/shared/Header.tsx"), "utf8");
 const mobileNavSource = readFileSync(resolve(root, "src/components/shared/MobileBottomNav.tsx"), "utf8");
 const footerSource = readFileSync(resolve(root, "src/components/shared/Footer.tsx"), "utf8");
@@ -95,6 +97,11 @@ describe("performance budgets", () => {
   it("ships generated 640w and 960w gallery image variants", () => {
     expect(existsSync(resolve(root, "public/images/gallery/640"))).toBe(true);
     expect(existsSync(resolve(root, "public/images/gallery/960"))).toBe(true);
+  });
+
+  it("does not reference an ungenerated 1200px gallery directory", () => {
+    expect(quickViewSource).not.toContain("/images/gallery/1200/");
+    expect(photoDetailSource).not.toContain("/images/gallery/1200/");
   });
 
   it("serves body fonts via fontsource and keeps display fonts self-hosted", () => {
