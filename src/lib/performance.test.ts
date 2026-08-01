@@ -73,6 +73,18 @@ describe("performance budgets", () => {
     expect(html).not.toContain('rel="preload" as="image" href="/images/gallery/');
   });
 
+  it("shows the premiere cover while the lazy homepage chunk loads", () => {
+    expect(routerSource).toContain("function HomePremiereFallback()");
+    expect(routerSource).toContain('className="hero hero-home home-premiere-fallback"');
+    expect(routerSource).toContain("premiere-luminance-v4.avif");
+    expect(routerSource).toContain('fetchPriority="high"');
+    expect(routerSource).toContain("const { openBookingModal } = useBookingModal()");
+    expect(routerSource).toContain('type="button" onClick={() => openBookingModal()}');
+    expect(routerSource).not.toContain('<a className="hero-cover-primary-btn" href="/booking"');
+    expect(routerSource).toContain('fallback={<HomePremiereFallback />}');
+    expect(routerSource).toContain('const HomePage = lazy(routeLoaders["/"])');
+  });
+
   it("builds responsive variants for static gallery images but not remote R2 images", () => {
     expect(viteConfig).toContain("gallery");
     expect(viteConfig).not.toContain("r2");

@@ -133,11 +133,38 @@ export function applyPresetGeometry(group: THREE.Group, preset: ScenePreset, pro
     const centered = index - (planes.length - 1) / 2;
     const column = index % 3;
     const row = Math.floor(index / 3);
+    let baseScaleX = 1;
+    let baseScaleY = 1;
 
     switch (preset.composition) {
       case "tunnel":
-        plane.position.set(centered * 0.56, Math.sin(index * 1.4) * 0.52, -index * preset.depth * 0.08);
-        plane.rotation.set(0, centered * -0.07, centered * 0.015);
+        if (preset.id === "home") {
+          if (index === 0) {
+            plane.position.set(0.35 - amount * 0.45, (amount - 0.5) * 0.04, -1.35 + amount * 0.4);
+            plane.rotation.set(0, (amount - 0.5) * -0.035, (amount - 0.5) * 0.008);
+            baseScaleX = 4.28 + amount * 0.35;
+            baseScaleY = 3.82 + amount * 0.25;
+          } else {
+            const lane = index - 1;
+            const direction = lane % 2 === 0 ? 1 : -1;
+            plane.position.set(
+              2.65 - lane * 0.43 + amount * (0.45 + lane * 0.24),
+              1.35 - lane * 0.48 + direction * amount * 0.42,
+              0.85 - lane * 0.28 + amount * (0.35 + lane * 0.16),
+            );
+            plane.rotation.set(
+              direction * amount * 0.025,
+              -0.08 - lane * 0.035 + amount * 0.13,
+              direction * (0.035 + amount * 0.07),
+            );
+            const landscape = index === 3;
+            baseScaleX = landscape ? 1.12 : index === 5 ? 0.72 : 0.62;
+            baseScaleY = landscape ? 0.86 : index === 5 ? 1.08 : 1.16;
+          }
+        } else {
+          plane.position.set(centered * 0.56, Math.sin(index * 1.4) * 0.52, -index * preset.depth * 0.08);
+          plane.rotation.set(0, centered * -0.07, centered * 0.015);
+        }
         break;
       case "archive":
         plane.position.set((column - 1) * 2.55, (1 - row) * 1.78, -row * 0.42);
@@ -179,7 +206,10 @@ export function applyPresetGeometry(group: THREE.Group, preset: ScenePreset, pro
     }
 
     plane.position.y += (amount - 0.5) * centered * 0.08;
+    plane.userData.opticalBaseScaleX = baseScaleX;
+    plane.userData.opticalBaseScaleY = baseScaleY;
+    plane.scale.set(baseScaleX, baseScaleY, 1);
   });
 
-  group.rotation.y = (amount - 0.5) * 0.06;
+  group.rotation.y = (amount - 0.5) * (preset.id === "home" ? 0.1 : 0.06);
 }

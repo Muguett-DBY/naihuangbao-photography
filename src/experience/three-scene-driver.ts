@@ -101,6 +101,17 @@ function isBudgetAdmissionFailure(error: unknown): boolean {
   return error instanceof AggregateError && error.errors.some((entry) => entry instanceof RangeError);
 }
 
+function isRecoverablePinnedBudgetError(error: unknown): boolean {
+  const isPinnedError = (entry: unknown) => (
+    entry instanceof RangeError
+    && entry.message === "Pinned textures exceed the new pool byte budget."
+  );
+  if (isPinnedError(error)) return true;
+  return error instanceof AggregateError
+    && error.errors.length > 0
+    && error.errors.every(isPinnedError);
+}
+
 function createDefaultIdleScheduler(): IdleScheduler {
   const host = globalThis as typeof globalThis & {
     requestIdleCallback?: (callback: () => void) => number;
@@ -295,7 +306,7 @@ export class TextureMorphCoordinator<T> {
     this.backgroundLease = null;
     this.retain(this.visibleResources.map((resource) => resource.url));
     this.clearConservativeBudgetOwnership();
-    this.setBudget(maxBytes);
+    this.setBudget(maxBytes, true);
 
     while (this.pool.totalBytes > maxBytes && this.visibleResources.length > 0) {
       const resource = this.visibleResources.at(-1);
@@ -308,7 +319,7 @@ export class TextureMorphCoordinator<T> {
       }
       this.visibleResources.pop();
       this.release(resource.lease);
-      this.setBudget(maxBytes);
+      this.setBudget(maxBytes, true);
     }
 
     if (this.pool.totalBytes > maxBytes) {
@@ -555,10 +566,11 @@ export class TextureMorphCoordinator<T> {
     }
   }
 
-  private setBudget(maxBytes: number): void {
+  private setBudget(maxBytes: number, suppressPinnedTransition = false): void {
     try {
       this.pool.setMaxBytes(maxBytes);
     } catch (error) {
+      if (suppressPinnedTransition && isRecoverablePinnedBudgetError(error)) return;
       this.report(error);
     }
   }
@@ -578,6 +590,114 @@ const TIER_LIMITS: Record<RenderedTier, { dpr: number; planes: number; textureBy
 };
 
 type CloseableImage = { width: number; height: number; close?: () => void };
+
+type FlowUniforms = {
+  time: { value: number };
+  pointer: { value: THREE.Vector2 };
+  velocity: { value: THREE.Vector2 };
+  strength: { value: number };
+  scroll: { value: number };
+  imageAspect: { value: number };
+  planeAspect: { value: number };
+};
+
+const FLOW_UNIFORM_KEY = "nhbFlowUniforms";
+const FLOW_PROGRAM_KEY = "nhb-flow-v2";
+
+const FLOW_MAP_FRAGMENT = /* glsl */`
+#ifdef USE_MAP
+  float nhbPlaneAspect = max(uNHBPlaneAspect, 0.001);
+  float nhbImageAspect = max(uNHBImageAspect, 0.001);
+  vec2 nhbCoverScale = vec2(
+    min(nhbPlaneAspect / nhbImageAspect, 1.0),
+    min(nhbImageAspect / nhbPlaneAspect, 1.0)
+  );
+  vec2 nhbUv = vMapUv * nhbCoverScale + (1.0 - nhbCoverScale) * 0.5;
+  vec2 nhbDelta = nhbUv - uNHBPointer;
+  float nhbDistance = max(length(nhbDelta), 0.0001);
+  vec2 nhbDirection = nhbDelta / nhbDistance;
+  vec2 nhbTangent = vec2(-nhbDirection.y, nhbDirection.x);
+  vec2 nhbVelocity = clamp(uNHBVelocity, vec2(-0.28), vec2(0.28));
+  float nhbActivity = min(1.6, max(0.0, uNHBStrength - 0.22));
+  float nhbInfluence = smoothstep(0.66, 0.0, nhbDistance) * min(uNHBStrength, 1.8);
+  float nhbWave = sin(nhbDistance * 38.0 - uNHBTime * 5.2 + uNHBScroll * 8.0);
+  float nhbVortex = cos(nhbDistance * 26.0 + uNHBTime * 3.4) * 0.009 * nhbInfluence;
+  vec2 nhbFlow = nhbDirection * nhbWave * 0.019 * nhbInfluence
+    + nhbTangent * nhbVortex
+    + nhbVelocity * (0.08 + nhbInfluence * 0.14);
+  float nhbSlice = sin(floor(nhbUv.y * 18.0) * 1.47 + uNHBTime * 0.72)
+    * (uNHBScroll * 0.008 + nhbActivity * length(nhbVelocity) * 0.018);
+  nhbUv = clamp(nhbUv + nhbFlow + vec2(nhbSlice, 0.0), 0.001, 0.999);
+
+  float nhbChromatic = min(
+    0.034,
+    (length(nhbVelocity) * 0.38 + 0.0028) * nhbInfluence
+  );
+  vec2 nhbChromaticVector = nhbDirection * nhbChromatic
+    + nhbVelocity * nhbChromatic * 1.2;
+  vec4 nhbCenter = texture2D(map, nhbUv);
+  vec4 sampledDiffuseColor = vec4(
+    texture2D(map, clamp(nhbUv + nhbChromaticVector * 1.65, 0.001, 0.999)).r,
+    nhbCenter.g,
+    texture2D(map, clamp(nhbUv - nhbChromaticVector * 2.05, 0.001, 0.999)).b,
+    nhbCenter.a
+  );
+  float nhbGrain = fract(sin(dot(gl_FragCoord.xy + uNHBTime, vec2(12.9898, 78.233))) * 43758.5453) - 0.5;
+  sampledDiffuseColor.rgb += nhbGrain * 0.012 * min(uNHBStrength, 1.0);
+
+  #ifdef DECODE_VIDEO_TEXTURE
+    sampledDiffuseColor = sRGBTransferEOTF(sampledDiffuseColor);
+  #endif
+
+  diffuseColor *= sampledDiffuseColor;
+#endif
+`;
+
+export function resolveFlowEnergy(pointerDeltaX: number, pointerDeltaY: number, scrollDelta: number): number {
+  const pointerSpeed = Math.hypot(pointerDeltaX, pointerDeltaY);
+  return Math.min(1.35, pointerSpeed * 5.5 + Math.abs(scrollDelta) * 8);
+}
+
+function createFlowUniforms(): FlowUniforms {
+  return {
+    time: { value: 0 },
+    pointer: { value: new THREE.Vector2(0.5, 0.5) },
+    velocity: { value: new THREE.Vector2() },
+    strength: { value: 0 },
+    scroll: { value: 0 },
+    imageAspect: { value: 1 },
+    planeAspect: { value: 1.5 },
+  };
+}
+
+function configureFlowMaterial(material: THREE.MeshBasicMaterial): void {
+  const uniforms = createFlowUniforms();
+  material.userData[FLOW_UNIFORM_KEY] = uniforms;
+  material.onBeforeCompile = (shader) => {
+    shader.uniforms.uNHBTime = uniforms.time;
+    shader.uniforms.uNHBPointer = uniforms.pointer;
+    shader.uniforms.uNHBVelocity = uniforms.velocity;
+    shader.uniforms.uNHBStrength = uniforms.strength;
+    shader.uniforms.uNHBScroll = uniforms.scroll;
+    shader.uniforms.uNHBImageAspect = uniforms.imageAspect;
+    shader.uniforms.uNHBPlaneAspect = uniforms.planeAspect;
+    shader.fragmentShader = shader.fragmentShader
+      .replace("#include <common>", `#include <common>
+uniform float uNHBTime;
+uniform vec2 uNHBPointer;
+uniform vec2 uNHBVelocity;
+uniform float uNHBStrength;
+uniform float uNHBScroll;
+uniform float uNHBImageAspect;
+uniform float uNHBPlaneAspect;`)
+      .replace("#include <map_fragment>", FLOW_MAP_FRAGMENT);
+  };
+  material.customProgramCacheKey = () => FLOW_PROGRAM_KEY;
+}
+
+function getFlowUniforms(material: THREE.MeshBasicMaterial): FlowUniforms | null {
+  return (material.userData[FLOW_UNIFORM_KEY] as FlowUniforms | undefined) ?? null;
+}
 
 export function validateTextureResponse(
   requestedUrl: string,
@@ -850,10 +970,16 @@ export class ThreeSceneDriver implements SceneDriver {
   private readonly texturePool: TexturePool<THREE.Texture>;
   private readonly morphCoordinator: TextureMorphCoordinator<THREE.Texture>;
   private readonly onError: (error: unknown) => void;
+  private readonly flowVelocity = new THREE.Vector2();
+  private readonly flowTargetVelocity = new THREE.Vector2();
+  private readonly previousPointer = new THREE.Vector2();
   private tierValue: RenderedTier;
   private currentPreset: ScenePreset | null = null;
   private currentUrls: string[] = [];
   private highlightedId: string | null = null;
+  private previousScrollProgress = 0;
+  private flowEnergy = 0;
+  private hasFlowFrame = false;
   private suspended = false;
   private disposed = false;
 
@@ -869,6 +995,7 @@ export class ThreeSceneDriver implements SceneDriver {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.shadowMap.enabled = false;
     this.renderer.setClearColor(0x111412, 0);
+    this.contactPlanes().forEach((plane) => configureFlowMaterial(plane.material));
     this.texturePool = options.texturePool ?? createTexturePool(options.tier);
     this.morphCoordinator = new TextureMorphCoordinator({
       pool: this.texturePool,
@@ -931,6 +1058,11 @@ export class ThreeSceneDriver implements SceneDriver {
   morphTo(preset: ScenePreset, imageUrls: string[]): Promise<void> {
     if (this.disposed) return Promise.resolve();
     const planeLimit = Math.min(TIER_LIMITS[this.tierValue].planes, preset.maxPlanes[this.tierValue]);
+    if (this.currentPreset?.id !== preset.id) {
+      this.flowEnergy = 0;
+      this.flowVelocity.set(0, 0);
+      this.hasFlowFrame = false;
+    }
     this.currentPreset = preset;
     this.currentUrls = [...imageUrls];
     this.focusRails.visible = presetUsesFocusRails(preset);
@@ -955,6 +1087,7 @@ export class ThreeSceneDriver implements SceneDriver {
       applyPresetGeometry(this.contactSheet, this.currentPreset, frame.scrollProgress);
       this.applyHighlightState();
     }
+    this.updateFlow(frame, seconds);
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -1006,7 +1139,10 @@ export class ThreeSceneDriver implements SceneDriver {
       : null;
     planes.forEach((plane, index) => {
       const selected = highlightedIndex === index;
-      plane.scale.setScalar(highlightedIndex === null ? 1 : selected ? 1.055 : 0.97);
+      const emphasis = highlightedIndex === null ? 1 : selected ? 1.055 : 0.97;
+      const baseScaleX = Number(plane.userData.opticalBaseScaleX) || 1;
+      const baseScaleY = Number(plane.userData.opticalBaseScaleY) || 1;
+      plane.scale.set(baseScaleX * emphasis, baseScaleY * emphasis, emphasis);
     });
   }
 
@@ -1022,6 +1158,7 @@ export class ThreeSceneDriver implements SceneDriver {
       plane.material.map = textures[index] ?? null;
       plane.material.color.setHex(textures[index] ? 0xffffff : 0x171a18);
       plane.material.needsUpdate = true;
+      this.updateTextureAspect(plane.material, textures[index] ?? null);
     });
   }
 
@@ -1036,6 +1173,46 @@ export class ThreeSceneDriver implements SceneDriver {
     plane.material.map = texture;
     plane.material.color.setHex(texture ? 0xffffff : 0x171a18);
     plane.material.needsUpdate = true;
+    this.updateTextureAspect(plane.material, texture);
+  }
+
+  private updateFlow(frame: SceneFrame, seconds: number): void {
+    const pointerDeltaX = this.hasFlowFrame ? frame.pointerX - this.previousPointer.x : 0;
+    const pointerDeltaY = this.hasFlowFrame ? frame.pointerY - this.previousPointer.y : 0;
+    const scrollDelta = this.hasFlowFrame ? frame.scrollProgress - this.previousScrollProgress : 0;
+    const frameRatio = Math.min(3, Math.max(0.25, frame.delta / (1000 / 60)));
+    this.flowTargetVelocity.set(pointerDeltaX, -pointerDeltaY).multiplyScalar(6.4);
+    const velocityIsRising = this.flowTargetVelocity.lengthSq() > this.flowVelocity.lengthSq();
+    const velocityBlend = 1 - Math.pow(velocityIsRising ? 0.62 : 0.92, frameRatio);
+    this.flowVelocity.lerp(this.flowTargetVelocity, velocityBlend);
+
+    const targetEnergy = resolveFlowEnergy(pointerDeltaX, pointerDeltaY, scrollDelta);
+    const energyBlend = 1 - Math.pow(targetEnergy > this.flowEnergy ? 0.62 : 0.975, frameRatio);
+    this.flowEnergy += (targetEnergy - this.flowEnergy) * energyBlend;
+    this.previousPointer.set(frame.pointerX, frame.pointerY);
+    this.previousScrollProgress = frame.scrollProgress;
+    this.hasFlowFrame = true;
+
+    const isHome = this.currentPreset?.id === "home";
+    const pointerX = Math.min(1, Math.max(0, (frame.pointerX + 1) * 0.5));
+    const pointerY = Math.min(1, Math.max(0, (1 - frame.pointerY) * 0.5));
+    this.contactPlanes().forEach((plane, index) => {
+      const uniforms = getFlowUniforms(plane.material);
+      if (!uniforms) return;
+      uniforms.time.value = seconds;
+      uniforms.pointer.value.set(pointerX, pointerY);
+      uniforms.velocity.value.copy(this.flowVelocity);
+      uniforms.strength.value = isHome ? (0.38 + this.flowEnergy * 1.45) * (index === 0 ? 0.88 : 1) : 0;
+      uniforms.scroll.value = isHome ? frame.scrollProgress : 0;
+      uniforms.planeAspect.value = 1.5 * Math.abs(plane.scale.x / Math.max(0.001, plane.scale.y));
+    });
+  }
+
+  private updateTextureAspect(material: THREE.MeshBasicMaterial, texture: THREE.Texture | null): void {
+    const uniforms = getFlowUniforms(material);
+    const image = texture?.image as Partial<CloseableImage> | undefined;
+    if (!uniforms || !image?.width || !image.height) return;
+    uniforms.imageAspect.value = image.width / image.height;
   }
 
   private report(error: unknown): void {

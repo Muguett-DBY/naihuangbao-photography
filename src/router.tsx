@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { RootLayout } from "./layouts/RootLayout";
 import { NotFound } from "./components/NotFound";
+import { useBookingModal } from "./hooks/useBookingModal";
 import { routeLoaders } from "./lib/route-preload";
 
 const HomePage = lazy(routeLoaders["/"]);
@@ -33,9 +34,68 @@ function AdminRoute() {
   );
 }
 
-function PageSuspense({ children }: { children: React.ReactNode }) {
+function HomePremiereFallback() {
+  const { t } = useTranslation();
+  const { openBookingModal } = useBookingModal();
+
   return (
-    <Suspense fallback={
+    <section className="hero hero-home home-premiere-fallback" aria-label={t("nav.home")}>
+      <div className="cinematic-premiere" aria-hidden="true">
+        <div className="cinematic-premiere__opening">
+          <picture>
+            <source
+              type="image/avif"
+              srcSet="/images/concept-premiere/640/premiere-luminance-v4.avif?v=20260801-4 640w, /images/concept-premiere/960/premiere-luminance-v4.avif?v=20260801-4 960w, /images/concept-premiere/premiere-luminance-v4.avif?v=20260801-4 1600w"
+              sizes="100vw"
+            />
+            <source
+              type="image/webp"
+              srcSet="/images/concept-premiere/640/premiere-luminance-v4.webp?v=20260801-4 640w, /images/concept-premiere/960/premiere-luminance-v4.webp?v=20260801-4 960w, /images/concept-premiere/premiere-luminance-v4.webp?v=20260801-4 1600w"
+              sizes="100vw"
+            />
+            <img
+              src="/images/concept-premiere/premiere-luminance-v4.webp?v=20260801-4"
+              alt=""
+              width="1600"
+              height="900"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </picture>
+        </div>
+        <div className="cinematic-premiere__kinetic-type">
+          <span>NHB / PORTRAIT / 2026</span>
+          <span>FIELD NOTES / NANJING</span>
+        </div>
+      </div>
+      <div className="hero-solid-scrim" aria-hidden="true" />
+      <div className="hero-editorial-copy">
+        <p className="hero-concept-label">
+          <span>{t("premiere.label")}</span>
+          <span>{t("premiere.disclosure")}</span>
+        </p>
+        <p className="hero-issue-line">
+          <span>{t("hero.volBadge")}</span>
+          <span>2026</span>
+        </p>
+        <h1 className="hero-title">{t("seo.siteName")}</h1>
+        <p className="hero-field-note">{t("hero.brandPrefix")}</p>
+        <p className="hero-intro">{t("hero.intro")}</p>
+        <div className="hero-actions">
+          <button className="hero-cover-primary-btn" type="button" onClick={() => openBookingModal()}>
+            {t("hero.ctaBooking")}
+          </button>
+          <a className="hero-gallery-link" href="/gallery">{t("hero.ctaView")}</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PageSuspense({ children, fallback }: { children: React.ReactNode; fallback?: React.ReactNode }) {
+  return (
+    <Suspense fallback={fallback ?? (
       <div style={{
         minHeight: "60vh",
         display: "flex",
@@ -49,7 +109,7 @@ function PageSuspense({ children }: { children: React.ReactNode }) {
           <span /><span /><span />
         </div>
       </div>
-    }>
+    )}>
       {children}
     </Suspense>
   );
@@ -68,7 +128,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: <RootLayout />,
     children: [
-      { index: true, element: <PageSuspense><HomePage /></PageSuspense> },
+      { index: true, element: <PageSuspense fallback={<HomePremiereFallback />}><HomePage /></PageSuspense> },
       { path: "gallery", element: <PageSuspense><GalleryPage /></PageSuspense> },
       { path: "gallery/:id", element: <PageSuspense><PhotoDetailPage /></PageSuspense> },
       { path: "courses", element: <PageSuspense><CoursesPage /></PageSuspense> },

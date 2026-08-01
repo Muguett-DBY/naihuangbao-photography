@@ -1,4 +1,4 @@
-import { getResponsiveImageDirectory } from "./responsive-image";
+import { getResponsiveImageDirectory, getResponsiveImageSourceWidth } from "./responsive-image";
 
 /**
  * Generates responsive `<picture>` element attributes for local editorial images.
@@ -22,17 +22,18 @@ export function getResponsivePictureAttrs(src: string, sizes?: string): {
   const version = src.includes("?") ? src.slice(src.indexOf("?")) : "";
   const fileName = base.split("/").pop() || "";
   const avifName = fileName.replace(/\.webp$/, ".avif");
+  const sourceWidth = getResponsiveImageSourceWidth(src);
 
   const avifSrcSet = [
     `${directory}640/${avifName}${version} 640w`,
     `${directory}960/${avifName}${version} 960w`,
-    `${directory}${avifName}${version} 1200w`,
+    `${directory}${avifName}${version} ${sourceWidth}w`,
   ].join(", ");
 
   const webpSrcSet = [
     `${directory}640/${fileName}${version} 640w`,
     `${directory}960/${fileName}${version} 960w`,
-    `${base}${version} 1200w`,
+    `${base}${version} ${sourceWidth}w`,
   ].join(", ");
 
   return {

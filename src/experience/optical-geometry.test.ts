@@ -73,4 +73,23 @@ describe("catalogue optical geometry", () => {
     expect(group.children.slice(1).every((child) => child.position.x === 0)).toBe(true);
     disposeOpticalGroup(group);
   });
+
+  it("builds the home scene as a full-bleed background with portrait slices that scatter on scroll", () => {
+    const group = showAllPlanes(createContactSheetGroup(7));
+    applyPresetGeometry(group, SCENE_PRESETS.home, 0);
+
+    const background = group.children[0]!;
+    const firstPortrait = group.children[1]!;
+    const portraitStart = firstPortrait.position.clone();
+    expect(background.scale.x).toBeGreaterThan(4);
+    expect(background.scale.y).toBeGreaterThan(3.5);
+    expect(background.position.z).toBeLessThan(-1);
+    expect(firstPortrait.scale.y).toBeGreaterThan(firstPortrait.scale.x);
+    expect(firstPortrait.position.z).toBeGreaterThan(background.position.z);
+
+    applyPresetGeometry(group, SCENE_PRESETS.home, 1);
+    expect(firstPortrait.position.distanceTo(portraitStart)).toBeGreaterThan(0.5);
+    expect(background.scale.x).toBeGreaterThan(4.5);
+    disposeOpticalGroup(group);
+  });
 });

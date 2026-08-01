@@ -583,8 +583,11 @@ test.describe("keyboard, focus, and dialog contracts", () => {
   test("desktop masthead and gallery filters expose visible keyboard focus", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
-    await page.keyboard.press("Tab");
-    await expectVisibleKeyboardFocus(page.locator(".skip-link").first());
+    const skipLink = page.locator(".skip-link").first();
+    await skipLink.waitFor({ state: "attached" });
+    await page.bringToFront();
+    await tabUntilFocused(page, skipLink, 2);
+    await expectVisibleKeyboardFocus(skipLink);
     await page.keyboard.press("Enter");
     await expectVisibleKeyboardFocus(page.locator("#main-content"));
 
