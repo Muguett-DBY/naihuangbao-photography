@@ -30,15 +30,15 @@ describe("editor regression contracts", () => {
     expect(zhCN).toContain("noFaceDetected");
   });
 
-  it("keeps mobile nav utility controls compact", () => {
+  it("keeps navigation utilities scoped to their active surface", () => {
     const sectionsCss = read("src/styles/sections.css");
     const heroCss = read("src/styles/hero.css");
 
-    expect(sectionsCss).toContain(".site-nav > .mood-toggle");
-    expect(sectionsCss).toContain(".site-nav > .theme-toggle");
-    expect(sectionsCss).toContain(".site-nav .nav-login span");
-    expect(sectionsCss).toContain("max-width: 44px !important");
-    expect(heroCss).toContain(".site-nav > .theme-toggle");
+    expect(sectionsCss).toContain(".nav-drawer-utilities .nav-utility-controls");
+    expect(sectionsCss).toContain("grid-template-columns: 1fr");
+    expect(sectionsCss).toContain("minmax(min-content, 1fr)");
+    expect(heroCss).toContain(".nav-utility-controls > button");
+    expect(heroCss).not.toMatch(/\.site-nav \.lang-toggle\s*\{[^}]*grid-column/s);
   });
 
   it("keeps core mobile destinations persistent without covering overlays", () => {

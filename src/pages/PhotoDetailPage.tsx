@@ -1,8 +1,8 @@
 import "../styles/pages.css";
-import { lazy, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, useEffect, useMemo, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { MapPin, Camera, ArrowRight, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { MapPin, Camera, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
@@ -29,25 +29,11 @@ const CompareSlider = lazy(() =>
   import("../components/CompareSlider").then((m) => ({ default: m.CompareSlider }))
 );
 
-const galleryThumb = (src: string) => {
-  const base = src.replace(/\?.*$/, "");
-  const fileName = base.split("/").pop();
-  return fileName ? `/images/gallery/1200/${fileName}` : src;
-};
-
-const relatedThumb = (src: string) => {
-  const base = src.replace(/\?.*$/, "");
-  const fileName = base.split("/").pop();
-  return fileName ? `/images/gallery/640/${fileName}` : src;
-};
-
 export function PhotoDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
   const { photos } = usePublicPhotos();
-  const [showComparison, setShowComparison] = useState(false);
-
   const photo = useMemo(() => photos.find((p) => p.id === id), [photos, id]);
   const { recordVisit } = useRecentlyViewed();
   const navigate = useNavigate();
@@ -172,9 +158,11 @@ export function PhotoDetailPage() {
     return <DetailNotFound message={t("photoDetail.notFound")} backTo="/gallery" backLabel={t("photoDetail.backToGallery")} />;
   }
 
-  const beforeSrc = photo.imageUrl;
-  const afterSrc = galleryThumb(photo.imageUrl);
-  const hasComparison = beforeSrc !== afterSrc;
+  const comparison = photo.beforeImageUrl
+    && photo.afterImageUrl
+    && photo.beforeImageUrl !== photo.afterImageUrl
+    ? { beforeSrc: photo.beforeImageUrl, afterSrc: photo.afterImageUrl }
+    : null;
 
   return (
     <PageTransition ref={rootRef}>
@@ -201,7 +189,7 @@ export function PhotoDetailPage() {
             )}
             <PinchZoom className="photo-detail-cover-frame">
               <ImageWithFallback
-                src={galleryThumb(photo.imageUrl)}
+                src={photo.imageUrl}
                 alt={photo.alt}
                 title={photo.title}
                 tone="cream"
@@ -307,32 +295,14 @@ export function PhotoDetailPage() {
           </div>
 
           {/* Before/After comparison */}
-          {hasComparison && (
+          {comparison && (
             <div className="photo-detail-comparison">
               <h3>{t("photoDetail.beforeAfter")}</h3>
               <p className="photo-detail-comparison-desc">{t("photoDetail.comparisonDesc")}</p>
-              <div className="photo-detail-comparison-toggle">
-                <button
-                  type="button"
-                  className={`photo-detail-comparison-btn ${!showComparison ? "active" : ""}`}
-                  onClick={() => setShowComparison(false)}
-                >
-                  <Eye size={14} />
-                  {t("photoDetail.original")}
-                </button>
-                <button
-                  type="button"
-                  className={`photo-detail-comparison-btn ${showComparison ? "active" : ""}`}
-                  onClick={() => setShowComparison(true)}
-                >
-                  <Eye size={14} />
-                  {t("photoDetail.edited")}
-                </button>
-              </div>
               <div className="photo-detail-comparison-container">
                 <CompareSlider
-                  beforeSrc={beforeSrc}
-                  afterSrc={afterSrc}
+                  beforeSrc={comparison.beforeSrc}
+                  afterSrc={comparison.afterSrc}
                   beforeAlt={`${photo.title} — ${t("compare.before")}`}
                   afterAlt={`${photo.title} — ${t("compare.after")}`}
                 />
@@ -366,7 +336,7 @@ export function PhotoDetailPage() {
                 >
                   <div className="photo-detail-related-thumb">
                     <ImageWithFallback
-                      src={relatedThumb(rp.imageUrl)}
+                      src={rp.imageUrl}
                       alt={rp.alt}
                       title={rp.title}
                       tone="cream"

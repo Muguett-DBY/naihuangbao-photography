@@ -170,6 +170,17 @@ describe("architecture optimization contracts", () => {
     expect(existsSync(resolve(root, "knip.json"))).toBe(true);
   });
 
+  it("isolates Animal Island component imports from its legacy bundled GSAP runtime", () => {
+    const viteConfig = read("vite.config.ts");
+    const runtimePath = "src/vendor/animal-island-ui-runtime.mjs";
+
+    expect(viteConfig).toContain("animalIslandRuntime");
+    expect(viteConfig).toContain("/^animal-island-ui$/");
+    expect(existsSync(resolve(root, runtimePath))).toBe(true);
+    expect(read(runtimePath)).not.toContain("Loading");
+    expect(read(runtimePath)).toContain("components/Button/Button.js");
+  });
+
   it("isolates the immersive Three.js runtime behind one lazy boundary", () => {
     const packageJson = read("package.json");
     const viteConfig = read("vite.config.ts");

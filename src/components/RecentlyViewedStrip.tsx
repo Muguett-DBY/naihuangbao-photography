@@ -4,12 +4,6 @@ import { X } from "lucide-react";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import { ImageWithFallback } from "./ImageWithFallback";
 
-const relatedThumb = (src: string) => {
-  const base = src.replace(/\?.*$/, "");
-  const fileName = base.split("/").pop();
-  return fileName ? `/images/gallery/640/${fileName}` : src;
-};
-
 export function RecentlyViewedStrip({ currentId }: { currentId?: string }) {
   const { t } = useTranslation();
   const { entries, clear } = useRecentlyViewed();
@@ -36,7 +30,7 @@ export function RecentlyViewedStrip({ currentId }: { currentId?: string }) {
             <Link to={entry.href} className="recently-viewed-card">
               {entry.imageUrl ? (
                 <ImageWithFallback
-                  src={relatedThumb(entry.imageUrl)}
+                  src={entry.imageUrl}
                   alt={entry.title ?? entry.id}
                   title={entry.title ?? entry.id}
                   tone="cream"

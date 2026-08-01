@@ -364,7 +364,10 @@ describe("audit regression coverage", () => {
     expect(editorCssSource).toContain(".dashboard-status-insight");
     expect(editorCssSource).toContain(".dashboard-reschedule-actions .ai-btn");
     expect(editorCssSource).toContain("padding-bottom: calc(24px + var(--mobile-bottom-nav-offset, 0px))");
-    expect(sectionsCssSource).toContain(".site-nav .nav-user-btn span");
+    expect(sectionsCssSource).toMatch(
+      /@media \(max-width: 980px\)[\s\S]*\.site-nav \.nav-user-menu,[\s\S]*display: none !important;/,
+    );
+    expect(sectionsCssSource).toContain(".nav-drawer-actions");
   });
 
   it("limits the hand-written display font to titles and compact UI accents", () => {
@@ -482,7 +485,7 @@ describe("audit regression coverage", () => {
     expect(cssSource).not.toMatch(/\.kicker,\s*\.hero h1,\s*\.hero-intro,\s*\.hero-actions > \*,\s*\.hero-scroll-cue/s);
     expect(cssSource).not.toMatch(/\.section-shell,\s*\.section-body > \*,\s*\.package-card,\s*\.why-card/s);
     expect(cssSource).not.toMatch(/\.public-chat-panel,\s*\.public-chat-message\s*\{[\s\S]*will-change:\s*transform/s);
-    expect(cssSource).toMatch(/\.site-nav::after\s*\{[\s\S]*will-change:\s*transform/s);
+    expect(cssSource).toMatch(/\.scroll-progress-bar\s*\{[^}]*will-change:\s*transform/s);
     expect(cssSource).toMatch(/\.hero-contact-sheet\s*\{[\s\S]*position:\s*absolute/s);
     expect(cssSource).toMatch(/\.nhb-scroll-top\s*\{[\s\S]*will-change:\s*transform,\s*opacity/s);
   });

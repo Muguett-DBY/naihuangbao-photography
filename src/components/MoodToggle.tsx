@@ -28,6 +28,7 @@ export function MoodToggle() {
   };
 
   const label = mood === "magazine" ? t("moodToggle.labelMagazine") : t("moodToggle.labelCute");
+  const actionLabel = mood === "magazine" ? t("moodToggle.magazine") : t("moodToggle.cute");
   const MoodIcon = mood === "magazine" ? Newspaper : NotebookPen;
 
   return (
@@ -35,10 +36,11 @@ export function MoodToggle() {
       className="mood-toggle"
       type="button"
       onClick={toggle}
-      title={mood === "magazine" ? t("moodToggle.magazine") : t("moodToggle.cute")}
+      title={actionLabel}
       aria-label={label}
     >
       <MoodIcon size={17} aria-hidden="true" />
+      <span>{actionLabel}</span>
     </button>
   );
 }

@@ -142,6 +142,7 @@ export function ThemeToggle() {
       aria-label={t("themeToggle.label", { theme: themeLabel })}
     >
       <ThemeIcon size={17} aria-hidden="true" />
+      <span>{themeLabel}</span>
     </button>
   );
 }

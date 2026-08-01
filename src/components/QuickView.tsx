@@ -8,12 +8,6 @@ import { FavoriteButton } from "./FavoriteButton";
 import { ShareMenu } from "./ShareMenu";
 import type { PhotoItem } from "../types/photo";
 
-const fullSrc = (src: string) => {
-  const base = src.replace(/\?.*$/, "");
-  const fileName = base.split("/").pop();
-  return fileName ? `/images/gallery/1200/${fileName}` : src;
-};
-
 type QuickViewProps = {
   photo: PhotoItem | null;
   onClose: () => void;
@@ -64,14 +58,14 @@ export function QuickView({ photo, onClose }: QuickViewProps) {
           {photo.videoUrl ? (
             <video
               src={photo.videoUrl}
-              poster={fullSrc(photo.imageUrl || "")}
+              poster={photo.imageUrl}
               controls
               autoPlay
               playsInline
             />
           ) : (
             <ImageWithFallback
-              src={fullSrc(photo.imageUrl || "")}
+              src={photo.imageUrl}
               alt={photo.alt}
               title={photo.title}
               tone="cream"

@@ -5,12 +5,6 @@ import { useRecentlyViewed } from "../../hooks/useRecentlyViewed";
 import { DashboardTabWrapper } from "./DashboardTabWrapper";
 import { ImageWithFallback } from "../ImageWithFallback";
 
-const relatedThumb = (src: string) => {
-  const base = src.replace(/\?.*$/, "");
-  const fileName = base.split("/").pop();
-  return fileName ? `/images/gallery/640/${fileName}` : src;
-};
-
 export function RecentlyViewedTab() {
   const { t } = useTranslation();
   const { entries, clear } = useRecentlyViewed();
@@ -43,7 +37,7 @@ export function RecentlyViewedTab() {
             <Link to={entry.href} className="dashboard-favorites-card">
               {entry.imageUrl ? (
                 <ImageWithFallback
-                  src={relatedThumb(entry.imageUrl)}
+                  src={entry.imageUrl}
                   alt={entry.title ?? entry.id}
                   title={entry.title ?? entry.id}
                   tone="cream"

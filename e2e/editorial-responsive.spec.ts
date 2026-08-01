@@ -697,6 +697,126 @@ test.describe("keyboard, focus, and dialog contracts", () => {
   });
 });
 
+test.describe("navigation and media regression contract", () => {
+  test.use({ serviceWorkers: "block" });
+
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.clear();
+      localStorage.setItem("lang", "en");
+      localStorage.setItem("nhb-pwa-install-dismissed-until", String(Date.now() + 86_400_000));
+    });
+    await mockPublicApi(page);
+  });
+
+  test("desktop utility controls stay aligned, readable, and inside a short viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 436 });
+    await page.goto("/");
+    await settleRoute(page);
+    await page.locator(".nav-utility-trigger").click();
+    const panel = page.locator("#nav-utility-panel");
+    await expect(panel).toBeVisible();
+
+    const layout = await panel.evaluate((element) => {
+      const panelRect = element.getBoundingClientRect();
+      const controls = element.querySelector<HTMLElement>(".nav-utility-controls")!;
+      const buttons = Array.from(controls.querySelectorAll<HTMLElement>("button"));
+      const buttonRects = buttons.map((button) => button.getBoundingClientRect());
+      const colors = buttons.map((button) => getComputedStyle(button).color);
+      return {
+        insideViewport:
+          panelRect.left >= 0
+          && panelRect.top >= 0
+          && panelRect.right <= innerWidth
+          && panelRect.bottom <= innerHeight,
+        columnCount: getComputedStyle(controls).gridTemplateColumns.split(/\s+/).filter(Boolean).length,
+        sameLeftEdge: buttonRects.every((rect) => Math.abs(rect.left - buttonRects[0].left) <= 1),
+        sameWidth: buttonRects.every((rect) => Math.abs(rect.width - buttonRects[0].width) <= 1),
+        ordered: buttonRects.every((rect, index) => index === 0 || rect.top >= buttonRects[index - 1].bottom),
+        sameColor: colors.every((color) => color === colors[0]),
+        visibleLabels: buttons.every((button) => Boolean(button.textContent?.trim())),
+      };
+    });
+
+    expect(layout).toEqual({
+      insideViewport: true,
+      columnCount: 1,
+      sameLeftEdge: true,
+      sameWidth: true,
+      ordered: true,
+      sameColor: true,
+      visibleLabels: true,
+    });
+  });
+
+  test("short mobile drawer scrolls instead of overlapping routes, utilities, and actions", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 480 });
+    await page.goto("/");
+    await settleRoute(page);
+    await page.locator(".hamburger").click();
+    const panel = page.locator(".nav-drawer-panel");
+    await expect(panel).toBeVisible();
+    await panel.evaluate(async (element) => {
+      await Promise.all(element.getAnimations().map((animation) => animation.finished.catch(() => undefined)));
+    });
+
+    const layout = await panel.evaluate((element) => {
+      const panelRect = element.getBoundingClientRect();
+      const lastRoute = element.querySelector<HTMLElement>(".nav-drawer-routes a:last-child")!.getBoundingClientRect();
+      const utilities = element.querySelector<HTMLElement>(".nav-drawer-utilities")!.getBoundingClientRect();
+      const utilityButton = element.querySelector<HTMLElement>(".nav-drawer-utilities button:last-child")!.getBoundingClientRect();
+      const actions = element.querySelector<HTMLElement>(".nav-drawer-actions")!.getBoundingClientRect();
+      return {
+        insideViewport:
+          panelRect.left >= 0
+          && panelRect.top >= 0
+          && panelRect.right <= innerWidth
+          && panelRect.bottom <= innerHeight,
+        scrollable: element.scrollHeight > element.clientHeight,
+        routesBeforeUtilities: lastRoute.bottom <= utilities.top + 1,
+        utilitiesBeforeActions: utilityButton.bottom <= actions.top + 1,
+      };
+    });
+
+    expect(layout).toEqual({
+      insideViewport: true,
+      scrollable: true,
+      routesBeforeUtilities: true,
+      utilitiesBeforeActions: true,
+    });
+
+    await panel.evaluate((element) => element.scrollTo({ top: element.scrollHeight }));
+    await expect(panel.locator(".nav-drawer-booking")).toBeInViewport();
+  });
+
+  test("photo detail uses an existing responsive image without requesting a 1200 folder", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/gallery/gallery-urban-01");
+    await settleRoute(page);
+    const image = page.locator(".photo-detail-cover-frame img");
+    await expect(image).toBeVisible();
+    await expect.poll(() => image.evaluate((element) => (
+      element instanceof HTMLImageElement && element.complete && element.naturalWidth > 0
+    ))).toBe(true);
+    expect(await image.getAttribute("src")).not.toContain("/images/gallery/1200/");
+    const requestedUnsupportedVariant = await page.evaluate(() => performance
+      .getEntriesByType("resource")
+      .some((entry) => entry.name.includes("/images/gallery/1200/")));
+    expect(requestedUnsupportedVariant).toBe(false);
+  });
+
+  test("homepage does not register ScrollTrigger against the component library's legacy GSAP", async ({ page }) => {
+    const warnings: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "warning") warnings.push(message.text());
+    });
+    await page.goto("/");
+    await settleRoute(page);
+    await page.waitForTimeout(1_200);
+    expect(warnings.filter((warning) => warning.includes("Requires GSAP"))).toEqual([]);
+  });
+});
+
 for (const viewport of [
   { width: 375, height: 812 },
   { width: 1440, height: 900 },
