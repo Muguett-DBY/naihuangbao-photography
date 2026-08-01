@@ -18,7 +18,7 @@ test.describe("booking flow", () => {
       await expect(bookingButton).toBeVisible();
 
       const initialScrollY = await page.evaluate(() => window.scrollY);
-      await bookingButton.evaluate((button: HTMLButtonElement) => button.click());
+      await bookingButton.click();
       await expect(page.locator("#booking-package")).toBeVisible();
 
       const dialog = page.getByRole("dialog").filter({ has: page.locator(".booking-modal-content") });

@@ -76,7 +76,7 @@ test.describe("shoot.custard.top", () => {
     expect(new Set(galleryRequests).size).toBe(1);
   });
 
-  test("首页使用兼容 ScrollTrigger 的 GSAP 核心", async ({ page }) => {
+  test("首页不安装旧版全局 GSAP 兼容层", async ({ page }) => {
     const gsapWarnings: string[] = [];
     page.on("console", (message) => {
       if (message.type() === "warning" && message.text().includes("Requires GSAP")) {
@@ -91,12 +91,13 @@ test.describe("shoot.custard.top", () => {
         gsap?: { version?: string; matchMedia?: unknown };
       }).gsap;
       return {
-        version: runtimeGsap?.version ?? "missing",
-        matchMediaType: typeof runtimeGsap?.matchMedia,
+        version: runtimeGsap?.version ?? null,
+        loaded: document.body.classList.contains("is-loaded"),
       };
     });
 
-    expect(runtime.matchMediaType, `window.gsap ${runtime.version}`).toBe("function");
+    expect(runtime.loaded).toBe(true);
+    expect(runtime.version).not.toBe("3.2.6");
     expect(gsapWarnings).toEqual([]);
   });
 

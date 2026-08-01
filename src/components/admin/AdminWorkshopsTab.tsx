@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button, Input, Loading, Table } from "animal-island-ui";
+import { Button, Input, Table } from "animal-island-ui";
 import type { TableColumn } from "animal-island-ui";
+import { AdminLoading } from "./AdminLoading";
 import type { Workshop } from "../../types/content";
 import { adminMutationHeaders, type ToastType } from "../../lib/admin-helpers";
 
@@ -52,7 +53,7 @@ export function AdminWorkshopsTab({ showToast }: Props) {
   };
 
   if (loading) {
-    return <div className="adm-content-panel" style={{ position: "relative", minHeight: 250 }}><Loading active /></div>;
+    return <div className="adm-content-panel" style={{ position: "relative", minHeight: 250 }}><AdminLoading /></div>;
   }
 
   if (editing) {

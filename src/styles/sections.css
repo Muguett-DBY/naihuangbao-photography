@@ -4870,13 +4870,13 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
   }
 }
 
-body:has(.booking-modal-content) [class*="animal-modal-"] {
+body:has(.booking-modal-content) .ui-modal {
   width: min(820px, calc(100vw - 64px)) !important;
   max-width: min(820px, calc(100vw - 64px)) !important;
   max-height: calc(100dvh - 48px) !important;
 }
 
-body:has(.booking-modal-content) [class*="animal-modalClipped"] {
+body:has(.booking-modal-content) .ui-modal-surface {
   width: 100% !important;
   height: 100% !important;
   max-height: calc(100dvh - 48px) !important;
@@ -4889,7 +4889,7 @@ body:has(.booking-modal-content) [class*="animal-modalClipped"] {
   clip-path: none !important;
 }
 
-body:has(.booking-modal-content) [class*="animal-body"] {
+body:has(.booking-modal-content) .ui-modal-body {
   width: 100% !important;
   max-height: calc(100dvh - 104px) !important;
   overflow-x: hidden !important;
@@ -4931,25 +4931,25 @@ body:has(.booking-modal-content) [class*="animal-body"] {
   border-color: var(--coral-dark);
 }
 
-body:has(.booking-modal-content) [class*="animal-mask"] {
+body:has(.booking-modal-content) .ui-modal-backdrop {
   z-index: 1600 !important;
   background: rgba(12, 18, 15, 0.62) !important;
   backdrop-filter: none;
 }
 
 @media (max-width: 620px) {
-  body:has(.booking-modal-content) [class*="animal-modal-"] {
+  body:has(.booking-modal-content) .ui-modal {
     width: calc(100vw - 16px) !important;
     max-width: calc(100vw - 16px) !important;
     max-height: calc(100dvh - 16px) !important;
   }
 
-  body:has(.booking-modal-content) [class*="animal-modalClipped"] {
+  body:has(.booking-modal-content) .ui-modal-surface {
     max-height: calc(100dvh - 16px) !important;
     padding: 18px 16px 16px !important;
   }
 
-  body:has(.booking-modal-content) [class*="animal-body"] {
+  body:has(.booking-modal-content) .ui-modal-body {
     max-height: calc(100dvh - 52px) !important;
     padding-right: 4px !important;
   }

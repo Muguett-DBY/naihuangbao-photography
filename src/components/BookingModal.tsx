@@ -1,12 +1,10 @@
-import { Button, Input, Modal } from "animal-island-ui";
-import { type FormEvent, useEffect, useId, useState, useCallback } from "react";
+import { Button, Input } from "animal-island-ui";
+import { type FormEvent, useEffect, useId, useRef, useState, useCallback } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ExternalLink, LayoutDashboard, X } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { useNotification } from "../hooks/useNotification";
-import { useFocusTrap } from "../hooks/useFocusTrap";
-import { useModalA11y } from "../hooks/useModalA11y";
 import { PaymentForm } from "./PaymentForm";
 import { BookingCalendar, type DateInfo } from "./BookingCalendar";
 import { BookingTimeSlotPicker, isBookingTimeSlotUnavailable } from "./BookingTimeSlotPicker";
@@ -16,6 +14,7 @@ import { track } from "../utils/track";
 import { savePendingBooking } from "../utils/offlineBooking";
 import { isBookableBusinessDate, isRealDateKey } from "../utils/businessDate";
 import { useBookingPolicy } from "../hooks/useBookingPolicy";
+import { Modal } from "./ui/Modal";
 
 type BookingModalProps = {
   initialPackage?: string;
@@ -90,8 +89,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const titleId = useId();
   const descriptionId = useId();
   const successBridgeTitleId = useId();
-  const contentRef = useFocusTrap<HTMLDivElement>({ initialFocus: "first" });
-  useModalA11y({ open: true, titleId, descriptionId });
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const isSelectedTimeUnavailable = useCallback((value: string) => {
     return isBookingTimeSlotUnavailable(selectedDateAvailability, value);
@@ -466,7 +464,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       ? t("bookingModal.waitlistAlreadyJoinedDescription")
       : t("bookingModal.waitlistSuccessDescription");
     return (
-      <Modal open onClose={onClose} footer={null} typewriter={false}>
+      <Modal open onClose={onClose} footer={null} aria-labelledby={titleId}>
         <span id={titleId} className="sr-only">{waitlistTitle}</span>
         <div ref={contentRef} className="booking-modal-content">
           {renderStepRail(5)}
@@ -518,7 +516,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   // ── Payment step ──
   if (showPayment && bookingId) {
     return (
-      <Modal open onClose={onClose} footer={null} typewriter={false}>
+      <Modal open onClose={onClose} footer={null} aria-labelledby={titleId}>
         <span id={titleId} className="sr-only">{t("bookingModal.paymentTitle", "Payment")}</span>
         <div ref={contentRef} className="booking-modal-content">
           {renderStepRail(4)}
@@ -581,7 +579,7 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       },
     ];
     return (
-      <Modal open onClose={onClose} footer={null} typewriter={false}>
+      <Modal open onClose={onClose} footer={null} aria-labelledby={titleId}>
         <span id={titleId} className="sr-only">{t("bookingModal.successTitle")}</span>
         <div ref={contentRef} className="booking-modal-content">
           {renderStepRail(5)}
@@ -673,9 +671,10 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
     <Modal
       open
       onClose={onClose}
-      typewriter={false}
       maskClosable={false}
       footer={null}
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
     >
       <span id={descriptionId} className="sr-only">{t("bookingModal.subtitle")}</span>
       <div ref={contentRef} className="booking-modal-content">

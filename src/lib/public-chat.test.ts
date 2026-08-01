@@ -63,7 +63,7 @@ describe("public AI chat integration", () => {
 
   it("builds a visitor-facing prompt with the homepage audience boundary", async () => {
     const chatModule = await import("../../functions/_chat");
-    const buildPublicSystemPrompt = chatModule.__test_buildPublicSystemPrompt as
+    const buildPublicSystemPrompt = chatModule.buildPublicSystemPrompt as
       | ((content: typeof defaultSiteContent) => string)
       | undefined;
 
@@ -151,7 +151,7 @@ describe("public AI chat integration", () => {
 
   it("repairs upstream length cutoffs before showing a reply", async () => {
     const chatModule = await import("../../functions/_chat");
-    const normalizeAssistantReply = chatModule.__test_normalizeAssistantReply as
+    const normalizeAssistantReply = chatModule.normalizeAssistantReply as
       | ((reply: string, finishReason?: string) => string)
       | undefined;
 

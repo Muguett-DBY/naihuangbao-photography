@@ -321,8 +321,6 @@ export async function enforcePublicChatRateLimit(request: Request, env: ChatEnv)
   );
 }
 
-export const __test_buildPublicSystemPrompt = buildPublicSystemPrompt;
 export const __test_buildOpenCodeChatBody = buildOpenCodeChatBody;
 export const __test_buildOpenCodeMessages = buildOpenCodeMessages;
 export const __test_stringifyOpenCodeBody = stringifyOpenCodeBody;
-export const __test_normalizeAssistantReply = normalizeAssistantReply;

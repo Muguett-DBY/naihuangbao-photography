@@ -3582,18 +3582,6 @@
     font-size: 0.8rem;
   }
 
-  /* Booking modal: tighter padding on mobile */
-  [class*="animal-modalClipped"] {
-    padding: 24px 20px 20px !important;
-  }
-  [class*="animal-title"] {
-    font-size: 1.3rem !important;
-  }
-  [class*="animal-body"] {
-    font-size: 16px !important;
-    padding-bottom: 12px !important;
-  }
-
   /* Booking form: reduce field spacing on mobile */
   .booking-field {
     margin-bottom: 12px;
@@ -8317,24 +8305,6 @@
    480px Mobile Breakpoint
    ══════════════════════════════════════════════ */
 @media (max-width: 480px) {
-  /* Dashboard Tabs: horizontal scroll on small screens */
-  .dashboard-tabs .animal-tabs-nav {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    flex-wrap: nowrap;
-  }
-
-  .dashboard-tabs .animal-tabs-nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  .dashboard-tabs .animal-tabs-nav button {
-    white-space: nowrap;
-    flex-shrink: 0;
-    min-height: 44px;
-  }
-
   /* Course detail meta */
   .course-detail-meta {
     gap: 10px;

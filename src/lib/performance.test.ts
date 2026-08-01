@@ -21,7 +21,7 @@ const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"
 const routerSource = readFileSync(resolve(root, "src/router.tsx"), "utf8");
 const routePreloadSource = readFileSync(resolve(root, "src/lib/route-preload.ts"), "utf8");
 const routeLoadersSource = readFileSync(resolve(root, "src/routing/route-loaders.ts"), "utf8");
-const navSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
+const scrollProgressSource = readFileSync(resolve(root, "src/components/ScrollProgress.tsx"), "utf8");
 const html = readFileSync(resolve(root, "index.html"), "utf8");
 const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
@@ -140,8 +140,9 @@ describe("performance budgets", () => {
     expect(rootLayoutSource).toContain("RouteHashScroller");
   });
 
-  it("strips component-library font faces and budgets emitted fonts", () => {
-    expect(viteConfig).toContain("stripAnimalIslandFonts()");
+  it("keeps the component-library stylesheet out and budgets emitted fonts", () => {
+    expect(mainSource).not.toContain("animal-island-ui/style");
+    expect(viteConfig).not.toContain("stripAnimalIslandFonts");
     expect(budgetSource).toContain("maxFontAssetBytes");
     expect(budgetSource).toContain("maxLazyJsBytes");
     expect(budgetSource).toContain("Font asset budget exceeded");
@@ -172,11 +173,16 @@ describe("performance budgets", () => {
 
   it("keeps first-load reveal and scroll progress outside the app shell", () => {
     expect(mainSource).toContain('document.body.classList.add("is-loaded")');
-    expect(navSource).toContain('scroll-progress-bar');
+    expect(scrollProgressSource).toContain('scroll-progress-bar');
     expect(allCss).toContain("body.is-loaded");
     expect(allCss).toContain(".site-nav::after");
     expect(allCss).toContain("@media (prefers-reduced-motion: reduce)");
     expect(rootLayoutSource).toContain("Outlet");
+  });
+
+  it("does not install an eager global GSAP compatibility runtime", () => {
+    expect(mainSource).not.toContain("gsap-runtime");
+    expect(existsSync(resolve(root, "src/lib/gsap-runtime.ts"))).toBe(false);
   });
 
   it("keeps removed cinematic assets out of the public shell", () => {

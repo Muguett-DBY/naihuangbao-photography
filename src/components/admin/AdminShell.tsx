@@ -23,7 +23,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button, Input, Loading } from "animal-island-ui";
+import { Button, Input } from "animal-island-ui";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { adminMutationHeaders, isAbortError, type AdminTab, type ToastType } from "../../lib/admin-helpers";
 import { AdminBookingsTab } from "./AdminBookingsTab";
@@ -35,6 +35,7 @@ import { AdminServicesTab } from "./AdminServicesTab";
 import { AdminCoursesTab } from "./AdminCoursesTab";
 import { AdminPresetsTab } from "./AdminPresetsTab";
 import { AdminWorkshopsTab } from "./AdminWorkshopsTab";
+import { AdminLoading } from "./AdminLoading";
 import { AdminMerchandiseTab } from "./AdminMerchandiseTab";
 import { AdminVitalsTab } from "./AdminVitalsTab";
 import { AdminErrorReportsTab } from "./AdminErrorReportsTab";
@@ -307,7 +308,7 @@ function AdminStats() {
   if (loading) {
     return (
       <div className="adm-content-panel" style={{ position: "relative", minHeight: 250 }}>
-        <Loading active />
+        <AdminLoading />
       </div>
     );
   }

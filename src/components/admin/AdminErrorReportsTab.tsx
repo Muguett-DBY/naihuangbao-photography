@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Bug, CheckCircle2, EyeOff, LoaderCircle, RotateCcw } from "lucide-react";
-import { Loading } from "animal-island-ui";
+import { AdminLoading } from "./AdminLoading";
 import { useTranslation } from "react-i18next";
 import { adminMutationHeaders, isAbortError } from "../../lib/admin-helpers";
 
@@ -151,7 +151,7 @@ export function AdminErrorReportsTab() {
   if (loading && !data) {
     return (
       <div className="adm-content-panel" style={{ position: "relative", minHeight: 250 }}>
-        <Loading active />
+        <AdminLoading />
       </div>
     );
   }

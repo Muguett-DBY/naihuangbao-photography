@@ -19,7 +19,9 @@ describe("architecture optimization contracts", () => {
 
     expect(packageJson).toContain('"typecheck": "tsc -b --noEmit"');
     expect(packageJson).toContain('"architecture:check": "node scripts/check-architecture.mjs"');
-    expect(packageJson).toContain('"lint": "npm run typecheck && npm run architecture:check"');
+    expect(packageJson).toContain(
+      '"lint": "npm run typecheck && npm run architecture:check && npm run deadcode:check"',
+    );
     expect(architectureCheck).toContain("findStronglyConnectedComponents");
     expect(architectureCheck).toContain("legacyLineBudgets");
     expect(architectureCheck).toContain('"react-router-dom"');
@@ -66,7 +68,6 @@ describe("architecture optimization contracts", () => {
   it("splits admin behavior into focused hooks and tab components", () => {
     const adminDashboard = read("src/components/AdminDashboard.tsx");
     const expectedFiles = [
-      "src/hooks/useAdminSession.ts",
       "src/components/admin/AdminShell.tsx",
       "src/components/admin/AdminPhotosTab.tsx",
       "src/components/admin/AdminPackagesTab.tsx",
@@ -142,6 +143,31 @@ describe("architecture optimization contracts", () => {
     // (a previous regression caused a runtime ReferenceError at app boot)
     expect(mainSource).not.toMatch(/^\s*gsap\./m);
     expect(mainSource).not.toMatch(/^\s*ScrollTrigger\./m);
+    expect(mainSource).not.toContain("gsap-runtime");
+    expect(existsSync(resolve(root, "src/lib/gsap-runtime.ts"))).toBe(false);
+  });
+
+  it("automates low-risk dependency maintenance and pins high-risk tooling", () => {
+    const packageJson = JSON.parse(read("package.json")) as {
+      scripts: Record<string, string>;
+      dependencies: Record<string, string>;
+      devDependencies: Record<string, string>;
+    };
+    const dependabot = read(".github/dependabot.yml");
+
+    expect(packageJson.scripts["deps:audit"]).toContain("npm audit");
+    expect(packageJson.scripts["deadcode:check"]).toContain("knip");
+    expect(packageJson.dependencies.three).toBe("0.185.1");
+    expect(packageJson.devDependencies["@types/three"]).toBe("0.185.3");
+    expect(packageJson.devDependencies.wrangler).toBe("4.118.0");
+    expect(packageJson.devDependencies.playwright).toBeUndefined();
+    expect(existsSync(resolve(root, "src/types/animal-island-ui.d.ts"))).toBe(false);
+    expect(read("src/components/admin/AdminLoading.tsx")).not.toContain("animal-island-ui");
+    expect(dependabot).toContain('package-ecosystem: "npm"');
+    expect(dependabot).toContain('package-ecosystem: "github-actions"');
+    expect(dependabot).toContain('dependency-name: "three"');
+    expect(dependabot).toContain('dependency-name: "@vitejs/plugin-react"');
+    expect(existsSync(resolve(root, "knip.json"))).toBe(true);
   });
 
   it("isolates the immersive Three.js runtime behind one lazy boundary", () => {

@@ -1,0 +1,48 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Australia/Sydney"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    groups:
+      runtime-minor-patch:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      tooling-minor-patch:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      # Three.js uses 0.x releases; each minor can contain breaking renderer changes.
+      - dependency-name: "three"
+        update-types:
+          - "version-update:semver-minor"
+      - dependency-name: "@types/three"
+        update-types:
+          - "version-update:semver-minor"
+      # 6.0.4/6.0.5 mis-resolve an optional Babel 8 peer under npm 12.
+      - dependency-name: "@vitejs/plugin-react"
+        versions:
+          - "6.0.4"
+          - "6.0.5"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions:
+        patterns:
+          - "*"

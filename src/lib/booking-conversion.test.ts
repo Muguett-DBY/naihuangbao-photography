@@ -54,13 +54,14 @@ describe("public booking conversion shell", () => {
     expect(map).toContain('aria-pressed={view === "list"}');
   });
 
-  it("loads only the Modal structural CSS sidecar", () => {
+  it("uses the local accessible modal without a package CSS sidecar", () => {
     const bookingModal = read("src/components/BookingModal.tsx");
     const animalTheme = read("src/styles/animal-theme.css");
     const main = read("src/main.tsx");
 
-    expect(animalTheme).toContain('@import "animal-island-ui/es/components/Modal/modal.module.css"');
-    expect(bookingModal).not.toContain('animal-island-ui/es/components/Modal/modal.module.css');
+    expect(animalTheme).not.toContain("animal-island-ui/es/components/Modal");
+    expect(animalTheme).toContain(".ui-modal-backdrop");
+    expect(bookingModal).toContain('from "./ui/Modal"');
     expect(bookingModal).toContain("booking-modal-close");
     expect(bookingModal).toContain("<X");
     expect(main).not.toContain('animal-island-ui/style');

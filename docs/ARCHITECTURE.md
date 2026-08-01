@@ -124,3 +124,15 @@ Current priority order for future decomposition:
   not release source.
 - `sw.js` and `registerSW.js` must remain `no-store/no-cache`; hashed JS, CSS,
   and image assets may be cached long-term.
+
+## Dependency policy
+
+- Runtime and tooling patch/minor updates are grouped weekly by Dependabot.
+- `three`, `@types/three`, and `wrangler` are pinned because renderer and
+  deployment changes require explicit regression testing.
+- Run `npm run deps:audit` after dependency changes to check vulnerabilities and
+  review every install script.
+- `npm run lint` includes Knip checks for unused files and dependencies; Cloudflare
+  filesystem routes and the Vite `fs` shim are declared as explicit entries.
+- `@vitejs/plugin-react` remains on `6.0.3` until the npm 12 optional Babel
+  peer-resolution regression in `6.0.4`/`6.0.5` is fixed upstream.
