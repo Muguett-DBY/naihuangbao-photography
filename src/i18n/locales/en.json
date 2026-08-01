@@ -52,7 +52,10 @@
       "glassAlt": "Concept-film still with frosted glass and botanical light",
       "stillLifeAlt": "Concept-film still life with a camera, wooden chair, and silk",
       "mirrorAlt": "Soft concept image with a mirror and warm lamp",
-      "lensAlt": "Concept macro image with a lens, petal, and silk"
+      "lensAlt": "Concept macro image with a lens, petal, and silk",
+      "prismAlt": "Concept macro image with refracted morning light, optical glass, and silk",
+      "ribbonAlt": "Concept-film still of an anonymous figure turning through coral ribbon and curtains",
+      "afterimageAlt": "Concept-film still with an anonymous long-exposure silhouette behind moss glass"
     }
   },
   "gallery": {

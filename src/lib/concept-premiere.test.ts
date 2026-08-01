@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   conceptPremiereFrames,
   conceptPremiereOpeningFrame,
+  conceptPremierePrismFrame,
 } from "../data/concept-premiere";
 import { galleryItems } from "../data/gallery";
 import { getResponsiveImageAttrs } from "./responsive-image";
@@ -17,10 +18,11 @@ function assetPath(imageUrl: string) {
 
 describe("homepage concept premiere assets", () => {
   it("ships the expected concept-only film sequence with responsive variants", () => {
-    expect(conceptPremiereFrames).toHaveLength(6);
+    expect(conceptPremiereFrames).toHaveLength(9);
     expect(conceptPremiereFrames[0]?.id).toBe("opening");
-    expect(conceptPremiereFrames.filter((frame) => frame.kind === "portrait")).toHaveLength(4);
-    expect(conceptPremiereFrames.filter((frame) => frame.kind === "detail")).toHaveLength(1);
+    expect(conceptPremierePrismFrame.id).toBe("prism");
+    expect(conceptPremiereFrames.filter((frame) => frame.kind === "portrait")).toHaveLength(6);
+    expect(conceptPremiereFrames.filter((frame) => frame.kind === "detail")).toHaveLength(2);
 
     for (const frame of conceptPremiereFrames) {
       const imagePath = assetPath(frame.imageUrl);
