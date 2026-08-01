@@ -30,10 +30,14 @@ test.describe("cinematic homepage premiere", () => {
     const booking = page.locator(".hero-cover-primary-btn");
     await expect(premiere).toBeVisible();
     await expect(premiere).toHaveAttribute("data-premiere-phase", "opening");
-    await expect(premiere.locator("[data-premiere-frame]")).toHaveCount(5);
+    await expect(premiere.locator("[data-premiere-frame]")).toHaveCount(7);
+    await expect(premiere.locator("[data-premiere-aperture]")).toBeVisible();
     await expect(page.locator(".hero-concept-label")).toContainText("Brand concept visuals");
     await expect(title).toBeVisible();
     await expect(booking).toBeVisible();
+    await expect.poll(async () => premiere.locator('[data-premiere-frame="ribbon"]').evaluate((element) => (
+      Number.parseFloat(getComputedStyle(element).opacity)
+    ))).toBeGreaterThan(0.2);
 
     const openingGeometry = await page.evaluate(() => {
       const heroBounds = document.querySelector<HTMLElement>(".hero-home")!.getBoundingClientRect();
@@ -46,9 +50,22 @@ test.describe("cinematic homepage premiere", () => {
     });
     expect(openingGeometry).toEqual({ titleInside: true, actionsInside: true });
 
+    const heroBounds = await hero.boundingBox();
+    expect(heroBounds).not.toBeNull();
+    if (heroBounds) {
+      await page.mouse.move(
+        heroBounds.x + heroBounds.width * 0.84,
+        heroBounds.y + heroBounds.height * 0.28,
+      );
+    }
+    await expect(premiere).toHaveAttribute("data-premiere-pointer", "active");
+    await expect.poll(async () => hero.evaluate((element) => (
+      Number.parseFloat(getComputedStyle(element).getPropertyValue("--premiere-pointer-x"))
+    ))).toBeGreaterThan(56);
+
     await page.evaluate(() => {
       const heroHeight = document.querySelector<HTMLElement>(".hero-home")!.offsetHeight;
-      window.scrollTo(0, Math.round(heroHeight * 0.8));
+      window.scrollTo(0, Math.round(heroHeight * 0.38));
     });
     await expect(premiere).toHaveAttribute("data-premiere-phase", "reveal");
     await expect.poll(async () => page.locator(".hero-contact-sheet").evaluate((element) => (
@@ -72,6 +89,7 @@ test.describe("cinematic homepage premiere", () => {
     await expect(page.locator(".hero-title")).toBeVisible();
     await expect(page.locator(".hero-cover-primary-btn")).toBeVisible();
     await expect(page.locator(".cinematic-premiere__frame-stack")).toHaveCSS("display", "none");
+    await expect(page.locator("[data-premiere-aperture]")).not.toBeVisible();
     expect(await page.locator(".hero-contact-sheet").evaluate((element) => (
       Number.parseFloat(getComputedStyle(element).opacity)
     ))).toBeGreaterThan(0.95);

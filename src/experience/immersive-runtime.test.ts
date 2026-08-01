@@ -762,6 +762,29 @@ describe("ImmersiveRuntime", () => {
     expect(fake.driver.render).toHaveBeenCalledTimes(rendersAtDowngrade + 1);
   });
 
+  it("downgrades high early under severe sustained frame pressure", () => {
+    const scheduler = createScheduler();
+    const fake = createDriver();
+    const runtime = new ImmersiveRuntime({
+      store: createExperienceStore(),
+      tier: "high",
+      createDriver: () => fake.driver,
+      scheduler,
+    });
+    let time = 0;
+
+    for (let index = 0; index < 29; index += 1) {
+      time += 100;
+      scheduler.flush(time);
+    }
+    expect(fake.driver.setTier).not.toHaveBeenCalled();
+
+    time += 100;
+    scheduler.flush(time);
+    expect(fake.driver.setTier).toHaveBeenCalledWith("medium");
+    expect(runtime.tier).toBe("medium");
+  });
+
   it("allows one context restore and locks static after repeated loss", () => {
     const scheduler = createScheduler();
     const fake = createDriver();

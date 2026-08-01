@@ -25,6 +25,9 @@ export type ImmersiveRuntimeOptions = {
 const FRAME_WINDOW_SIZE = 120;
 const SLOW_FRAME_THRESHOLD_MS = 34;
 const SLOW_FRAME_COUNT = Math.floor(FRAME_WINDOW_SIZE * 0.05) + 1;
+const SEVERE_PRESSURE_MIN_SAMPLES = 30;
+const SEVERE_PRESSURE_MIN_DURATION_MS = 2_500;
+const SEVERE_PRESSURE_RATIO = 0.25;
 const MEDIUM_PRESSURE_THRESHOLD_MS = 20;
 const MEDIUM_PRESSURE_MIN_SAMPLES = 60;
 const MEDIUM_PRESSURE_RATIO = 0.35;
@@ -42,6 +45,7 @@ export class ImmersiveRuntime {
   private readonly frameDurations = new Float64Array(FRAME_WINDOW_SIZE);
   private frameDurationCount = 0;
   private frameDurationCursor = 0;
+  private frameDurationTotal = 0;
   private slowFrameCount = 0;
   private mediumPressureFrameCount = 0;
   private mediumCadenceLimited = false;
@@ -304,6 +308,7 @@ export class ImmersiveRuntime {
     if (!Number.isFinite(duration) || duration <= 0) return;
     if (this.frameDurationCount === FRAME_WINDOW_SIZE) {
       const previous = this.frameDurations[this.frameDurationCursor] ?? 0;
+      this.frameDurationTotal -= previous;
       if (previous > SLOW_FRAME_THRESHOLD_MS) this.slowFrameCount -= 1;
       if (previous > MEDIUM_PRESSURE_THRESHOLD_MS) this.mediumPressureFrameCount -= 1;
     } else {
@@ -311,14 +316,19 @@ export class ImmersiveRuntime {
     }
 
     this.frameDurations[this.frameDurationCursor] = duration;
+    this.frameDurationTotal += duration;
     this.frameDurationCursor = (this.frameDurationCursor + 1) % FRAME_WINDOW_SIZE;
     if (duration > SLOW_FRAME_THRESHOLD_MS) this.slowFrameCount += 1;
     if (duration > MEDIUM_PRESSURE_THRESHOLD_MS) this.mediumPressureFrameCount += 1;
 
+    const severePressure = this.frameDurationCount >= SEVERE_PRESSURE_MIN_SAMPLES
+      && this.frameDurationTotal >= SEVERE_PRESSURE_MIN_DURATION_MS
+      && this.slowFrameCount / this.frameDurationCount >= SEVERE_PRESSURE_RATIO;
+    const fullWindowPressure = this.frameDurationCount === FRAME_WINDOW_SIZE
+      && this.slowFrameCount >= SLOW_FRAME_COUNT;
     if (
       this.tierValue === "high"
-      && this.frameDurationCount === FRAME_WINDOW_SIZE
-      && this.slowFrameCount >= SLOW_FRAME_COUNT
+      && (severePressure || fullWindowPressure)
       && this.driver
     ) {
       this.tierValue = "medium";
@@ -356,6 +366,7 @@ export class ImmersiveRuntime {
     this.frameDurations.fill(0);
     this.frameDurationCount = 0;
     this.frameDurationCursor = 0;
+    this.frameDurationTotal = 0;
     this.slowFrameCount = 0;
     this.mediumPressureFrameCount = 0;
   }

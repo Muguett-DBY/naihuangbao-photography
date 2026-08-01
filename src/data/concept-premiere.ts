@@ -1,11 +1,20 @@
 export type ConceptPremiereFrame = {
-  id: "opening" | "silk" | "glass" | "still-life" | "mirror" | "lens";
+  id:
+    | "opening"
+    | "prism"
+    | "ribbon"
+    | "afterimage"
+    | "silk"
+    | "glass"
+    | "still-life"
+    | "mirror"
+    | "lens";
   imageUrl: string;
   altKey: string;
   kind: "opening" | "portrait" | "detail";
 };
 
-const conceptPremiereAssetVersion = "20260730-1";
+const conceptPremiereAssetVersion = "20260801-2";
 const conceptImage = (fileName: string) => `/images/concept-premiere/${fileName}?v=${conceptPremiereAssetVersion}`;
 
 export const conceptPremiereFrames = [
@@ -14,6 +23,24 @@ export const conceptPremiereFrames = [
     imageUrl: conceptImage("premiere-opening-v1.webp"),
     altKey: "premiere.frames.openingAlt",
     kind: "opening",
+  },
+  {
+    id: "prism",
+    imageUrl: conceptImage("premiere-prism-v2.webp"),
+    altKey: "premiere.frames.prismAlt",
+    kind: "detail",
+  },
+  {
+    id: "ribbon",
+    imageUrl: conceptImage("premiere-ribbon-v2.webp"),
+    altKey: "premiere.frames.ribbonAlt",
+    kind: "portrait",
+  },
+  {
+    id: "afterimage",
+    imageUrl: conceptImage("premiere-afterimage-v2.webp"),
+    altKey: "premiere.frames.afterimageAlt",
+    kind: "portrait",
   },
   {
     id: "silk",
@@ -48,4 +75,5 @@ export const conceptPremiereFrames = [
 ] as const satisfies readonly ConceptPremiereFrame[];
 
 export const conceptPremiereOpeningFrame = conceptPremiereFrames[0];
-export const conceptPremiereMotionFrames = conceptPremiereFrames.slice(1);
+export const conceptPremierePrismFrame = conceptPremiereFrames[1];
+export const conceptPremiereMotionFrames = conceptPremiereFrames.slice(2);
