@@ -1,6 +1,6 @@
 import "../styles/pages.css";
 import { useMemo, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, Users, Clock, CheckCircle, X } from "lucide-react";
 import { Button } from "animal-island-ui";

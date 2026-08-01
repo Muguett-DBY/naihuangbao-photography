@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Camera, MapPin, X } from "lucide-react";
 import { useFocusTrap } from "../hooks/useFocusTrap";

@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 type Props = {
   to: string;

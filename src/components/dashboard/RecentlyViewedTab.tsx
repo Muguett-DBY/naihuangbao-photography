@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { History, Trash2 } from "lucide-react";
 import { useRecentlyViewed } from "../../hooks/useRecentlyViewed";
 import { DashboardTabWrapper } from "./DashboardTabWrapper";

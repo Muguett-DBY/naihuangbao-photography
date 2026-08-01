@@ -6,7 +6,7 @@ import {
   CalendarCheck,
   ShieldCheck,
 } from "lucide-react";
-import { useBookingModal } from "../hooks/useBookingModal";
+import { useBookingModal } from "../features/booking/BookingContext";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";

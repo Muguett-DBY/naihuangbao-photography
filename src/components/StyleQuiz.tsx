@@ -23,7 +23,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { packages } from "../data/packages";
-import { useBookingModal } from "../hooks/useBookingModal";
+import { useBookingModal } from "../features/booking/BookingContext";
 import { useInView } from "../hooks/useInView";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { ImageWithFallback } from "./ImageWithFallback";

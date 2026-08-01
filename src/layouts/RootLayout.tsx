@@ -1,10 +1,11 @@
 import { Suspense, lazy, useCallback, useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { PublicChatLauncher } from "../components/PublicChatLauncher";
 import { PublicPhotosProvider } from "../hooks/usePublicPhotos";
 import { SiteContentProvider } from "../hooks/useSiteContent";
-import { BookingProvider, useBookingModal } from "../hooks/useBookingModal";
+import { useBookingModal } from "../features/booking/BookingContext";
+import { BookingProvider } from "../features/booking/BookingProvider";
 import { AuthProvider } from "../hooks/useAuth";
 import { Header } from "../components/shared/Header";
 import { Footer } from "../components/shared/Footer";

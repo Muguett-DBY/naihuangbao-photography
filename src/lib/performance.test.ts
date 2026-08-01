@@ -20,6 +20,7 @@ const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
 const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
 const routerSource = readFileSync(resolve(root, "src/router.tsx"), "utf8");
 const routePreloadSource = readFileSync(resolve(root, "src/lib/route-preload.ts"), "utf8");
+const routeLoadersSource = readFileSync(resolve(root, "src/routing/route-loaders.ts"), "utf8");
 const navSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
 const html = readFileSync(resolve(root, "index.html"), "utf8");
 const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
@@ -117,7 +118,7 @@ describe("performance budgets", () => {
     expect(gallerySource).toContain('loading="lazy"');
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
     expect(rootLayoutSource).toContain('lazy(() => import("../components/PublicChatWidget")');
-    expect(routePreloadSource).toContain('import("../styles/admin.css")');
+    expect(routeLoadersSource).toContain('import("../styles/admin.css")');
   });
 
   it("preloads primary routes on navigation intent", () => {

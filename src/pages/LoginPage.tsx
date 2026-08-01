@@ -1,6 +1,6 @@
 import "../styles/pages.css";
 import { useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { CalendarCheck, LogIn, UserPlus, Mail, Lock, User, KeyRound, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";

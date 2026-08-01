@@ -1,6 +1,6 @@
 import "../styles/pages.css";
 import { useRef } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin, Image, Settings, Sparkles, ArrowRight, Heart, History, Mail } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";

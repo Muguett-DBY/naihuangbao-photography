@@ -35,6 +35,9 @@ export default defineConfig({
           if (/node_modules\/(?:react|react-dom|scheduler)\//.test(id)) {
             return "react-vendor";
           }
+          if (id.includes("node_modules/react-router/")) {
+            return "router-vendor";
+          }
           if (id.includes("node_modules/lucide-react")) {
             return "icon-vendor";
           }

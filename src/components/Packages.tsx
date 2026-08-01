@@ -3,7 +3,7 @@ import { Check, MessageCircle } from "lucide-react";
 import { Button, Card } from "animal-island-ui";
 import { useTranslation } from "react-i18next";
 import { useSiteContent } from "../hooks/useSiteContent";
-import { useBookingModal } from "../hooks/useBookingModal";
+import { useBookingModal } from "../features/booking/BookingContext";
 import { Section } from "./Section";
 
 const PACKAGE_SLUGS = ["indoor", "outdoor", "instant"] as const;

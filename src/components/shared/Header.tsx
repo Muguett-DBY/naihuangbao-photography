@@ -15,7 +15,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router";
 import { safeLocalStorage } from "../../lib/browser-storage";
 import { useAuth } from "../../hooks/useAuth";
 import { useSiteContent } from "../../hooks/useSiteContent";

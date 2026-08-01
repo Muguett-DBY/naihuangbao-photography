@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Image, Download } from "lucide-react";
 import { useFetch } from "../../hooks/useFetch";
 import { DashboardTabWrapper } from "./DashboardTabWrapper";

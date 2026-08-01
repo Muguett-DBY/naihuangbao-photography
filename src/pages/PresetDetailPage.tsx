@@ -1,6 +1,6 @@
 import "../styles/pages.css";
 import { useMemo, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Download, Star, Check } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";

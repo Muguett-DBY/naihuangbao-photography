@@ -1,6 +1,6 @@
 import { Button, Input, Modal } from "animal-island-ui";
 import { type FormEvent, useEffect, useId, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ExternalLink, LayoutDashboard, X } from "lucide-react";
 import { useSiteContent } from "../hooks/useSiteContent";

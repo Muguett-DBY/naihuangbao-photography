@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, CheckCircle2, RefreshCw, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useBookingModal } from "../hooks/useBookingModal";
+import { useBookingModal } from "../features/booking/BookingContext";
 import {
   clearSyncedBookings,
   getPendingBookings,
