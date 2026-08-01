@@ -19,6 +19,7 @@ export function PwaUpdateBanner() {
 
     let reloading = false;
     let disposed = false;
+    let hasController = Boolean(navigator.serviceWorker.controller);
     let updateRegistration: ServiceWorkerRegistration | null = null;
     let updateTimer: number | null = null;
 
@@ -41,6 +42,10 @@ export function PwaUpdateBanner() {
     };
 
     const handleControllerChange = () => {
+      if (!hasController) {
+        hasController = Boolean(navigator.serviceWorker.controller);
+        return;
+      }
       if (reloading) return;
       reloading = true;
       setRefreshing(true);

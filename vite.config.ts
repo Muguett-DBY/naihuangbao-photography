@@ -57,7 +57,7 @@ export default defineConfig({
     stripAnimalIslandFonts(),
     react(),
     VitePWA({
-      registerType: "prompt",
+      registerType: "autoUpdate",
       injectRegister: "script-defer",
       manifest: false,
       includeAssets: [
@@ -69,6 +69,8 @@ export default defineConfig({
         "icons/pwa-maskable-512.png",
       ],
       workbox: {
+        skipWaiting: true,
+        clientsClaim: true,
         cleanupOutdatedCaches: true,
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         globPatterns: ["**/*.{js,css,html}"],
