@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Activity, Gauge } from "lucide-react";
-import { Loading } from "animal-island-ui";
+import { AdminLoading } from "./AdminLoading";
 import { isAbortError } from "../../lib/admin-helpers";
 
 type OverallSummary = {
@@ -89,7 +89,7 @@ export function AdminVitalsTab() {
   if (loading && !data) {
     return (
       <div className="adm-content-panel" style={{ position: "relative", minHeight: 250 }}>
-        <Loading active />
+        <AdminLoading />
       </div>
     );
   }

@@ -3,7 +3,6 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
-import { stripAnimalIslandFonts } from "./vite-plugins/strip-animal-fonts";
 
 export default defineConfig({
   resolve: {
@@ -57,7 +56,6 @@ export default defineConfig({
     },
   },
   plugins: [
-    stripAnimalIslandFonts(),
     react(),
     VitePWA({
       registerType: "autoUpdate",

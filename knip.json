@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/lib/empty-node-module.ts",
+    "functions/api/**/*.ts",
+    "functions/*.html.ts"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}",
+    "functions/**/*.ts",
+    "scripts/**/*.{js,mjs,ts}"
+  ],
+  "ignoreDependencies": [
+    "@fontsource/nunito"
+  ]
+}

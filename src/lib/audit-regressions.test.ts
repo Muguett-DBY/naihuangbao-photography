@@ -34,7 +34,6 @@ const routesSource = readFileSync(resolve(root, "public/_routes.json"), "utf8");
 const spa404Source = readFileSync(resolve(root, "scripts/sync-spa-404.mjs"), "utf8");
 const ciWorkflowSource = readFileSync(resolve(root, ".github/workflows/ci.yml"), "utf8");
 const useInViewSource = readFileSync(resolve(root, "src/hooks/useInView.ts"), "utf8");
-const gsapAnimationsSource = readFileSync(resolve(root, "src/hooks/useGsapAnimations.ts"), "utf8");
 const e2eConfigSource = readFileSync(resolve(root, "e2e/playwright.config.ts"), "utf8");
 const e2eSmokeSource = readFileSync(resolve(root, "e2e/smoke.spec.ts"), "utf8");
 const photosMapperSource = readFileSync(resolve(root, "functions/_photos.ts"), "utf8");
@@ -82,7 +81,6 @@ const bookingCalendarSource = readFileSync(resolve(root, "src/components/Booking
 const routeLoadingStateSource = readFileSync(resolve(root, "src/components/shared/RouteLoadingState.tsx"), "utf8");
 const resilientClientStorageSources = [
   "src/pages/CourseDetailPage.tsx",
-  "src/hooks/useUserPreferences.ts",
 ].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const errorBoundarySource = readFileSync(resolve(root, "src/components/ErrorBoundary.tsx"), "utf8");
 const pwaUpdateBannerSource = readFileSync(resolve(root, "src/components/PwaUpdateBanner.tsx"), "utf8");
@@ -537,13 +535,8 @@ describe("audit regression coverage", () => {
     expect(ciWorkflowSource).not.toContain("FORCE_JAVASCRIPT_ACTIONS_TO_NODE24");
   });
 
-  it("avoids stale intersection state and hidden-tab gallery RAF work", () => {
+  it("avoids stale intersection state", () => {
     expect(useInViewSource).toContain("[threshold, once, inView]");
-    expect(gsapAnimationsSource).toContain("WeakMap<HTMLElement, IntersectionObserver>");
-    expect(gsapAnimationsSource).toContain("WeakMap<HTMLElement, number>");
-    expect(gsapAnimationsSource).toContain("!document.hidden");
-    expect(gsapAnimationsSource).not.toContain("_autoScrollIO");
-    expect(gsapAnimationsSource).not.toContain("_autoScrollRaf");
   });
 
   it("keeps remote photo metadata compatible with old and new database schemas", () => {

@@ -16,21 +16,25 @@ describe("modal accessibility contracts", () => {
     expect(source).toContain("aria-hidden");
   });
 
-  it("provides a modal a11y helper that wires aria-labelledby and aria-describedby", () => {
-    const source = read("src/hooks/useModalA11y.ts");
-    expect(source).toContain("useModalA11y");
+  it("provides a local modal primitive with direct dialog semantics", () => {
+    const source = read("src/components/ui/Modal.tsx");
+    expect(source).toContain("useFocusTrap");
     expect(source).toContain('aria-labelledby');
     expect(source).toContain('aria-describedby');
     expect(source).toContain('role="dialog"');
     expect(source).toContain('aria-modal="true"');
+    expect(source).toContain('event.key === "Escape"');
+    expect(source).toContain("previousOverflow");
   });
 
-  it("applies focus trap, aria-labelledby, and aria-describedby in the booking modal", () => {
+  it("labels the booking modal without a second focus trap or DOM observer", () => {
     const source = read("src/components/BookingModal.tsx");
-    expect(source).toContain("useFocusTrap");
-    expect(source).toContain("useModalA11y");
+    expect(source).not.toContain("useFocusTrap");
+    expect(source).not.toContain("useModalA11y");
     expect(source).toContain("titleId");
     expect(source).toContain("descriptionId");
+    expect(source).toContain("aria-labelledby={titleId}");
+    expect(source).toContain("aria-describedby={descriptionId}");
     expect(source).toContain("booking-modal-content");
     expect(source).toContain("sr-only");
   });

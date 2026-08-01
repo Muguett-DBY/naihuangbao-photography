@@ -16,7 +16,6 @@ const legacyLineBudgets = new Map([
   ["src/components/BookingModal.tsx", 856],
   ["src/lib/editor-effects.ts", 856],
   ["src/components/admin/AdminPhotosTab.tsx", 700],
-  ["src/hooks/useGsapAnimations.ts", 574],
   ["src/components/dashboard/BookingsTab.tsx", 545],
   ["src/pages/LoginPage.tsx", 528],
   ["src/components/CinematicPremiere.tsx", 528],

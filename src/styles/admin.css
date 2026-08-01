@@ -8,6 +8,36 @@
   min-height: 100dvh; color: #88756f; font-size: 14px;
 }
 
+.adm-loading-indicator {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  min-height: 160px;
+  color: #5d4e49;
+  background: rgba(255, 250, 246, 0.74);
+}
+
+.adm-loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 2px solid rgba(73, 55, 53, 0.16);
+  border-top-color: #493735;
+  border-radius: 50%;
+  animation: adm-loading-spin 720ms linear infinite;
+}
+
+@keyframes adm-loading-spin {
+  to { transform: rotate(1turn); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adm-loading-spinner {
+    animation: none;
+    border-right-color: #493735;
+  }
+}
+
 .adm-login-box {
   width: 100%; max-width: 380px; margin: 120px auto 0; text-align: center;
   padding: 40px 32px; border-radius: 16px;
