@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { resolveRoutePreset, SCENE_PRESETS } from "./scene-presets";
-import { resolveCameraDepth } from "./three-scene-driver";
+import { resolveCameraDepth, resolveFlowEnergy } from "./three-scene-driver";
 
 describe("immersive route presets", () => {
   it.each([
@@ -59,5 +59,12 @@ describe("immersive route presets", () => {
     expect(resolveCameraDepth(preset, -1)).toBe(start);
     expect(resolveCameraDepth(preset, 2)).toBe(end);
     expect(resolveCameraDepth(preset, Number.NaN)).toBe(start);
+  });
+
+  it("bounds pointer and scroll flow energy for the home shader", () => {
+    expect(resolveFlowEnergy(0, 0, 0)).toBe(0);
+    expect(resolveFlowEnergy(0.04, -0.03, 0)).toBeCloseTo(0.275, 6);
+    expect(resolveFlowEnergy(0, 0, 0.05)).toBeCloseTo(0.4, 6);
+    expect(resolveFlowEnergy(10, 10, 10)).toBe(1.35);
   });
 });

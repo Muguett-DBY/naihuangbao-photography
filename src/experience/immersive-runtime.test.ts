@@ -386,6 +386,7 @@ describe("ImmersiveRuntime", () => {
     expect(harness.updates).toContainEqual({ index: 1, value: null });
     expect(second.value.dispose).toHaveBeenCalledOnce();
     expect(first.value.dispose).not.toHaveBeenCalled();
+    expect(harness.errors).toEqual([]);
   });
 
   it("restarts queued idle work after budget enforcement", async () => {

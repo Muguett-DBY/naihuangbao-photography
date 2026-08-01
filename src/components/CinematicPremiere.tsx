@@ -1,16 +1,23 @@
 import { useEffect, useRef, type RefObject } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  conceptPremiereColdOpenFrames,
+  conceptPremiereFeatureFlora,
+  conceptPremiereFeatureNight,
+  conceptPremiereFeatureReflection,
+  conceptPremiereFeatureVeil,
   conceptPremiereMotionFrames,
-  conceptPremiereOpeningFrame,
-  conceptPremierePrismFrame,
+  conceptPremierePortalDuet,
+  conceptPremierePortalFilm,
+  conceptPremierePortalLead,
+  conceptPremierePortalPrism,
   conceptPremiereTrailFrames,
 } from "../data/concept-premiere";
 import { ImageWithFallback } from "./ImageWithFallback";
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 const clampRange = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-const TRAIL_DISTANCE_PX = 68;
+const TRAIL_DISTANCE_PX = 52;
 
 function applyPremiereFrame(root: HTMLDivElement, progress: number) {
   const host = root.parentElement instanceof HTMLElement ? root.parentElement : root;
@@ -19,22 +26,26 @@ function applyPremiereFrame(root: HTMLDivElement, progress: number) {
   const realReveal = clamp((progress - 0.38) / 0.48);
   const openingExit = clamp((progress - 0.04) / 0.68);
   const apertureExit = clamp((progress - 0.58) / 0.42);
-  const teaserFade = 1 - clamp(progress / 0.2);
+  const portalExit = clamp((progress - 0.08) / 0.58);
   const frameOpacity = frameEntrance * (1 - frameExit);
   const frameShift = Math.round((1 - frameEntrance) * 38);
 
   host.style.setProperty("--premiere-progress", progress.toFixed(4));
   host.style.setProperty("--premiere-opening-opacity", (1 - openingExit).toFixed(4));
   host.style.setProperty("--premiere-opening-scale", (1.04 + progress * 0.045).toFixed(4));
-  host.style.setProperty("--premiere-aperture-opacity", ((0.58 + frameEntrance * 0.16) * (1 - apertureExit)).toFixed(4));
+  host.style.setProperty("--premiere-aperture-opacity", ((0.72 + frameEntrance * 0.14) * (1 - apertureExit) * (1 - portalExit)).toFixed(4));
   host.style.setProperty("--premiere-frame-opacity", frameOpacity.toFixed(4));
-  host.style.setProperty("--premiere-ribbon-opacity", Math.max(frameOpacity, teaserFade * 0.48).toFixed(4));
-  host.style.setProperty("--premiere-afterimage-opacity", Math.max(frameOpacity, teaserFade * 0.28).toFixed(4));
+  host.style.setProperty("--premiere-ribbon-opacity", frameOpacity.toFixed(4));
+  host.style.setProperty("--premiere-afterimage-opacity", frameOpacity.toFixed(4));
   host.style.setProperty("--premiere-frame-shift", `${frameShift}px`);
   host.style.setProperty("--premiere-frame-upshift", `${Math.round(frameShift * -0.72)}px`);
   host.style.setProperty("--premiere-frame-soft-lift", `${Math.round(frameShift * -0.4)}px`);
   host.style.setProperty("--premiere-real-opacity", (0.14 + realReveal * 0.86).toFixed(4));
-  host.style.setProperty("--premiere-veil-opacity", (0.3 * (1 - realReveal)).toFixed(4));
+  host.style.setProperty("--premiere-veil-opacity", (0.08 * (1 - realReveal)).toFixed(4));
+  host.style.setProperty("--premiere-portal-opacity", (1 - portalExit).toFixed(4));
+  host.style.setProperty("--premiere-portal-shift", `${Math.round(portalExit * 96)}px`);
+  host.style.setProperty("--premiere-portal-scale", (1 - portalExit * 0.045).toFixed(4));
+  host.style.setProperty("--premiere-type-opacity", (0.2 * (1 - portalExit)).toFixed(4));
   root.dataset.premierePhase = progress < 0.12 ? "opening" : progress < 0.7 ? "unfolding" : "reveal";
 }
 
@@ -54,6 +65,14 @@ function applyPremierePointer(root: HTMLDivElement, x: number, y: number) {
   host.style.setProperty("--premiere-pointer-mid-y", `${(y * 11).toFixed(2)}px`);
   host.style.setProperty("--premiere-pointer-far-x", `${(-x * 10).toFixed(2)}px`);
   host.style.setProperty("--premiere-pointer-far-y", `${(-y * 7).toFixed(2)}px`);
+  host.style.setProperty("--premiere-portal-near-x", `${(x * 34).toFixed(2)}px`);
+  host.style.setProperty("--premiere-portal-near-y", `${(y * 23).toFixed(2)}px`);
+  host.style.setProperty("--premiere-portal-mid-x", `${(x * 19).toFixed(2)}px`);
+  host.style.setProperty("--premiere-portal-mid-y", `${(y * 13).toFixed(2)}px`);
+  host.style.setProperty("--premiere-portal-far-x", `${(-x * 12).toFixed(2)}px`);
+  host.style.setProperty("--premiere-portal-far-y", `${(-y * 8).toFixed(2)}px`);
+  host.style.setProperty("--premiere-portal-rotate-x", `${(-y * 2.4).toFixed(2)}deg`);
+  host.style.setProperty("--premiere-portal-rotate-y", `${(x * 3.4).toFixed(2)}deg`);
 }
 
 function applyPremiereVelocity(root: HTMLDivElement, velocity: number) {
@@ -76,6 +95,7 @@ function usePremiereScroll(rootRef: RefObject<HTMLDivElement | null>) {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const finePointerQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
     const host = root.parentElement instanceof HTMLElement ? root.parentElement : root;
+    const signature = host.querySelector<HTMLElement>("[data-premiere-signature]");
     const trailFrames = Array.from(host.querySelectorAll<HTMLElement>("[data-premiere-trail-frame]"));
     const trailAnimations = new Map<HTMLElement, Animation>();
     let intersectsViewport = true;
@@ -93,6 +113,27 @@ function usePremiereScroll(rootRef: RefObject<HTMLDivElement | null>) {
     let trailOriginY = 0;
     let trailHasOrigin = false;
     let trailIdleTimer: number | null = null;
+    let introTimer: number | null = null;
+
+    const startIntro = () => {
+      if (introTimer !== null) window.clearTimeout(introTimer);
+      if (motionQuery.matches) {
+        root.dataset.premiereIntro = "reduced";
+        host.dataset.premiereIntro = "reduced";
+        if (signature) signature.dataset.premiereIntro = "reduced";
+        introTimer = null;
+        return;
+      }
+      root.dataset.premiereIntro = "running";
+      host.dataset.premiereIntro = "running";
+      if (signature) signature.dataset.premiereIntro = "running";
+      introTimer = window.setTimeout(() => {
+        root.dataset.premiereIntro = "settled";
+        host.dataset.premiereIntro = "settled";
+        if (signature) signature.dataset.premiereIntro = "settled";
+        introTimer = null;
+      }, 1_850);
+    };
 
     const stopTrail = (state: "idle" | "disabled" = "idle") => {
       trailAnimations.forEach((animation) => animation.cancel());
@@ -126,13 +167,13 @@ function usePremiereScroll(rootRef: RefObject<HTMLDivElement | null>) {
           transform: `translate(-50%, -50%) translate3d(0, 16px, 0) scale(0.68) rotate(${rotation - 4}deg)`,
         },
         {
-          opacity: 0.9,
+          opacity: 0.96,
           clipPath: "inset(0 0 0 0)",
           transform: `translate(-50%, -50%) translate3d(0, 0, 0) scale(1) rotate(${rotation}deg)`,
           offset: 0.16,
         },
         {
-          opacity: 0.78,
+          opacity: 0.86,
           clipPath: "inset(0 0 0 0)",
           transform: `translate(-50%, -50%) translate3d(${driftX * 0.45}px, ${driftY * 0.45}px, 0) scale(${1.01 + speed * 0.035}) rotate(${(rotation + nextRotation) * 0.5}deg)`,
           offset: 0.58,
@@ -143,7 +184,7 @@ function usePremiereScroll(rootRef: RefObject<HTMLDivElement | null>) {
           transform: `translate(-50%, -50%) translate3d(${driftX}px, ${driftY}px, 0) scale(${1.04 + speed * 0.08}) rotate(${nextRotation}deg)`,
         },
       ], {
-        duration: 1_240 + (1 - speed) * 260,
+        duration: 1_650 + (1 - speed) * 250,
         easing: "cubic-bezier(0.22, 1, 0.36, 1)",
         fill: "both",
       });
@@ -160,7 +201,7 @@ function usePremiereScroll(rootRef: RefObject<HTMLDivElement | null>) {
       trailIdleTimer = window.setTimeout(() => {
         root.dataset.premiereTrail = "idle";
         trailIdleTimer = null;
-      }, 1_650);
+      }, 2_100);
       trailCursor = (trailCursor + 1) % trailFrames.length;
     };
 
@@ -220,6 +261,7 @@ function usePremiereScroll(rootRef: RefObject<HTMLDivElement | null>) {
       frame = window.requestAnimationFrame(update);
     };
     const handleMotionChange = () => {
+      startIntro();
       if (motionQuery.matches) applyStaticFrame();
       else requestUpdate();
     };
@@ -280,6 +322,7 @@ function usePremiereScroll(rootRef: RefObject<HTMLDivElement | null>) {
 
     return () => {
       if (frame !== null) window.cancelAnimationFrame(frame);
+      if (introTimer !== null) window.clearTimeout(introTimer);
       stopTrail();
       observer?.disconnect();
       window.removeEventListener("scroll", requestUpdate);
@@ -287,6 +330,7 @@ function usePremiereScroll(rootRef: RefObject<HTMLDivElement | null>) {
       host.removeEventListener("pointermove", handlePointerMove);
       host.removeEventListener("pointerleave", handlePointerLeave);
       motionQuery.removeEventListener("change", handleMotionChange);
+      delete host.dataset.premiereIntro;
     };
   }, [rootRef]);
 }
@@ -305,6 +349,7 @@ export function CinematicPremiere() {
         data-premiere-phase="opening"
         data-premiere-pointer="idle"
         data-premiere-active="true"
+        data-premiere-intro="running"
         data-premiere-trail="idle"
         data-premiere-velocity="still"
         aria-hidden="true"
@@ -312,7 +357,7 @@ export function CinematicPremiere() {
         <div className="cinematic-premiere__veil" />
         <div className="cinematic-premiere__opening">
           <ImageWithFallback
-            src={conceptPremiereOpeningFrame.imageUrl}
+            src={conceptPremierePortalLead.imageUrl}
             alt=""
             title={t("premiere.assetTitle")}
             tone="cream"
@@ -320,12 +365,58 @@ export function CinematicPremiere() {
             sizes="100vw"
           />
         </div>
+        <div className="cinematic-premiere__kinetic-type" aria-hidden="true">
+          <span>NHB / PORTRAIT / 2026</span>
+          <span>FIELD NOTES / NANJING</span>
+        </div>
+        <div className="cinematic-premiere__cold-open" data-premiere-cold-open>
+          <div className="cinematic-premiere__repeat-run" data-premiere-repeat-run>
+            {conceptPremiereColdOpenFrames.map((frame, frameIndex) => {
+              const index = frameIndex + 1;
+              return (
+                <div
+                  className={`cinematic-premiere__repeat-frame cinematic-premiere__repeat-frame--${index}`}
+                  data-premiere-repeat-frame={index}
+                  key={frame.id}
+                >
+                  <ImageWithFallback
+                    src={frame.imageUrl}
+                    alt=""
+                    title={t(frame.altKey)}
+                    tone="ink"
+                    priority={index === 1}
+                    sizes="(max-width: 980px) 44vw, 24vw"
+                  />
+                </div>
+              );
+            })}
+          </div>
+          <div className="cinematic-premiere__portal-frame cinematic-premiere__portal-frame--duet">
+            <ImageWithFallback
+              src={conceptPremierePortalDuet.imageUrl}
+              alt=""
+              title={t(conceptPremierePortalDuet.altKey)}
+              tone="ink"
+              sizes="(max-width: 980px) 34vw, 18vw"
+            />
+          </div>
+          <div className="cinematic-premiere__portal-frame cinematic-premiere__portal-frame--film">
+            <ImageWithFallback
+              src={conceptPremierePortalFilm.imageUrl}
+              alt=""
+              title={t(conceptPremierePortalFilm.altKey)}
+              tone="ink"
+              sizes="(max-width: 980px) 30vw, 15vw"
+            />
+          </div>
+        </div>
         <div className="cinematic-premiere__aperture" data-premiere-aperture>
           <ImageWithFallback
-            src={conceptPremierePrismFrame.imageUrl}
+            src={conceptPremierePortalPrism.imageUrl}
             alt=""
-            title={t(conceptPremierePrismFrame.altKey)}
-            tone="cream"
+            title={t(conceptPremierePortalPrism.altKey)}
+            tone="ink"
+            priority
             sizes="100vw"
           />
         </div>
@@ -340,11 +431,78 @@ export function CinematicPremiere() {
                 src={frame.imageUrl}
                 alt=""
                 title={t(frame.altKey)}
-                tone={frame.kind === "detail" ? "ink" : "cream"}
+                tone="ink"
                 sizes="(max-width: 980px) 42vw, 24vw"
               />
             </div>
           ))}
+        </div>
+      </div>
+      <div
+        className="cinematic-premiere__signature"
+        data-premiere-signature
+        data-premiere-intro="running"
+        aria-hidden="true"
+      >
+        <div className="cinematic-premiere__signature-field">
+          <ImageWithFallback
+            src={conceptPremierePortalLead.imageUrl}
+            alt=""
+            title={t("premiere.assetTitle")}
+            tone="ink"
+            priority
+            sizes="100vw"
+          />
+        </div>
+        <div className="cinematic-premiere__signature-shutter" />
+        <div className="cinematic-premiere__signature-reel">
+          <div className="cinematic-premiere__signature-slice cinematic-premiere__signature-slice--portrait">
+            <ImageWithFallback
+              src={conceptPremiereFeatureVeil.imageUrl}
+              alt=""
+              title={t(conceptPremiereFeatureVeil.altKey)}
+              tone="ink"
+              priority
+              sizes="22vw"
+            />
+          </div>
+          <div className="cinematic-premiere__signature-slice cinematic-premiere__signature-slice--duet">
+            <ImageWithFallback
+              src={conceptPremiereFeatureReflection.imageUrl}
+              alt=""
+              title={t(conceptPremiereFeatureReflection.altKey)}
+              tone="ink"
+              sizes="20vw"
+            />
+          </div>
+          <div className="cinematic-premiere__signature-slice cinematic-premiere__signature-slice--prism">
+            <ImageWithFallback
+              src={conceptPremiereFeatureFlora.imageUrl}
+              alt=""
+              title={t(conceptPremiereFeatureFlora.altKey)}
+              tone="ink"
+              sizes="24vw"
+            />
+          </div>
+          <div className="cinematic-premiere__signature-slice cinematic-premiere__signature-slice--night">
+            <ImageWithFallback
+              src={conceptPremiereFeatureNight.imageUrl}
+              alt=""
+              title={t(conceptPremiereFeatureNight.altKey)}
+              tone="ink"
+              sizes="22vw"
+            />
+          </div>
+        </div>
+        <div className="cinematic-premiere__signature-copy">
+          <span className="cinematic-premiere__signature-kicker">CONCEPT FILM / NANJING / 2026</span>
+          <span className="cinematic-premiere__signature-word cinematic-premiere__signature-word--lead">NAIHUANGBAO</span>
+          <span className="cinematic-premiere__signature-word cinematic-premiere__signature-word--echo">PORTRAIT</span>
+        </div>
+        <div className="cinematic-premiere__signature-meter">
+          <span>VOL.01</span>
+          <span>00:00:01:24</span>
+          <span>FIELD NOTES</span>
         </div>
       </div>
       <div className="cinematic-premiere__trail" data-premiere-trail-layer aria-hidden="true">

@@ -200,7 +200,7 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(heroCss).not.toContain("hero-glow-orb");
     expect(heroCss).not.toContain("hero-cover-design");
     expect(heroBlock).not.toMatch(/background(?:-image)?\s*:[^;]*gradient\(/s);
-    expect(heroCss).toMatch(/\.cinematic-premiere__aperture\s*\{[^}]*width:\s*min\(30vw, 430px\)[^}]*aspect-ratio:\s*16 \/ 9/s);
+    expect(heroCss).toMatch(/\.cinematic-premiere__aperture\s*\{[^}]*width:\s*min\(39vw, 560px\)[^}]*aspect-ratio:\s*16 \/ 9/s);
     expect(galleryCss).toContain(".gallery-page-contact-sheet");
     expect(pagesCss).toContain(".photo-detail-contact-sheet");
     expect(pagesCss).toMatch(/\.home-editorial-band--why \.why-card\s*\{[^}]*border-radius:\s*0/s);

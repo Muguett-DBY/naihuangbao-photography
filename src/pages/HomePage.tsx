@@ -20,7 +20,7 @@ import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import { SectionSkeleton } from "../components/SectionSkeleton";
 import { ServiceJournal } from "../components/ServiceJournal";
 import { CinematicPremiere } from "../components/CinematicPremiere";
-import { conceptPremiereFrames } from "../data/concept-premiere";
+import { conceptPremiereImmersiveFrames } from "../data/concept-premiere";
 import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 import { OpticalSceneChrome } from "../components/shared/OpticalSceneChrome";
 import { HomeChapterIndex, type HomeChapter } from "../components/shared/HomeChapterIndex";
@@ -45,16 +45,11 @@ export function HomePage() {
     [photos],
   );
   const immersiveImages = useMemo(() => {
-    const conceptImages = conceptPremiereFrames.map((frame) => frame.imageUrl);
+    const conceptImages = conceptPremiereImmersiveFrames.map((frame) => frame.imageUrl);
     const photoImages = coverPhotos.map((photo) => photo.imageUrl);
     return [
-      conceptImages[0],
-      photoImages[0],
-      conceptImages[1],
-      photoImages[1],
-      conceptImages[2],
-      photoImages[2],
-      ...conceptImages.slice(3),
+      ...conceptImages,
+      ...photoImages,
     ].filter((imageUrl): imageUrl is string => Boolean(imageUrl));
   }, [coverPhotos]);
   const immersiveHeroRef = useImmersiveAnchor({
@@ -117,7 +112,7 @@ export function HomePage() {
             <span>{siteConfig.city}</span>
             <span>2026</span>
           </p>
-          <h1 className="hero-title">{siteConfig.brandName}</h1>
+          <h1 className="hero-title" data-premiere-title>{siteConfig.brandName}</h1>
           <p className="hero-field-note">{t("hero.brandPrefix")}</p>
           <p className="hero-intro">{t("hero.intro")}</p>
 
