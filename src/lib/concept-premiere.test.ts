@@ -5,6 +5,7 @@ import {
   conceptPremiereFrames,
   conceptPremiereOpeningFrame,
   conceptPremierePrismFrame,
+  conceptPremiereTrailFrames,
 } from "../data/concept-premiere";
 import { galleryItems } from "../data/gallery";
 import { getResponsiveImageAttrs } from "./responsive-image";
@@ -23,8 +24,10 @@ describe("homepage concept premiere assets", () => {
     expect(conceptPremierePrismFrame.id).toBe("prism");
     expect(conceptPremiereFrames.filter((frame) => frame.kind === "portrait")).toHaveLength(6);
     expect(conceptPremiereFrames.filter((frame) => frame.kind === "detail")).toHaveLength(2);
+    expect(conceptPremiereTrailFrames).toHaveLength(4);
+    expect(conceptPremiereTrailFrames.filter((frame) => frame.orientation === "portrait")).toHaveLength(3);
 
-    for (const frame of conceptPremiereFrames) {
+    for (const frame of [...conceptPremiereFrames, ...conceptPremiereTrailFrames]) {
       const imagePath = assetPath(frame.imageUrl);
       const fileName = imagePath.split("/").at(-1);
       const avifName = fileName?.replace(/\.webp$/, ".avif");
@@ -40,11 +43,13 @@ describe("homepage concept premiere assets", () => {
   it("emits AVIF and WebP source sets for concept visuals without contaminating the real gallery", () => {
     const picture = getResponsivePictureAttrs(conceptPremiereOpeningFrame.imageUrl, "100vw");
     const image = getResponsiveImageAttrs(conceptPremiereOpeningFrame.imageUrl, "100vw");
+    const trailPicture = getResponsivePictureAttrs(conceptPremiereTrailFrames[0].imageUrl, "20vw");
 
     expect(picture.sources).toHaveLength(2);
     expect(picture.sources[0]?.srcSet).toContain("/images/concept-premiere/640/");
     expect(picture.sources[0]?.srcSet).toContain(".avif");
     expect(picture.sources[1]?.srcSet).toContain(".webp");
+    expect(trailPicture.sources[0]?.srcSet).toContain("/images/concept-premiere/640/premiere-wake-v3.avif");
     expect(image.srcSet).toContain("/images/concept-premiere/960/");
     expect(galleryItems.every((item) => !item.imageUrl.includes("concept-premiere"))).toBe(true);
   });

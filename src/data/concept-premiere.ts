@@ -14,8 +14,17 @@ export type ConceptPremiereFrame = {
   kind: "opening" | "portrait" | "detail";
 };
 
+export type ConceptPremiereTrailFrame = {
+  id: "wake" | "crossing" | "shards" | "ritual";
+  imageUrl: string;
+  altKey: string;
+  orientation: "portrait" | "landscape";
+};
+
 const conceptPremiereAssetVersion = "20260801-2";
+const conceptPremiereTrailAssetVersion = "20260801-3";
 const conceptImage = (fileName: string) => `/images/concept-premiere/${fileName}?v=${conceptPremiereAssetVersion}`;
+const conceptTrailImage = (fileName: string) => `/images/concept-premiere/${fileName}?v=${conceptPremiereTrailAssetVersion}`;
 
 export const conceptPremiereFrames = [
   {
@@ -77,3 +86,30 @@ export const conceptPremiereFrames = [
 export const conceptPremiereOpeningFrame = conceptPremiereFrames[0];
 export const conceptPremierePrismFrame = conceptPremiereFrames[1];
 export const conceptPremiereMotionFrames = conceptPremiereFrames.slice(2);
+
+export const conceptPremiereTrailFrames = [
+  {
+    id: "wake",
+    imageUrl: conceptTrailImage("premiere-wake-v3.webp"),
+    altKey: "premiere.frames.wakeAlt",
+    orientation: "portrait",
+  },
+  {
+    id: "crossing",
+    imageUrl: conceptTrailImage("premiere-crossing-v3.webp"),
+    altKey: "premiere.frames.crossingAlt",
+    orientation: "portrait",
+  },
+  {
+    id: "shards",
+    imageUrl: conceptTrailImage("premiere-shards-v3.webp"),
+    altKey: "premiere.frames.shardsAlt",
+    orientation: "landscape",
+  },
+  {
+    id: "ritual",
+    imageUrl: conceptTrailImage("premiere-ritual-v3.webp"),
+    altKey: "premiere.frames.ritualAlt",
+    orientation: "portrait",
+  },
+] as const satisfies readonly ConceptPremiereTrailFrame[];
