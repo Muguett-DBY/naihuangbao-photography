@@ -32,6 +32,7 @@ test.describe("cinematic homepage premiere", () => {
     await expect(premiere).toHaveAttribute("data-premiere-phase", "opening");
     await expect(premiere.locator("[data-premiere-frame]")).toHaveCount(7);
     await expect(premiere.locator("[data-premiere-aperture]")).toBeVisible();
+    await expect(page.locator("[data-premiere-trail-frame]")).toHaveCount(4);
     await expect(page.locator(".hero-concept-label")).toContainText("Brand concept visuals");
     await expect(title).toBeVisible();
     await expect(booking).toBeVisible();
@@ -59,9 +60,20 @@ test.describe("cinematic homepage premiere", () => {
       );
     }
     await expect(premiere).toHaveAttribute("data-premiere-pointer", "active");
+    await expect(premiere).toHaveAttribute("data-premiere-trail", "active");
     await expect.poll(async () => hero.evaluate((element) => (
       Number.parseFloat(getComputedStyle(element).getPropertyValue("--premiere-pointer-x"))
     ))).toBeGreaterThan(56);
+    if (heroBounds) {
+      await page.mouse.move(
+        heroBounds.x + heroBounds.width * 0.68,
+        heroBounds.y + heroBounds.height * 0.64,
+        { steps: 3 },
+      );
+    }
+    await expect.poll(async () => page.locator("[data-premiere-trail-frame]").evaluateAll((elements) => (
+      Math.max(...elements.map((element) => Number.parseFloat(getComputedStyle(element).opacity)))
+    ))).toBeGreaterThan(0.1);
 
     await page.evaluate(() => {
       const heroHeight = document.querySelector<HTMLElement>(".hero-home")!.offsetHeight;
@@ -90,6 +102,8 @@ test.describe("cinematic homepage premiere", () => {
     await expect(page.locator(".hero-cover-primary-btn")).toBeVisible();
     await expect(page.locator(".cinematic-premiere__frame-stack")).toHaveCSS("display", "none");
     await expect(page.locator("[data-premiere-aperture]")).not.toBeVisible();
+    await expect(page.locator("[data-premiere-trail-layer]")).toHaveCSS("display", "none");
+    await expect(premiere).toHaveAttribute("data-premiere-trail", "disabled");
     expect(await page.locator(".hero-contact-sheet").evaluate((element) => (
       Number.parseFloat(getComputedStyle(element).opacity)
     ))).toBeGreaterThan(0.95);
