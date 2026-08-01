@@ -1,6 +1,6 @@
 import "../styles/pages.css";
 import { useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowUpRight, Calendar, Clock, Filter, LayoutGrid, MapPin, Share2, Users, X } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";

@@ -421,17 +421,33 @@ test.describe("short desktop hero contract", () => {
   test("hero title and actions remain inside the cover while the next section stays visible", async ({ page }) => {
     await page.goto("/");
     await settleRoute(page);
-    const geometry = await page.evaluate(() => {
-      const hero = document.querySelector<HTMLElement>(".hero-home")!.getBoundingClientRect();
-      const title = document.querySelector<HTMLElement>(".hero-title")!;
-      const actions = document.querySelector<HTMLElement>(".hero-actions")!.getBoundingClientRect();
-      const index = document.querySelector<HTMLElement>(".home-index-strip")!.getBoundingClientRect();
-      return {
-        actionsInside: actions.top >= hero.top && actions.bottom <= hero.bottom,
-        titleClipped: title.scrollWidth > title.clientWidth + 1,
-        nextSectionVisible: index.top < window.innerHeight,
-      };
-    });
+    const hero = page.locator(".hero-home:not(.home-premiere-fallback)");
+    const title = hero.locator(".hero-title");
+    const actions = hero.locator(".hero-actions");
+    const index = page.locator(".home-index-strip");
+
+    await expect(hero).toBeVisible();
+    await expect(title).toBeVisible();
+    await expect(actions).toBeVisible();
+    await expect(index).toBeVisible();
+
+    const [heroBox, actionsBox, indexBox, titleClipped] = await Promise.all([
+      hero.boundingBox(),
+      actions.boundingBox(),
+      index.boundingBox(),
+      title.evaluate((element) => element.scrollWidth > element.clientWidth + 1),
+    ]);
+    expect(heroBox).not.toBeNull();
+    expect(actionsBox).not.toBeNull();
+    expect(indexBox).not.toBeNull();
+
+    const geometry = {
+      actionsInside:
+        actionsBox!.y >= heroBox!.y
+        && actionsBox!.y + actionsBox!.height <= heroBox!.y + heroBox!.height,
+      titleClipped,
+      nextSectionVisible: indexBox!.y < page.viewportSize()!.height,
+    };
     expect(geometry).toEqual({ actionsInside: true, titleClipped: false, nextSectionVisible: true });
   });
 });

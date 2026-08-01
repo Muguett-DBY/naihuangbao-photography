@@ -1,10 +1,10 @@
 import "../styles/pages.css";
 import { useRef, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ShoppingCart } from "lucide-react";
 import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
-import { useBookingModal } from "../hooks/useBookingModal";
+import { useBookingModal } from "../features/booking/BookingContext";
 import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";

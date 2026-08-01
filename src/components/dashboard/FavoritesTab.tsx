@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { Heart, Trash2 } from "lucide-react";
 import { useFavorites } from "../../hooks/useFavorites";
 import { DashboardTabWrapper } from "./DashboardTabWrapper";

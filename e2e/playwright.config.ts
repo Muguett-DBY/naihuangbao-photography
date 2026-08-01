@@ -5,6 +5,7 @@ delete process.env.NO_COLOR;
 export default defineConfig({
   testDir: ".",
   timeout: 30000,
+  workers: process.env.CI ? 4 : 6,
   use: {
     baseURL: process.env.BASE_URL || "http://127.0.0.1:4174",
     headless: true,

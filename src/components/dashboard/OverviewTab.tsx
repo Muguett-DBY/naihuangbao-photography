@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { CalendarCheck, BookOpen, MapPin, ArrowRight, Camera, Sparkles, ShoppingBag, Clock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useFetch } from "../../hooks/useFetch";
 import { useAuth } from "../../hooks/useAuth";
 import { Skeleton } from "../shared/Skeleton";

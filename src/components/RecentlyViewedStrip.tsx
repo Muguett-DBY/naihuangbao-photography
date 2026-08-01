@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed";

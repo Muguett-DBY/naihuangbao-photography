@@ -1,8 +1,9 @@
 import "./lib/gsap-runtime";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { RouterProvider } from "react-router-dom";
-import { router } from "./router";
+import { RouterProvider } from "react-router/dom";
+import { preloadRoute, router } from "./router";
+import { RoutePreloadProvider } from "./routing/RoutePreloadProvider";
 import { initializeAppearancePreferences } from "./lib/appearance-preferences";
 import { initWebVitals } from "./utils/webVitals";
 import "./i18n";
@@ -37,7 +38,9 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <RoutePreloadProvider preloadRoute={preloadRoute}>
+      <RouterProvider router={router} />
+    </RoutePreloadProvider>
   </StrictMode>,
 );
 

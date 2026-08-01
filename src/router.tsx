@@ -1,10 +1,13 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router";
 import { useTranslation } from "react-i18next";
 import { RootLayout } from "./layouts/RootLayout";
 import { NotFound } from "./components/NotFound";
-import { useBookingModal } from "./hooks/useBookingModal";
-import { routeLoaders } from "./lib/route-preload";
+import { useBookingModal } from "./features/booking/BookingContext";
+import { createRoutePreloader } from "./lib/route-preload";
+import { routeLoaders } from "./routing/route-loaders";
+
+export const preloadRoute = createRoutePreloader(routeLoaders);
 
 const HomePage = lazy(routeLoaders["/"]);
 const GalleryPage = lazy(routeLoaders["/gallery"]);

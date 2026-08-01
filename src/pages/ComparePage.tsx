@@ -1,5 +1,5 @@
 import "../styles/pages.css";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, GitCompare, Layers, Repeat, X, Keyboard } from "lucide-react";
 import { useCompare } from "../hooks/useCompare";

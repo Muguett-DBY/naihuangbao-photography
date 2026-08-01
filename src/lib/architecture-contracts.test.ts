@@ -9,6 +9,28 @@ function read(path: string) {
 }
 
 describe("architecture optimization contracts", () => {
+  it("enforces dependency direction, cycle checks, and file-size ratchets in lint", () => {
+    const packageJson = read("package.json");
+    const architectureCheck = read("scripts/check-architecture.mjs");
+    const routePreload = read("src/lib/route-preload.ts");
+    const routeLoaders = read("src/routing/route-loaders.ts");
+    const prefetchLink = read("src/components/shared/PrefetchLink.tsx");
+    const main = read("src/main.tsx");
+
+    expect(packageJson).toContain('"typecheck": "tsc -b --noEmit"');
+    expect(packageJson).toContain('"architecture:check": "node scripts/check-architecture.mjs"');
+    expect(packageJson).toContain('"lint": "npm run typecheck && npm run architecture:check"');
+    expect(architectureCheck).toContain("findStronglyConnectedComponents");
+    expect(architectureCheck).toContain("legacyLineBudgets");
+    expect(architectureCheck).toContain('"react-router-dom"');
+    expect(routePreload).not.toContain('../pages/');
+    expect(routeLoaders).toContain('../pages/HomePage');
+    expect(prefetchLink).toContain("useRoutePreloader");
+    expect(main).toContain("<RoutePreloadProvider");
+    expect(existsSync(resolve(root, "docs/ARCHITECTURE.md"))).toBe(true);
+    expect(existsSync(resolve(root, "CONTRIBUTING.md"))).toBe(true);
+  });
+
   it("keeps Cloudflare bindings generated and deploy environments explicit", () => {
     const wrangler = read("wrangler.toml");
     const tsconfigNode = read("tsconfig.node.json");
@@ -98,12 +120,20 @@ describe("architecture optimization contracts", () => {
     const packageJson = read("package.json");
     const viteConfig = read("vite.config.ts");
     const mainSource = read("src/main.tsx");
+    const bookingProvider = read("src/features/booking/BookingProvider.tsx");
 
     expect(packageJson).toContain("perf:budget");
     expect(viteConfig).toContain("manualChunks");
     expect(viteConfig).toContain("react-vendor");
+    expect(viteConfig).toContain("router-vendor");
     expect(viteConfig).toContain("assetsInlineLimit");
     expect(mainSource).toContain("requestIdleCallback");
+    expect(bookingProvider).toContain("lazy(preloadBookingModal)");
+    expect(bookingProvider).toContain('import("../../components/BookingModal")');
+    expect(bookingProvider).toContain("void preloadBookingModal()");
+    expect(bookingProvider).not.toContain(
+      'import { BookingModal } from "../../components/BookingModal"',
+    );
   });
 
   it("keeps main.tsx free of undefined identifiers (gsap/plugin references)", () => {

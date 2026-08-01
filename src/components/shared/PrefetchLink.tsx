@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react";
-import { Link } from "react-router-dom";
-import { preloadRoute } from "../../lib/route-preload";
+import { Link } from "react-router";
 import { logAndIgnore } from "../../lib/errors";
+import { useRoutePreloader } from "../../routing/RoutePreloadProvider";
 
 type PrefetchLinkProps = ComponentProps<typeof Link>;
 
@@ -12,6 +12,7 @@ export function PrefetchLink({
   to,
   ...props
 }: PrefetchLinkProps) {
+  const preloadRoute = useRoutePreloader();
   const preload = () => {
     if (typeof to === "string") {
       void preloadRoute(to).catch((error) => {

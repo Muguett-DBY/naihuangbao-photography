@@ -1,6 +1,6 @@
 import "../styles/pages.css";
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { BarChart3, BookOpen, CheckCircle, Clock, FileText, Images, Lock, LogIn, Play, ShoppingCart } from "lucide-react";
 import { Button } from "animal-island-ui";

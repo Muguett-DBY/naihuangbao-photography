@@ -1,6 +1,6 @@
 import "../styles/boundaries.css";
 import { Component, type ErrorInfo, type ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { AlertTriangle, House, RotateCcw } from "lucide-react";
 import i18n from "../i18n";
 import { logError } from "../lib/error-logger";

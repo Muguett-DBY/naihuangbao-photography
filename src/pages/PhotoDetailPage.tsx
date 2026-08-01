@@ -1,6 +1,6 @@
 import "../styles/pages.css";
 import { lazy, useEffect, useMemo, useRef, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { MapPin, Camera, ArrowRight, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";

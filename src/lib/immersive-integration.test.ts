@@ -265,7 +265,7 @@ describe("immersive experience integration", () => {
       expect(source).not.toContain('from "three"');
     }
 
-    const booking = read("src/hooks/useBookingModal.tsx");
+    const booking = read("src/features/booking/BookingContext.tsx");
     const lightbox = read("src/components/Lightbox.tsx");
     const map = read("src/pages/MapPage.tsx");
     const editor = read("src/pages/PhotoEditorWorkspace.tsx");

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Play, Loader2, Search, X, LayoutGrid, Columns, RotateCcw, Eye } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";

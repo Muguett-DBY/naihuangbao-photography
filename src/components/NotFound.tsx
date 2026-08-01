@@ -1,6 +1,6 @@
 import "../styles/boundaries.css";
 import { ArchiveX, ArrowLeft, Images } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "./shared/PageTransition";
