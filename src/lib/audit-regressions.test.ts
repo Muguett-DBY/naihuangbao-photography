@@ -502,6 +502,9 @@ describe("audit regression coverage", () => {
     expect(headersSource).toContain("object-src 'none'");
     expect(headersSource).not.toContain("/assets/*");
     expect(headersSource).not.toContain("Cache-Control: public, max-age=31536000");
+    expect(headersSource).toContain("/sw.js\n  Cache-Control: no-cache, no-store, must-revalidate");
+    expect(headersSource).toContain("Service-Worker-Allowed: /");
+    expect(headersSource).toContain("/registerSW.js\n  Cache-Control: no-cache, no-store, must-revalidate");
     expect(redirectsSource).toContain("/admin /admin/ 301");
     expect(redirectsSource).toContain("/booking / 200");
     expect(redirectsSource).toContain("/gallery/:id / 200");
@@ -1070,13 +1073,17 @@ describe("audit regression coverage", () => {
     expect(viteConfigSource).not.toContain("backgroundSync");
   });
 
-  it("keeps PWA updates user-visible and clears outdated app-shell caches", () => {
-    expect(viteConfigSource).toContain('registerType: "prompt"');
+  it("activates PWA updates automatically and clears outdated app-shell caches", () => {
+    expect(viteConfigSource).toContain('registerType: "autoUpdate"');
+    expect(viteConfigSource).toContain("skipWaiting: true");
+    expect(viteConfigSource).toContain("clientsClaim: true");
     expect(viteConfigSource).toContain("cleanupOutdatedCaches: true");
     expect(pwaUpdateBannerSource).toContain("const registration = registrationRef.current");
     expect(pwaUpdateBannerSource).toContain("!registration?.installing && !registration?.waiting && !registration?.active");
     expect(pwaUpdateBannerSource).toContain("registration.update()");
     expect(pwaUpdateBannerSource).toContain("UPDATE_CHECK_INTERVAL_MS");
+    expect(pwaUpdateBannerSource).toContain("let hasController = Boolean(navigator.serviceWorker.controller)");
+    expect(pwaUpdateBannerSource).toMatch(/if \(!hasController\)[\s\S]*?return;/);
     expect(pwaUpdateBannerSource).toContain("navigator.serviceWorker.getRegistration()");
     expect(pwaUpdateBannerSource).toContain("window.setInterval(checkForUpdate");
     expect(pwaUpdateBannerSource).toContain("window.addEventListener(\"online\", checkForUpdate)");
