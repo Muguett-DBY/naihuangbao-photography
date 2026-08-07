@@ -2,7 +2,7 @@ import "../styles/pages.css";
 import { Suspense, lazy, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { CalendarCheck } from "lucide-react";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useBookingModal } from "../features/booking/BookingContext";
 import { track } from "../utils/track";
@@ -23,7 +23,7 @@ export function BookingPage() {
   const { openBookingModal } = useBookingModal();
 
   useSEO({ titleKey: "seo.bookingTitle", descKey: "seo.bookingDesc", path: "/booking" });
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
   useEffect(() => {
     track("booking_page_view");
   }, []);

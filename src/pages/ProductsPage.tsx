@@ -3,7 +3,7 @@ import { useRef, useState, useMemo } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Download } from "lucide-react";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
@@ -28,7 +28,7 @@ export function ProductsPage() {
   const bindImmersiveHighlight = useImmersiveHighlight();
 
   useSEO({ titleKey: "seo.presetsTitle", descKey: "seo.presetsDesc", path: "/products" });
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
 
   // Extract unique categories
   const categories = useMemo(() => {

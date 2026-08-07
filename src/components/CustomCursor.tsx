@@ -1,148 +1,84 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  const rafId = useRef(0);
-  const pos = useRef({ x: 0, y: 0 });
-  const ringPos = useRef({ x: 0, y: 0 });
-  const idleTimer = useRef(0);
-
-  const onMove = useCallback((e: MouseEvent) => {
-    pos.current = { x: e.clientX, y: e.clientY };
-    idleTimer.current = 0;
-
-    const target = e.target as HTMLElement;
-    const isClickable = target.closest("a, button, [role='button'], input, select, textarea, label, .gallery-card, .package-card, .why-card");
-    const isImage = target.closest("img, .img-blur-wrap, .gallery-image-placeholder");
-    const ring = ringRef.current;
-    if (ring) {
-      ring.classList.toggle("is-clickable", !!isClickable);
-      ring.classList.toggle("is-image", !!isImage);
-    }
-  }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
-
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const dot = dotRef.current;
     const ring = ringRef.current;
     if (!dot || !ring) return;
 
-    let running = false;
+    let frame = 0;
+    let settledFrames = 0;
+    let targetX = 0;
+    let targetY = 0;
+    let ringX = 0;
+    let ringY = 0;
+    let initialized = false;
 
-    const loop = () => {
-      if (document.hidden || idleTimer.current >= 300) {
-        running = false;
-        rafId.current = 0;
-        return;
-      }
+    const animateRing = () => {
+      frame = 0;
+      const deltaX = targetX - ringX;
+      const deltaY = targetY - ringY;
+      ringX += deltaX * 0.18;
+      ringY += deltaY * 0.18;
+      ring.style.transform = `translate3d(${ringX - 16}px, ${ringY - 16}px, 0)`;
 
-      idleTimer.current++;
-      ringPos.current.x += (pos.current.x - ringPos.current.x) * 0.12;
-      ringPos.current.y += (pos.current.y - ringPos.current.y) * 0.12;
-
-      dot.style.transform = `translate(${pos.current.x - 3}px, ${pos.current.y - 3}px)`;
-      ring.style.transform = `translate(${ringPos.current.x - 16}px, ${ringPos.current.y - 16}px)`;
-
-      rafId.current = requestAnimationFrame(loop);
+      if (Math.abs(deltaX) < 0.12 && Math.abs(deltaY) < 0.12) settledFrames += 1;
+      else settledFrames = 0;
+      if (settledFrames < 4 && !document.hidden) frame = window.requestAnimationFrame(animateRing);
     };
 
-    const startLoop = () => {
-      if (running) return;
-      running = true;
-      rafId.current = requestAnimationFrame(loop);
+    const requestRingFrame = () => {
+      if (frame === 0) frame = window.requestAnimationFrame(animateRing);
     };
 
     const handleMove = (event: MouseEvent) => {
-      onMove(event);
-      startLoop();
+      targetX = event.clientX;
+      targetY = event.clientY;
+      if (!initialized) {
+        ringX = targetX;
+        ringY = targetY;
+        initialized = true;
+      }
+      settledFrames = 0;
+      dot.style.transform = `translate3d(${targetX - 3}px, ${targetY - 3}px, 0)`;
+
+      const target = event.target instanceof Element ? event.target : null;
+      const clickable = target?.closest("a, button, [role='button'], input, select, textarea, label, .gallery-card, .package-card, .why-card");
+      const image = target?.closest("img, .img-blur-wrap, .gallery-image-placeholder");
+      ring.classList.toggle("is-clickable", Boolean(clickable));
+      ring.classList.toggle("is-image", Boolean(image));
+      requestRingFrame();
+    };
+
+    const handleWindowLeave = () => {
+      dot.dataset.visible = "false";
+      ring.dataset.visible = "false";
+    };
+    const handleWindowEnter = () => {
+      dot.dataset.visible = "true";
+      ring.dataset.visible = "true";
     };
 
     document.addEventListener("mousemove", handleMove, { passive: true });
-    startLoop();
+    document.documentElement.addEventListener("mouseleave", handleWindowLeave);
+    document.documentElement.addEventListener("mouseenter", handleWindowEnter);
 
     return () => {
       document.removeEventListener("mousemove", handleMove);
-      cancelAnimationFrame(rafId.current);
+      document.documentElement.removeEventListener("mouseleave", handleWindowLeave);
+      document.documentElement.removeEventListener("mouseenter", handleWindowEnter);
+      if (frame !== 0) window.cancelAnimationFrame(frame);
     };
-  }, [onMove]);
+  }, []);
 
   return (
     <>
-      <div
-        ref={dotRef}
-        aria-hidden="true"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: 6,
-          height: 6,
-          borderRadius: "50%",
-          background: "#8B5E4A",
-          pointerEvents: "none",
-          zIndex: 9998,
-          willChange: "transform",
-        }}
-      />
-      <div
-        ref={ringRef}
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: 32,
-          height: 32,
-          borderRadius: "50%",
-          border: "1.5px solid rgba(139, 94, 74, 0.4)",
-          pointerEvents: "none",
-          zIndex: 9997,
-          willChange: "transform",
-          transition: "width 0.2s, height 0.2s, border-color 0.2s, background 0.2s",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 10,
-          color: "#8B5E4A",
-        }}
-      />
-      <style>{`
-        @media (hover: hover) and (pointer: fine) {
-          .booking-modal input,
-          .booking-modal textarea,
-          .booking-modal select,
-          .login-page input,
-          .login-page textarea,
-          .adm-login input,
-          .adm-login textarea,
-          .public-chat-form textarea,
-          .newsletter-form input,
-          #booking-name,
-          #booking-contact,
-          #booking-notes,
-          #booking-time,
-          input, textarea, select { cursor: text !important; }
-        }
-
-        .is-clickable {
-          width: 24px !important;
-          height: 24px !important;
-          border-color: rgba(139, 94, 74, 0.6) !important;
-          background: rgba(139, 94, 74, 0.08) !important;
-        }
-        .is-image {
-          width: 48px !important;
-          height: 48px !important;
-          border-color: rgba(255, 184, 161, 0.5) !important;
-          background: rgba(255, 184, 161, 0.1) !important;
-        }
-        .is-image::after {
-          content: "🔍";
-          font-size: 14px;
-        }
-      `}</style>
+      <div ref={dotRef} className="nhb-cursor-dot" data-visible="true" aria-hidden="true" />
+      <div ref={ringRef} className="nhb-cursor-ring" data-visible="true" aria-hidden="true" />
     </>
   );
 }

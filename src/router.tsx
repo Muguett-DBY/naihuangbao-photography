@@ -39,7 +39,7 @@ function AdminRoute() {
 
 function HomePremiereFallback() {
   const { t } = useTranslation();
-  const { openBookingModal } = useBookingModal();
+  const { openBookingModal, warmBookingModal } = useBookingModal();
 
   return (
     <section className="hero hero-home home-premiere-fallback" aria-label={t("nav.home")}>
@@ -86,7 +86,14 @@ function HomePremiereFallback() {
         <p className="hero-field-note">{t("hero.brandPrefix")}</p>
         <p className="hero-intro">{t("hero.intro")}</p>
         <div className="hero-actions">
-          <button className="hero-cover-primary-btn" type="button" onClick={() => openBookingModal()}>
+          <button
+            className="hero-cover-primary-btn"
+            type="button"
+            onClick={() => openBookingModal()}
+            onFocus={warmBookingModal}
+            onPointerDown={warmBookingModal}
+            onPointerEnter={warmBookingModal}
+          >
             {t("hero.ctaBooking")}
           </button>
           <a className="hero-gallery-link" href="/gallery">{t("hero.ctaView")}</a>

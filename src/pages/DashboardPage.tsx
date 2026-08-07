@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { Link, Navigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { User, CalendarCheck, ShoppingCart, BookOpen, MapPin, Image, Settings, Sparkles, ArrowRight, Heart, History, Mail } from "lucide-react";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useAuth } from "../hooks/useAuth";
 import { PageTransition } from "../components/shared/PageTransition";
@@ -25,7 +25,7 @@ export function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
 
   useSEO({ titleKey: "dashboard.title", descKey: "dashboard.title", path: "/dashboard" });
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
 
   if (authLoading) {
     return (

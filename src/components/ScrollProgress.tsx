@@ -1,40 +1,57 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export function ScrollProgress() {
-  const [progress, setProgress] = useState(0);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let frame: number | null = null;
+    let lastPercent = -1;
+
     const update = () => {
       frame = null;
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const ratio = docHeight > 0 ? Math.min(1, Math.max(0, scrollTop / docHeight)) : 0;
-      setProgress(ratio);
+      const progress = progressRef.current;
+      const bar = barRef.current;
+      if (!progress || !bar) return;
+
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = scrollableHeight > 0
+        ? Math.min(1, Math.max(0, window.scrollY / scrollableHeight))
+        : 0;
+      const percent = Math.round(ratio * 100);
+      bar.style.transform = `scaleX(${ratio})`;
+      if (percent !== lastPercent) {
+        progress.setAttribute("aria-valuenow", String(percent));
+        lastPercent = percent;
+      }
     };
-    const onScroll = () => {
-      if (frame === null) frame = requestAnimationFrame(update);
+
+    const requestUpdate = () => {
+      if (frame === null) frame = window.requestAnimationFrame(update);
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
-    update();
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate, { passive: true });
+    requestUpdate();
+
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame !== null) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (frame !== null) window.cancelAnimationFrame(frame);
     };
   }, []);
 
   return (
     <div
+      ref={progressRef}
       className="scroll-progress"
       role="progressbar"
       aria-label="Page scroll progress"
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-valuenow={Math.round(progress * 100)}
+      aria-valuenow={0}
     >
-      <div className="scroll-progress-bar" style={{ transform: `scaleX(${progress})` }} />
+      <div ref={barRef} className="scroll-progress-bar" />
     </div>
   );
 }

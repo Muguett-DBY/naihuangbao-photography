@@ -1,186 +1,47 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
-const GRAIN_SIZE = 128;
+const GRAIN_SIZE = 96;
 
-function getDeviceCapability(): "high" | "medium" | "low" {
-  if (window.matchMedia("(max-width: 768px), (pointer: coarse)").matches) return "low";
-  const cores = navigator.hardwareConcurrency || 4;
-  if (cores <= 2) return "low";
-  if (cores <= 4) return "medium";
-  return "high";
+function supportsFilmGrain() {
+  if (typeof window === "undefined") return false;
+  if (window.matchMedia("(max-width: 768px), (pointer: coarse), (prefers-reduced-motion: reduce)").matches) {
+    return false;
+  }
+  return (navigator.hardwareConcurrency || 4) > 2;
 }
 
 export function FilmGrain() {
-  const [capability, setCapability] = useState<"high" | "medium" | "low">(() => {
-    if (typeof window === "undefined") return "high";
-    return getDeviceCapability();
-  });
   const grainRef = useRef<HTMLCanvasElement>(null);
-  const leakRef = useRef<HTMLCanvasElement>(null);
+  const enabled = supportsFilmGrain();
 
   useEffect(() => {
-    if (capability === "low") {
-      return;
+    if (!enabled) return;
+    const canvas = grainRef.current;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context) return;
+
+    const imageData = context.createImageData(GRAIN_SIZE, GRAIN_SIZE);
+    const pixels = imageData.data;
+    for (let index = 0; index < pixels.length; index += 4) {
+      const noise = (Math.random() - 0.5) * 34;
+      pixels[index] = 250 + noise;
+      pixels[index + 1] = 243 + noise;
+      pixels[index + 2] = 230 + noise;
+      pixels[index + 3] = 12;
     }
+    context.putImageData(imageData, 0, 0);
+  }, [enabled]);
 
-    const grain = grainRef.current;
-    if (!grain) return;
-    const gCtx = grain.getContext("2d");
-    if (!gCtx) return;
-
-    const grainSkip = capability === "medium" ? 12 : 6;
-    let frame = 0;
-    let rafId = 0;
-
-    const updateGrain = () => {
-      if (!document.hidden) {
-        frame++;
-        if (frame % grainSkip === 0) {
-          gCtx.clearRect(0, 0, GRAIN_SIZE, GRAIN_SIZE);
-          const imageData = gCtx.createImageData(GRAIN_SIZE, GRAIN_SIZE);
-          const data = imageData.data;
-          for (let i = 0; i < data.length; i += 4) {
-            const noise = (Math.random() - 0.5) * 40;
-            data[i] = 255 + noise;
-            data[i + 1] = 245 + noise;
-            data[i + 2] = 230 + noise;
-            data[i + 3] = 10;
-          }
-          gCtx.putImageData(imageData, 0, 0);
-        }
-      }
-      rafId = requestAnimationFrame(updateGrain);
-    };
-    rafId = requestAnimationFrame(updateGrain);
-
-    const leak = leakRef.current;
-    if (!leak) return;
-    const lCtx = leak.getContext("2d");
-    if (!lCtx) return;
-
-    let w = window.innerWidth;
-    let h = window.innerHeight;
-    leak.width = w;
-    leak.height = h;
-
-    let leakTimer = 0;
-    let leakActive = false;
-    let leakX = 0;
-    let leakOpacity = 0;
-    let leakRaf = 0;
-    let idleFrames = 0;
-
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const leakFps = capability === "medium" ? 15 : isMobile ? 20 : 30;
-    const leakFrameInterval = 1000 / leakFps;
-    let lastLeakFrameTime = 0;
-
-    const updateLeak = (currentTime: number) => {
-      if (!document.hidden) {
-        idleFrames = 0;
-        const elapsed = currentTime - lastLeakFrameTime;
-        if (elapsed >= leakFrameInterval) {
-          lastLeakFrameTime = currentTime - (elapsed % leakFrameInterval);
-          lCtx.clearRect(0, 0, w, h);
-
-          leakTimer++;
-          if (!leakActive && leakTimer > 300 + Math.random() * 500) {
-            leakActive = true;
-            leakTimer = 0;
-            leakX = Math.random() * w;
-            leakOpacity = 0;
-          }
-
-          if (leakActive) {
-            leakOpacity += 0.005;
-            if (leakOpacity > 0.08) leakOpacity = 0.08;
-
-            const gradient = lCtx.createRadialGradient(leakX, 0, 0, leakX, 0, h * 0.6);
-            gradient.addColorStop(0, `rgba(255, 180, 120, ${leakOpacity})`);
-            gradient.addColorStop(0.3, `rgba(255, 150, 100, ${leakOpacity * 0.5})`);
-            gradient.addColorStop(1, "rgba(255, 150, 100, 0)");
-            lCtx.fillStyle = gradient;
-            lCtx.fillRect(0, 0, w, h);
-
-            leakX += 1.5;
-            if (leakX > w + 200) {
-              leakActive = false;
-              leakTimer = 0;
-            }
-          }
-        }
-      }
-      leakRaf = requestAnimationFrame(updateLeak);
-    };
-    leakRaf = requestAnimationFrame(updateLeak);
-
-    const handleResize = () => {
-      w = window.innerWidth;
-      h = window.innerHeight;
-      leak.width = w;
-      leak.height = h;
-    };
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      cancelAnimationFrame(leakRaf);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [capability]);
-
-  useEffect(() => {
-    let resizeTimer = 0;
-    const pointerQuery = window.matchMedia("(pointer: coarse)");
-    const syncCapability = () => {
-      window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(() => {
-        setCapability(getDeviceCapability());
-      }, 120);
-    };
-
-    window.addEventListener("resize", syncCapability, { passive: true });
-    pointerQuery.addEventListener?.("change", syncCapability);
-    return () => {
-      window.clearTimeout(resizeTimer);
-      window.removeEventListener("resize", syncCapability);
-      pointerQuery.removeEventListener?.("change", syncCapability);
-    };
-  }, []);
-
-  if (capability === "low") return null;
+  if (!enabled) return null;
 
   return (
-    <>
-      <canvas
-        ref={grainRef}
-        aria-hidden="true"
-        width={GRAIN_SIZE}
-        height={GRAIN_SIZE}
-        style={{
-          position: "fixed",
-          inset: 0,
-          width: "100vw",
-          height: "100vh",
-          zIndex: 9995,
-          pointerEvents: "none",
-          mixBlendMode: "overlay",
-          opacity: 0.5,
-          imageRendering: "pixelated",
-        }}
-      />
-      <canvas
-        ref={leakRef}
-        aria-hidden="true"
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 9994,
-          pointerEvents: "none",
-          mixBlendMode: "screen",
-          opacity: 0.8,
-        }}
-      />
-    </>
+    <canvas
+      ref={grainRef}
+      className="film-grain-layer"
+      data-film-grain="static"
+      aria-hidden="true"
+      width={GRAIN_SIZE}
+      height={GRAIN_SIZE}
+    />
   );
 }

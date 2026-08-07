@@ -19,6 +19,15 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<InstallChoice>;
 }
 
+let capturedInstallPrompt: BeforeInstallPromptEvent | null = null;
+
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    capturedInstallPrompt = event as BeforeInstallPromptEvent;
+  });
+}
+
 function readStoredNumber(key: string): number {
   try {
     const value = Number.parseInt(window.localStorage.getItem(key) ?? "0", 10);
@@ -78,17 +87,19 @@ export function PwaInstallBanner() {
     setInstalling(false);
     setInstallError(false);
     deferredPromptRef.current = null;
+    capturedInstallPrompt = null;
     writeStoredValue(STORAGE_KEY, String(Date.now() + DISMISS_COOLDOWN_MS));
   };
 
   useEffect(() => {
-    visitsRef.current = recordVisit();
+    if (visitsRef.current === 0) visitsRef.current = recordVisit();
 
     const onBeforeInstall = (event: Event) => {
       event.preventDefault();
       if (!canOfferInstall(visitsRef.current)) return;
 
-      deferredPromptRef.current = event as BeforeInstallPromptEvent;
+      capturedInstallPrompt = event as BeforeInstallPromptEvent;
+      deferredPromptRef.current = capturedInstallPrompt;
       clearShowTimer();
       showTimerRef.current = window.setTimeout(() => {
         showTimerRef.current = null;
@@ -107,6 +118,7 @@ export function PwaInstallBanner() {
 
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
     window.addEventListener("appinstalled", onAppInstalled);
+    if (capturedInstallPrompt) onBeforeInstall(capturedInstallPrompt);
     return () => {
       clearShowTimer();
       window.removeEventListener("beforeinstallprompt", onBeforeInstall);
@@ -125,6 +137,7 @@ export function PwaInstallBanner() {
       await promptEvent.prompt();
       const choice = await promptEvent.userChoice;
       deferredPromptRef.current = null;
+      capturedInstallPrompt = null;
       if (choice.outcome === "accepted") {
         writeStoredValue(INSTALLED_KEY, "true");
         setInstalling(false);

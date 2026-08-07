@@ -19,42 +19,64 @@ export default defineConfig({
     chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes("node_modules/three")) {
-            return "immersive-vendor";
-          }
-          if (id.includes("node_modules/face-api.js")) {
-            return "face-api-vendor";
-          }
-          if (id.includes("node_modules/framer-motion")) {
-            return "motion-vendor";
-          }
-          if (id.includes("node_modules/photoswipe")) {
-            return "lightbox-vendor";
-          }
-          if (id.includes("node_modules/i18next") || id.includes("node_modules/react-i18next")) {
-            return "i18n-vendor";
-          }
-          if (/node_modules\/(?:react|react-dom|scheduler)\//.test(id)) {
-            return "react-vendor";
-          }
-          if (id.includes("node_modules/react-router/")) {
-            return "router-vendor";
-          }
-          if (id.includes("node_modules/lucide-react")) {
-            return "icon-vendor";
-          }
-
-          if (id.includes("node_modules/gsap")) {
-            return "animation-vendor";
-          }
-          if (id.includes("node_modules/swiper")) {
-            return "swiper-vendor";
-          }
-          if (id.includes("node_modules/leaflet") || id.includes("node_modules/react-leaflet")) {
-            return "map-vendor";
-          }
-          return undefined;
+        codeSplitting: {
+          groups: [
+            {
+              name: "react-vendor",
+              test: /node_modules[\\/](?:react|react-dom|scheduler)[\\/]/,
+              priority: 100,
+            },
+            {
+              name: "i18n-vendor",
+              test: /node_modules[\\/](?:i18next|react-i18next)[\\/]/,
+              priority: 90,
+            },
+            {
+              name: "router-vendor",
+              test: /node_modules[\\/]react-router[\\/]/,
+              priority: 80,
+            },
+            {
+              name: "icon-vendor",
+              test: /node_modules[\\/]lucide-react[\\/]/,
+              priority: 70,
+            },
+            {
+              name: "immersive-vendor",
+              test: /node_modules[\\/]three[\\/]/,
+              priority: 60,
+            },
+            {
+              name: "face-api-vendor",
+              test: /node_modules[\\/]face-api\.js[\\/]/,
+              priority: 60,
+            },
+            {
+              name: "motion-vendor",
+              test: /node_modules[\\/]framer-motion[\\/]/,
+              priority: 60,
+            },
+            {
+              name: "lightbox-vendor",
+              test: /node_modules[\\/]photoswipe[\\/]/,
+              priority: 60,
+            },
+            {
+              name: "animation-vendor",
+              test: /node_modules[\\/]gsap[\\/]/,
+              priority: 60,
+            },
+            {
+              name: "swiper-vendor",
+              test: /node_modules[\\/]swiper[\\/]/,
+              priority: 60,
+            },
+            {
+              name: "map-vendor",
+              test: /node_modules[\\/](?:leaflet|react-leaflet)[\\/]/,
+              priority: 50,
+            },
+          ],
         },
       },
     },
@@ -83,8 +105,34 @@ export default defineConfig({
           "**/images/gallery/**/*",
           "**/images/concept-premiere/**/*",
           "**/immersive-vendor-*.js",
+          "**/face-api-vendor-*.js",
+          "**/map-vendor-*.js",
+          "**/animation-vendor-*.js",
+          "**/swiper-vendor-*.js",
+          "**/lightbox-vendor-*",
+          "**/en-*.js",
+          "**/ja-*.js",
+          "**/ko-*.js",
+          "**/zh-CN-*.js",
         ],
         runtimeCaching: [
+          {
+            urlPattern: ({ request, url }) => {
+              const assetRequest = request as unknown as { destination?: string };
+              return assetRequest.destination === "script" && url.pathname.startsWith("/assets/");
+            },
+            handler: "CacheFirst",
+            options: {
+              cacheName: "lazy-script-assets",
+              expiration: {
+                maxEntries: 80,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
           {
             urlPattern: ({ request, url }) => {
               const imageRequest = request as unknown as { destination?: string };

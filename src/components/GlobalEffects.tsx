@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useGsapGlobalEffects } from "../hooks/useGsapGlobalEffects";
+import { useGlobalVisualEffects } from "../hooks/useGlobalVisualEffects";
 import { CustomCursor } from "./CustomCursor";
 import { FilmGrain } from "./FilmGrain";
 import { ScrollProgress } from "./ScrollProgress";
@@ -7,14 +7,12 @@ import { ScrollProgress } from "./ScrollProgress";
 /**
  * Visual effects and global GSAP setup that are NOT critical for first paint.
  *
- * This module is loaded via React.lazy() from RootLayout so that the initial
- * JavaScript bundle excludes gsap, ScrollTrigger, Lenis, and the visual
- * decoration components. The page renders and becomes interactive first;
- * the cinematic layer (custom cursor, film grain, smooth scroll) kicks in
- * once this chunk arrives.
+ * This module is loaded via React.lazy() from RootLayout so cursor and texture
+ * decoration stay outside the critical render path. Motion itself relies on
+ * native browser primitives and does not hijack scrolling.
  */
 export default function GlobalEffects() {
-  useGsapGlobalEffects();
+  useGlobalVisualEffects();
 
   useEffect(() => {
     // Trigger the body class without re-entering Lenis (the hook handles that).

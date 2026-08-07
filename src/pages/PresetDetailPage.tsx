@@ -3,7 +3,7 @@ import { useMemo, useRef } from "react";
 import { useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Download, Star, Check } from "lucide-react";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useApiItem } from "../hooks/useApiItem";
 import { useRelatedItems } from "../hooks/useRelatedItems";
@@ -32,7 +32,7 @@ export function PresetDetailPage() {
   const { related: allPresets } = useRelatedItems<Preset>("/api/presets", "presets", id);
   const bindImmersiveHighlight = useImmersiveHighlight();
 
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
 
   const lang = i18n.language;
 

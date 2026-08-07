@@ -424,7 +424,9 @@ describe("audit regression coverage", () => {
   it("resets image fallback state when the source changes", () => {
     expect(imageSource).toContain("useEffect");
     expect(imageSource).toContain("setFailed(false)");
-    expect(imageSource).toContain("setLoaded(false)");
+    expect(imageSource).toContain('wrapper?.classList.remove("is-loaded")');
+    expect(imageSource).toContain('wrapper.dataset.state = "loading"');
+    expect(imageSource).toContain('wrapper.dataset.state = "loaded"');
   });
 
   it("cleans admin timers, object URLs, and initial session fetches", () => {
@@ -999,12 +1001,12 @@ describe("audit regression coverage", () => {
   });
 
   it("pauses decorative loops when idle or after viewport capability changes", () => {
-    expect(customCursorSource).toContain("startLoop");
-    expect(customCursorSource).toContain("idleTimer.current >= 300");
-    expect(customCursorSource).toContain("running = false");
-    expect(filmGrainSource).toContain("setCapability");
-    expect(filmGrainSource).toContain("addEventListener(\"resize\"");
-    expect(filmGrainSource).toContain("[capability]");
+    expect(customCursorSource).toContain("requestRingFrame");
+    expect(customCursorSource).toContain("settledFrames < 4");
+    expect(customCursorSource).not.toContain("idleTimer");
+    expect(filmGrainSource).toContain('data-film-grain="static"');
+    expect(filmGrainSource).not.toContain("requestAnimationFrame");
+    expect(filmGrainSource).not.toContain("addEventListener(\"resize\"");
   });
 
   it("keeps editor controls below the fixed navigation while scrolling", () => {

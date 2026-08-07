@@ -27,10 +27,6 @@ function preloadBookingModal() {
 
 const BookingModal = lazy(preloadBookingModal);
 
-// Booking is a primary offline-capable flow, so warm its split chunk without
-// making the first render wait for the modal implementation.
-void preloadBookingModal().catch(() => undefined);
-
 export function BookingProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState("");
@@ -40,9 +36,12 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     setIsOpen(true);
   }, []);
   const closeBookingModal = useCallback(() => setIsOpen(false), []);
+  const warmBookingModal = useCallback(() => {
+    void preloadBookingModal().catch(() => undefined);
+  }, []);
   const value = useMemo(
-    () => ({ openBookingModal, isBookingOpen: isOpen }),
-    [isOpen, openBookingModal],
+    () => ({ openBookingModal, isBookingOpen: isOpen, warmBookingModal }),
+    [isOpen, openBookingModal, warmBookingModal],
   );
 
   return (

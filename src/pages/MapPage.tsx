@@ -2,7 +2,7 @@ import "../styles/pages.css";
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { List, Map as MapIcon } from "lucide-react";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useSEO } from "../hooks/useSEO";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { PageTransition } from "../components/shared/PageTransition";
@@ -22,7 +22,7 @@ export function MapPage() {
   const [view, setView] = useState<"map" | "list">("map");
   const [mapStageVisible, setMapStageVisible] = useState(false);
 
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
   useSEO({ titleKey: "seo.mapTitle", descKey: "seo.mapDesc", path: "/map" });
 
   const { locations, zoneStats } = useMemo(() => {

@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { CalendarCheck, LogIn, UserPlus, Mail, Lock, User, KeyRound, ArrowLeft, CheckCircle2, Eye, EyeOff } from "lucide-react";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { useAuth } from "../hooks/useAuth";
@@ -58,7 +58,7 @@ export function LoginPage() {
     imageAlt: t("auth.visualImageAlt"),
     path: "/login",
   });
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
   const authMediaAnchor = useImmersiveAnchor({
     id: "login-media",
     preset: "login",

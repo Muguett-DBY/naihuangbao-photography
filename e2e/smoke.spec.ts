@@ -21,13 +21,17 @@ async function uploadEditorPhoto(page: Page, file: EditorUploadFile) {
 }
 
 async function openGalleryFromNav(page: Page) {
+  await expect(page.locator(".site-nav")).toBeVisible();
   const inlineGalleryLink = page.locator('.nav-menu--inline a[href="/gallery"]').first();
-  if (await inlineGalleryLink.isVisible()) {
+  if ((page.viewportSize()?.width ?? 1280) > 980) {
+    await expect(inlineGalleryLink).toBeVisible();
     await inlineGalleryLink.click();
     return;
   }
 
-  await page.locator(".hamburger").click();
+  const hamburger = page.locator(".hamburger");
+  await expect(hamburger).toBeVisible();
+  await hamburger.click();
   const overlayGalleryLink = page.locator('#site-navigation-menu a[href="/gallery"]').first();
   await expect(overlayGalleryLink).toBeVisible();
   await overlayGalleryLink.click();
@@ -110,8 +114,7 @@ test.describe("shoot.custard.top", () => {
 
   test("Lightbox 打开和关闭", async ({ page }) => {
     await page.goto("/");
-    // Scroll to gallery
-    await page.evaluate(() => document.getElementById("gallery")?.scrollIntoView());
+    await page.locator("#featured").scrollIntoViewIfNeeded();
     // Click the actual interactive control so layout shifts cannot land on article whitespace.
     const firstItemButton = page.locator(".gallery-masonry-item .gallery-masonry-btn").first();
     await expect(firstItemButton).toBeVisible({ timeout: 10000 });
@@ -125,7 +128,7 @@ test.describe("shoot.custard.top", () => {
 
   test("首页作品区和作品入口存在", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator("#featured")).toBeVisible();
+    await page.locator("#featured").scrollIntoViewIfNeeded();
     await expect(page.locator(".gallery-masonry-item").first()).toBeVisible();
     await expect(page.locator('.home-page-link[href="/gallery"]')).toBeVisible();
   });
@@ -161,6 +164,7 @@ test.describe("shoot.custard.top", () => {
     });
 
     await page.goto("/");
+    await page.locator("#featured").scrollIntoViewIfNeeded();
     await expect(page.locator(".gallery-masonry-item").first()).toBeVisible({ timeout: 10000 });
     const detachments = await page.evaluate(() => (
       window as Window & { __featuredDomDetachments?: number }

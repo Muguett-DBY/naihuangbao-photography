@@ -23,6 +23,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { loadAndChangeLanguage } from "../../i18n";
 import { Button, Input } from "animal-island-ui";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { adminMutationHeaders, isAbortError, type AdminTab, type ToastType } from "../../lib/admin-helpers";
@@ -223,7 +224,7 @@ export function AdminShell() {
           <select
             className="adm-bar-locale"
             value={i18n.language}
-            onChange={(e) => { void i18n.changeLanguage(e.target.value); }}
+            onChange={(e) => { void loadAndChangeLanguage(e.target.value); }}
             aria-label={t("admin.header.localeLabel", "Interface language")}
           >
             <option value="zh-CN">中文</option>

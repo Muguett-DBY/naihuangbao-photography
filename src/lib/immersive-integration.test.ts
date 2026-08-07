@@ -51,6 +51,8 @@ describe("immersive experience integration", () => {
     expect(transition).toContain('className={`page-transition');
     expect(transition).toContain('className="page-transition-exposure"');
     expect(transition).toContain('aria-hidden="true"');
+    expect(transition).not.toContain("framer-motion");
+    expect(css).toContain("@keyframes page-content-enter");
     expect(css).toMatch(/\.page-transition-exposure\s*\{[^}]*position:\s*fixed/s);
     expect(css).toMatch(/\.page-transition-exposure\s*\{[^}]*pointer-events:\s*none/s);
     expect(css).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)[\s\S]*\.page-transition-exposure/s);

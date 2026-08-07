@@ -3,7 +3,7 @@ import { useRef, useState, useMemo } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowUpRight, BookOpen, Clock } from "lucide-react";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { PageTransition } from "../components/shared/PageTransition";
@@ -27,7 +27,7 @@ export function CoursesPage() {
   const bindImmersiveHighlight = useImmersiveHighlight();
 
   useSEO({ titleKey: "seo.coursesTitle", descKey: "seo.coursesDesc", path: "/courses" });
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
 
   const categories = useMemo(() => {
     const cats = new Map<string, number>();

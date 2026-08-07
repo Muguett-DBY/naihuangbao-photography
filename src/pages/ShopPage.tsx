@@ -3,7 +3,7 @@ import { useRef, useState, useMemo } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ShoppingCart } from "lucide-react";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useBookingModal } from "../features/booking/BookingContext";
 import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
@@ -29,7 +29,7 @@ export function ShopPage() {
   const bindImmersiveHighlight = useImmersiveHighlight();
 
   useSEO({ titleKey: "seo.shopTitle", descKey: "seo.shopDesc", path: "/shop" });
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
 
   const categories = useMemo(() => {
     const cats = new Map<string, number>();

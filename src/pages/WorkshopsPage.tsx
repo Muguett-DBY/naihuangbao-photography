@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowUpRight, Calendar, Clock, Filter, LayoutGrid, MapPin, Share2, Users, X } from "lucide-react";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useApiList } from "../hooks/useApiList";
 import { getWorkshopAvailability, useWorkshopRegistration } from "../hooks/useWorkshopRegistration";
@@ -36,7 +36,7 @@ export function WorkshopsPage() {
   const bindImmersiveHighlight = useImmersiveHighlight();
 
   useSEO({ titleKey: "seo.workshopsTitle", descKey: "seo.workshopsDesc", path: "/workshops" });
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
 
   const activeWorkshop = workshops.find((workshop) => workshop.id === formOpen);
   const registration = useWorkshopRegistration(activeWorkshop ?? null);

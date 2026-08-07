@@ -4,7 +4,7 @@ import { useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Calendar, MapPin, Users, Clock, CheckCircle, X } from "lucide-react";
 import { Button } from "animal-island-ui";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useSEO } from "../hooks/useSEO";
 import { useApiItem } from "../hooks/useApiItem";
 import { getWorkshopAvailability, useWorkshopRegistration } from "../hooks/useWorkshopRegistration";
@@ -39,7 +39,7 @@ export function WorkshopDetailPage() {
     returnFocus: false,
   });
 
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
 
   const lang = i18n.language;
 
