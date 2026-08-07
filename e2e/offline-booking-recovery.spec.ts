@@ -71,10 +71,13 @@ test.describe("offline booking recovery", () => {
     }));
 
     await page.goto("/");
-    await expect(page.locator(".hero-cover-primary-btn")).toBeVisible();
+    const bookingButton = page.locator(".hero-cover-primary-btn");
+    await expect(bookingButton).toBeVisible();
+    await bookingButton.hover();
+    await page.waitForLoadState("networkidle");
     await context.setOffline(true);
     await page.evaluate(() => window.dispatchEvent(new Event("offline")));
-    await page.locator(".hero-cover-primary-btn").click();
+    await bookingButton.click();
     await page.getByRole("button", { name: "Next", exact: true }).click();
     await page.locator("#booking-name").fill("Offline Guest");
     await page.locator("#booking-contact").fill("offline@example.com");

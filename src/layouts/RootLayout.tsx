@@ -24,9 +24,8 @@ import { ExperienceProvider, useExperienceStore } from "../experience/Experience
 import { useExperiencePause } from "../experience/useExperiencePause";
 import { resolveRoutePreset } from "../experience/scene-presets";
 
-// Heavy visual effects and animations are split into a separate chunk
-// so the initial bundle only ships React + i18n + router. These activate
-// on idle so the page can paint and become interactive first.
+// Optional cursor and texture effects stay in a separate chunk so the page
+// can paint and become interactive without coupling them to route code.
 const GlobalEffects = lazy(() => import("../components/GlobalEffects"));
 
 const PublicChatWidget = lazy(() => import("../components/PublicChatWidget"));

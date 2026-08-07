@@ -5,8 +5,9 @@ test.describe("editorial public pages", () => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
 
+    await page.locator(".home-deferred-reviews").scrollIntoViewIfNeeded();
     const reviews = page.locator(".reviews-shell");
-    await reviews.scrollIntoViewIfNeeded();
+    await expect(reviews).toBeVisible();
 
     const geometry = await reviews.evaluate((section) => {
       const text = section.querySelector<HTMLElement>(".reviews-text")?.getBoundingClientRect();

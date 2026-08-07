@@ -46,6 +46,18 @@
     "label": "NHB CONCEPT FILM / 2026",
     "disclosure": "Brand concept visuals, not client portfolio work",
     "assetTitle": "Naihuangbao Photography brand concept visual",
+    "reel": {
+      "modeLabel": "Hero visual mode",
+      "conceptMode": "Concept film",
+      "portfolioMode": "Real work",
+      "sceneLabel": "Concept scene selector",
+      "frames": {
+        "luminance": "Morning glass",
+        "motion": "In motion",
+        "reflection": "Reflection",
+        "night": "Night passage"
+      }
+    },
     "frames": {
       "openingAlt": "Portrait photography brand concept image behind a sunlit curtain",
       "silkAlt": "Concept-film still with silk and floral shadow",

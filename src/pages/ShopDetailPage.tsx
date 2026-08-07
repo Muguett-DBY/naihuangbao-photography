@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, Package, Truck, RotateCcw, MessageCircle } from "lucide-react";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useBookingModal } from "../features/booking/BookingContext";
 import { useSEO } from "../hooks/useSEO";
 import { useApiItem } from "../hooks/useApiItem";
@@ -34,7 +34,7 @@ export function ShopDetailPage() {
     setActiveImage(0);
   }, [id]);
 
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
 
   const lang = i18n.language;
 

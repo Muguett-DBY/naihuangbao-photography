@@ -124,14 +124,15 @@ describe("architecture optimization contracts", () => {
     const bookingProvider = read("src/features/booking/BookingProvider.tsx");
 
     expect(packageJson).toContain("perf:budget");
-    expect(viteConfig).toContain("manualChunks");
+    expect(viteConfig).toContain("codeSplitting");
     expect(viteConfig).toContain("react-vendor");
     expect(viteConfig).toContain("router-vendor");
     expect(viteConfig).toContain("assetsInlineLimit");
     expect(mainSource).toContain("requestIdleCallback");
     expect(bookingProvider).toContain("lazy(preloadBookingModal)");
     expect(bookingProvider).toContain('import("../../components/BookingModal")');
-    expect(bookingProvider).toContain("void preloadBookingModal()");
+    expect(bookingProvider).toContain("warmBookingModal");
+    expect(bookingProvider).not.toContain("\nvoid preloadBookingModal()");
     expect(bookingProvider).not.toContain(
       'import { BookingModal } from "../../components/BookingModal"',
     );
@@ -159,7 +160,7 @@ describe("architecture optimization contracts", () => {
     expect(packageJson.scripts["deadcode:check"]).toContain("knip");
     expect(packageJson.dependencies.three).toBe("0.185.1");
     expect(packageJson.devDependencies["@types/three"]).toBe("0.185.3");
-    expect(packageJson.devDependencies.wrangler).toBe("4.118.0");
+    expect(packageJson.devDependencies.wrangler).toBe("4.120.0");
     expect(packageJson.devDependencies.playwright).toBeUndefined();
     expect(existsSync(resolve(root, "src/types/animal-island-ui.d.ts"))).toBe(false);
     expect(read("src/components/admin/AdminLoading.tsx")).not.toContain("animal-island-ui");
@@ -188,7 +189,7 @@ describe("architecture optimization contracts", () => {
     const gate = read("src/experience/ImmersiveExperienceGate.tsx");
 
     expect(packageJson).toContain('"three"');
-    expect(viteConfig).toContain('return "immersive-vendor"');
+    expect(viteConfig).toContain('name: "immersive-vendor"');
     expect(viteConfig).toContain("**/immersive-vendor-*.js");
     expect(rootLayout).toContain("<ImmersiveExperienceGate");
     expect(rootLayout).not.toContain('from "three"');

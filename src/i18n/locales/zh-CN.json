@@ -46,6 +46,18 @@
     "label": "NHB 概念影像 / 2026",
     "disclosure": "品牌概念影像，不代替真实客片",
     "assetTitle": "奶黄包摄影品牌概念影像",
+    "reel": {
+      "modeLabel": "首屏影像模式",
+      "conceptMode": "概念影像",
+      "portfolioMode": "真实作品",
+      "sceneLabel": "概念场景选择",
+      "frames": {
+        "luminance": "晨光玻璃",
+        "motion": "流动瞬间",
+        "reflection": "雨窗叠影",
+        "night": "莓色夜幕"
+      }
+    },
     "frames": {
       "openingAlt": "晨光帘幕后的人像摄影品牌概念影像",
       "silkAlt": "薄纱与花影中的概念电影静帧",

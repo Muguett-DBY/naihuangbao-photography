@@ -80,14 +80,9 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
         padding: { top: 48, bottom: 64, left: 0, right: 0 },
       });
 
-      const lenis = window.__nhbLenis;
-      if (lenis) lenis.stop();
-
       const finishClose = () => {
         if (closeHandledRef.current) return;
         closeHandledRef.current = true;
-        const l = window.__nhbLenis;
-        if (l) l.start();
         onCloseRef.current();
       };
 
@@ -171,8 +166,6 @@ export default function Lightbox({ photos, currentIndex, onClose }: LightboxProp
         destroyPhotoSwipe(pswpRef.current);
         pswpRef.current = null;
       }
-      const l = window.__nhbLenis;
-      if (l) l.start();
     };
   }, [photos, currentIndex]);
 

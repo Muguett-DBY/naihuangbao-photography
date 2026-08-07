@@ -17,6 +17,7 @@ const allCss = [
   "src/styles/chat.css",
 ].map((p) => readFileSync(resolve(root, p), "utf8")).join("\n");
 const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
+const i18nSource = readFileSync(resolve(root, "src/i18n/index.ts"), "utf8");
 const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
 const routerSource = readFileSync(resolve(root, "src/router.tsx"), "utf8");
 const routePreloadSource = readFileSync(resolve(root, "src/lib/route-preload.ts"), "utf8");
@@ -25,6 +26,8 @@ const scrollProgressSource = readFileSync(resolve(root, "src/components/ScrollPr
 const html = readFileSync(resolve(root, "index.html"), "utf8");
 const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
+const homeSource = readFileSync(resolve(root, "src/pages/HomePage.tsx"), "utf8");
+const premiereSource = readFileSync(resolve(root, "src/components/CinematicPremiere.tsx"), "utf8");
 const quickViewSource = readFileSync(resolve(root, "src/components/QuickView.tsx"), "utf8");
 const photoDetailSource = readFileSync(resolve(root, "src/pages/PhotoDetailPage.tsx"), "utf8");
 const headerSource = readFileSync(resolve(root, "src/components/shared/Header.tsx"), "utf8");
@@ -81,8 +84,9 @@ describe("performance budgets", () => {
     expect(routerSource).toContain('className="hero hero-home home-premiere-fallback"');
     expect(routerSource).toContain("premiere-luminance-v4.avif");
     expect(routerSource).toContain('fetchPriority="high"');
-    expect(routerSource).toContain("const { openBookingModal } = useBookingModal()");
-    expect(routerSource).toContain('type="button" onClick={() => openBookingModal()}');
+    expect(routerSource).toContain("const { openBookingModal, warmBookingModal } = useBookingModal()");
+    expect(routerSource).toContain("onPointerEnter={warmBookingModal}");
+    expect(routerSource).toContain("onPointerDown={warmBookingModal}");
     expect(routerSource).not.toContain('<a className="hero-cover-primary-btn" href="/booking"');
     expect(routerSource).toContain('fallback={<HomePremiereFallback />}');
     expect(routerSource).toContain('const HomePage = lazy(routeLoaders["/"])');
@@ -167,6 +171,14 @@ describe("performance budgets", () => {
     expect(budgetSource).toContain("gzipSync");
   });
 
+  it("keeps React runtime ownership ahead of route-only vendor groups", () => {
+    expect(viteConfig).toContain("codeSplitting");
+    expect(viteConfig).toContain('name: "react-vendor"');
+    expect(viteConfig).toContain("priority: 100");
+    expect(viteConfig).toContain('name: "map-vendor"');
+    expect(viteConfig).not.toContain("manualChunks");
+  });
+
   it("shims node-only face-api filesystem fallback out of the browser build", () => {
     expect(viteConfig).toContain("empty-node-module");
     expect(viteConfig).toContain("chunkSizeWarningLimit: 700");
@@ -176,6 +188,29 @@ describe("performance budgets", () => {
   it("renders default homepage data first and defers remote enhancement until idle", () => {
     expect(mainSource).toContain("requestIdleCallback");
     expect(mainSource).toContain("StrictMode");
+  });
+
+  it("loads only the active locale into the initial application graph", () => {
+    expect(i18nSource).toContain('import("./locales/en.json")');
+    expect(i18nSource).toContain('import("./locales/zh-CN.json")');
+    expect(i18nSource).toContain("loadAndChangeLanguage");
+    expect(i18nSource).not.toContain('import en from "./locales/en.json"');
+    expect(i18nSource).not.toContain('import zhCN from "./locales/zh-CN.json"');
+    expect(mainSource).toContain("i18nReady.finally");
+    expect(headerSource).toContain("loadAndChangeLanguage");
+  });
+
+  it("defers below-fold homepage modules and progressively loads premiere scenes", () => {
+    expect(homeSource).toContain("useDeferredRender");
+    expect(homeSource).toContain("galleryRender.ready ?");
+    expect(homeSource).toContain("whyRender.ready ?");
+    expect(homeSource).toContain("reviewsRender.ready ?");
+    expect(homeSource).toContain("quizRender.ready ?");
+    expect(homeSource).toContain("conceptPremiereImmersiveFrames.slice(0, 2)");
+    expect(premiereSource).toContain("loadedScenes.has(index)");
+    expect(premiereSource).toContain("priority={index === 0}");
+    expect(premiereSource).toContain("data-loaded-scenes");
+    expect(premiereSource).not.toContain("conceptPremiereTrailFrames");
   });
 
   it("keeps first-load reveal and scroll progress outside the app shell", () => {
@@ -214,6 +249,9 @@ describe("performance budgets", () => {
     // Verify precache excludes gallery images
     expect(viteConfig).toContain("globIgnores");
     expect(viteConfig).toContain("gallery");
+    expect(viteConfig).toContain('cacheName: "lazy-script-assets"');
+    expect(viteConfig).toContain('"**/face-api-vendor-*.js"');
+    expect(viteConfig).toContain('"**/animation-vendor-*.js"');
   });
 
 

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { MapPin, Camera, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSEO } from "../hooks/useSEO";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed";
 import { useJsonLd } from "../hooks/useJsonLd";
 import { useHreflang } from "../hooks/useHreflang";
@@ -148,7 +148,7 @@ export function PhotoDetailPage() {
 
   useHreflang({ path: id ? `/gallery/${id}` : "/gallery" });
 
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
 
   if (!id) {
     return <DetailNotFound message={t("photoDetail.notFound")} backTo="/gallery" backLabel={t("photoDetail.backToGallery")} />;

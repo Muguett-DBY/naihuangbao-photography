@@ -1,4 +1,5 @@
 import "../styles/pages.css";
+import "../styles/home-premiere.css";
 import { Suspense, lazy, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -9,7 +10,8 @@ import {
 import { useBookingModal } from "../features/booking/BookingContext";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { useDeferredRender } from "../hooks/useDeferredRender";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
@@ -36,16 +38,20 @@ const StyleQuiz = lazy(() => import("../components/StyleQuiz").then((module) => 
 export function HomePage() {
   const { t } = useTranslation();
   const { siteConfig } = useSiteContent();
-  const { openBookingModal } = useBookingModal();
+  const { openBookingModal, warmBookingModal } = useBookingModal();
   const rootRef = useRef<HTMLDivElement>(null);
   const { photos } = usePublicPhotos();
+  const galleryRender = useDeferredRender<HTMLElement>();
+  const whyRender = useDeferredRender<HTMLDivElement>();
+  const reviewsRender = useDeferredRender<HTMLDivElement>();
+  const quizRender = useDeferredRender<HTMLElement>();
 
   const coverPhotos = useMemo(
     () => photos.filter((photo) => photo.visibility === "public").slice(0, 3),
     [photos],
   );
   const immersiveImages = useMemo(() => {
-    const conceptImages = conceptPremiereImmersiveFrames.map((frame) => frame.imageUrl);
+    const conceptImages = conceptPremiereImmersiveFrames.slice(0, 2).map((frame) => frame.imageUrl);
     const photoImages = coverPhotos.map((photo) => photo.imageUrl);
     return [
       ...conceptImages,
@@ -71,7 +77,7 @@ export function HomePage() {
   );
 
   useSEO({ titleKey: "seo.homeTitle", descKey: "seo.homeDesc", path: "/" });
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
 
   return (
     <PageTransition ref={rootRef}>
@@ -93,7 +99,6 @@ export function HomePage() {
                 alt={photo.alt}
                 title={photo.title}
                 tone="ink"
-                priority={index === 0}
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 58vw, 42vw"
               />
             </div>
@@ -127,6 +132,9 @@ export function HomePage() {
               type="button"
               className="hero-cover-primary-btn"
               onClick={() => openBookingModal()}
+              onFocus={warmBookingModal}
+              onPointerDown={warmBookingModal}
+              onPointerEnter={warmBookingModal}
             >
               <CalendarCheck size={18} aria-hidden="true" />
               {t("hero.ctaBooking")}
@@ -154,7 +162,13 @@ export function HomePage() {
 
       <RecentlyViewedStrip />
 
-      <section className="home-editorial-band home-editorial-band--gallery" id="featured" data-chapter="02">
+      <section
+        ref={galleryRender.ref}
+        className="home-editorial-band home-editorial-band--gallery"
+        id="featured"
+        data-chapter="02"
+        data-deferred-ready={galleryRender.ready}
+      >
         <header className="home-band-heading" data-motion-group>
           <p className="home-band-index" data-motion-item>02 / {t("gallery.eyebrow")}</p>
           <div data-motion-item>
@@ -162,11 +176,13 @@ export function HomePage() {
             <p>{t("gallery.description")}</p>
           </div>
         </header>
-        <ErrorBoundary>
-          <Suspense fallback={<SectionSkeleton hasCards={3} />}>
-            <Gallery />
-          </Suspense>
-        </ErrorBoundary>
+        {galleryRender.ready ? (
+          <ErrorBoundary>
+            <Suspense fallback={<SectionSkeleton hasCards={3} />}>
+              <Gallery />
+            </Suspense>
+          </ErrorBoundary>
+        ) : <SectionSkeleton hasCards={3} />}
         <div className="home-band-action">
           <PrefetchLink to="/gallery" className="home-page-link">
             {t("hero.ctaView")} <ArrowRight size={17} aria-hidden="true" />
@@ -185,21 +201,41 @@ export function HomePage() {
         <ServiceJournal />
       </section>
 
-      <div className="home-editorial-band home-editorial-band--why">
-        <ErrorBoundary>
-          <Suspense fallback={<SectionSkeleton hasCards={3} />}>
-            <WhyChooseUs />
-          </Suspense>
-        </ErrorBoundary>
+      <div
+        ref={whyRender.ref}
+        className="home-editorial-band home-editorial-band--why"
+        data-deferred-ready={whyRender.ready}
+      >
+        {whyRender.ready ? (
+          <ErrorBoundary>
+            <Suspense fallback={<SectionSkeleton hasCards={3} />}>
+              <WhyChooseUs />
+            </Suspense>
+          </ErrorBoundary>
+        ) : <SectionSkeleton hasCards={3} />}
       </div>
 
-      <ErrorBoundary>
-        <Suspense fallback={<SectionSkeleton lines={4} />}>
-          <Reviews />
-        </Suspense>
-      </ErrorBoundary>
+      <div
+        ref={reviewsRender.ref}
+        className="home-deferred-reviews"
+        data-deferred-ready={reviewsRender.ready}
+      >
+        {reviewsRender.ready ? (
+          <ErrorBoundary>
+            <Suspense fallback={<SectionSkeleton lines={4} />}>
+              <Reviews />
+            </Suspense>
+          </ErrorBoundary>
+        ) : <SectionSkeleton lines={4} />}
+      </div>
 
-      <section className="home-editorial-band home-editorial-band--quiz" id="style-finder" data-chapter="04">
+      <section
+        ref={quizRender.ref}
+        className="home-editorial-band home-editorial-band--quiz"
+        id="style-finder"
+        data-chapter="04"
+        data-deferred-ready={quizRender.ready}
+      >
         <header className="home-band-heading home-band-heading--light" data-motion-group>
           <p className="home-band-index" data-motion-item>04 / {t("home.styleQuizTitle")}</p>
           <div data-motion-item>
@@ -207,11 +243,13 @@ export function HomePage() {
             <p>{t("quiz.result.desc")}</p>
           </div>
         </header>
-        <ErrorBoundary>
-          <Suspense fallback={<SectionSkeleton lines={3} />}>
-            <StyleQuiz showPreview />
-          </Suspense>
-        </ErrorBoundary>
+        {quizRender.ready ? (
+          <ErrorBoundary>
+            <Suspense fallback={<SectionSkeleton lines={3} />}>
+              <StyleQuiz showPreview />
+            </Suspense>
+          </ErrorBoundary>
+        ) : <SectionSkeleton lines={3} />}
       </section>
 
       <section className="home-final-cta" id="book" data-motion-group>
@@ -233,7 +271,13 @@ export function HomePage() {
             <h2>{t("midCTA.title")}</h2>
             <p>{t("midCTA.desc")}</p>
           </div>
-          <button type="button" className="home-final-cta-button" onClick={() => openBookingModal()}>
+          <button
+            type="button"
+            className="home-final-cta-button"
+            onClick={() => openBookingModal()}
+            onFocus={warmBookingModal}
+            onPointerEnter={warmBookingModal}
+          >
             <CalendarCheck size={18} aria-hidden="true" />
             {t("midCTA.cta")}
           </button>

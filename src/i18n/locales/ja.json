@@ -46,6 +46,18 @@
     "label": "NHB CONCEPT FILM / 2026",
     "disclosure": "ブランドコンセプト映像であり、実際の顧客作品ではありません",
     "assetTitle": "ナイホアンバオ写真のブランドコンセプト映像",
+    "reel": {
+      "modeLabel": "ヒーロー映像モード",
+      "conceptMode": "コンセプト映像",
+      "portfolioMode": "実作品",
+      "sceneLabel": "コンセプトシーン選択",
+      "frames": {
+        "luminance": "朝のガラス",
+        "motion": "動きの瞬間",
+        "reflection": "雨窓の反射",
+        "night": "夜の回廊"
+      }
+    },
     "frames": {
       "openingAlt": "朝の光とカーテンによる写真ブランドのコンセプト映像",
       "silkAlt": "シルクと花影のコンセプトフィルム静止画",

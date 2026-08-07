@@ -12,11 +12,12 @@ import {
   User,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { safeLocalStorage } from "../../lib/browser-storage";
+import { loadAndChangeLanguage } from "../../i18n";
 import { useAuth } from "../../hooks/useAuth";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { MoodToggle } from "../MoodToggle";
@@ -99,7 +100,7 @@ export function Header({ onOpenChat }: HeaderProps) {
   const toggleLang = () => {
     const index = LANG_CYCLE.indexOf(i18n.language as (typeof LANG_CYCLE)[number]);
     const next = LANG_CYCLE[(index + 1) % LANG_CYCLE.length];
-    void i18n.changeLanguage(next);
+    void loadAndChangeLanguage(next);
     safeLocalStorage.setItem("lang", next);
   };
 
@@ -120,7 +121,7 @@ export function Header({ onOpenChat }: HeaderProps) {
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const header = headerRef.current;
     if (!header) return;
 
@@ -135,7 +136,7 @@ export function Header({ onOpenChat }: HeaderProps) {
       observer.disconnect();
       document.documentElement.style.removeProperty("--nav-h");
     };
-  }, []);
+  }, [scrolled]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(COMPACT_NAVIGATION_QUERY);

@@ -18,7 +18,7 @@ describe("scroll reveal", () => {
     const home = read("src/pages/HomePage.tsx");
     const services = read("src/components/ServiceJournal.tsx");
 
-    expect(home).toContain("useGsapPageEffects(rootRef)");
+    expect(home).toContain("usePageRevealEffects(rootRef)");
     expect(home).toContain("<ServiceJournal />");
     expect(home).not.toContain("useReveal");
     expect(services).toContain("data-motion-group");

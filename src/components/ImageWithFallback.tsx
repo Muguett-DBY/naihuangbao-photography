@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { getResponsiveImageAttrs } from "../lib/responsive-image";
 import { getResponsivePictureAttrs } from "../lib/responsive-picture";
 import { FilmPlaceholder } from "./FilmPlaceholder";
@@ -24,7 +24,7 @@ export const ImageWithFallback = memo(function ImageWithFallback({
 }) {
   const [failed, setFailed] = useState(false);
   const [useDirectImg, setUseDirectImg] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
   const pictureAttrs = !useDirectImg ? getResponsivePictureAttrs(src, sizes) : null;
@@ -39,10 +39,23 @@ export const ImageWithFallback = memo(function ImageWithFallback({
     }
   };
 
+  const markLoaded = useCallback(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    wrapper.classList.add("is-loaded");
+    wrapper.dataset.state = "loaded";
+    wrapper.setAttribute("aria-busy", "false");
+  }, []);
+
   useEffect(() => {
     setFailed(false);
     setUseDirectImg(false);
-    setLoaded(false);
+    const wrapper = wrapperRef.current;
+    wrapper?.classList.remove("is-loaded");
+    if (wrapper) {
+      wrapper.dataset.state = "loading";
+      wrapper.setAttribute("aria-busy", "true");
+    }
     const image = imgRef.current;
     if (!src || !image) {
       if (!src) setFailed(true);
@@ -50,9 +63,9 @@ export const ImageWithFallback = memo(function ImageWithFallback({
     }
 
     if (image.complete && image.naturalWidth > 0) {
-      setLoaded(true);
+      markLoaded();
     }
-  }, [src]);
+  }, [markLoaded, src]);
 
   if (!src) {
     return <FilmPlaceholder title={title} tone={tone} />;
@@ -79,9 +92,10 @@ export const ImageWithFallback = memo(function ImageWithFallback({
 
   return (
     <div
-      className={`img-blur-wrap ${loaded ? "is-loaded" : ""} ${className || ""}`}
-      data-state={loaded ? "loaded" : "loading"}
-      aria-busy={!loaded}
+      ref={wrapperRef}
+      className={`img-blur-wrap ${className || ""}`}
+      data-state="loading"
+      aria-busy="true"
     >
       <div className="img-skeleton gallery-skeleton" aria-hidden="true" />
       {usePicture && pictureAttrs ? (
@@ -101,7 +115,7 @@ export const ImageWithFallback = memo(function ImageWithFallback({
             sizes={pictureAttrs.fallback.sizes}
             alt={alt}
             onError={handleError}
-            onLoad={() => setLoaded(true)}
+            onLoad={markLoaded}
           />
         </picture>
       ) : (
@@ -115,7 +129,7 @@ export const ImageWithFallback = memo(function ImageWithFallback({
           {...(imageAttrs || { src })}
           alt={alt}
           onError={() => setFailed(true)}
-          onLoad={() => setLoaded(true)}
+          onLoad={markLoaded}
         />
       )}
     </div>

@@ -46,8 +46,8 @@ describe("editorial public-page reconstruction contracts", () => {
   it("connects the home editorial sections to scoped reveal motion", () => {
     const home = read("src/pages/HomePage.tsx");
 
-    expect(home).toContain('import { useGsapPageEffects } from "../hooks/useGsapPageEffects"');
-    expect(home).toContain("useGsapPageEffects(rootRef)");
+    expect(home).toContain('import { usePageRevealEffects } from "../hooks/usePageRevealEffects"');
+    expect(home).toContain("usePageRevealEffects(rootRef)");
   });
 
   it("keeps a desktop chapter console in sync without a continuous scroll listener", () => {
@@ -190,6 +190,7 @@ describe("editorial public-page reconstruction contracts", () => {
 
   it("defines stable editorial media geometry without a gradient hero background", () => {
     const heroCss = read("src/styles/hero.css");
+    const premiereCss = read("src/styles/home-premiere.css");
     const galleryCss = read("src/styles/gallery.css");
     const pagesCss = read("src/styles/pages.css");
 
@@ -200,7 +201,9 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(heroCss).not.toContain("hero-glow-orb");
     expect(heroCss).not.toContain("hero-cover-design");
     expect(heroBlock).not.toMatch(/background(?:-image)?\s*:[^;]*gradient\(/s);
-    expect(heroCss).toMatch(/\.cinematic-premiere__aperture\s*\{[^}]*width:\s*min\(39vw, 560px\)[^}]*aspect-ratio:\s*16 \/ 9/s);
+    expect(premiereCss).toMatch(/\.cinematic-premiere__stage\s*\{[^}]*clip-path:\s*polygon\(/s);
+    expect(premiereCss).toMatch(/\.cinematic-premiere__reel button\s*\{[^}]*min-height:\s*48px/s);
+    expect(premiereCss).toContain("content-visibility: auto");
     expect(galleryCss).toContain(".gallery-page-contact-sheet");
     expect(pagesCss).toContain(".photo-detail-contact-sheet");
     expect(pagesCss).toMatch(/\.home-editorial-band--why \.why-card\s*\{[^}]*border-radius:\s*0/s);

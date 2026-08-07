@@ -4,7 +4,7 @@ import { useParams, Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { BarChart3, BookOpen, CheckCircle, Clock, FileText, Images, Lock, LogIn, Play, ShoppingCart } from "lucide-react";
 import { Button } from "animal-island-ui";
-import { useGsapPageEffects } from "../hooks/useGsapPageEffects";
+import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
 import { useNotification } from "../hooks/useNotification";
 import { useSEO } from "../hooks/useSEO";
 import { useJsonLd } from "../hooks/useJsonLd";
@@ -194,7 +194,7 @@ export function CourseDetailPage() {
     data: breadcrumb ?? {},
   });
 
-  useGsapPageEffects(rootRef);
+  usePageRevealEffects(rootRef);
   const immersiveImages = useMemo(
     () => selectImmersiveImageUrls([data?.course?.cover_image_url]),
     [data?.course?.cover_image_url],
