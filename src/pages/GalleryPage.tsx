@@ -1,4 +1,5 @@
 import "../styles/pages.css";
+import "../styles/gallery.css";
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "../hooks/useSEO";

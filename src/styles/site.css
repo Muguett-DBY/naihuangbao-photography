@@ -1,5 +1,4 @@
 @import "./hero.css";
-@import "./gallery.css";
 @import "./sections.css";
 @import "./immersive.css";
 .site-shell { min-height: 100dvh; color: var(--ink); background: var(--newsprint); }

@@ -1,3 +1,5 @@
+import "../styles/pages.css";
+import "../styles/gallery.css";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -28,7 +30,6 @@ import { QuickView } from "./QuickView";
 import { RecentlyViewedStrip } from "./RecentlyViewedStrip";
 import { ShareMenu } from "./ShareMenu";
 import { useExperienceStore } from "../experience/ExperienceProvider";
-
 type StyleFilter = PhotoStyle | "all";
 type ViewMode = "masonry" | "compact";
 type SortMode = "default" | "newest" | "featured";
@@ -41,7 +42,6 @@ interface GalleryPersistedState {
   view: ViewMode;
   sort: SortMode;
 }
-
 const STYLE_FILTERS: StyleFilter[] = ["all", "jiangnan", "street", "park", "sweet", "couple", "indoor"];
 const VIEW_MODES: ViewMode[] = ["masonry", "compact"];
 const SORT_MODES: SortMode[] = ["default", "newest", "featured"];

@@ -50,7 +50,6 @@ describe("performance budgets", () => {
       "CoursesPage.tsx",
       "DashboardPage.tsx",
       "GalleryPage.tsx",
-      "HomePage.tsx",
       "LoginPage.tsx",
       "MapPage.tsx",
       "PhotoDetailPage.tsx",
@@ -67,6 +66,12 @@ describe("performance budgets", () => {
     for (const page of routedPages) {
       expect(readFileSync(resolve(root, "src/pages", page), "utf8")).toContain('import "../styles/pages.css"');
     }
+    expect(siteCss).not.toContain('@import "./gallery.css"');
+    expect(gallerySource).toContain('import "../styles/gallery.css"');
+    expect(homeSource).not.toContain('import "../styles/pages.css";');
+    expect(homeSource).toContain('import("../styles/pages.css")');
+    expect(homeSource).toContain("scheduleIdleTask(start, 0)");
+    expect(homeSource).toContain("window.setTimeout(start, 120)");
   });
 
   it("prefetches featured portfolio images only on the homepage", () => {

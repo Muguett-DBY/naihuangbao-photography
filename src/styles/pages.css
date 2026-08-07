@@ -8838,15 +8838,6 @@
   color: var(--ink);
 }
 
-#premiere,
-#field-notes,
-#featured,
-#services-preview,
-#style-finder,
-#book {
-  scroll-margin-top: calc(var(--nav-h, 64px) + 74px);
-}
-
 @media (min-width: 981px) {
   .home-index-strip {
     position: sticky;

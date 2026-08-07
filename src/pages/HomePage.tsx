@@ -1,6 +1,5 @@
-import "../styles/pages.css";
 import "../styles/home-premiere.css";
-import { Suspense, lazy, useMemo, useRef } from "react";
+import { Suspense, lazy, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
@@ -26,6 +25,7 @@ import { conceptPremiereImmersiveFrames } from "../data/concept-premiere";
 import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 import { OpticalSceneChrome } from "../components/shared/OpticalSceneChrome";
 import { HomeChapterIndex, type HomeChapter } from "../components/shared/HomeChapterIndex";
+import { scheduleIdleTask } from "../lib/idle";
 
 const Gallery = lazy(() => import("../components/Gallery").then((module) => ({ default: module.Gallery })));
 const WhyChooseUs = lazy(() => import("../components/WhyChooseUs").then((module) => ({ default: module.WhyChooseUs })));
@@ -34,6 +34,36 @@ const FilmStripStory = lazy(() =>
   import("../components/FilmStripStory").then((module) => ({ default: module.FilmStripStory })),
 );
 const StyleQuiz = lazy(() => import("../components/StyleQuiz").then((module) => ({ default: module.StyleQuiz })));
+
+function useDeferredHomePageStyles() {
+  useEffect(() => {
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      cancelIdle();
+      window.clearTimeout(deadline);
+      window.removeEventListener("scroll", start);
+      window.removeEventListener("pointerdown", start);
+      window.removeEventListener("keydown", start);
+      void import("../styles/pages.css").catch(() => undefined);
+    };
+
+    const cancelIdle = scheduleIdleTask(start, 0);
+    const deadline = window.setTimeout(start, 120);
+    window.addEventListener("scroll", start, { passive: true, once: true });
+    window.addEventListener("pointerdown", start, { passive: true, once: true });
+    window.addEventListener("keydown", start, { once: true });
+
+    return () => {
+      cancelIdle();
+      window.clearTimeout(deadline);
+      window.removeEventListener("scroll", start);
+      window.removeEventListener("pointerdown", start);
+      window.removeEventListener("keydown", start);
+    };
+  }, []);
+}
 
 export function HomePage() {
   const { t } = useTranslation();
@@ -78,6 +108,7 @@ export function HomePage() {
 
   useSEO({ titleKey: "seo.homeTitle", descKey: "seo.homeDesc", path: "/" });
   usePageRevealEffects(rootRef);
+  useDeferredHomePageStyles();
 
   return (
     <PageTransition ref={rootRef}>

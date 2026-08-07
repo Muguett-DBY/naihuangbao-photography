@@ -35,7 +35,7 @@ export function ImmersiveExperienceGate() {
           setExperience(() => ImmersiveExperience);
         }).catch(() => undefined);
       },
-      scheduleIdle: (callback) => scheduleIdleTask(callback, 0),
+      scheduleIdle: (callback) => scheduleIdleTask(callback, 360),
       scheduleDeadline: (callback, delayMs) => {
         const timeout = window.setTimeout(callback, delayMs);
         return () => window.clearTimeout(timeout);
