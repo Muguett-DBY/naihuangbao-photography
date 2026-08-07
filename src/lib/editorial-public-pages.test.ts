@@ -55,6 +55,7 @@ describe("editorial public-page reconstruction contracts", () => {
     const chapterIndex = read("src/components/shared/HomeChapterIndex.tsx");
     const header = read("src/components/shared/Header.tsx");
     const css = read("src/styles/pages.css");
+    const premiereCss = read("src/styles/home-premiere.css");
 
     expect(home).toContain('from "../components/shared/HomeChapterIndex"');
     expect(home).toContain("<HomeChapterIndex");
@@ -68,7 +69,7 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(header).toContain('style.setProperty("--nav-h"');
     expect(css).toMatch(/@media \(min-width: 981px\)[\s\S]*?\.home-index-strip\s*\{[^}]*position:\s*sticky[^}]*top:\s*var\(--nav-h,\s*64px\)/s);
     expect(css).toContain(".home-index-strip a.is-active");
-    expect(css).toContain("scroll-margin-top: calc(var(--nav-h, 64px) + 74px)");
+    expect(premiereCss).toContain("scroll-margin-top: calc(var(--nav-h, 64px) + 74px)");
   });
 
   it("adds a desktop-only optical focus response to gallery photographs", () => {

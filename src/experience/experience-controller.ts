@@ -103,7 +103,7 @@ export function createDeferredExperienceLoad(options: DeferredExperienceLoadOpti
   if (cleared) idleCancel();
   else cancelIdle = idleCancel;
 
-  const deadlineCancel = options.scheduleDeadline(start, 120);
+  const deadlineCancel = options.scheduleDeadline(start, 1600);
   if (cleared) deadlineCancel();
   else cancelDeadline = deadlineCancel;
 

@@ -112,7 +112,7 @@ describe("immersive experience integration", () => {
       },
       scheduleDeadline(callback, delayMs) {
         deadlineCallback = callback;
-        expect(delayMs).toBe(120);
+        expect(delayMs).toBe(1600);
         return cancelDeadline;
       },
       subscribeImmediateTrigger(callback) {

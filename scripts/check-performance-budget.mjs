@@ -5,7 +5,7 @@ import { gzipSync } from "node:zlib";
 const assetsDir = join(process.cwd(), "dist", "assets");
 const maxMainJsBytes = 384 * 1024;
 const maxLazyJsBytes = 700 * 1024;
-const maxMainCssBytes = 200 * 1024;
+const maxMainCssBytes = 150 * 1024;
 const maxFontAssetBytes = 256 * 1024;
 const baselineMainGzipBytes = 29_560;
 const maxInitialGrowthGzipBytes = 5 * 1024;

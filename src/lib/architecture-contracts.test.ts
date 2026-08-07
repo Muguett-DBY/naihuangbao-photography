@@ -88,6 +88,8 @@ describe("architecture optimization contracts", () => {
   it("uses focused CSS modules through a small global entrypoint", () => {
     const globalCss = read("src/styles/global.css");
     const siteCss = read("src/styles/site.css");
+    const gallery = read("src/components/Gallery.tsx");
+    const galleryPage = read("src/pages/GalleryPage.tsx");
 
     expect(existsSync(resolve(root, "src/styles/base.css"))).toBe(true);
     expect(existsSync(resolve(root, "src/styles/site.css"))).toBe(true);
@@ -99,7 +101,9 @@ describe("architecture optimization contracts", () => {
     expect(globalCss).toContain('@import "./site.css"');
     expect(globalCss).toContain('@import "./chat.css"');
     expect(siteCss).toContain('@import "./hero.css"');
-    expect(siteCss).toContain('@import "./gallery.css"');
+    expect(siteCss).not.toContain('@import "./gallery.css"');
+    expect(gallery).toContain('import "../styles/gallery.css"');
+    expect(galleryPage).toContain('import "../styles/gallery.css"');
     expect(siteCss).toContain('@import "./sections.css"');
     expect(globalCss.split(/\r?\n/).length).toBeLessThan(80);
     expect(siteCss.split(/\r?\n/).length).toBeLessThan(10);
