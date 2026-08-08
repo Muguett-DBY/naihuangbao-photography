@@ -20,8 +20,14 @@ import { tWorkshopStatus } from "../lib/i18n-typed";
 import { selectImmersiveImageUrls } from "../experience/immersive-images";
 import { useImmersiveHighlight } from "../experience/useImmersiveHighlight";
 import type { Workshop } from "../types/content";
+import { opticalArchiveById } from "../data/optical-archive";
 
 type ViewMode = "grid" | "calendar";
+const WORKSHOP_IMMERSIVE_IMAGES = selectImmersiveImageUrls([
+  opticalArchiveById["rain-corridor"].imageUrl,
+  opticalArchiveById["garden-hero"].imageUrl,
+  opticalArchiveById["moon-gate-night"].imageUrl,
+]);
 
 export function WorkshopsPage() {
   const { t, i18n } = useTranslation();
@@ -58,10 +64,6 @@ export function WorkshopsPage() {
     (groups[key] ??= []).push(workshop);
     return groups;
   }, {}), [filteredWorkshops]);
-  const workshopCoverUrls = useMemo(() => selectImmersiveImageUrls([
-    ...workshops.map((workshop) => workshop.cover_image_url),
-    "/images/gallery/gallery-jiangnan-01.webp",
-  ]), [workshops]);
 
   const handleRegister = async (workshopId: string) => {
     setRegisteringId(workshopId);
@@ -219,11 +221,11 @@ export function WorkshopsPage() {
         eyebrow="Workshops"
         title={t("workshops.title")}
         subtitle={t("workshops.intro")}
-        image="/images/gallery/gallery-jiangnan-01.webp"
-        imageAlt={t("workshops.title")}
+        image={opticalArchiveById["rain-corridor"].imageUrl}
+        imageAlt={t(opticalArchiveById["rain-corridor"].altKey as never)}
         issue="MAKE TOGETHER / 05"
         immersivePreset="workshops"
-        immersiveImages={workshopCoverUrls}
+        immersiveImages={WORKSHOP_IMMERSIVE_IMAGES}
       />
 
       <section className="section-shell catalogue-section is-visible">

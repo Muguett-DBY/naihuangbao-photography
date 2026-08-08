@@ -57,8 +57,8 @@ test.describe("cinematic homepage premiere", () => {
 
     await expect(premiere).toBeVisible();
     await expect(premiere).toHaveAttribute("data-premiere-phase", "opening");
-    await expect(premiere.locator("[data-premiere-scene]")).toHaveCount(4);
-    await expect(reelButtons).toHaveCount(4);
+    await expect(premiere.locator("[data-premiere-scene]")).toHaveCount(5);
+    await expect(reelButtons).toHaveCount(5);
     await expect(modeButtons).toHaveCount(2);
     await expect(premiere.locator(".cinematic-premiere__scene img")).toHaveCount(1);
     await expect(premiere).toHaveAttribute("data-loaded-scenes", "1");
@@ -82,14 +82,14 @@ test.describe("cinematic homepage premiere", () => {
     expect(openingGeometry).toEqual({ titleInside: true, actionsInside: true });
 
     await reelButtons.nth(1).hover();
-    await expect(premiere).toHaveAttribute("data-active-scene", "run");
+    await expect(premiere).toHaveAttribute("data-active-scene", "rain-corridor");
     await expect(premiere).toHaveAttribute("data-loaded-scenes", "2");
     await expect(premiere.locator(".cinematic-premiere__scene img")).toHaveCount(2);
-    await expect(premiere.locator(".cinematic-premiere__readout")).toContainText("In motion");
+    await expect(premiere.locator(".cinematic-premiere__readout")).toContainText("Rain-window corridor");
 
     await reelButtons.nth(1).focus();
     await page.keyboard.press("ArrowRight");
-    await expect(premiere).toHaveAttribute("data-active-scene", "reflection");
+    await expect(premiere).toHaveAttribute("data-active-scene", "lens-stilllife");
     await expect(reelButtons.nth(2)).toBeFocused();
 
     const heroBounds = await hero.boundingBox();
@@ -98,6 +98,7 @@ test.describe("cinematic homepage premiere", () => {
       await page.mouse.move(heroBounds.x + heroBounds.width * 0.82, heroBounds.y + heroBounds.height * 0.3);
     }
     await expect(premiere).toHaveAttribute("data-premiere-pointer", "active");
+    await expect(premiere.locator(".cinematic-premiere__optical-lens")).toHaveCSS("opacity", "1");
     await expect.poll(async () => hero.evaluate((element) => (
       Math.abs(Number.parseFloat(getComputedStyle(element).getPropertyValue("--premiere-pointer-x")))
     ))).toBeGreaterThan(4);
@@ -118,13 +119,13 @@ test.describe("cinematic homepage premiere", () => {
     await expect(premiere).toHaveAttribute("data-premiere-phase", "reveal");
 
     const chapterConsole = page.locator(".home-index-strip");
-    await expect(chapterConsole.locator('a[href="#premiere"]')).toContainText("Premiere");
+    await expect(chapterConsole.locator('a[href="#premiere"]')).toContainText("Optical Garden");
   });
 
   test("reduces to a stable cover on motion-sensitive and failed-image paths", async ({ page }) => {
     await prepareHome(page);
     await page.addInitScript(() => sessionStorage.setItem("nhb-disable-webgl", "1"));
-    await page.route("**/images/concept-premiere/**", (route) => route.abort("failed"));
+    await page.route("**/images/optical-archive/**", (route) => route.abort("failed"));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");

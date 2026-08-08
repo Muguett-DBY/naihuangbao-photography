@@ -3,7 +3,7 @@ import { test, expect, type Page } from "@playwright/test";
 
 // Playwright config is at e2e/playwright.config.ts - run with: npx playwright test --config=e2e/playwright.config.ts
 
-const editorTestImage = resolve("public/images/gallery/gallery-urban-01.webp");
+const editorTestImage = resolve("e2e/fixtures/editor-test-image.png");
 
 type EditorUploadFile = string | {
   name: string;
@@ -64,20 +64,24 @@ test.describe("shoot.custard.top", () => {
 
   test("非画廊页面只加载当前 Hero 图", async ({ page }) => {
     const galleryRequests: string[] = [];
+    const bookingHeroRequests: string[] = [];
     page.on("request", (request) => {
       const pathname = new URL(request.url()).pathname;
       if (pathname.startsWith("/images/gallery/")) galleryRequests.push(pathname);
+      if (pathname.includes("booking-garden-table-v1")) bookingHeroRequests.push(pathname);
     });
 
     await page.goto("/booking");
     await expect(page.locator(".booking-quick-cta")).toBeVisible();
     await expect(page.locator(".page-hero-media img")).toBeVisible();
 
-    expect(galleryRequests.length).toBeGreaterThan(0);
-    expect(galleryRequests.every((pathname) => (
-      /^\/images\/gallery\/gallery-flower-01\.(?:avif|webp)$/.test(pathname)
+    const currentHero = await page.locator(".page-hero-media img").evaluate((image) => new URL((image as HTMLImageElement).currentSrc).pathname);
+    expect(galleryRequests).toHaveLength(0);
+    expect(bookingHeroRequests.length).toBeGreaterThan(0);
+    expect(bookingHeroRequests.every((pathname) => (
+      /^\/images\/optical-archive\/(?:640\/|960\/)?booking-garden-table-v1\.(?:avif|webp)$/.test(pathname)
     ))).toBe(true);
-    expect(new Set(galleryRequests).size).toBe(1);
+    expect(currentHero).toMatch(/^\/images\/optical-archive\/(?:640\/|960\/)?booking-garden-table-v1\.(?:avif|webp)$/);
   });
 
   test("首页不安装旧版全局 GSAP 兼容层", async ({ page }) => {

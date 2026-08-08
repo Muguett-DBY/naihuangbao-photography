@@ -1,5 +1,5 @@
 /**
- * Builds responsive WebP and AVIF variants for concept-premiere source images.
+ * Builds responsive WebP and AVIF variants for versioned concept collections.
  * Source files live outside public/ so Vite never ships the large originals.
  *
  * Usage: node scripts/process-concept-assets.mjs
@@ -9,44 +9,53 @@ import { existsSync, mkdirSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import sharp from "sharp";
 
-const RAW_DIR = resolve(process.cwd(), "source-assets/concept-premiere/raw");
-const OUT_DIR = resolve(process.cwd(), "public/images/concept-premiere");
+const COLLECTIONS = [
+  { name: "concept-premiere", webpQuality: 82, avifQuality: 65 },
+  { name: "optical-archive", webpQuality: 76, avifQuality: 58 },
+];
 const SIZES = [
   { directory: "640", width: 640 },
   { directory: "960", width: 960 },
   { directory: "", width: 1800 },
 ];
 
-async function main() {
-  if (!existsSync(RAW_DIR)) {
-    console.log("No concept source directory found. Skipping.");
-    return;
-  }
+async function processCollection(collection) {
+  const rawDirectory = resolve(process.cwd(), `source-assets/${collection.name}/raw`);
+  const outputRoot = resolve(process.cwd(), `public/images/${collection.name}`);
+  if (!existsSync(rawDirectory)) return 0;
 
-  const sourceFiles = readdirSync(RAW_DIR).filter((file) =>
+  const sourceFiles = readdirSync(rawDirectory).filter((file) =>
     /\.(jpe?g|png|webp)$/i.test(file) && !file.startsWith("."),
   );
 
   for (const file of sourceFiles) {
-    const inputPath = resolve(RAW_DIR, file);
+    const inputPath = resolve(rawDirectory, file);
     const baseName = file.replace(/\.[^.]+$/, "");
 
     for (const size of SIZES) {
-      const outputDirectory = resolve(OUT_DIR, size.directory);
+      const outputDirectory = resolve(outputRoot, size.directory);
       if (!existsSync(outputDirectory)) mkdirSync(outputDirectory, { recursive: true });
 
       const image = sharp(inputPath).resize(size.width, undefined, {
         fit: "inside",
         withoutEnlargement: true,
       });
-      await image.clone().webp({ quality: 82 }).toFile(resolve(outputDirectory, `${baseName}.webp`));
-      await image.clone().avif({ quality: 65 }).toFile(resolve(outputDirectory, `${baseName}.avif`));
+      await image.clone().webp({ quality: collection.webpQuality, effort: 5 }).toFile(resolve(outputDirectory, `${baseName}.webp`));
+      await image.clone().avif({ quality: collection.avifQuality, effort: 5 }).toFile(resolve(outputDirectory, `${baseName}.avif`));
     }
 
-    console.log(`Built concept variants for ${baseName}`);
+    console.log(`Built ${collection.name} variants for ${baseName}`);
   }
 
-  console.log(`Processed ${sourceFiles.length} concept source images.`);
+  return sourceFiles.length;
+}
+
+async function main() {
+  let processed = 0;
+  for (const collection of COLLECTIONS) {
+    processed += await processCollection(collection);
+  }
+  console.log(`Processed ${processed} concept source images across ${COLLECTIONS.length} collections.`);
 }
 
 main().catch((error) => {

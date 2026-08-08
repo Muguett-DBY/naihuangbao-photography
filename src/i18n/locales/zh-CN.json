@@ -84,6 +84,35 @@
       "nightAlt": "虚构人物在深莓色夜间廊道与雨窗倒影中的概念人像"
     }
   },
+  "opticalArchive": {
+    "chapter": "光学花园",
+    "label": "NHB 无人物概念档案 / 2026",
+    "sceneLabel": "光学花园场景选择",
+    "lensHint": "移动指针探索取景镜",
+    "sampleTitle": "从一张无人物样片开始",
+    "sampleHint": "无需上传即可体验色彩、滤镜与导出流程",
+    "useSample": "打开样片",
+    "frames": {
+      "garden": "雨后月门",
+      "corridor": "雨窗长廊",
+      "stilllife": "镜片与花",
+      "paper": "纸上水光",
+      "night": "夜色回廊"
+    },
+    "gardenHeroAlt": "雨后江南庭院、月门与水面倒影组成的无人物概念影像",
+    "rainCorridorAlt": "透过雨滴玻璃看到的空旷江南长廊",
+    "lensStilllifeAlt": "镜头、棱镜、山茶花与胶片组成的光学静物",
+    "contactSheetAlt": "植物、建筑与雨景底片组成的摄影联系表",
+    "bambooShadowAlt": "奶油色墙面、竹影、古玻璃与珊瑚色丝带",
+    "darkroomAlt": "暖色光桌、胶片与植物照片组成的无人暗房",
+    "courseLightAlt": "空白笔记本、测光表、镜片与茉莉组成的课程静物",
+    "colorGlassAlt": "彩色光学玻璃、雨水与胶片组成的色彩研究",
+    "printFolioAlt": "植物与建筑艺术微喷、收藏夹和玻璃镇纸",
+    "bookingTableAlt": "雨后花园窗边的空白预约卡、茶杯与山茶花",
+    "moonGateNightAlt": "雨后蓝调时刻里透过月门看到的江南夜巷",
+    "camelliaPrismAlt": "带雨滴的珊瑚色山茶花与小型棱镜",
+    "paperRippleAlt": "宣纸、光学玻璃、水纹与竹影组成的抽象光影"
+  },
   "rainLetter": {
     "chapter": "雨信",
     "eyebrow": "NHB 季节首映 / 第二章",
@@ -119,7 +148,21 @@
     "viewMode": "视图模式",
     "viewMasonry": "照片墙视图",
     "viewCompact": "紧凑视图",
+    "viewContact": "联系表视图",
     "viewStory": "故事漫游",
+    "viewAtlas": "展览地图视图",
+    "atlasEyebrow": "EXHIBITION ATLAS / 真实作品",
+    "atlasTitle": "沿着地点与季节翻阅",
+    "atlasIntro": "概念联系表只负责引导视线，地图中的每一张照片仍然来自已授权公开的真实作品。",
+    "atlasConceptDisclosure": "无人物概念联系表 / 展览导语",
+    "atlasRealWork": "地图收录 {{count}} 张真实作品",
+    "seasons": {
+      "spring": "春季档案",
+      "summer": "夏季档案",
+      "autumn": "秋季档案",
+      "winter": "冬季档案",
+      "archive": "时间未标注"
+    },
     "enterStory": "进入故事",
     "discoveryKicker": "作品筛选台",
     "discoveryTitle": "先选想看的风格，再打开完整故事",

@@ -84,6 +84,35 @@
       "nightAlt": "Fictional concept portrait in a deep-berry night passage with a rain-window reflection"
     }
   },
+  "opticalArchive": {
+    "chapter": "Optical Garden",
+    "label": "NHB NO-PERSON CONCEPT ARCHIVE / 2026",
+    "sceneLabel": "Optical garden scene selector",
+    "lensHint": "Move the pointer to explore the viewfinder",
+    "sampleTitle": "Start with a no-person study",
+    "sampleHint": "Try color, filters and export without uploading a photo",
+    "useSample": "Open sample",
+    "frames": {
+      "garden": "Moon gate after rain",
+      "corridor": "Rain-window corridor",
+      "stilllife": "Lens and camellia",
+      "paper": "Light on paper",
+      "night": "Night passage"
+    },
+    "gardenHeroAlt": "No-person concept image of a Jiangnan garden, moon gate and reflections after rain",
+    "rainCorridorAlt": "Empty Jiangnan corridor seen through rain-covered glass",
+    "lensStilllifeAlt": "Optical still life with lenses, prism, camellia and film",
+    "contactSheetAlt": "Photography contact sheet of plants, architecture and rain",
+    "bambooShadowAlt": "Cream wall with bamboo shadows, antique glass and coral ribbon",
+    "darkroomAlt": "Empty darkroom with a warm light table, film and botanical prints",
+    "courseLightAlt": "Course still life with a blank notebook, light meter, filters and jasmine",
+    "colorGlassAlt": "Color study with optical glass, rainwater and film",
+    "printFolioAlt": "Botanical and architectural art prints with a folio and glass weights",
+    "bookingTableAlt": "Blank appointment card, tea cup and camellia beside a garden window after rain",
+    "moonGateNightAlt": "Jiangnan lane at blue hour seen through a moon gate after rain",
+    "camelliaPrismAlt": "Rain-covered coral camellia with a small optical prism",
+    "paperRippleAlt": "Abstract light study of rice paper, optical glass, water ripples and bamboo shadows"
+  },
   "rainLetter": {
     "chapter": "Rain Letter",
     "eyebrow": "NHB Seasonal Premiere / Chapter Two",
@@ -119,7 +148,21 @@
     "viewMode": "View mode",
     "viewMasonry": "Masonry view",
     "viewCompact": "Compact view",
+    "viewContact": "Contact sheet",
     "viewStory": "Story walk",
+    "viewAtlas": "Exhibition atlas",
+    "atlasEyebrow": "EXHIBITION ATLAS / REAL WORK",
+    "atlasTitle": "Browse by place and season",
+    "atlasIntro": "The concept contact sheet guides the eye; every photograph mapped below remains authorized real portfolio work.",
+    "atlasConceptDisclosure": "No-person concept contact sheet / exhibition prelude",
+    "atlasRealWork": "{{count}} real photographs mapped",
+    "seasons": {
+      "spring": "Spring archive",
+      "summer": "Summer archive",
+      "autumn": "Autumn archive",
+      "winter": "Winter archive",
+      "archive": "Undated archive"
+    },
     "enterStory": "Enter story",
     "discoveryKicker": "Gallery finder",
     "discoveryTitle": "Choose a mood first, then open the full story",

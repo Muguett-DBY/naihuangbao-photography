@@ -163,7 +163,7 @@ describe("architecture optimization contracts", () => {
     expect(packageJson.scripts["deps:audit"]).toContain("npm audit");
     expect(packageJson.scripts["deadcode:check"]).toContain("knip");
     expect(packageJson.dependencies.three).toBe("0.185.1");
-    expect(packageJson.devDependencies["@types/three"]).toBe("0.185.3");
+    expect(packageJson.devDependencies["@types/three"]).toBe("0.185.4");
     expect(packageJson.devDependencies.wrangler).toBe("4.120.0");
     expect(packageJson.devDependencies.playwright).toBeUndefined();
     expect(existsSync(resolve(root, "src/types/animal-island-ui.d.ts"))).toBe(false);

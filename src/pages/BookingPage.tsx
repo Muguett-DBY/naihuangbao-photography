@@ -10,12 +10,17 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { PageHero } from "../components/shared/PageHero";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SectionSkeleton } from "../components/SectionSkeleton";
+import { opticalArchiveById } from "../data/optical-archive";
 
 const Packages = lazy(() => import("../components/Packages").then((m) => ({ default: m.Packages })));
 const ServiceDetails = lazy(() => import("../components/ServiceDetails").then((m) => ({ default: m.ServiceDetails })));
 const ProcessAndFaq = lazy(() => import("../components/ProcessAndFaq").then((m) => ({ default: m.ProcessAndFaq })));
 const StyleQuiz = lazy(() => import("../components/StyleQuiz").then((m) => ({ default: m.StyleQuiz })));
-const BOOKING_IMMERSIVE_IMAGES = ["/images/gallery/gallery-flower-01.avif"];
+const BOOKING_IMMERSIVE_IMAGES = [
+  opticalArchiveById["booking-table"].imageUrl,
+  opticalArchiveById["camellia-prism"].imageUrl,
+  opticalArchiveById["bamboo-shadow"].imageUrl,
+];
 
 export function BookingPage() {
   const { t } = useTranslation();
@@ -34,8 +39,8 @@ export function BookingPage() {
         eyebrow={t("packages.eyebrow")}
         title={t("nav.booking")}
         subtitle={t("aboutBooking.desc")}
-        image="/images/gallery/gallery-flower-01.webp"
-        imageAlt={t("nav.booking")}
+        image={opticalArchiveById["booking-table"].imageUrl}
+        imageAlt={t(opticalArchiveById["booking-table"].altKey as never)}
         issue="SOFT BOOKING / 07"
         immersivePreset="booking"
         immersiveImages={BOOKING_IMMERSIVE_IMAGES}

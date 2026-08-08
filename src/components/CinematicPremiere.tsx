@@ -1,3 +1,4 @@
+import "../styles/optical-garden.css";
 import {
   useCallback,
   useEffect,
@@ -9,20 +10,18 @@ import {
 import { Aperture, Images } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
-  conceptPremiereFeatureNight,
-  conceptPremiereFeatureReflection,
-  conceptPremiereFeatureRun,
-  conceptPremierePortalLead,
-} from "../data/concept-premiere";
+  opticalArchiveById,
+} from "../data/optical-archive";
 import { ImageWithFallback } from "./ImageWithFallback";
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
 const premiereScenes = [
-  { ...conceptPremierePortalLead, labelKey: "premiere.reel.frames.luminance" },
-  { ...conceptPremiereFeatureRun, labelKey: "premiere.reel.frames.motion" },
-  { ...conceptPremiereFeatureReflection, labelKey: "premiere.reel.frames.reflection" },
-  { ...conceptPremiereFeatureNight, labelKey: "premiere.reel.frames.night" },
+  { ...opticalArchiveById["garden-hero"], labelKey: "opticalArchive.frames.garden" },
+  { ...opticalArchiveById["rain-corridor"], labelKey: "opticalArchive.frames.corridor" },
+  { ...opticalArchiveById["lens-stilllife"], labelKey: "opticalArchive.frames.stilllife" },
+  { ...opticalArchiveById["paper-ripple"], labelKey: "opticalArchive.frames.paper" },
+  { ...opticalArchiveById["moon-gate-night"], labelKey: "opticalArchive.frames.night" },
 ] as const;
 
 type PremiereView = "concept" | "portfolio";
@@ -42,6 +41,8 @@ function applyPremierePointer(root: HTMLDivElement, x: number, y: number) {
   host.style.setProperty("--premiere-pointer-y", `${(y * 10).toFixed(2)}px`);
   host.style.setProperty("--premiere-pointer-far-x", `${(-x * 7).toFixed(2)}px`);
   host.style.setProperty("--premiere-pointer-far-y", `${(-y * 5).toFixed(2)}px`);
+  host.style.setProperty("--premiere-pointer-position-x", `${(50 + x * 30).toFixed(2)}%`);
+  host.style.setProperty("--premiere-pointer-position-y", `${(50 + y * 30).toFixed(2)}%`);
 }
 
 function usePremiereInteraction(rootRef: RefObject<HTMLDivElement | null>) {
@@ -215,7 +216,7 @@ export function CinematicPremiere() {
               <ImageWithFallback
                 src={scene.imageUrl}
                 alt=""
-                title={t(scene.altKey)}
+                title={t(scene.altKey as never)}
                 tone="ink"
                 priority={index === 0}
                 sizes="(max-width: 980px) 100vw, 62vw"
@@ -224,12 +225,28 @@ export function CinematicPremiere() {
           </div>
         ))}
         <div className="cinematic-premiere__gate" />
+        <div className="cinematic-premiere__optical-lens">
+          <ImageWithFallback
+            src={activeScene.imageUrl}
+            alt=""
+            title={t(activeScene.altKey as never)}
+            tone="ink"
+            sizes="(max-width: 980px) 100vw, 62vw"
+          />
+          <span className="cinematic-premiere__lens-reticle" />
+        </div>
         <div className="cinematic-premiere__registration">
           <span />
           <span />
           <span />
           <span />
         </div>
+      </div>
+
+      <div className="cinematic-premiere__archive-mark" aria-hidden="true">
+        <Aperture size={17} />
+        <span>NHB / OPTICAL ARCHIVE</span>
+        <strong>{String(activeIndex + 1).padStart(2, "0")}</strong>
       </div>
 
       <div className="cinematic-premiere__mode" role="group" aria-label={t("premiere.reel.modeLabel")}>
@@ -258,7 +275,7 @@ export function CinematicPremiere() {
           <div
             className="cinematic-premiere__reel"
             role="group"
-            aria-label={t("premiere.reel.sceneLabel")}
+            aria-label={t("opticalArchive.sceneLabel")}
             onKeyDown={handleSceneKeys}
           >
             {premiereScenes.map((scene, index) => (
@@ -267,7 +284,7 @@ export function CinematicPremiere() {
                 type="button"
                 className={index === activeIndex ? "is-active" : undefined}
                 aria-pressed={index === activeIndex}
-                aria-label={`${String(index + 1).padStart(2, "0")} ${t(scene.labelKey)}`}
+                aria-label={`${String(index + 1).padStart(2, "0")} ${t(scene.labelKey as never)}`}
                 key={scene.id}
                 onClick={() => activateScene(index)}
                 onFocus={() => activateScene(index)}
@@ -276,14 +293,14 @@ export function CinematicPremiere() {
                 }}
               >
                 <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{t(scene.labelKey)}</strong>
+                <strong>{t(scene.labelKey as never)}</strong>
               </button>
             ))}
           </div>
 
           <div className="cinematic-premiere__readout" aria-live="polite">
             <span>{String(activeIndex + 1).padStart(2, "0")} / {String(premiereScenes.length).padStart(2, "0")}</span>
-            <strong>{t(activeScene.labelKey)}</strong>
+            <strong>{t(activeScene.labelKey as never)}</strong>
           </div>
         </>
       ) : null}

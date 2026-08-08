@@ -16,8 +16,14 @@ import { tCourseCategory, tCourseDifficulty } from "../lib/i18n-typed";
 import { selectImmersiveImageUrls } from "../experience/immersive-images";
 import { useImmersiveHighlight } from "../experience/useImmersiveHighlight";
 import type { Course } from "../types/content";
+import { opticalArchiveById } from "../data/optical-archive";
 
 type CategoryFilter = string | "all";
+const COURSE_IMMERSIVE_IMAGES = selectImmersiveImageUrls([
+  opticalArchiveById["course-light"].imageUrl,
+  opticalArchiveById["paper-ripple"].imageUrl,
+  opticalArchiveById["lens-stilllife"].imageUrl,
+]);
 
 export function CoursesPage() {
   const { t, i18n } = useTranslation();
@@ -39,10 +45,6 @@ export function CoursesPage() {
     if (filter === "all") return courses;
     return courses.filter((c) => c.category === filter);
   }, [courses, filter]);
-  const courseCoverUrls = useMemo(() => selectImmersiveImageUrls([
-    ...courses.map((course) => course.cover_image_url),
-    "/images/gallery/gallery-garden-01.webp",
-  ]), [courses]);
 
   return (
     <PageTransition ref={rootRef} className="catalogue-page catalogue-page--courses">
@@ -50,11 +52,11 @@ export function CoursesPage() {
         eyebrow="Courses"
         title={t("courses.title")}
         subtitle={t("courses.intro")}
-        image="/images/gallery/gallery-garden-01.webp"
-        imageAlt={t("courses.title")}
+        image={opticalArchiveById["course-light"].imageUrl}
+        imageAlt={t(opticalArchiveById["course-light"].altKey as never)}
         issue="LEARN GENTLY / 03"
         immersivePreset="courses"
-        immersiveImages={courseCoverUrls}
+        immersiveImages={COURSE_IMMERSIVE_IMAGES}
       />
 
       <section className="section-shell catalogue-section is-visible">

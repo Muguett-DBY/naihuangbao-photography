@@ -17,8 +17,14 @@ import { tMerchandiseCategory } from "../lib/i18n-typed";
 import { selectImmersiveImageUrls } from "../experience/immersive-images";
 import { useImmersiveHighlight } from "../experience/useImmersiveHighlight";
 import type { Merchandise } from "../types/content";
+import { opticalArchiveById } from "../data/optical-archive";
 
 type CategoryFilter = string | "all";
+const SHOP_IMMERSIVE_IMAGES = selectImmersiveImageUrls([
+  opticalArchiveById["print-folio"].imageUrl,
+  opticalArchiveById["contact-sheet"].imageUrl,
+  opticalArchiveById["bamboo-shadow"].imageUrl,
+]);
 
 export function ShopPage() {
   const { t, i18n } = useTranslation();
@@ -41,10 +47,6 @@ export function ShopPage() {
     if (filter === "all") return items;
     return items.filter((item) => item.category === filter);
   }, [items, filter]);
-  const merchandiseImageUrls = useMemo(() => selectImmersiveImageUrls([
-    ...items.flatMap((item) => item.images ?? []),
-    "/images/gallery/gallery-daily-01.webp",
-  ]), [items]);
 
   return (
     <PageTransition ref={rootRef} className="catalogue-page catalogue-page--shop">
@@ -52,11 +54,11 @@ export function ShopPage() {
         eyebrow="Shop"
         title={t("merchandise.title")}
         subtitle={t("merchandise.intro")}
-        image="/images/gallery/gallery-daily-01.webp"
-        imageAlt={t("merchandise.title")}
+        image={opticalArchiveById["print-folio"].imageUrl}
+        imageAlt={t(opticalArchiveById["print-folio"].altKey as never)}
         issue="LITTLE THINGS / 06"
         immersivePreset="shop"
-        immersiveImages={merchandiseImageUrls}
+        immersiveImages={SHOP_IMMERSIVE_IMAGES}
       />
 
       <section className="section-shell catalogue-section is-visible">

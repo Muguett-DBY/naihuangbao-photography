@@ -1,6 +1,7 @@
 import "../styles/pages.css";
 import "../styles/gallery.css";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import "../styles/gallery-exhibition.css";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { Play, Loader2, Search, X, RotateCcw, Eye } from "lucide-react";
@@ -28,11 +29,12 @@ import { CompareButton } from "./CompareButton";
 import { CompareBar } from "./CompareBar";
 import { QuickView } from "./QuickView";
 import { RecentlyViewedStrip } from "./RecentlyViewedStrip";
-import { ShareMenu } from "./ShareMenu";
 import { useExperienceStore } from "../experience/ExperienceProvider";
 import { PrefetchLink } from "./shared/PrefetchLink";
 import { photoTransitionName } from "../lib/photo-transition";
 import { GalleryViewToggle, type GalleryViewMode } from "./GalleryViewToggle";
+import { GalleryExhibitionAtlas } from "./GalleryExhibitionAtlas";
+import { GalleryShareButton, GalleryVideoPreview } from "./GalleryMediaControls";
 type StyleFilter = PhotoStyle | "all";
 type ViewMode = GalleryViewMode;
 type SortMode = "default" | "newest" | "featured";
@@ -46,7 +48,7 @@ interface GalleryPersistedState {
   sort: SortMode;
 }
 const STYLE_FILTERS: StyleFilter[] = ["all", "jiangnan", "street", "park", "sweet", "couple", "indoor"];
-const VIEW_MODES: ViewMode[] = ["masonry", "compact", "story"];
+const VIEW_MODES: ViewMode[] = ["masonry", "compact", "contact", "story", "atlas"];
 const SORT_MODES: SortMode[] = ["default", "newest", "featured"];
 const GALLERY_STATE_KEY = "nhb-gallery-discovery-state";
 const tones = ["rose", "sage", "cream", "ink"] as const;
@@ -135,85 +137,6 @@ function getInitialState(searchParams: URLSearchParams): GalleryPersistedState &
   }
 
   return { filter: "all", album: "all", dateRange: "all", search: "", view: "masonry", sort: "default", restored: false };
-}
-
-function VideoPreview({ videoUrl, posterUrl, title }: { videoUrl: string; posterUrl: string; title: string }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [hovering, setHovering] = useState(false);
-
-  const playVideo = () => {
-    setHovering(true);
-    videoRef.current?.play().catch(() => {});
-  };
-
-  const pauseVideo = () => {
-    setHovering(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  };
-
-  const toggleTouchPlay = () => {
-    if (videoRef.current?.paused) {
-      playVideo();
-    } else {
-      pauseVideo();
-    }
-  };
-
-  return (
-    <div
-      className="gallery-video-wrap"
-      onMouseEnter={playVideo}
-      onMouseLeave={pauseVideo}
-      onTouchStart={toggleTouchPlay}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleTouchPlay(); } }}
-      aria-label={`Play video: ${title}`}
-    >
-      {!hovering && (
-        <ImageWithFallback
-          src={posterUrl}
-          alt={title}
-          title={title}
-          tone="cream"
-          load={true}
-          priority={false}
-          sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
-        />
-      )}
-      <video
-        ref={videoRef}
-        className={`gallery-video-preview ${hovering ? "is-playing" : ""}`}
-        src={videoUrl}
-        poster={posterUrl}
-        muted
-        loop
-        playsInline
-        preload="none"
-        aria-label={title}
-      />
-      <span className="gallery-video-badge">
-        <Play size={12} />
-      </span>
-    </div>
-  );
-}
-
-function ShareButton({ photo }: { photo: PhotoItem }) {
-  const url = typeof window !== "undefined" ? `${window.location.origin}/gallery/${photo.id}` : "";
-  return (
-    <span onClick={(e) => e.stopPropagation()} role="presentation">
-      <ShareMenu
-        variant="icon"
-        url={url}
-        title={photo.title}
-        text={`${photo.title} — ${photo.location}`}
-      />
-    </span>
-  );
 }
 
 type GalleryProps = {
@@ -326,8 +249,12 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
   const viewLabel = t(
     viewMode === "compact"
       ? "gallery.viewCompact"
+      : viewMode === "contact"
+        ? "gallery.viewContact"
       : viewMode === "story"
         ? "gallery.viewStory"
+        : viewMode === "atlas"
+          ? "gallery.viewAtlas"
         : "gallery.viewMasonry",
   );
   const sortLabel = t(`gallery.sort${sortMode.charAt(0).toUpperCase()}${sortMode.slice(1)}`, sortMode);
@@ -845,8 +772,18 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
           </div>
         )}
 
+        {photos.length > 0 && viewMode === "atlas" && (
+          <GalleryExhibitionAtlas
+            photos={visiblePhotos}
+            onOpen={(photo) => {
+              setLightboxIndex(photoIndexMap.get(photo.id) ?? 0);
+              track("lightbox_open", { photoId: photo.id, style: photo.style, source: "atlas" });
+            }}
+          />
+        )}
+
         {/* Album groupings */}
-        {photos.length > 0 && (() => {
+        {photos.length > 0 && viewMode !== "atlas" && (() => {
           const albums = new Map<string, typeof visiblePhotos>();
           for (const p of visiblePhotos) {
             const key = p.album || t("gallery.otherAlbum");
@@ -860,7 +797,7 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
                 <span className="gallery-album-count">{albumPhotos.length} {t("gallery.photos", "photos")}</span>
               </div>
               <div
-                className={`gallery-masonry ${viewMode === "compact" ? "gallery-masonry--compact" : ""} ${viewMode === "story" ? "gallery-masonry--story" : ""} ${isTransitioning ? "gallery-masonry--transitioning" : ""}`}
+                className={`gallery-masonry ${viewMode === "compact" ? "gallery-masonry--compact" : ""} ${viewMode === "contact" ? "gallery-masonry--contact" : ""} ${viewMode === "story" ? "gallery-masonry--story" : ""} ${isTransitioning ? "gallery-masonry--transitioning" : ""}`}
                 data-gallery-view={viewMode}
               >
                 {albumPhotos.map((item, index) => {
@@ -895,7 +832,16 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
                         }
                       }}
                     >
-                      <div className="gallery-masonry-media">
+                      <div
+                        className="gallery-masonry-media"
+                        style={{ "--gallery-loupe-image": `url("${item.imageUrl}")` } as CSSProperties}
+                        onPointerMove={(event) => {
+                          if (event.pointerType !== "mouse") return;
+                          const bounds = event.currentTarget.getBoundingClientRect();
+                          event.currentTarget.style.setProperty("--gallery-focus-x", `${((event.clientX - bounds.left) / Math.max(1, bounds.width)) * 100}%`);
+                          event.currentTarget.style.setProperty("--gallery-focus-y", `${((event.clientY - bounds.top) / Math.max(1, bounds.height)) * 100}%`);
+                        }}
+                      >
                         <button
                           className="gallery-masonry-btn"
                           type="button"
@@ -909,7 +855,7 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
                           aria-label={`${t("gallery.viewLargeImage")}${item.title}`}
                         >
                           {isVideo && item.videoUrl ? (
-                            <VideoPreview
+                            <GalleryVideoPreview
                               videoUrl={item.videoUrl}
                               posterUrl={item.imageUrl || ""}
                               title={item.title}
@@ -983,7 +929,7 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
                                 }}
                               />
                             </span>
-                            <ShareButton photo={item} />
+                            <GalleryShareButton photo={item} />
                           </div>
                         </div>
                       </div>

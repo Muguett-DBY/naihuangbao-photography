@@ -1,12 +1,14 @@
-import { BookOpen, Columns, LayoutGrid } from "lucide-react";
+import { BookOpen, Columns, Grid3X3, LayoutGrid, MapPinned } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export type GalleryViewMode = "masonry" | "compact" | "story";
+export type GalleryViewMode = "masonry" | "compact" | "contact" | "story" | "atlas";
 
 const VIEW_OPTIONS = [
   { id: "masonry", icon: LayoutGrid, labelKey: "gallery.viewMasonry", fallback: "Masonry view" },
   { id: "compact", icon: Columns, labelKey: "gallery.viewCompact", fallback: "Compact view" },
+  { id: "contact", icon: Grid3X3, labelKey: "gallery.viewContact", fallback: "Contact sheet" },
   { id: "story", icon: BookOpen, labelKey: "gallery.viewStory", fallback: "Story view" },
+  { id: "atlas", icon: MapPinned, labelKey: "gallery.viewAtlas", fallback: "Exhibition atlas" },
 ] as const;
 
 export function GalleryViewToggle({

@@ -17,8 +17,14 @@ import { publicMutationHeaders } from "../lib/admin-helpers";
 import { selectImmersiveImageUrls } from "../experience/immersive-images";
 import { useImmersiveHighlight } from "../experience/useImmersiveHighlight";
 import type { Preset } from "../types/content";
+import { opticalArchiveById } from "../data/optical-archive";
 
 type CategoryFilter = string | "all";
+const PRESET_IMMERSIVE_IMAGES = selectImmersiveImageUrls([
+  opticalArchiveById["color-glass"].imageUrl,
+  opticalArchiveById["lens-stilllife"].imageUrl,
+  opticalArchiveById["paper-ripple"].imageUrl,
+]);
 
 export function ProductsPage() {
   const { t, i18n } = useTranslation();
@@ -42,10 +48,6 @@ export function ProductsPage() {
     if (filter === "all") return presets;
     return presets.filter((p) => p.category === filter);
   }, [presets, filter]);
-  const presetPreviewUrls = useMemo(() => selectImmersiveImageUrls([
-    ...presets.flatMap((preset) => preset.preview_images ?? []),
-    "/images/gallery/gallery-urban-01.webp",
-  ]), [presets]);
 
   const handleDownload = (id: string) => {
     void fetch(`/api/presets/${id}/download`, {
@@ -61,11 +63,11 @@ export function ProductsPage() {
         eyebrow="Presets"
         title={t("presets.title")}
         subtitle={t("presets.intro")}
-        image="/images/gallery/gallery-urban-01.webp"
-        imageAlt={t("presets.title")}
+        image={opticalArchiveById["color-glass"].imageUrl}
+        imageAlt={t(opticalArchiveById["color-glass"].altKey as never)}
         issue="SOFT TONES / 04"
         immersivePreset="presets"
-        immersiveImages={presetPreviewUrls}
+        immersiveImages={PRESET_IMMERSIVE_IMAGES}
       />
 
       <section className="section-shell catalogue-section is-visible">

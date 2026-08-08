@@ -143,6 +143,34 @@ test.describe("editorial account and operations surfaces", () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test("editor samples open the color workflow without loading face models and expose real history", async ({ page }) => {
+    let modelRequests = 0;
+    await page.route("**/models/**", (route) => {
+      modelRequests += 1;
+      return route.abort("failed");
+    });
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/editor?lang=en");
+
+    const samples = page.locator("[data-editor-sample]");
+    await expect(samples).toHaveCount(3);
+    await samples.first().click();
+    await expect(page.locator(".editor-canvas")).toBeVisible({ timeout: 15_000 });
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1);
+    await expect(page.getByRole("tab", { name: "Color", exact: true })).toHaveAttribute("aria-selected", "true");
+    await expect.poll(() => modelRequests).toBe(0);
+
+    const history = page.locator(".editor-history-rail");
+    await expect(history.getByRole("button")).toHaveCount(1);
+    await page.getByRole("button", { name: "Filter", exact: true }).click();
+    await expect(page.locator(".editor-filter-preview img")).toHaveCount(12);
+    await page.locator(".editor-filter-btn").nth(1).click();
+    await expect(history.getByRole("button")).toHaveCount(2);
+    await history.getByRole("button").first().click();
+    await expect(history.getByRole("button").first()).toHaveAttribute("aria-current", "step");
+    await expectNoHorizontalOverflow(page);
+  });
+
   test("admin exposes every operations section in a responsive navigation rail", async ({ page }) => {
     await mockAdmin(page);
     await page.setViewportSize({ width: 1440, height: 1000 });

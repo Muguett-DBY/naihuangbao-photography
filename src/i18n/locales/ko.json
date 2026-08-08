@@ -84,6 +84,35 @@
       "nightAlt": "딥 베리색 밤 회랑과 빗물 어린 창 반사 속 가상 인물의 콘셉트 포트레이트"
     }
   },
+  "opticalArchive": {
+    "chapter": "빛의 정원",
+    "label": "NHB 무인 콘셉트 아카이브 / 2026",
+    "sceneLabel": "빛의 정원 장면 선택",
+    "lensHint": "포인터를 움직여 뷰파인더를 탐색하세요",
+    "sampleTitle": "인물 없는 샘플로 시작하기",
+    "sampleHint": "사진을 올리지 않고 색상, 필터, 내보내기를 체험하세요",
+    "useSample": "샘플 열기",
+    "frames": {
+      "garden": "비 갠 뒤 월문",
+      "corridor": "빗창 회랑",
+      "stilllife": "렌즈와 동백",
+      "paper": "종이 위의 빛",
+      "night": "밤의 회랑"
+    },
+    "gardenHeroAlt": "비 갠 뒤 장난 정원과 월문, 수면 반사를 담은 무인 콘셉트 이미지",
+    "rainCorridorAlt": "빗방울 맺힌 유리 너머의 비어 있는 장난 회랑",
+    "lensStilllifeAlt": "렌즈, 프리즘, 동백, 필름으로 구성된 광학 정물",
+    "contactSheetAlt": "식물, 건축, 빗풍경으로 구성된 사진 콘택트 시트",
+    "bambooShadowAlt": "크림색 벽, 대나무 그림자, 오래된 유리와 산호색 리본",
+    "darkroomAlt": "따뜻한 라이트 테이블과 필름, 식물 사진이 있는 무인 암실",
+    "courseLightAlt": "빈 노트, 노출계, 필터와 재스민으로 구성된 강좌 정물",
+    "colorGlassAlt": "광학 유리, 빗물과 필름으로 구성된 색채 연구",
+    "printFolioAlt": "식물과 건축 아트 프린트, 폴리오와 유리 문진",
+    "bookingTableAlt": "비 갠 정원 창가의 빈 예약 카드, 찻잔과 동백",
+    "moonGateNightAlt": "비 갠 뒤 월문 너머로 보이는 블루아워의 장난 골목",
+    "camelliaPrismAlt": "빗방울 맺힌 산호색 동백과 작은 광학 프리즘",
+    "paperRippleAlt": "한지, 광학 유리, 물결과 대나무 그림자의 추상 빛 연구"
+  },
   "rainLetter": {
     "chapter": "비의 편지",
     "eyebrow": "NHB 시즌 프리미어 / 두 번째 장",
@@ -119,7 +148,21 @@
     "viewMode": "보기 방식",
     "viewMasonry": "메이슨리 보기",
     "viewCompact": "컴팩트 보기",
+    "viewContact": "콘택트 시트 보기",
     "viewStory": "스토리 보기",
+    "viewAtlas": "전시 아틀라스",
+    "atlasEyebrow": "EXHIBITION ATLAS / 실제 작품",
+    "atlasTitle": "장소와 계절을 따라 보기",
+    "atlasIntro": "콘셉트 콘택트 시트는 시선만 안내하며, 지도 속 모든 사진은 공개 승인을 받은 실제 작품입니다.",
+    "atlasConceptDisclosure": "무인 콘셉트 시트 / 전시 서문",
+    "atlasRealWork": "실제 작품 {{count}}장 수록",
+    "seasons": {
+      "spring": "봄 아카이브",
+      "summer": "여름 아카이브",
+      "autumn": "가을 아카이브",
+      "winter": "겨울 아카이브",
+      "archive": "날짜 미지정"
+    },
     "enterStory": "스토리 열기",
     "discoveryKicker": "작품 찾기",
     "discoveryTitle": "분위기를 먼저 고르고, 전체 스토리를 열어보세요",

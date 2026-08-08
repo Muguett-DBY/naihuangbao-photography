@@ -3,7 +3,10 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
-const read = (path: string) => readFileSync(resolve(root, path), "utf8");
+const readRaw = (path: string) => readFileSync(resolve(root, path), "utf8");
+const read = (path: string) => path === "src/styles/pages.css"
+  ? ["src/styles/pages.css", "src/styles/editor.css", "src/styles/darkroom-v2.css"].map(readRaw).join("\n")
+  : readRaw(path);
 
 describe("editor regression contracts", () => {
   it("does not render the public chat overlay on the editor route", () => {
@@ -189,13 +192,15 @@ describe("editor regression contracts", () => {
     expect(editor).toContain("setStudioReady(true)");
     expect(editor).toContain("setInitialFile(file)");
     expect(editor).toContain("initialFile={initialFile}");
+    expect(editor).toContain('import "../styles/editor.css"');
     expect(editor).not.toContain("../data/editor-constants");
     expect(editor).not.toContain("../lib/editor-effects");
     expect(editor).not.toContain("../lib/photo-processing");
     expect(editor).not.toContain("useRef<HTMLCanvasElement>");
 
     expect(workspace).toContain("initialFile?: File | null");
-    expect(workspace).toContain("loadImageFile(initialFile)");
+    expect(workspace).toContain("skipInitialFaceDetection?: boolean");
+    expect(workspace).toContain("loadImageFile(initialFile, { skipFaceDetection: skipInitialFaceDetection })");
   });
 
   it("recovers from unreadable and superseded editor image loads", () => {
@@ -241,7 +246,8 @@ describe("editor regression contracts", () => {
     const en = read("src/i18n/locales/en.json");
 
     expect(editor).toContain("ImagePlus");
-    expect(editor).toContain("editor-empty-panel");
+    expect(editor).toContain("editor-darkroom-feature");
+    expect(editor).toContain("editor-sample-deck");
     expect(editor).toContain("editor-empty-upload");
     expect(editor).toContain("editor-empty-badges");
     expect(editor).toContain("editor.emptyTitle");
