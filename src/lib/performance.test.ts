@@ -67,6 +67,10 @@ describe("performance budgets", () => {
       expect(readFileSync(resolve(root, "src/pages", page), "utf8")).toContain('import "../styles/pages.css"');
     }
     expect(siteCss).not.toContain('@import "./gallery.css"');
+    expect(existsSync(resolve(root, "src/styles/editor.css"))).toBe(true);
+    expect(readFileSync(resolve(root, "src/pages/PhotoEditorPage.tsx"), "utf8")).toContain('import "../styles/editor.css"');
+    expect(readFileSync(resolve(root, "src/pages/PhotoEditorWorkspace.tsx"), "utf8")).toContain('import "../styles/editor.css"');
+    expect(readFileSync(resolve(root, "src/styles/pages.css"), "utf8")).not.toContain("Photo Editor page");
     expect(gallerySource).toContain('import "../styles/gallery.css"');
     expect(homeSource).not.toContain('import "../styles/pages.css";');
     expect(homeSource).toContain('import("../styles/pages.css")');
@@ -87,7 +91,7 @@ describe("performance budgets", () => {
   it("shows the premiere cover while the lazy homepage chunk loads", () => {
     expect(routerSource).toContain("function HomePremiereFallback()");
     expect(routerSource).toContain('className="hero hero-home home-premiere-fallback"');
-    expect(routerSource).toContain("premiere-luminance-v4.avif");
+    expect(routerSource).toContain("optical-garden-hero-v1.avif");
     expect(routerSource).toContain('fetchPriority="high"');
     expect(routerSource).toContain("const { openBookingModal, warmBookingModal } = useBookingModal()");
     expect(routerSource).toContain("onPointerEnter={warmBookingModal}");
@@ -211,7 +215,7 @@ describe("performance budgets", () => {
     expect(homeSource).toContain("whyRender.ready ?");
     expect(homeSource).toContain("reviewsRender.ready ?");
     expect(homeSource).toContain("quizRender.ready ?");
-    expect(homeSource).toContain("conceptPremiereImmersiveFrames.slice(0, 2)");
+    expect(homeSource).toContain("opticalGardenFrames.slice(0, 3)");
     expect(premiereSource).toContain("loadedScenes.has(index)");
     expect(premiereSource).toContain("priority={index === 0}");
     expect(premiereSource).toContain("data-loaded-scenes");

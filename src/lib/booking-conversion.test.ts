@@ -12,7 +12,7 @@ describe("public booking conversion shell", () => {
     const pagesCss = read("src/styles/pages.css");
 
     expect(bookingPage).toContain('className="booking-page booking-page--editorial"');
-    expect(bookingPage).toContain('image="/images/gallery/');
+    expect(bookingPage).toContain('image={opticalArchiveById["booking-table"].imageUrl}');
     expect(bookingPage).toContain('className="booking-content-surface"');
     expect(bookingPage).toContain("<StyleQuiz showPreview deferPreview />");
     expect(pagesCss).toMatch(

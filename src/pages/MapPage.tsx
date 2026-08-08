@@ -11,8 +11,14 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SectionSkeleton } from "../components/SectionSkeleton";
 import { selectImmersiveImageUrls } from "../experience/immersive-images";
 import { useExperiencePause } from "../experience/useExperiencePause";
+import { opticalArchiveById } from "../data/optical-archive";
 
 const PhotoMap = lazy(() => import("../components/PhotoMap").then((m) => ({ default: m.PhotoMap })));
+const MAP_IMMERSIVE_IMAGES = selectImmersiveImageUrls([
+  opticalArchiveById["moon-gate-night"].imageUrl,
+  opticalArchiveById["rain-corridor"].imageUrl,
+  opticalArchiveById["garden-hero"].imageUrl,
+], 4);
 
 export function MapPage() {
   const { t } = useTranslation();
@@ -51,13 +57,6 @@ export function MapPage() {
       zoneStats: zones,
     };
   }, [photos]);
-  const mapImages = useMemo(
-    () => selectImmersiveImageUrls([
-      ...photos.map((photo) => photo.imageUrl),
-      "/images/gallery/gallery-urban-01.webp",
-    ], 4),
-    [photos],
-  );
 
   useExperiencePause("map", mapStageVisible);
   useEffect(() => {
@@ -91,11 +90,11 @@ export function MapPage() {
         eyebrow={t("photoMap.eyebrow")}
         title={t("photoMap.title")}
         subtitle={t("photoMap.intro")}
-        image="/images/gallery/gallery-urban-01.webp"
-        imageAlt={t("photoMap.heroImageAlt")}
+        image={opticalArchiveById["moon-gate-night"].imageUrl}
+        imageAlt={t(opticalArchiveById["moon-gate-night"].altKey as never)}
         issue="NANJING WALKS / 09"
         immersivePreset="map"
-        immersiveImages={mapImages}
+        immersiveImages={MAP_IMMERSIVE_IMAGES}
       />
 
       <section className="section-shell map-page-workspace is-visible">

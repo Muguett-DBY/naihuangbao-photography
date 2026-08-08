@@ -21,7 +21,7 @@ import { RecentlyViewedStrip } from "../components/RecentlyViewedStrip";
 import { SectionSkeleton } from "../components/SectionSkeleton";
 import { ServiceJournal } from "../components/ServiceJournal";
 import { CinematicPremiere } from "../components/CinematicPremiere";
-import { conceptPremiereImmersiveFrames } from "../data/concept-premiere";
+import { opticalGardenFrames } from "../data/optical-archive";
 import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 import { OpticalSceneChrome } from "../components/shared/OpticalSceneChrome";
 import { HomeChapterIndex, type HomeChapter } from "../components/shared/HomeChapterIndex";
@@ -85,7 +85,7 @@ export function HomePage() {
     [photos],
   );
   const immersiveImages = useMemo(() => {
-    const conceptImages = conceptPremiereImmersiveFrames.slice(0, 2).map((frame) => frame.imageUrl);
+    const conceptImages = opticalGardenFrames.slice(0, 3).map((frame) => frame.imageUrl);
     const photoImages = coverPhotos.map((photo) => photo.imageUrl);
     return [
       ...conceptImages,
@@ -100,7 +100,7 @@ export function HomePage() {
   const finalCtaPhoto = coverPhotos[2] ?? coverPhotos[0];
   const homeChapters = useMemo<HomeChapter[]>(
     () => [
-      { id: "premiere", index: "00", label: t("premiere.chapter") },
+      { id: "premiere", index: "00", label: t("opticalArchive.chapter") },
       { id: "rain-letter", index: "01", label: t("rainLetter.chapter") },
       { id: "field-notes", index: "02", label: t("filmstrip.title" as never) },
       { id: "featured", index: "03", label: t("gallery.title") },
@@ -122,6 +122,7 @@ export function HomePage() {
         className="hero hero-home"
         id="premiere"
         data-immersive-anchor="home"
+        data-optical-garden="true"
       >
         <CinematicPremiere />
         <div className="hero-contact-sheet">
@@ -145,7 +146,7 @@ export function HomePage() {
 
         <div className="hero-editorial-copy">
           <p className="hero-concept-label">
-            <span>{t("premiere.label")}</span>
+            <span>{t("opticalArchive.label")}</span>
             <span>{t("premiere.disclosure")}</span>
           </p>
           <div className="mood-signature" aria-live="polite">

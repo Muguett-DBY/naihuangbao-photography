@@ -66,7 +66,9 @@ const adminBookingsApiSource = readFileSync(resolve(root, "functions/api/admin/b
 const photoImageApiSource = readFileSync(resolve(root, "functions/api/photos/[id]/image.ts"), "utf8");
 const sitemapSource = readFileSync(resolve(root, "public/sitemap.xml"), "utf8");
 const adminCssSource = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
-const editorCssSource = readFileSync(resolve(root, "src/styles/pages.css"), "utf8");
+const editorCssSource = ["src/styles/pages.css", "src/styles/editor.css", "src/styles/darkroom-v2.css"]
+  .map((path) => readFileSync(resolve(root, path), "utf8"))
+  .join("\n");
 const sectionsCssSource = readFileSync(resolve(root, "src/styles/sections.css"), "utf8");
 const dashboardSource = readFileSync(resolve(root, "src/components/dashboard/ProfileTab.tsx"), "utf8");
 const viteConfigSource = readFileSync(resolve(root, "vite.config.ts"), "utf8");

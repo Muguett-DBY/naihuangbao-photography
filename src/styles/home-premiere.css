@@ -518,6 +518,12 @@ body.is-loaded .cinematic-premiere[data-premiere-motion="full"] .cinematic-premi
 }
 
 @media (prefers-reduced-motion: reduce) {
+  body.is-loaded .hero-home .hero-contact-sheet,
+  html[data-immersive-ready="true"] body.is-loaded .hero-home[data-immersive-anchor="home"] .hero-contact-sheet {
+    opacity: 1;
+    transition: none;
+  }
+
   .soft-magnet {
     transform: none !important;
     transition: none !important;

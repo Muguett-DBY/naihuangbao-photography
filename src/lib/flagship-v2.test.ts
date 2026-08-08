@@ -26,10 +26,12 @@ describe("flagship v2 experience contracts", () => {
     const toggle = read("src/components/GalleryViewToggle.tsx");
     const css = read("src/styles/gallery.css");
 
-    expect(toggle).toContain('export type GalleryViewMode = "masonry" | "compact" | "story"');
+    expect(toggle).toContain('export type GalleryViewMode = "masonry" | "compact" | "contact" | "story" | "atlas"');
     expect(toggle).toContain('{ id: "story"');
     expect(gallery).toContain("<GalleryViewToggle");
     expect(gallery).toContain("gallery-masonry--story");
+    expect(gallery).toContain("gallery-masonry--contact");
+    expect(gallery).toContain("GalleryExhibitionAtlas");
     expect(css).toContain(".gallery-masonry--story");
   });
 

@@ -25,7 +25,10 @@ describe("share menu", () => {
   });
 
   it("upgrades the gallery ShareButton to use the new ShareMenu with toast feedback", () => {
-    const source = read("src/components/Gallery.tsx");
+    const source = [
+      read("src/components/Gallery.tsx"),
+      read("src/components/GalleryMediaControls.tsx"),
+    ].join("\n");
     expect(source).toContain("ShareMenu");
     expect(source).not.toContain("navigator.share(shareData)");
     expect(source).not.toContain("alert(t(\"gallery.linkCopied\"))");

@@ -48,16 +48,16 @@ function HomePremiereFallback() {
           <picture>
             <source
               type="image/avif"
-              srcSet="/images/concept-premiere/640/premiere-luminance-v4.avif?v=20260801-4 640w, /images/concept-premiere/960/premiere-luminance-v4.avif?v=20260801-4 960w, /images/concept-premiere/premiere-luminance-v4.avif?v=20260801-4 1600w"
+              srcSet="/images/optical-archive/640/optical-garden-hero-v1.avif?v=20260808-1 640w, /images/optical-archive/960/optical-garden-hero-v1.avif?v=20260808-1 960w, /images/optical-archive/optical-garden-hero-v1.avif?v=20260808-1 1672w"
               sizes="100vw"
             />
             <source
               type="image/webp"
-              srcSet="/images/concept-premiere/640/premiere-luminance-v4.webp?v=20260801-4 640w, /images/concept-premiere/960/premiere-luminance-v4.webp?v=20260801-4 960w, /images/concept-premiere/premiere-luminance-v4.webp?v=20260801-4 1600w"
+              srcSet="/images/optical-archive/640/optical-garden-hero-v1.webp?v=20260808-1 640w, /images/optical-archive/960/optical-garden-hero-v1.webp?v=20260808-1 960w, /images/optical-archive/optical-garden-hero-v1.webp?v=20260808-1 1672w"
               sizes="100vw"
             />
             <img
-              src="/images/concept-premiere/premiere-luminance-v4.webp?v=20260801-4"
+              src="/images/optical-archive/optical-garden-hero-v1.webp?v=20260808-1"
               alt=""
               width="1600"
               height="900"
@@ -75,7 +75,7 @@ function HomePremiereFallback() {
       <div className="hero-solid-scrim" aria-hidden="true" />
       <div className="hero-editorial-copy">
         <p className="hero-concept-label">
-          <span>{t("premiere.label")}</span>
+          <span>{t("opticalArchive.label")}</span>
           <span>{t("premiere.disclosure")}</span>
         </p>
         <p className="hero-issue-line">

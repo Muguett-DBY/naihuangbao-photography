@@ -27,7 +27,8 @@ describe("editorial catalogue routes", () => {
     expect(source).toContain("imageAlt?: string");
     expect(source).toContain("issue?: string");
     expect(source).toContain("<picture");
-    expect(source).toContain('type="image/avif"');
+    expect(source).toContain("getResponsivePictureAttrs");
+    expect(source).toContain("pictureAttrs.sources.map");
     expect(source).toContain('className="page-hero-issue"');
   });
 
@@ -66,11 +67,12 @@ describe("editorial catalogue routes", () => {
     }
   });
 
-  it("art-directs every index with an authorized local image and issue label", () => {
+  it("art-directs every index with a versioned local concept image and issue label", () => {
     for (const path of indexRoutes) {
       const source = read(path);
-      expect(source).toMatch(/image="\/images\/gallery\/gallery-[a-z-]+-01\.webp"/);
-      expect(source).toMatch(/imageAlt=\{t\(/);
+      expect(source).toContain('opticalArchiveById["');
+      expect(source).toMatch(/image=\{opticalArchiveById\["[a-z-]+"\]\.imageUrl\}/);
+      expect(source).toMatch(/imageAlt=\{t\(opticalArchiveById/);
       expect(source).toMatch(/issue="[A-Z ]+ \/ \d{2}"/);
       expect(source).toContain('className="catalogue-page');
     }

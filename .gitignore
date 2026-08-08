@@ -11,6 +11,10 @@ dist
 source-assets/gallery/raw/*
 !source-assets/gallery/raw/README.md
 .playwright-mcp/
+.playwright-cli/
+test-results/
+playwright-report/
+output/
 opencode.json
 .reasonix/
 bun.lock

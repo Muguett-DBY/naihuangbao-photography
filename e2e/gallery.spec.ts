@@ -49,6 +49,21 @@ test.describe("gallery browsing flow", () => {
     }
   });
 
+  test("switches between contact sheet and exhibition atlas", async ({ page }) => {
+    await page.goto("/gallery");
+    const viewButtons = page.locator(".gallery-view-btn");
+    await expect(viewButtons).toHaveCount(5);
+
+    await viewButtons.nth(2).click();
+    await expect(page).toHaveURL(/view=contact/);
+    await expect(page.locator(".gallery-masonry--contact").first()).toBeVisible();
+
+    await viewButtons.nth(4).click();
+    await expect(page).toHaveURL(/view=atlas/);
+    await expect(page.locator(".gallery-exhibition-atlas")).toBeVisible();
+    await expect(page.locator(".gallery-exhibition-atlas__lead img")).toBeVisible();
+  });
+
   test("photo detail page loads from gallery", async ({ page }) => {
     await page.goto("/gallery");
     await page.waitForTimeout(1000);

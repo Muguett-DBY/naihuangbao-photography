@@ -1,6 +1,8 @@
+import "../../styles/route-art-direction.css";
 import { memo, type ReactNode } from "react";
 import type { ScenePresetId } from "../../experience/scene-presets";
 import { useImmersiveAnchor } from "../../experience/useImmersiveAnchor";
+import { getResponsivePictureAttrs } from "../../lib/responsive-picture";
 import { OpticalSceneChrome } from "./OpticalSceneChrome";
 
 type PageHeroProps = {
@@ -16,10 +18,6 @@ type PageHeroProps = {
 };
 
 const EMPTY_IMMERSIVE_IMAGES: readonly string[] = Object.freeze([]);
-
-function alternateImageSource(image: string, extension: "avif" | "webp") {
-  return image.replace(/\.(?:avif|webp)(\?.*)?$/i, `.${extension}$1`);
-}
 
 export const PageHero = memo(function PageHero({
   eyebrow,
@@ -38,6 +36,7 @@ export const PageHero = memo(function PageHero({
     imageUrls: immersiveImages ?? EMPTY_IMMERSIVE_IMAGES,
   });
   const shouldRegisterImmersiveAnchor = immersivePreset !== undefined && immersiveImages !== undefined;
+  const pictureAttrs = image ? getResponsivePictureAttrs(image, "100vw") : null;
 
   return (
     <section
@@ -46,15 +45,33 @@ export const PageHero = memo(function PageHero({
       id="top"
       aria-labelledby="page-hero-title"
       data-immersive-anchor={shouldRegisterImmersiveAnchor ? immersivePreset : undefined}
+      data-page-hero={immersivePreset}
     >
-      {image && (
+      {image && pictureAttrs && (
         <picture className="page-hero-media">
-          <source srcSet={alternateImageSource(image, "avif")} type="image/avif" />
-          <source srcSet={alternateImageSource(image, "webp")} type="image/webp" />
-          <img src={image} alt={imageAlt || title} width={1920} height={1280} fetchPriority="high" />
+          {pictureAttrs.sources.map((source) => (
+            <source key={source.type} srcSet={source.srcSet} sizes={source.sizes} type={source.type} />
+          ))}
+          <img
+            src={pictureAttrs.fallback.src}
+            srcSet={pictureAttrs.fallback.srcSet}
+            sizes={pictureAttrs.fallback.sizes}
+            alt={imageAlt || title}
+            width={1920}
+            height={1080}
+            fetchPriority="high"
+            decoding="async"
+          />
         </picture>
       )}
       {immersivePreset && <OpticalSceneChrome preset={immersivePreset} />}
+      {immersivePreset && (
+        <div className="page-hero-optical-axis" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+      )}
       <div className="page-hero-heading">
         {backLink}
         <div className="page-hero-ledger">

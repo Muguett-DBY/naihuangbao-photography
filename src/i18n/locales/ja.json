@@ -84,6 +84,35 @@
       "nightAlt": "深いベリー色の夜の回廊と雨窓の反射に佇む架空人物のコンセプトポートレート"
     }
   },
+  "opticalArchive": {
+    "chapter": "光学の庭",
+    "label": "NHB 無人コンセプトアーカイブ / 2026",
+    "sceneLabel": "光学の庭のシーン選択",
+    "lensHint": "ポインターを動かしてファインダーを探索",
+    "sampleTitle": "人物のいないサンプルから始める",
+    "sampleHint": "アップロードせずに色、フィルター、書き出しを試せます",
+    "useSample": "サンプルを開く",
+    "frames": {
+      "garden": "雨上がりの月門",
+      "corridor": "雨窓の回廊",
+      "stilllife": "レンズと椿",
+      "paper": "紙上の光",
+      "night": "夜の回廊"
+    },
+    "gardenHeroAlt": "雨上がりの江南庭園、月門、水面反射による無人コンセプト映像",
+    "rainCorridorAlt": "雨粒のガラス越しに見る誰もいない江南の回廊",
+    "lensStilllifeAlt": "レンズ、プリズム、椿、フィルムによる光学静物",
+    "contactSheetAlt": "植物、建築、雨景で構成された写真コンタクトシート",
+    "bambooShadowAlt": "クリーム色の壁、竹影、古いガラス、珊瑚色のリボン",
+    "darkroomAlt": "暖かなライトテーブル、フィルム、植物写真のある無人暗室",
+    "courseLightAlt": "無地のノート、露出計、フィルター、ジャスミンの講座静物",
+    "colorGlassAlt": "光学ガラス、雨水、フィルムによる色彩研究",
+    "printFolioAlt": "植物と建築のアートプリント、フォリオ、ガラスウェイト",
+    "bookingTableAlt": "雨上がりの庭窓辺に置かれた無地の予約カード、茶器、椿",
+    "moonGateNightAlt": "雨上がりの月門越しに見るブルーアワーの江南路地",
+    "camelliaPrismAlt": "雨粒をまとった珊瑚色の椿と小さな光学プリズム",
+    "paperRippleAlt": "和紙、光学ガラス、水紋、竹影による抽象光景"
+  },
   "rainLetter": {
     "chapter": "雨の手紙",
     "eyebrow": "NHB シーズンプレミア / 第二章",
@@ -119,7 +148,21 @@
     "viewMode": "表示モード",
     "viewMasonry": "モザイク表示",
     "viewCompact": "コンパクト表示",
+    "viewContact": "コンタクトシート表示",
     "viewStory": "ストーリー表示",
+    "viewAtlas": "展覧会アトラス",
+    "atlasEyebrow": "EXHIBITION ATLAS / 実作品",
+    "atlasTitle": "場所と季節をたどる",
+    "atlasIntro": "コンセプトのコンタクトシートは導入のみ。地図内の写真はすべて公開許可済みの実作品です。",
+    "atlasConceptDisclosure": "無人コンセプトシート / 展覧会の序章",
+    "atlasRealWork": "実作品 {{count}} 点を収録",
+    "seasons": {
+      "spring": "春のアーカイブ",
+      "summer": "夏のアーカイブ",
+      "autumn": "秋のアーカイブ",
+      "winter": "冬のアーカイブ",
+      "archive": "日付未設定"
+    },
     "enterStory": "ストーリーを見る",
     "discoveryKicker": "作品ファインダー",
     "discoveryTitle": "気分を選んでから、写真の物語を開く",

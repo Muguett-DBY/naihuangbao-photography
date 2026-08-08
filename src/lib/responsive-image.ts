@@ -4,7 +4,11 @@ export type ResponsiveImageAttrs = {
   sizes?: string;
 };
 
-const responsiveImageDirectories = ["/images/gallery/", "/images/concept-premiere/"] as const;
+const responsiveImageDirectories = [
+  "/images/gallery/",
+  "/images/concept-premiere/",
+  "/images/optical-archive/",
+] as const;
 
 const conceptPremiereSourceWidths: Readonly<Record<string, number>> = Object.freeze({
   "premiere-afterimage-v2.webp": 1200,
@@ -35,6 +39,22 @@ const conceptPremiereSourceWidths: Readonly<Record<string, number>> = Object.fre
   "rain-window-portrait-v6.webp": 1122,
 });
 
+const opticalArchiveSourceWidths: Readonly<Record<string, number>> = Object.freeze({
+  "archive-contact-sheet-v1.webp": 1448,
+  "bamboo-shadow-ribbon-v1.webp": 1122,
+  "booking-garden-table-v1.webp": 1672,
+  "camellia-prism-macro-v1.webp": 1536,
+  "color-glass-study-v1.webp": 1672,
+  "course-light-study-v1.webp": 1672,
+  "darkroom-light-table-v1.webp": 1122,
+  "optical-garden-hero-v1.webp": 1672,
+  "paper-ripple-study-v1.webp": 1536,
+  "print-folio-v1.webp": 1672,
+  "prism-lens-stilllife-v1.webp": 1536,
+  "rain-moon-gate-night-v1.webp": 1672,
+  "rain-window-corridor-v1.webp": 1672,
+});
+
 export function getResponsiveImageDirectory(src: string): string | null {
   const path = src.replace(/\?.*$/, "");
   return responsiveImageDirectories.find((directory) => path.startsWith(directory)) ?? null;
@@ -42,9 +62,10 @@ export function getResponsiveImageDirectory(src: string): string | null {
 
 export function getResponsiveImageSourceWidth(src: string): number {
   const path = src.replace(/\?.*$/, "");
-  if (!path.startsWith("/images/concept-premiere/")) return 1200;
   const fileName = path.split("/").pop() || "";
-  return conceptPremiereSourceWidths[fileName] ?? 1200;
+  if (path.startsWith("/images/concept-premiere/")) return conceptPremiereSourceWidths[fileName] ?? 1200;
+  if (path.startsWith("/images/optical-archive/")) return opticalArchiveSourceWidths[fileName] ?? 1200;
+  return 1200;
 }
 
 export function getResponsiveImageAttrs(src: string, sizes?: string): ResponsiveImageAttrs {

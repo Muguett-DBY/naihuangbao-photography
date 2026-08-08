@@ -1,4 +1,6 @@
 import "../styles/pages.css";
+import "../styles/editor.css";
+import "../styles/darkroom-v2.css";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -54,11 +56,13 @@ import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { EditorHoldOriginalButton } from "../components/editor/EditorHoldOriginalButton";
+import { EditorHistoryRail } from "../components/editor/EditorHistoryRail";
+import { EditorFilterPresets } from "../components/editor/EditorFilterPresets";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import { useExperienceRuntimeBridge } from "../experience/ExperienceProvider";
 import { useExperiencePause } from "../experience/useExperiencePause";
 import type { BeautySettings, BeautyCategory, BeautyTool, TextOverlay, StickerOverlay, FrameId } from "../types/photo-editor";
-import { INITIAL, FILTERS, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
+import { INITIAL, FRAMES, STICKERS, CATEGORIES, TOOLS, CATEGORY_DESCRIPTIONS, MAX_HISTORY } from "../data/editor-constants";
 import {
   prepareFaceApiBackend,
   loadFaceApiModels,
@@ -81,6 +85,7 @@ import {
 
 type PhotoEditorWorkspaceProps = {
   initialFile?: File | null;
+  skipInitialFaceDetection?: boolean;
 };
 
 type EditorWorkflowKey = "quick" | "color" | "compose" | "export";
@@ -162,7 +167,7 @@ const EDITOR_TOOL_ICONS: Partial<Record<BeautyTool, LucideIcon>> = {
   eyeliner: Paintbrush,
 };
 
-export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditorWorkspaceProps) {
+export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFaceDetection = false }: PhotoEditorWorkspaceProps) {
   const { t } = useTranslation();
   const runtimeBridge = useExperienceRuntimeBridge();
   useSEO({ titleKey: "editor.title", descKey: "editor.desc", path: "/editor" });
@@ -195,8 +200,8 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const [imageLoadError, setImageLoadError] = useState<ImageLoadError | null>(null);
   const [loadProgress, setLoadProgress] = useState(0);
   const [detecting, setDetecting] = useState(false);
-  const [cat, setCat] = useState<BeautyCategory>("beauty");
-  const [tool, setTool] = useState<BeautyTool>("smooth");
+  const [cat, setCat] = useState<BeautyCategory>(skipInitialFaceDetection ? "color" : "beauty");
+  const [tool, setTool] = useState<BeautyTool>(skipInitialFaceDetection ? "temperature" : "smooth");
   const [settings, setSettings] = useState<BeautySettings>({ ...INITIAL });
   const [faceOk, setFaceOk] = useState(false);
   const [faceError, setFaceError] = useState(false);
@@ -214,7 +219,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const [compareDrag, setCompareDrag] = useState(false);
   const [showMesh, setShowMesh] = useState(false);
   const [modelLoadAttempt, setModelLoadAttempt] = useState(0);
-  const [activeWorkflowGroup, setActiveWorkflowGroup] = useState<EditorWorkflowKey>("quick");
+  const [activeWorkflowGroup, setActiveWorkflowGroup] = useState<EditorWorkflowKey>(skipInitialFaceDetection ? "color" : "quick");
   const [exportStatus, setExportStatus] = useState<ExportStatus>({
     state: "idle",
     messageKey: "editor.exportStatus.idle",
@@ -278,15 +283,6 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
 
   const [colorSplashHue, setColorSplashHue] = useState(0);
   const [colorSplashRange, setColorSplashRange] = useState(30);
-
-  useEffect(() => {
-    if (!showExport) return;
-    const h = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setShowExport(false);
-    };
-    window.addEventListener("keydown", h);
-    return () => window.removeEventListener("keydown", h);
-  }, [showExport]);
 
   const [doubleExposureImage, setDoubleExposureImage] = useState<HTMLImageElement | null>(null);
   const [blendMode, setBlendMode] = useState<"overlay" | "screen" | "soft-light">("overlay");
@@ -426,32 +422,32 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
         const w = w2, h = h2;
 
         if (s.lipstick > 0 || s.blush > 0 || s.eyeshadow > 0 || s.eyeliner > 0) {
-          applyMakeup(ctx, w, h, lm, s, lipstickColor, blushColor, eyeshadowColor);
+          applyMakeupFn(ctx, w, h, lm, s, lipstickColor, blushColor, eyeshadowColor);
         }
 
         if (localBrushMaskRef.current && (s.local_bright !== 0 || s.local_warm !== 0 || s.local_sat !== 0)) {
-          applyLocalAdjustment(ctx, w, h, localBrushMaskRef.current, s);
+          applyLocalAdjustmentFn(ctx, w, h, localBrushMaskRef.current, s);
         }
 
         if (s.color_splash > 0) {
-          applyColorSplash(ctx, w, h, colorSplashHue, colorSplashRange, s.color_splash / 100);
+          applyColorSplashFn(ctx, w, h, colorSplashHue, colorSplashRange, s.color_splash / 100);
         }
 
         if (s.double_exposure > 0 && doubleExposureImage) {
-          applyDoubleExposure(ctx, canvas, doubleExposureImage, blendMode, s.double_exposure / 100, doubleExposureOpacity / 100);
+          applyDoubleExposureFn(ctx, canvas, doubleExposureImage, blendMode, s.double_exposure / 100, doubleExposureOpacity / 100);
         }
 
         if (s.blur_bg > 0) {
-          applyBackgroundBlur(ctx, canvas, lm, s.blur_bg / 100);
+          applyBackgroundBlurFn(ctx, canvas, lm, s.blur_bg / 100);
         }
         if (s.bg_remove > 0) {
-          applyBackgroundRemove(ctx, canvas, lm, s.bg_remove / 100);
+          applyBackgroundRemoveFn(ctx, canvas, lm, s.bg_remove / 100);
         }
         if (s.bg_solid > 0) {
-          applyBackgroundSolid(ctx, canvas, lm, s.bg_solid / 100, bgSolidColor);
+          applyBackgroundSolidFn(ctx, canvas, lm, s.bg_solid / 100, bgSolidColor);
         }
         if (s.bg_gradient > 0) {
-          applyBackgroundGradient(ctx, canvas, lm, s.bg_gradient / 100, bgGradientStart, bgGradientEnd);
+          applyBackgroundGradientFn(ctx, canvas, lm, s.bg_gradient / 100, bgGradientStart, bgGradientEnd);
         }
 
         if (blemishCanvasRef.current) {
@@ -511,37 +507,16 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
     });
   }, [frameId, texts, stickers, showMesh, selectedOverlay, bgSolidColor, bgGradientStart, bgGradientEnd, lipstickColor, blushColor, eyeshadowColor, colorSplashHue, colorSplashRange, doubleExposureImage, blendMode, doubleExposureOpacity]);
 
-  // Background effects — delegated to editor-effects.ts
-  const applyBackgroundBlur = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number) => {
-    applyBackgroundBlurFn(ctx, canvas, lm, intensity);
-  }, []);
+  useEffect(() => {
+    if (originalRef.current) render(settings);
+  }, [render, settings]);
 
-  const applyBackgroundRemove = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number) => {
-    applyBackgroundRemoveFn(ctx, canvas, lm, intensity);
-  }, []);
-
-  const applyBackgroundSolid = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number, color: string) => {
-    applyBackgroundSolidFn(ctx, canvas, lm, intensity, color);
-  }, []);
-
-  const applyBackgroundGradient = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, lm: Landmarks, intensity: number, c1: string, c2: string) => {
-    applyBackgroundGradientFn(ctx, canvas, lm, intensity, c1, c2);
-  }, []);
-
-  const applyMakeup = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, lm: Landmarks, s: BeautySettings, lipCol: string, blushCol: string, shadowCol: string) => {
-    applyMakeupFn(ctx, w, h, lm, s, lipCol, blushCol, shadowCol);
-  }, []);
-
-  const applyLocalAdjustment = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, mask: ImageData, s: BeautySettings) => {
-    applyLocalAdjustmentFn(ctx, w, h, mask, s);
-  }, []);
-
-  const applyColorSplash = useCallback((ctx: CanvasRenderingContext2D, w: number, h: number, targetHue: number, range: number, intensity: number) => {
-    applyColorSplashFn(ctx, w, h, targetHue, range, intensity);
-  }, []);
-
-  const applyDoubleExposure = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, img2: HTMLImageElement, mode: string, intensity: number, opacity: number) => {
-    applyDoubleExposureFn(ctx, canvas, img2, mode, intensity, opacity);
+  const jumpToHistory = useCallback((index: number) => {
+    const snapshot = historyRef.current[index];
+    if (!snapshot) return;
+    historyIdxRef.current = index;
+    setHistoryIdx(index);
+    setSettings({ ...snapshot });
   }, []);
 
   // Blemish removal on click
@@ -600,7 +575,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
     uploadRef.current?.click();
   }, []);
 
-  const loadImageFile = useCallback((file: File) => {
+  const loadImageFile = useCallback((file: File, options?: { skipFaceDetection?: boolean }) => {
     runtimeBridge.releaseTransientTextures();
     const requestId = imageLoadRequestRef.current + 1;
     imageLoadRequestRef.current = requestId;
@@ -666,40 +641,46 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
         // Reset blemish canvas
         blemishCanvasRef.current = null;
 
-        // Detect face
-        setDetecting(true);
-        setFaceError(false);
-        setFaceOk(false);
-        try {
-          const ready = await waitForFaceModels();
-          if (!isCurrentImageLoad()) return;
-          if (ready) {
-            const api = faceApiRef.current || await import("face-api.js");
+        if (options?.skipFaceDetection) {
+          setDetecting(false);
+          setFaceError(false);
+          setFaceOk(false);
+          landmarksRef.current = null;
+        } else {
+          setDetecting(true);
+          setFaceError(false);
+          setFaceOk(false);
+          try {
+            const ready = await waitForFaceModels();
             if (!isCurrentImageLoad()) return;
-            await prepareFaceApiBackend(api);
-            if (!isCurrentImageLoad()) return;
-            faceApiRef.current = api;
-            const landmarks = await detectFaceLandmarks(api, canvas);
-            if (!isCurrentImageLoad()) return;
-            if (landmarks) {
-              setFaceOk(true);
-              landmarksRef.current = landmarks;
+            if (ready) {
+              const api = faceApiRef.current || await import("face-api.js");
+              if (!isCurrentImageLoad()) return;
+              await prepareFaceApiBackend(api);
+              if (!isCurrentImageLoad()) return;
+              faceApiRef.current = api;
+              const landmarks = await detectFaceLandmarks(api, canvas);
+              if (!isCurrentImageLoad()) return;
+              if (landmarks) {
+                setFaceOk(true);
+                landmarksRef.current = landmarks;
+              } else {
+                setFaceError(true);
+                landmarksRef.current = null;
+              }
             } else {
-              setFaceError(true);
+              setFaceError(false);
               landmarksRef.current = null;
             }
-          } else {
+          } catch (err) {
+            console.error("Face detection failed:", err);
+            modelErrorRef.current = true;
+            setModelError(true);
             setFaceError(false);
             landmarksRef.current = null;
+          } finally {
+            if (isCurrentImageLoad()) setDetecting(false);
           }
-        } catch (err) {
-          console.error("Face detection failed:", err);
-          modelErrorRef.current = true;
-          setModelError(true);
-          setFaceError(false);
-          landmarksRef.current = null;
-        } finally {
-          if (isCurrentImageLoad()) setDetecting(false);
         }
         if (!isCurrentImageLoad()) return;
         historyRef.current = [{ ...INITIAL }];
@@ -731,8 +712,8 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   useEffect(() => {
     if (!initialFile || initialFileLoadedRef.current === initialFile) return;
     initialFileLoadedRef.current = initialFile;
-    loadImageFile(initialFile);
-  }, [initialFile, loadImageFile]);
+    loadImageFile(initialFile, { skipFaceDetection: skipInitialFaceDetection });
+  }, [initialFile, loadImageFile, skipInitialFaceDetection]);
 
   // Drag-and-drop handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -1136,6 +1117,14 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           </section>
         )}
 
+        {originalRef.current && (
+          <EditorHistoryRail
+            current={historyIdx}
+            total={historyRef.current.length}
+            onSelect={jumpToHistory}
+          />
+        )}
+
         {/* Text input panel */}
         {showTextPanel && (
           <div className="editor-popup-panel">
@@ -1359,14 +1348,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
               )}
 
               {workflowCategories.length === 0 ? null : cat === "filter" ? (
-                <div className="editor-filter-grid">
-                  {FILTERS.map((f, i) => (
-                    <button key={i} type="button" className="editor-filter-btn" onClick={() => applyPreset(f.settings)}>
-                      <span className={`editor-filter-swatch editor-filter-swatch--${i % 6}`} aria-hidden="true" />
-                      <span className="editor-filter-name">{t(f.name as any)}</span>
-                    </button>
-                  ))}
-                </div>
+                <EditorFilterPresets source={originalRef.current.src} onApply={applyPreset} />
               ) : (
                 <>
                   <div className="editor-tools">
