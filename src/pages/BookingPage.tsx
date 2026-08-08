@@ -36,7 +36,7 @@ export function BookingPage() {
         subtitle={t("aboutBooking.desc")}
         image="/images/gallery/gallery-flower-01.webp"
         imageAlt={t("nav.booking")}
-        issue="ISSUE 07"
+        issue="SOFT BOOKING / 07"
         immersivePreset="booking"
         immersiveImages={BOOKING_IMMERSIVE_IMAGES}
       />
@@ -72,7 +72,7 @@ export function BookingPage() {
       <div className="booking-content-surface">
         <div className="booking-content-ledger" aria-hidden="true">
           <span>SESSION CONFIGURATOR</span>
-          <span>ISSUE 07 / LIVE DESK</span>
+          <span>SOFT BOOKING / YOUR NOTES</span>
         </div>
 
         <ErrorBoundary>

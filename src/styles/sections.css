@@ -3234,8 +3234,8 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
   overflow: hidden;
   border-top: 0;
   padding: 0;
-  color: #f4f0e7;
-  background: #17201b;
+  color: #fff8ef;
+  background: #4b3b37;
   font-size: 13px;
   opacity: 1;
   transform: none;
@@ -3246,8 +3246,8 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
   min-height: 52px;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(244, 240, 231, 0.22);
-  color: rgba(244, 240, 231, 0.72);
+  border-bottom: 1px solid rgba(255, 248, 239, 0.2);
+  color: rgba(255, 248, 239, 0.72);
   font-size: 10px;
   font-weight: 800;
 }
@@ -3266,7 +3266,7 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
 }
 
 .site-footer .footer-brand-name {
-  color: #fffdf8;
+  color: #fffaf4;
   font-family: var(--font-display);
   font-size: 24px;
   font-weight: 700;
@@ -3276,13 +3276,13 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
 .site-footer .footer-brand-tagline,
 .site-footer .footer-note {
   margin: 0;
-  color: rgba(244, 240, 231, 0.7);
+  color: rgba(255, 248, 239, 0.72);
   line-height: 1.7;
 }
 
 .site-footer .footer-note {
   max-width: 260px;
-  color: #b9d7dc;
+  color: #c5ddd6;
   font-family: var(--font-note);
   font-size: 14px;
 }
@@ -3296,16 +3296,16 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
   width: 44px;
   height: 44px;
   place-items: center;
-  border: 1px solid rgba(244, 240, 231, 0.32);
+  border: 1px solid rgba(255, 248, 239, 0.3);
   border-radius: 50%;
-  color: #f4f0e7;
-  background: transparent;
+  color: #fff8ef;
+  background: rgba(255, 248, 239, 0.04);
 }
 
 .site-footer .footer-social-link:hover {
-  border-color: #d95f4b;
-  color: #fffdf8;
-  background: #d95f4b;
+  border-color: #d99a91;
+  color: #4b3b37;
+  background: #f2dca1;
 }
 
 .site-footer .footer-nav {
@@ -3322,7 +3322,7 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
 .site-footer .footer-nav-group h3,
 .site-footer .footer-newsletter h3 {
   margin: 0 0 8px;
-  color: #fffdf8;
+  color: #fffaf4;
   font-family: var(--font-display);
   font-size: 15px;
   letter-spacing: 0;
@@ -3333,16 +3333,16 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
   min-width: 44px;
   min-height: 44px;
   align-items: center;
-  color: rgba(244, 240, 231, 0.72);
+  color: rgba(255, 248, 239, 0.72);
   letter-spacing: 0;
 }
 
 .site-footer a::after {
-  background: #d95f4b;
+  background: #e3a39a;
 }
 
 .site-footer a:hover {
-  color: #fffdf8;
+  color: #fffaf4;
 }
 
 .site-footer .footer-newsletter {
@@ -3354,30 +3354,30 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
 .footer-column-index {
   display: block;
   margin-bottom: 14px;
-  color: #e6c867;
+  color: #f2dca1;
   font-size: 9px;
   font-weight: 800;
 }
 
 .site-footer .footer-newsletter > p {
   margin: 0 0 16px;
-  color: rgba(244, 240, 231, 0.7);
+  color: rgba(255, 248, 239, 0.7);
   line-height: 1.65;
 }
 
 .site-footer .footer-newsletter input {
   min-height: 44px;
-  border-color: rgba(244, 240, 231, 0.32);
+  border-color: rgba(255, 248, 239, 0.32);
   border-radius: var(--radius-control);
-  color: #fffdf8;
-  background: transparent;
+  color: #fffaf4;
+  background: rgba(255, 248, 239, 0.04);
 }
 
 .site-footer .footer-newsletter button {
   min-height: 44px;
   border-radius: var(--radius-control);
-  color: #fffdf8;
-  background: #d95f4b;
+  color: #4b3b37;
+  background: #f2dca1;
 }
 
 .site-footer .footer-bottom {
@@ -3386,8 +3386,8 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  border-top: 1px solid rgba(244, 240, 231, 0.22);
-  color: rgba(244, 240, 231, 0.56);
+  border-top: 1px solid rgba(255, 248, 239, 0.2);
+  color: rgba(255, 248, 239, 0.56);
   font-size: 10px;
 }
 

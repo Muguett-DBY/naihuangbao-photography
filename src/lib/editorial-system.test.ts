@@ -13,6 +13,22 @@ describe("editorial design system", () => {
     expect(css).not.toContain("hero-glow-orb");
   });
 
+  it("keeps the soft portrait palette anchored in warm, balanced brand colors", () => {
+    const css = read("src/styles/base.css");
+
+    for (const token of [
+      "--ink: #4b3b37",
+      "--newsprint: #fff7ed",
+      "--moss: #789783",
+      "--coral: #d8897f",
+      "--sky-note: #b8d5d0",
+      "--sun-note: #eed98f",
+      "--radius-control: 8px",
+    ]) {
+      expect(css).toContain(token);
+    }
+  });
+
   it("does not block first paint with the old loading cover", () => {
     const layout = read("src/layouts/RootLayout.tsx");
     expect(layout).not.toContain("LoadingScreen");
@@ -84,11 +100,11 @@ describe("editorial design system", () => {
     expect(shellCss).toMatch(/\.nhb-scroll-top\s*\{[^{}]*right: auto;[^{}]*left: 24px;/s);
   });
 
-  it("renders the configured city in the editorial footer line", () => {
+  it("renders the configured city in the soft portrait footer line", () => {
     const footer = read("src/components/shared/Footer.tsx");
 
-    expect(footer).toContain("{siteConfig.city} PORTRAIT FIELD NOTES");
-    expect(footer).not.toContain("NANJING PORTRAIT FIELD NOTES");
+    expect(footer).toContain("{siteConfig.city} / PORTRAITS, LIGHT");
+    expect(footer).not.toContain("NANJING / PORTRAITS, LIGHT");
   });
 
   it("mounts appearance controls only in the active responsive navigation surface", () => {

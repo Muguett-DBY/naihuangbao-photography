@@ -93,7 +93,7 @@ export function MapPage() {
         subtitle={t("photoMap.intro")}
         image="/images/gallery/gallery-urban-01.webp"
         imageAlt={t("photoMap.heroImageAlt")}
-        issue="FIELD NOTES 09"
+        issue="NANJING WALKS / 09"
         immersivePreset="map"
         immersiveImages={mapImages}
       />

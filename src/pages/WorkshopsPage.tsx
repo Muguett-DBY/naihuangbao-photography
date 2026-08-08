@@ -221,7 +221,7 @@ export function WorkshopsPage() {
         subtitle={t("workshops.intro")}
         image="/images/gallery/gallery-jiangnan-01.webp"
         imageAlt={t("workshops.title")}
-        issue="ISSUE 05"
+        issue="MAKE TOGETHER / 05"
         immersivePreset="workshops"
         immersiveImages={workshopCoverUrls}
       />

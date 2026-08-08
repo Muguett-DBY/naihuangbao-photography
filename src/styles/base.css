@@ -107,22 +107,22 @@
 }
 
 :root {
-  --ink: #17201b;
-  --newsprint: #f4f0e7;
+  --ink: #4b3b37;
+  --newsprint: #fff7ed;
   --paper: #fffdf8;
-  --moss: #355c4b;
-  --moss-dark: #234336;
-  --coral: #d95f4b;
-  --coral-dark: #ad3f31;
-  --sky-note: #b9d7dc;
-  --sun-note: #e6c867;
-  --text-muted: #667069;
-  --hairline: rgba(23, 32, 27, 0.18);
-  --font-display: Georgia, "Songti SC", "STSong", "SimSun", serif;
+  --moss: #789783;
+  --moss-dark: #4f6f5e;
+  --coral: #d8897f;
+  --coral-dark: #a95f57;
+  --sky-note: #b8d5d0;
+  --sun-note: #eed98f;
+  --text-muted: #766a65;
+  --hairline: rgba(91, 68, 61, 0.17);
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Songti SC", "STSong", serif;
   --font-body: "PingFang SC", "Microsoft YaHei UI", system-ui, sans-serif;
   --font-note: "Naihuangbao WenKai", "Kaiti SC", "KaiTi", serif;
   --radius-card: 8px;
-  --radius-control: 4px;
+  --radius-control: 8px;
   --focus-ring: 0 0 0 2px var(--paper), 0 0 0 5px var(--coral);
   --caramel-text: var(--ink) !important;
   --caramel-deep: var(--moss-dark) !important;
@@ -143,7 +143,7 @@
   --border-subtle: var(--hairline);
   --card-bg: var(--paper);
   --card-gradient: var(--paper);
-  --text-secondary-contrast: #4f5952;
+  --text-secondary-contrast: #675a55;
   --font-display-cn: var(--font-display);
   --font-heading-cn: var(--font-display-cn);
   --font-heading: var(--font-heading-cn);
@@ -154,19 +154,19 @@
   --ease-smooth: cubic-bezier(0.45, 0, 0.15, 1);
   --section-inline: clamp(16px, 4vw, 48px);
   --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='table' tableValues='0 0.08'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.38'/%3E%3C/svg%3E");
-  --shadow-core: 0 1px 2px rgba(23, 32, 27, 0.08);
-  --shadow-mid: 0 12px 32px rgba(23, 32, 27, 0.08);
+  --shadow-core: 0 1px 2px rgba(75, 59, 55, 0.07);
+  --shadow-mid: 0 14px 36px rgba(100, 73, 64, 0.09);
   --shadow-ambient: 0 0 transparent;
   --shadow-far: 0 0 transparent;
   --warm-shadow: var(--shadow-core), var(--shadow-mid), var(--shadow-ambient), var(--shadow-far);
   --warm-shadow-strong:
-    0 2px 6px rgba(23, 32, 27, 0.1),
-    0 18px 48px rgba(23, 32, 27, 0.12);
+    0 2px 6px rgba(75, 59, 55, 0.09),
+    0 20px 52px rgba(100, 73, 64, 0.13);
   --paper-inset:
     inset 0 1px 0 rgba(255, 255, 255, 0.72),
     inset 0 0 0 1px var(--hairline);
-  --button-shadow: 0 2px 8px rgba(23, 32, 27, 0.14);
-  --button-shadow-hover: 0 5px 16px rgba(23, 32, 27, 0.18);
+  --button-shadow: 0 3px 10px rgba(126, 85, 75, 0.14);
+  --button-shadow-hover: 0 8px 22px rgba(126, 85, 75, 0.18);
   color: var(--ink);
   background: var(--newsprint);
   font-family: var(--font-body);
@@ -210,33 +210,33 @@
 }
 
 :root[data-theme="dark"] {
-  --ink: #f4f0e7;
-  --newsprint: #121915;
-  --paper: #1b2520;
-  --moss: #83a995;
-  --moss-dark: #b8d1c3;
-  --coral: #ef806e;
-  --coral-dark: #f29a8b;
-  --sky-note: #38565a;
-  --sun-note: #b29a4f;
-  --text-muted: #b6c0ba;
-  --hairline: rgba(244, 240, 231, 0.2);
+  --ink: #fff5ec;
+  --newsprint: #211b1a;
+  --paper: #2c2422;
+  --moss: #99b6a2;
+  --moss-dark: #c2d4c7;
+  --coral: #e5a198;
+  --coral-dark: #f1b6ad;
+  --sky-note: #54716d;
+  --sun-note: #d9c57f;
+  --text-muted: #c9bbb4;
+  --hairline: rgba(255, 245, 236, 0.18);
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ink: #f4f0e7;
-    --newsprint: #121915;
-    --paper: #1b2520;
-    --moss: #83a995;
-    --moss-dark: #b8d1c3;
-    --coral: #ef806e;
-    --coral-dark: #f29a8b;
-    --sky-note: #38565a;
-    --sun-note: #b29a4f;
-    --text-muted: #b6c0ba;
-    --hairline: rgba(244, 240, 231, 0.2);
+    --ink: #fff5ec;
+    --newsprint: #211b1a;
+    --paper: #2c2422;
+    --moss: #99b6a2;
+    --moss-dark: #c2d4c7;
+    --coral: #e5a198;
+    --coral-dark: #f1b6ad;
+    --sky-note: #54716d;
+    --sun-note: #d9c57f;
+    --text-muted: #c9bbb4;
+    --hairline: rgba(255, 245, 236, 0.18);
     color-scheme: dark;
   }
 }

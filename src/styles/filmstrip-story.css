@@ -1,8 +1,8 @@
 /* Field notes: an interactive editorial index in normal document flow. */
 .field-notes {
   padding: clamp(56px, 8vw, 112px) var(--section-inline);
-  background: var(--ink);
-  color: var(--newsprint);
+  background: color-mix(in srgb, var(--paper) 76%, var(--moss));
+  color: var(--ink);
 }
 
 .field-notes-heading {
@@ -12,7 +12,7 @@
   width: min(1440px, 100%);
   margin: 0 auto clamp(32px, 5vw, 64px);
   padding-bottom: 20px;
-  border-bottom: 1px solid rgba(244, 240, 231, 0.3);
+  border-bottom: 1px solid var(--hairline);
 }
 
 .field-notes-heading p {
@@ -26,7 +26,7 @@
 .field-notes-heading h2 {
   max-width: 900px;
   margin: 0;
-  color: var(--newsprint);
+  color: var(--ink);
   font-family: var(--font-display);
   font-size: 3.75rem;
   font-weight: 500;
@@ -52,7 +52,7 @@
   grid-template-rows: auto 1fr auto auto;
   gap: 28px;
   padding: 20px 0 0;
-  border-top: 1px solid rgba(244, 240, 231, 0.28);
+  border-top: 1px solid var(--hairline);
 }
 
 .field-notes-rail-folio {
@@ -70,7 +70,7 @@
 }
 
 .field-notes-rail-folio span:last-child {
-  color: rgba(244, 240, 231, 0.48);
+  color: var(--text-muted);
   font-size: 0.8rem;
 }
 
@@ -88,7 +88,7 @@
 
 .field-notes-rail-copy h3 {
   margin: 0;
-  color: var(--newsprint);
+  color: var(--ink);
   font-family: var(--font-display);
   font-size: 2.35rem;
   font-weight: 500;
@@ -100,7 +100,7 @@
 .field-notes-rail-copy > p:last-child {
   max-width: 34ch;
   margin: 16px 0 0;
-  color: rgba(244, 240, 231, 0.72);
+  color: var(--text-muted);
   font-size: 0.95rem;
   line-height: 1.7;
 }
@@ -111,8 +111,8 @@
   min-height: 44px;
   align-items: center;
   gap: 8px;
-  border-bottom: 1px solid rgba(244, 240, 231, 0.46);
-  color: var(--newsprint);
+  border-bottom: 1px solid color-mix(in srgb, var(--moss-dark) 52%, transparent);
+  color: var(--ink);
   font-size: 0.8rem;
   font-weight: 700;
   transition: border-color 180ms ease, color 180ms ease;
@@ -128,14 +128,14 @@
   width: 100%;
   height: 3px;
   border: 0;
-  border-radius: 0;
+  border-radius: 999px;
   overflow: hidden;
-  background: rgba(244, 240, 231, 0.2);
+  background: color-mix(in srgb, var(--moss) 22%, var(--paper));
   color: var(--coral);
 }
 
 .field-notes-progress::-webkit-progress-bar {
-  background: rgba(244, 240, 231, 0.2);
+  background: color-mix(in srgb, var(--moss) 22%, var(--paper));
 }
 
 .field-notes-progress::-webkit-progress-value {
@@ -173,8 +173,9 @@
   aspect-ratio: 4 / 5;
   min-width: 0;
   overflow: hidden;
-  border: 1px solid rgba(244, 240, 231, 0.2);
-  background: var(--moss-dark);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--moss) 42%, var(--paper));
   transition: border-color 180ms ease, opacity 180ms ease;
 }
 
@@ -217,7 +218,7 @@
   gap: 12px;
   align-items: start;
   padding: 14px 0 0;
-  border-top: 1px solid rgba(244, 240, 231, 0.2);
+  border-top: 1px solid var(--hairline);
 }
 
 .field-note-caption span {
@@ -228,7 +229,7 @@
 
 .field-note-caption p {
   margin: 0;
-  color: rgba(244, 240, 231, 0.86);
+  color: var(--ink);
   font-family: var(--font-display);
   font-size: 1rem;
   line-height: 1.55;

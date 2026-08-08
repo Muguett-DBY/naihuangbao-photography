@@ -50,6 +50,19 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(home).toContain("usePageRevealEffects(rootRef)");
   });
 
+  it("keeps the soft CTA magnet off the React render path and honors reduced motion", () => {
+    const home = read("src/pages/HomePage.tsx");
+    const magnet = read("src/components/shared/SoftMagnet.tsx");
+    const css = read("src/styles/home-premiere.css");
+
+    expect(home).toContain("<SoftMagnet");
+    expect(magnet).toContain("window.requestAnimationFrame");
+    expect(magnet).toContain("prefers-reduced-motion: reduce");
+    expect(magnet).not.toContain("useState");
+    expect(css).toContain("--soft-magnet-x");
+    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.soft-magnet\s*\{[^}]*transform:\s*none !important/s);
+  });
+
   it("keeps a desktop chapter console in sync without a continuous scroll listener", () => {
     const home = read("src/pages/HomePage.tsx");
     const chapterIndex = read("src/components/shared/HomeChapterIndex.tsx");
@@ -202,7 +215,7 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(heroCss).not.toContain("hero-glow-orb");
     expect(heroCss).not.toContain("hero-cover-design");
     expect(heroBlock).not.toMatch(/background(?:-image)?\s*:[^;]*gradient\(/s);
-    expect(premiereCss).toMatch(/\.cinematic-premiere__stage\s*\{[^}]*clip-path:\s*polygon\(/s);
+    expect(premiereCss).toMatch(/\.cinematic-premiere__stage\s*\{[^}]*clip-path:\s*inset\(/s);
     expect(premiereCss).toMatch(/\.cinematic-premiere__reel button\s*\{[^}]*min-height:\s*48px/s);
     expect(premiereCss).toContain("content-visibility: auto");
     expect(galleryCss).toContain(".gallery-page-contact-sheet");

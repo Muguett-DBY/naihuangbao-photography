@@ -54,7 +54,7 @@ export function ShopPage() {
         subtitle={t("merchandise.intro")}
         image="/images/gallery/gallery-daily-01.webp"
         imageAlt={t("merchandise.title")}
-        issue="ISSUE 06"
+        issue="LITTLE THINGS / 06"
         immersivePreset="shop"
         immersiveImages={merchandiseImageUrls}
       />

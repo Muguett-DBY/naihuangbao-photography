@@ -281,7 +281,7 @@ export function Header({ onOpenChat }: HeaderProps) {
           </span>
           <span className="brand-copy">
             <strong>{siteConfig.brandName}</strong>
-            <small>NHB / FIELD NOTES</small>
+            <small>NHB / SOFT PORTRAITS</small>
           </span>
         </PrefetchLink>
 
@@ -317,7 +317,7 @@ export function Header({ onOpenChat }: HeaderProps) {
             </button>
             {utilityOpen && !compactNavigation ? (
               <div ref={utilityMenuRef} id="nav-utility-panel" className="nav-popover nav-utility-panel">
-                <span className="nav-popover-label">NHB / UTILITIES</span>
+                <span className="nav-popover-label">NHB / PREFERENCES</span>
                 <UtilityControls onLanguageChange={toggleLang} languageLabel={languageLabel} menuLabel={utilityLabel} />
               </div>
             ) : null}
@@ -410,8 +410,8 @@ export function Header({ onOpenChat }: HeaderProps) {
             <div className="nav-drawer-panel">
               <div className="nav-drawer-head">
                 <span>
-                  <strong>NHB / ISSUE 01</strong>
-                  <small>{siteConfig.city} PORTRAIT FIELD NOTES</small>
+                  <strong>NHB / PORTRAIT DIARY</strong>
+                  <small>{siteConfig.city} / SOFT LIGHT &amp; SMALL MOMENTS</small>
                 </span>
                 <button className="nav-drawer-close" type="button" onClick={() => setDrawerOpen(false)} aria-label={t("nav.close", "Close menu")}>
                   <X size={20} aria-hidden="true" />
@@ -434,7 +434,7 @@ export function Header({ onOpenChat }: HeaderProps) {
               </nav>
 
               <section className="nav-drawer-utilities" aria-labelledby="drawer-utility-label">
-                <span id="drawer-utility-label" className="nav-popover-label">NHB / UTILITIES</span>
+                <span id="drawer-utility-label" className="nav-popover-label">NHB / PREFERENCES</span>
                 <UtilityControls onLanguageChange={toggleLang} languageLabel={languageLabel} menuLabel={utilityLabel} />
               </section>
 

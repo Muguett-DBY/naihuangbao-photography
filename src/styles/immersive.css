@@ -24,36 +24,36 @@ html[data-immersive-ready="true"] .immersive-experience {
 .optical-scene-chrome {
   --optical-accent: var(--sun-note);
   position: absolute;
-  inset: clamp(14px, 2.2vw, 32px);
+  inset: clamp(18px, 2.4vw, 36px);
   z-index: 2;
   overflow: hidden;
-  color: rgba(255, 253, 248, 0.78);
+  color: rgba(255, 250, 244, 0.68);
   font-family: var(--font-ui);
   font-size: 9px;
   font-variant-numeric: tabular-nums;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0;
   text-transform: uppercase;
-  text-shadow: 0 1px 8px rgba(7, 13, 10, 0.62);
+  text-shadow: 0 2px 12px rgba(67, 43, 38, 0.36);
   pointer-events: none;
   contain: layout paint;
   animation: optical-scene-acquire 680ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .optical-scene-chrome--moss {
-  --optical-accent: #c8d8a7;
+  --optical-accent: #d8e1c4;
 }
 
 .optical-scene-chrome--coral {
-  --optical-accent: #ff9e82;
+  --optical-accent: #efb2a8;
 }
 
 .optical-scene-chrome--sun {
-  --optical-accent: #f0c76e;
+  --optical-accent: #f2dda1;
 }
 
 .optical-scene-chrome--sky {
-  --optical-accent: #a9d7e7;
+  --optical-accent: #bedbd5;
 }
 
 .optical-scene-corner {
@@ -62,7 +62,8 @@ html[data-immersive-ready="true"] .immersive-experience {
   height: clamp(24px, 3vw, 42px);
   border-color: var(--optical-accent);
   border-style: solid;
-  opacity: 0.88;
+  border-radius: 3px;
+  opacity: 0.46;
 }
 
 .optical-scene-corner--tl {
@@ -106,7 +107,7 @@ html[data-immersive-ready="true"] .immersive-experience {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #fffdf8;
+  color: #fffaf4;
 }
 
 .optical-scene-live i {
@@ -123,7 +124,9 @@ html[data-immersive-ready="true"] .immersive-experience {
   left: 50%;
   width: clamp(58px, 6vw, 88px);
   aspect-ratio: 1;
-  border: 1px solid rgba(255, 253, 248, 0.42);
+  border: 1px solid rgba(255, 250, 244, 0.22);
+  border-radius: 50%;
+  opacity: 0.42;
   transform: translate(-50%, -50%);
 }
 
@@ -163,6 +166,7 @@ html[data-immersive-ready="true"] .immersive-experience {
   width: 7px;
   height: 7px;
   border: 1px solid var(--optical-accent);
+  border-radius: 50%;
 }
 
 .optical-scene-focus > i {
@@ -183,6 +187,7 @@ html[data-immersive-ready="true"] .immersive-experience {
   align-items: center;
   justify-items: end;
   transform: translateY(-50%);
+  opacity: 0.48;
 }
 
 .optical-scene-meter i {
@@ -200,6 +205,7 @@ html[data-immersive-ready="true"] .immersive-experience {
 .optical-scene-readout {
   right: 18px;
   bottom: 10px;
+  opacity: 0.72;
 }
 
 .optical-scene-readout strong {
@@ -221,13 +227,20 @@ html[data-immersive-ready="true"] .immersive-experience {
 .optical-scene-chapter strong {
   color: var(--optical-accent);
   font-family: var(--font-display);
-  font-size: 42px;
+  font-size: 36px;
   font-weight: 500;
   line-height: 0.8;
 }
 
 .optical-scene-chapter span {
   max-width: 72px;
+  opacity: 0.72;
+}
+
+.hero-home .optical-scene-focus,
+.hero-home .optical-scene-meter,
+.hero-home .optical-scene-readout {
+  opacity: 0.18;
 }
 
 .page-transition-exposure {
@@ -295,21 +308,13 @@ html[data-immersive-ready="true"] .immersive-experience {
 
   .optical-scene-status > span:last-child,
   .optical-scene-meter,
-  .optical-scene-readout span:first-child,
-  .optical-scene-readout span:last-child,
+  .optical-scene-readout,
   .optical-scene-chapter span {
     display: none;
   }
 
   .optical-scene-focus {
-    width: 48px;
-    opacity: 0.7;
-  }
-
-  .optical-scene-readout {
-    right: 12px;
-    bottom: 8px;
-    gap: 9px;
+    display: none;
   }
 
   .optical-scene-chapter {

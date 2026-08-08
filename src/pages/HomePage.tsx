@@ -25,6 +25,7 @@ import { conceptPremiereImmersiveFrames } from "../data/concept-premiere";
 import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 import { OpticalSceneChrome } from "../components/shared/OpticalSceneChrome";
 import { HomeChapterIndex, type HomeChapter } from "../components/shared/HomeChapterIndex";
+import { SoftMagnet } from "../components/shared/SoftMagnet";
 import { scheduleIdleTask } from "../lib/idle";
 
 const Gallery = lazy(() => import("../components/Gallery").then((module) => ({ default: module.Gallery })));
@@ -159,21 +160,25 @@ export function HomePage() {
           </div>
 
           <div className="hero-actions">
-            <button
-              type="button"
-              className="hero-cover-primary-btn"
-              onClick={() => openBookingModal()}
-              onFocus={warmBookingModal}
-              onPointerDown={warmBookingModal}
-              onPointerEnter={warmBookingModal}
-            >
-              <CalendarCheck size={18} aria-hidden="true" />
-              {t("hero.ctaBooking")}
-            </button>
-            <PrefetchLink to="/gallery" className="hero-gallery-link">
-              {t("hero.ctaView")}
-              <ArrowRight size={18} aria-hidden="true" />
-            </PrefetchLink>
+            <SoftMagnet strength={12}>
+              <button
+                type="button"
+                className="hero-cover-primary-btn"
+                onClick={() => openBookingModal()}
+                onFocus={warmBookingModal}
+                onPointerDown={warmBookingModal}
+                onPointerEnter={warmBookingModal}
+              >
+                <CalendarCheck size={18} aria-hidden="true" />
+                {t("hero.ctaBooking")}
+              </button>
+            </SoftMagnet>
+            <SoftMagnet strength={8}>
+              <PrefetchLink to="/gallery" className="hero-gallery-link">
+                {t("hero.ctaView")}
+                <ArrowRight size={18} aria-hidden="true" />
+              </PrefetchLink>
+            </SoftMagnet>
           </div>
         </div>
 
@@ -302,16 +307,18 @@ export function HomePage() {
             <h2>{t("midCTA.title")}</h2>
             <p>{t("midCTA.desc")}</p>
           </div>
-          <button
-            type="button"
-            className="home-final-cta-button"
-            onClick={() => openBookingModal()}
-            onFocus={warmBookingModal}
-            onPointerEnter={warmBookingModal}
-          >
-            <CalendarCheck size={18} aria-hidden="true" />
-            {t("midCTA.cta")}
-          </button>
+          <SoftMagnet strength={12}>
+            <button
+              type="button"
+              className="home-final-cta-button"
+              onClick={() => openBookingModal()}
+              onFocus={warmBookingModal}
+              onPointerEnter={warmBookingModal}
+            >
+              <CalendarCheck size={18} aria-hidden="true" />
+              {t("midCTA.cta")}
+            </button>
+          </SoftMagnet>
         </div>
       </section>
     </PageTransition>

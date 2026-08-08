@@ -65,8 +65,8 @@ export const OpticalSceneChrome = memo(function OpticalSceneChrome({
       <span className="optical-scene-corner optical-scene-corner--br" />
 
       <div className="optical-scene-status">
-        <span className="optical-scene-live"><i /> NHB LIVE</span>
-        <span>{scene.composition.toUpperCase()}</span>
+        <span className="optical-scene-live"><i /> NHB SOFT LIGHT</span>
+        <span>PORTRAIT DIARY</span>
       </div>
 
       <div className="optical-scene-focus">
@@ -79,10 +79,10 @@ export const OpticalSceneChrome = memo(function OpticalSceneChrome({
       </div>
 
       <div className="optical-scene-readout">
-        <span>AF-C</span>
+        <span>GENTLE</span>
         <strong>{EXPOSURE[preset]}</strong>
-        <span>1/250</span>
-        <span>ISO 200</span>
+        <span>NATURAL</span>
+        <span>NO RUSH</span>
       </div>
 
       <div className="optical-scene-chapter">
