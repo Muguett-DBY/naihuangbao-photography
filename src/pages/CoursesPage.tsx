@@ -52,7 +52,7 @@ export function CoursesPage() {
         subtitle={t("courses.intro")}
         image="/images/gallery/gallery-garden-01.webp"
         imageAlt={t("courses.title")}
-        issue="ISSUE 03"
+        issue="LEARN GENTLY / 03"
         immersivePreset="courses"
         immersiveImages={courseCoverUrls}
       />

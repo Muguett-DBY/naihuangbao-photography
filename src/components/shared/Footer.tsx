@@ -13,7 +13,7 @@ export function Footer() {
   return (
     <footer id="site-footer" className="site-footer is-visible" aria-label={t("footer.ariaLabel", "Site footer")}>
       <div className="footer-issue-line" aria-label="Publication issue">
-        <span>NHB / ISSUE 01</span>
+        <span>NHB / SOFT PORTRAITS</span>
         <span>{siteConfig.city} / {currentYear}</span>
       </div>
 
@@ -51,7 +51,7 @@ export function Footer() {
         </nav>
 
         <div className="footer-newsletter">
-          <span className="footer-column-index">04 / STUDIO LETTERS</span>
+          <span className="footer-column-index">04 / LITTLE LETTERS</span>
           <h3>{t("newsletter.title")}</h3>
           <p>{t("newsletter.description")}</p>
           <NewsletterForm />
@@ -62,7 +62,7 @@ export function Footer() {
         <p className="footer-copyright">
           {t("footer.copyright", { year: currentYear, brand: siteConfig.brandName })}
         </p>
-        <p className="footer-tagline">{siteConfig.city} PORTRAIT FIELD NOTES / EST. {currentYear}</p>
+        <p className="footer-tagline">{siteConfig.city} / PORTRAITS, LIGHT &amp; SMALL MOMENTS / EST. {currentYear}</p>
       </div>
 
     </footer>

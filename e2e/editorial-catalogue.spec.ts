@@ -184,10 +184,10 @@ test.describe("editorial catalogue routes", () => {
 
   test("all catalogue indexes render API entries inside image-led editorial shells", async ({ page }) => {
     const routes = [
-      { path: "/courses", grid: ".courses-grid", cards: 2, issue: "ISSUE 03" },
-      { path: "/products", grid: ".presets-grid", cards: 2, issue: "ISSUE 04" },
-      { path: "/workshops", grid: ".workshops-grid", cards: 3, issue: "ISSUE 05" },
-      { path: "/shop", grid: ".merchandise-grid", cards: 2, issue: "ISSUE 06" },
+      { path: "/courses", grid: ".courses-grid", cards: 2, issue: "LEARN GENTLY / 03" },
+      { path: "/products", grid: ".presets-grid", cards: 2, issue: "SOFT TONES / 04" },
+      { path: "/workshops", grid: ".workshops-grid", cards: 3, issue: "MAKE TOGETHER / 05" },
+      { path: "/shop", grid: ".merchandise-grid", cards: 2, issue: "LITTLE THINGS / 06" },
     ];
 
     for (const route of routes) {

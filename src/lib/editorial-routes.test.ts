@@ -71,7 +71,7 @@ describe("editorial catalogue routes", () => {
       const source = read(path);
       expect(source).toMatch(/image="\/images\/gallery\/gallery-[a-z-]+-01\.webp"/);
       expect(source).toMatch(/imageAlt=\{t\(/);
-      expect(source).toMatch(/issue="ISSUE \d{2}"/);
+      expect(source).toMatch(/issue="[A-Z ]+ \/ \d{2}"/);
       expect(source).toContain('className="catalogue-page');
     }
   });

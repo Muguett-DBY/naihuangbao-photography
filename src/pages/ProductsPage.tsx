@@ -63,7 +63,7 @@ export function ProductsPage() {
         subtitle={t("presets.intro")}
         image="/images/gallery/gallery-urban-01.webp"
         imageAlt={t("presets.title")}
-        issue="ISSUE 04"
+        issue="SOFT TONES / 04"
         immersivePreset="presets"
         immersiveImages={presetPreviewUrls}
       />
