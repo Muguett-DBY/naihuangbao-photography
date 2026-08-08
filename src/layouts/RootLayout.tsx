@@ -23,6 +23,8 @@ import { ImmersiveExperienceGate } from "../experience/ImmersiveExperienceGate";
 import { ExperienceProvider, useExperienceStore } from "../experience/ExperienceProvider";
 import { useExperiencePause } from "../experience/useExperiencePause";
 import { resolveRoutePreset } from "../experience/scene-presets";
+import { CommandPalette } from "../components/CommandPalette";
+import { RouteExperienceTelemetry } from "../components/shared/RouteExperienceTelemetry";
 
 // Optional cursor and texture effects stay in a separate chunk so the page
 // can paint and become interactive without coupling them to route code.
@@ -76,7 +78,7 @@ export function RootLayout() {
   }, []);
 
   const isEditor = location.pathname === "/editor";
-  const showPublicChat = !isEditor;
+  const showPublicChat = !isEditor && location.pathname !== "/studio";
   const routePreset = resolveRoutePreset(location.pathname);
 
   return (
@@ -84,6 +86,7 @@ export function RootLayout() {
       <OfflineFallback isOffline={!isOnline} />
       <PwaUpdateBanner />
       <RouteHashScroller />
+      <RouteExperienceTelemetry pathname={location.pathname} />
       <nav className="skip-links" aria-label={t("common.skipLinksLabel", "Skip links")}>
         <a
           href="#main-content"
@@ -144,6 +147,7 @@ export function RootLayout() {
                 {routePreset && <ImmersiveExperienceGate />}
                 <ToastProvider>
                   <Header onOpenChat={() => setChatOpen(true)} />
+                  <CommandPalette />
                   {!isEditor && (
                     <Suspense fallback={null}>
                       <OfflineBookingRecovery isOnline={isOnline} />

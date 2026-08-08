@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "generatedFrom": "content/archive/projects.json",
+  "projects": [
+    {
+      "id": "optical-garden",
+      "kind": "concept",
+      "title": "Optical Garden",
+      "subtitle": "雨后月门与缓慢折射",
+      "chapter": "01",
+      "year": 2026,
+      "summary": "把空庭院、玻璃、水面与晨光编排成一段无人出演的开场。",
+      "place": "南京",
+      "season": "初夏",
+      "moods": [
+        "温柔",
+        "雨后",
+        "通透"
+      ],
+      "palette": [
+        "奶油",
+        "苔藓",
+        "珊瑚"
+      ],
+      "media": [
+        {
+          "src": "/images/optical-archive/optical-garden-hero-v1.webp",
+          "alt": "雨后江南庭院、月门与水面倒影组成的无人物概念影像",
+          "width": 1672,
+          "height": 941,
+          "avif": "/images/optical-archive/optical-garden-hero-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/optical-garden-hero-v1.webp",
+            "width960": "/images/optical-archive/960/optical-garden-hero-v1.webp"
+          }
+        },
+        {
+          "src": "/images/optical-archive/rain-window-corridor-v1.webp",
+          "alt": "透过雨滴玻璃看到的空旷江南长廊",
+          "width": 1672,
+          "height": 941,
+          "avif": "/images/optical-archive/rain-window-corridor-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/rain-window-corridor-v1.webp",
+            "width960": "/images/optical-archive/960/rain-window-corridor-v1.webp"
+          }
+        }
+      ]
+    },
+    {
+      "id": "prism-notes",
+      "kind": "concept",
+      "title": "Prism Notes",
+      "subtitle": "镜片、山茶与微小光谱",
+      "chapter": "02",
+      "year": 2026,
+      "summary": "用镜头、棱镜与花瓣记录一次关于色散和触感的桌面实验。",
+      "place": "室内光桌",
+      "season": "春",
+      "moods": [
+        "明亮",
+        "实验",
+        "细腻"
+      ],
+      "palette": [
+        "奶油",
+        "珊瑚",
+        "玻璃蓝"
+      ],
+      "media": [
+        {
+          "src": "/images/optical-archive/prism-lens-stilllife-v1.webp",
+          "alt": "镜头、棱镜、山茶花与胶片组成的光学静物",
+          "width": 1536,
+          "height": 1024,
+          "avif": "/images/optical-archive/prism-lens-stilllife-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/prism-lens-stilllife-v1.webp",
+            "width960": "/images/optical-archive/960/prism-lens-stilllife-v1.webp"
+          }
+        },
+        {
+          "src": "/images/optical-archive/camellia-prism-macro-v1.webp",
+          "alt": "带雨滴的珊瑚色山茶花与小型棱镜",
+          "width": 1536,
+          "height": 1024,
+          "avif": "/images/optical-archive/camellia-prism-macro-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/camellia-prism-macro-v1.webp",
+            "width960": "/images/optical-archive/960/camellia-prism-macro-v1.webp"
+          }
+        }
+      ]
+    },
+    {
+      "id": "paper-tide",
+      "kind": "concept",
+      "title": "Paper Tide",
+      "subtitle": "宣纸上的水光呼吸",
+      "chapter": "03",
+      "year": 2026,
+      "summary": "光线越过宣纸、竹影与水纹，让静止画面保留一点流动。",
+      "place": "纸上工作室",
+      "season": "盛夏",
+      "moods": [
+        "安静",
+        "抽象",
+        "轻盈"
+      ],
+      "palette": [
+        "奶油",
+        "苔藓",
+        "柔黄"
+      ],
+      "media": [
+        {
+          "src": "/images/optical-archive/paper-ripple-study-v1.webp",
+          "alt": "宣纸、光学玻璃、水纹与竹影组成的抽象光影",
+          "width": 1536,
+          "height": 1024,
+          "avif": "/images/optical-archive/paper-ripple-study-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/paper-ripple-study-v1.webp",
+            "width960": "/images/optical-archive/960/paper-ripple-study-v1.webp"
+          }
+        },
+        {
+          "src": "/images/optical-archive/bamboo-shadow-ribbon-v1.webp",
+          "alt": "奶油色墙面、竹影、古玻璃与珊瑚色丝带",
+          "width": 1122,
+          "height": 1402,
+          "avif": "/images/optical-archive/bamboo-shadow-ribbon-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/bamboo-shadow-ribbon-v1.webp",
+            "width960": "/images/optical-archive/960/bamboo-shadow-ribbon-v1.webp"
+          }
+        }
+      ]
+    },
+    {
+      "id": "darkroom-herbarium",
+      "kind": "concept",
+      "title": "Darkroom Herbarium",
+      "subtitle": "暖光桌上的植物暗房",
+      "chapter": "04",
+      "year": 2026,
+      "summary": "在无人暗房里整理胶片、植物拓印与尚未命名的色彩配方。",
+      "place": "NHB 暗房",
+      "season": "秋",
+      "moods": [
+        "安静",
+        "温暖",
+        "手作"
+      ],
+      "palette": [
+        "深莓",
+        "柔黄",
+        "苔藓"
+      ],
+      "media": [
+        {
+          "src": "/images/optical-archive/darkroom-light-table-v1.webp",
+          "alt": "暖色光桌、胶片与植物照片组成的无人暗房",
+          "width": 1122,
+          "height": 1402,
+          "avif": "/images/optical-archive/darkroom-light-table-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/darkroom-light-table-v1.webp",
+            "width960": "/images/optical-archive/960/darkroom-light-table-v1.webp"
+          }
+        },
+        {
+          "src": "/images/optical-archive/archive-contact-sheet-v1.webp",
+          "alt": "植物、建筑与雨景底片组成的摄影联系表",
+          "width": 1448,
+          "height": 1086,
+          "avif": "/images/optical-archive/archive-contact-sheet-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/archive-contact-sheet-v1.webp",
+            "width960": "/images/optical-archive/960/archive-contact-sheet-v1.webp"
+          }
+        }
+      ]
+    },
+    {
+      "id": "rain-atlas",
+      "kind": "concept",
+      "title": "Rain Atlas",
+      "subtitle": "蓝调时刻的南京雨信",
+      "chapter": "05",
+      "year": 2026,
+      "summary": "把月门、夜巷和雨窗编成一册可以继续生长的城市天气图谱。",
+      "place": "南京旧城",
+      "season": "梅雨",
+      "moods": [
+        "雨后",
+        "电影感",
+        "深邃"
+      ],
+      "palette": [
+        "深莓",
+        "苔藓",
+        "玻璃蓝"
+      ],
+      "media": [
+        {
+          "src": "/images/optical-archive/rain-moon-gate-night-v1.webp",
+          "alt": "雨后蓝调时刻里透过月门看到的江南夜巷",
+          "width": 1672,
+          "height": 941,
+          "avif": "/images/optical-archive/rain-moon-gate-night-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/rain-moon-gate-night-v1.webp",
+            "width960": "/images/optical-archive/960/rain-moon-gate-night-v1.webp"
+          }
+        },
+        {
+          "src": "/images/optical-archive/color-glass-study-v1.webp",
+          "alt": "彩色光学玻璃、雨水与胶片组成的色彩研究",
+          "width": 1672,
+          "height": 941,
+          "avif": "/images/optical-archive/color-glass-study-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/color-glass-study-v1.webp",
+            "width960": "/images/optical-archive/960/color-glass-study-v1.webp"
+          }
+        }
+      ]
+    },
+    {
+      "id": "print-room",
+      "kind": "concept",
+      "title": "Print Room",
+      "subtitle": "从屏幕返回纸面",
+      "chapter": "06",
+      "year": 2026,
+      "summary": "关于联系表、艺术微喷、空白笔记与一张等待被写下的卡片。",
+      "place": "NHB 印样室",
+      "season": "冬",
+      "moods": [
+        "手作",
+        "明亮",
+        "收藏"
+      ],
+      "palette": [
+        "奶油",
+        "柔黄",
+        "珊瑚"
+      ],
+      "media": [
+        {
+          "src": "/images/optical-archive/print-folio-v1.webp",
+          "alt": "植物与建筑艺术微喷、收藏夹和玻璃镇纸",
+          "width": 1672,
+          "height": 941,
+          "avif": "/images/optical-archive/print-folio-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/print-folio-v1.webp",
+            "width960": "/images/optical-archive/960/print-folio-v1.webp"
+          }
+        },
+        {
+          "src": "/images/optical-archive/course-light-study-v1.webp",
+          "alt": "空白笔记本、测光表、镜片与茉莉组成的课程静物",
+          "width": 1672,
+          "height": 941,
+          "avif": "/images/optical-archive/course-light-study-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/course-light-study-v1.webp",
+            "width960": "/images/optical-archive/960/course-light-study-v1.webp"
+          }
+        },
+        {
+          "src": "/images/optical-archive/booking-garden-table-v1.webp",
+          "alt": "雨后花园窗边的空白卡片、茶杯与山茶花",
+          "width": 1672,
+          "height": 941,
+          "avif": "/images/optical-archive/booking-garden-table-v1.avif",
+          "responsive": {
+            "width640": "/images/optical-archive/640/booking-garden-table-v1.webp",
+            "width960": "/images/optical-archive/960/booking-garden-table-v1.webp"
+          }
+        }
+      ]
+    }
+  ]
+}

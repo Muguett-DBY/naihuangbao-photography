@@ -8,6 +8,11 @@ function asDefault<T extends ComponentType>(component: T) {
 
 export const routeLoaders = {
   "/": () => import("../pages/HomePage").then((module) => asDefault(module.HomePage)),
+  "/archive": () => import("../pages/ArchivePage").then((module) => asDefault(module.ArchivePage)),
+  "/stories": () => import("../pages/StoriesPage").then((module) => asDefault(module.StoriesPage)),
+  "/studio": () => import("../pages/CreativeStudioPage").then((module) => asDefault(module.CreativeStudioPage)),
+  "/lab": () => import("../pages/LabPage").then((module) => asDefault(module.LabPage)),
+  "/about": () => import("../pages/AboutPage").then((module) => asDefault(module.AboutPage)),
   "/gallery": () => import("../pages/GalleryPage").then((module) => asDefault(module.GalleryPage)),
   "/gallery/:id": () => import("../pages/PhotoDetailPage").then((module) => asDefault(module.PhotoDetailPage)),
   "/courses": () => import("../pages/CoursesPage").then((module) => asDefault(module.CoursesPage)),

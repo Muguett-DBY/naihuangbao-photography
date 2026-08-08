@@ -1,10 +1,9 @@
 import "../styles/pages.css";
 import "../styles/editor.css";
 import "../styles/darkroom-v2.css";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  AlertTriangle,
   Aperture,
   Bandage,
   Blend,
@@ -24,21 +23,17 @@ import {
   Frame,
   Gauge,
   Images,
-  ImagePlus,
   Layers3,
   MoveHorizontal,
   MoveVertical,
   Paintbrush,
   Palette,
-  Printer,
   Redo2,
   RotateCcw,
   ScanFace,
   Scissors,
-  ShieldCheck,
   SlidersHorizontal,
   Smile,
-  Smartphone,
   Sparkles,
   Split,
   Square,
@@ -48,8 +43,6 @@ import {
   Undo2,
   Upload,
   WandSparkles,
-  X,
-  Zap,
   type LucideIcon,
 } from "lucide-react";
 import { useSEO } from "../hooks/useSEO";
@@ -58,7 +51,9 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import { EditorHoldOriginalButton } from "../components/editor/EditorHoldOriginalButton";
 import { EditorHistoryRail } from "../components/editor/EditorHistoryRail";
 import { EditorFilterPresets } from "../components/editor/EditorFilterPresets";
-import { useFocusTrap } from "../hooks/useFocusTrap";
+import { EditorEmptyState } from "../components/editor/EditorEmptyState";
+import { EditorExportDialog } from "../components/editor/EditorExportDialog";
+import { EditorProjectControls } from "../components/editor/EditorProjectControls";
 import { useExperienceRuntimeBridge } from "../experience/ExperienceProvider";
 import { useExperiencePause } from "../experience/useExperiencePause";
 import type { BeautySettings, BeautyCategory, BeautyTool, TextOverlay, StickerOverlay, FrameId } from "../types/photo-editor";
@@ -82,9 +77,17 @@ import {
   applyColorAdjustments,
   applyPostProcessing,
 } from "../lib/editor-effects";
+import {
+  createEditorProjectFile,
+  getEditorProject,
+  parseEditorProjectFile,
+  saveEditorProject,
+  type EditorProjectSnapshot,
+} from "../lib/editor-project-store";
 
 type PhotoEditorWorkspaceProps = {
   initialFile?: File | null;
+  initialProject?: EditorProjectSnapshot | null;
   skipInitialFaceDetection?: boolean;
 };
 
@@ -167,7 +170,7 @@ const EDITOR_TOOL_ICONS: Partial<Record<BeautyTool, LucideIcon>> = {
   eyeliner: Paintbrush,
 };
 
-export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFaceDetection = false }: PhotoEditorWorkspaceProps) {
+export default function PhotoEditorWorkspace({ initialFile = null, initialProject = null, skipInitialFaceDetection = false }: PhotoEditorWorkspaceProps) {
   const { t } = useTranslation();
   const runtimeBridge = useExperienceRuntimeBridge();
   useSEO({ titleKey: "editor.title", descKey: "editor.desc", path: "/editor" });
@@ -185,6 +188,7 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
   const blemishCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const faceApiRef = useRef<typeof import("face-api.js") | null>(null);
   const originalSizeRef = useRef<{ w: number; h: number } | null>(null);
+  const sourceFileRef = useRef<File | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
   const modelsReadyRef = useRef(false);
   const modelErrorRef = useRef(false);
@@ -194,7 +198,6 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
   const initialFileLoadedRef = useRef<File | null>(null);
   const imageLoadRequestRef = useRef(0);
   const modelLoadRequestRef = useRef(0);
-  const exportTitleId = useId();
 
   const [loading, setLoading] = useState(false);
   const [imageLoadError, setImageLoadError] = useState<ImageLoadError | null>(null);
@@ -224,18 +227,9 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
     state: "idle",
     messageKey: "editor.exportStatus.idle",
   });
-  const exportDialogRef = useFocusTrap<HTMLDivElement>({ active: showExport, initialFocus: "first" });
-
-  useEffect(() => {
-    if (!showExport) return undefined;
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      event.preventDefault();
-      setShowExport(false);
-    };
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [showExport]);
+  const [projectSourceVersion, setProjectSourceVersion] = useState(0);
+  const [projectStatus, setProjectStatus] = useState<"idle" | "saving" | "saved" | "failed">("idle");
+  const [recoverableProject, setRecoverableProject] = useState<EditorProjectSnapshot | null>(null);
 
   useEffect(() => {
     modelsReadyRef.current = modelsReady;
@@ -249,6 +243,15 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
     mountedRef.current = true;
     return () => { mountedRef.current = false; };
   }, []);
+
+  useEffect(() => {
+    if (initialFile) return;
+    let active = true;
+    void getEditorProject().then((project) => {
+      if (active && project) setRecoverableProject(project);
+    }).catch(() => undefined);
+    return () => { active = false; };
+  }, [initialFile]);
 
   useEffect(() => {
     if (!imageLoadError) return;
@@ -575,7 +578,7 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
     uploadRef.current?.click();
   }, []);
 
-  const loadImageFile = useCallback((file: File, options?: { skipFaceDetection?: boolean }) => {
+  const loadImageFile = useCallback((file: File, options?: { skipFaceDetection?: boolean; project?: EditorProjectSnapshot }) => {
     runtimeBridge.releaseTransientTextures();
     const requestId = imageLoadRequestRef.current + 1;
     imageLoadRequestRef.current = requestId;
@@ -640,6 +643,26 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
 
         // Reset blemish canvas
         blemishCanvasRef.current = null;
+        sourceFileRef.current = file;
+        setProjectSourceVersion((version) => version + 1);
+        if (options?.project) {
+          const restored = options.project;
+          historyRef.current = restored.history.map((entry) => ({ ...entry }));
+          historyIdxRef.current = Math.min(restored.historyIndex, restored.history.length - 1);
+          setHistoryIdx(historyIdxRef.current);
+          setSettings({ ...restored.settings });
+          setCat(restored.activeCategory ?? (skipInitialFaceDetection ? "color" : "beauty")); setTool(restored.activeTool ?? (skipInitialFaceDetection ? "temperature" : "smooth"));
+          setActiveWorkflowGroup(restored.activeWorkflow ?? (skipInitialFaceDetection ? "color" : "quick"));
+          setTexts(restored.texts.map((text) => ({ ...text })));
+          setStickers(restored.stickers.map((sticker) => ({ ...sticker })));
+          setFrameId(restored.frameId);
+        } else {
+          historyRef.current = [{ ...INITIAL }];
+          historyIdxRef.current = 0;
+          setHistoryIdx(0);
+          setSettings({ ...INITIAL });
+          setTexts([]); setStickers([]); setFrameId("none");
+        }
 
         if (options?.skipFaceDetection) {
           setDetecting(false);
@@ -683,11 +706,7 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
           }
         }
         if (!isCurrentImageLoad()) return;
-        historyRef.current = [{ ...INITIAL }];
-        historyIdxRef.current = 0;
-        setHistoryIdx(0);
-        setSettings({ ...INITIAL });
-        setTexts([]); setStickers([]); setFrameId("none");
+        if (options?.project) render(options.project.settings);
       };
       img.onerror = () => failImageLoad("decode");
       img.src = dataUrl;
@@ -699,7 +718,7 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
       failImageLoad("read");
     };
     reader.readAsDataURL(file);
-  }, [runtimeBridge, waitForFaceModels]);
+  }, [render, runtimeBridge, waitForFaceModels]);
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -712,8 +731,75 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
   useEffect(() => {
     if (!initialFile || initialFileLoadedRef.current === initialFile) return;
     initialFileLoadedRef.current = initialFile;
-    loadImageFile(initialFile, { skipFaceDetection: skipInitialFaceDetection });
-  }, [initialFile, loadImageFile, skipInitialFaceDetection]);
+    loadImageFile(initialFile, { skipFaceDetection: skipInitialFaceDetection, project: initialProject ?? undefined });
+  }, [initialFile, initialProject, loadImageFile, skipInitialFaceDetection]);
+
+  const createProjectSnapshot = useCallback((): EditorProjectSnapshot | null => {
+    const source = sourceFileRef.current;
+    if (!source) return null;
+    return {
+      id: "autosave",
+      version: 1,
+      name: source.name.replace(/\.[^.]+$/, "") || "NHB project",
+      fileName: source.name,
+      source,
+      settings: { ...settings },
+      activeCategory: cat, activeTool: tool,
+      activeWorkflow: activeWorkflowGroup, skipFaceDetection: skipInitialFaceDetection,
+      history: historyRef.current.map((entry) => ({ ...entry })),
+      historyIndex: historyIdxRef.current,
+      frameId,
+      texts: texts.map((text) => ({ ...text })),
+      stickers: stickers.map((sticker) => ({ ...sticker })),
+      savedAt: Date.now(),
+    };
+  }, [activeWorkflowGroup, cat, frameId, settings, skipInitialFaceDetection, stickers, texts, tool]);
+
+  const persistProject = useCallback(async () => {
+    const project = createProjectSnapshot();
+    if (!project) return;
+    setProjectStatus("saving");
+    try {
+      await saveEditorProject(project);
+      setRecoverableProject(project);
+      setProjectStatus("saved");
+    } catch {
+      setProjectStatus("failed");
+    }
+  }, [createProjectSnapshot]);
+
+  useEffect(() => {
+    if (!projectSourceVersion || loading) return;
+    setProjectStatus("saving");
+    const timeout = window.setTimeout(() => void persistProject(), 1200);
+    return () => window.clearTimeout(timeout);
+  }, [loading, persistProject, projectSourceVersion]);
+
+  const restoreProject = useCallback((project: EditorProjectSnapshot) => {
+    const file = new File([project.source], project.fileName, { type: project.source.type, lastModified: project.savedAt });
+    setRecoverableProject(project);
+    loadImageFile(file, { project });
+  }, [loadImageFile]);
+
+  const handleProjectExport = useCallback(async () => {
+    const project = createProjectSnapshot();
+    if (!project) return;
+    const blob = await createEditorProjectFile(project);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${project.name}.nhb`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, [createProjectSnapshot]);
+
+  const handleProjectImport = useCallback(async (file: File) => {
+    try {
+      restoreProject(await parseEditorProjectFile(file));
+    } catch {
+      setProjectStatus("failed");
+    }
+  }, [restoreProject]);
 
   // Drag-and-drop handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -1032,6 +1118,12 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
           <input ref={uploadRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: "none" }} />
           {originalRef.current && (
             <>
+              <EditorProjectControls
+                status={projectStatus}
+                onSave={() => void persistProject()}
+                onExport={() => void handleProjectExport()}
+                onImport={(file) => void handleProjectImport(file)}
+              />
               <div className="editor-toolbar-group" role="group" aria-label={t("editor.toolbarHistory")}>
                 <button type="button" className="editor-icon-btn" disabled={historyIdx <= 0} onClick={undo} aria-label={t("editor.undo")} title={t("editor.undo")}><Undo2 size={17} aria-hidden="true" /></button>
                 <button type="button" className="editor-icon-btn" disabled={historyIdx >= historyRef.current.length - 1} onClick={redo} aria-label={t("editor.redo")} title={t("editor.redo")}><Redo2 size={17} aria-hidden="true" /></button>
@@ -1225,44 +1317,14 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
           <div className="editor-canvas-container">
             {!originalRef.current && !loading && (
               <div className={`editor-canvas--empty ${imageLoadError ? "editor-canvas--error" : ""}`}>
-                {isDragOver ? (
-                  <div className="editor-drop-zone">
-                    <span className="editor-drop-icon" aria-hidden="true"><Camera size={32} /></span>
-                    <p>{t("editor.dropHere", "Drop your photo here")}</p>
-                  </div>
-                ) : imageLoadError && imageLoadErrorMessageKey ? (
-                  <div className="editor-image-error editor-recovery-panel" role="alert" aria-live="assertive" tabIndex={-1} ref={recoveryRef}>
-                    <span className="editor-recovery-icon" aria-hidden="true"><AlertTriangle size={20} /></span>
-                    <span className="editor-empty-kicker">{t("editor.imageLoadFailed")}</span>
-                    <h2>{t("editor.editorRecoveryTitle")}</h2>
-                    <p>{t(imageLoadErrorMessageKey as any)}</p>
-                    <p className="editor-recovery-hint">{t("editor.imageRecoveryHint")}</p>
-                    <button type="button" className="editor-empty-upload editor-recovery-action" onClick={handleUploadClick}>
-                      <ImagePlus size={18} aria-hidden="true" />
-                      <span>{t("editor.tryAnotherImage")}</span>
-                    </button>
-                    <div className="editor-recovery-badges" aria-label={t("editor.supportedFormatsLabel")}>
-                      <span><ShieldCheck size={14} aria-hidden="true" />{t("editor.supportedFormats")}</span>
-                      <span><Zap size={14} aria-hidden="true" />{t("editor.manualFallback", "Filters, text, and export stay available")}</span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="editor-empty-panel">
-                    <span className="editor-empty-kicker">{t("editor.emptyKicker", "Local editing studio")}</span>
-                    <h2>{t("editor.emptyTitle", "Open a portrait to start editing")}</h2>
-                    <p>{t("editor.emptyDesc", "The workspace stays light until a photo is added, then loads the face model only when needed.")}</p>
-                    <button type="button" className="editor-empty-upload" onClick={handleUploadClick}>
-                      <ImagePlus size={18} aria-hidden="true" />
-                      <span>{t("editor.upload")}</span>
-                    </button>
-                    <div className="editor-empty-badges" aria-label={t("editor.emptyBadgesLabel", "Editor loading notes")}>
-                      <span><ShieldCheck size={14} aria-hidden="true" />{t("editor.localOnly", "Your photo stays on this device")}</span>
-                      <span><Sparkles size={14} aria-hidden="true" />{t("editor.modelsDeferred", "AI models load only after you add a photo.")}</span>
-                      <span><Zap size={14} aria-hidden="true" />{t("editor.manualFallback", "Filters, text, and export stay available")}</span>
-                    </div>
-                    <p className="editor-drop-hint">{t("editor.dropHint", "or drag and drop an image")}</p>
-                  </div>
-                )}
+                <EditorEmptyState
+                  dragOver={isDragOver}
+                  errorMessageKey={imageLoadErrorMessageKey}
+                  recoveryRef={recoveryRef}
+                  hasRecoverableProject={Boolean(recoverableProject)}
+                  onUpload={handleUploadClick}
+                  onRestore={() => recoverableProject && restoreProject(recoverableProject)}
+                />
               </div>
             )}
             <canvas
@@ -1388,58 +1450,15 @@ export default function PhotoEditorWorkspace({ initialFile = null, skipInitialFa
           )}
         </div>
 
-        {showExport && (
-          <div className="editor-modal-overlay" onMouseDown={() => setShowExport(false)}>
-            <div
-              ref={exportDialogRef}
-              className="editor-modal"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={exportTitleId}
-              onMouseDown={e => e.stopPropagation()}
-            >
-              <header className="editor-modal-heading">
-                <h3 id={exportTitleId}>{t("editor.exportTitle")}</h3>
-                <button type="button" className="editor-modal-close" onClick={() => setShowExport(false)} aria-label={t("editor.cancel")} title={t("editor.cancel")}>
-                  <X size={18} aria-hidden="true" />
-                </button>
-              </header>
-              <div className="editor-export-presets">
-                <button type="button" className={`editor-preset-btn ${exportFormat === "jpeg" && exportQuality === 85 ? "active" : ""}`} onClick={() => { setExportFormat("jpeg"); setExportQuality(85); }}>
-                  <span className="editor-preset-icon"><Smartphone size={20} aria-hidden="true" /></span>
-                  <span className="editor-preset-label">{t("editor.presetSocial", "Social")}</span>
-                  <span className="editor-preset-desc">JPEG 85%</span>
-                </button>
-                <button type="button" className={`editor-preset-btn ${exportFormat === "jpeg" && exportQuality === 75 ? "active" : ""}`} onClick={() => { setExportFormat("jpeg"); setExportQuality(75); }}>
-                  <span className="editor-preset-icon"><Gauge size={20} aria-hidden="true" /></span>
-                  <span className="editor-preset-label">{t("editor.presetQuick", "Quick")}</span>
-                  <span className="editor-preset-desc">JPEG 75%</span>
-                </button>
-                <button type="button" className={`editor-preset-btn ${exportFormat === "png" ? "active" : ""}`} onClick={() => { setExportFormat("png"); setExportQuality(100); }}>
-                  <span className="editor-preset-icon"><Printer size={20} aria-hidden="true" /></span>
-                  <span className="editor-preset-label">{t("editor.presetPrint", "Print")}</span>
-                  <span className="editor-preset-desc">PNG</span>
-                </button>
-              </div>
-              <div className="editor-export-options">
-                <label>{t("editor.format")}
-                  <select value={exportFormat} onChange={e => setExportFormat(e.target.value as "png" | "jpeg")}>
-                    <option value="png">PNG</option>
-                    <option value="jpeg">JPEG</option>
-                  </select>
-                </label>
-                <label>{t("editor.quality")}
-                  <input type="range" min="10" max="100" value={exportQuality} onChange={e => setExportQuality(Number(e.target.value))} />
-                  <span>{exportQuality}%</span>
-                </label>
-              </div>
-              <div className="editor-modal-actions">
-                <button type="button" className="editor-btn" onClick={() => setShowExport(false)}>{t("editor.cancel")}</button>
-                <button type="button" className="editor-btn editor-btn--primary" onClick={handleDownload}><Download size={16} aria-hidden="true" />{t("editor.download")}</button>
-              </div>
-            </div>
-          </div>
-        )}
+        <EditorExportDialog
+          open={showExport}
+          format={exportFormat}
+          quality={exportQuality}
+          onFormatChange={setExportFormat}
+          onQualityChange={setExportQuality}
+          onClose={() => setShowExport(false)}
+          onDownload={() => void handleDownload()}
+        />
       </div>
       </ErrorBoundary>
     </PageTransition>

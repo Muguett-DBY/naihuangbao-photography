@@ -2,6 +2,10 @@
   "nav": {
     "home": "홈",
     "gallery": "갤러리",
+    "archive": "아카이브",
+    "stories": "스토리",
+    "studio": "스튜디오",
+    "lab": "랩",
     "packages": "패키지",
     "details": "상세",
     "reviews": "리뷰",
@@ -27,6 +31,102 @@
     "booking": "예약",
     "editor": "보정",
     "account": "내 정보"
+  },
+  "platform": {
+    "routes": {
+      "home": "현재 프리미어 경험으로 돌아가기",
+      "archive": "콘셉트 연구와 실제 작품 탐색",
+      "stories": "이미지 뒤의 필드 노트 읽기",
+      "studio": "필름스트립, 콘택트 시트, 무드보드 만들기",
+      "lab": "프로젝트 연습 시스템 열기",
+      "about": "이 개인 프로젝트가 만들어지는 방식 보기"
+    },
+    "practice": {
+      "gallery": "기존 공개 인물 갤러리",
+      "editor": "로컬 인물 암실",
+      "compare": "전후 비교 데스크",
+      "courses": "강좌 목록 연습 모듈",
+      "presets": "프리셋 목록 연습 모듈",
+      "workshops": "워크숍 흐름 연습 모듈",
+      "shop": "프린트와 굿즈 연습 모듈",
+      "booking": "예약 흐름 연습 모듈",
+      "map": "장소 필드 노트 지도",
+      "account": "계정과 대시보드 연습 모듈"
+    },
+    "command": {
+      "title": "NHB 검색",
+      "placeholder": "페이지, 도구 또는 사진 검색...",
+      "results": "검색 결과",
+      "suggestions": "추천 경로",
+      "empty": "일치하는 페이지나 사진이 없습니다"
+    },
+    "archive": {
+      "title": "자라나는 이미지 아카이브",
+      "description": "인물 없는 콘셉트 연구, 현장 관찰, 명확히 분리된 실제 인물 작품의 지속적인 인덱스입니다.",
+      "enter": "아카이브 인덱스 열기",
+      "filterTitle": "화면의 온도 찾기",
+      "filterDescription": "장소, 계절, 분위기 또는 색으로 콘셉트 연구를 필터링합니다.",
+      "place": "장소",
+      "season": "계절",
+      "mood": "분위기",
+      "palette": "색상",
+      "all": "전체",
+      "reset": "필터 초기화",
+      "conceptTitle": "인물 없는 콘셉트 연구",
+      "conceptDisclosure": "시각 탐구를 위한 생성 콘셉트 소재이며 실제 고객 사진이 아닙니다.",
+      "empty": "이 조합과 일치하는 연구가 없습니다.",
+      "realTitle": "실제 인물 작품",
+      "realDescription": "허가된 실제 사진은 신뢰할 수 있는 작품으로 별도 표시됩니다.",
+      "openGallery": "전체 실제 작품 갤러리 열기"
+    },
+    "stories": {
+      "title": "필드 노트",
+      "description": "비, 종이, 유리, 색과 한 장면 뒤의 작은 결정에 관한 짧은 시각 에세이입니다.",
+      "readStudy": "전체 연구 열기"
+    },
+    "studio": {
+      "title": "로컬 크리에이티브 스튜디오",
+      "description": "로컬 이미지를 필름스트립, 콘택트 시트, 엽서 또는 무드보드로 구성하고 업로드 없이 내보냅니다.",
+      "openDarkroom": "인물 암실 열기",
+      "controls": "구성 컨트롤",
+      "modeLabel": "구성 형식",
+      "modes": {
+        "filmstrip": "필름스트립",
+        "contact-sheet": "콘택트 시트",
+        "postcard": "엽서",
+        "moodboard": "무드보드"
+      },
+      "addImages": "로컬 이미지 추가",
+      "imageCount": "{{count}}장 선택됨",
+      "invalidFiles": "브라우저에서 지원되는 이미지를 선택하세요.",
+      "restoreSamples": "인물 없는 샘플 복원",
+      "titleLabel": "제목",
+      "captionLabel": "캡션",
+      "paperLabel": "용지 색상",
+      "localOnly": "기기에서 렌더링되며 이미지를 업로드하지 않습니다."
+    },
+    "lab": {
+      "title": "연습 실험실",
+      "description": "기존 상업형 흐름도 제품 및 엔지니어링 연습임을 명확히 표시해 이곳에 유지합니다.",
+      "statusLabel": "로컬 실험실 상태",
+      "online": "연결됨",
+      "offline": "오프라인 모드",
+      "modules": "사용 가능한 모듈"
+    },
+    "about": {
+      "title": "부드러운 사진 놀이터",
+      "description": "NHB는 시각 시스템, 브라우저 그래픽, 로컬 창작 도구와 접근 가능한 상호작용을 탐구하는 개인 연습 프로젝트입니다.",
+      "disclosure": "상업 사진 서비스가 아닙니다.",
+      "principles": "프로젝트가 자라는 방식",
+      "practiceTitle": "공개하며 연습하기",
+      "practiceCopy": "새 실험은 정적 시안이 아니라 테스트된 실제 페이지로 공개합니다.",
+      "systemTitle": "하나의 시각 시스템",
+      "systemCopy": "콘셉트 소재, 실제 작품, 도구와 기존 모듈을 명확하게 분리합니다.",
+      "openTitle": "로컬 우선 제작",
+      "openCopy": "브라우저가 할 수 있는 창작 작업은 가능한 한 기기에서 처리합니다.",
+      "openStudio": "크리에이티브 스튜디오 열기",
+      "openLab": "연습 실험실 보기"
+    }
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -1515,6 +1615,16 @@
     "emptyDesc": "사진을 추가하기 전까지 화면을 가볍게 유지하고 필요할 때만 얼굴 모델을 로드합니다.",
     "emptyBadgesLabel": "편집 화면 로딩 안내",
     "localOnly": "사진은 이 기기에 남아 있습니다",
+    "project": {
+      "controls": "로컬 프로젝트 컨트롤",
+      "save": "프로젝트 로컬 저장",
+      "export": "NHB 프로젝트 내보내기",
+      "import": "NHB 프로젝트 가져오기",
+      "saving": "저장 중...",
+      "saved": "로컬에 저장됨",
+      "failed": "프로젝트 작업 실패",
+      "restore": "마지막 로컬 프로젝트 복원"
+    },
     "manualFallback": "필터, 텍스트, 내보내기는 먼저 사용할 수 있습니다",
     "dropHere": "여기에 사진을 놓으세요",
     "upload": "사진 업로드",

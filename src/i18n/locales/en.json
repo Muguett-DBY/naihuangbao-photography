@@ -2,6 +2,10 @@
   "nav": {
     "home": "Home",
     "gallery": "Gallery",
+    "archive": "Archive",
+    "stories": "Stories",
+    "studio": "Studio",
+    "lab": "Lab",
     "packages": "Packages",
     "details": "Details",
     "reviews": "Reviews",
@@ -27,6 +31,102 @@
     "booking": "Book",
     "editor": "Edit",
     "account": "Account"
+  },
+  "platform": {
+    "routes": {
+      "home": "Return to the current premiere",
+      "archive": "Explore visual studies and real work",
+      "stories": "Read field notes behind the images",
+      "studio": "Compose a filmstrip, contact sheet, or moodboard",
+      "lab": "Open the project's practice systems",
+      "about": "Learn how this personal project is made"
+    },
+    "practice": {
+      "gallery": "Original public portrait gallery",
+      "editor": "Local portrait darkroom",
+      "compare": "Before-and-after comparison desk",
+      "courses": "Course catalogue practice module",
+      "presets": "Preset catalogue practice module",
+      "workshops": "Workshop flow practice module",
+      "shop": "Print and merchandise practice module",
+      "booking": "Booking-flow practice module",
+      "map": "Location field-notes map",
+      "account": "Account and dashboard practice module"
+    },
+    "command": {
+      "title": "Search NHB",
+      "placeholder": "Search pages, tools, or photographs...",
+      "results": "Results",
+      "suggestions": "Suggested destinations",
+      "empty": "No matching page or photograph"
+    },
+    "archive": {
+      "title": "Living Archive",
+      "description": "A growing index of no-person concept studies, field observations, and clearly separated real portrait work.",
+      "enter": "Open the index",
+      "filterTitle": "Find a visual temperature",
+      "filterDescription": "Filter the concept studies by place, season, mood, or palette.",
+      "place": "Place",
+      "season": "Season",
+      "mood": "Mood",
+      "palette": "Palette",
+      "all": "All",
+      "reset": "Reset filters",
+      "conceptTitle": "No-person concept studies",
+      "conceptDisclosure": "Generated brand studies for visual exploration. They are not client photographs.",
+      "empty": "No studies match this combination.",
+      "realTitle": "Real portrait work",
+      "realDescription": "Authorized photographs remain a separate, clearly labelled source of truth.",
+      "openGallery": "Open the complete real-work gallery"
+    },
+    "stories": {
+      "title": "Field Notes",
+      "description": "Short visual essays about rain, paper, glass, color, and the small decisions behind an image.",
+      "readStudy": "Open the full study"
+    },
+    "studio": {
+      "title": "Creative Studio",
+      "description": "Arrange local images into a filmstrip, contact sheet, postcard, or moodboard, then export the result without uploading anything.",
+      "openDarkroom": "Open portrait darkroom",
+      "controls": "Composition controls",
+      "modeLabel": "Composition format",
+      "modes": {
+        "filmstrip": "Filmstrip",
+        "contact-sheet": "Contact sheet",
+        "postcard": "Postcard",
+        "moodboard": "Moodboard"
+      },
+      "addImages": "Add local images",
+      "imageCount": "{{count}} images selected",
+      "invalidFiles": "Choose one or more browser-supported image files.",
+      "restoreSamples": "Restore no-person samples",
+      "titleLabel": "Title",
+      "captionLabel": "Caption",
+      "paperLabel": "Paper color",
+      "localOnly": "Rendered locally. No image upload."
+    },
+    "lab": {
+      "title": "Practice Lab",
+      "description": "Every older commercial-style flow remains available here as a transparent product and engineering exercise.",
+      "statusLabel": "Local lab status",
+      "online": "Connected",
+      "offline": "Offline mode",
+      "modules": "Working modules"
+    },
+    "about": {
+      "title": "A soft photography playground",
+      "description": "NHB is a personal practice project exploring visual systems, browser graphics, local creative tools, and accessible interaction design.",
+      "disclosure": "This is not a commercial photography service.",
+      "principles": "How the project grows",
+      "practiceTitle": "Practice in public",
+      "practiceCopy": "New experiments ship as usable pages with tests, not as static mockups.",
+      "systemTitle": "One visual system",
+      "systemCopy": "Concept imagery, real work, tools, and legacy modules stay clearly labelled and structurally separate.",
+      "openTitle": "Local-first making",
+      "openCopy": "Creative image workflows run on-device whenever the browser can do the work.",
+      "openStudio": "Open creative studio",
+      "openLab": "Inspect the practice lab"
+    }
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -1518,6 +1618,16 @@
     "emptyDesc": "The workspace stays light until a photo is added, then loads the face model only when needed.",
     "emptyBadgesLabel": "Editor loading notes",
     "localOnly": "Your photo stays on this device",
+    "project": {
+      "controls": "Local project controls",
+      "save": "Save project locally",
+      "export": "Export NHB project",
+      "import": "Import NHB project",
+      "saving": "Saving...",
+      "saved": "Saved locally",
+      "failed": "Project action failed",
+      "restore": "Restore the last local project"
+    },
     "manualFallback": "Filters, text, and export stay available",
     "dropHere": "Drop your photo here",
     "upload": "Upload Photo",

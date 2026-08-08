@@ -4,38 +4,38 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://shoot.custard.top/</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://shoot.custard.top/images/gallery/gallery-jiangnan-01.webp</image:loc>
-      <image:title>南京江南感写真｜女生约拍</image:title>
-      <image:caption>奶黄包摄影南京女生写真，江南感风格</image:caption>
+      <image:title>伞下春光</image:title>
+      <image:caption>南京园林中的江南感人像作品</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://shoot.custard.top/images/gallery/gallery-jiangnan-02.webp</image:loc>
-      <image:title>南京探店写真｜室内约拍</image:title>
-      <image:caption>南京室内写真约拍，柔雾胶片感</image:caption>
+      <image:loc>https://shoot.custard.top/images/gallery/gallery-urban-01.webp</image:loc>
+      <image:title>台阶午后</image:title>
+      <image:caption>南京室内台阶场景的都市人像作品</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://shoot.custard.top/images/gallery/gallery-street-01.webp</image:loc>
-      <image:title>南京街拍写真｜室外约拍</image:title>
-      <image:caption>南京街拍女生写真，自然光日常记录</image:caption>
-    </image:image>
-    <image:image>
-      <image:loc>https://shoot.custard.top/images/gallery/gallery-couple-01.webp</image:loc>
-      <image:title>南京情侣约拍｜室外写真</image:title>
-      <image:caption>南京情侣约拍，自然甜蜜风格</image:caption>
+      <image:loc>https://shoot.custard.top/images/gallery/gallery-garden-01.webp</image:loc>
+      <image:title>绿意裙摆</image:title>
+      <image:caption>南京公园绿意与纸伞人像作品</image:caption>
     </image:image>
     <image:image>
       <image:loc>https://shoot.custard.top/images/gallery/gallery-sweet-01.webp</image:loc>
-      <image:title>南京甜系写真｜室内棚拍</image:title>
-      <image:caption>南京甜系女生写真，温柔柔雾风格</image:caption>
+      <image:title>黄 hoodie 街角</image:title>
+      <image:caption>南京街区日常人像作品</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://shoot.custard.top/images/gallery/gallery-park-01.webp</image:loc>
-      <image:title>南京公园写真｜自然光约拍</image:title>
-      <image:caption>南京公园女生写真，自然柔光风格</image:caption>
+      <image:loc>https://shoot.custard.top/images/gallery/gallery-flower-01.webp</image:loc>
+      <image:title>花墙紫调</image:title>
+      <image:caption>南京花墙前的柔和人像作品</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/gallery/gallery-daily-01.webp</image:loc>
+      <image:title>廊下白衬衫</image:title>
+      <image:caption>南京公园廊下的日常人像作品</image:caption>
     </image:image>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/" />
     <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/?lang=en" />
@@ -44,8 +44,63 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/" />
   </url>
   <url>
+    <loc>https://shoot.custard.top/archive</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive" />
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/stories</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/stories" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/stories?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/stories?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/stories?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/stories" />
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/studio</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/studio" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/studio?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/studio?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/studio?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/studio" />
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/lab</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/lab" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/lab?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/lab?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/lab?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/lab" />
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/about</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/about?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/about?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/about?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/about" />
+  </url>
+  <url>
     <loc>https://shoot.custard.top/gallery</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery" />
@@ -56,7 +111,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/booking</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/booking" />
@@ -67,7 +122,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/courses</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/courses" />
@@ -78,7 +133,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/products</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/products" />
@@ -89,7 +144,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/workshops</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/workshops" />
@@ -100,7 +155,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/shop</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/shop" />
@@ -111,7 +166,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/map</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/map" />
@@ -122,7 +177,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/gallery/gallery-jiangnan-01</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-jiangnan-01" />
@@ -132,41 +187,30 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery/gallery-jiangnan-01" />
   </url>
   <url>
-    <loc>https://shoot.custard.top/gallery/gallery-jiangnan-02</loc>
-    <lastmod>2026-06-28</lastmod>
+    <loc>https://shoot.custard.top/gallery/gallery-urban-01</loc>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-jiangnan-02" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery/gallery-jiangnan-02?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery/gallery-jiangnan-02?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/gallery/gallery-jiangnan-02?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery/gallery-jiangnan-02" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-urban-01" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery/gallery-urban-01?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery/gallery-urban-01?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/gallery/gallery-urban-01?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery/gallery-urban-01" />
   </url>
   <url>
-    <loc>https://shoot.custard.top/gallery/gallery-street-01</loc>
-    <lastmod>2026-06-28</lastmod>
+    <loc>https://shoot.custard.top/gallery/gallery-garden-01</loc>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-street-01" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery/gallery-street-01?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery/gallery-street-01?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/gallery/gallery-street-01?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery/gallery-street-01" />
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/gallery/gallery-couple-01</loc>
-    <lastmod>2026-06-28</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-couple-01" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery/gallery-couple-01?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery/gallery-couple-01?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/gallery/gallery-couple-01?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery/gallery-couple-01" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-garden-01" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery/gallery-garden-01?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery/gallery-garden-01?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/gallery/gallery-garden-01?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery/gallery-garden-01" />
   </url>
   <url>
     <loc>https://shoot.custard.top/gallery/gallery-sweet-01</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-sweet-01" />
@@ -176,14 +220,25 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery/gallery-sweet-01" />
   </url>
   <url>
-    <loc>https://shoot.custard.top/gallery/gallery-park-01</loc>
-    <lastmod>2026-06-28</lastmod>
+    <loc>https://shoot.custard.top/gallery/gallery-flower-01</loc>
+    <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-park-01" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery/gallery-park-01?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery/gallery-park-01?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/gallery/gallery-park-01?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery/gallery-park-01" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-flower-01" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery/gallery-flower-01?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery/gallery-flower-01?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/gallery/gallery-flower-01?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery/gallery-flower-01" />
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/gallery/gallery-daily-01</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-daily-01" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery/gallery-daily-01?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery/gallery-daily-01?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/gallery/gallery-daily-01?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery/gallery-daily-01" />
   </url>
 </urlset>

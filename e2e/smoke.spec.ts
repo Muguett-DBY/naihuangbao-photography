@@ -20,21 +20,21 @@ async function uploadEditorPhoto(page: Page, file: EditorUploadFile) {
   await fileChooser.setFiles(file);
 }
 
-async function openGalleryFromNav(page: Page) {
+async function openArchiveFromNav(page: Page) {
   await expect(page.locator(".site-nav")).toBeVisible();
-  const inlineGalleryLink = page.locator('.nav-menu--inline a[href="/gallery"]').first();
+  const inlineArchiveLink = page.locator('.nav-menu--inline a[href="/archive"]').first();
   if ((page.viewportSize()?.width ?? 1280) > 980) {
-    await expect(inlineGalleryLink).toBeVisible();
-    await inlineGalleryLink.click();
+    await expect(inlineArchiveLink).toBeVisible();
+    await inlineArchiveLink.click();
     return;
   }
 
   const hamburger = page.locator(".hamburger");
   await expect(hamburger).toBeVisible();
   await hamburger.click();
-  const overlayGalleryLink = page.locator('#site-navigation-menu a[href="/gallery"]').first();
-  await expect(overlayGalleryLink).toBeVisible();
-  await overlayGalleryLink.click();
+  const overlayArchiveLink = page.locator('#site-navigation-menu a[href="/archive"]').first();
+  await expect(overlayArchiveLink).toBeVisible();
+  await overlayArchiveLink.click();
 }
 
 test.describe("shoot.custard.top", () => {
@@ -111,9 +111,9 @@ test.describe("shoot.custard.top", () => {
 
   test("导航链接可点击跳转", async ({ page }) => {
     await page.goto("/");
-    await openGalleryFromNav(page);
-    await expect(page).toHaveURL(/\/gallery$/);
-    await expect(page.locator("#gallery")).toBeVisible();
+    await openArchiveFromNav(page);
+    await expect(page).toHaveURL(/\/archive$/);
+    await expect(page.locator("#archive-index")).toBeVisible();
   });
 
   test("Lightbox 打开和关闭", async ({ page }) => {
@@ -359,15 +359,15 @@ test.describe("shoot.custard.top", () => {
     await expect.poll(() => page.evaluate(() => localStorage.getItem("nhb-pwa-installed"))).toBe("true");
   });
 
-  test("移动端导航可打开作品页", async ({ page }) => {
+  test("移动端导航可打开档案页", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-    await openGalleryFromNav(page);
-    await expect(page).toHaveURL(/\/gallery$/);
-    await expect(page.locator("#gallery")).toBeVisible();
+    await openArchiveFromNav(page);
+    await expect(page).toHaveURL(/\/archive$/);
+    await expect(page.locator("#archive-index")).toBeVisible();
   });
 
-  test("移动端底部导航覆盖核心路径并打开预约", async ({ page }) => {
+  test("移动端底部导航覆盖核心路径并打开创作工具", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
@@ -375,16 +375,17 @@ test.describe("shoot.custard.top", () => {
     await expect(bottomNav).toBeVisible();
     await expect(bottomNav.locator('a[href="/"]')).toHaveAttribute("aria-current", "page");
 
-    await bottomNav.locator('a[href="/gallery"]').click();
-    await expect(page).toHaveURL(/\/gallery$/);
-    await expect(bottomNav.locator('a[href="/gallery"]')).toHaveAttribute("aria-current", "page");
+    await bottomNav.locator('a[href="/archive"]').click();
+    await expect(page).toHaveURL(/\/archive$/);
+    await expect(bottomNav.locator('a[href="/archive"]')).toHaveAttribute("aria-current", "page");
 
-    await bottomNav.locator("button.mobile-bottom-nav__booking").click();
-    // Wait for modal to open - it's a multi-step form
-    await expect(page.locator("#booking-package")).toBeVisible();
-    await page.keyboard.press("Escape");
+    await bottomNav.locator('a[href="/studio"]').click();
+    await expect(page).toHaveURL(/\/studio$/);
+    await expect(page.locator(".studio-canvas-frame canvas")).toBeVisible();
 
-    await bottomNav.locator('a[href="/editor"]').click();
+    await bottomNav.locator('a[href="/lab"]').click();
+    await expect(page).toHaveURL(/\/lab$/);
+    await page.locator('.lab-tool[href="/editor"]').click();
     await expect(page).toHaveURL(/\/editor$/);
     await expect(page.locator(".editor-root")).toBeVisible();
     await expect(page.locator(".mobile-bottom-nav")).toHaveCount(0);

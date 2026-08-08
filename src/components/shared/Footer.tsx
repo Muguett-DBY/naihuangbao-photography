@@ -13,7 +13,7 @@ export function Footer() {
   return (
     <footer id="site-footer" className="site-footer is-visible" aria-label={t("footer.ariaLabel", "Site footer")}>
       <div className="footer-issue-line" aria-label="Publication issue">
-        <span>NHB / SOFT PORTRAITS</span>
+        <span>NHB / LIVING ARCHIVE</span>
         <span>{siteConfig.city} / {currentYear}</span>
       </div>
 
@@ -32,21 +32,21 @@ export function Footer() {
         <nav className="footer-nav" aria-label={t("footer.navLabel", "Footer navigation")}>
           <div className="footer-nav-group">
             <h3>{t("footer.explore", "Explore")}</h3>
+            <PrefetchLink to="/archive">{t("nav.archive")}</PrefetchLink>
+            <PrefetchLink to="/stories">{t("nav.stories")}</PrefetchLink>
             <PrefetchLink to="/gallery">{t("nav.gallery")}</PrefetchLink>
-            <PrefetchLink to="/courses">{t("nav.courses")}</PrefetchLink>
-            <PrefetchLink to="/products">{t("nav.presets")}</PrefetchLink>
           </div>
           <div className="footer-nav-group">
-            <h3>{t("footer.services", "Services")}</h3>
-            <PrefetchLink to="/workshops">{t("nav.workshops")}</PrefetchLink>
-            <PrefetchLink to="/shop">{t("nav.shop")}</PrefetchLink>
-            <PrefetchLink to="/booking">{t("nav.booking")}</PrefetchLink>
+            <h3>{t("footer.create", "Create")}</h3>
+            <PrefetchLink to="/studio">{t("nav.studio")}</PrefetchLink>
+            <PrefetchLink to="/editor">{t("nav.editor")}</PrefetchLink>
+            <PrefetchLink to="/compare">{t("photoCompare.title")}</PrefetchLink>
           </div>
           <div className="footer-nav-group">
             <h3>{t("footer.discover", "Discover")}</h3>
+            <PrefetchLink to="/lab">{t("nav.lab")}</PrefetchLink>
+            <PrefetchLink to="/about">{t("nav.about")}</PrefetchLink>
             <PrefetchLink to="/map">{t("nav.map")}</PrefetchLink>
-            <PrefetchLink to="/#why">{t("nav.about", "About")}</PrefetchLink>
-            <PrefetchLink to="/booking#faq">{t("nav.faq", "FAQ")}</PrefetchLink>
           </div>
         </nav>
 
