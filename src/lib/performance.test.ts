@@ -152,7 +152,7 @@ describe("performance budgets", () => {
     expect(footerSource).toContain('to="/about"');
     expect(footerSource).not.toContain('to="/faq"');
     expect(footerSource).toContain('to="/archive"');
-    expect(footerSource).toContain('to="/studio"');
+    expect(footerSource).toContain('to="/create"');
     expect(footerSource).toContain('to="/lab"');
     for (const localeFile of localeFiles) {
       const locale = JSON.parse(readFileSync(resolve(root, localeFile), "utf8"));
@@ -253,7 +253,8 @@ describe("performance budgets", () => {
   it("keeps gallery photos out of the precache and runtime-caches them", () => {
     // Verify Vite PWA config runtime-caches gallery images
     expect(viteConfig).toContain("runtimeCaching");
-    expect(viteConfig).toContain("gallery-images");
+    expect(viteConfig).toContain("visual-archive-images-v4");
+    expect(viteConfig).toContain('/images/optical-archive/');
     expect(viteConfig).toContain('handler: "CacheFirst"');
     expect(viteConfig).toContain("NetworkFirst");
     // Verify precache excludes gallery images

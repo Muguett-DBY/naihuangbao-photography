@@ -11,14 +11,12 @@ const defaultLineBudget = 500;
 // the default budget; lowering these entries requires splitting the source file.
 const legacyLineBudgets = new Map([
   ["src/pages/PhotoEditorWorkspace.tsx", 1467],
-  ["src/experience/three-scene-driver.ts", 1230],
-  ["src/components/Gallery.tsx", 1051],
+  ["src/components/Gallery.tsx", 996],
   ["src/components/BookingModal.tsx", 856],
   ["src/lib/editor-effects.ts", 856],
   ["src/components/admin/AdminPhotosTab.tsx", 700],
   ["src/components/dashboard/BookingsTab.tsx", 545],
   ["src/pages/LoginPage.tsx", 528],
-  ["src/components/CinematicPremiere.tsx", 528],
   ["src/components/PublicChatWidget.tsx", 518],
 ]);
 

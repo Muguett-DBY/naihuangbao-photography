@@ -4,6 +4,7 @@
     "gallery": "作品",
     "archive": "档案",
     "stories": "故事",
+    "create": "创作",
     "studio": "创作室",
     "lab": "实验室",
     "courses": "课程",
@@ -33,10 +34,20 @@
     "account": "我的"
   },
   "platform": {
+    "playground": {
+      "intro": "一个关于光、颜色、纸张与本地创作工具的个人视觉实验场。",
+      "lightTable": "光桌",
+      "local": "本地优先",
+      "archive": "持续生长的视觉档案",
+      "practice": "为实验而制作",
+      "startCreating": "开始创作",
+      "bookingDemo": "预约流程实验"
+    },
     "routes": {
       "home": "回到当前首映体验",
       "archive": "浏览概念研究与真实作品",
       "stories": "阅读画面背后的现场笔记",
+      "create": "进入本地视觉创作工作台",
       "studio": "编排胶片条、联系表与灵感板",
       "lab": "打开项目中的练习系统",
       "about": "了解这个个人项目如何制作"
@@ -103,7 +114,12 @@
       "titleLabel": "标题",
       "captionLabel": "注释",
       "paperLabel": "纸张颜色",
-      "localOnly": "全部在本地渲染，不上传图片。"
+      "localOnly": "全部在本地渲染，不上传图片。",
+      "projectName": "项目名称",
+      "importProject": "打开项目",
+      "exportProject": "保存 .nhb",
+      "invalidProject": "无法打开这个 NHB 项目。",
+      "saveStatus": { "loading": "正在恢复本地项目", "saving": "正在自动保存", "saved": "已保存到当前浏览器", "error": "本地保存失败" }
     },
     "lab": {
       "title": "练习实验室",

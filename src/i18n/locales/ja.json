@@ -4,6 +4,7 @@
     "gallery": "ギャラリー",
     "archive": "アーカイブ",
     "stories": "ストーリー",
+    "create": "制作",
     "studio": "スタジオ",
     "lab": "ラボ",
     "packages": "プラン",
@@ -33,10 +34,20 @@
     "account": "マイページ"
   },
   "platform": {
+    "playground": {
+      "intro": "光、色、紙、ローカル制作ツールのための個人的なビジュアル実験場。",
+      "lightTable": "ライトテーブル",
+      "local": "ローカル優先",
+      "archive": "成長するビジュアルアーカイブ",
+      "practice": "実験のために制作",
+      "startCreating": "制作を始める",
+      "bookingDemo": "予約フロー実験"
+    },
     "routes": {
       "home": "現在のプレミア体験へ戻る",
       "archive": "コンセプト研究と実作品を見る",
       "stories": "写真の背景にあるフィールドノートを読む",
+      "create": "ローカルのビジュアル制作ワークスペースを開く",
       "studio": "フィルム、コンタクトシート、ムードボードを作る",
       "lab": "プロジェクトの練習システムを開く",
       "about": "この個人プロジェクトについて知る"
@@ -103,7 +114,12 @@
       "titleLabel": "タイトル",
       "captionLabel": "キャプション",
       "paperLabel": "用紙の色",
-      "localOnly": "端末内で描画し、画像はアップロードしません。"
+      "localOnly": "端末内で描画し、画像はアップロードしません。",
+      "projectName": "プロジェクト名",
+      "importProject": "プロジェクトを開く",
+      "exportProject": ".nhb を保存",
+      "invalidProject": "この NHB プロジェクトを開けませんでした。",
+      "saveStatus": { "loading": "ローカルプロジェクトを復元中", "saving": "自動保存中", "saved": "このブラウザに保存済み", "error": "ローカル保存に失敗" }
     },
     "lab": {
       "title": "プラクティス・ラボ",

@@ -11,7 +11,9 @@ export const preloadRoute = createRoutePreloader(routeLoaders);
 
 const HomePage = lazy(routeLoaders["/"]);
 const ArchivePage = lazy(routeLoaders["/archive"]);
+const ArchiveProjectPage = lazy(routeLoaders["/archive/:id"]);
 const StoriesPage = lazy(routeLoaders["/stories"]);
+const CreateHubPage = lazy(routeLoaders["/create"]);
 const CreativeStudioPage = lazy(routeLoaders["/studio"]);
 const LabPage = lazy(routeLoaders["/lab"]);
 const AboutPage = lazy(routeLoaders["/about"]);
@@ -88,9 +90,10 @@ function HomePremiereFallback() {
           <span>2026</span>
         </p>
         <h1 className="hero-title">{t("seo.siteName")}</h1>
-        <p className="hero-field-note">{t("hero.brandPrefix")}</p>
-        <p className="hero-intro">{t("hero.intro")}</p>
+        <p className="hero-field-note">NHB / PERSONAL VISUAL PLAYGROUND</p>
+        <p className="hero-intro">{t("platform.playground.intro", "A personal visual playground for light, color, paper, and local creative tools.")}</p>
         <div className="hero-actions">
+          <a className="hero-create-primary" href="/create">{t("platform.playground.startCreating", "Start creating")}</a>
           <button
             className="hero-cover-primary-btn"
             type="button"
@@ -99,7 +102,7 @@ function HomePremiereFallback() {
             onPointerDown={warmBookingModal}
             onPointerEnter={warmBookingModal}
           >
-            {t("hero.ctaBooking")}
+            {t("platform.playground.bookingDemo", "Booking flow experiment")}
           </button>
           <a className="hero-gallery-link" href="/gallery">{t("hero.ctaView")}</a>
         </div>
@@ -145,7 +148,9 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <PageSuspense fallback={<HomePremiereFallback />}><HomePage /></PageSuspense> },
       { path: "archive", element: <PageSuspense><ArchivePage /></PageSuspense> },
+      { path: "archive/:id", element: <PageSuspense><ArchiveProjectPage /></PageSuspense> },
       { path: "stories", element: <PageSuspense><StoriesPage /></PageSuspense> },
+      { path: "create", element: <PageSuspense><CreateHubPage /></PageSuspense> },
       { path: "studio", element: <PageSuspense><CreativeStudioPage /></PageSuspense> },
       { path: "lab", element: <PageSuspense><LabPage /></PageSuspense> },
       { path: "about", element: <PageSuspense><AboutPage /></PageSuspense> },

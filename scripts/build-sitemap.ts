@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,6 +18,7 @@ const STATIC_PAGES = [
   { path: "/", priority: 1.0, changefreq: "weekly" },
   { path: "/archive", priority: 0.9, changefreq: "weekly" },
   { path: "/stories", priority: 0.8, changefreq: "weekly" },
+  { path: "/create", priority: 0.9, changefreq: "monthly" },
   { path: "/studio", priority: 0.8, changefreq: "monthly" },
   { path: "/lab", priority: 0.7, changefreq: "monthly" },
   { path: "/about", priority: 0.7, changefreq: "monthly" },
@@ -63,6 +64,10 @@ function hreflangLinks(path: string) {
 
 function buildSitemap() {
   const entries: string[] = [];
+  const archiveProjects = JSON.parse(readFileSync(
+    resolve(dirname(fileURLToPath(import.meta.url)), "../content/archive/projects.json"),
+    "utf8",
+  )) as Array<{ id: string; title: string; subtitle: string; media: Array<{ src: string }> }>;
 
   for (const page of STATIC_PAGES) {
     const url = `${SITE_ORIGIN}${page.path}`;
@@ -78,6 +83,19 @@ function buildSitemap() {
     }
     extra.push(...hreflangLinks(page.path));
     entries.push(urlEntry(url, page.priority, page.changefreq, extra));
+  }
+
+  for (const project of archiveProjects) {
+    const path = `/archive/${project.id}`;
+    const extra = [
+      ...hreflangLinks(path),
+      "    <image:image>",
+      `      <image:loc>${escapeXml(`${SITE_ORIGIN}${project.media[0].src}`)}</image:loc>`,
+      `      <image:title>${escapeXml(project.title)}</image:title>`,
+      `      <image:caption>${escapeXml(project.subtitle)}</image:caption>`,
+      "    </image:image>",
+    ];
+    entries.push(urlEntry(`${SITE_ORIGIN}${path}`, 0.8, "monthly", extra));
   }
 
   for (const item of galleryItems) {

@@ -1,6 +1,7 @@
 import "../styles/platform-v3.css";
 import { useTranslation } from "react-i18next";
 import { ImageWithFallback } from "../components/ImageWithFallback";
+import { ArchiveConstellation } from "../components/ArchiveConstellation";
 import { LivingArchiveExplorer } from "../components/LivingArchiveExplorer";
 import { PageTransition } from "../components/shared/PageTransition";
 import { useSEO } from "../hooks/useSEO";
@@ -38,6 +39,7 @@ export function ArchivePage() {
           <a href="#archive-index" className="platform-hero__jump">{t("platform.archive.enter")} <span aria-hidden="true">↓</span></a>
         </div>
       </section>
+      <ArchiveConstellation />
       <div id="archive-index"><LivingArchiveExplorer /></div>
     </PageTransition>
   );

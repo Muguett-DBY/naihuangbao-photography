@@ -4,6 +4,7 @@
     "gallery": "갤러리",
     "archive": "아카이브",
     "stories": "스토리",
+    "create": "만들기",
     "studio": "스튜디오",
     "lab": "랩",
     "packages": "패키지",
@@ -33,10 +34,20 @@
     "account": "내 정보"
   },
   "platform": {
+    "playground": {
+      "intro": "빛, 색, 종이, 로컬 제작 도구를 위한 개인 비주얼 실험실입니다.",
+      "lightTable": "라이트 테이블",
+      "local": "로컬 우선",
+      "archive": "계속 자라는 비주얼 아카이브",
+      "practice": "실험을 위해 제작",
+      "startCreating": "만들기 시작",
+      "bookingDemo": "예약 흐름 실험"
+    },
     "routes": {
       "home": "현재 프리미어 경험으로 돌아가기",
       "archive": "콘셉트 연구와 실제 작품 탐색",
       "stories": "이미지 뒤의 필드 노트 읽기",
+      "create": "로컬 비주얼 제작 워크스페이스 열기",
       "studio": "필름스트립, 콘택트 시트, 무드보드 만들기",
       "lab": "프로젝트 연습 시스템 열기",
       "about": "이 개인 프로젝트가 만들어지는 방식 보기"
@@ -103,7 +114,12 @@
       "titleLabel": "제목",
       "captionLabel": "캡션",
       "paperLabel": "용지 색상",
-      "localOnly": "기기에서 렌더링되며 이미지를 업로드하지 않습니다."
+      "localOnly": "기기에서 렌더링되며 이미지를 업로드하지 않습니다.",
+      "projectName": "프로젝트 이름",
+      "importProject": "프로젝트 열기",
+      "exportProject": ".nhb 저장",
+      "invalidProject": "이 NHB 프로젝트를 열 수 없습니다.",
+      "saveStatus": { "loading": "로컬 프로젝트 복원 중", "saving": "자동 저장 중", "saved": "이 브라우저에 저장됨", "error": "로컬 저장 실패" }
     },
     "lab": {
       "title": "연습 실험실",

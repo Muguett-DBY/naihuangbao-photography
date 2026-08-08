@@ -2,15 +2,10 @@ import {
   Bot,
   CalendarCheck,
   Camera,
-  ChevronDown,
   Languages,
-  LayoutDashboard,
-  LogIn,
-  LogOut,
   Menu,
   Search,
   Settings2,
-  User,
   WandSparkles,
   X,
 } from "lucide-react";
@@ -22,7 +17,6 @@ import { safeLocalStorage } from "../../lib/browser-storage";
 import { openCommandPalette } from "../../lib/command-palette";
 import { loadAndChangeLanguage } from "../../i18n";
 import { primaryNavigation } from "../../data/product-navigation";
-import { useAuth } from "../../hooks/useAuth";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { MoodToggle } from "../MoodToggle";
 import { ThemeToggle } from "../ThemeToggle";
@@ -72,19 +66,15 @@ export function Header({ onOpenChat }: HeaderProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [utilityOpen, setUtilityOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [compactNavigation, setCompactNavigation] = useState(getCompactNavigation);
   const headerRef = useRef<HTMLElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
   const utilityButtonRef = useRef<HTMLButtonElement>(null);
   const utilityMenuRef = useRef<HTMLDivElement>(null);
-  const userButtonRef = useRef<HTMLButtonElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
   const { t, i18n } = useTranslation();
   const { siteConfig } = useSiteContent();
   const location = useLocation();
-  const { user, logout } = useAuth();
 
   const navItems = useMemo(
     () => primaryNavigation.map((item) => ({ ...item, label: t(item.labelKey as never) })),
@@ -147,7 +137,6 @@ export function Header({ onOpenChat }: HeaderProps) {
       setCompactNavigation(event.matches);
       setDrawerOpen(false);
       setUtilityOpen(false);
-      setUserMenuOpen(false);
 
       if (focusWasInUtility || focusWasInDrawer) {
         window.requestAnimationFrame(() => {
@@ -168,7 +157,6 @@ export function Header({ onOpenChat }: HeaderProps) {
   useEffect(() => {
     setDrawerOpen(false);
     setUtilityOpen(false);
-    setUserMenuOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -238,29 +226,6 @@ export function Header({ onOpenChat }: HeaderProps) {
     };
   }, [compactNavigation, utilityOpen]);
 
-  useEffect(() => {
-    if (!userMenuOpen || compactNavigation) return;
-    userMenuRef.current?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
-    const onPointerDown = (event: MouseEvent) => {
-      if (!userMenuRef.current?.contains(event.target as Node) && !userButtonRef.current?.contains(event.target as Node)) {
-        setUserMenuOpen(false);
-      }
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setUserMenuOpen(false);
-        userButtonRef.current?.focus();
-      }
-    };
-    document.addEventListener("mousedown", onPointerDown);
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [compactNavigation, userMenuOpen]);
-
   const languageLabel = t(`langToggle.languages.${i18n.language}` as never);
   const utilityLabel = t("nav.utilityMenu", "Display and language settings");
 
@@ -278,7 +243,7 @@ export function Header({ onOpenChat }: HeaderProps) {
           </span>
           <span className="brand-copy">
             <strong>{siteConfig.brandName}</strong>
-            <small>NHB / LIVING ARCHIVE</small>
+            <small>NHB / VISUAL PLAYGROUND</small>
           </span>
         </PrefetchLink>
 
@@ -317,7 +282,6 @@ export function Header({ onOpenChat }: HeaderProps) {
               aria-controls="nav-utility-panel"
               onClick={() => {
                 setUtilityOpen((value) => !value);
-                setUserMenuOpen(false);
               }}
             >
               <Settings2 size={18} aria-hidden="true" />
@@ -330,57 +294,9 @@ export function Header({ onOpenChat }: HeaderProps) {
             ) : null}
           </div>
 
-          <div className="nav-user-menu">
-            {user ? (
-              <>
-                <button
-                  ref={userButtonRef}
-                  className="nav-account-action"
-                  type="button"
-                  onClick={() => {
-                    setUserMenuOpen((value) => !value);
-                    setUtilityOpen(false);
-                  }}
-                  aria-label={t("auth.userMenu", "User menu")}
-                  aria-expanded={userMenuOpen}
-                  aria-controls="nav-account-panel"
-                >
-                  <User size={17} aria-hidden="true" />
-                  <span>{user.displayName}</span>
-                  <ChevronDown size={14} aria-hidden="true" />
-                </button>
-                {userMenuOpen && !compactNavigation ? (
-                  <div ref={userMenuRef} id="nav-account-panel" className="nav-popover nav-user-dropdown">
-                    <span className="nav-user-email">{user.email}</span>
-                    <PrefetchLink to="/dashboard" onClick={() => setUserMenuOpen(false)} className="nav-user-link">
-                      <LayoutDashboard size={16} aria-hidden="true" />
-                      {t("dashboard.title", "Dashboard")}
-                    </PrefetchLink>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        logout();
-                        setUserMenuOpen(false);
-                      }}
-                      className="nav-user-link"
-                    >
-                      <LogOut size={16} aria-hidden="true" />
-                      {t("auth.logout", "Log out")}
-                    </button>
-                  </div>
-                ) : null}
-              </>
-            ) : (
-              <PrefetchLink to="/login" className="nav-account-action nav-login">
-                <LogIn size={17} aria-hidden="true" />
-                <span>{t("auth.login", "Log in")}</span>
-              </PrefetchLink>
-            )}
-          </div>
-
-          <PrefetchLink className="nav-cta" to="/studio">
+          <PrefetchLink className="nav-cta" to="/create">
             <WandSparkles size={17} aria-hidden="true" />
-            {t("nav.studio")}
+            {t("nav.create")}
           </PrefetchLink>
 
           <button
@@ -417,7 +333,7 @@ export function Header({ onOpenChat }: HeaderProps) {
             <div className="nav-drawer-panel">
               <div className="nav-drawer-head">
                 <span>
-                  <strong>NHB / LIVING ARCHIVE</strong>
+                  <strong>NHB / VISUAL PLAYGROUND</strong>
                   <small>{siteConfig.city} / PERSONAL VISUAL PRACTICE</small>
                 </span>
                 <button className="nav-drawer-close" type="button" onClick={() => setDrawerOpen(false)} aria-label={t("nav.close", "Close menu")}>
@@ -450,23 +366,10 @@ export function Header({ onOpenChat }: HeaderProps) {
                   <Search size={18} aria-hidden="true" />
                   {t("platform.command.title")}
                 </button>
-                {user ? (
-                  <>
-                    <PrefetchLink to="/dashboard" onClick={() => setDrawerOpen(false)}>
-                      <LayoutDashboard size={18} aria-hidden="true" />
-                      {t("dashboard.title", "Dashboard")}
-                    </PrefetchLink>
-                    <button type="button" onClick={() => { logout(); setDrawerOpen(false); }}>
-                      <LogOut size={18} aria-hidden="true" />
-                      {t("auth.logout", "Log out")}
-                    </button>
-                  </>
-                ) : (
-                  <PrefetchLink to="/login" onClick={() => setDrawerOpen(false)}>
-                    <LogIn size={18} aria-hidden="true" />
-                    {t("auth.login", "Log in")}
-                  </PrefetchLink>
-                )}
+                <PrefetchLink to="/create" onClick={() => setDrawerOpen(false)}>
+                  <WandSparkles size={18} aria-hidden="true" />
+                  {t("nav.create")}
+                </PrefetchLink>
                 <button
                   className="nav-drawer-chat"
                   type="button"

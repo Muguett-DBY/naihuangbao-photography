@@ -5,6 +5,12 @@ export type ArchiveMedia = {
   alt: string;
   width: number;
   height: number;
+  note?: string;
+};
+
+export type ArchiveProcessNote = {
+  title: string;
+  note: string;
 };
 
 export type ArchiveProject = {
@@ -15,10 +21,14 @@ export type ArchiveProject = {
   chapter: string;
   year: number;
   summary: string;
+  statement: string;
   place: string;
   season: string;
   moods: string[];
   palette: string[];
+  techniques: string[];
+  process: ArchiveProcessNote[];
+  related: string[];
   media: ArchiveMedia[];
 };
 
@@ -33,7 +43,7 @@ export type ArchiveManifestEntry = ArchiveProject & {
 };
 
 export type ArchiveManifest = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   generatedFrom: string;
   projects: ArchiveManifestEntry[];
 };

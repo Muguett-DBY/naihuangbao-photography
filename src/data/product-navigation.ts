@@ -10,12 +10,13 @@ export const primaryNavigation: ProductRoute[] = [
   { id: "home", to: "/", labelKey: "nav.home", descriptionKey: "platform.routes.home", keywords: ["home", "首页", "start"] },
   { id: "archive", to: "/archive", labelKey: "nav.archive", descriptionKey: "platform.routes.archive", keywords: ["archive", "档案", "photos", "作品"] },
   { id: "stories", to: "/stories", labelKey: "nav.stories", descriptionKey: "platform.routes.stories", keywords: ["stories", "故事", "journal", "notes"] },
-  { id: "studio", to: "/studio", labelKey: "nav.studio", descriptionKey: "platform.routes.studio", keywords: ["studio", "创作", "contact sheet", "filmstrip"] },
-  { id: "lab", to: "/lab", labelKey: "nav.lab", descriptionKey: "platform.routes.lab", keywords: ["lab", "实验室", "tools", "practice"] },
+  { id: "create", to: "/create", labelKey: "nav.create", descriptionKey: "platform.routes.create", keywords: ["create", "创作", "studio", "darkroom", "contact sheet", "filmstrip"] },
   { id: "about", to: "/about", labelKey: "nav.about", descriptionKey: "platform.routes.about", keywords: ["about", "关于", "project"] },
 ];
 
 export const practiceNavigation: ProductRoute[] = [
+  { id: "studio", to: "/studio", labelKey: "nav.studio", descriptionKey: "platform.routes.studio", keywords: ["studio", "排版", "contact sheet", "filmstrip"] },
+  { id: "lab", to: "/lab", labelKey: "nav.lab", descriptionKey: "platform.routes.lab", keywords: ["lab", "实验室", "tools", "practice"] },
   { id: "gallery", to: "/gallery", labelKey: "nav.gallery", descriptionKey: "platform.practice.gallery", keywords: ["gallery", "客片", "portfolio"] },
   { id: "editor", to: "/editor", labelKey: "nav.editor", descriptionKey: "platform.practice.editor", keywords: ["editor", "修图", "darkroom"] },
   { id: "compare", to: "/compare", labelKey: "photoCompare.title", descriptionKey: "platform.practice.compare", keywords: ["compare", "对比", "before after"] },

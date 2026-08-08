@@ -7,10 +7,18 @@
     "chapter": "01",
     "year": 2026,
     "summary": "把空庭院、玻璃、水面与晨光编排成一段无人出演的开场。",
+    "statement": "这里没有主角，只有雨水移动过墙面、玻璃和旧砖之后留下的光。画面被设计成一段可以缓慢进入的空间，而不是一张需要立刻读完的照片。",
     "place": "南京",
     "season": "初夏",
     "moods": ["温柔", "雨后", "通透"],
     "palette": ["奶油", "苔藓", "珊瑚"],
+    "techniques": ["低机位反射", "柔雾高光", "分层景深"],
+    "process": [
+      { "title": "寻找入口", "note": "先用月门固定观看方向，再让水面承担第二个画框。" },
+      { "title": "保留空气", "note": "降低局部对比度，让雨雾和晨光留在建筑之间。" },
+      { "title": "控制颜色", "note": "只留下苔藓绿、旧墙奶油色和极少量珊瑚暖调。" }
+    ],
+    "related": ["rain-atlas", "paper-tide"],
     "media": [
       { "src": "/images/optical-archive/optical-garden-hero-v1.webp", "alt": "雨后江南庭院、月门与水面倒影组成的无人物概念影像", "width": 1672, "height": 941 },
       { "src": "/images/optical-archive/rain-window-corridor-v1.webp", "alt": "透过雨滴玻璃看到的空旷江南长廊", "width": 1672, "height": 941 }
@@ -24,10 +32,18 @@
     "chapter": "02",
     "year": 2026,
     "summary": "用镜头、棱镜与花瓣记录一次关于色散和触感的桌面实验。",
+    "statement": "把摄影器材从工具变成被观察的对象。镜片、花瓣和折射光共同构成一张小型地图，每一次移动都重新分配颜色。",
     "place": "室内光桌",
     "season": "春",
     "moods": ["明亮", "实验", "细腻"],
     "palette": ["奶油", "珊瑚", "玻璃蓝"],
+    "techniques": ["桌面布光", "棱镜色散", "微距切片"],
+    "process": [
+      { "title": "搭建光桌", "note": "用半透明纸柔化硬光，同时保留玻璃边缘的高光。" },
+      { "title": "移动棱镜", "note": "每次只改变一个角度，寻找不过度彩虹化的细小色散。" },
+      { "title": "加入触感", "note": "用带水滴的花瓣平衡镜片和金属的冷静。" }
+    ],
+    "related": ["paper-tide", "print-room"],
     "media": [
       { "src": "/images/optical-archive/prism-lens-stilllife-v1.webp", "alt": "镜头、棱镜、山茶花与胶片组成的光学静物", "width": 1536, "height": 1024 },
       { "src": "/images/optical-archive/camellia-prism-macro-v1.webp", "alt": "带雨滴的珊瑚色山茶花与小型棱镜", "width": 1536, "height": 1024 }
@@ -41,10 +57,18 @@
     "chapter": "03",
     "year": 2026,
     "summary": "光线越过宣纸、竹影与水纹，让静止画面保留一点流动。",
+    "statement": "这是一组关于轻和慢的练习。纸张不是背景，而是一层会吸收光、显露纤维并改变时间感的介质。",
     "place": "纸上工作室",
     "season": "盛夏",
     "moods": ["安静", "抽象", "轻盈"],
     "palette": ["奶油", "苔藓", "柔黄"],
+    "techniques": ["透射光", "纸张肌理", "水纹投影"],
+    "process": [
+      { "title": "选择纸面", "note": "保留宣纸纤维，让空白区域也拥有可见的信息。" },
+      { "title": "制造水纹", "note": "通过浅水盘反射太阳光，得到不重复的缓慢波形。" },
+      { "title": "减少物件", "note": "移除多余道具，只留下玻璃、竹影与一条色彩线索。" }
+    ],
+    "related": ["optical-garden", "prism-notes"],
     "media": [
       { "src": "/images/optical-archive/paper-ripple-study-v1.webp", "alt": "宣纸、光学玻璃、水纹与竹影组成的抽象光影", "width": 1536, "height": 1024 },
       { "src": "/images/optical-archive/bamboo-shadow-ribbon-v1.webp", "alt": "奶油色墙面、竹影、古玻璃与珊瑚色丝带", "width": 1122, "height": 1402 }
@@ -58,10 +82,18 @@
     "chapter": "04",
     "year": 2026,
     "summary": "在无人暗房里整理胶片、植物拓印与尚未命名的色彩配方。",
+    "statement": "暗房被当作一座植物标本室：底片记录外部世界，叶片与纸张记录手的动作，暖光让两种时间在桌面相遇。",
     "place": "NHB 暗房",
     "season": "秋",
     "moods": ["安静", "温暖", "手作"],
     "palette": ["深莓", "柔黄", "苔藓"],
+    "techniques": ["暖色局部光", "联系表叙事", "植物拓印"],
+    "process": [
+      { "title": "建立桌面秩序", "note": "让底片、印样和植物沿阅读方向形成连续节奏。" },
+      { "title": "压低环境光", "note": "只保留光桌和一盏侧灯，强调手作空间的温度。" },
+      { "title": "留下未完成", "note": "刻意保留空白卡片和未命名配方，让档案仍可继续生长。" }
+    ],
+    "related": ["print-room", "rain-atlas"],
     "media": [
       { "src": "/images/optical-archive/darkroom-light-table-v1.webp", "alt": "暖色光桌、胶片与植物照片组成的无人暗房", "width": 1122, "height": 1402 },
       { "src": "/images/optical-archive/archive-contact-sheet-v1.webp", "alt": "植物、建筑与雨景底片组成的摄影联系表", "width": 1448, "height": 1086 }
@@ -75,10 +107,18 @@
     "chapter": "05",
     "year": 2026,
     "summary": "把月门、夜巷和雨窗编成一册可以继续生长的城市天气图谱。",
+    "statement": "城市在下雨时会暂时失去明确边界。窗、门洞和倒影把同一条街拆成多层空间，蓝调时刻则把噪声压成安静的色块。",
     "place": "南京旧城",
     "season": "梅雨",
     "moods": ["雨后", "电影感", "深邃"],
     "palette": ["深莓", "苔藓", "玻璃蓝"],
+    "techniques": ["蓝调曝光", "雨窗前景", "夜色分层"],
+    "process": [
+      { "title": "等待蓝调", "note": "在天光与路灯亮度接近的短时间内完成主画面。" },
+      { "title": "借用雨窗", "note": "把玻璃上的水滴作为近景，让街道退到更深的位置。" },
+      { "title": "整理灯光", "note": "压制过亮招牌，只保留能引导视线的暖色反射。" }
+    ],
+    "related": ["optical-garden", "darkroom-herbarium"],
     "media": [
       { "src": "/images/optical-archive/rain-moon-gate-night-v1.webp", "alt": "雨后蓝调时刻里透过月门看到的江南夜巷", "width": 1672, "height": 941 },
       { "src": "/images/optical-archive/color-glass-study-v1.webp", "alt": "彩色光学玻璃、雨水与胶片组成的色彩研究", "width": 1672, "height": 941 }
@@ -92,14 +132,97 @@
     "chapter": "06",
     "year": 2026,
     "summary": "关于联系表、艺术微喷、空白笔记与一张等待被写下的卡片。",
+    "statement": "屏幕里的图像总能继续修改，纸面却要求做出决定。这个章节记录从选择、排序到打印的过程，也记录一张照片成为物件之后的新尺度。",
     "place": "NHB 印样室",
     "season": "冬",
     "moods": ["手作", "明亮", "收藏"],
     "palette": ["奶油", "柔黄", "珊瑚"],
+    "techniques": ["艺术微喷", "纸张配对", "编辑排序"],
+    "process": [
+      { "title": "编辑联系表", "note": "先按节奏而不是单张强度排序，让系列拥有停顿。" },
+      { "title": "匹配纸张", "note": "根据阴影密度与颜色选择纹理和白度不同的纸张。" },
+      { "title": "回到手中", "note": "用真实观看距离检查尺寸、边距和触感，而不是只看屏幕。" }
+    ],
+    "related": ["darkroom-herbarium", "prism-notes"],
     "media": [
       { "src": "/images/optical-archive/print-folio-v1.webp", "alt": "植物与建筑艺术微喷、收藏夹和玻璃镇纸", "width": 1672, "height": 941 },
       { "src": "/images/optical-archive/course-light-study-v1.webp", "alt": "空白笔记本、测光表、镜片与茉莉组成的课程静物", "width": 1672, "height": 941 },
       { "src": "/images/optical-archive/booking-garden-table-v1.webp", "alt": "雨后花园窗边的空白卡片、茶杯与山茶花", "width": 1672, "height": 941 }
+    ]
+  },
+  {
+    "id": "morning-conservatory",
+    "kind": "concept",
+    "title": "Morning Conservatory",
+    "subtitle": "雨停以后，空间开始发光",
+    "chapter": "07",
+    "year": 2026,
+    "summary": "从湿润石面、薄纱与植物影子里整理一条缓慢进入花园的观看路线。",
+    "statement": "这组画面把房间当成一只巨大的光学装置。窗、薄纱、积水与旧玻璃依次过滤晨光，空间本身成为摄影对象。",
+    "place": "晨光温室",
+    "season": "早春",
+    "moods": ["晨光", "温柔", "空间"],
+    "palette": ["奶油", "苔藓", "珊瑚"],
+    "techniques": ["建筑分层", "反射控制", "自然光等待"],
+    "process": [
+      { "title": "保留湿度", "note": "雨停后立即拍摄，让石面反光连接室内与花园。" },
+      { "title": "建立前景", "note": "用薄纱和玻璃容器减缓观看速度，而不是直接展示窗外。" },
+      { "title": "等待影子", "note": "让植物影子沿走廊移动到结构最清晰的位置。" }
+    ],
+    "related": ["optical-garden", "paper-tide"],
+    "media": [
+      { "src": "/images/optical-archive/conservatory-after-rain-v1.webp", "alt": "雨后空温室、奶油薄纱、湿润石面与花园晨光", "width": 1536, "height": 1024, "note": "雨后温室的第一束光" },
+      { "src": "/images/optical-archive/corridor-shadow-study-v1.webp", "alt": "空走廊里的植物影子、苔藓绿长凳与珊瑚色织物", "width": 1536, "height": 1024, "note": "沿墙面移动的植物影子" }
+    ]
+  },
+  {
+    "id": "tactile-optics",
+    "kind": "concept",
+    "title": "Tactile Optics",
+    "subtitle": "纸、水与旧玻璃的触觉光学",
+    "chapter": "08",
+    "year": 2026,
+    "summary": "把纸张纤维、水纹、植物和老玻璃放在同一张桌面上，观察光如何改变触感。",
+    "statement": "光并不只负责照亮物体，它也会放大纤维、折叠影子，并让一块旧玻璃拥有短暂的颜色。这个实验尝试把视觉变成接近触摸的经验。",
+    "place": "纸上实验室",
+    "season": "初夏",
+    "moods": ["触觉", "明亮", "安静"],
+    "palette": ["奶油", "柔黄", "深莓"],
+    "techniques": ["微距静物", "真实折射", "纸张透光"],
+    "process": [
+      { "title": "选择材料", "note": "只使用纸、水、植物和玻璃，让每一种表面都有明确角色。" },
+      { "title": "追踪焦散", "note": "缓慢移动水盘和镜片，保留最自然、最少装饰感的折射。" },
+      { "title": "加入颜色", "note": "用一条深莓线和珊瑚纸边建立克制的视觉方向。" }
+    ],
+    "related": ["prism-notes", "paper-tide"],
+    "media": [
+      { "src": "/images/optical-archive/paper-water-lab-v1.webp", "alt": "手工纸、水盘、植物标本与深莓色线组成的无人桌面实验", "width": 1536, "height": 1024, "note": "水纹落在纸张和植物标本上" },
+      { "src": "/images/optical-archive/glass-fern-caustics-v1.webp", "alt": "旧玻璃、水面与蕨类在亚麻布上形成的真实折射光", "width": 1536, "height": 1024, "note": "玻璃边缘形成的细小焦散" }
+    ]
+  },
+  {
+    "id": "weather-print-room",
+    "kind": "concept",
+    "title": "Weather Print Room",
+    "subtitle": "把一场雨编辑成纸面色谱",
+    "chapter": "09",
+    "year": 2026,
+    "summary": "从蓝调雨窗到清晨印样室，记录天气如何被选择、排序并最终留在纸上。",
+    "statement": "天气没有固定形状，但可以通过反射、色样和纸张被重新组织。这组研究把观察室与印样室连接成一条从现场到物件的路径。",
+    "place": "雨窗与印样室",
+    "season": "梅雨末期",
+    "moods": ["蓝调", "收藏", "安静"],
+    "palette": ["玻璃蓝", "苔藓", "柔黄"],
+    "techniques": ["混合色温", "色样编辑", "纸面输出"],
+    "process": [
+      { "title": "记录天气", "note": "在雨窗前保留冷色环境光和少量暖色灯光的平衡。" },
+      { "title": "提取色谱", "note": "从玻璃、植物和灯影里挑选有限的颜色，而不是复制整张画面。" },
+      { "title": "返回纸面", "note": "在晨光印样室检查纸张对白色、黄色与深色区域的响应。" }
+    ],
+    "related": ["print-room", "rain-atlas"],
+    "media": [
+      { "src": "/images/optical-archive/rain-observation-room-v1.webp", "alt": "蓝调雨窗、苔藓绿玻璃瓶与深莓色滤镜组成的无人观察室", "width": 1535, "height": 1024, "note": "蓝调时刻的天气观察架" },
+      { "src": "/images/optical-archive/print-room-morning-v2.webp", "alt": "清晨无人印样室、奶油色艺术纸与苔藓绿工作台", "width": 1536, "height": 1024, "note": "从色样到纸面的最后一步" }
     ]
   }
 ]

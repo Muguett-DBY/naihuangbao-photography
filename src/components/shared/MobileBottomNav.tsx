@@ -1,4 +1,4 @@
-import { FlaskConical, Home, Images, Info, WandSparkles } from "lucide-react";
+import { BookOpenText, Home, Images, Info, WandSparkles } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -44,21 +44,21 @@ export function MobileBottomNav() {
         icon={<Images size={21} aria-hidden="true" />}
       />
       <PrefetchLink
-        to="/studio"
-        className={`mobile-bottom-nav__item mobile-bottom-nav__booking${pathname === "/studio" ? " is-active" : ""}`}
-        aria-current={pathname === "/studio" ? "page" : undefined}
-        aria-label={t("nav.studio")}
+        to="/create"
+        className={`mobile-bottom-nav__item mobile-bottom-nav__booking${pathname.startsWith("/create") ? " is-active" : ""}`}
+        aria-current={pathname.startsWith("/create") ? "page" : undefined}
+        aria-label={t("nav.create")}
       >
         <span className="mobile-bottom-nav__icon mobile-bottom-nav__booking-icon">
           <WandSparkles size={23} aria-hidden="true" />
         </span>
-        <span>{t("nav.studio")}</span>
+        <span>{t("nav.create")}</span>
       </PrefetchLink>
       <MobileNavLink
-        to="/lab"
-        label={t("nav.lab")}
-        active={pathname === "/lab"}
-        icon={<FlaskConical size={21} aria-hidden="true" />}
+        to="/stories"
+        label={t("nav.stories")}
+        active={pathname === "/stories"}
+        icon={<BookOpenText size={21} aria-hidden="true" />}
       />
       <MobileNavLink
         to="/about"

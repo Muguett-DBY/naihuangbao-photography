@@ -24,6 +24,7 @@ export function ImmersiveExperienceGate() {
 
   useEffect(() => {
     const resolvedTier = selectExperienceTier(readCapabilitySignals());
+    document.documentElement.dataset.experienceTier = resolvedTier;
     if (resolvedTier === "static") return;
 
     let active = true;
@@ -46,6 +47,7 @@ export function ImmersiveExperienceGate() {
     return () => {
       active = false;
       disposeDeferredLoad();
+      delete document.documentElement.dataset.experienceTier;
     };
   }, []);
 

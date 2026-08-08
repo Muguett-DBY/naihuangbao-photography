@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 
 const root = process.cwd();
 const packageJson = JSON.parse(await readFile(resolve(root, "package.json"), "utf8"));
+const archiveManifest = JSON.parse(await readFile(resolve(root, "public", "archive-manifest.json"), "utf8"));
 
 function resolveCommit() {
   const environmentCommit = process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA;
@@ -20,7 +21,7 @@ const release = {
   version: packageJson.version,
   commit: resolveCommit(),
   builtAt: new Date().toISOString(),
-  archiveSchemaVersion: 1,
+  archiveSchemaVersion: archiveManifest.schemaVersion,
 };
 
 await writeFile(resolve(root, "dist", "release.json"), `${JSON.stringify(release, null, 2)}\n`, "utf8");

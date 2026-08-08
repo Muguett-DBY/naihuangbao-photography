@@ -379,13 +379,11 @@ test.describe("shoot.custard.top", () => {
     await expect(page).toHaveURL(/\/archive$/);
     await expect(bottomNav.locator('a[href="/archive"]')).toHaveAttribute("aria-current", "page");
 
-    await bottomNav.locator('a[href="/studio"]').click();
-    await expect(page).toHaveURL(/\/studio$/);
+    await bottomNav.locator('a[href="/create"]').click();
+    await expect(page).toHaveURL(/\/create$/);
     await expect(page.locator(".studio-canvas-frame canvas")).toBeVisible();
 
-    await bottomNav.locator('a[href="/lab"]').click();
-    await expect(page).toHaveURL(/\/lab$/);
-    await page.locator('.lab-tool[href="/editor"]').click();
+    await page.locator('.create-toolrail a[href="/editor"]').click();
     await expect(page).toHaveURL(/\/editor$/);
     await expect(page.locator(".editor-root")).toBeVisible();
     await expect(page.locator(".mobile-bottom-nav")).toHaveCount(0);

@@ -1,11 +1,8 @@
 import { forwardRef, useEffect } from "react";
 import { createCompositionSlots, getCompositionSize, type CompositionMode } from "../lib/composition-layout";
+import type { CompositionImage } from "../types/composition";
 
-export type CompositionImage = {
-  id: string;
-  src: string;
-  name: string;
-};
+export type { CompositionImage } from "../types/composition";
 
 type CompositionCanvasProps = {
   mode: CompositionMode;
