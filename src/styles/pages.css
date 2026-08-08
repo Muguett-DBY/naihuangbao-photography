@@ -10384,7 +10384,9 @@ html[data-immersive-ready="true"] .photo-detail-stage[data-immersive-anchor="pho
 
 @media (max-width: 768px) {
   .home-index-strip {
-    grid-template-columns: repeat(4, minmax(158px, 1fr));
+    grid-template-columns: repeat(var(--home-index-chapter-count, 5), 158px);
+    grid-template-rows: 60px;
+    grid-auto-flow: column;
     overflow-x: auto;
     scroll-padding-inline: 16px;
     scroll-snap-type: x mandatory;
