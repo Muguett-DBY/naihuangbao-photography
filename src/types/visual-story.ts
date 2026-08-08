@@ -1,0 +1,30 @@
+import type { ArchiveMedia } from "./living-archive";
+
+export type StoryLayout = "full" | "columns" | "contact" | "quiet";
+
+export type VisualStoryChapter = {
+  id: string;
+  kicker: string;
+  title: string;
+  body: string;
+  layout: StoryLayout;
+  media: ArchiveMedia[];
+};
+
+export type VisualStory = {
+  id: string;
+  title: string;
+  subtitle: string;
+  summary: string;
+  publishedAt: string;
+  readingMinutes: number;
+  accent: string;
+  concept: true;
+  chapters: VisualStoryChapter[];
+};
+
+export type VisualStoryManifest = {
+  schemaVersion: 1;
+  generatedFrom: string;
+  stories: VisualStory[];
+};

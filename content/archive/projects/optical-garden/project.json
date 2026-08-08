@@ -1,0 +1,77 @@
+{
+  "id": "optical-garden",
+  "kind": "concept",
+  "title": "Optical Garden",
+  "subtitle": "雨后月门与缓慢折射",
+  "chapter": "01",
+  "year": 2026,
+  "summary": "把空庭院、玻璃、水面与晨光编排成一段无人出演的开场。",
+  "statement": "这里没有主角，只有雨水移动过墙面、玻璃和旧砖之后留下的光。画面被设计成一段可以缓慢进入的空间，而不是一张需要立刻读完的照片。",
+  "place": "南京",
+  "season": "初夏",
+  "moods": [
+    "温柔",
+    "雨后",
+    "通透"
+  ],
+  "palette": [
+    "奶油",
+    "苔藓",
+    "珊瑚"
+  ],
+  "techniques": [
+    "低机位反射",
+    "柔雾高光",
+    "分层景深"
+  ],
+  "process": [
+    {
+      "title": "寻找入口",
+      "note": "先用月门固定观看方向，再让水面承担第二个画框。"
+    },
+    {
+      "title": "保留空气",
+      "note": "降低局部对比度，让雨雾和晨光留在建筑之间。"
+    },
+    {
+      "title": "控制颜色",
+      "note": "只留下苔藓绿、旧墙奶油色和极少量珊瑚暖调。"
+    }
+  ],
+  "related": [
+    "rain-atlas",
+    "paper-tide"
+  ],
+  "media": [
+    {
+      "src": "/images/optical-archive/optical-garden-hero-v1.webp",
+      "alt": "雨后江南庭院、月门与水面倒影组成的无人物概念影像",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "src": "/images/optical-archive/rain-window-corridor-v1.webp",
+      "alt": "透过雨滴玻璃看到的空旷江南长廊",
+      "width": 1672,
+      "height": 941
+    }
+  ],
+  "publishedAt": "2026-01-15",
+  "mediums": [
+    "生成式概念摄影",
+    "空间研究"
+  ],
+  "keywords": [
+    "南京",
+    "初夏",
+    "温柔",
+    "雨后",
+    "通透",
+    "奶油",
+    "苔藓",
+    "珊瑚",
+    "低机位反射",
+    "柔雾高光",
+    "分层景深"
+  ]
+}

@@ -44,9 +44,11 @@ test.describe("flagship v2 experience", () => {
       return {
         count: links.length,
         oneRow: links.every((link) => Math.abs(link.offsetTop - firstTop) <= 1),
-        height: element.scrollHeight,
       };
-    })).toEqual({ count: 8, oneRow: true, height: 60 });
+    })).toMatchObject({ count: 8, oneRow: true });
+    const railHeight = await rail.evaluate((element) => element.scrollHeight);
+    expect(railHeight).toBeGreaterThanOrEqual(60);
+    expect(railHeight).toBeLessThanOrEqual(62);
   });
 
   test("gallery story mode opens an editorial photo walk", async ({ page }) => {

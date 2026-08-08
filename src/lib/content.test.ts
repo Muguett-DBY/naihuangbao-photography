@@ -14,7 +14,8 @@ describe("site content defaults and validation", () => {
       "室外约拍",
       "拍立得加拍",
     ]);
-    expect(defaultSiteContent.faqs[0]?.question).toBe("可以拍哪些类型？");
+    expect(defaultSiteContent.faqs[0]?.question).toBe("这是正在营业的商业摄影服务吗？");
+    expect(defaultSiteContent.faqs.some((faq) => faq.question === "可以拍哪些类型？")).toBe(true);
   });
 
   it("merges CMS content over defaults while keeping missing sections usable", () => {

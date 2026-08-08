@@ -1,0 +1,29 @@
+{
+  "id": "light-workshop",
+  "kind": "concept",
+  "title": "Light Workshop",
+  "subtitle": "晨光、纸张与可移动的光学桌面",
+  "chapter": "10",
+  "year": 2026,
+  "summary": "把空工作室当作一台缓慢显影的机器，观察光如何经过纸、水与玻璃。",
+  "statement": "这组练习从一张没有人的工作台开始。纸张不是背景，玻璃也不是道具，它们共同决定光线的路径，让每一帧都像可以继续操作的未完成实验。",
+  "place": "南京",
+  "season": "盛夏",
+  "moods": ["温柔", "明亮", "实验"],
+  "palette": ["奶油", "柔黄", "苔藓"],
+  "techniques": ["晨光分层", "光学折射", "水面反射"],
+  "process": [
+    { "title": "搭建光路", "note": "用玻璃、水盘和白纸安排三段不同速度的反射。" },
+    { "title": "保留空场", "note": "移除人物，让材料本身成为动作和叙事。" },
+    { "title": "控制温度", "note": "暖光只落在纸边，阴影维持克制的苔藓色。" }
+  ],
+  "related": ["tactile-optics", "material-index", "night-projection-room"],
+  "media": [
+    { "src": "/images/visual-os-v5/01-dawn-studio.webp", "alt": "晨光中的空工作室、手工纸和光学玻璃", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v5/02-optical-caustic.webp", "alt": "玻璃、水与蕨叶形成的微距焦散光影", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v5/07-bamboo-water.webp", "alt": "水盘把竹影反射到奶油色墙面", "width": 1536, "height": 1024 }
+  ],
+  "publishedAt": "2026-06-18",
+  "mediums": ["生成式概念摄影", "材料研究"],
+  "keywords": ["工作室", "晨光", "手工纸", "玻璃", "水面", "折射", "空场", "奶油色"]
+}

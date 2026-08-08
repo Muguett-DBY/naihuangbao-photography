@@ -1,0 +1,77 @@
+{
+  "id": "prism-notes",
+  "kind": "concept",
+  "title": "Prism Notes",
+  "subtitle": "镜片、山茶与微小光谱",
+  "chapter": "02",
+  "year": 2026,
+  "summary": "用镜头、棱镜与花瓣记录一次关于色散和触感的桌面实验。",
+  "statement": "把摄影器材从工具变成被观察的对象。镜片、花瓣和折射光共同构成一张小型地图，每一次移动都重新分配颜色。",
+  "place": "室内光桌",
+  "season": "春",
+  "moods": [
+    "明亮",
+    "实验",
+    "细腻"
+  ],
+  "palette": [
+    "奶油",
+    "珊瑚",
+    "玻璃蓝"
+  ],
+  "techniques": [
+    "桌面布光",
+    "棱镜色散",
+    "微距切片"
+  ],
+  "process": [
+    {
+      "title": "搭建光桌",
+      "note": "用半透明纸柔化硬光，同时保留玻璃边缘的高光。"
+    },
+    {
+      "title": "移动棱镜",
+      "note": "每次只改变一个角度，寻找不过度彩虹化的细小色散。"
+    },
+    {
+      "title": "加入触感",
+      "note": "用带水滴的花瓣平衡镜片和金属的冷静。"
+    }
+  ],
+  "related": [
+    "paper-tide",
+    "print-room"
+  ],
+  "media": [
+    {
+      "src": "/images/optical-archive/prism-lens-stilllife-v1.webp",
+      "alt": "镜头、棱镜、山茶花与胶片组成的光学静物",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "src": "/images/optical-archive/camellia-prism-macro-v1.webp",
+      "alt": "带雨滴的珊瑚色山茶花与小型棱镜",
+      "width": 1536,
+      "height": 1024
+    }
+  ],
+  "publishedAt": "2026-02-15",
+  "mediums": [
+    "生成式概念摄影",
+    "静物研究"
+  ],
+  "keywords": [
+    "室内光桌",
+    "春",
+    "明亮",
+    "实验",
+    "细腻",
+    "奶油",
+    "珊瑚",
+    "玻璃蓝",
+    "桌面布光",
+    "棱镜色散",
+    "微距切片"
+  ]
+}

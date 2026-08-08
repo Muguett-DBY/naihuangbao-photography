@@ -16,7 +16,6 @@ export const primaryNavigation: ProductRoute[] = [
 
 export const practiceNavigation: ProductRoute[] = [
   { id: "studio", to: "/studio", labelKey: "nav.studio", descriptionKey: "platform.routes.studio", keywords: ["studio", "排版", "contact sheet", "filmstrip"] },
-  { id: "lab", to: "/lab", labelKey: "nav.lab", descriptionKey: "platform.routes.lab", keywords: ["lab", "实验室", "tools", "practice"] },
   { id: "gallery", to: "/gallery", labelKey: "nav.gallery", descriptionKey: "platform.practice.gallery", keywords: ["gallery", "客片", "portfolio"] },
   { id: "editor", to: "/editor", labelKey: "nav.editor", descriptionKey: "platform.practice.editor", keywords: ["editor", "修图", "darkroom"] },
   { id: "compare", to: "/compare", labelKey: "photoCompare.title", descriptionKey: "platform.practice.compare", keywords: ["compare", "对比", "before after"] },
@@ -28,3 +27,11 @@ export const practiceNavigation: ProductRoute[] = [
   { id: "map", to: "/map", labelKey: "nav.map", descriptionKey: "platform.practice.map", keywords: ["map", "地图", "locations"] },
   { id: "account", to: "/login", labelKey: "auth.login", descriptionKey: "platform.practice.account", keywords: ["account", "登录", "dashboard"] },
 ];
+
+export const practiceHubRoute: ProductRoute = {
+  id: "practice",
+  to: "/practice",
+  labelKey: "platform.lab.title",
+  descriptionKey: "platform.lab.description",
+  keywords: ["practice", "lab", "实验室", "实验", "练习", "tools", "legacy"],
+};

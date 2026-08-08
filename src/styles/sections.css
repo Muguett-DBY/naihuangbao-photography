@@ -3597,7 +3597,7 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
   cursor: pointer;
 }
 
-.nav-drawer-actions .nav-drawer-booking {
+.nav-drawer-actions .nav-drawer-practice {
   grid-column: 1 / -1;
   border-color: var(--moss-dark);
   color: var(--paper);

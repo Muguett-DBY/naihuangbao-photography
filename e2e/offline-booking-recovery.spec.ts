@@ -45,7 +45,7 @@ test.describe("offline booking recovery", () => {
   });
 
   test("shows a failed local booking and lets the customer remove it", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/booking");
     await seedOfflineBooking(page, "failed");
     await page.evaluate(() => window.dispatchEvent(new Event("nhb:pending-bookings-changed")));
 
@@ -70,8 +70,8 @@ test.describe("offline booking recovery", () => {
       body: JSON.stringify({ id: "synced-offline-booking" }),
     }));
 
-    await page.goto("/");
-    const bookingButton = page.locator(".hero-cover-primary-btn");
+    await page.goto("/booking");
+    const bookingButton = page.locator(".booking-quick-cta-btn");
     await expect(bookingButton).toBeVisible();
     await bookingButton.hover();
     await page.waitForLoadState("networkidle");

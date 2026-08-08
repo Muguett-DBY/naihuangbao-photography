@@ -1,0 +1,79 @@
+{
+  "id": "weather-print-room",
+  "kind": "concept",
+  "title": "Weather Print Room",
+  "subtitle": "把一场雨编辑成纸面色谱",
+  "chapter": "09",
+  "year": 2026,
+  "summary": "从蓝调雨窗到清晨印样室，记录天气如何被选择、排序并最终留在纸上。",
+  "statement": "天气没有固定形状，但可以通过反射、色样和纸张被重新组织。这组研究把观察室与印样室连接成一条从现场到物件的路径。",
+  "place": "雨窗与印样室",
+  "season": "梅雨末期",
+  "moods": [
+    "蓝调",
+    "收藏",
+    "安静"
+  ],
+  "palette": [
+    "玻璃蓝",
+    "苔藓",
+    "柔黄"
+  ],
+  "techniques": [
+    "混合色温",
+    "色样编辑",
+    "纸面输出"
+  ],
+  "process": [
+    {
+      "title": "记录天气",
+      "note": "在雨窗前保留冷色环境光和少量暖色灯光的平衡。"
+    },
+    {
+      "title": "提取色谱",
+      "note": "从玻璃、植物和灯影里挑选有限的颜色，而不是复制整张画面。"
+    },
+    {
+      "title": "返回纸面",
+      "note": "在晨光印样室检查纸张对白色、黄色与深色区域的响应。"
+    }
+  ],
+  "related": [
+    "print-room",
+    "rain-atlas"
+  ],
+  "media": [
+    {
+      "src": "/images/optical-archive/rain-observation-room-v1.webp",
+      "alt": "蓝调雨窗、苔藓绿玻璃瓶与深莓色滤镜组成的无人观察室",
+      "width": 1535,
+      "height": 1024,
+      "note": "蓝调时刻的天气观察架"
+    },
+    {
+      "src": "/images/optical-archive/print-room-morning-v2.webp",
+      "alt": "清晨无人印样室、奶油色艺术纸与苔藓绿工作台",
+      "width": 1536,
+      "height": 1024,
+      "note": "从色样到纸面的最后一步"
+    }
+  ],
+  "publishedAt": "2026-09-15",
+  "mediums": [
+    "生成式概念摄影",
+    "材料研究"
+  ],
+  "keywords": [
+    "雨窗与印样室",
+    "梅雨末期",
+    "蓝调",
+    "收藏",
+    "安静",
+    "玻璃蓝",
+    "苔藓",
+    "柔黄",
+    "混合色温",
+    "色样编辑",
+    "纸面输出"
+  ]
+}

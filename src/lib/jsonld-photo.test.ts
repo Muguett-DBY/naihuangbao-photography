@@ -41,10 +41,11 @@ describe("dynamic JSON-LD for photo detail", () => {
     expect(source).toContain("priceCurrency");
   });
 
-  it("preserves the static ProfessionalService and FAQPage schemas on the home shell", () => {
+  it("publishes the static visual archive schemas on the home shell", () => {
     const html = read("index.html");
-    expect(html).toContain('"@type": "ProfessionalService"');
-    expect(html).toContain('"@type": "FAQPage"');
-    expect(html).toContain('"@type": "ImageGallery"');
+    expect(html).toContain('"@type": "WebSite"');
+    expect(html).toContain('"@type": "CollectionPage"');
+    expect(html).toContain('"@type": "CreativeWork"');
+    expect(html).not.toContain('"@type": "ProfessionalService"');
   });
 });

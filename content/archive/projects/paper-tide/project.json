@@ -1,0 +1,77 @@
+{
+  "id": "paper-tide",
+  "kind": "concept",
+  "title": "Paper Tide",
+  "subtitle": "宣纸上的水光呼吸",
+  "chapter": "03",
+  "year": 2026,
+  "summary": "光线越过宣纸、竹影与水纹，让静止画面保留一点流动。",
+  "statement": "这是一组关于轻和慢的练习。纸张不是背景，而是一层会吸收光、显露纤维并改变时间感的介质。",
+  "place": "纸上工作室",
+  "season": "盛夏",
+  "moods": [
+    "安静",
+    "抽象",
+    "轻盈"
+  ],
+  "palette": [
+    "奶油",
+    "苔藓",
+    "柔黄"
+  ],
+  "techniques": [
+    "透射光",
+    "纸张肌理",
+    "水纹投影"
+  ],
+  "process": [
+    {
+      "title": "选择纸面",
+      "note": "保留宣纸纤维，让空白区域也拥有可见的信息。"
+    },
+    {
+      "title": "制造水纹",
+      "note": "通过浅水盘反射太阳光，得到不重复的缓慢波形。"
+    },
+    {
+      "title": "减少物件",
+      "note": "移除多余道具，只留下玻璃、竹影与一条色彩线索。"
+    }
+  ],
+  "related": [
+    "optical-garden",
+    "prism-notes"
+  ],
+  "media": [
+    {
+      "src": "/images/optical-archive/paper-ripple-study-v1.webp",
+      "alt": "宣纸、光学玻璃、水纹与竹影组成的抽象光影",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "src": "/images/optical-archive/bamboo-shadow-ribbon-v1.webp",
+      "alt": "奶油色墙面、竹影、古玻璃与珊瑚色丝带",
+      "width": 1122,
+      "height": 1402
+    }
+  ],
+  "publishedAt": "2026-03-15",
+  "mediums": [
+    "生成式概念摄影",
+    "材料研究"
+  ],
+  "keywords": [
+    "纸上工作室",
+    "盛夏",
+    "安静",
+    "抽象",
+    "轻盈",
+    "奶油",
+    "苔藓",
+    "柔黄",
+    "透射光",
+    "纸张肌理",
+    "水纹投影"
+  ]
+}

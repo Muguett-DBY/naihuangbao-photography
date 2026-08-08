@@ -77,6 +77,17 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/create" />
   </url>
   <url>
+    <loc>https://shoot.custard.top/create/story</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/create/story" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/create/story?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/create/story?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/create/story?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/create/story" />
+  </url>
+  <url>
     <loc>https://shoot.custard.top/studio</loc>
     <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
@@ -88,15 +99,15 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/studio" />
   </url>
   <url>
-    <loc>https://shoot.custard.top/lab</loc>
+    <loc>https://shoot.custard.top/practice</loc>
     <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/lab" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/lab?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/lab?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/lab?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/lab" />
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/practice" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/practice?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/practice?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/practice?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/practice" />
   </url>
   <url>
     <loc>https://shoot.custard.top/about</loc>
@@ -112,8 +123,8 @@
   <url>
     <loc>https://shoot.custard.top/gallery</loc>
     <lastmod>2026-08-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery" />
     <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery?lang=en" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery?lang=ja" />
@@ -121,118 +132,15 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery" />
   </url>
   <url>
-    <loc>https://shoot.custard.top/booking</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/booking" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/booking?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/booking?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/booking?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/booking" />
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/courses</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/courses" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/courses?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/courses?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/courses?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/courses" />
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/products</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/products" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/products?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/products?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/products?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/products" />
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/workshops</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/workshops" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/workshops?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/workshops?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/workshops?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/workshops" />
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/shop</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/shop" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/shop?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/shop?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/shop?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/shop" />
-  </url>
-  <url>
     <loc>https://shoot.custard.top/map</loc>
     <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/map" />
     <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/map?lang=en" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/map?lang=ja" />
     <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/map?lang=ko" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/map" />
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/archive/optical-garden</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/optical-garden" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/optical-garden?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/optical-garden?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/optical-garden?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/optical-garden" />
-    <image:image>
-      <image:loc>https://shoot.custard.top/images/optical-archive/optical-garden-hero-v1.webp</image:loc>
-      <image:title>Optical Garden</image:title>
-      <image:caption>雨后月门与缓慢折射</image:caption>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/archive/prism-notes</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/prism-notes" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/prism-notes?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/prism-notes?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/prism-notes?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/prism-notes" />
-    <image:image>
-      <image:loc>https://shoot.custard.top/images/optical-archive/prism-lens-stilllife-v1.webp</image:loc>
-      <image:title>Prism Notes</image:title>
-      <image:caption>镜片、山茶与微小光谱</image:caption>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/archive/paper-tide</loc>
-    <lastmod>2026-08-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/paper-tide" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/paper-tide?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/paper-tide?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/paper-tide?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/paper-tide" />
-    <image:image>
-      <image:loc>https://shoot.custard.top/images/optical-archive/paper-ripple-study-v1.webp</image:loc>
-      <image:title>Paper Tide</image:title>
-      <image:caption>宣纸上的水光呼吸</image:caption>
-    </image:image>
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/darkroom-herbarium</loc>
@@ -251,35 +159,35 @@
     </image:image>
   </url>
   <url>
-    <loc>https://shoot.custard.top/archive/rain-atlas</loc>
+    <loc>https://shoot.custard.top/archive/light-workshop</loc>
     <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/rain-atlas" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/rain-atlas?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/rain-atlas?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/rain-atlas?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/rain-atlas" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/light-workshop" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/light-workshop?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/light-workshop?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/light-workshop?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/light-workshop" />
     <image:image>
-      <image:loc>https://shoot.custard.top/images/optical-archive/rain-moon-gate-night-v1.webp</image:loc>
-      <image:title>Rain Atlas</image:title>
-      <image:caption>蓝调时刻的南京雨信</image:caption>
+      <image:loc>https://shoot.custard.top/images/visual-os-v5/01-dawn-studio.webp</image:loc>
+      <image:title>Light Workshop</image:title>
+      <image:caption>晨光、纸张与可移动的光学桌面</image:caption>
     </image:image>
   </url>
   <url>
-    <loc>https://shoot.custard.top/archive/print-room</loc>
+    <loc>https://shoot.custard.top/archive/material-index</loc>
     <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/print-room" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/print-room?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/print-room?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/print-room?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/print-room" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/material-index" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/material-index?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/material-index?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/material-index?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/material-index" />
     <image:image>
-      <image:loc>https://shoot.custard.top/images/optical-archive/print-folio-v1.webp</image:loc>
-      <image:title>Print Room</image:title>
-      <image:caption>从屏幕返回纸面</image:caption>
+      <image:loc>https://shoot.custard.top/images/visual-os-v5/04-color-lab.webp</image:loc>
+      <image:title>Material Index</image:title>
+      <image:caption>颜色、档案与纸纤维的索引练习</image:caption>
     </image:image>
   </url>
   <url>
@@ -299,6 +207,102 @@
     </image:image>
   </url>
   <url>
+    <loc>https://shoot.custard.top/archive/night-projection-room</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/night-projection-room" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/night-projection-room?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/night-projection-room?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/night-projection-room?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/night-projection-room" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v5/05-night-print-room.webp</image:loc>
+      <image:title>Night Projection Room</image:title>
+      <image:caption>暗房、投影与无人观看的放映</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/optical-garden</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/optical-garden" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/optical-garden?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/optical-garden?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/optical-garden?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/optical-garden" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/optical-archive/optical-garden-hero-v1.webp</image:loc>
+      <image:title>Optical Garden</image:title>
+      <image:caption>雨后月门与缓慢折射</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/paper-tide</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/paper-tide" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/paper-tide?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/paper-tide?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/paper-tide?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/paper-tide" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/optical-archive/paper-ripple-study-v1.webp</image:loc>
+      <image:title>Paper Tide</image:title>
+      <image:caption>宣纸上的水光呼吸</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/print-room</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/print-room" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/print-room?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/print-room?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/print-room?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/print-room" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/optical-archive/print-folio-v1.webp</image:loc>
+      <image:title>Print Room</image:title>
+      <image:caption>从屏幕返回纸面</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/prism-notes</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/prism-notes" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/prism-notes?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/prism-notes?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/prism-notes?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/prism-notes" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/optical-archive/prism-lens-stilllife-v1.webp</image:loc>
+      <image:title>Prism Notes</image:title>
+      <image:caption>镜片、山茶与微小光谱</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/rain-atlas</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/rain-atlas" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/rain-atlas?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/rain-atlas?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/rain-atlas?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/rain-atlas" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/optical-archive/rain-moon-gate-night-v1.webp</image:loc>
+      <image:title>Rain Atlas</image:title>
+      <image:caption>蓝调时刻的南京雨信</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://shoot.custard.top/archive/tactile-optics</loc>
     <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
@@ -315,6 +319,22 @@
     </image:image>
   </url>
   <url>
+    <loc>https://shoot.custard.top/archive/weather-glasshouse</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/weather-glasshouse" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/weather-glasshouse?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/weather-glasshouse?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/weather-glasshouse?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/weather-glasshouse" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v5/03-rain-conservatory.webp</image:loc>
+      <image:title>Weather Glasshouse</image:title>
+      <image:caption>雨水穿过玻璃之后的三种天气</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://shoot.custard.top/archive/weather-print-room</loc>
     <lastmod>2026-08-08</lastmod>
     <changefreq>monthly</changefreq>
@@ -328,6 +348,54 @@
       <image:loc>https://shoot.custard.top/images/optical-archive/rain-observation-room-v1.webp</image:loc>
       <image:title>Weather Print Room</image:title>
       <image:caption>把一场雨编辑成纸面色谱</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/stories/weather-into-paper</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/stories/weather-into-paper" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/stories/weather-into-paper?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/stories/weather-into-paper?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/stories/weather-into-paper?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/stories/weather-into-paper" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v5/03-rain-conservatory.webp</image:loc>
+      <image:title>Weather Into Paper</image:title>
+      <image:caption>把一场雨折进四张纸里</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/stories/quiet-machines-of-light</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/stories/quiet-machines-of-light" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/stories/quiet-machines-of-light?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/stories/quiet-machines-of-light?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/stories/quiet-machines-of-light?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/stories/quiet-machines-of-light" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v5/01-dawn-studio.webp</image:loc>
+      <image:title>Quiet Machines of Light</image:title>
+      <image:caption>一间工作室如何制造缓慢的光</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/stories/materials-after-rain</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/stories/materials-after-rain" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/stories/materials-after-rain?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/stories/materials-after-rain?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/stories/materials-after-rain?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/stories/materials-after-rain" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v5/04-color-lab.webp</image:loc>
+      <image:title>Materials After Rain</image:title>
+      <image:caption>雨后材料索引的十二个表面</image:caption>
     </image:image>
   </url>
   <url>

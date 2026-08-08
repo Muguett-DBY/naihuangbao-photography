@@ -4,11 +4,11 @@ export const siteConfig = {
   brandName: "奶黄包摄影",
   city: "南京",
   domain: "shoot.custard.top",
-  tagline: "南京女生写真与情侣约拍",
+  tagline: "个人视觉档案与本地创作实验",
   description:
-    "偏柔雾胶片感的自然约拍，适合日常记录、江南感写真、情侣纪念和轻松陪拍。",
-  contactStatus: "小红书私信咨询",
-  contactHint: "小红书私信预约，确认风格和档期后锁定拍摄时间。",
+    "一个持续生长的个人视觉练习项目，用来探索摄影、互动叙事、浏览器图形和本地优先创作工具。",
+  contactStatus: "个人练习项目",
+  contactHint: "这里记录视觉实验、制作过程与可在浏览器中直接使用的创作工具。",
   xiaohongshuProfile:
     "https://www.xiaohongshu.com/user/profile/60f5b14b000000002002fa9f",
 };

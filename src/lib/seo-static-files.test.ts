@@ -38,9 +38,10 @@ describe("SEO static files", () => {
 
   it("enriches the PWA manifest with categories, description, and screenshots", () => {
     const manifest = JSON.parse(read("public/manifest.webmanifest"));
-    expect(manifest.name).toContain("南京女生写真");
+    expect(manifest.name).toContain("个人视觉档案");
     expect(manifest.description.length).toBeGreaterThan(20);
     expect(manifest.categories).toContain("photo");
+    expect(manifest.categories).toContain("productivity");
     expect(manifest.theme_color).toBeTruthy();
     expect(Array.isArray(manifest.icons)).toBe(true);
     expect(manifest.icons.length).toBeGreaterThanOrEqual(3);

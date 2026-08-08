@@ -1,0 +1,77 @@
+{
+  "id": "rain-atlas",
+  "kind": "concept",
+  "title": "Rain Atlas",
+  "subtitle": "蓝调时刻的南京雨信",
+  "chapter": "05",
+  "year": 2026,
+  "summary": "把月门、夜巷和雨窗编成一册可以继续生长的城市天气图谱。",
+  "statement": "城市在下雨时会暂时失去明确边界。窗、门洞和倒影把同一条街拆成多层空间，蓝调时刻则把噪声压成安静的色块。",
+  "place": "南京旧城",
+  "season": "梅雨",
+  "moods": [
+    "雨后",
+    "电影感",
+    "深邃"
+  ],
+  "palette": [
+    "深莓",
+    "苔藓",
+    "玻璃蓝"
+  ],
+  "techniques": [
+    "蓝调曝光",
+    "雨窗前景",
+    "夜色分层"
+  ],
+  "process": [
+    {
+      "title": "等待蓝调",
+      "note": "在天光与路灯亮度接近的短时间内完成主画面。"
+    },
+    {
+      "title": "借用雨窗",
+      "note": "把玻璃上的水滴作为近景，让街道退到更深的位置。"
+    },
+    {
+      "title": "整理灯光",
+      "note": "压制过亮招牌，只保留能引导视线的暖色反射。"
+    }
+  ],
+  "related": [
+    "optical-garden",
+    "darkroom-herbarium"
+  ],
+  "media": [
+    {
+      "src": "/images/optical-archive/rain-moon-gate-night-v1.webp",
+      "alt": "雨后蓝调时刻里透过月门看到的江南夜巷",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "src": "/images/optical-archive/color-glass-study-v1.webp",
+      "alt": "彩色光学玻璃、雨水与胶片组成的色彩研究",
+      "width": 1672,
+      "height": 941
+    }
+  ],
+  "publishedAt": "2026-05-15",
+  "mediums": [
+    "生成式概念摄影",
+    "静物研究"
+  ],
+  "keywords": [
+    "南京旧城",
+    "梅雨",
+    "雨后",
+    "电影感",
+    "深邃",
+    "深莓",
+    "苔藓",
+    "玻璃蓝",
+    "蓝调曝光",
+    "雨窗前景",
+    "夜色分层"
+  ]
+}

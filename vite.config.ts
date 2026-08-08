@@ -105,6 +105,8 @@ export default defineConfig({
         globIgnores: [
           "**/images/gallery/**/*",
           "**/images/concept-premiere/**/*",
+          "**/images/optical-archive/**/*",
+          "**/images/visual-os-v5/**/*",
           "**/immersive-vendor-*.js",
           "**/face-api-vendor-*.js",
           "**/map-vendor-*.js",
@@ -140,11 +142,12 @@ export default defineConfig({
               return imageRequest.destination === "image"
                 && (url.pathname.startsWith("/images/gallery/")
                   || url.pathname.startsWith("/images/concept-premiere/")
-                  || url.pathname.startsWith("/images/optical-archive/"));
+                  || url.pathname.startsWith("/images/optical-archive/")
+                  || url.pathname.startsWith("/images/visual-os-v5/"));
             },
             handler: "CacheFirst",
             options: {
-              cacheName: "visual-archive-images-v4",
+              cacheName: "visual-archive-images-v5",
               expiration: {
                 maxEntries: 180,
                 maxAgeSeconds: 60 * 60 * 24 * 90,
@@ -155,7 +158,7 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ url }) => url.pathname === "/archive-manifest.json" || url.pathname === "/release.json",
+            urlPattern: ({ url }) => ["/archive-manifest.json", "/story-manifest.json", "/release.json"].includes(url.pathname),
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "visual-platform-manifests-v4",

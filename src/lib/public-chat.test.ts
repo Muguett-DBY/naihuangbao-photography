@@ -210,12 +210,13 @@ describe("public AI chat integration", () => {
     expect(existsSync(adminChatApiPath)).toBe(false);
   });
 
-  it("distinguishes the public chat launcher from booking CTA and avoids fixed-button overlap", () => {
+  it("confines the public chat launcher to practice routes and avoids fixed-button overlap", () => {
     const navSource = readFileSync(resolve(root, "src/components/shared/Header.tsx"), "utf8");
     const launcherSource = readFileSync(launcherPath, "utf8");
 
-    expect(navSource).toContain("CalendarCheck");
-    expect(navSource).toContain('t("nav.booking")');
+    expect(navSource).not.toContain("CalendarCheck");
+    expect(navSource).not.toContain('t("nav.booking")');
+    expect(navSource).toContain('to="/practice"');
     expect(navSource).not.toContain("MessageCircle");
     expect(launcherSource).toContain("chat.launcherLabel");
     expect(launcherSource).not.toContain("<span>咨询</span>");

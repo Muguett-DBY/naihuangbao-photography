@@ -27,7 +27,6 @@ const widgetSource = readFileSync(resolve(root, "src/components/PublicChatWidget
 const photoWallSource = readFileSync(resolve(root, "src/components/PhotoWall3DCss.tsx"), "utf8");
 const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
 const galleryPageSource = readFileSync(resolve(root, "src/pages/GalleryPage.tsx"), "utf8");
-const reviewsSource = readFileSync(resolve(root, "src/components/Reviews.tsx"), "utf8");
 const headersSource = readFileSync(resolve(root, "public/_headers"), "utf8");
 const redirectsSource = readFileSync(resolve(root, "public/_redirects"), "utf8");
 const routesSource = readFileSync(resolve(root, "public/_routes.json"), "utf8");
@@ -982,13 +981,7 @@ describe("audit regression coverage", () => {
     expect(gallerySource).toContain('removeEventListener("touchmove"');
   });
 
-  it("keeps visible review content and SEO alternates localized", () => {
-    expect(reviewsSource).toContain('t("reviews.items"');
-    expect(zhLocaleSource).toContain('"items"');
-    expect(enLocaleSource).toContain('"items"');
-    expect(jaLocaleSource).toContain('"輪郭補正"');
-    expect(jaLocaleSource).toContain('"items"');
-    expect(koLocaleSource).toContain('"items"');
+  it("keeps SEO alternates localized", () => {
     expect(seoSource).toContain('hreflang="en"');
     expect(seoSource).toContain('hreflang="ja"');
     expect(seoSource).toContain('hreflang="ko"');
@@ -1027,8 +1020,11 @@ describe("audit regression coverage", () => {
   });
 
   it("lists indexable public routes without exposing account pages in the sitemap", () => {
-    for (const route of ["/gallery", "/booking", "/courses", "/products", "/workshops", "/shop", "/map"]) {
+    for (const route of ["/", "/archive", "/stories", "/create", "/about", "/gallery", "/map"]) {
       expect(sitemapSource).toContain(`<loc>https://shoot.custard.top${route}</loc>`);
+    }
+    for (const route of ["/booking", "/courses", "/products", "/workshops", "/shop"]) {
+      expect(sitemapSource).not.toContain(`<loc>https://shoot.custard.top${route}</loc>`);
     }
     expect(sitemapSource).not.toContain("<loc>https://shoot.custard.top/login</loc>");
     expect(sitemapSource).not.toContain("<loc>https://shoot.custard.top/dashboard</loc>");

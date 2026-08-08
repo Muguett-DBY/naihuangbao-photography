@@ -10,14 +10,12 @@ const defaultLineBudget = 500;
 // Existing hotspots are ratcheted at their current size. New code must stay below
 // the default budget; lowering these entries requires splitting the source file.
 const legacyLineBudgets = new Map([
-  ["src/pages/PhotoEditorWorkspace.tsx", 1467],
+  ["src/pages/PhotoEditorWorkspace.tsx", 1375],
   ["src/components/Gallery.tsx", 996],
   ["src/components/BookingModal.tsx", 856],
-  ["src/lib/editor-effects.ts", 856],
   ["src/components/admin/AdminPhotosTab.tsx", 700],
   ["src/components/dashboard/BookingsTab.tsx", 545],
   ["src/pages/LoginPage.tsx", 528],
-  ["src/components/PublicChatWidget.tsx", 518],
 ]);
 
 const dependencyRules = [

@@ -81,6 +81,12 @@
       "season": "계절",
       "mood": "분위기",
       "palette": "색상",
+      "technique": "기법",
+      "medium": "매체",
+      "search": "아카이브 검색",
+      "searchHint": "제목, 재료, 기법 또는 분위기",
+      "resultCount": "프로젝트 {{count}}개",
+      "clearAll": "모든 조건 지우기",
       "all": "전체",
       "reset": "필터 초기화",
       "conceptTitle": "인물 없는 콘셉트 연구",
@@ -146,12 +152,12 @@
   },
   "hero": {
     "volBadge": "✦ Vol.1",
-    "brandPrefix": "난징 여성 사진 & 커플 사진",
-    "intro": "부드럽고 필름 감성의 자연스러운 일상 사진 — 난징의 추억으로 간직하세요. 첫 촬영, 커플 기념일, 여유로운 도시 산책에 안성맞춤입니다.",
+    "brandPrefix": "개인 비주얼 아카이브와 로컬 창작 도구",
+    "intro": "빛, 종이, 날씨와 브라우저 그래픽을 탐색하고 다시 만들 수 있는 성장형 비주얼 시스템입니다.",
     "trustTags": {
-      "privacy": "사진 기본 비공개",
-      "guidance": "전체 포즈 가이드",
-      "styles": "장난 / 거리 / 공원"
+      "privacy": "로컬 우선 창작",
+      "guidance": "계속 자라는 아카이브",
+      "styles": "비주얼 / 인터랙션 / 도구"
     },
     "ctaView": "갤러리 보기",
     "ctaBooking": "예약",
@@ -1586,9 +1592,9 @@
   },
   "seo": {
     "siteName": "나이황바오 사진촬영",
-    "siteTagline": "나이황바오 사진촬영 | 난징 촬영 예약",
-    "homeTitle": "나이황바오 사진촬영 | 난징 촬영 예약",
-    "homeDesc": "부드럽고 필름 감성의 자연스러운 포트레트 촬영 — 난징에서 여성 사진과 커플 사진을 전문으로 합니다.",
+    "siteTagline": "NHB Photography | 개인 비주얼 아카이브",
+    "homeTitle": "NHB Photography | 개인 비주얼 아카이브와 창작 실험",
+    "homeDesc": "사진, 인터랙티브 스토리텔링, 브라우저 그래픽과 로컬 우선 창작 도구를 탐구하는 개인 연습 프로젝트입니다.",
     "galleryTitle": "갤러리 | 나이황바오 사진촬영",
     "galleryDesc": "난징 포트레트 사진 갤러리 — 공원, 장난 감성, 거리, 실내 및 커플 촬영 작품을 둘러보세요.",
     "coursesTitle": "사진 강좌 | 나이황바오 사진촬영",

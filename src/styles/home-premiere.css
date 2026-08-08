@@ -406,12 +406,13 @@ body.is-loaded .cinematic-premiere[data-premiere-motion="full"] .cinematic-premi
 }
 
 #premiere,
+#light-table,
+#visual-system,
+#portals,
 #rain-letter,
+#creative-pulse,
 #field-notes,
-#featured,
-#services-preview,
-#style-finder,
-#book {
+#make-something {
   scroll-margin-top: calc(var(--nav-h, 64px) + 74px);
 }
 
@@ -472,9 +473,14 @@ body.is-loaded .cinematic-premiere[data-premiere-motion="full"] .cinematic-premi
     z-index: 1;
   }
 
+  body.is-loaded .hero-home:not([data-premiere-view="portfolio"]) .hero-contact-sheet,
+  html[data-immersive-ready="true"] body.is-loaded .hero-home[data-immersive-anchor="home"]:not([data-premiere-view="portfolio"]) .hero-contact-sheet {
+    opacity: calc(var(--premiere-real-opacity, 0.24) * 0.1 + var(--premiere-progress, 0) * 0.7);
+  }
+
   .cinematic-premiere__stage {
     clip-path: none;
-    opacity: calc(var(--premiere-concept-opacity, 1) * 0.5);
+    opacity: calc(var(--premiere-concept-opacity, 1) * 0.82);
   }
 
   .cinematic-premiere__stage::after {
@@ -482,7 +488,7 @@ body.is-loaded .cinematic-premiere[data-premiere-motion="full"] .cinematic-premi
   }
 
   .cinematic-premiere__scene img {
-    object-position: 58% 46%;
+    object-position: 74% 46%;
     transform: scale(1.035);
   }
 
@@ -519,7 +525,9 @@ body.is-loaded .cinematic-premiere[data-premiere-motion="full"] .cinematic-premi
 
 @media (prefers-reduced-motion: reduce) {
   body.is-loaded .hero-home .hero-contact-sheet,
-  html[data-immersive-ready="true"] body.is-loaded .hero-home[data-immersive-anchor="home"] .hero-contact-sheet {
+  body.is-loaded .hero-home:not([data-premiere-view="portfolio"]) .hero-contact-sheet,
+  html[data-immersive-ready="true"] body.is-loaded .hero-home[data-immersive-anchor="home"] .hero-contact-sheet,
+  html[data-immersive-ready="true"] body.is-loaded .hero-home[data-immersive-anchor="home"]:not([data-premiere-view="portfolio"]) .hero-contact-sheet {
     opacity: 1;
     transition: none;
   }

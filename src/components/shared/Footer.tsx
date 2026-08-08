@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react";
+import { FlaskConical, MessageCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { NewsletterForm } from "../NewsletterForm";
@@ -34,7 +34,7 @@ export function Footer() {
             <h3>{t("footer.explore", "Explore")}</h3>
             <PrefetchLink to="/archive">{t("nav.archive")}</PrefetchLink>
             <PrefetchLink to="/stories">{t("nav.stories")}</PrefetchLink>
-            <PrefetchLink to="/gallery">{t("nav.gallery")}</PrefetchLink>
+            <PrefetchLink to="/about">{t("nav.about")}</PrefetchLink>
           </div>
           <div className="footer-nav-group">
             <h3>{t("footer.create", "Create")}</h3>
@@ -44,8 +44,8 @@ export function Footer() {
           </div>
           <div className="footer-nav-group">
             <h3>{t("footer.discover", "Discover")}</h3>
-            <PrefetchLink to="/lab">{t("nav.lab")}</PrefetchLink>
-            <PrefetchLink to="/about">{t("nav.about")}</PrefetchLink>
+            <PrefetchLink to="/practice"><FlaskConical size={15} aria-hidden="true" />{t("platform.lab.title")}</PrefetchLink>
+            <PrefetchLink to="/gallery">{t("nav.gallery")}</PrefetchLink>
             <PrefetchLink to="/map">{t("nav.map")}</PrefetchLink>
           </div>
         </nav>
@@ -62,7 +62,7 @@ export function Footer() {
         <p className="footer-copyright">
           {t("footer.copyright", { year: currentYear, brand: siteConfig.brandName })}
         </p>
-        <p className="footer-tagline">{siteConfig.city} / PORTRAITS, LIGHT &amp; SMALL MOMENTS / EST. {currentYear}</p>
+        <p className="footer-tagline">{siteConfig.city} / LIGHT, PAPER &amp; LOCAL TOOLS / EST. {currentYear}</p>
       </div>
 
     </footer>

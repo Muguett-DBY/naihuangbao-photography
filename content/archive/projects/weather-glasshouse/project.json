@@ -1,0 +1,29 @@
+{
+  "id": "weather-glasshouse",
+  "kind": "concept",
+  "title": "Weather Glasshouse",
+  "subtitle": "雨水穿过玻璃之后的三种天气",
+  "chapter": "11",
+  "year": 2026,
+  "summary": "从温室长廊、湿润织物到雨玻璃，把天气保存成一组可触摸的表面。",
+  "statement": "天气不是画面的背景，而是一种不断改写边缘的介质。雨滴让玻璃失去确定性，湿润的石面把织物和植物重新连接，镜头只负责记录这些短暂关系。",
+  "place": "南京",
+  "season": "梅雨",
+  "moods": ["湿润", "通透", "漂浮"],
+  "palette": ["苔藓", "奶油", "珊瑚"],
+  "techniques": ["雨玻璃折射", "材料动态", "低饱和分色"],
+  "process": [
+    { "title": "等待雨线", "note": "让水滴先建立画面的纵向节奏，再决定主体位置。" },
+    { "title": "引入织物", "note": "用半透明材料把不可见的风转译成可见动作。" },
+    { "title": "压低高光", "note": "保留湿润质感，同时避免玻璃反射变成纯白斑块。" }
+  ],
+  "related": ["rain-atlas", "optical-garden", "material-index"],
+  "media": [
+    { "src": "/images/visual-os-v5/03-rain-conservatory.webp", "alt": "雨后无人温室长廊与湿润玻璃", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v5/06-fabric-moss-garden.webp", "alt": "苔藓庭院中随风移动的奶油色半透明织物", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v5/10-rain-glass-camellia.webp", "alt": "雨玻璃后方的白色山茶与彩色折射", "width": 1536, "height": 1024 }
+  ],
+  "publishedAt": "2026-07-02",
+  "mediums": ["生成式概念摄影", "天气研究"],
+  "keywords": ["温室", "雨玻璃", "织物", "山茶", "苔藓", "梅雨", "折射", "湿润"]
+}

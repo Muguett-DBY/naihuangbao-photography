@@ -8,11 +8,11 @@ const read = (path: string) => readFileSync(resolve(root, path), "utf8");
 
 describe("static SEO shell", () => {
   it("publishes readable brand metadata for search engines", () => {
-    expect(html).toContain("<title>奶黄包摄影｜南京女生写真与情侣约拍</title>");
+    expect(html).toContain("<title>奶黄包摄影｜个人视觉档案与本地创作实验</title>");
     expect(html).toContain('name="description"');
     expect(html).toContain("奶黄包摄影");
-    expect(html).toContain("南京女生写真");
-    expect(html).toContain("情侣约拍");
+    expect(html).toContain("个人视觉档案");
+    expect(html).toContain("本地创作工具");
     expect(html).toContain("https://shoot.custard.top");
   });
 
@@ -20,11 +20,10 @@ describe("static SEO shell", () => {
     const rootMatch = html.match(/<div id="root">([\s\S]*?)<\/div>\s*<script/);
 
     expect(rootMatch?.[1]).toContain("奶黄包摄影");
-    expect(rootMatch?.[1]).toContain("南京女生写真");
-    expect(rootMatch?.[1]).toContain("情侣约拍");
-    expect(rootMatch?.[1]).toContain("室内写真 50/h");
-    expect(rootMatch?.[1]).toContain("室外约拍 60/h");
-    expect(rootMatch?.[1]).toContain("小红书私信咨询");
+    expect(rootMatch?.[1]).toContain("个人视觉档案");
+    expect(rootMatch?.[1]).toContain("Living Archive");
+    expect(rootMatch?.[1]).toContain("Create Studio");
+    expect(rootMatch?.[1]).not.toContain("约拍套餐价格");
   });
 
   it("keeps fallback portfolio images inert while JavaScript is enabled", () => {
@@ -36,15 +35,15 @@ describe("static SEO shell", () => {
     expect(activeFallback).not.toContain("<img");
   });
 
-  it("uses ProfessionalService structured data for the photography brand", () => {
-    expect(html).toContain('"@type": "ProfessionalService"');
+  it("uses WebSite and CollectionPage structured data for the visual archive", () => {
+    expect(html).toContain('"@type": "WebSite"');
+    expect(html).toContain('"@type": "CollectionPage"');
     expect(html).toContain('"name": "奶黄包摄影"');
-    expect(html).toContain('"areaServed"');
-    expect(html).toContain('"南京"');
+    expect(html).toContain('"name": "NHB Living Archive"');
   });
 
   it("publishes WeChat-compatible share metadata", () => {
-    expect(html).toContain('property="og:title" content="奶黄包摄影｜南京女生写真与情侣约拍"');
+    expect(html).toContain('property="og:title" content="奶黄包摄影｜个人视觉档案与本地创作实验"');
     expect(html).toContain('property="og:image" content="https://shoot.custard.top/wechat-share.jpg"');
     expect(html).toContain('name="twitter:image" content="https://shoot.custard.top/wechat-share.jpg"');
   });

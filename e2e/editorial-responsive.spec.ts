@@ -470,9 +470,9 @@ test.describe("desktop chapter console contract", () => {
 
     const chapterConsole = page.locator(".home-index-strip");
     await expect(chapterConsole).toHaveAttribute("data-active-chapter", "premiere");
-    await page.locator("#services-preview").scrollIntoViewIfNeeded();
-    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "services-preview");
-    await expect(chapterConsole.locator('a[href="#services-preview"]')).toHaveAttribute("aria-current", "location");
+    await chapterConsole.locator('a[href="#visual-system"]').click();
+    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "visual-system");
+    await expect(chapterConsole.locator('a[href="#visual-system"]')).toHaveAttribute("aria-current", "location");
     await expect(page.locator(".site-nav")).toHaveClass(/is-scrolled/);
 
     const geometry = await page.evaluate(() => {
@@ -488,11 +488,11 @@ test.describe("desktop chapter console contract", () => {
       `chapter console geometry: ${JSON.stringify(geometry)}`,
     ).toBeLessThanOrEqual(2);
 
-    await chapterConsole.locator('a[href="#style-finder"]').click();
-    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "style-finder");
+    await chapterConsole.locator('a[href="#make-something"]').click();
+    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "make-something");
     const anchorGeometry = await page.evaluate(() => {
       const chapterIndex = document.querySelector<HTMLElement>(".home-index-strip")!.getBoundingClientRect();
-      const section = document.querySelector<HTMLElement>("#style-finder")!.getBoundingClientRect();
+      const section = document.querySelector<HTMLElement>("#make-something")!.getBoundingClientRect();
       return {
         chapterBottom: Math.round(chapterIndex.bottom),
         sectionTop: Math.round(section.top),
@@ -786,7 +786,7 @@ test.describe("navigation and media regression contract", () => {
     });
 
     await panel.evaluate((element) => element.scrollTo({ top: element.scrollHeight }));
-    await expect(panel.locator(".nav-drawer-booking")).toBeInViewport();
+    await expect(panel.locator(".nav-drawer-practice")).toBeInViewport();
   });
 
   test("photo detail uses an existing responsive image without requesting a 1200 folder", async ({ page }) => {

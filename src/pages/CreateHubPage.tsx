@@ -1,6 +1,6 @@
 import "../styles/platform-v3.css";
 import "../styles/platform-v4.css";
-import { Aperture, ArrowRight, Columns2, FlaskConical, Layers3, LockKeyhole, Sparkles } from "lucide-react";
+import { Aperture, ArrowRight, BookOpenText, Columns2, FlaskConical, Layers3, LockKeyhole, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { CompositionStudio } from "../components/studio/CompositionStudio";
 import { PageTransition } from "../components/shared/PageTransition";
@@ -9,9 +9,10 @@ import { useSEO } from "../hooks/useSEO";
 
 const creatorTools = [
   { id: "compose", to: "/create", icon: Layers3, label: "Compose", detail: "排版与联系表" },
+  { id: "story", to: "/create/story", icon: BookOpenText, label: "Story", detail: "滚动视觉叙事" },
   { id: "develop", to: "/editor", icon: Aperture, label: "Develop", detail: "本地人像暗房" },
   { id: "compare", to: "/compare", icon: Columns2, label: "Compare", detail: "前后版本比较" },
-  { id: "experiments", to: "/lab", icon: FlaskConical, label: "Experiments", detail: "全部练习模块" },
+  { id: "experiments", to: "/practice", icon: FlaskConical, label: "Experiments", detail: "全部练习模块" },
 ];
 
 export function CreateHubPage() {

@@ -51,7 +51,7 @@ test.describe("cinematic homepage premiere", () => {
     const premiere = page.locator(".cinematic-premiere");
     const hero = page.locator(".hero-home");
     const title = page.locator(".hero-title");
-    const booking = page.locator(".hero-cover-primary-btn");
+    const archiveAction = page.locator(".hero-cover-primary-btn");
     const reelButtons = premiere.locator(".cinematic-premiere__reel button");
     const modeButtons = premiere.locator(".cinematic-premiere__mode button");
 
@@ -64,7 +64,7 @@ test.describe("cinematic homepage premiere", () => {
     await expect(premiere).toHaveAttribute("data-loaded-scenes", "1");
     await expect(page.locator(".hero-concept-label")).toContainText("Brand concept visuals");
     await expect(title).toBeVisible();
-    await expect(booking).toBeVisible();
+    await expect(archiveAction).toBeVisible();
     await expect.poll(async () => premiere.locator(".cinematic-premiere__scene img").first().evaluate((image) => (
       image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0
     ))).toBe(true);
@@ -120,6 +120,24 @@ test.describe("cinematic homepage premiere", () => {
 
     const chapterConsole = page.locator(".home-index-strip");
     await expect(chapterConsole.locator('a[href="#premiere"]')).toContainText("Optical Garden");
+  });
+
+  test("keeps the mobile opening concept-led before revealing real work", async ({ page }) => {
+    await prepareHome(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/");
+
+    const conceptStage = page.locator(".cinematic-premiere__stage");
+    const realWork = page.locator(".hero-contact-sheet");
+    await expect.poll(async () => Number.parseFloat(await conceptStage.evaluate((element) => getComputedStyle(element).opacity))).toBeGreaterThan(0.75);
+    await expect.poll(async () => Number.parseFloat(await realWork.evaluate((element) => getComputedStyle(element).opacity))).toBeLessThan(0.08);
+
+    await page.evaluate(() => {
+      const hero = document.querySelector<HTMLElement>(".hero-home")!;
+      window.scrollTo(0, hero.offsetHeight * 0.42);
+    });
+    await expect.poll(async () => Number.parseFloat(await realWork.evaluate((element) => getComputedStyle(element).opacity))).toBeGreaterThan(0.3);
   });
 
   test("reduces to a stable cover on motion-sensitive and failed-image paths", async ({ page }) => {

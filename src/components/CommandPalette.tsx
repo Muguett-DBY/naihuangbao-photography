@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { primaryNavigation, practiceNavigation } from "../data/product-navigation";
+import { primaryNavigation, practiceHubRoute, practiceNavigation } from "../data/product-navigation";
 import { archiveProjects } from "../data/living-archive";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { OPEN_COMMAND_PALETTE_EVENT } from "../lib/command-palette";
@@ -33,7 +33,7 @@ export function CommandPalette({ initiallyOpen = false }: { initiallyOpen?: bool
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const results = useMemo(() => {
-    const routes: PaletteResult[] = [...primaryNavigation, ...practiceNavigation].map((route) => ({
+    const routes: PaletteResult[] = [...primaryNavigation, practiceHubRoute, ...practiceNavigation].map((route) => ({
       id: route.id,
       to: route.to,
       label: t(route.labelKey as never),

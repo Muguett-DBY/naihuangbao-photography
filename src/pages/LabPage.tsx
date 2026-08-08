@@ -23,7 +23,7 @@ const icons = {
 export function LabPage() {
   const { t } = useTranslation();
   const isOnline = useOnlineStatus();
-  useSEO({ titleKey: "platform.lab.title", descKey: "platform.lab.description", path: "/lab" });
+  useSEO({ titleKey: "platform.lab.title", descKey: "platform.lab.description", path: "/practice" });
 
   return (
     <PageTransition className="platform-page lab-page">

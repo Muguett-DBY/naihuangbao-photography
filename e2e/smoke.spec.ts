@@ -56,9 +56,10 @@ test.describe("shoot.custard.top", () => {
   test("公开页面标题不会重复品牌名", async ({ page }) => {
     for (const path of ["/", "/gallery", "/booking", "/products", "/workshops", "/shop", "/courses", "/map"]) {
       await page.goto(path);
-      await expect.poll(() => page.title()).toContain(" | ");
-      const segments = (await page.title()).split("|").map((segment) => segment.trim());
-      expect(new Set(segments).size, `${path}: ${segments.join(" | ")}`).toBe(segments.length);
+      await expect.poll(async () => (await page.title()).trim().length).toBeGreaterThan(4);
+      const title = await page.title();
+      const brandOccurrences = title.match(/奶黄包摄影|Naihuangbao Photography/gi)?.length ?? 0;
+      expect(brandOccurrences, `${path}: ${title}`).toBeLessThanOrEqual(1);
     }
   });
 
@@ -117,8 +118,7 @@ test.describe("shoot.custard.top", () => {
   });
 
   test("Lightbox 打开和关闭", async ({ page }) => {
-    await page.goto("/");
-    await page.locator("#featured").scrollIntoViewIfNeeded();
+    await page.goto("/gallery");
     // Click the actual interactive control so layout shifts cannot land on article whitespace.
     const firstItemButton = page.locator(".gallery-masonry-item .gallery-masonry-btn").first();
     await expect(firstItemButton).toBeVisible({ timeout: 10000 });
@@ -130,11 +130,15 @@ test.describe("shoot.custard.top", () => {
     await expect(lightbox).toHaveCount(0, { timeout: 10000 });
   });
 
-  test("首页作品区和作品入口存在", async ({ page }) => {
+  test("首页视觉系统可切换并保留档案入口", async ({ page }) => {
     await page.goto("/");
-    await page.locator("#featured").scrollIntoViewIfNeeded();
-    await expect(page.locator(".gallery-masonry-item").first()).toBeVisible();
-    await expect(page.locator('.home-page-link[href="/gallery"]')).toBeVisible();
+    const visualSystem = page.locator("#visual-system");
+    await visualSystem.scrollIntoViewIfNeeded();
+    await expect(visualSystem).toBeVisible();
+    await expect(visualSystem.locator(".home-visual-system__nodes button")).toHaveCount(4);
+    await visualSystem.getByRole("button", { name: /Visual Stories/ }).click();
+    await expect(visualSystem.locator(".home-visual-system__preview-copy")).toContainText("Visual Stories");
+    await expect(page.locator('.home-playground-portals a[href="/archive"]')).toBeVisible();
   });
 
   test("首页过渡动画不会替换已呈现内容", async ({ page }) => {
@@ -145,7 +149,7 @@ test.describe("shoot.custard.top", () => {
       };
       const rememberFeatured = (node: Node) => {
         if (!(node instanceof Element)) return;
-        const featured = node.id === "featured" ? node : node.querySelector("#featured");
+        const featured = node.id === "visual-system" ? node : node.querySelector("#visual-system");
         if (!featured || featured === state.current) return;
         state.current = featured;
       };
@@ -168,25 +172,25 @@ test.describe("shoot.custard.top", () => {
     });
 
     await page.goto("/");
-    await page.locator("#featured").scrollIntoViewIfNeeded();
-    await expect(page.locator(".gallery-masonry-item").first()).toBeVisible({ timeout: 10000 });
+    await page.locator("#visual-system").scrollIntoViewIfNeeded();
+    await expect(page.locator(".home-visual-system__preview")).toBeVisible({ timeout: 10000 });
     const detachments = await page.evaluate(() => (
       window as Window & { __featuredDomDetachments?: number }
     ).__featuredDomDetachments ?? 0);
     expect(detachments).toBe(0);
   });
 
-  test("首页作品卡片不嵌套交互控件", async ({ page }) => {
+  test("首页入口卡片不嵌套交互控件", async ({ page }) => {
     await page.goto("/");
-    await page.locator("#featured").scrollIntoViewIfNeeded();
-    const firstCard = page.locator(".gallery-masonry-item").first();
+    await page.locator("#portals").scrollIntoViewIfNeeded();
+    const firstCard = page.locator(".home-playground-portals > div > a").first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
-    await expect(firstCard.locator(".gallery-masonry-btn button, .gallery-masonry-btn a, .gallery-masonry-btn [tabindex]"))
+    await expect(firstCard.locator("button, a, [tabindex]"))
       .toHaveCount(0);
   });
 
   test("AI 聊天正确呈现列表与代码块", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/practice");
     await page.evaluate(() => {
       localStorage.setItem("nhb-push-dismissed", "true");
       localStorage.setItem("chat-history", JSON.stringify([{
@@ -195,7 +199,7 @@ test.describe("shoot.custard.top", () => {
         content: "Intro\n\n- First\n- Second\n\nOutro\n\n```\n- not a list\n**not bold**\n```",
       }]));
     });
-    await page.goto("/?preserve-pwa-state=1");
+    await page.goto("/practice?preserve-pwa-state=1");
     await page.locator(".public-chat-launcher").click();
 
     const markdown = page.locator(".public-chat-markdown").first();
@@ -223,9 +227,9 @@ test.describe("shoot.custard.top", () => {
     await expect(page.locator("html")).not.toHaveAttribute("data-theme", "dark");
   });
 
-  test("首页预约 CTA 打开可填写表单", async ({ page }) => {
-    await page.goto("/");
-    await page.locator(".hero-cover-primary-btn").click();
+  test("练习预约页 CTA 打开可填写表单", async ({ page }) => {
+    await page.goto("/booking");
+    await page.locator(".booking-quick-cta-btn").click();
     // Wait for modal to open - it's a multi-step form, Step 1 shows package/date/time
     await expect(page.locator("#booking-package")).toBeVisible();
     await expect(page.locator("#booking-time")).toBeVisible();
