@@ -35,7 +35,7 @@ export function FilmStripStory() {
       data-motion-group
     >
       <header className="field-notes-heading" data-motion-item>
-        <p>01 / {t("filmstrip.title" as never)}</p>
+        <p>02 / {t("filmstrip.title" as never)}</p>
         <h2 id="field-notes-title">{t("filmstrip.title" as never)}</h2>
       </header>
 

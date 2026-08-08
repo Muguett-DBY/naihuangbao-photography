@@ -638,6 +638,116 @@
   }
 }
 
+/* Flagship story view: each photograph becomes a full editorial beat. */
+.gallery-masonry--story {
+  display: grid;
+  max-width: 1180px;
+  margin-inline: auto;
+  gap: clamp(52px, 8vw, 112px);
+}
+
+.gallery-masonry--story .gallery-masonry-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.65fr);
+  min-height: min(72vh, 760px);
+  border-top: 1px solid var(--hairline);
+  background: color-mix(in srgb, var(--paper) 82%, transparent);
+  transform: none;
+}
+
+.gallery-masonry--story .gallery-masonry-item:nth-child(even) {
+  grid-template-columns: minmax(280px, 0.65fr) minmax(0, 1.55fr);
+}
+
+.gallery-masonry--story .gallery-masonry-item:nth-child(even) .gallery-masonry-media {
+  order: 2;
+}
+
+.gallery-masonry--story .gallery-masonry-media,
+.gallery-masonry--story .gallery-masonry-btn,
+.gallery-masonry--story .img-blur-wrap,
+.gallery-masonry--story picture {
+  height: 100%;
+  min-height: 520px;
+}
+
+.gallery-masonry--story .gallery-masonry-btn img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-masonry--story .gallery-masonry-caption {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(28px, 5vw, 72px);
+  border-left: 1px solid var(--hairline);
+}
+
+.gallery-masonry--story .gallery-masonry-item:nth-child(even) .gallery-masonry-caption {
+  border-right: 1px solid var(--hairline);
+  border-left: 0;
+}
+
+.gallery-masonry--story .gallery-masonry-caption h3 {
+  margin-top: 14px;
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 4vw, 4.8rem);
+  line-height: 0.95;
+}
+
+.gallery-story-note {
+  display: grid;
+  gap: 18px;
+  margin-top: auto;
+  padding-top: 42px;
+}
+
+.gallery-story-note > span {
+  color: var(--coral-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.gallery-story-note p {
+  max-width: 38ch;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.gallery-story-note a {
+  width: fit-content;
+  border-bottom: 1px solid currentColor;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+@media (max-width: 820px) {
+  .gallery-masonry--story .gallery-masonry-item,
+  .gallery-masonry--story .gallery-masonry-item:nth-child(even) {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .gallery-masonry--story .gallery-masonry-item:nth-child(even) .gallery-masonry-media {
+    order: 0;
+  }
+
+  .gallery-masonry--story .gallery-masonry-media,
+  .gallery-masonry--story .gallery-masonry-btn,
+  .gallery-masonry--story .img-blur-wrap,
+  .gallery-masonry--story picture {
+    min-height: min(118vw, 620px);
+  }
+
+  .gallery-masonry--story .gallery-masonry-caption,
+  .gallery-masonry--story .gallery-masonry-item:nth-child(even) .gallery-masonry-caption {
+    border: 0;
+    border-top: 1px solid var(--hairline);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .gallery-facet-select select {
     transition: none;

@@ -10,6 +10,7 @@ export function PrefetchLink({
   onPointerEnter,
   onTouchStart,
   to,
+  viewTransition = true,
   ...props
 }: PrefetchLinkProps) {
   const preloadRoute = useRoutePreloader();
@@ -25,6 +26,7 @@ export function PrefetchLink({
     <Link
       {...props}
       to={to}
+      viewTransition={viewTransition}
       onFocus={(event) => {
         onFocus?.(event);
         if (!event.defaultPrevented) preload();

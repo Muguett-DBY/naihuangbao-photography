@@ -84,6 +84,25 @@
       "nightAlt": "虚构人物在深莓色夜间廊道与雨窗倒影中的概念人像"
     }
   },
+  "rainLetter": {
+    "chapter": "雨信",
+    "eyebrow": "NHB 季节首映 / 第二章",
+    "disclosure": "品牌概念影像，不代替真实客片",
+    "title": "南京雨信",
+    "intro": "从潮湿的庭院走到雨窗，再走进莓色夜巷。让一场南京的雨，成为可以触摸的电影章节。",
+    "scroll": "继续翻阅",
+    "frames": {
+      "gardenTitle": "雨落庭前",
+      "gardenCopy": "奶油晨光停在青苔与旧廊之间，故事从第一滴雨开始。",
+      "gardenAlt": "江南庭院雨幕与奶油晨光中的品牌概念电影静帧",
+      "windowTitle": "窗上回声",
+      "windowCopy": "人物、玻璃与倒影叠成柔软的双重曝光，像一封没有寄出的信。",
+      "windowAlt": "虚构人物倚在雨窗前的竖幅品牌概念人像",
+      "laneTitle": "夜色回信",
+      "laneCopy": "深莓夜色接住最后一点暖光，雨停之后，南京仍在发亮。",
+      "laneAlt": "南京雨夜旧巷暖灯与深莓色倒影的品牌概念电影静帧"
+    }
+  },
   "gallery": {
     "eyebrow": "Portfolio",
     "title": "作品集",
@@ -100,6 +119,8 @@
     "viewMode": "视图模式",
     "viewMasonry": "照片墙视图",
     "viewCompact": "紧凑视图",
+    "viewStory": "故事漫游",
+    "enterStory": "进入故事",
     "discoveryKicker": "作品筛选台",
     "discoveryTitle": "先选想看的风格，再打开完整故事",
     "discoveryHint": "可按标题、地点或风格搜索，也可以切换紧凑浏览。",
@@ -1588,6 +1609,7 @@
     "redo": "重做",
     "auto": "一键美颜",
     "compare": "对比",
+    "holdOriginal": "按住查看原图",
     "before": "原图",
     "after": "修图",
     "export": "导出",

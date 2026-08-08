@@ -15,6 +15,7 @@ test.describe("booking flow", () => {
       await page.setViewportSize(viewport);
       await page.goto("/");
       await expect(page.locator(".home-premiere-fallback")).toHaveCount(0);
+      await expect(page.locator(".cinematic-premiere")).toBeVisible();
       const bookingButton = page.locator(".hero-cover-primary-btn");
       await expect(bookingButton).toBeVisible();
       await bookingButton.scrollIntoViewIfNeeded();

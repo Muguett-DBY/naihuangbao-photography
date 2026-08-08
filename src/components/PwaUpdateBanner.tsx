@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { RefreshCw, X } from "lucide-react";
 import { logAndIgnore } from "../lib/errors";
 
-const UPDATE_CHECK_INTERVAL_MS = 30 * 60 * 1000;
+const UPDATE_CHECK_INTERVAL_MS = 5 * 60 * 1000;
 
 export function PwaUpdateBanner() {
   const { t } = useTranslation();
@@ -92,6 +92,7 @@ export function PwaUpdateBanner() {
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("focus", checkForUpdate);
     window.addEventListener("online", checkForUpdate);
+    window.addEventListener("pageshow", checkForUpdate);
     updateTimer = window.setInterval(checkForUpdate, UPDATE_CHECK_INTERVAL_MS);
 
     return () => {
@@ -100,6 +101,7 @@ export function PwaUpdateBanner() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", checkForUpdate);
       window.removeEventListener("online", checkForUpdate);
+      window.removeEventListener("pageshow", checkForUpdate);
       updateRegistration?.removeEventListener("updatefound", handleUpdateFound);
       if (updateTimer !== null) {
         window.clearInterval(updateTimer);

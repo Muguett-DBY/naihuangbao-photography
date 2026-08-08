@@ -53,6 +53,7 @@ import {
 import { useSEO } from "../hooks/useSEO";
 import { PageTransition } from "../components/shared/PageTransition";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+import { EditorHoldOriginalButton } from "../components/editor/EditorHoldOriginalButton";
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import { useExperienceRuntimeBridge } from "../experience/ExperienceProvider";
 import { useExperiencePause } from "../experience/useExperiencePause";
@@ -204,6 +205,7 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const [modelError, setModelError] = useState(false);
   const [modelLoadIssue, setModelLoadIssue] = useState<FaceModelLoadFailureReason | null>(null);
   const [showCompare, setShowCompare] = useState(false);
+  const [holdingOriginal, setHoldingOriginal] = useState(false);
   const [comparePos, setComparePos] = useState(50);
   const [historyIdx, setHistoryIdx] = useState(0);
   const [showExport, setShowExport] = useState(false);
@@ -248,7 +250,6 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
     recoveryRef.current?.focus({ preventScroll: true });
   }, [imageLoadError]);
 
-  // New feature states
   const [frameId, setFrameId] = useState<FrameId>("none");
   const [texts, setTexts] = useState<TextOverlay[]>([]);
   const [stickers, setStickers] = useState<StickerOverlay[]>([]);
@@ -262,27 +263,22 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
   const [selectedOverlay, setSelectedOverlay] = useState<string | null>(null);
   const draggingRef = useRef<{ id: string; offsetX: number; offsetY: number } | null>(null);
 
-  // Feature 1: Background
   const [bgSolidColor, setBgSolidColor] = useState("#ffffff");
   const [bgGradientStart, setBgGradientStart] = useState("#ff6b6b");
   const [bgGradientEnd, setBgGradientEnd] = useState("#4ecdc4");
 
-  // Feature 2: Makeup
   const [lipstickColor, setLipstickColor] = useState("#e74c3c");
   const [blushColor, setBlushColor] = useState("#f8a5c2");
   const [eyeshadowColor, setEyeshadowColor] = useState("#a29bfe");
 
-  // Feature 3: Local adjustment brush
   const localBrushMaskRef = useRef<ImageData | null>(null);
   const [localBrushActive, setLocalBrushActive] = useState(false);
   const [localBrushTool, setLocalBrushTool] = useState<"local_bright" | "local_warm" | "local_sat">("local_bright");
   const localBrushCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Feature 4: Color Splash
   const [colorSplashHue, setColorSplashHue] = useState(0);
   const [colorSplashRange, setColorSplashRange] = useState(30);
 
-  // Export modal Escape key
   useEffect(() => {
     if (!showExport) return;
     const h = (e: KeyboardEvent) => {
@@ -292,7 +288,6 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
     return () => window.removeEventListener("keydown", h);
   }, [showExport]);
 
-  // Feature 5: Double Exposure
   const [doubleExposureImage, setDoubleExposureImage] = useState<HTMLImageElement | null>(null);
   const [blendMode, setBlendMode] = useState<"overlay" | "screen" | "soft-light">("overlay");
   const [doubleExposureOpacity, setDoubleExposureOpacity] = useState(50);
@@ -1064,6 +1059,11 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
               <div className="editor-toolbar-group" role="group" aria-label={t("editor.toolbarInspect")}>
                 <button type="button" className={`editor-icon-btn ${showMesh ? "active" : ""}`} onClick={() => setShowMesh(!showMesh)} aria-pressed={showMesh} aria-label={t("editor.faceMesh")} title={t("editor.faceMesh")}><ScanFace size={17} aria-hidden="true" /></button>
                 <button type="button" className={`editor-icon-btn ${showCompare ? "active" : ""}`} onClick={() => setShowCompare(!showCompare)} aria-pressed={showCompare} aria-label={t("editor.compare")} title={t("editor.compare")}><Columns2 size={17} aria-hidden="true" /></button>
+                <EditorHoldOriginalButton
+                  active={holdingOriginal}
+                  label={t("editor.holdOriginal", "Hold for original")}
+                  onChange={setHoldingOriginal}
+                />
               </div>
               <div className="editor-toolbar-group" role="group" aria-label={t("editor.toolbarCompose")}>
                 <button type="button" className="editor-icon-btn" onClick={() => { setActiveWorkflowGroup("compose"); setShowTextPanel(!showTextPanel); }} aria-label={t("editor.addText")} title={t("editor.addText")}><Type size={17} aria-hidden="true" /></button>
@@ -1165,7 +1165,6 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           </div>
         )}
 
-        {/* Feature 1: Background controls */}
         {tool === "bg_solid" && cat === "bg" && (
           <div className="editor-popup-panel">
             <label className="editor-label">{t("editor.bgColor")}</label>
@@ -1181,7 +1180,6 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           </div>
         )}
 
-        {/* Feature 2: Makeup color controls */}
         {tool === "lipstick" && cat === "makeup" && (
           <div className="editor-popup-panel">
             <label className="editor-label">{t("editor.lipColor")}</label>
@@ -1201,7 +1199,6 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           </div>
         )}
 
-        {/* Feature 3: Local brush controls */}
         {cat === "tools" && ["local_bright", "local_warm", "local_sat"].includes(tool) && (
           <div className="editor-popup-panel editor-brush-controls">
             <button type="button" className={`editor-btn ${localBrushActive ? "active" : ""}`} onClick={() => { setLocalBrushActive(!localBrushActive); setLocalBrushTool(tool as typeof localBrushTool); }}>
@@ -1211,7 +1208,6 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           </div>
         )}
 
-        {/* Feature 4: Color splash controls */}
         {tool === "color_splash" && cat === "tools" && (
           <div className="editor-popup-panel editor-color-splash-controls">
             <label className="editor-label">{t("editor.targetHue")}: {colorSplashHue}°</label>
@@ -1221,7 +1217,6 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
           </div>
         )}
 
-        {/* Feature 5: Double exposure controls */}
         {tool === "double_exposure" && cat === "tools" && (
           <div className="editor-popup-panel editor-double-exposure-controls">
             <button type="button" className="editor-btn" onClick={handleDoubleExposureUpload}>
@@ -1283,9 +1278,10 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
             )}
             <canvas
               ref={canvasRef}
-              className={`editor-canvas ${!originalRef.current ? "editor-canvas--placeholder" : ""}`}
+              className={`editor-canvas ${!originalRef.current ? "editor-canvas--placeholder" : ""}${holdingOriginal ? " is-holding-original" : ""}`}
               style={{
                 ...(showCompare ? { clipPath: `inset(0 ${100 - comparePos}% 0 0)` } : undefined),
+                ...(holdingOriginal ? { opacity: 0 } : undefined),
                 ...(blemishMode || localBrushActive ? { cursor: "crosshair" } : undefined),
               }}
               onClick={blemishMode ? handleCanvasClick : undefined}
@@ -1306,7 +1302,10 @@ export default function PhotoEditorWorkspace({ initialFile = null }: PhotoEditor
               role="img"
               aria-label={t("editor.canvasLabel")}
             />
-            {showCompare && originalRef.current && (
+            {holdingOriginal && originalRef.current && (
+              <img className="editor-held-original" src={originalRef.current.src} alt={t("editor.before")} />
+            )}
+            {!holdingOriginal && showCompare && originalRef.current && (
               <>
                 <img src={originalRef.current.src} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", clipPath: `inset(0 0 0 ${comparePos}%)` }} />
                 <div

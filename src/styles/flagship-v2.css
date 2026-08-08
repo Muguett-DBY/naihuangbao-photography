@@ -1,0 +1,147 @@
+:root[data-mood="magazine"] {
+  --mood-rule: var(--coral);
+  --mood-accent: var(--sun-note);
+  --mood-panel: color-mix(in srgb, var(--paper) 94%, var(--newsprint));
+}
+
+:root[data-mood="cute"] {
+  --mood-rule: #d7837b;
+  --mood-accent: #efd98e;
+  --mood-panel: #fff8ee;
+  --moss: #789481;
+  --moss-dark: #506d5d;
+  --coral: #dc8b82;
+  --coral-dark: #a95f58;
+  --sky-note: #bdd9d3;
+  --sun-note: #efd98e;
+  --radius-card: 8px;
+  --radius-control: 8px;
+  --font-heading: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+.mood-signature {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  margin-bottom: 16px;
+  border-left: 2px solid var(--mood-rule);
+  padding: 7px 11px;
+  color: var(--paper);
+  background: color-mix(in srgb, var(--ink) 46%, transparent);
+  font-size: 0.67rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.mood-signature::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--mood-accent);
+  transform: rotate(45deg);
+}
+
+.mood-signature__cute { display: none; }
+
+:root[data-mood="cute"] .mood-signature {
+  border: 1px dashed color-mix(in srgb, var(--coral) 72%, var(--paper));
+  color: var(--ink);
+  background: color-mix(in srgb, var(--paper) 91%, transparent);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--sun-note) 54%, transparent);
+  transform: rotate(-1deg);
+}
+
+:root[data-mood="cute"] .mood-signature__magazine { display: none; }
+:root[data-mood="cute"] .mood-signature__cute { display: inline; }
+
+:root[data-mood="cute"] .site-nav,
+:root[data-mood="cute"] .mobile-menu-panel,
+:root[data-mood="cute"] .gallery-controls-shell {
+  background: color-mix(in srgb, var(--paper) 96%, var(--sun-note));
+}
+
+:root[data-mood="cute"] .brand-mark {
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--coral) 34%, transparent);
+  transform: rotate(-2deg);
+}
+
+:root[data-mood="cute"] .hero-title,
+:root[data-mood="cute"] .page-hero h1,
+:root[data-mood="cute"] .section-heading h2 {
+  font-weight: 900;
+}
+
+:root[data-mood="cute"] .home-chapter-link.is-active,
+:root[data-mood="cute"] .gallery-view-btn.is-active {
+  color: var(--ink);
+  background: var(--sun-note);
+}
+
+:root[data-mood="cute"] .gallery-masonry-item,
+:root[data-mood="cute"] .home-service-card,
+:root[data-mood="cute"] .why-card,
+:root[data-mood="cute"] .detail-card {
+  border-color: color-mix(in srgb, var(--coral) 28%, var(--hairline));
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--coral) 13%, transparent);
+}
+
+:root[data-mood="cute"] .page-hero::after,
+:root[data-mood="cute"] .gallery-page-hero::after {
+  content: "NHB  ·  LITTLE PHOTO DIARY  ·  2026";
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 4;
+  border: 1px dashed color-mix(in srgb, var(--paper) 68%, transparent);
+  padding: 8px 10px;
+  color: var(--paper);
+  font-size: 0.62rem;
+  font-weight: 900;
+  transform: rotate(-1deg);
+}
+
+.editor-held-original {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  animation: darkroom-original-in 120ms ease-out both;
+}
+
+.editor-hold-original.active {
+  color: var(--ink);
+  background: var(--sun-note);
+}
+
+@keyframes darkroom-original-in {
+  from { opacity: 0.45; filter: brightness(1.08); }
+}
+
+@media (max-width: 640px) {
+  .mood-signature {
+    margin-bottom: 10px;
+    font-size: 0.58rem;
+  }
+
+  :root[data-mood="cute"] .page-hero::after,
+  :root[data-mood="cute"] .gallery-page-hero::after {
+    right: 12px;
+    bottom: 12px;
+    max-width: calc(100% - 24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  .editor-held-original,
+  .mood-signature {
+    animation: none !important;
+    transition: none !important;
+  }
+}

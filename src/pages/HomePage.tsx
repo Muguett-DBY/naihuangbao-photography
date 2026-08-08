@@ -35,6 +35,9 @@ const FilmStripStory = lazy(() =>
   import("../components/FilmStripStory").then((module) => ({ default: module.FilmStripStory })),
 );
 const StyleQuiz = lazy(() => import("../components/StyleQuiz").then((module) => ({ default: module.StyleQuiz })));
+const RainLetterPremiere = lazy(() => import("../components/RainLetterPremiere").then((module) => ({
+  default: module.RainLetterPremiere,
+})));
 
 function useDeferredHomePageStyles() {
   useEffect(() => {
@@ -98,11 +101,12 @@ export function HomePage() {
   const homeChapters = useMemo<HomeChapter[]>(
     () => [
       { id: "premiere", index: "00", label: t("premiere.chapter") },
-      { id: "field-notes", index: "01", label: t("filmstrip.title" as never) },
-      { id: "featured", index: "02", label: t("gallery.title") },
-      { id: "services-preview", index: "03", label: t("home.servicesTitle") },
-      { id: "style-finder", index: "04", label: t("home.styleQuizTitle") },
-      { id: "book", index: "05", label: t("midCTA.cta") },
+      { id: "rain-letter", index: "01", label: t("rainLetter.chapter") },
+      { id: "field-notes", index: "02", label: t("filmstrip.title" as never) },
+      { id: "featured", index: "03", label: t("gallery.title") },
+      { id: "services-preview", index: "04", label: t("home.servicesTitle") },
+      { id: "style-finder", index: "05", label: t("home.styleQuizTitle") },
+      { id: "book", index: "06", label: t("midCTA.cta") },
     ],
     [t],
   );
@@ -144,6 +148,10 @@ export function HomePage() {
             <span>{t("premiere.label")}</span>
             <span>{t("premiere.disclosure")}</span>
           </p>
+          <div className="mood-signature" aria-live="polite">
+            <span className="mood-signature__magazine">NHB / SOFT CINEMA EDITION</span>
+            <span className="mood-signature__cute">NHB / LITTLE PHOTO DIARY</span>
+          </div>
           <p className="hero-issue-line">
             <span>{t("hero.volBadge")}</span>
             <span>{siteConfig.city}</span>
@@ -188,6 +196,12 @@ export function HomePage() {
 
       <ErrorBoundary>
         <Suspense fallback={<SectionSkeleton lines={3} hasImage />}>
+          <RainLetterPremiere />
+        </Suspense>
+      </ErrorBoundary>
+
+      <ErrorBoundary>
+        <Suspense fallback={<SectionSkeleton lines={3} hasImage />}>
           <FilmStripStory />
         </Suspense>
       </ErrorBoundary>
@@ -206,7 +220,7 @@ export function HomePage() {
         data-deferred-ready={galleryRender.ready}
       >
         <header className="home-band-heading" data-motion-group>
-          <p className="home-band-index" data-motion-item>02 / {t("gallery.eyebrow")}</p>
+          <p className="home-band-index" data-motion-item>03 / {t("gallery.eyebrow")}</p>
           <div data-motion-item>
             <h2>{t("gallery.title")}</h2>
             <p>{t("gallery.description")}</p>
@@ -226,9 +240,9 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="home-editorial-band home-editorial-band--services" id="services-preview" data-chapter="03">
+      <section className="home-editorial-band home-editorial-band--services" id="services-preview" data-chapter="04">
         <header className="home-band-heading" data-motion-group>
-          <p className="home-band-index" data-motion-item>03 / {t("home.servicesTitle")}</p>
+          <p className="home-band-index" data-motion-item>04 / {t("home.servicesTitle")}</p>
           <div data-motion-item>
             <h2>{t("home.servicesTitle")}</h2>
             <p>{t("hero.intro")}</p>
@@ -269,11 +283,11 @@ export function HomePage() {
         ref={quizRender.ref}
         className="home-editorial-band home-editorial-band--quiz"
         id="style-finder"
-        data-chapter="04"
+        data-chapter="05"
         data-deferred-ready={quizRender.ready}
       >
         <header className="home-band-heading home-band-heading--light" data-motion-group>
-          <p className="home-band-index" data-motion-item>04 / {t("home.styleQuizTitle")}</p>
+          <p className="home-band-index" data-motion-item>05 / {t("home.styleQuizTitle")}</p>
           <div data-motion-item>
             <h2>{t("home.styleQuizTitle")}</h2>
             <p>{t("quiz.result.desc")}</p>
@@ -302,7 +316,7 @@ export function HomePage() {
           <span aria-hidden="true" />
         </div>
         <div className="home-final-cta-content" data-motion-item>
-          <p className="home-band-index">05 / {t("midCTA.cta")}</p>
+          <p className="home-band-index">06 / {t("midCTA.cta")}</p>
           <div>
             <h2>{t("midCTA.title")}</h2>
             <p>{t("midCTA.desc")}</p>

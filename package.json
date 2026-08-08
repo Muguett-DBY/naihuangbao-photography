@@ -27,6 +27,7 @@
     "spa:404": "node scripts/sync-spa-404.mjs",
     "perf:budget": "node scripts/check-performance-budget.mjs",
     "assets:crop": "node scripts/crop-gallery-assets.mjs",
+    "assets:concept": "node scripts/process-concept-assets.mjs",
     "deps:audit": "npm audit --audit-level=moderate && npm install-scripts ls"
   },
   "dependencies": {

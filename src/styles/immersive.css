@@ -261,6 +261,27 @@ html[data-immersive-ready="true"] .immersive-experience {
   animation: page-content-enter 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+::view-transition-group(*) {
+  animation-duration: 560ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(root) {
+  animation: 220ms ease both route-view-fade-out;
+}
+
+::view-transition-new(root) {
+  animation: 420ms cubic-bezier(0.22, 1, 0.36, 1) both route-view-fade-in;
+}
+
+@keyframes route-view-fade-out {
+  to { opacity: 0.5; filter: saturate(0.82) blur(2px); }
+}
+
+@keyframes route-view-fade-in {
+  from { opacity: 0; filter: saturate(0.78) blur(5px); }
+}
+
 @keyframes page-content-enter {
   from {
     opacity: 0;
