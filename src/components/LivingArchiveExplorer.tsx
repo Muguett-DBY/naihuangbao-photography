@@ -1,4 +1,4 @@
-import { ArrowRight, RotateCcw } from "lucide-react";
+import { ArrowRight, Search, RotateCcw, SlidersHorizontal, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { archiveProjects } from "../data/living-archive";
@@ -8,12 +8,22 @@ import { photoTransitionName } from "../lib/photo-transition";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { PrefetchLink } from "./shared/PrefetchLink";
 
-const initialFilters: ArchiveFilters = { place: "all", season: "all", mood: "all", palette: "all" };
+const initialFilters: ArchiveFilters = {
+  place: "all",
+  season: "all",
+  mood: "all",
+  palette: "all",
+  technique: "all",
+  medium: "all",
+  query: "",
+};
 const facetLabels: Record<ArchiveFacet, string> = {
   place: "platform.archive.place",
   season: "platform.archive.season",
   mood: "platform.archive.mood",
   palette: "platform.archive.palette",
+  technique: "platform.archive.technique",
+  medium: "platform.archive.medium",
 };
 
 export function LivingArchiveExplorer() {
@@ -22,7 +32,7 @@ export function LivingArchiveExplorer() {
   const [filters, setFilters] = useState(initialFilters);
   const view = useMemo(() => createArchiveView(archiveProjects, filters), [filters]);
   const realPhotos = photos.filter((photo) => photo.visibility === "public");
-  const isFiltered = Object.values(filters).some((value) => value !== "all");
+  const isFiltered = Object.entries(filters).some(([key, value]) => key === "query" ? Boolean(value) : value !== "all");
 
   const updateFilter = (facet: ArchiveFacet, value: string) => {
     setFilters((current) => ({ ...current, [facet]: value }));
@@ -37,6 +47,10 @@ export function LivingArchiveExplorer() {
           <p>{t("platform.archive.filterDescription")}</p>
         </div>
         <div className="archive-filters">
+          <label className="archive-search-field">
+            <span>{t("platform.archive.search", "搜索档案")}</span>
+            <span><Search size={17} aria-hidden="true" /><input type="search" value={filters.query} onChange={(event) => setFilters((current) => ({ ...current, query: event.target.value }))} placeholder={t("platform.archive.searchHint", "标题、材料、技法或情绪")} /></span>
+          </label>
           {(Object.keys(facetLabels) as ArchiveFacet[]).map((facet) => (
             <label key={facet}>
               <span>{t(facetLabels[facet] as never)}</span>
@@ -56,6 +70,12 @@ export function LivingArchiveExplorer() {
           >
             <RotateCcw size={18} aria-hidden="true" />
           </button>
+        </div>
+        <div className="archive-filter-summary" aria-live="polite">
+          <span><SlidersHorizontal size={15} aria-hidden="true" />{t("platform.archive.resultCount", { count: view.projects.length, defaultValue: `${view.projects.length} 个项目` })}</span>
+          {isFiltered ? (
+            <button type="button" onClick={() => setFilters(initialFilters)}><X size={14} aria-hidden="true" />{t("platform.archive.clearAll", "清除全部条件")}</button>
+          ) : null}
         </div>
       </section>
 
@@ -93,6 +113,7 @@ export function LivingArchiveExplorer() {
                   <div><dt>{t("platform.archive.place")}</dt><dd>{project.place}</dd></div>
                   <div><dt>{t("platform.archive.season")}</dt><dd>{project.season}</dd></div>
                   <div><dt>{t("platform.archive.mood")}</dt><dd>{project.moods.join(" / ")}</dd></div>
+                  <div><dt>{t("platform.archive.medium", "媒介")}</dt><dd>{project.mediums.join(" / ")}</dd></div>
                 </dl>
                 <div className="archive-project__palette" aria-label={project.palette.join(", ")}>
                   {project.palette.map((color) => <span key={color}>{color}</span>)}

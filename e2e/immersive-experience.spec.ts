@@ -190,7 +190,10 @@ test.describe("immersive portrait archive", () => {
     const originalCanvas = await canvas.elementHandle();
     expect(originalCanvas).not.toBeNull();
 
-    await page.locator(".hero-gallery-link").click();
+    await page.keyboard.press("Control+K");
+    await expect(page.locator("#command-palette-input")).toBeVisible();
+    await page.locator("#command-palette-input").fill("gallery");
+    await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/\/gallery$/);
     await expect(page.locator("[data-immersive-anchor='gallery']")).toBeVisible();
     await expect(canvas).toHaveAttribute("data-scene-preset", "gallery");

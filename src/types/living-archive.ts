@@ -6,6 +6,9 @@ export type ArchiveMedia = {
   width: number;
   height: number;
   note?: string;
+  dominantColor?: string;
+  blurDataUrl?: string;
+  aspectRatio?: number;
 };
 
 export type ArchiveProcessNote = {
@@ -20,6 +23,7 @@ export type ArchiveProject = {
   subtitle: string;
   chapter: string;
   year: number;
+  publishedAt: string;
   summary: string;
   statement: string;
   place: string;
@@ -27,6 +31,8 @@ export type ArchiveProject = {
   moods: string[];
   palette: string[];
   techniques: string[];
+  mediums: string[];
+  keywords: string[];
   process: ArchiveProcessNote[];
   related: string[];
   media: ArchiveMedia[];
@@ -43,7 +49,7 @@ export type ArchiveManifestEntry = ArchiveProject & {
 };
 
 export type ArchiveManifest = {
-  schemaVersion: 2;
+  schemaVersion: 3;
   generatedFrom: string;
   projects: ArchiveManifestEntry[];
 };

@@ -1,4 +1,5 @@
 import "../styles/platform-v3.css";
+import "../styles/archive-v3.css";
 import { useTranslation } from "react-i18next";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { ArchiveConstellation } from "../components/ArchiveConstellation";

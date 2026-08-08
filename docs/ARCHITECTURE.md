@@ -18,6 +18,8 @@ The rules below are executable through `npm run architecture:check`.
 | `src/experience/` | Isolated Three.js lifecycle and resource management | Experience modules, data, types, low-level libraries |
 | `src/lib/`, `src/utils/` | UI-independent algorithms and infrastructure | Data, types, other low-level modules |
 | `src/data/`, `src/types/` | Static models, defaults, and shared contracts | Types and data only |
+| `content/` | Directory-owned Archive and Story source documents | No runtime imports |
+| `source-assets/` | Versioned master images outside the public delivery tree | Asset build scripts |
 | `functions/` | Cloudflare Pages Functions and server security boundaries | Server helpers and UI-independent shared domain modules |
 
 The intended browser dependency direction is:
@@ -52,6 +54,10 @@ remain free of DOM and React dependencies.
   components should receive typed data and callbacks.
 - Browser persistence should use `src/lib/browser-storage.ts` so blocked or full
   storage does not crash the application.
+- Creative projects share `nhb-local-studio` but use separate object stores for
+  editor projects, compositions, composition versions, and visual stories.
+- Canvas composition image loads pass through `image-decode-queue.ts`; do not
+  reintroduce unbounded `Promise.all(new Image())` decoding.
 - API error bodies should use `readJsonResponse` and `getApiError` from
   `src/lib/http.ts` instead of assuming every response is valid JSON.
 - Cloudflare mutations must retain the authentication, CSRF, validation, rate
@@ -82,8 +88,8 @@ Current priority order for future decomposition:
    and lightbox coordination.
 3. `src/components/BookingModal.tsx`: move API commands and each booking stage
    into the booking feature boundary.
-4. `src/lib/editor-effects.ts`: separate background, makeup, face geometry, and
-   post-processing algorithms.
+4. `src/components/admin/AdminPhotosTab.tsx`: separate upload orchestration,
+   metadata editing, and media-list presentation.
 
 Completed decompositions:
 
@@ -92,6 +98,20 @@ Completed decompositions:
   live in focused modules below the 500-line default budget.
 - `src/components/CinematicPremiere.tsx` is below the default budget and no
   longer requires a legacy allowance.
+- Editor effects now keep a stable barrel API while background, face geometry,
+  and pixel/post-processing algorithms live in three sub-500-line modules.
+- Public chat persistence is isolated from rendering, and editor workflow/icon
+  configuration is owned by `src/data/editor-workflow.ts`.
+
+## Content pipeline
+
+1. Store master concept images under `source-assets/<collection>/raw/`.
+2. Run `npm run assets:concept` to emit 640w, 960w, and source-size AVIF/WebP.
+3. Add one `content/archive/projects/<id>/project.json` per concept project.
+4. Add one `content/stories/<id>/story.json` per visual story, referencing
+   archive project IDs and media indexes rather than duplicating image data.
+5. `archive:build` and `stories:build` validate relationships and emit generated
+   app/public manifests. Generated JSON is never hand-edited.
 
 ## Change recipes
 
@@ -128,6 +148,8 @@ Completed decompositions:
   staging when routes did not change.
 - Playwright screenshots, traces, and `test-results` are verification artifacts,
   not release source.
+- The home route must not import the legacy `pages.css` chunk. Archive, stories,
+  studio, and immersive code remain route or capability lazy-loaded.
 - `sw.js` and `registerSW.js` must remain `no-store/no-cache`; hashed JS, CSS,
   and image assets may be cached long-term.
 

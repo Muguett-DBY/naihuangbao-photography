@@ -1,7 +1,6 @@
 import {
-  Bot,
-  CalendarCheck,
   Camera,
+  FlaskConical,
   Languages,
   Menu,
   Search,
@@ -33,10 +32,6 @@ type UtilityControlsProps = {
   menuLabel: string;
 };
 
-type HeaderProps = {
-  onOpenChat: () => void;
-};
-
 function getCompactNavigation() {
   return typeof window !== "undefined" && window.matchMedia(COMPACT_NAVIGATION_QUERY).matches;
 }
@@ -62,7 +57,7 @@ function UtilityControls({ onLanguageChange, languageLabel, menuLabel }: Utility
   );
 }
 
-export function Header({ onOpenChat }: HeaderProps) {
+export function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [utilityOpen, setUtilityOpen] = useState(false);
@@ -229,11 +224,6 @@ export function Header({ onOpenChat }: HeaderProps) {
   const languageLabel = t(`langToggle.languages.${i18n.language}` as never);
   const utilityLabel = t("nav.utilityMenu", "Display and language settings");
 
-  const openChatFromDrawer = () => {
-    setDrawerOpen(false);
-    window.requestAnimationFrame(onOpenChat);
-  };
-
   return (
     <>
       <header ref={headerRef} className={`site-nav${scrolled ? " is-scrolled" : ""}`}>
@@ -243,7 +233,7 @@ export function Header({ onOpenChat }: HeaderProps) {
           </span>
           <span className="brand-copy">
             <strong>{siteConfig.brandName}</strong>
-            <small>NHB / VISUAL PLAYGROUND</small>
+            <small>NHB / VISUAL OPERATING SYSTEM</small>
           </span>
         </PrefetchLink>
 
@@ -333,7 +323,7 @@ export function Header({ onOpenChat }: HeaderProps) {
             <div className="nav-drawer-panel">
               <div className="nav-drawer-head">
                 <span>
-                  <strong>NHB / VISUAL PLAYGROUND</strong>
+                  <strong>NHB / VISUAL OPERATING SYSTEM</strong>
                   <small>{siteConfig.city} / PERSONAL VISUAL PRACTICE</small>
                 </span>
                 <button className="nav-drawer-close" type="button" onClick={() => setDrawerOpen(false)} aria-label={t("nav.close", "Close menu")}>
@@ -370,18 +360,9 @@ export function Header({ onOpenChat }: HeaderProps) {
                   <WandSparkles size={18} aria-hidden="true" />
                   {t("nav.create")}
                 </PrefetchLink>
-                <button
-                  className="nav-drawer-chat"
-                  type="button"
-                  onClick={openChatFromDrawer}
-                  aria-label={t("chat.launcherLabel", "AI Chat")}
-                >
-                  <Bot size={18} aria-hidden="true" />
-                  {t("chat.launcherLabel", "AI Chat")}
-                </button>
-                <PrefetchLink className="nav-drawer-booking" to="/booking" onClick={() => setDrawerOpen(false)}>
-                  <CalendarCheck size={18} aria-hidden="true" />
-                  {t("nav.booking")}
+                <PrefetchLink className="nav-drawer-practice" to="/practice" onClick={() => setDrawerOpen(false)}>
+                  <FlaskConical size={18} aria-hidden="true" />
+                  {t("platform.lab.title")}
                 </PrefetchLink>
               </div>
             </div>

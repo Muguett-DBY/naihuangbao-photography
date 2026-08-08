@@ -20,7 +20,7 @@ describe("scroll progress and reading aids", () => {
     const rootLayout = read("src/layouts/RootLayout.tsx");
     const globalEffects = read("src/components/GlobalEffects.tsx");
     // ScrollProgress lives in the lazy GlobalEffects module
-    expect(rootLayout).toContain("!isEditor");
+    expect(rootLayout).toContain("!isCreativeWorkspace");
     expect(rootLayout).toContain("GlobalEffects");
     expect(globalEffects).toContain("ScrollProgress");
   });

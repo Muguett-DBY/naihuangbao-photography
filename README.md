@@ -1,12 +1,14 @@
 # 奶黄包摄影
 
-南京女生写真、情侣约拍与摄影服务网站。项目包含公开作品与预约流程、客户账户、课程与活动、浏览器端修图工具、后台管理，以及 Cloudflare Pages Functions API。
+一个围绕光、颜色、纸张与影像编排持续练习的个人视觉实验平台。主产品由 Living Archive、滚动视觉故事、浏览器本地创作工具和单画布沉浸式视觉层组成；历史预约、账户与后台流程保留在 Practice 区，作为工程练习而非商业服务承诺。
 
 ## 技术栈
 
 - React 19 + React Router 8 + TypeScript 7
 - Vite 8 + Vitest + Playwright
-- Cloudflare Pages Functions + D1 + R2
+- 目录化内容清单 + 构建期图片/关系校验
+- IndexedDB 本地项目（Composer、Story Builder、暗房）
+- Cloudflare Pages Functions + D1 + R2 练习模块
 - Three.js 单画布沉浸式视觉层
 - PWA、响应式图片、离线预约恢复和多语言内容
 
@@ -43,8 +45,20 @@ src/
   lib, utils/   UI 无关算法与基础设施
   data, types/  静态模型、默认内容和契约
 functions/      Cloudflare Pages Functions
+content/        可独立编辑的 Archive 与 Story 内容源
+source-assets/  版本化概念源图，不直接发送给浏览器
 scripts/        构建、SEO、性能和架构工具
 ```
+
+内容与素材更新：
+
+```bash
+npm run assets:concept   # 从 source-assets 生成 AVIF/WebP 响应式版本
+npm run archive:build   # 校验并生成 Archive 清单
+npm run stories:build   # 校验并生成 Story 清单
+```
+
+不要直接编辑 `src/data/*.generated.json`、`public/archive-manifest.json` 或 `public/story-manifest.json`。
 
 完整依赖方向和大文件治理规则见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)，开发与发布约定见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 

@@ -218,6 +218,7 @@ export function StyleQuiz({
   return (
     <div
       ref={previewGateRef}
+      id="style-finder"
       className={showPreview ? "style-quiz style-quiz--with-preview" : "style-quiz"}
       data-motion-group
     >

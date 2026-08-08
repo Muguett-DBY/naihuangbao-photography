@@ -1,9 +1,8 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { RootLayout } from "./layouts/RootLayout";
 import { NotFound } from "./components/NotFound";
-import { useBookingModal } from "./features/booking/BookingContext";
 import { createRoutePreloader } from "./lib/route-preload";
 import { routeLoaders } from "./routing/route-loaders";
 
@@ -13,9 +12,12 @@ const HomePage = lazy(routeLoaders["/"]);
 const ArchivePage = lazy(routeLoaders["/archive"]);
 const ArchiveProjectPage = lazy(routeLoaders["/archive/:id"]);
 const StoriesPage = lazy(routeLoaders["/stories"]);
+const VisualStoryPage = lazy(routeLoaders["/stories/:id"]);
 const CreateHubPage = lazy(routeLoaders["/create"]);
+const StoryBuilderPage = lazy(routeLoaders["/create/story"]);
 const CreativeStudioPage = lazy(routeLoaders["/studio"]);
 const LabPage = lazy(routeLoaders["/lab"]);
+const PracticePage = lazy(routeLoaders["/practice"]);
 const AboutPage = lazy(routeLoaders["/about"]);
 const GalleryPage = lazy(routeLoaders["/gallery"]);
 const CoursesPage = lazy(routeLoaders["/courses"]);
@@ -46,7 +48,6 @@ function AdminRoute() {
 
 function HomePremiereFallback() {
   const { t } = useTranslation();
-  const { openBookingModal, warmBookingModal } = useBookingModal();
 
   return (
     <section className="hero hero-home home-premiere-fallback" aria-label={t("nav.home")}>
@@ -94,17 +95,8 @@ function HomePremiereFallback() {
         <p className="hero-intro">{t("platform.playground.intro", "A personal visual playground for light, color, paper, and local creative tools.")}</p>
         <div className="hero-actions">
           <a className="hero-create-primary" href="/create">{t("platform.playground.startCreating", "Start creating")}</a>
-          <button
-            className="hero-cover-primary-btn"
-            type="button"
-            onClick={() => openBookingModal()}
-            onFocus={warmBookingModal}
-            onPointerDown={warmBookingModal}
-            onPointerEnter={warmBookingModal}
-          >
-            {t("platform.playground.bookingDemo", "Booking flow experiment")}
-          </button>
-          <a className="hero-gallery-link" href="/gallery">{t("hero.ctaView")}</a>
+          <a className="hero-cover-primary-btn" href="/archive">{t("nav.archive")}</a>
+          <a className="hero-gallery-link" href="/stories">{t("nav.stories")}</a>
         </div>
       </div>
     </section>
@@ -150,9 +142,12 @@ export const router = createBrowserRouter([
       { path: "archive", element: <PageSuspense><ArchivePage /></PageSuspense> },
       { path: "archive/:id", element: <PageSuspense><ArchiveProjectPage /></PageSuspense> },
       { path: "stories", element: <PageSuspense><StoriesPage /></PageSuspense> },
+      { path: "stories/:id", element: <PageSuspense><VisualStoryPage /></PageSuspense> },
       { path: "create", element: <PageSuspense><CreateHubPage /></PageSuspense> },
+      { path: "create/story", element: <PageSuspense><StoryBuilderPage /></PageSuspense> },
       { path: "studio", element: <PageSuspense><CreativeStudioPage /></PageSuspense> },
-      { path: "lab", element: <PageSuspense><LabPage /></PageSuspense> },
+      { path: "practice", element: <PageSuspense><PracticePage /></PageSuspense> },
+      { path: "lab", element: <Navigate to="/practice" replace /> },
       { path: "about", element: <PageSuspense><AboutPage /></PageSuspense> },
       { path: "gallery", element: <PageSuspense><GalleryPage /></PageSuspense> },
       { path: "gallery/:id", element: <PageSuspense><PhotoDetailPage /></PageSuspense> },

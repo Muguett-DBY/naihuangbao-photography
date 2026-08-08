@@ -1,5 +1,13 @@
 import { test, expect } from "@playwright/test";
 
+async function openBookingModal(page: import("@playwright/test").Page) {
+  await page.goto("/booking");
+  const bookingButton = page.locator(".booking-quick-cta-btn");
+  await expect(bookingButton).toBeVisible();
+  await bookingButton.click();
+  await expect(page.locator("#booking-package")).toBeVisible();
+}
+
 test.describe("booking flow", () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
@@ -13,17 +21,9 @@ test.describe("booking flow", () => {
       { width: 390, height: 844 },
     ]) {
       await page.setViewportSize(viewport);
-      await page.goto("/");
-      const homeHero = page.locator('.hero[data-optical-garden="true"]');
-      await expect(homeHero).toBeVisible();
-      await expect(homeHero.locator(".cinematic-premiere")).toBeVisible();
-      const bookingButton = homeHero.locator(".hero-cover-primary-btn");
-      await expect(bookingButton).toBeVisible();
-      await bookingButton.scrollIntoViewIfNeeded();
+      await openBookingModal(page);
 
       const initialScrollY = await page.evaluate(() => window.scrollY);
-      await bookingButton.click();
-      await expect(page.locator("#booking-package")).toBeVisible();
 
       const dialog = page.getByRole("dialog").filter({ has: page.locator(".booking-modal-content") });
       const mask = dialog.locator("..");
@@ -53,32 +53,7 @@ test.describe("booking flow", () => {
   });
 
   test("opens booking modal, validates form, submits", async ({ page }) => {
-    await page.goto("/booking");
-
-    // Verify page loads
-    await expect(page.locator("h1")).toBeVisible();
-
-    // Scroll to the StyleQuiz section
-    await page.evaluate(() => window.scrollTo(0, 200));
-    await page.waitForTimeout(500);
-
-    // Find and click booking CTA on the page
-    const bookBtn = page.locator('a[href="/booking"]').first();
-    if (await bookBtn.isVisible()) {
-      await bookBtn.click();
-    }
-
-    // Navigate home and use the hero booking button
-    await page.goto("/");
-    await page.waitForTimeout(1000);
-
-    // Click the booking CTA button on the hero
-    const heroBookBtn = page.locator(".hero-cover-primary-btn");
-    await expect(heroBookBtn).toBeVisible();
-    await heroBookBtn.click();
-
-    // Wait for modal to open - Step 1 shows package/date/time
-    await expect(page.locator("#booking-package")).toBeVisible({ timeout: 5000 });
+    await openBookingModal(page);
     await expect(page.locator("#booking-time")).toBeVisible();
 
     // Click Next to go to Step 2 where name/contact are
@@ -180,9 +155,7 @@ test.describe("booking flow", () => {
       }),
     }));
 
-    await page.goto("/");
-    await page.locator(".hero-cover-primary-btn").click();
-    await expect(page.locator("#booking-package")).toBeVisible();
+    await openBookingModal(page);
     await expect(page.locator(".mobile-bottom-nav")).toBeHidden();
     await expect(page.locator(".public-chat-widget")).toBeHidden();
 
@@ -250,8 +223,7 @@ test.describe("booking flow", () => {
       }),
     }));
 
-    await page.goto("/");
-    await page.locator(".hero-cover-primary-btn").click();
+    await openBookingModal(page);
 
     await expect(page.locator(".calendar-date-boundary")).toContainText(policyDate);
     await expect(page.locator(".calendar-policy-note")).toContainText("Asia/Shanghai");
@@ -341,8 +313,7 @@ test.describe("booking flow", () => {
       });
     });
 
-    await page.goto("/");
-    await page.locator(".hero-cover-primary-btn").click();
+    await openBookingModal(page);
     await page.getByRole("button", { name: /^August 21, 2099 - Open slots: 2/ }).click();
     await page.locator("#booking-time").selectOption("fullDay");
     await page.getByRole("button", { name: "Next", exact: true }).click();
@@ -419,8 +390,7 @@ test.describe("booking flow", () => {
       });
     });
 
-    await page.goto("/");
-    await page.locator(".hero-cover-primary-btn").click();
+    await openBookingModal(page);
 
     const fullDateButton = page.getByRole("button", { name: /^August 21, 2099 - Fully Booked, join waitlist/ });
     await expect(fullDateButton).toBeEnabled();
@@ -500,8 +470,7 @@ test.describe("booking flow", () => {
       });
     });
 
-    await page.goto("/");
-    await page.locator(".hero-cover-primary-btn").click();
+    await openBookingModal(page);
 
     await page.getByRole("button", { name: /^August 21, 2099 - Fully Booked, join waitlist/ }).click();
     await page.locator("#booking-name").fill("Waitlist Guest");
@@ -568,8 +537,7 @@ test.describe("booking flow", () => {
       }),
     }));
 
-    await page.goto("/");
-    await page.locator(".hero-cover-primary-btn").click();
+    await openBookingModal(page);
     await page.getByRole("button", { name: /^August 21, 2099 - Fully Booked, join waitlist/ }).click();
     await page.locator("#booking-name").fill("Waitlist Guest");
     await page.locator("#booking-contact").fill("xiaohongshu:waitlist-guest");

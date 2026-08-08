@@ -81,6 +81,12 @@
       "season": "Season",
       "mood": "Mood",
       "palette": "Palette",
+      "technique": "Technique",
+      "medium": "Medium",
+      "search": "Search the archive",
+      "searchHint": "Title, material, technique, or mood",
+      "resultCount": "{{count}} projects",
+      "clearAll": "Clear all filters",
       "all": "All",
       "reset": "Reset filters",
       "conceptTitle": "No-person concept studies",
@@ -146,12 +152,12 @@
   },
   "hero": {
     "volBadge": "✦ Vol.1",
-    "brandPrefix": "Nanjing Portrait & Couple Photography",
-    "intro": "Soft, film-like, natural everyday portraits — captured as Nanjing memories you'll want to revisit. Perfect for first-timers, couple anniversaries, and relaxed city walks.",
+    "brandPrefix": "Personal visual archive and local creative tools",
+    "intro": "A living visual system where light, paper, weather, and browser graphics can be explored, remixed, and carried forward.",
     "trustTags": {
-      "privacy": "Photos private by default",
-      "guidance": "Full posing guidance",
-      "styles": "Jiangnan / Street / Park"
+      "privacy": "Local-first making",
+      "guidance": "A living archive",
+      "styles": "Visuals / Interaction / Tools"
     },
     "ctaView": "View Gallery",
     "ctaBooking": "Book",
@@ -1589,9 +1595,9 @@
   },
   "seo": {
     "siteName": "Naihuangbao Photography",
-    "siteTagline": "Naihuangbao Photography | Nanjing Portrait",
-    "homeTitle": "Naihuangbao Photography | Nanjing Portrait",
-    "homeDesc": "Soft, film-like portrait photography in Nanjing. Natural everyday portraits for individuals and couples — Xianlin, Xuanwu Lake, Yihe Road and beyond.",
+    "siteTagline": "NHB Photography | Personal Visual Archive",
+    "homeTitle": "NHB Photography | Personal Visual Archive and Creative Lab",
+    "homeDesc": "A living personal practice project exploring photography, interactive storytelling, browser graphics, and local-first creative tools.",
     "galleryTitle": "Portfolio | Naihuangbao Photography",
     "galleryDesc": "Browse our portfolio of Nanjing portrait photography — park shoots, Jiangnan vibes, street style, indoor portraits and couple sessions.",
     "coursesTitle": "Photography Courses | Naihuangbao Photography",

@@ -1,0 +1,29 @@
+{
+  "id": "material-index",
+  "kind": "concept",
+  "title": "Material Index",
+  "subtitle": "颜色、档案与纸纤维的索引练习",
+  "chapter": "12",
+  "year": 2026,
+  "summary": "把颜料、底片形状、植物标本和纸张纤维组织成一套不需要文字的目录。",
+  "statement": "索引并不一定从标签开始。颜色的位置、抽屉的深度和纸张透光的方式，也可以构成一套直觉性的检索系统。这组画面尝试让材料自己说明彼此的关系。",
+  "place": "南京",
+  "season": "盛夏",
+  "moods": ["理性", "触觉", "安静"],
+  "palette": ["奶油", "苔藓", "深莓"],
+  "techniques": ["俯拍编排", "档案式构图", "透射微距"],
+  "process": [
+    { "title": "建立色谱", "note": "只使用五个品牌色域，让材料差异比色相数量更重要。" },
+    { "title": "折叠目录", "note": "用抽屉、薄纸和空白底片形状建立层级。" },
+    { "title": "放大纤维", "note": "最后进入纸张内部，让宏观秩序落到真实触感。" }
+  ],
+  "related": ["paper-tide", "darkroom-herbarium", "light-workshop"],
+  "media": [
+    { "src": "/images/visual-os-v5/04-color-lab.webp", "alt": "颜料、空白底片形状与植物标本组成的色彩实验桌", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v5/08-archive-drawers.webp", "alt": "打开的木质档案抽屉与蕨叶、滤色片和空白联系表", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v5/09-paper-light.webp", "alt": "透射光穿过奶油、苔藓与珊瑚色手工纸纤维", "width": 1536, "height": 1024 }
+  ],
+  "publishedAt": "2026-07-19",
+  "mediums": ["生成式概念摄影", "档案设计"],
+  "keywords": ["色彩实验", "档案", "手工纸", "蕨叶", "底片", "颜料", "微距", "索引"]
+}

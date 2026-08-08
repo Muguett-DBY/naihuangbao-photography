@@ -12,6 +12,7 @@ import sharp from "sharp";
 const COLLECTIONS = [
   { name: "concept-premiere", webpQuality: 82, avifQuality: 65 },
   { name: "optical-archive", webpQuality: 76, avifQuality: 58 },
+  { name: "visual-os-v5", webpQuality: 80, avifQuality: 62 },
 ];
 const SIZES = [
   { directory: "640", width: 640 },
@@ -51,11 +52,18 @@ async function processCollection(collection) {
 }
 
 async function main() {
+  const requestedCollection = process.argv[2];
+  const collections = requestedCollection
+    ? COLLECTIONS.filter((collection) => collection.name === requestedCollection)
+    : COLLECTIONS;
+  if (collections.length === 0) {
+    throw new Error(`Unknown concept collection: ${requestedCollection}`);
+  }
   let processed = 0;
-  for (const collection of COLLECTIONS) {
+  for (const collection of collections) {
     processed += await processCollection(collection);
   }
-  console.log(`Processed ${processed} concept source images across ${COLLECTIONS.length} collections.`);
+  console.log(`Processed ${processed} concept source images across ${collections.length} collections.`);
 }
 
 main().catch((error) => {

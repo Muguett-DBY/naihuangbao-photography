@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { archiveProjects } from "../data/living-archive";
 import { galleryItems } from "../data/gallery";
-import { primaryNavigation, practiceNavigation } from "../data/product-navigation";
+import { primaryNavigation, practiceHubRoute, practiceNavigation } from "../data/product-navigation";
 import { INITIAL } from "../data/editor-constants";
 import { createCompositionSlots, getCompositionSize, type CompositionMode } from "./composition-layout";
 import {
@@ -19,7 +19,7 @@ import { resolveViewTransitionKind } from "./view-transition";
 describe("NHB visual playground v4 contracts", () => {
   it("keeps concept studies complete and separate from authorized real work", () => {
     const realIds = new Set(galleryItems.map((photo) => photo.id));
-    expect(archiveProjects).toHaveLength(9);
+    expect(archiveProjects).toHaveLength(13);
     expect(new Set(archiveProjects.map((project) => project.id)).size).toBe(archiveProjects.length);
     for (const project of archiveProjects) {
       expect(project.kind).toBe("concept");
@@ -29,7 +29,7 @@ describe("NHB visual playground v4 contracts", () => {
       expect(project.media.length).toBeGreaterThan(0);
       expect(realIds.has(project.id)).toBe(false);
       for (const media of project.media) {
-        expect(media.src).toMatch(/^\/images\/optical-archive\/.+\.webp$/);
+        expect(media.src).toMatch(/^\/images\/(optical-archive|visual-os-v5)\/.+\.webp$/);
         expect(media.width).toBeGreaterThanOrEqual(1122);
         expect(media.height).toBeGreaterThanOrEqual(900);
       }
@@ -41,7 +41,11 @@ describe("NHB visual playground v4 contracts", () => {
     expect(result.projects.length).toBeGreaterThan(0);
     expect(result.projects.every((project) => project.moods.includes("雨后"))).toBe(true);
     expect(result.facets.palette).toContain("奶油");
-    expect(archiveProjects).toHaveLength(9);
+    expect(result.facets.technique.length).toBeGreaterThan(3);
+    expect(result.facets.medium).toContain("生成式概念摄影");
+    expect(createArchiveView(archiveProjects, { query: "玻璃" }).projects.length).toBeGreaterThan(0);
+    expect(createArchiveView(archiveProjects, { query: "definitely-missing" }).projects).toHaveLength(0);
+    expect(archiveProjects).toHaveLength(13);
   });
 
   it("builds AVIF and WebP responsive sources for optical archive images", () => {
@@ -56,9 +60,29 @@ describe("NHB visual playground v4 contracts", () => {
 
   it("ships a deterministic validated archive manifest", () => {
     const manifest = JSON.parse(readFileSync(resolve(process.cwd(), "public/archive-manifest.json"), "utf8"));
-    expect(manifest.schemaVersion).toBe(2);
-    expect(manifest.projects).toHaveLength(9);
-    expect(manifest.projects.flatMap((project: { media: unknown[] }) => project.media)).toHaveLength(19);
+    expect(manifest.schemaVersion).toBe(3);
+    expect(manifest.projects).toHaveLength(13);
+    expect(manifest.projects.flatMap((project: { media: unknown[] }) => project.media)).toHaveLength(31);
+    expect(manifest.generatedFrom).toBe("content/archive/projects/*/project.json");
+    for (const media of manifest.projects.flatMap((project: { media: Array<Record<string, unknown>> }) => project.media)) {
+      expect(media.dominantColor).toMatch(/^#[0-9a-f]{6}$/);
+      expect(media.blurDataUrl).toMatch(/^data:image\/webp;base64,/);
+      expect(Number(media.aspectRatio)).toBeGreaterThan(0);
+    }
+  });
+
+  it("keeps every archive study independently editable without a monolithic source file", () => {
+    const contentRoot = resolve(process.cwd(), "content/archive/projects");
+    const directories = readdirSync(contentRoot, { withFileTypes: true }).filter((entry) => entry.isDirectory());
+    expect(directories).toHaveLength(archiveProjects.length);
+    expect(existsSync(resolve(process.cwd(), "content/archive/projects.json"))).toBe(false);
+    for (const directory of directories) {
+      const source = JSON.parse(readFileSync(resolve(contentRoot, directory.name, "project.json"), "utf8"));
+      expect(source.id).toBe(directory.name);
+      expect(source.publishedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(source.mediums.length).toBeGreaterThan(0);
+      expect(source.keywords.length).toBeGreaterThanOrEqual(3);
+    }
   });
 
   it("keeps composition slots bounded for every export format", () => {
@@ -122,11 +146,13 @@ describe("NHB visual playground v4 contracts", () => {
   });
 
   it("defines a unique primary IA and route-specific transition intents", () => {
-    const paths = [...primaryNavigation, ...practiceNavigation].map((route) => route.to);
+    const paths = [...primaryNavigation, practiceHubRoute, ...practiceNavigation].map((route) => route.to);
     expect(new Set(primaryNavigation.map((route) => route.to)).size).toBe(primaryNavigation.length);
     expect(paths).toContain("/archive");
     expect(primaryNavigation.map((route) => route.to)).toContain("/create");
     expect(paths).toContain("/studio");
+    expect(paths).toContain("/practice");
+    expect(paths).not.toContain("/lab");
     expect(resolveViewTransitionKind("/archive", "/gallery/gallery-jiangnan-01")).toBe("photo-deepen");
     expect(resolveViewTransitionKind("/gallery/gallery-jiangnan-01", "/archive")).toBe("photo-return");
     expect(resolveViewTransitionKind("/archive", "/archive/morning-conservatory")).toBe("photo-deepen");

@@ -19,16 +19,12 @@ const STATIC_PAGES = [
   { path: "/archive", priority: 0.9, changefreq: "weekly" },
   { path: "/stories", priority: 0.8, changefreq: "weekly" },
   { path: "/create", priority: 0.9, changefreq: "monthly" },
+  { path: "/create/story", priority: 0.7, changefreq: "monthly" },
   { path: "/studio", priority: 0.8, changefreq: "monthly" },
-  { path: "/lab", priority: 0.7, changefreq: "monthly" },
+  { path: "/practice", priority: 0.6, changefreq: "monthly" },
   { path: "/about", priority: 0.7, changefreq: "monthly" },
-  { path: "/gallery", priority: 0.9, changefreq: "weekly" },
-  { path: "/booking", priority: 0.9, changefreq: "monthly" },
-  { path: "/courses", priority: 0.7, changefreq: "weekly" },
-  { path: "/products", priority: 0.7, changefreq: "weekly" },
-  { path: "/workshops", priority: 0.7, changefreq: "weekly" },
-  { path: "/shop", priority: 0.6, changefreq: "weekly" },
-  { path: "/map", priority: 0.6, changefreq: "monthly" },
+  { path: "/gallery", priority: 0.7, changefreq: "monthly" },
+  { path: "/map", priority: 0.5, changefreq: "monthly" },
 ];
 
 const today = new Date().toISOString().slice(0, 10);
@@ -65,9 +61,13 @@ function hreflangLinks(path: string) {
 function buildSitemap() {
   const entries: string[] = [];
   const archiveProjects = JSON.parse(readFileSync(
-    resolve(dirname(fileURLToPath(import.meta.url)), "../content/archive/projects.json"),
+    resolve(dirname(fileURLToPath(import.meta.url)), "../src/data/archive-projects.generated.json"),
     "utf8",
   )) as Array<{ id: string; title: string; subtitle: string; media: Array<{ src: string }> }>;
+  const visualStories = JSON.parse(readFileSync(
+    resolve(dirname(fileURLToPath(import.meta.url)), "../src/data/visual-stories.generated.json"),
+    "utf8",
+  )) as Array<{ id: string; title: string; subtitle: string; chapters: Array<{ media: Array<{ src: string }> }> }>;
 
   for (const page of STATIC_PAGES) {
     const url = `${SITE_ORIGIN}${page.path}`;
@@ -93,6 +93,20 @@ function buildSitemap() {
       `      <image:loc>${escapeXml(`${SITE_ORIGIN}${project.media[0].src}`)}</image:loc>`,
       `      <image:title>${escapeXml(project.title)}</image:title>`,
       `      <image:caption>${escapeXml(project.subtitle)}</image:caption>`,
+      "    </image:image>",
+    ];
+    entries.push(urlEntry(`${SITE_ORIGIN}${path}`, 0.8, "monthly", extra));
+  }
+
+  for (const story of visualStories) {
+    const path = `/stories/${story.id}`;
+    const cover = story.chapters[0].media[0];
+    const extra = [
+      ...hreflangLinks(path),
+      "    <image:image>",
+      `      <image:loc>${escapeXml(`${SITE_ORIGIN}${cover.src}`)}</image:loc>`,
+      `      <image:title>${escapeXml(story.title)}</image:title>`,
+      `      <image:caption>${escapeXml(story.subtitle)}</image:caption>`,
       "    </image:image>",
     ];
     entries.push(urlEntry(`${SITE_ORIGIN}${path}`, 0.8, "monthly", extra));

@@ -1,0 +1,44 @@
+{
+  "id": "weather-into-paper",
+  "title": "Weather Into Paper",
+  "subtitle": "把一场雨折进四张纸里",
+  "summary": "一篇从温室、织物、雨玻璃走向纸纤维的滚动视觉札记。",
+  "publishedAt": "2026-08-08",
+  "readingMinutes": 4,
+  "accent": "#56705d",
+  "concept": true,
+  "chapters": [
+    {
+      "id": "corridor",
+      "kicker": "01 / ARRIVAL",
+      "title": "天气先进入走廊",
+      "body": "玻璃把雨线拉成长句。空间里没有人物，只有水滴不断改变远处植物和墙面的边缘。",
+      "layout": "full",
+      "media": [{ "projectId": "weather-glasshouse", "mediaIndex": 0 }]
+    },
+    {
+      "id": "fabric",
+      "kicker": "02 / AIR",
+      "title": "风被织物看见",
+      "body": "半透明织物把不可见的空气变成慢动作。奶油色在苔藓庭院里不再是背景，而是一条移动的光路。",
+      "layout": "columns",
+      "media": [{ "projectId": "weather-glasshouse", "mediaIndex": 1 }, { "projectId": "optical-garden", "mediaIndex": 0 }]
+    },
+    {
+      "id": "glass",
+      "kicker": "03 / REFRACTION",
+      "title": "山茶在雨玻璃之后失焦",
+      "body": "水珠把一朵花拆成多个色域。重要的不是恢复清晰，而是保留这段短暂的视觉偏差。",
+      "layout": "quiet",
+      "media": [{ "projectId": "weather-glasshouse", "mediaIndex": 2 }]
+    },
+    {
+      "id": "paper",
+      "kicker": "04 / TRACE",
+      "title": "最后只留下纸的纤维",
+      "body": "天气退场之后，光仍停在材料内部。纸张把此前的绿色、黄色和珊瑚色压缩成可以触摸的余像。",
+      "layout": "contact",
+      "media": [{ "projectId": "material-index", "mediaIndex": 2 }, { "projectId": "light-workshop", "mediaIndex": 1 }, { "projectId": "light-workshop", "mediaIndex": 2 }]
+    }
+  ]
+}

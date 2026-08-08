@@ -1,0 +1,77 @@
+{
+  "id": "darkroom-herbarium",
+  "kind": "concept",
+  "title": "Darkroom Herbarium",
+  "subtitle": "暖光桌上的植物暗房",
+  "chapter": "04",
+  "year": 2026,
+  "summary": "在无人暗房里整理胶片、植物拓印与尚未命名的色彩配方。",
+  "statement": "暗房被当作一座植物标本室：底片记录外部世界，叶片与纸张记录手的动作，暖光让两种时间在桌面相遇。",
+  "place": "NHB 暗房",
+  "season": "秋",
+  "moods": [
+    "安静",
+    "温暖",
+    "手作"
+  ],
+  "palette": [
+    "深莓",
+    "柔黄",
+    "苔藓"
+  ],
+  "techniques": [
+    "暖色局部光",
+    "联系表叙事",
+    "植物拓印"
+  ],
+  "process": [
+    {
+      "title": "建立桌面秩序",
+      "note": "让底片、印样和植物沿阅读方向形成连续节奏。"
+    },
+    {
+      "title": "压低环境光",
+      "note": "只保留光桌和一盏侧灯，强调手作空间的温度。"
+    },
+    {
+      "title": "留下未完成",
+      "note": "刻意保留空白卡片和未命名配方，让档案仍可继续生长。"
+    }
+  ],
+  "related": [
+    "print-room",
+    "rain-atlas"
+  ],
+  "media": [
+    {
+      "src": "/images/optical-archive/darkroom-light-table-v1.webp",
+      "alt": "暖色光桌、胶片与植物照片组成的无人暗房",
+      "width": 1122,
+      "height": 1402
+    },
+    {
+      "src": "/images/optical-archive/archive-contact-sheet-v1.webp",
+      "alt": "植物、建筑与雨景底片组成的摄影联系表",
+      "width": 1448,
+      "height": 1086
+    }
+  ],
+  "publishedAt": "2026-04-15",
+  "mediums": [
+    "生成式概念摄影",
+    "空间研究"
+  ],
+  "keywords": [
+    "NHB 暗房",
+    "秋",
+    "安静",
+    "温暖",
+    "手作",
+    "深莓",
+    "柔黄",
+    "苔藓",
+    "暖色局部光",
+    "联系表叙事",
+    "植物拓印"
+  ]
+}

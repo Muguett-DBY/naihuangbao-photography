@@ -30,4 +30,12 @@ describe("sitemap generator", () => {
     expect(source).toContain("x-default");
     expect(source).toContain("hreflang");
   });
+
+  it("indexes the primary visual platform and reads the generated archive catalogue", () => {
+    const source = read("scripts/build-sitemap.ts");
+    expect(source).toContain('{ path: "/practice"');
+    expect(source).not.toContain('{ path: "/booking"');
+    expect(source).not.toContain('{ path: "/lab"');
+    expect(source).toContain("archive-projects.generated.json");
+  });
 });

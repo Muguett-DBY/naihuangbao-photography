@@ -1,0 +1,1093 @@
+[
+  {
+    "id": "darkroom-herbarium",
+    "kind": "concept",
+    "title": "Darkroom Herbarium",
+    "subtitle": "暖光桌上的植物暗房",
+    "chapter": "04",
+    "year": 2026,
+    "summary": "在无人暗房里整理胶片、植物拓印与尚未命名的色彩配方。",
+    "statement": "暗房被当作一座植物标本室：底片记录外部世界，叶片与纸张记录手的动作，暖光让两种时间在桌面相遇。",
+    "place": "NHB 暗房",
+    "season": "秋",
+    "moods": [
+      "安静",
+      "温暖",
+      "手作"
+    ],
+    "palette": [
+      "深莓",
+      "柔黄",
+      "苔藓"
+    ],
+    "techniques": [
+      "暖色局部光",
+      "联系表叙事",
+      "植物拓印"
+    ],
+    "process": [
+      {
+        "title": "建立桌面秩序",
+        "note": "让底片、印样和植物沿阅读方向形成连续节奏。"
+      },
+      {
+        "title": "压低环境光",
+        "note": "只保留光桌和一盏侧灯，强调手作空间的温度。"
+      },
+      {
+        "title": "留下未完成",
+        "note": "刻意保留空白卡片和未命名配方，让档案仍可继续生长。"
+      }
+    ],
+    "related": [
+      "print-room",
+      "rain-atlas"
+    ],
+    "media": [
+      {
+        "src": "/images/optical-archive/darkroom-light-table-v1.webp",
+        "alt": "暖色光桌、胶片与植物照片组成的无人暗房",
+        "width": 1122,
+        "height": 1402,
+        "dominantColor": "#53412d",
+        "aspectRatio": 0.8003
+      },
+      {
+        "src": "/images/optical-archive/archive-contact-sheet-v1.webp",
+        "alt": "植物、建筑与雨景底片组成的摄影联系表",
+        "width": 1448,
+        "height": 1086,
+        "dominantColor": "#8d887e",
+        "aspectRatio": 1.3333
+      }
+    ],
+    "publishedAt": "2026-04-15",
+    "mediums": [
+      "生成式概念摄影",
+      "空间研究"
+    ],
+    "keywords": [
+      "NHB 暗房",
+      "秋",
+      "安静",
+      "温暖",
+      "手作",
+      "深莓",
+      "柔黄",
+      "苔藓",
+      "暖色局部光",
+      "联系表叙事",
+      "植物拓印"
+    ]
+  },
+  {
+    "id": "light-workshop",
+    "kind": "concept",
+    "title": "Light Workshop",
+    "subtitle": "晨光、纸张与可移动的光学桌面",
+    "chapter": "10",
+    "year": 2026,
+    "summary": "把空工作室当作一台缓慢显影的机器，观察光如何经过纸、水与玻璃。",
+    "statement": "这组练习从一张没有人的工作台开始。纸张不是背景，玻璃也不是道具，它们共同决定光线的路径，让每一帧都像可以继续操作的未完成实验。",
+    "place": "南京",
+    "season": "盛夏",
+    "moods": [
+      "温柔",
+      "明亮",
+      "实验"
+    ],
+    "palette": [
+      "奶油",
+      "柔黄",
+      "苔藓"
+    ],
+    "techniques": [
+      "晨光分层",
+      "光学折射",
+      "水面反射"
+    ],
+    "process": [
+      {
+        "title": "搭建光路",
+        "note": "用玻璃、水盘和白纸安排三段不同速度的反射。"
+      },
+      {
+        "title": "保留空场",
+        "note": "移除人物，让材料本身成为动作和叙事。"
+      },
+      {
+        "title": "控制温度",
+        "note": "暖光只落在纸边，阴影维持克制的苔藓色。"
+      }
+    ],
+    "related": [
+      "tactile-optics",
+      "material-index",
+      "night-projection-room"
+    ],
+    "media": [
+      {
+        "src": "/images/visual-os-v5/01-dawn-studio.webp",
+        "alt": "晨光中的空工作室、手工纸和光学玻璃",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#837767",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/visual-os-v5/02-optical-caustic.webp",
+        "alt": "玻璃、水与蕨叶形成的微距焦散光影",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#8c7e6b",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/visual-os-v5/07-bamboo-water.webp",
+        "alt": "水盘把竹影反射到奶油色墙面",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#97836d",
+        "aspectRatio": 1.5
+      }
+    ],
+    "publishedAt": "2026-06-18",
+    "mediums": [
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "keywords": [
+      "工作室",
+      "晨光",
+      "手工纸",
+      "玻璃",
+      "水面",
+      "折射",
+      "空场",
+      "奶油色"
+    ]
+  },
+  {
+    "id": "material-index",
+    "kind": "concept",
+    "title": "Material Index",
+    "subtitle": "颜色、档案与纸纤维的索引练习",
+    "chapter": "12",
+    "year": 2026,
+    "summary": "把颜料、底片形状、植物标本和纸张纤维组织成一套不需要文字的目录。",
+    "statement": "索引并不一定从标签开始。颜色的位置、抽屉的深度和纸张透光的方式，也可以构成一套直觉性的检索系统。这组画面尝试让材料自己说明彼此的关系。",
+    "place": "南京",
+    "season": "盛夏",
+    "moods": [
+      "理性",
+      "触觉",
+      "安静"
+    ],
+    "palette": [
+      "奶油",
+      "苔藓",
+      "深莓"
+    ],
+    "techniques": [
+      "俯拍编排",
+      "档案式构图",
+      "透射微距"
+    ],
+    "process": [
+      {
+        "title": "建立色谱",
+        "note": "只使用五个品牌色域，让材料差异比色相数量更重要。"
+      },
+      {
+        "title": "折叠目录",
+        "note": "用抽屉、薄纸和空白底片形状建立层级。"
+      },
+      {
+        "title": "放大纤维",
+        "note": "最后进入纸张内部，让宏观秩序落到真实触感。"
+      }
+    ],
+    "related": [
+      "paper-tide",
+      "darkroom-herbarium",
+      "light-workshop"
+    ],
+    "media": [
+      {
+        "src": "/images/visual-os-v5/04-color-lab.webp",
+        "alt": "颜料、空白底片形状与植物标本组成的色彩实验桌",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#706f6d",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/visual-os-v5/08-archive-drawers.webp",
+        "alt": "打开的木质档案抽屉与蕨叶、滤色片和空白联系表",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#50483e",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/visual-os-v5/09-paper-light.webp",
+        "alt": "透射光穿过奶油、苔藓与珊瑚色手工纸纤维",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#6f5a2f",
+        "aspectRatio": 1.5
+      }
+    ],
+    "publishedAt": "2026-07-19",
+    "mediums": [
+      "生成式概念摄影",
+      "档案设计"
+    ],
+    "keywords": [
+      "色彩实验",
+      "档案",
+      "手工纸",
+      "蕨叶",
+      "底片",
+      "颜料",
+      "微距",
+      "索引"
+    ]
+  },
+  {
+    "id": "morning-conservatory",
+    "kind": "concept",
+    "title": "Morning Conservatory",
+    "subtitle": "雨停以后，空间开始发光",
+    "chapter": "07",
+    "year": 2026,
+    "summary": "从湿润石面、薄纱与植物影子里整理一条缓慢进入花园的观看路线。",
+    "statement": "这组画面把房间当成一只巨大的光学装置。窗、薄纱、积水与旧玻璃依次过滤晨光，空间本身成为摄影对象。",
+    "place": "晨光温室",
+    "season": "早春",
+    "moods": [
+      "晨光",
+      "温柔",
+      "空间"
+    ],
+    "palette": [
+      "奶油",
+      "苔藓",
+      "珊瑚"
+    ],
+    "techniques": [
+      "建筑分层",
+      "反射控制",
+      "自然光等待"
+    ],
+    "process": [
+      {
+        "title": "保留湿度",
+        "note": "雨停后立即拍摄，让石面反光连接室内与花园。"
+      },
+      {
+        "title": "建立前景",
+        "note": "用薄纱和玻璃容器减缓观看速度，而不是直接展示窗外。"
+      },
+      {
+        "title": "等待影子",
+        "note": "让植物影子沿走廊移动到结构最清晰的位置。"
+      }
+    ],
+    "related": [
+      "optical-garden",
+      "paper-tide"
+    ],
+    "media": [
+      {
+        "src": "/images/optical-archive/conservatory-after-rain-v1.webp",
+        "alt": "雨后空温室、奶油薄纱、湿润石面与花园晨光",
+        "width": 1536,
+        "height": 1024,
+        "note": "雨后温室的第一束光",
+        "dominantColor": "#695f4e",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/optical-archive/corridor-shadow-study-v1.webp",
+        "alt": "空走廊里的植物影子、苔藓绿长凳与珊瑚色织物",
+        "width": 1536,
+        "height": 1024,
+        "note": "沿墙面移动的植物影子",
+        "dominantColor": "#9a8265",
+        "aspectRatio": 1.5
+      }
+    ],
+    "publishedAt": "2026-07-15",
+    "mediums": [
+      "生成式概念摄影",
+      "空间研究"
+    ],
+    "keywords": [
+      "晨光温室",
+      "早春",
+      "晨光",
+      "温柔",
+      "空间",
+      "奶油",
+      "苔藓",
+      "珊瑚",
+      "建筑分层",
+      "反射控制",
+      "自然光等待"
+    ]
+  },
+  {
+    "id": "night-projection-room",
+    "kind": "concept",
+    "title": "Night Projection Room",
+    "subtitle": "暗房、投影与无人观看的放映",
+    "chapter": "13",
+    "year": 2026,
+    "summary": "一场没有观众的深夜放映，让安全灯、投影尘埃和静物在暗处完成叙事。",
+    "statement": "当房间里没有观众，放映仍然会发生。光束穿过尘埃，纸屏接住一段空白影像，物件在安全灯下等待显影。这组练习关注观看发生之前的那一分钟。",
+    "place": "南京",
+    "season": "夏夜",
+    "moods": [
+      "电影感",
+      "深夜",
+      "专注"
+    ],
+    "palette": [
+      "深莓",
+      "奶油",
+      "苔藓"
+    ],
+    "techniques": [
+      "安全灯色域",
+      "体积光",
+      "静物舞台"
+    ],
+    "process": [
+      {
+        "title": "关闭环境光",
+        "note": "让安全灯先定义暗部层次，而不是把空间压成纯黑。"
+      },
+      {
+        "title": "显出光束",
+        "note": "保留空气里的颗粒，使投影成为有体积的对象。"
+      },
+      {
+        "title": "留下空白",
+        "note": "屏幕和底片框保持无内容，让观看动作本身成为主题。"
+      }
+    ],
+    "related": [
+      "print-room",
+      "weather-print-room",
+      "light-workshop"
+    ],
+    "media": [
+      {
+        "src": "/images/visual-os-v5/05-night-print-room.webp",
+        "alt": "深莓色安全灯下的无人暗房与显影盘",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#380c05",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/visual-os-v5/11-projection-room.webp",
+        "alt": "空房间中的模拟投影机把光束投向手工纸屏幕",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#342415",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/visual-os-v5/12-film-still-life.webp",
+        "alt": "底片框、苔藓色陶器、光学玻璃和珊瑚色细绳静物",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#98886f",
+        "aspectRatio": 1.5
+      }
+    ],
+    "publishedAt": "2026-08-06",
+    "mediums": [
+      "生成式概念摄影",
+      "光线装置"
+    ],
+    "keywords": [
+      "暗房",
+      "投影",
+      "安全灯",
+      "显影",
+      "静物",
+      "深莓",
+      "体积光",
+      "夜晚"
+    ]
+  },
+  {
+    "id": "optical-garden",
+    "kind": "concept",
+    "title": "Optical Garden",
+    "subtitle": "雨后月门与缓慢折射",
+    "chapter": "01",
+    "year": 2026,
+    "summary": "把空庭院、玻璃、水面与晨光编排成一段无人出演的开场。",
+    "statement": "这里没有主角，只有雨水移动过墙面、玻璃和旧砖之后留下的光。画面被设计成一段可以缓慢进入的空间，而不是一张需要立刻读完的照片。",
+    "place": "南京",
+    "season": "初夏",
+    "moods": [
+      "温柔",
+      "雨后",
+      "通透"
+    ],
+    "palette": [
+      "奶油",
+      "苔藓",
+      "珊瑚"
+    ],
+    "techniques": [
+      "低机位反射",
+      "柔雾高光",
+      "分层景深"
+    ],
+    "process": [
+      {
+        "title": "寻找入口",
+        "note": "先用月门固定观看方向，再让水面承担第二个画框。"
+      },
+      {
+        "title": "保留空气",
+        "note": "降低局部对比度，让雨雾和晨光留在建筑之间。"
+      },
+      {
+        "title": "控制颜色",
+        "note": "只留下苔藓绿、旧墙奶油色和极少量珊瑚暖调。"
+      }
+    ],
+    "related": [
+      "rain-atlas",
+      "paper-tide"
+    ],
+    "media": [
+      {
+        "src": "/images/optical-archive/optical-garden-hero-v1.webp",
+        "alt": "雨后江南庭院、月门与水面倒影组成的无人物概念影像",
+        "width": 1672,
+        "height": 941,
+        "dominantColor": "#857c65",
+        "aspectRatio": 1.7768
+      },
+      {
+        "src": "/images/optical-archive/rain-window-corridor-v1.webp",
+        "alt": "透过雨滴玻璃看到的空旷江南长廊",
+        "width": 1672,
+        "height": 941,
+        "dominantColor": "#3d3a2d",
+        "aspectRatio": 1.7768
+      }
+    ],
+    "publishedAt": "2026-01-15",
+    "mediums": [
+      "生成式概念摄影",
+      "空间研究"
+    ],
+    "keywords": [
+      "南京",
+      "初夏",
+      "温柔",
+      "雨后",
+      "通透",
+      "奶油",
+      "苔藓",
+      "珊瑚",
+      "低机位反射",
+      "柔雾高光",
+      "分层景深"
+    ]
+  },
+  {
+    "id": "paper-tide",
+    "kind": "concept",
+    "title": "Paper Tide",
+    "subtitle": "宣纸上的水光呼吸",
+    "chapter": "03",
+    "year": 2026,
+    "summary": "光线越过宣纸、竹影与水纹，让静止画面保留一点流动。",
+    "statement": "这是一组关于轻和慢的练习。纸张不是背景，而是一层会吸收光、显露纤维并改变时间感的介质。",
+    "place": "纸上工作室",
+    "season": "盛夏",
+    "moods": [
+      "安静",
+      "抽象",
+      "轻盈"
+    ],
+    "palette": [
+      "奶油",
+      "苔藓",
+      "柔黄"
+    ],
+    "techniques": [
+      "透射光",
+      "纸张肌理",
+      "水纹投影"
+    ],
+    "process": [
+      {
+        "title": "选择纸面",
+        "note": "保留宣纸纤维，让空白区域也拥有可见的信息。"
+      },
+      {
+        "title": "制造水纹",
+        "note": "通过浅水盘反射太阳光，得到不重复的缓慢波形。"
+      },
+      {
+        "title": "减少物件",
+        "note": "移除多余道具，只留下玻璃、竹影与一条色彩线索。"
+      }
+    ],
+    "related": [
+      "optical-garden",
+      "prism-notes"
+    ],
+    "media": [
+      {
+        "src": "/images/optical-archive/paper-ripple-study-v1.webp",
+        "alt": "宣纸、光学玻璃、水纹与竹影组成的抽象光影",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#b1a17e",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/optical-archive/bamboo-shadow-ribbon-v1.webp",
+        "alt": "奶油色墙面、竹影、古玻璃与珊瑚色丝带",
+        "width": 1122,
+        "height": 1402,
+        "dominantColor": "#7f7055",
+        "aspectRatio": 0.8003
+      }
+    ],
+    "publishedAt": "2026-03-15",
+    "mediums": [
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "keywords": [
+      "纸上工作室",
+      "盛夏",
+      "安静",
+      "抽象",
+      "轻盈",
+      "奶油",
+      "苔藓",
+      "柔黄",
+      "透射光",
+      "纸张肌理",
+      "水纹投影"
+    ]
+  },
+  {
+    "id": "print-room",
+    "kind": "concept",
+    "title": "Print Room",
+    "subtitle": "从屏幕返回纸面",
+    "chapter": "06",
+    "year": 2026,
+    "summary": "关于联系表、艺术微喷、空白笔记与一张等待被写下的卡片。",
+    "statement": "屏幕里的图像总能继续修改，纸面却要求做出决定。这个章节记录从选择、排序到打印的过程，也记录一张照片成为物件之后的新尺度。",
+    "place": "NHB 印样室",
+    "season": "冬",
+    "moods": [
+      "手作",
+      "明亮",
+      "收藏"
+    ],
+    "palette": [
+      "奶油",
+      "柔黄",
+      "珊瑚"
+    ],
+    "techniques": [
+      "艺术微喷",
+      "纸张配对",
+      "编辑排序"
+    ],
+    "process": [
+      {
+        "title": "编辑联系表",
+        "note": "先按节奏而不是单张强度排序，让系列拥有停顿。"
+      },
+      {
+        "title": "匹配纸张",
+        "note": "根据阴影密度与颜色选择纹理和白度不同的纸张。"
+      },
+      {
+        "title": "回到手中",
+        "note": "用真实观看距离检查尺寸、边距和触感，而不是只看屏幕。"
+      }
+    ],
+    "related": [
+      "darkroom-herbarium",
+      "prism-notes"
+    ],
+    "media": [
+      {
+        "src": "/images/optical-archive/print-folio-v1.webp",
+        "alt": "植物与建筑艺术微喷、收藏夹和玻璃镇纸",
+        "width": 1672,
+        "height": 941,
+        "dominantColor": "#988d7b",
+        "aspectRatio": 1.7768
+      },
+      {
+        "src": "/images/optical-archive/course-light-study-v1.webp",
+        "alt": "空白笔记本、测光表、镜片与茉莉组成的课程静物",
+        "width": 1672,
+        "height": 941,
+        "dominantColor": "#9c9386",
+        "aspectRatio": 1.7768
+      },
+      {
+        "src": "/images/optical-archive/booking-garden-table-v1.webp",
+        "alt": "雨后花园窗边的空白卡片、茶杯与山茶花",
+        "width": 1672,
+        "height": 941,
+        "dominantColor": "#55523f",
+        "aspectRatio": 1.7768
+      }
+    ],
+    "publishedAt": "2026-06-15",
+    "mediums": [
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "keywords": [
+      "NHB 印样室",
+      "冬",
+      "手作",
+      "明亮",
+      "收藏",
+      "奶油",
+      "柔黄",
+      "珊瑚",
+      "艺术微喷",
+      "纸张配对",
+      "编辑排序"
+    ]
+  },
+  {
+    "id": "prism-notes",
+    "kind": "concept",
+    "title": "Prism Notes",
+    "subtitle": "镜片、山茶与微小光谱",
+    "chapter": "02",
+    "year": 2026,
+    "summary": "用镜头、棱镜与花瓣记录一次关于色散和触感的桌面实验。",
+    "statement": "把摄影器材从工具变成被观察的对象。镜片、花瓣和折射光共同构成一张小型地图，每一次移动都重新分配颜色。",
+    "place": "室内光桌",
+    "season": "春",
+    "moods": [
+      "明亮",
+      "实验",
+      "细腻"
+    ],
+    "palette": [
+      "奶油",
+      "珊瑚",
+      "玻璃蓝"
+    ],
+    "techniques": [
+      "桌面布光",
+      "棱镜色散",
+      "微距切片"
+    ],
+    "process": [
+      {
+        "title": "搭建光桌",
+        "note": "用半透明纸柔化硬光，同时保留玻璃边缘的高光。"
+      },
+      {
+        "title": "移动棱镜",
+        "note": "每次只改变一个角度，寻找不过度彩虹化的细小色散。"
+      },
+      {
+        "title": "加入触感",
+        "note": "用带水滴的花瓣平衡镜片和金属的冷静。"
+      }
+    ],
+    "related": [
+      "paper-tide",
+      "print-room"
+    ],
+    "media": [
+      {
+        "src": "/images/optical-archive/prism-lens-stilllife-v1.webp",
+        "alt": "镜头、棱镜、山茶花与胶片组成的光学静物",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#8a7e68",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/optical-archive/camellia-prism-macro-v1.webp",
+        "alt": "带雨滴的珊瑚色山茶花与小型棱镜",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#807869",
+        "aspectRatio": 1.5
+      }
+    ],
+    "publishedAt": "2026-02-15",
+    "mediums": [
+      "生成式概念摄影",
+      "静物研究"
+    ],
+    "keywords": [
+      "室内光桌",
+      "春",
+      "明亮",
+      "实验",
+      "细腻",
+      "奶油",
+      "珊瑚",
+      "玻璃蓝",
+      "桌面布光",
+      "棱镜色散",
+      "微距切片"
+    ]
+  },
+  {
+    "id": "rain-atlas",
+    "kind": "concept",
+    "title": "Rain Atlas",
+    "subtitle": "蓝调时刻的南京雨信",
+    "chapter": "05",
+    "year": 2026,
+    "summary": "把月门、夜巷和雨窗编成一册可以继续生长的城市天气图谱。",
+    "statement": "城市在下雨时会暂时失去明确边界。窗、门洞和倒影把同一条街拆成多层空间，蓝调时刻则把噪声压成安静的色块。",
+    "place": "南京旧城",
+    "season": "梅雨",
+    "moods": [
+      "雨后",
+      "电影感",
+      "深邃"
+    ],
+    "palette": [
+      "深莓",
+      "苔藓",
+      "玻璃蓝"
+    ],
+    "techniques": [
+      "蓝调曝光",
+      "雨窗前景",
+      "夜色分层"
+    ],
+    "process": [
+      {
+        "title": "等待蓝调",
+        "note": "在天光与路灯亮度接近的短时间内完成主画面。"
+      },
+      {
+        "title": "借用雨窗",
+        "note": "把玻璃上的水滴作为近景，让街道退到更深的位置。"
+      },
+      {
+        "title": "整理灯光",
+        "note": "压制过亮招牌，只保留能引导视线的暖色反射。"
+      }
+    ],
+    "related": [
+      "optical-garden",
+      "darkroom-herbarium"
+    ],
+    "media": [
+      {
+        "src": "/images/optical-archive/rain-moon-gate-night-v1.webp",
+        "alt": "雨后蓝调时刻里透过月门看到的江南夜巷",
+        "width": 1672,
+        "height": 941,
+        "dominantColor": "#282828",
+        "aspectRatio": 1.7768
+      },
+      {
+        "src": "/images/optical-archive/color-glass-study-v1.webp",
+        "alt": "彩色光学玻璃、雨水与胶片组成的色彩研究",
+        "width": 1672,
+        "height": 941,
+        "dominantColor": "#968b73",
+        "aspectRatio": 1.7768
+      }
+    ],
+    "publishedAt": "2026-05-15",
+    "mediums": [
+      "生成式概念摄影",
+      "静物研究"
+    ],
+    "keywords": [
+      "南京旧城",
+      "梅雨",
+      "雨后",
+      "电影感",
+      "深邃",
+      "深莓",
+      "苔藓",
+      "玻璃蓝",
+      "蓝调曝光",
+      "雨窗前景",
+      "夜色分层"
+    ]
+  },
+  {
+    "id": "tactile-optics",
+    "kind": "concept",
+    "title": "Tactile Optics",
+    "subtitle": "纸、水与旧玻璃的触觉光学",
+    "chapter": "08",
+    "year": 2026,
+    "summary": "把纸张纤维、水纹、植物和老玻璃放在同一张桌面上，观察光如何改变触感。",
+    "statement": "光并不只负责照亮物体，它也会放大纤维、折叠影子，并让一块旧玻璃拥有短暂的颜色。这个实验尝试把视觉变成接近触摸的经验。",
+    "place": "纸上实验室",
+    "season": "初夏",
+    "moods": [
+      "触觉",
+      "明亮",
+      "安静"
+    ],
+    "palette": [
+      "奶油",
+      "柔黄",
+      "深莓"
+    ],
+    "techniques": [
+      "微距静物",
+      "真实折射",
+      "纸张透光"
+    ],
+    "process": [
+      {
+        "title": "选择材料",
+        "note": "只使用纸、水、植物和玻璃，让每一种表面都有明确角色。"
+      },
+      {
+        "title": "追踪焦散",
+        "note": "缓慢移动水盘和镜片，保留最自然、最少装饰感的折射。"
+      },
+      {
+        "title": "加入颜色",
+        "note": "用一条深莓线和珊瑚纸边建立克制的视觉方向。"
+      }
+    ],
+    "related": [
+      "prism-notes",
+      "paper-tide"
+    ],
+    "media": [
+      {
+        "src": "/images/optical-archive/paper-water-lab-v1.webp",
+        "alt": "手工纸、水盘、植物标本与深莓色线组成的无人桌面实验",
+        "width": 1536,
+        "height": 1024,
+        "note": "水纹落在纸张和植物标本上",
+        "dominantColor": "#8b7d67",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/optical-archive/glass-fern-caustics-v1.webp",
+        "alt": "旧玻璃、水面与蕨类在亚麻布上形成的真实折射光",
+        "width": 1536,
+        "height": 1024,
+        "note": "玻璃边缘形成的细小焦散",
+        "dominantColor": "#867562",
+        "aspectRatio": 1.5
+      }
+    ],
+    "publishedAt": "2026-08-15",
+    "mediums": [
+      "生成式概念摄影",
+      "静物研究"
+    ],
+    "keywords": [
+      "纸上实验室",
+      "初夏",
+      "触觉",
+      "明亮",
+      "安静",
+      "奶油",
+      "柔黄",
+      "深莓",
+      "微距静物",
+      "真实折射",
+      "纸张透光"
+    ]
+  },
+  {
+    "id": "weather-glasshouse",
+    "kind": "concept",
+    "title": "Weather Glasshouse",
+    "subtitle": "雨水穿过玻璃之后的三种天气",
+    "chapter": "11",
+    "year": 2026,
+    "summary": "从温室长廊、湿润织物到雨玻璃，把天气保存成一组可触摸的表面。",
+    "statement": "天气不是画面的背景，而是一种不断改写边缘的介质。雨滴让玻璃失去确定性，湿润的石面把织物和植物重新连接，镜头只负责记录这些短暂关系。",
+    "place": "南京",
+    "season": "梅雨",
+    "moods": [
+      "湿润",
+      "通透",
+      "漂浮"
+    ],
+    "palette": [
+      "苔藓",
+      "奶油",
+      "珊瑚"
+    ],
+    "techniques": [
+      "雨玻璃折射",
+      "材料动态",
+      "低饱和分色"
+    ],
+    "process": [
+      {
+        "title": "等待雨线",
+        "note": "让水滴先建立画面的纵向节奏，再决定主体位置。"
+      },
+      {
+        "title": "引入织物",
+        "note": "用半透明材料把不可见的风转译成可见动作。"
+      },
+      {
+        "title": "压低高光",
+        "note": "保留湿润质感，同时避免玻璃反射变成纯白斑块。"
+      }
+    ],
+    "related": [
+      "rain-atlas",
+      "optical-garden",
+      "material-index"
+    ],
+    "media": [
+      {
+        "src": "/images/visual-os-v5/03-rain-conservatory.webp",
+        "alt": "雨后无人温室长廊与湿润玻璃",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#545441",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/visual-os-v5/06-fabric-moss-garden.webp",
+        "alt": "苔藓庭院中随风移动的奶油色半透明织物",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#554d3e",
+        "aspectRatio": 1.5
+      },
+      {
+        "src": "/images/visual-os-v5/10-rain-glass-camellia.webp",
+        "alt": "雨玻璃后方的白色山茶与彩色折射",
+        "width": 1536,
+        "height": 1024,
+        "dominantColor": "#5f5539",
+        "aspectRatio": 1.5
+      }
+    ],
+    "publishedAt": "2026-07-02",
+    "mediums": [
+      "生成式概念摄影",
+      "天气研究"
+    ],
+    "keywords": [
+      "温室",
+      "雨玻璃",
+      "织物",
+      "山茶",
+      "苔藓",
+      "梅雨",
+      "折射",
+      "湿润"
+    ]
+  },
+  {
+    "id": "weather-print-room",
+    "kind": "concept",
+    "title": "Weather Print Room",
+    "subtitle": "把一场雨编辑成纸面色谱",
+    "chapter": "09",
+    "year": 2026,
+    "summary": "从蓝调雨窗到清晨印样室，记录天气如何被选择、排序并最终留在纸上。",
+    "statement": "天气没有固定形状，但可以通过反射、色样和纸张被重新组织。这组研究把观察室与印样室连接成一条从现场到物件的路径。",
+    "place": "雨窗与印样室",
+    "season": "梅雨末期",
+    "moods": [
+      "蓝调",
+      "收藏",
+      "安静"
+    ],
+    "palette": [
+      "玻璃蓝",
+      "苔藓",
+      "柔黄"
+    ],
+    "techniques": [
+      "混合色温",
+      "色样编辑",
+      "纸面输出"
+    ],
+    "process": [
+      {
+        "title": "记录天气",
+        "note": "在雨窗前保留冷色环境光和少量暖色灯光的平衡。"
+      },
+      {
+        "title": "提取色谱",
+        "note": "从玻璃、植物和灯影里挑选有限的颜色，而不是复制整张画面。"
+      },
+      {
+        "title": "返回纸面",
+        "note": "在晨光印样室检查纸张对白色、黄色与深色区域的响应。"
+      }
+    ],
+    "related": [
+      "print-room",
+      "rain-atlas"
+    ],
+    "media": [
+      {
+        "src": "/images/optical-archive/rain-observation-room-v1.webp",
+        "alt": "蓝调雨窗、苔藓绿玻璃瓶与深莓色滤镜组成的无人观察室",
+        "width": 1535,
+        "height": 1024,
+        "note": "蓝调时刻的天气观察架",
+        "dominantColor": "#3f4b5a",
+        "aspectRatio": 1.499
+      },
+      {
+        "src": "/images/optical-archive/print-room-morning-v2.webp",
+        "alt": "清晨无人印样室、奶油色艺术纸与苔藓绿工作台",
+        "width": 1536,
+        "height": 1024,
+        "note": "从色样到纸面的最后一步",
+        "dominantColor": "#8b7759",
+        "aspectRatio": 1.5
+      }
+    ],
+    "publishedAt": "2026-09-15",
+    "mediums": [
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "keywords": [
+      "雨窗与印样室",
+      "梅雨末期",
+      "蓝调",
+      "收藏",
+      "安静",
+      "玻璃蓝",
+      "苔藓",
+      "柔黄",
+      "混合色温",
+      "色样编辑",
+      "纸面输出"
+    ]
+  }
+]

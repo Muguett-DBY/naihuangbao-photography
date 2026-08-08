@@ -38,6 +38,8 @@ npm audit --omit=dev --audit-level=high
 | Reusable state without rendered UI | `src/hooks/` |
 | Pure browser-independent logic | `src/lib/` or `src/utils/` |
 | Shared model or static default | `src/types/` or `src/data/` |
+| Archive or story source content | `content/archive/` or `content/stories/` |
+| Versioned concept source image | `source-assets/<collection>/raw/` |
 | Three.js resources and lifecycle | `src/experience/` |
 | Cloudflare endpoint | `functions/api/` |
 | Shared server security or domain logic | `functions/_*.ts` |
@@ -73,6 +75,7 @@ The following commonly change during verification and should only be committed
 when intentional:
 
 - `public/sitemap.xml` and `public/sitemap-index.xml`
+- `src/data/*.generated.json`, `public/archive-manifest.json`, and `public/story-manifest.json`
 - `dist/`
 - `test-results/`
 - `.playwright-cli/`

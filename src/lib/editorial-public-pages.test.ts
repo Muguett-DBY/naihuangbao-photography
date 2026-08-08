@@ -13,7 +13,8 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(home).toContain('className="hero-contact-sheet"');
     expect(home).toContain('className="hero-issue-line"');
     expect(home).toContain('className="hero-cover-primary-btn"');
-    expect(home).toContain('className="home-editorial-band');
+    expect(home).toContain("<HomeVisualSystem />");
+    expect(home).toContain('className="home-playground-portals"');
     expect(home).not.toContain("hero-glow-orb");
     expect(home).not.toContain("float-element");
     expect(home).not.toContain("deco-svg-path");
@@ -67,12 +68,12 @@ describe("editorial public-page reconstruction contracts", () => {
     const home = read("src/pages/HomePage.tsx");
     const chapterIndex = read("src/components/shared/HomeChapterIndex.tsx");
     const header = read("src/components/shared/Header.tsx");
-    const css = read("src/styles/pages.css");
+    const css = read("src/styles/platform-v5.css");
     const premiereCss = read("src/styles/home-premiere.css");
 
     expect(home).toContain('from "../components/shared/HomeChapterIndex"');
     expect(home).toContain("<HomeChapterIndex");
-    expect(home).toContain('id="book"');
+    expect(home).toContain('id="make-something"');
     expect(chapterIndex).toContain("IntersectionObserver");
     expect(chapterIndex).toContain('const DESKTOP_INDEX_QUERY = "(min-width: 981px)"');
     expect(chapterIndex).toContain("matchMedia(DESKTOP_INDEX_QUERY)");
@@ -94,46 +95,19 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(css).toContain(".gallery-masonry-item:focus-within .gallery-masonry-media::after");
   });
 
-  it("turns the home services into an image-led interactive journal", () => {
+  it("turns the home platform map into an image-led interactive visual system", () => {
     const home = read("src/pages/HomePage.tsx");
-    const services = read("src/components/ServiceJournal.tsx");
-    const css = read("src/styles/pages.css");
+    const system = read("src/components/HomeVisualSystem.tsx");
+    const css = read("src/styles/platform-v5.css");
 
-    expect(home).toContain('import { ServiceJournal } from "../components/ServiceJournal"');
-    expect(home).toContain("<ServiceJournal />");
-    expect(home).not.toContain('className="home-services-grid"');
-    expect(services).toContain("36vw");
-    expect(css).toContain(".home-service-journal");
-    expect(css).toContain(".home-service-panel.is-active");
-  });
-
-  it("presents trust promises as a keyboard-operable image desk", () => {
-    const why = read("src/components/WhyChooseUs.tsx");
-
-    expect(why).toContain('className="why-editorial-layout"');
-    expect(why).toContain('className="why-editorial-media"');
-    expect(why).toContain("ImageWithFallback");
-    expect(why).toContain("setActiveIndex(index)");
-    expect(why).toContain("onPointerEnter");
-    expect(why).toContain("onFocus");
-    expect(why).toContain("aria-pressed");
-    expect(why).toContain("data-motion-group");
-  });
-
-  it("gives reviews motion-safe transitions, visibility pausing, and swipe navigation", () => {
-    const reviews = read("src/components/Reviews.tsx");
-    const css = read("src/styles/pages.css");
-
-    expect(reviews).toContain("AnimatePresence");
-    expect(reviews).toContain("useReducedMotion");
-    expect(reviews).toContain('document.addEventListener("visibilitychange"');
-    expect(reviews).toContain("onDragEnd");
-    expect(reviews).toContain("isHovering || hasFocusWithin || isPointerActive");
-    expect(reviews).toContain('window.addEventListener("pointerup", releasePointer)');
-    expect(reviews).toContain('window.removeEventListener("pointerup", releasePointer)');
-    expect(reviews).not.toContain("setIsPaused");
-    expect(reviews).toContain('className={`reviews-progress');
-    expect(css).toContain("@keyframes review-cycle");
+    expect(home).toContain('import { HomeVisualSystem } from "../components/HomeVisualSystem"');
+    expect(home).toContain("<HomeVisualSystem />");
+    expect(system).toContain("requestAnimationFrame");
+    expect(system).toContain("aria-pressed");
+    expect(system).toContain('role="group"');
+    expect(system).toContain('aria-label="NHB system areas"');
+    expect(css).toContain(".home-visual-system__stage");
+    expect(css).toContain(".home-visual-system__nodes button:is(:hover, :focus-visible, .is-active)");
   });
 
   it("pairs every style-finder step with a responsive photo preview", () => {
@@ -142,7 +116,7 @@ describe("editorial public-page reconstruction contracts", () => {
     const quiz = read("src/components/StyleQuiz.tsx");
     const css = read("src/styles/pages.css");
 
-    expect(home).toContain("<StyleQuiz showPreview />");
+    expect(home).not.toContain("<StyleQuiz");
     expect(booking).toContain("<StyleQuiz showPreview deferPreview />");
     expect(quiz).toContain("showPreview = false");
     expect(quiz).toContain("deferPreview = false");
@@ -158,11 +132,11 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(css).toMatch(/@media \(max-width: 980px\)[\s\S]*?\.quiz-preview\s*\{[^}]*order:\s*2/s);
   });
 
-  it("closes the home page with a full-width photographic booking action", () => {
+  it("closes the home page with a full-width photographic creation action", () => {
     const home = read("src/pages/HomePage.tsx");
-    const css = read("src/styles/pages.css");
+    const css = read("src/styles/platform-v5.css");
 
-    expect(home).toContain('className="home-final-cta"');
+    expect(home).toContain('className="home-final-cta home-final-cta--create"');
     expect(home).toContain('className="home-final-cta-media"');
     expect(home).toContain('className="home-final-cta-content"');
     expect(home).toContain("data-motion-group");

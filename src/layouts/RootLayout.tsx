@@ -25,6 +25,7 @@ import { useExperiencePause } from "../experience/useExperiencePause";
 import { resolveRoutePreset } from "../experience/scene-presets";
 import { OPEN_COMMAND_PALETTE_EVENT } from "../lib/command-palette";
 import { RouteExperienceTelemetry } from "../components/shared/RouteExperienceTelemetry";
+import { RouteIndexingPolicy } from "../components/shared/RouteIndexingPolicy";
 
 // Optional cursor and texture effects stay in a separate chunk so the page
 // can paint and become interactive without coupling them to route code.
@@ -105,8 +106,10 @@ export function RootLayout() {
   }, []);
 
   const isEditor = location.pathname === "/editor";
-  const isCreativeWorkspace = isEditor || ["/create", "/studio"].includes(location.pathname);
-  const showPublicChat = !isCreativeWorkspace;
+  const isCreativeWorkspace = isEditor || location.pathname === "/create" || location.pathname.startsWith("/create/") || location.pathname === "/studio";
+  const practicePrefixes = ["/practice", "/gallery", "/courses", "/products", "/presets", "/workshops", "/shop", "/booking", "/map", "/login", "/dashboard", "/compare"];
+  const isPracticeRoute = practicePrefixes.some((prefix) => location.pathname === prefix || location.pathname.startsWith(`${prefix}/`));
+  const showPublicChat = isPracticeRoute && !isCreativeWorkspace;
   const routePreset = resolveRoutePreset(location.pathname);
 
   return (
@@ -114,6 +117,7 @@ export function RootLayout() {
       <OfflineFallback isOffline={!isOnline} />
       <PwaUpdateBanner />
       <RouteHashScroller />
+      <RouteIndexingPolicy />
       <RouteExperienceTelemetry pathname={location.pathname} />
       <nav className="skip-links" aria-label={t("common.skipLinksLabel", "Skip links")}>
         <a
@@ -159,7 +163,7 @@ export function RootLayout() {
           {t("common.skipToFooter", "跳转到页脚")}
         </a>
       </nav>
-      {!isEditor && (
+      {!isCreativeWorkspace && (
         <ErrorBoundary fallback={null}>
           <Suspense fallback={null}>
             <GlobalEffects />
@@ -174,9 +178,9 @@ export function RootLayout() {
                 <ExperienceStateBridge pathname={location.pathname} chatOpen={chatOpen} />
                 {routePreset && <ImmersiveExperienceGate />}
                 <ToastProvider>
-                  <Header onOpenChat={() => setChatOpen(true)} />
+                  <Header />
                   <DeferredCommandPalette />
-                  {!isEditor && (
+                  {isPracticeRoute && !isEditor && (
                     <Suspense fallback={null}>
                       <OfflineBookingRecovery isOnline={isOnline} />
                     </Suspense>
@@ -205,7 +209,7 @@ export function RootLayout() {
                     </div>
                   )}
                   <Footer />
-                  {!isEditor && <MobileBottomNav />}
+                  {!isCreativeWorkspace && <MobileBottomNav />}
                   <ScrollToTop />
                   <PwaInstallBanner />
                 </ToastProvider>

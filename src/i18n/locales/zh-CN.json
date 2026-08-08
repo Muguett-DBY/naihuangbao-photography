@@ -81,6 +81,12 @@
       "season": "季节",
       "mood": "情绪",
       "palette": "色彩",
+      "technique": "技法",
+      "medium": "媒介",
+      "search": "搜索档案",
+      "searchHint": "标题、材料、技法或情绪",
+      "resultCount": "{{count}} 个项目",
+      "clearAll": "清除全部条件",
       "all": "全部",
       "reset": "重置筛选",
       "conceptTitle": "无人物概念研究",
@@ -146,12 +152,12 @@
   },
   "hero": {
     "volBadge": "✦ Vol.1",
-    "brandPrefix": "南京女生写真与情侣约拍",
-    "intro": "把自然、柔和、带一点胶片感的日常，拍成可以反复翻看的南京记忆。适合第一次约拍的女生、情侣纪念和轻松的城市散步。",
+    "brandPrefix": "个人视觉档案与本地创作工具",
+    "intro": "把光、纸张、天气与浏览器图形组织成可以探索、创作和继续生长的个人视觉系统。",
     "trustTags": {
-      "privacy": "不默认公开客片",
-      "guidance": "全程动作引导",
-      "styles": "江南 / 街拍 / 公园"
+      "privacy": "本地优先创作",
+      "guidance": "持续更新档案",
+      "styles": "视觉 / 交互 / 工具"
     },
     "ctaView": "查看作品",
     "ctaBooking": "预约",
@@ -1640,9 +1646,9 @@
   },
   "seo": {
     "siteName": "奶黄包摄影",
-    "siteTagline": "奶黄包摄影 | 南京约拍",
-    "homeTitle": "奶黄包摄影 | 南京约拍",
-    "homeDesc": "偏柔雾胶片感的自然约拍，适合日常记录、江南感写真、情侣纪念和轻松陪拍。南京女生写真与情侣约拍首选。",
+    "siteTagline": "奶黄包摄影 | 个人视觉档案",
+    "homeTitle": "奶黄包摄影 | 个人视觉档案与创作实验",
+    "homeDesc": "持续生长的个人视觉练习项目：探索摄影、互动叙事、浏览器图形和本地优先创作工具。",
     "galleryTitle": "作品集 | 奶黄包摄影",
     "galleryDesc": "南京写真摄影作品集——公园日常、江南感、街拍、室内写真和情侣约拍。真实授权作品展示。",
     "coursesTitle": "摄影课程 | 奶黄包摄影",

@@ -55,14 +55,15 @@ describe("editorial design system", () => {
     }
   });
 
-  it("moves mobile chat access into the navigation drawer without a floating launcher", () => {
+  it("keeps chat out of the primary platform shell and confines it to practice routes", () => {
     const chatCss = read("src/styles/chat.css");
     const header = read("src/components/shared/Header.tsx");
     const layout = read("src/layouts/RootLayout.tsx");
     const shellCss = read("src/styles/sections.css");
 
-    expect(header).toContain("onOpenChat");
-    expect(layout).toContain("<Header onOpenChat=");
+    expect(header).not.toContain("onOpenChat");
+    expect(layout).toContain("<Header />");
+    expect(layout).toContain("const showPublicChat = isPracticeRoute && !isCreativeWorkspace");
     expect(chatCss).toMatch(/@media \(max-width: 768px\)[\s\S]*\.public-chat-launcher \{\s*display: none;/);
     expect(shellCss).toContain("padding-bottom: var(--mobile-bottom-nav-offset)");
   });
@@ -103,7 +104,7 @@ describe("editorial design system", () => {
   it("renders the configured city in the soft portrait footer line", () => {
     const footer = read("src/components/shared/Footer.tsx");
 
-    expect(footer).toContain("{siteConfig.city} / PORTRAITS, LIGHT");
+    expect(footer).toContain("{siteConfig.city} / LIGHT, PAPER &amp; LOCAL TOOLS");
     expect(footer).not.toContain("NANJING / PORTRAITS, LIGHT");
   });
 

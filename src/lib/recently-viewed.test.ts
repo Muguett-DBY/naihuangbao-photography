@@ -40,9 +40,10 @@ describe("recently viewed photos", () => {
     expect(page).toContain("recently-viewed");
   });
 
-  it("mounts the RecentlyViewedStrip on the home page so returning visitors can resume", () => {
+  it("keeps visit history on detail and dashboard surfaces instead of the flagship home", () => {
     const home = read("src/pages/HomePage.tsx");
-    expect(home).toContain("RecentlyViewedStrip");
+    expect(home).not.toContain("RecentlyViewedStrip");
+    expect(home).toContain("HomeCreativePulse");
   });
 
   it("ships localized recently viewed copy in all locales", () => {

@@ -1,0 +1,79 @@
+{
+  "id": "morning-conservatory",
+  "kind": "concept",
+  "title": "Morning Conservatory",
+  "subtitle": "雨停以后，空间开始发光",
+  "chapter": "07",
+  "year": 2026,
+  "summary": "从湿润石面、薄纱与植物影子里整理一条缓慢进入花园的观看路线。",
+  "statement": "这组画面把房间当成一只巨大的光学装置。窗、薄纱、积水与旧玻璃依次过滤晨光，空间本身成为摄影对象。",
+  "place": "晨光温室",
+  "season": "早春",
+  "moods": [
+    "晨光",
+    "温柔",
+    "空间"
+  ],
+  "palette": [
+    "奶油",
+    "苔藓",
+    "珊瑚"
+  ],
+  "techniques": [
+    "建筑分层",
+    "反射控制",
+    "自然光等待"
+  ],
+  "process": [
+    {
+      "title": "保留湿度",
+      "note": "雨停后立即拍摄，让石面反光连接室内与花园。"
+    },
+    {
+      "title": "建立前景",
+      "note": "用薄纱和玻璃容器减缓观看速度，而不是直接展示窗外。"
+    },
+    {
+      "title": "等待影子",
+      "note": "让植物影子沿走廊移动到结构最清晰的位置。"
+    }
+  ],
+  "related": [
+    "optical-garden",
+    "paper-tide"
+  ],
+  "media": [
+    {
+      "src": "/images/optical-archive/conservatory-after-rain-v1.webp",
+      "alt": "雨后空温室、奶油薄纱、湿润石面与花园晨光",
+      "width": 1536,
+      "height": 1024,
+      "note": "雨后温室的第一束光"
+    },
+    {
+      "src": "/images/optical-archive/corridor-shadow-study-v1.webp",
+      "alt": "空走廊里的植物影子、苔藓绿长凳与珊瑚色织物",
+      "width": 1536,
+      "height": 1024,
+      "note": "沿墙面移动的植物影子"
+    }
+  ],
+  "publishedAt": "2026-07-15",
+  "mediums": [
+    "生成式概念摄影",
+    "空间研究"
+  ],
+  "keywords": [
+    "晨光温室",
+    "早春",
+    "晨光",
+    "温柔",
+    "空间",
+    "奶油",
+    "苔藓",
+    "珊瑚",
+    "建筑分层",
+    "反射控制",
+    "自然光等待"
+  ]
+}

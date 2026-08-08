@@ -73,9 +73,8 @@ describe("performance budgets", () => {
     expect(readFileSync(resolve(root, "src/styles/pages.css"), "utf8")).not.toContain("Photo Editor page");
     expect(gallerySource).toContain('import "../styles/gallery.css"');
     expect(homeSource).not.toContain('import "../styles/pages.css";');
-    expect(homeSource).toContain('import("../styles/pages.css")');
-    expect(homeSource).toContain("scheduleIdleTask(start, 0)");
-    expect(homeSource).toContain("window.setTimeout(start, 120)");
+    expect(homeSource).not.toContain('import("../styles/pages.css")');
+    expect(homeSource).not.toContain("useDeferredHomePageStyles");
   });
 
   it("prefetches featured portfolio images only on the homepage", () => {
@@ -93,10 +92,10 @@ describe("performance budgets", () => {
     expect(routerSource).toContain('className="hero hero-home home-premiere-fallback"');
     expect(routerSource).toContain("optical-garden-hero-v1.avif");
     expect(routerSource).toContain('fetchPriority="high"');
-    expect(routerSource).toContain("const { openBookingModal, warmBookingModal } = useBookingModal()");
-    expect(routerSource).toContain("onPointerEnter={warmBookingModal}");
-    expect(routerSource).toContain("onPointerDown={warmBookingModal}");
-    expect(routerSource).not.toContain('<a className="hero-cover-primary-btn" href="/booking"');
+    expect(routerSource).toContain('<a className="hero-create-primary" href="/create"');
+    expect(routerSource).toContain('<a className="hero-cover-primary-btn" href="/archive"');
+    expect(routerSource).toContain('<a className="hero-gallery-link" href="/stories"');
+    expect(routerSource).not.toContain('href="/booking"');
     expect(routerSource).toContain('fallback={<HomePremiereFallback />}');
     expect(routerSource).toContain('const HomePage = lazy(routeLoaders["/"])');
   });
@@ -153,7 +152,7 @@ describe("performance budgets", () => {
     expect(footerSource).not.toContain('to="/faq"');
     expect(footerSource).toContain('to="/archive"');
     expect(footerSource).toContain('to="/create"');
-    expect(footerSource).toContain('to="/lab"');
+    expect(footerSource).toContain('to="/practice"');
     for (const localeFile of localeFiles) {
       const locale = JSON.parse(readFileSync(resolve(root, localeFile), "utf8"));
       expect(locale.nav.about).toBeTruthy();
@@ -175,7 +174,7 @@ describe("performance budgets", () => {
     expect(budgetSource).toContain("maxInitialGrowthGzipBytes");
     expect(budgetSource).toContain("maxImmersiveGzipBytes");
     expect(budgetSource).toContain("29_560");
-    expect(budgetSource).toContain("5 * 1024");
+    expect(budgetSource).toContain("4 * 1024");
     expect(budgetSource).toContain("190 * 1024");
     expect(budgetSource).toContain("immersive-vendor");
     expect(budgetSource).toContain("gzipSync");
@@ -211,11 +210,12 @@ describe("performance budgets", () => {
   });
 
   it("defers below-fold homepage modules and progressively loads premiere scenes", () => {
-    expect(homeSource).toContain("useDeferredRender");
-    expect(homeSource).toContain("galleryRender.ready ?");
-    expect(homeSource).toContain("whyRender.ready ?");
-    expect(homeSource).toContain("reviewsRender.ready ?");
-    expect(homeSource).toContain("quizRender.ready ?");
+    expect(homeSource).toContain('import("../components/FilmStripStory")');
+    expect(homeSource).toContain('import("../components/RainLetterPremiere")');
+    expect(homeSource).toContain("<VisualLightTable />");
+    expect(homeSource).toContain("<HomeVisualSystem />");
+    expect(homeSource).toContain("<HomeCreativePulse />");
+    expect(homeSource).not.toContain("BookingConversionSection");
     expect(homeSource).toContain("opticalGardenFrames.slice(0, 3)");
     expect(premiereSource).toContain("loadedScenes.has(index)");
     expect(premiereSource).toContain("priority={index === 0}");
@@ -253,8 +253,10 @@ describe("performance budgets", () => {
   it("keeps gallery photos out of the precache and runtime-caches them", () => {
     // Verify Vite PWA config runtime-caches gallery images
     expect(viteConfig).toContain("runtimeCaching");
-    expect(viteConfig).toContain("visual-archive-images-v4");
+    expect(viteConfig).toContain("visual-archive-images-v5");
     expect(viteConfig).toContain('/images/optical-archive/');
+    expect(viteConfig).toContain('/images/visual-os-v5/');
+    expect(viteConfig).toContain('/story-manifest.json');
     expect(viteConfig).toContain('handler: "CacheFirst"');
     expect(viteConfig).toContain("NetworkFirst");
     // Verify precache excludes gallery images

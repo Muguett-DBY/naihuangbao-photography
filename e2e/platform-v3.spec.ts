@@ -14,7 +14,7 @@ test("@critical V4 信息架构、档案分层与发布清单可用", async ({ p
   await expect(page.locator(".platform-hero h1")).toContainText("影像档案");
   await expect(page.locator('.nav-menu--inline a[href="/archive"]')).toBeVisible();
   await expect(page.locator('.nav-menu--inline a[href="/create"]')).toBeVisible();
-  await expect(page.locator(".archive-project")).toHaveCount(9);
+  await expect(page.locator(".archive-project")).toHaveCount(13);
   await expect(page.locator(".archive-real-item")).toHaveCount(6);
   await expect(page.locator(".archive-constellation")).toBeVisible();
   await expect(page.locator(".archive-concept-section")).toContainText("不是真实客片");
@@ -26,7 +26,8 @@ test("@critical V4 信息架构、档案分层与发布清单可用", async ({ p
   expect(releaseResponse.ok()).toBe(true);
   const release = await releaseResponse.json();
   expect(release.commit).toMatch(/^[a-f0-9]{40}$/);
-  expect(release.archiveSchemaVersion).toBe(2);
+  expect(release.archiveSchemaVersion).toBe(3);
+  expect(release.storySchemaVersion).toBe(1);
 });
 
 test("@critical 档案筛选只影响概念研究且不混入真实作品", async ({ page }) => {
@@ -35,7 +36,7 @@ test("@critical 档案筛选只影响概念研究且不混入真实作品", asyn
   await expect(page.locator(".archive-project")).toHaveCount(2);
   await expect(page.locator(".archive-real-item")).toHaveCount(6);
   await page.getByRole("button", { name: "重置筛选" }).click();
-  await expect(page.locator(".archive-project")).toHaveCount(9);
+  await expect(page.locator(".archive-project")).toHaveCount(13);
 });
 
 test("@critical 命令面板可键盘搜索并进入统一创作工作区", async ({ page }) => {
@@ -88,6 +89,79 @@ test("@critical 创作工作区自动保存并能导出 PNG", async ({ page }) =
   expect(download.suggestedFilename()).toMatch(/^nhb-filmstrip-\d+\.png$/);
 });
 
+test("@critical Studio 2.0 支持多项目、非破坏性画框与版本快照", async ({ page }) => {
+  await page.goto("/create");
+  await page.evaluate(() => new Promise<void>((resolve) => {
+    const request = indexedDB.deleteDatabase("nhb-local-studio");
+    request.onsuccess = () => resolve();
+    request.onerror = () => resolve();
+    request.onblocked = () => resolve();
+  }));
+  await page.reload();
+
+  const shelf = page.locator(".studio-project-shelf");
+  await expect(shelf).toBeVisible();
+  await expect(page.locator(".studio-transform-controls")).toBeVisible();
+  const zoom = page.locator('.studio-transform-controls input[type="range"]').first();
+  await expect(zoom).toHaveValue("1");
+  await zoom.fill("1.5");
+  await expect(zoom).toHaveValue("1.5");
+
+  await shelf.getByRole("button", { name: "SNAPSHOT" }).click();
+  await expect(page.locator(".studio-project-shelf__versions button")).toHaveCount(1);
+  await shelf.getByRole("button", { name: "NEW" }).click();
+  await page.getByRole("textbox", { name: "项目名称" }).fill("Second Local Study");
+  await expect(page.locator(".studio-save-status")).toContainText("已保存", { timeout: 10_000 });
+  await expect(page.locator(".studio-project-shelf__list > button")).toHaveCount(2);
+});
+
+test("@critical 视觉故事支持章节索引、滚动进度与创建入口", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/stories");
+  await expect(page.locator(".stories-v2-entry")).toHaveCount(3);
+  await page.locator(".stories-v2-entry").first().getByRole("link", { name: /进入滚动故事/ }).click();
+  await expect(page).toHaveURL(/\/stories\/weather-into-paper$/);
+  await expect(page.locator(".visual-story-reader h1")).toContainText("Weather Into Paper");
+  await expect(page.locator(".visual-story-index")).toBeVisible();
+  const storyHeroGeometry = await page.locator(".visual-story-hero__copy").evaluate((element) => {
+    const copy = element.getBoundingClientRect();
+    const back = element.querySelector<HTMLElement>(".visual-story-back")!.getBoundingClientRect();
+    const label = element.querySelector<HTMLElement>(".platform-index")!.getBoundingClientRect();
+    return { left: copy.left, backBottom: back.bottom, labelTop: label.top };
+  });
+  expect(storyHeroGeometry.left).toBeGreaterThanOrEqual(20);
+  expect(storyHeroGeometry.labelTop).toBeGreaterThanOrEqual(storyHeroGeometry.backBottom);
+
+  const secondChapter = page.locator(".visual-story-chapter").nth(1);
+  await secondChapter.evaluate((element) => element.scrollIntoView({ block: "center" }));
+  await expect(page.locator('.visual-story-index a[aria-current="step"]')).toContainText("风被织物看见");
+  await expect.poll(() => page.locator(".visual-story-reader").evaluate((element) => Number.parseFloat(getComputedStyle(element).getPropertyValue("--story-progress")))).toBeGreaterThan(0);
+  await expect(page.getByRole("link", { name: /打开 Story Builder/ })).toHaveAttribute("href", "/create/story");
+});
+
+test("@critical Story Builder 本地保存章节并导出项目", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => new Promise<void>((resolve) => {
+    const request = indexedDB.deleteDatabase("nhb-local-studio");
+    request.onsuccess = () => resolve();
+    request.onerror = () => resolve();
+    request.onblocked = () => resolve();
+  }));
+  await page.goto("/create/story");
+  await expect(page.locator(".story-builder-preview")).toBeVisible();
+  await page.getByLabel("Project name").fill("Weather Builder Test");
+  await expect(page.locator(".story-builder-topbar")).toContainText("SAVED LOCALLY", { timeout: 10_000 });
+  const chapterCount = await page.locator(".story-builder-chapter-tabs button").count();
+  await page.locator(".story-builder-controls section").nth(1).getByRole("button", { name: "Add" }).click();
+  await expect(page.locator(".story-builder-chapter-tabs button")).toHaveCount(chapterCount + 1);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByTitle("Export project").click();
+  expect((await downloadPromise).suggestedFilename()).toMatch(/\.nhb-story$/);
+  await page.reload();
+  await expect(page.getByLabel("Project name")).toHaveValue("Weather Builder Test");
+});
+
 test("@critical 首页光桌可交互并通向完整档案研究", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
@@ -109,10 +183,9 @@ test("@critical 首页光桌可交互并通向完整档案研究", async ({ page
   await page.keyboard.press("ArrowRight");
   await expect(lightTable.locator(".visual-light-table__inspector h3")).toContainText("Morning Conservatory");
 
-  await page.goto("/archive");
-  await page.locator(".archive-constellation__focus a").click();
-  await expect(page).toHaveURL(/\/archive\/optical-garden$/);
-  await expect(page.locator(".archive-study-page h1")).toContainText("Optical Garden");
+  await lightTable.locator(".visual-light-table__inspector a").click();
+  await expect(page).toHaveURL(/\/archive\/morning-conservatory$/);
+  await expect(page.locator(".archive-study-page h1")).toContainText("Morning Conservatory");
   await expect(page.locator(".archive-study-process")).toBeVisible();
 });
 

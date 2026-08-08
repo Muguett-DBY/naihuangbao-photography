@@ -1,0 +1,79 @@
+{
+  "id": "tactile-optics",
+  "kind": "concept",
+  "title": "Tactile Optics",
+  "subtitle": "纸、水与旧玻璃的触觉光学",
+  "chapter": "08",
+  "year": 2026,
+  "summary": "把纸张纤维、水纹、植物和老玻璃放在同一张桌面上，观察光如何改变触感。",
+  "statement": "光并不只负责照亮物体，它也会放大纤维、折叠影子，并让一块旧玻璃拥有短暂的颜色。这个实验尝试把视觉变成接近触摸的经验。",
+  "place": "纸上实验室",
+  "season": "初夏",
+  "moods": [
+    "触觉",
+    "明亮",
+    "安静"
+  ],
+  "palette": [
+    "奶油",
+    "柔黄",
+    "深莓"
+  ],
+  "techniques": [
+    "微距静物",
+    "真实折射",
+    "纸张透光"
+  ],
+  "process": [
+    {
+      "title": "选择材料",
+      "note": "只使用纸、水、植物和玻璃，让每一种表面都有明确角色。"
+    },
+    {
+      "title": "追踪焦散",
+      "note": "缓慢移动水盘和镜片，保留最自然、最少装饰感的折射。"
+    },
+    {
+      "title": "加入颜色",
+      "note": "用一条深莓线和珊瑚纸边建立克制的视觉方向。"
+    }
+  ],
+  "related": [
+    "prism-notes",
+    "paper-tide"
+  ],
+  "media": [
+    {
+      "src": "/images/optical-archive/paper-water-lab-v1.webp",
+      "alt": "手工纸、水盘、植物标本与深莓色线组成的无人桌面实验",
+      "width": 1536,
+      "height": 1024,
+      "note": "水纹落在纸张和植物标本上"
+    },
+    {
+      "src": "/images/optical-archive/glass-fern-caustics-v1.webp",
+      "alt": "旧玻璃、水面与蕨类在亚麻布上形成的真实折射光",
+      "width": 1536,
+      "height": 1024,
+      "note": "玻璃边缘形成的细小焦散"
+    }
+  ],
+  "publishedAt": "2026-08-15",
+  "mediums": [
+    "生成式概念摄影",
+    "静物研究"
+  ],
+  "keywords": [
+    "纸上实验室",
+    "初夏",
+    "触觉",
+    "明亮",
+    "安静",
+    "奶油",
+    "柔黄",
+    "深莓",
+    "微距静物",
+    "真实折射",
+    "纸张透光"
+  ]
+}

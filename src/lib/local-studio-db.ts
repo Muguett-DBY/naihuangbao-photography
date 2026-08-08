@@ -1,7 +1,7 @@
 const DATABASE_NAME = "nhb-local-studio";
-const DATABASE_VERSION = 2;
+const DATABASE_VERSION = 4;
 
-export type LocalStudioStore = "projects" | "compositions";
+export type LocalStudioStore = "projects" | "compositions" | "compositionVersions" | "stories";
 
 export function openLocalStudioDatabase() {
   return new Promise<IDBDatabase>((resolve, reject) => {
@@ -12,6 +12,13 @@ export function openLocalStudioDatabase() {
       }
       if (!request.result.objectStoreNames.contains("compositions")) {
         request.result.createObjectStore("compositions", { keyPath: "id" });
+      }
+      if (!request.result.objectStoreNames.contains("compositionVersions")) {
+        const versions = request.result.createObjectStore("compositionVersions", { keyPath: "id" });
+        versions.createIndex("projectId", "projectId", { unique: false });
+      }
+      if (!request.result.objectStoreNames.contains("stories")) {
+        request.result.createObjectStore("stories", { keyPath: "id" });
       }
     };
     request.onsuccess = () => {

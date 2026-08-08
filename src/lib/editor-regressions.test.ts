@@ -6,14 +6,21 @@ const root = process.cwd();
 const readRaw = (path: string) => readFileSync(resolve(root, path), "utf8");
 const read = (path: string) => path === "src/styles/pages.css"
   ? ["src/styles/pages.css", "src/styles/editor.css", "src/styles/darkroom-v2.css"].map(readRaw).join("\n")
+  : path === "src/lib/editor-effects.ts"
+    ? [
+      "src/lib/editor-effects.ts",
+      "src/lib/editor-background-effects.ts",
+      "src/lib/editor-face-effects.ts",
+      "src/lib/editor-pixel-effects.ts",
+    ].map(readRaw).join("\n")
   : readRaw(path);
 
 describe("editor regression contracts", () => {
   it("does not render the public chat overlay in creative workspaces", () => {
     const rootLayout = read("src/layouts/RootLayout.tsx");
 
-    expect(rootLayout).toContain('const isCreativeWorkspace = isEditor || ["/create", "/studio"].includes(location.pathname)');
-    expect(rootLayout).toContain("const showPublicChat = !isCreativeWorkspace");
+    expect(rootLayout).toContain('location.pathname.startsWith("/create/")');
+    expect(rootLayout).toContain("const showPublicChat = isPracticeRoute && !isCreativeWorkspace");
     expect(rootLayout).toContain("{showPublicChat &&");
   });
 
@@ -54,7 +61,7 @@ describe("editor regression contracts", () => {
     const pagesCss = read("src/styles/pages.css");
 
     expect(rootLayout).toContain("<MobileBottomNav");
-    expect(rootLayout).toContain("!isCreativeWorkspace");
+    expect(rootLayout).toContain("!isCreativeWorkspace && <MobileBottomNav");
     expect(mobileNav).toContain('to="/archive"');
     expect(mobileNav).toContain('to="/create"');
     expect(mobileNav).toContain('to="/stories"');

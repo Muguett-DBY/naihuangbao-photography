@@ -1,0 +1,83 @@
+{
+  "id": "print-room",
+  "kind": "concept",
+  "title": "Print Room",
+  "subtitle": "从屏幕返回纸面",
+  "chapter": "06",
+  "year": 2026,
+  "summary": "关于联系表、艺术微喷、空白笔记与一张等待被写下的卡片。",
+  "statement": "屏幕里的图像总能继续修改，纸面却要求做出决定。这个章节记录从选择、排序到打印的过程，也记录一张照片成为物件之后的新尺度。",
+  "place": "NHB 印样室",
+  "season": "冬",
+  "moods": [
+    "手作",
+    "明亮",
+    "收藏"
+  ],
+  "palette": [
+    "奶油",
+    "柔黄",
+    "珊瑚"
+  ],
+  "techniques": [
+    "艺术微喷",
+    "纸张配对",
+    "编辑排序"
+  ],
+  "process": [
+    {
+      "title": "编辑联系表",
+      "note": "先按节奏而不是单张强度排序，让系列拥有停顿。"
+    },
+    {
+      "title": "匹配纸张",
+      "note": "根据阴影密度与颜色选择纹理和白度不同的纸张。"
+    },
+    {
+      "title": "回到手中",
+      "note": "用真实观看距离检查尺寸、边距和触感，而不是只看屏幕。"
+    }
+  ],
+  "related": [
+    "darkroom-herbarium",
+    "prism-notes"
+  ],
+  "media": [
+    {
+      "src": "/images/optical-archive/print-folio-v1.webp",
+      "alt": "植物与建筑艺术微喷、收藏夹和玻璃镇纸",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "src": "/images/optical-archive/course-light-study-v1.webp",
+      "alt": "空白笔记本、测光表、镜片与茉莉组成的课程静物",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "src": "/images/optical-archive/booking-garden-table-v1.webp",
+      "alt": "雨后花园窗边的空白卡片、茶杯与山茶花",
+      "width": 1672,
+      "height": 941
+    }
+  ],
+  "publishedAt": "2026-06-15",
+  "mediums": [
+    "生成式概念摄影",
+    "材料研究"
+  ],
+  "keywords": [
+    "NHB 印样室",
+    "冬",
+    "手作",
+    "明亮",
+    "收藏",
+    "奶油",
+    "柔黄",
+    "珊瑚",
+    "艺术微喷",
+    "纸张配对",
+    "编辑排序"
+  ]
+}

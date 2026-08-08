@@ -1,0 +1,29 @@
+{
+  "id": "night-projection-room",
+  "kind": "concept",
+  "title": "Night Projection Room",
+  "subtitle": "暗房、投影与无人观看的放映",
+  "chapter": "13",
+  "year": 2026,
+  "summary": "一场没有观众的深夜放映，让安全灯、投影尘埃和静物在暗处完成叙事。",
+  "statement": "当房间里没有观众，放映仍然会发生。光束穿过尘埃，纸屏接住一段空白影像，物件在安全灯下等待显影。这组练习关注观看发生之前的那一分钟。",
+  "place": "南京",
+  "season": "夏夜",
+  "moods": ["电影感", "深夜", "专注"],
+  "palette": ["深莓", "奶油", "苔藓"],
+  "techniques": ["安全灯色域", "体积光", "静物舞台"],
+  "process": [
+    { "title": "关闭环境光", "note": "让安全灯先定义暗部层次，而不是把空间压成纯黑。" },
+    { "title": "显出光束", "note": "保留空气里的颗粒，使投影成为有体积的对象。" },
+    { "title": "留下空白", "note": "屏幕和底片框保持无内容，让观看动作本身成为主题。" }
+  ],
+  "related": ["print-room", "weather-print-room", "light-workshop"],
+  "media": [
+    { "src": "/images/visual-os-v5/05-night-print-room.webp", "alt": "深莓色安全灯下的无人暗房与显影盘", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v5/11-projection-room.webp", "alt": "空房间中的模拟投影机把光束投向手工纸屏幕", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v5/12-film-still-life.webp", "alt": "底片框、苔藓色陶器、光学玻璃和珊瑚色细绳静物", "width": 1536, "height": 1024 }
+  ],
+  "publishedAt": "2026-08-06",
+  "mediums": ["生成式概念摄影", "光线装置"],
+  "keywords": ["暗房", "投影", "安全灯", "显影", "静物", "深莓", "体积光", "夜晚"]
+}
