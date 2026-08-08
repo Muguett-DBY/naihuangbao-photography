@@ -38,7 +38,7 @@ export function Footer() {
           </div>
           <div className="footer-nav-group">
             <h3>{t("footer.create", "Create")}</h3>
-            <PrefetchLink to="/studio">{t("nav.studio")}</PrefetchLink>
+            <PrefetchLink to="/create">{t("nav.create")}</PrefetchLink>
             <PrefetchLink to="/editor">{t("nav.editor")}</PrefetchLink>
             <PrefetchLink to="/compare">{t("photoCompare.title")}</PrefetchLink>
           </div>

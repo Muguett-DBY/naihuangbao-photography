@@ -13,11 +13,17 @@ function isPhotoDetail(path: string) {
   return /^\/gallery\/[^/]+/.test(path);
 }
 
+function isArchiveDetail(path: string) {
+  return /^\/archive\/[^/]+/.test(path);
+}
+
 export function resolveViewTransitionKind(from: string, to: string): ViewTransitionKind {
   if (isPhotoDetail(to) && (from === "/archive" || from === "/gallery")) return "photo-deepen";
   if (isPhotoDetail(from) && (to === "/archive" || to === "/gallery")) return "photo-return";
-  if ((from === "/lab" && ["/studio", "/editor"].includes(to)) || (to === "/studio" && from === "/archive")) return "create";
-  if (from === "/studio" || to === "/studio") return "studio";
+  if (isArchiveDetail(to) && from === "/archive") return "photo-deepen";
+  if (isArchiveDetail(from) && to === "/archive") return "photo-return";
+  if ((from === "/lab" && ["/create", "/studio", "/editor"].includes(to)) || (to === "/create" && from === "/archive")) return "create";
+  if (["/create", "/studio"].includes(from) || ["/create", "/studio"].includes(to)) return "studio";
   return "page";
 }
 

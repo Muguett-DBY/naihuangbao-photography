@@ -18,6 +18,13 @@ for (const project of projects) {
   if (!project.id || ids.has(project.id)) throw new Error(`Duplicate or missing archive id: ${project.id}`);
   if (project.kind !== "concept") throw new Error(`Archive project ${project.id} must be explicitly marked concept`);
   if (!Array.isArray(project.media) || project.media.length === 0) throw new Error(`Archive project ${project.id} has no media`);
+  if (!project.statement || !Array.isArray(project.process) || project.process.length < 2) {
+    throw new Error(`Archive project ${project.id} needs a statement and at least two process notes`);
+  }
+  if (!Array.isArray(project.techniques) || project.techniques.length === 0) {
+    throw new Error(`Archive project ${project.id} needs at least one technique`);
+  }
+  if (!Array.isArray(project.related)) throw new Error(`Archive project ${project.id} needs related project ids`);
   ids.add(project.id);
 
   const media = [];
@@ -54,8 +61,16 @@ for (const project of projects) {
   manifestProjects.push({ ...project, media });
 }
 
+for (const project of manifestProjects) {
+  for (const relatedId of project.related) {
+    if (!ids.has(relatedId) || relatedId === project.id) {
+      throw new Error(`Archive project ${project.id} has invalid related id: ${relatedId}`);
+    }
+  }
+}
+
 const manifest = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   generatedFrom: relative(root, sourcePath).replaceAll("\\", "/"),
   projects: manifestProjects,
 };

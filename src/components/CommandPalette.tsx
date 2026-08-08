@@ -1,9 +1,10 @@
-import { ArrowRight, Camera, CornerDownLeft, Search, X } from "lucide-react";
+import { ArrowRight, Camera, CornerDownLeft, Layers3, Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { primaryNavigation, practiceNavigation } from "../data/product-navigation";
+import { archiveProjects } from "../data/living-archive";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { OPEN_COMMAND_PALETTE_EVENT } from "../lib/command-palette";
 import { prepareViewTransition } from "../lib/view-transition";
@@ -15,16 +16,16 @@ type PaletteResult = {
   label: string;
   description: string;
   search: string;
-  kind: "route" | "photo";
+  kind: "route" | "archive" | "photo";
 };
 
 const focusableSelector = 'input, button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])';
 
-export function CommandPalette() {
+export function CommandPalette({ initiallyOpen = false }: { initiallyOpen?: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { photos } = usePublicPhotos();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,8 +51,16 @@ export function CommandPalette() {
         search: `${photo.title} ${photo.location} ${photo.album || ""} ${photo.tags?.join(" ") || ""}`.toLowerCase(),
         kind: "photo",
       }));
+    const archiveResults: PaletteResult[] = archiveProjects.map((project) => ({
+      id: project.id,
+      to: `/archive/${project.id}`,
+      label: project.title,
+      description: `${project.chapter} / ${project.subtitle}`,
+      search: `${project.title} ${project.subtitle} ${project.place} ${project.moods.join(" ")} ${project.palette.join(" ")}`.toLowerCase(),
+      kind: "archive",
+    }));
     const normalized = query.trim().toLowerCase();
-    const all = [...routes, ...photoResults];
+    const all = [...routes, ...archiveResults, ...photoResults];
     return normalized ? all.filter((result) => result.search.includes(normalized)).slice(0, 10) : all.slice(0, 10);
   }, [photos, query, t]);
 
@@ -169,7 +178,7 @@ export function CommandPalette() {
               onClick={() => selectResult(result)}
             >
               <span className="command-palette__result-icon" aria-hidden="true">
-                {result.kind === "photo" ? <Camera size={17} /> : <ArrowRight size={17} />}
+                {result.kind === "photo" ? <Camera size={17} /> : result.kind === "archive" ? <Layers3 size={17} /> : <ArrowRight size={17} />}
               </span>
               <span>
                 <strong>{result.label}</strong>

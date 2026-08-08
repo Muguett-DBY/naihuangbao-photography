@@ -78,14 +78,20 @@ Current priority order for future decomposition:
 
 1. `src/pages/PhotoEditorWorkspace.tsx`: separate editor controller, canvas
    interactions, workflow panels, and export UI.
-2. `src/experience/three-scene-driver.ts`: separate image decoding, texture
-   morph coordination, shader setup, and scene driver lifecycle.
-3. `src/components/Gallery.tsx`: separate discovery state, filters, media cards,
+2. `src/components/Gallery.tsx`: separate discovery state, filters, media cards,
    and lightbox coordination.
-4. `src/components/BookingModal.tsx`: move API commands and each booking stage
+3. `src/components/BookingModal.tsx`: move API commands and each booking stage
    into the booking feature boundary.
-5. `src/lib/editor-effects.ts`: separate background, makeup, face geometry, and
+4. `src/lib/editor-effects.ts`: separate background, makeup, face geometry, and
    post-processing algorithms.
+
+Completed decompositions:
+
+- `src/experience/three-scene-driver.ts` is now a 404-line lifecycle module;
+  texture transactions, flow materials, image decoding, and support contracts
+  live in focused modules below the 500-line default budget.
+- `src/components/CinematicPremiere.tsx` is below the default budget and no
+  longer requires a legacy allowance.
 
 ## Change recipes
 

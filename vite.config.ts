@@ -99,6 +99,7 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        navigateFallback: "index.html",
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         globPatterns: ["**/*.{js,css,html}"],
         globIgnores: [
@@ -143,13 +144,24 @@ export default defineConfig({
             },
             handler: "CacheFirst",
             options: {
-              cacheName: "gallery-images",
+              cacheName: "visual-archive-images-v4",
               expiration: {
-                maxEntries: 120,
+                maxEntries: 180,
                 maxAgeSeconds: 60 * 60 * 24 * 90,
               },
               cacheableResponse: {
                 statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname === "/archive-manifest.json" || url.pathname === "/release.json",
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "visual-platform-manifests-v4",
+              expiration: {
+                maxEntries: 4,
+                maxAgeSeconds: 60 * 60 * 24 * 7,
               },
             },
           },

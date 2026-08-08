@@ -1,7 +1,6 @@
 import type { BeautyCategory, BeautySettings, BeautyTool, FrameId, StickerOverlay, TextOverlay } from "../types/photo-editor";
+import { runLocalStudioRequest } from "./local-studio-db";
 
-const DATABASE_NAME = "nhb-local-studio";
-const STORE_NAME = "projects";
 const AUTOSAVE_ID = "autosave";
 
 export type EditorProjectSnapshot = {
@@ -27,38 +26,14 @@ type PortableEditorProject = Omit<EditorProjectSnapshot, "source"> & {
   source: { type: string; data: string };
 };
 
-function openDatabase() {
-  return new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open(DATABASE_NAME, 1);
-    request.onupgradeneeded = () => {
-      if (!request.result.objectStoreNames.contains(STORE_NAME)) {
-        request.result.createObjectStore(STORE_NAME, { keyPath: "id" });
-      }
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-function runRequest<T>(mode: IDBTransactionMode, action: (store: IDBObjectStore) => IDBRequest<T>) {
-  return openDatabase().then((database) => new Promise<T>((resolve, reject) => {
-    const transaction = database.transaction(STORE_NAME, mode);
-    const request = action(transaction.objectStore(STORE_NAME));
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-    transaction.oncomplete = () => database.close();
-    transaction.onerror = () => reject(transaction.error);
-  }));
-}
-
 export async function saveEditorProject(project: EditorProjectSnapshot) {
   if (!("indexedDB" in window)) return;
-  await runRequest("readwrite", (store) => store.put(project));
+  await runLocalStudioRequest("projects", "readwrite", (store) => store.put(project));
 }
 
 export async function getEditorProject() {
   if (!("indexedDB" in window)) return null;
-  return (await runRequest<EditorProjectSnapshot | undefined>("readonly", (store) => store.get(AUTOSAVE_ID))) ?? null;
+  return (await runLocalStudioRequest<EditorProjectSnapshot | undefined>("projects", "readonly", (store) => store.get(AUTOSAVE_ID))) ?? null;
 }
 
 function bytesToBase64(bytes: Uint8Array) {

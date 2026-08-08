@@ -36,6 +36,17 @@ describe("route intent preloading", () => {
     expect(calls).toBe(2);
   });
 
+  it("matches dynamic project routes and shares their module preload", async () => {
+    let calls = 0;
+    const preload = createRoutePreloader({
+      "/archive/:id": async () => { calls += 1; },
+    });
+
+    await expect(preload("/archive/tactile-optics?from=light-table")).resolves.toBe(true);
+    await expect(preload("/archive/morning-conservatory")).resolves.toBe(true);
+    expect(calls).toBe(1);
+  });
+
   it("does not load unknown routes", async () => {
     const preload = createRoutePreloader({});
 

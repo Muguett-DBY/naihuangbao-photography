@@ -1,10 +1,14 @@
 import "../styles/home-premiere.css";
+import "../styles/platform-v4.css";
 import { Suspense, lazy, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ArrowRight,
+  BookOpenText,
   CalendarCheck,
+  Layers3,
   ShieldCheck,
+  WandSparkles,
 } from "lucide-react";
 import { useBookingModal } from "../features/booking/BookingContext";
 import { useSiteContent } from "../hooks/useSiteContent";
@@ -27,6 +31,7 @@ import { OpticalSceneChrome } from "../components/shared/OpticalSceneChrome";
 import { HomeChapterIndex, type HomeChapter } from "../components/shared/HomeChapterIndex";
 import { SoftMagnet } from "../components/shared/SoftMagnet";
 import { scheduleIdleTask } from "../lib/idle";
+import { VisualLightTable } from "../components/VisualLightTable";
 
 const Gallery = lazy(() => import("../components/Gallery").then((module) => ({ default: module.Gallery })));
 const WhyChooseUs = lazy(() => import("../components/WhyChooseUs").then((module) => ({ default: module.WhyChooseUs })));
@@ -101,12 +106,13 @@ export function HomePage() {
   const homeChapters = useMemo<HomeChapter[]>(
     () => [
       { id: "premiere", index: "00", label: t("opticalArchive.chapter") },
-      { id: "rain-letter", index: "01", label: t("rainLetter.chapter") },
-      { id: "field-notes", index: "02", label: t("filmstrip.title" as never) },
-      { id: "featured", index: "03", label: t("gallery.title") },
-      { id: "services-preview", index: "04", label: t("home.servicesTitle") },
-      { id: "style-finder", index: "05", label: t("home.styleQuizTitle") },
-      { id: "book", index: "06", label: t("midCTA.cta") },
+      { id: "light-table", index: "01", label: t("platform.playground.lightTable", "光桌") },
+      { id: "rain-letter", index: "02", label: t("rainLetter.chapter") },
+      { id: "field-notes", index: "03", label: t("filmstrip.title" as never) },
+      { id: "featured", index: "04", label: t("gallery.title") },
+      { id: "services-preview", index: "05", label: t("home.servicesTitle") },
+      { id: "style-finder", index: "06", label: t("home.styleQuizTitle") },
+      { id: "book", index: "07", label: t("midCTA.cta") },
     ],
     [t],
   );
@@ -159,16 +165,22 @@ export function HomePage() {
             <span>2026</span>
           </p>
           <h1 className="hero-title" data-premiere-title>{siteConfig.brandName}</h1>
-          <p className="hero-field-note">{t("hero.brandPrefix")}</p>
-          <p className="hero-intro">{t("hero.intro")}</p>
+          <p className="hero-field-note">NHB / PERSONAL VISUAL PLAYGROUND</p>
+          <p className="hero-intro">{t("platform.playground.intro", "一个关于光、颜色、纸张与本地创作工具的个人视觉实验场。")}</p>
 
-          <div className="hero-proof-line" aria-label={t("hero.trustTags.privacy")}>
-            <span><ShieldCheck size={15} aria-hidden="true" />{t("hero.trustTags.privacy")}</span>
-            <span>{t("hero.trustTags.guidance")}</span>
-            <span>{t("hero.trustTags.styles")}</span>
+          <div className="hero-proof-line" aria-label={t("platform.playground.local", "本地优先")}>
+            <span><ShieldCheck size={15} aria-hidden="true" />{t("platform.playground.local", "本地优先")}</span>
+            <span>{t("platform.playground.archive", "持续生长的视觉档案")}</span>
+            <span>{t("platform.playground.practice", "为实验而制作")}</span>
           </div>
 
           <div className="hero-actions">
+            <SoftMagnet strength={12}>
+              <PrefetchLink to="/create" className="hero-create-primary">
+                <WandSparkles size={18} aria-hidden="true" />
+                {t("platform.playground.startCreating", "开始创作")}
+              </PrefetchLink>
+            </SoftMagnet>
             <SoftMagnet strength={12}>
               <button
                 type="button"
@@ -179,7 +191,7 @@ export function HomePage() {
                 onPointerEnter={warmBookingModal}
               >
                 <CalendarCheck size={18} aria-hidden="true" />
-                {t("hero.ctaBooking")}
+                {t("platform.playground.bookingDemo", "预约流程实验")}
               </button>
             </SoftMagnet>
             <SoftMagnet strength={8}>
@@ -194,6 +206,32 @@ export function HomePage() {
       </section>
 
       <HomeChapterIndex ariaLabel={t("nav.home")} chapters={homeChapters} />
+
+      <VisualLightTable />
+
+      <section className="home-playground-portals" aria-labelledby="home-playground-portals-title">
+        <header>
+          <span className="platform-index">02 / EXPLORE · MAKE · READ</span>
+          <div><h2 id="home-playground-portals-title">从一张画面进入完整系统</h2><p>浏览概念档案、打开本地创作工具，或阅读每个实验背后的选择。</p></div>
+        </header>
+        <div>
+          <PrefetchLink to="/archive">
+            <ImageWithFallback src="/images/optical-archive/paper-water-lab-v1.webp" alt="" title={t("nav.archive")} sizes="(max-width: 760px) 100vw, 34vw" />
+            <span><Layers3 size={21} aria-hidden="true" /><small>EXPLORE</small><strong>{t("nav.archive")}</strong><p>沿着天气、颜色和材质探索概念项目。</p></span>
+            <ArrowRight size={19} aria-hidden="true" />
+          </PrefetchLink>
+          <PrefetchLink to="/create">
+            <ImageWithFallback src="/images/optical-archive/print-room-morning-v2.webp" alt="" title={t("nav.create")} sizes="(max-width: 760px) 100vw, 34vw" />
+            <span><WandSparkles size={21} aria-hidden="true" /><small>MAKE</small><strong>{t("nav.create")}</strong><p>排版、调色、保存并导出自己的视觉项目。</p></span>
+            <ArrowRight size={19} aria-hidden="true" />
+          </PrefetchLink>
+          <PrefetchLink to="/stories">
+            <ImageWithFallback src="/images/optical-archive/rain-observation-room-v1.webp" alt="" title={t("nav.stories")} sizes="(max-width: 760px) 100vw, 34vw" />
+            <span><BookOpenText size={21} aria-hidden="true" /><small>READ</small><strong>{t("nav.stories")}</strong><p>阅读画面、过程和小型技术实验笔记。</p></span>
+            <ArrowRight size={19} aria-hidden="true" />
+          </PrefetchLink>
+        </div>
+      </section>
 
       <ErrorBoundary>
         <Suspense fallback={<SectionSkeleton lines={3} hasImage />}>

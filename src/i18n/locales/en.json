@@ -4,6 +4,7 @@
     "gallery": "Gallery",
     "archive": "Archive",
     "stories": "Stories",
+    "create": "Create",
     "studio": "Studio",
     "lab": "Lab",
     "packages": "Packages",
@@ -33,10 +34,20 @@
     "account": "Account"
   },
   "platform": {
+    "playground": {
+      "intro": "A personal visual playground for light, color, paper, and local creative tools.",
+      "lightTable": "Light table",
+      "local": "Local first",
+      "archive": "A living visual archive",
+      "practice": "Made for experiments",
+      "startCreating": "Start creating",
+      "bookingDemo": "Booking flow experiment"
+    },
     "routes": {
       "home": "Return to the current premiere",
       "archive": "Explore visual studies and real work",
       "stories": "Read field notes behind the images",
+      "create": "Enter the local visual creation workspace",
       "studio": "Compose a filmstrip, contact sheet, or moodboard",
       "lab": "Open the project's practice systems",
       "about": "Learn how this personal project is made"
@@ -103,7 +114,12 @@
       "titleLabel": "Title",
       "captionLabel": "Caption",
       "paperLabel": "Paper color",
-      "localOnly": "Rendered locally. No image upload."
+      "localOnly": "Rendered locally. No image upload.",
+      "projectName": "Project name",
+      "importProject": "Open project",
+      "exportProject": "Save .nhb",
+      "invalidProject": "This NHB project could not be opened.",
+      "saveStatus": { "loading": "Restoring local project", "saving": "Auto-saving", "saved": "Saved in this browser", "error": "Local save failed" }
     },
     "lab": {
       "title": "Practice Lab",

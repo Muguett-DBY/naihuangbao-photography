@@ -1,4 +1,4 @@
-import { RotateCcw } from "lucide-react";
+import { ArrowRight, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { archiveProjects } from "../data/living-archive";
@@ -94,6 +94,12 @@ export function LivingArchiveExplorer() {
                   <div><dt>{t("platform.archive.season")}</dt><dd>{project.season}</dd></div>
                   <div><dt>{t("platform.archive.mood")}</dt><dd>{project.moods.join(" / ")}</dd></div>
                 </dl>
+                <div className="archive-project__palette" aria-label={project.palette.join(", ")}>
+                  {project.palette.map((color) => <span key={color}>{color}</span>)}
+                </div>
+                <PrefetchLink className="archive-project__open" to={`/archive/${project.id}`}>
+                  打开完整研究 <ArrowRight size={17} aria-hidden="true" />
+                </PrefetchLink>
               </div>
             </article>
           ))}

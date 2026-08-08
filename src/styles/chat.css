@@ -9,6 +9,18 @@
   color: var(--ink);
 }
 
+@media (min-width: 981px) {
+  body:has(.cinematic-premiere[data-premiere-active="true"]) .public-chat-widget.is-home {
+    right: 50%;
+    bottom: max(112px, env(safe-area-inset-bottom));
+    transform: translateX(50%);
+  }
+
+  body:has(.cinematic-premiere[data-premiere-active="true"]) .public-chat-widget.is-home .public-chat-panel {
+    height: min(560px, calc(100dvh - 220px));
+  }
+}
+
 .public-chat-launcher {
   display: inline-flex;
   min-width: 112px;

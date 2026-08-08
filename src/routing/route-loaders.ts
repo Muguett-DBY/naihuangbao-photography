@@ -9,7 +9,9 @@ function asDefault<T extends ComponentType>(component: T) {
 export const routeLoaders = {
   "/": () => import("../pages/HomePage").then((module) => asDefault(module.HomePage)),
   "/archive": () => import("../pages/ArchivePage").then((module) => asDefault(module.ArchivePage)),
+  "/archive/:id": () => import("../pages/ArchiveProjectPage").then((module) => asDefault(module.ArchiveProjectPage)),
   "/stories": () => import("../pages/StoriesPage").then((module) => asDefault(module.StoriesPage)),
+  "/create": () => import("../pages/CreateHubPage").then((module) => asDefault(module.CreateHubPage)),
   "/studio": () => import("../pages/CreativeStudioPage").then((module) => asDefault(module.CreativeStudioPage)),
   "/lab": () => import("../pages/LabPage").then((module) => asDefault(module.LabPage)),
   "/about": () => import("../pages/AboutPage").then((module) => asDefault(module.AboutPage)),

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useCallback, useEffect, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { PublicChatLauncher } from "../components/PublicChatLauncher";
@@ -23,15 +23,42 @@ import { ImmersiveExperienceGate } from "../experience/ImmersiveExperienceGate";
 import { ExperienceProvider, useExperienceStore } from "../experience/ExperienceProvider";
 import { useExperiencePause } from "../experience/useExperiencePause";
 import { resolveRoutePreset } from "../experience/scene-presets";
-import { CommandPalette } from "../components/CommandPalette";
+import { OPEN_COMMAND_PALETTE_EVENT } from "../lib/command-palette";
 import { RouteExperienceTelemetry } from "../components/shared/RouteExperienceTelemetry";
 
 // Optional cursor and texture effects stay in a separate chunk so the page
 // can paint and become interactive without coupling them to route code.
 const GlobalEffects = lazy(() => import("../components/GlobalEffects"));
+const CommandPalette = lazy(() => import("../components/CommandPalette").then((module) => ({ default: module.CommandPalette })));
 
 const PublicChatWidget = lazy(() => import("../components/PublicChatWidget"));
 const OfflineBookingRecovery = lazy(() => import("../components/OfflineBookingRecovery"));
+
+function DeferredCommandPalette() {
+  const [requested, setRequested] = useState(false);
+
+  useLayoutEffect(() => {
+    const requestPalette = () => setRequested(true);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        requestPalette();
+      }
+    };
+    window.addEventListener(OPEN_COMMAND_PALETTE_EVENT, requestPalette);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener(OPEN_COMMAND_PALETTE_EVENT, requestPalette);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, []);
+
+  return requested ? (
+    <Suspense fallback={null}>
+      <CommandPalette initiallyOpen />
+    </Suspense>
+  ) : null;
+}
 
 function focusWithTemporaryTabIndex(target: HTMLElement) {
   const hadTabIndex = target.hasAttribute("tabindex");
@@ -78,7 +105,8 @@ export function RootLayout() {
   }, []);
 
   const isEditor = location.pathname === "/editor";
-  const showPublicChat = !isEditor && location.pathname !== "/studio";
+  const isCreativeWorkspace = isEditor || ["/create", "/studio"].includes(location.pathname);
+  const showPublicChat = !isCreativeWorkspace;
   const routePreset = resolveRoutePreset(location.pathname);
 
   return (
@@ -147,7 +175,7 @@ export function RootLayout() {
                 {routePreset && <ImmersiveExperienceGate />}
                 <ToastProvider>
                   <Header onOpenChat={() => setChatOpen(true)} />
-                  <CommandPalette />
+                  <DeferredCommandPalette />
                   {!isEditor && (
                     <Suspense fallback={null}>
                       <OfflineBookingRecovery isOnline={isOnline} />
@@ -161,7 +189,7 @@ export function RootLayout() {
                     </ErrorBoundary>
                   </main>
                   {showPublicChat && (
-                    <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
+                    <div className={`public-chat-widget${location.pathname === "/" ? " is-home" : ""}${chatOpen ? " is-open" : ""}`}>
                       <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
                       {chatOpen ? (
                         <Suspense

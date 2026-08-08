@@ -9,10 +9,11 @@ const read = (path: string) => path === "src/styles/pages.css"
   : readRaw(path);
 
 describe("editor regression contracts", () => {
-  it("does not render the public chat overlay on the editor route", () => {
+  it("does not render the public chat overlay in creative workspaces", () => {
     const rootLayout = read("src/layouts/RootLayout.tsx");
 
-    expect(rootLayout).toContain("const showPublicChat = !isEditor");
+    expect(rootLayout).toContain('const isCreativeWorkspace = isEditor || ["/create", "/studio"].includes(location.pathname)');
+    expect(rootLayout).toContain("const showPublicChat = !isCreativeWorkspace");
     expect(rootLayout).toContain("{showPublicChat &&");
   });
 
@@ -53,10 +54,10 @@ describe("editor regression contracts", () => {
     const pagesCss = read("src/styles/pages.css");
 
     expect(rootLayout).toContain("<MobileBottomNav");
-    expect(rootLayout).toContain("!isEditor");
+    expect(rootLayout).toContain("!isCreativeWorkspace");
     expect(mobileNav).toContain('to="/archive"');
-    expect(mobileNav).toContain('to="/studio"');
-    expect(mobileNav).toContain('to="/lab"');
+    expect(mobileNav).toContain('to="/create"');
+    expect(mobileNav).toContain('to="/stories"');
     expect(mobileNav).toContain('to="/about"');
     expect(mobileNav).not.toContain("openBooking");
     expect(mobileNav).toContain('aria-current={active ? "page" : undefined}');

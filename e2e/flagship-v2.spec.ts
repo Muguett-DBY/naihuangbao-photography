@@ -32,7 +32,7 @@ test.describe("flagship v2 experience", () => {
     await expect(section.locator(".rain-letter__note--2")).toBeVisible();
   });
 
-  test("mobile chapter rail keeps all seven chapters on one scrollable row", async ({ page }) => {
+  test("mobile chapter rail keeps all eight chapters on one scrollable row", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/#rain-letter");
 
@@ -46,7 +46,7 @@ test.describe("flagship v2 experience", () => {
         oneRow: links.every((link) => Math.abs(link.offsetTop - firstTop) <= 1),
         height: element.scrollHeight,
       };
-    })).toEqual({ count: 7, oneRow: true, height: 60 });
+    })).toEqual({ count: 8, oneRow: true, height: 60 });
   });
 
   test("gallery story mode opens an editorial photo walk", async ({ page }) => {
