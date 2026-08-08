@@ -513,6 +513,17 @@ describe("audit regression coverage", () => {
     expect(redirectsSource).toContain("/admin /admin/ 301");
     expect(redirectsSource).toContain("/booking / 200");
     expect(redirectsSource).toContain("/gallery/:id / 200");
+    [
+      "/archive / 200",
+      "/archive/:id / 200",
+      "/stories / 200",
+      "/stories/:id / 200",
+      "/create / 200",
+      "/create/story / 200",
+      "/studio / 200",
+      "/practice / 200",
+      "/about / 200",
+    ].forEach((rewrite) => expect(redirectsSource).toContain(rewrite));
     expect(redirectsSource).not.toMatch(/^\/\*\s+\/\s+200$/m);
     expect(routesSource).toContain('"/api/*"');
     expect(routesSource).toContain('"/baidu_verify_codeva-XrPQbInHz7.html"');
