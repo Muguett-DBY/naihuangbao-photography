@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 const DESKTOP_INDEX_QUERY = "(min-width: 981px)";
 
@@ -18,7 +18,11 @@ interface HomeChapterIndexProps {
 }
 
 export function HomeChapterIndex({ ariaLabel, chapters }: HomeChapterIndexProps) {
-  const [activeId, setActiveId] = useState(chapters[0]?.id ?? "");
+  const navRef = useRef<HTMLElement>(null);
+  const [activeId, setActiveId] = useState(() => {
+    const hashId = typeof window === "undefined" ? "" : window.location.hash.slice(1);
+    return chapters.some((chapter) => chapter.id === hashId) ? hashId : (chapters[0]?.id ?? "");
+  });
   const [desktopIndexEnabled, setDesktopIndexEnabled] = useState(getDesktopIndexEnabled);
   const chapterKey = chapters.map((chapter) => chapter.id).join("|");
   const activeIndex = Math.max(0, chapters.findIndex((chapter) => chapter.id === activeId));
@@ -76,15 +80,36 @@ export function HomeChapterIndex({ ariaLabel, chapters }: HomeChapterIndexProps)
     };
   }, [chapterKey]);
 
+  useEffect(() => {
+    const syncHash = () => {
+      const hashId = window.location.hash.slice(1);
+      if (chapters.some((chapter) => chapter.id === hashId)) setActiveId(hashId);
+    };
+
+    window.addEventListener("hashchange", syncHash);
+    syncHash();
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, [chapters]);
+
+  useEffect(() => {
+    if (desktopIndexEnabled) return;
+    const nav = navRef.current;
+    const activeLink = nav?.querySelector<HTMLAnchorElement>(`a[href="#${activeId}"]`);
+    if (!nav || !activeLink) return;
+    const left = activeLink.offsetLeft - (nav.clientWidth - activeLink.offsetWidth) / 2;
+    nav.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
+  }, [activeId, desktopIndexEnabled]);
+
   return (
     <nav
+      ref={navRef}
       className="home-index-strip"
       aria-label={ariaLabel}
       data-active-chapter={desktopIndexEnabled ? activeId : undefined}
       style={style}
     >
       {chapters.map((chapter) => {
-        const isActive = desktopIndexEnabled && chapter.id === activeId;
+        const isActive = chapter.id === activeId;
         return (
           <a
             key={chapter.id}

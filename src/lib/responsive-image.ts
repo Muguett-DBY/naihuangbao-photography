@@ -30,6 +30,9 @@ const conceptPremiereSourceWidths: Readonly<Record<string, number>> = Object.fre
   "premiere-surge-v4.webp": 1024,
   "premiere-veil-v5.webp": 1024,
   "premiere-wake-v3.webp": 1024,
+  "rain-garden-lead-v6.webp": 1587,
+  "rain-lane-night-v6.webp": 1586,
+  "rain-window-portrait-v6.webp": 1122,
 });
 
 export function getResponsiveImageDirectory(src: string): string | null {

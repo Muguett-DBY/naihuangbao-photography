@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router";
+import { PrefetchLink } from "./PrefetchLink";
 
 type Props = {
   to: string;
@@ -9,11 +9,11 @@ type Props = {
 
 export const DetailBackLink = memo(function DetailBackLink({ to, label }: Props) {
   return (
-    <Link
+    <PrefetchLink
       to={to}
       className="detail-back-link"
     >
       <ArrowLeft size={16} aria-hidden="true" /> {label}
-    </Link>
+    </PrefetchLink>
   );
 });

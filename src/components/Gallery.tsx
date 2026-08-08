@@ -3,7 +3,7 @@ import "../styles/gallery.css";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Play, Loader2, Search, X, LayoutGrid, Columns, RotateCcw, Eye } from "lucide-react";
+import { Play, Loader2, Search, X, RotateCcw, Eye } from "lucide-react";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
 import { useSiteContent } from "../hooks/useSiteContent";
 import {
@@ -30,8 +30,11 @@ import { QuickView } from "./QuickView";
 import { RecentlyViewedStrip } from "./RecentlyViewedStrip";
 import { ShareMenu } from "./ShareMenu";
 import { useExperienceStore } from "../experience/ExperienceProvider";
+import { PrefetchLink } from "./shared/PrefetchLink";
+import { photoTransitionName } from "../lib/photo-transition";
+import { GalleryViewToggle, type GalleryViewMode } from "./GalleryViewToggle";
 type StyleFilter = PhotoStyle | "all";
-type ViewMode = "masonry" | "compact";
+type ViewMode = GalleryViewMode;
 type SortMode = "default" | "newest" | "featured";
 
 interface GalleryPersistedState {
@@ -43,7 +46,7 @@ interface GalleryPersistedState {
   sort: SortMode;
 }
 const STYLE_FILTERS: StyleFilter[] = ["all", "jiangnan", "street", "park", "sweet", "couple", "indoor"];
-const VIEW_MODES: ViewMode[] = ["masonry", "compact"];
+const VIEW_MODES: ViewMode[] = ["masonry", "compact", "story"];
 const SORT_MODES: SortMode[] = ["default", "newest", "featured"];
 const GALLERY_STATE_KEY = "nhb-gallery-discovery-state";
 const tones = ["rose", "sage", "cream", "ink"] as const;
@@ -320,7 +323,13 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
   const filterLabel = t(`gallery.filters.${filter}`, filter);
   const albumLabel = albumFilter === "all" ? "" : albumFilter;
   const dateRangeLabel = dateRange === "all" ? "" : t(`gallery.dateRanges.${dateRange}`, dateRange);
-  const viewLabel = t(viewMode === "compact" ? "gallery.viewCompact" : "gallery.viewMasonry");
+  const viewLabel = t(
+    viewMode === "compact"
+      ? "gallery.viewCompact"
+      : viewMode === "story"
+        ? "gallery.viewStory"
+        : "gallery.viewMasonry",
+  );
   const sortLabel = t(`gallery.sort${sortMode.charAt(0).toUpperCase()}${sortMode.slice(1)}`, sortMode);
   const hasActiveDiscovery = filter !== "all" || Boolean(searchQuery.trim() || debouncedSearch.trim()) || viewMode !== "masonry" || albumFilter !== "all" || dateRange !== "all" || sortMode !== "default";
   const activeFilterCount = useMemo(() => {
@@ -609,28 +618,7 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
               <kbd className="gallery-search-shortcut" aria-hidden="true">/</kbd>
             )}
           </div>
-          <div className="gallery-view-toggle" aria-label={t("gallery.viewMode", "View mode")}>
-            <button
-              type="button"
-              className={`gallery-view-btn ${viewMode === "masonry" ? "is-active" : ""}`}
-              onClick={() => setViewMode("masonry")}
-              aria-label={t("gallery.viewMasonry", "Masonry view")}
-              aria-pressed={viewMode === "masonry"}
-              title={t("gallery.viewMasonry", "Masonry view")}
-            >
-              <LayoutGrid size={16} />
-            </button>
-            <button
-              type="button"
-              className={`gallery-view-btn ${viewMode === "compact" ? "is-active" : ""}`}
-              onClick={() => setViewMode("compact")}
-              aria-label={t("gallery.viewCompact", "Compact view")}
-              aria-pressed={viewMode === "compact"}
-              title={t("gallery.viewCompact", "Compact view")}
-            >
-              <Columns size={16} />
-            </button>
-          </div>
+          <GalleryViewToggle value={viewMode} onChange={setViewMode} />
           <label className="gallery-sort-toggle">
             <span className="sr-only">{t("gallery.sortLabel", "Sort photos")}</span>
             <select
@@ -871,7 +859,10 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
                 <h3 className="gallery-album-title">{albumName}</h3>
                 <span className="gallery-album-count">{albumPhotos.length} {t("gallery.photos", "photos")}</span>
               </div>
-              <div className={`gallery-masonry ${viewMode === "compact" ? "gallery-masonry--compact" : ""} ${isTransitioning ? "gallery-masonry--transitioning" : ""}`}>
+              <div
+                className={`gallery-masonry ${viewMode === "compact" ? "gallery-masonry--compact" : ""} ${viewMode === "story" ? "gallery-masonry--story" : ""} ${isTransitioning ? "gallery-masonry--transitioning" : ""}`}
+                data-gallery-view={viewMode}
+              >
                 {albumPhotos.map((item, index) => {
                   const isVideo = Boolean(item.videoUrl);
                   return (
@@ -932,6 +923,7 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
                               load={true}
                               priority={(photoIndexMap.get(item.id) ?? 0) < 6 || item.id === "gallery-daily-01"}
                               sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
+                              transitionName={photoTransitionName(item.id)}
                             />
                           )}
                           {isVideo && (
@@ -966,9 +958,9 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
                             >
                               <Eye size={14} />
                             </button>
-                            <Link to={`/gallery/${item.id}`} className="gallery-detail-link" onClick={(e) => e.stopPropagation()}>
+                            <PrefetchLink to={`/gallery/${item.id}`} className="gallery-detail-link" onClick={(e) => e.stopPropagation()}>
                               {t("gallery.viewDetails", "Details")} →
-                            </Link>
+                            </PrefetchLink>
                             <span onClick={(e) => e.stopPropagation()} role="presentation">
                               <CompareButton
                                 variant="icon"
@@ -999,6 +991,13 @@ export function Gallery({ onImmersivePhotosChange }: GalleryProps = {}) {
                         <p>{t(`gallery.filters.${item.style}`, item.style)}</p>
                         <h3><HighlightText text={item.title} query={searchQuery} /></h3>
                         <span><HighlightText text={item.location} query={searchQuery} /></span>
+                        {viewMode === "story" && (
+                          <div className="gallery-story-note">
+                            <span>{String((photoIndexMap.get(item.id) ?? 0) + 1).padStart(2, "0")} / {String(photos.length).padStart(2, "0")}</span>
+                            <p>{item.alt || item.title}</p>
+                            <PrefetchLink to={`/gallery/${item.id}`}>{t("gallery.enterStory", "Enter story")} →</PrefetchLink>
+                          </div>
+                        )}
                       </div>
                     </article>
                   );

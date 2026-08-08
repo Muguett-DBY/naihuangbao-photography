@@ -24,6 +24,7 @@ import { siteOrigin } from "../lib/site-origin";
 import { getRelatedPhotos } from "../utils/relatedPhotos";
 import type { PhotoItem } from "../types/photo";
 import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
+import { photoTransitionName } from "../lib/photo-transition";
 
 const CompareSlider = lazy(() =>
   import("../components/CompareSlider").then((m) => ({ default: m.CompareSlider }))
@@ -195,6 +196,7 @@ export function PhotoDetailPage() {
                 tone="cream"
                 priority={true}
                 sizes="(max-width: 768px) 100vw, 68vw"
+                transitionName={photoTransitionName(photo.id)}
               />
             </PinchZoom>
           </div>
@@ -210,6 +212,7 @@ export function PhotoDetailPage() {
             {adjacent.prev ? (
               <Link
                 to={`/gallery/${adjacent.prev.id}`}
+                viewTransition
                 className="photo-detail-adjacent-link photo-detail-adjacent-link--prev"
                 onClick={() => {
                   if (adjacent.prev) {
@@ -224,6 +227,7 @@ export function PhotoDetailPage() {
             {adjacent.next ? (
               <Link
                 to={`/gallery/${adjacent.next.id}`}
+                viewTransition
                 className="photo-detail-adjacent-link photo-detail-adjacent-link--next"
                 onClick={() => {
                   if (adjacent.next) {
@@ -332,6 +336,7 @@ export function PhotoDetailPage() {
                 <Link
                   key={rp.id}
                   to={`/gallery/${rp.id}`}
+                  viewTransition
                   className="photo-detail-related-card"
                 >
                   <div className="photo-detail-related-thumb">
@@ -341,6 +346,7 @@ export function PhotoDetailPage() {
                       title={rp.title}
                       tone="cream"
                       sizes="(max-width: 600px) 50vw, 240px"
+                      transitionName={photoTransitionName(rp.id)}
                     />
                   </div>
                   <div className="photo-detail-related-info">

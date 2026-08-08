@@ -84,6 +84,25 @@
       "nightAlt": "Fictional concept portrait in a deep-berry night passage with a rain-window reflection"
     }
   },
+  "rainLetter": {
+    "chapter": "Rain Letter",
+    "eyebrow": "NHB Seasonal Premiere / Chapter Two",
+    "disclosure": "Brand concept visuals, not client portfolio work",
+    "title": "A Letter in Rain",
+    "intro": "From a rain-soaked garden to a misted window and a berry-lit lane, one Nanjing shower unfolds as a tactile film chapter.",
+    "scroll": "Turn the page",
+    "frames": {
+      "gardenTitle": "Rain at the Garden",
+      "gardenCopy": "Cream morning light pauses between moss and an old corridor. The story begins with the first drop.",
+      "gardenAlt": "Brand concept film still of rain and cream morning light in a Jiangnan garden",
+      "windowTitle": "Echo on Glass",
+      "windowCopy": "Figure, glass and reflection settle into a soft double exposure, like a letter never sent.",
+      "windowAlt": "Vertical brand concept portrait of a fictional figure beside a rain-covered window",
+      "laneTitle": "Night Replies",
+      "laneCopy": "Deep berry night catches the last warm light. After the rain, Nanjing keeps glowing.",
+      "laneAlt": "Brand concept film still of a warm lamp and berry reflections in a rainy Nanjing lane"
+    }
+  },
   "gallery": {
     "eyebrow": "Portfolio",
     "title": "Gallery",
@@ -100,6 +119,8 @@
     "viewMode": "View mode",
     "viewMasonry": "Masonry view",
     "viewCompact": "Compact view",
+    "viewStory": "Story walk",
+    "enterStory": "Enter story",
     "discoveryKicker": "Gallery finder",
     "discoveryTitle": "Choose a mood first, then open the full story",
     "discoveryHint": "Search by title, place, or style, or switch to compact browsing.",
@@ -1546,6 +1567,7 @@
     "redo": "Redo",
     "auto": "Auto Enhance",
     "compare": "Compare",
+    "holdOriginal": "Hold for original",
     "before": "Before",
     "after": "After",
     "export": "Export",

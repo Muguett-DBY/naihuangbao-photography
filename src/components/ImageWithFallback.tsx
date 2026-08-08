@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { getResponsiveImageAttrs } from "../lib/responsive-image";
 import { getResponsivePictureAttrs } from "../lib/responsive-picture";
 import { FilmPlaceholder } from "./FilmPlaceholder";
@@ -12,6 +12,7 @@ export const ImageWithFallback = memo(function ImageWithFallback({
   priority = false,
   load = true,
   sizes,
+  transitionName,
 }: {
   src: string;
   alt: string;
@@ -21,6 +22,7 @@ export const ImageWithFallback = memo(function ImageWithFallback({
   priority?: boolean;
   load?: boolean;
   sizes?: string;
+  transitionName?: string;
 }) {
   const [failed, setFailed] = useState(false);
   const [useDirectImg, setUseDirectImg] = useState(false);
@@ -95,6 +97,8 @@ export const ImageWithFallback = memo(function ImageWithFallback({
       ref={wrapperRef}
       className={`img-blur-wrap ${className || ""}`}
       data-state="loading"
+      data-photo-transition={transitionName || undefined}
+      style={transitionName ? ({ viewTransitionName: transitionName } as CSSProperties) : undefined}
       aria-busy="true"
     >
       <div className="img-skeleton gallery-skeleton" aria-hidden="true" />
