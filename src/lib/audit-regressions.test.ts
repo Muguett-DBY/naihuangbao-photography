@@ -103,6 +103,7 @@ const styleQuizSource = readFileSync(resolve(root, "src/components/StyleQuiz.tsx
 const seoSource = readFileSync(resolve(root, "src/lib/seo.ts"), "utf8");
 const i18nSource = readFileSync(resolve(root, "src/i18n/index.ts"), "utf8");
 const packageSource = readFileSync(resolve(root, "package.json"), "utf8");
+const packageManifest = JSON.parse(packageSource) as { scripts: Record<string, string> };
 const readmeSource = readFileSync(resolve(root, "README.md"), "utf8");
 const paymentLiveReadinessPath = resolve(root, "docs/payment-live-readiness.md");
 const paymentLiveReadinessSource = existsSync(paymentLiveReadinessPath) ? readFileSync(paymentLiveReadinessPath, "utf8") : "";
@@ -517,15 +518,17 @@ describe("audit regression coverage", () => {
     expect(routesSource).toContain('"/api/*"');
     expect(routesSource).toContain('"/baidu_verify_codeva-XrPQbInHz7.html"');
     expect(routesSource).not.toContain('"/*"');
-    expect(packageSource.match(/npm run spa:404/g)).toHaveLength(2);
+    expect(packageManifest.scripts["build:app"]).toContain("npm run spa:404");
+    expect(packageManifest.scripts.build).toContain("npm run build:app");
+    expect(packageManifest.scripts["build:full"]).toContain("npm run build");
     expect(spa404Source).toContain("copyFile(indexPath, notFoundPath)");
     expect(e2eConfigSource).toContain('testDir: "."');
     expect(e2eConfigSource).toContain("webServer");
     expect(e2eConfigSource).toContain("127.0.0.1:4174");
     expect(e2eSmokeSource).toContain('page.goto("/")');
-    expect(e2eSmokeSource).toContain("openGalleryFromNav");
+    expect(e2eSmokeSource).toContain("openArchiveFromNav");
     expect(e2eSmokeSource).toContain("#site-navigation-menu");
-    expect(e2eSmokeSource).toContain('a[href="/gallery"]');
+    expect(e2eSmokeSource).toContain('a[href="/archive"]');
     expect(e2eSmokeSource).toContain('toHaveAttribute("data-theme"');
     expect(e2eSmokeSource).not.toContain("https://shoot.custard.top/");
     expect(e2eSmokeSource).not.toContain("waitForTimeout");

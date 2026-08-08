@@ -54,10 +54,11 @@ describe("editor regression contracts", () => {
 
     expect(rootLayout).toContain("<MobileBottomNav");
     expect(rootLayout).toContain("!isEditor");
-    expect(mobileNav).toContain('to="/gallery"');
-    expect(mobileNav).toContain('to="/editor"');
-    expect(mobileNav).toContain('user ? "/dashboard" : "/login"');
-    expect(mobileNav).toContain("openBooking");
+    expect(mobileNav).toContain('to="/archive"');
+    expect(mobileNav).toContain('to="/studio"');
+    expect(mobileNav).toContain('to="/lab"');
+    expect(mobileNav).toContain('to="/about"');
+    expect(mobileNav).not.toContain("openBooking");
     expect(mobileNav).toContain('aria-current={active ? "page" : undefined}');
     expect(dashboard).toContain('to="/editor"');
     expect(dashboard).toContain("dashboard.editorTitle");
@@ -169,13 +170,14 @@ describe("editor regression contracts", () => {
 
   it("defers face-api model loading until upload or explicit retry", () => {
     const editor = read("src/pages/PhotoEditorWorkspace.tsx");
+    const emptyState = read("src/components/editor/EditorEmptyState.tsx");
     const zhCN = read("src/i18n/locales/zh-CN.json");
     const en = read("src/i18n/locales/en.json");
 
     expect(editor).not.toContain("useEffect(() => startModelLoad(), [startModelLoad, modelLoadAttempt])");
     expect(editor).toContain("startModelLoad({ force: true })");
     expect(editor).toContain("await waitForFaceModels()");
-    expect(editor).toContain("editor.modelsDeferred");
+    expect(emptyState).toContain("editor.modelsDeferred");
     expect(editor).toContain("faceModelsPromiseRef.current = null");
     expect(zhCN).toContain("AI 模型会在上传照片后按需加载");
     expect(en).toContain("AI models load only after you add a photo");
@@ -199,12 +201,14 @@ describe("editor regression contracts", () => {
     expect(editor).not.toContain("useRef<HTMLCanvasElement>");
 
     expect(workspace).toContain("initialFile?: File | null");
+    expect(workspace).toContain("initialProject?: EditorProjectSnapshot | null");
     expect(workspace).toContain("skipInitialFaceDetection?: boolean");
-    expect(workspace).toContain("loadImageFile(initialFile, { skipFaceDetection: skipInitialFaceDetection })");
+    expect(workspace).toContain("loadImageFile(initialFile, { skipFaceDetection: skipInitialFaceDetection, project: initialProject ?? undefined })");
   });
 
   it("recovers from unreadable and superseded editor image loads", () => {
     const workspace = read("src/pages/PhotoEditorWorkspace.tsx");
+    const emptyState = read("src/components/editor/EditorEmptyState.tsx");
     const pagesCss = read("src/styles/pages.css");
     const en = read("src/i18n/locales/en.json");
     const zhCN = read("src/i18n/locales/zh-CN.json");
@@ -213,9 +217,9 @@ describe("editor regression contracts", () => {
     expect(workspace).toContain("setImageLoadError");
     expect(workspace).toContain("img.onerror");
     expect(workspace).toContain("reader.onabort");
-    expect(workspace).toContain("editor-image-error");
-    expect(workspace).toContain('role="alert"');
-    expect(workspace).toContain("tryAnotherImage");
+    expect(emptyState).toContain("editor-image-error");
+    expect(emptyState).toContain('role="alert"');
+    expect(emptyState).toContain("tryAnotherImage");
     expect(pagesCss).toContain(".editor-image-error");
     expect(en).toContain('"imageDecodeFailed"');
     expect(zhCN).toContain('"imageDecodeFailed"');
@@ -223,15 +227,16 @@ describe("editor regression contracts", () => {
 
   it("presents image load failures as a clear recovery state", () => {
     const workspace = read("src/pages/PhotoEditorWorkspace.tsx");
+    const emptyState = read("src/components/editor/EditorEmptyState.tsx");
     const pagesCss = read("src/styles/pages.css");
     const en = read("src/i18n/locales/en.json");
     const zhCN = read("src/i18n/locales/zh-CN.json");
 
-    expect(workspace).toContain("editor-recovery-panel");
+    expect(emptyState).toContain("editor-recovery-panel");
     expect(workspace).toContain("editor-canvas--error");
-    expect(workspace).toContain("editor-recovery-action");
-    expect(workspace).toContain("editorRecoveryTitle");
-    expect(workspace).toContain("imageRecoveryHint");
+    expect(emptyState).toContain("editor-recovery-action");
+    expect(emptyState).toContain("editorRecoveryTitle");
+    expect(emptyState).toContain("imageRecoveryHint");
     expect(pagesCss).toContain(".editor-recovery-panel");
     expect(pagesCss).toContain(".editor-canvas--error");
     expect(pagesCss).toContain(".editor-recovery-action");

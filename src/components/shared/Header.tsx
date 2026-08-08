@@ -8,8 +8,10 @@ import {
   LogIn,
   LogOut,
   Menu,
+  Search,
   Settings2,
   User,
+  WandSparkles,
   X,
 } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -17,7 +19,9 @@ import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { safeLocalStorage } from "../../lib/browser-storage";
+import { openCommandPalette } from "../../lib/command-palette";
 import { loadAndChangeLanguage } from "../../i18n";
+import { primaryNavigation } from "../../data/product-navigation";
 import { useAuth } from "../../hooks/useAuth";
 import { useSiteContent } from "../../hooks/useSiteContent";
 import { MoodToggle } from "../MoodToggle";
@@ -83,14 +87,7 @@ export function Header({ onOpenChat }: HeaderProps) {
   const { user, logout } = useAuth();
 
   const navItems = useMemo(
-    () => [
-      { to: "/", label: t("nav.home") },
-      { to: "/gallery", label: t("nav.gallery") },
-      { to: "/courses", label: t("nav.courses") },
-      { to: "/products", label: t("nav.presets") },
-      { to: "/shop", label: t("nav.shop") },
-      { to: "/booking", label: t("nav.booking") },
-    ],
+    () => primaryNavigation.map((item) => ({ ...item, label: t(item.labelKey as never) })),
     [t],
   );
 
@@ -281,7 +278,7 @@ export function Header({ onOpenChat }: HeaderProps) {
           </span>
           <span className="brand-copy">
             <strong>{siteConfig.brandName}</strong>
-            <small>NHB / SOFT PORTRAITS</small>
+            <small>NHB / LIVING ARCHIVE</small>
           </span>
         </PrefetchLink>
 
@@ -300,6 +297,16 @@ export function Header({ onOpenChat }: HeaderProps) {
         </nav>
 
         <div className="nav-actions">
+          <button
+            className="nav-icon-button nav-command-trigger"
+            type="button"
+            onClick={openCommandPalette}
+            aria-label={t("platform.command.title")}
+            title={`${t("platform.command.title")} (Ctrl+K)`}
+          >
+            <Search size={18} aria-hidden="true" />
+            <kbd>⌘K</kbd>
+          </button>
           <div className="nav-utility-menu">
             <button
               ref={utilityButtonRef}
@@ -371,9 +378,9 @@ export function Header({ onOpenChat }: HeaderProps) {
             )}
           </div>
 
-          <PrefetchLink className="nav-cta" to="/booking">
-            <CalendarCheck size={17} aria-hidden="true" />
-            {t("nav.booking")}
+          <PrefetchLink className="nav-cta" to="/studio">
+            <WandSparkles size={17} aria-hidden="true" />
+            {t("nav.studio")}
           </PrefetchLink>
 
           <button
@@ -410,8 +417,8 @@ export function Header({ onOpenChat }: HeaderProps) {
             <div className="nav-drawer-panel">
               <div className="nav-drawer-head">
                 <span>
-                  <strong>NHB / PORTRAIT DIARY</strong>
-                  <small>{siteConfig.city} / SOFT LIGHT &amp; SMALL MOMENTS</small>
+                  <strong>NHB / LIVING ARCHIVE</strong>
+                  <small>{siteConfig.city} / PERSONAL VISUAL PRACTICE</small>
                 </span>
                 <button className="nav-drawer-close" type="button" onClick={() => setDrawerOpen(false)} aria-label={t("nav.close", "Close menu")}>
                   <X size={20} aria-hidden="true" />
@@ -439,6 +446,10 @@ export function Header({ onOpenChat }: HeaderProps) {
               </section>
 
               <div className="nav-drawer-actions">
+                <button type="button" onClick={() => { setDrawerOpen(false); window.requestAnimationFrame(openCommandPalette); }}>
+                  <Search size={18} aria-hidden="true" />
+                  {t("platform.command.title")}
+                </button>
                 {user ? (
                   <>
                     <PrefetchLink to="/dashboard" onClick={() => setDrawerOpen(false)}>

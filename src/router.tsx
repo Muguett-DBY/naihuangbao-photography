@@ -10,6 +10,11 @@ import { routeLoaders } from "./routing/route-loaders";
 export const preloadRoute = createRoutePreloader(routeLoaders);
 
 const HomePage = lazy(routeLoaders["/"]);
+const ArchivePage = lazy(routeLoaders["/archive"]);
+const StoriesPage = lazy(routeLoaders["/stories"]);
+const CreativeStudioPage = lazy(routeLoaders["/studio"]);
+const LabPage = lazy(routeLoaders["/lab"]);
+const AboutPage = lazy(routeLoaders["/about"]);
 const GalleryPage = lazy(routeLoaders["/gallery"]);
 const CoursesPage = lazy(routeLoaders["/courses"]);
 const CourseDetailPage = lazy(routeLoaders["/courses/:id"]);
@@ -139,6 +144,11 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <PageSuspense fallback={<HomePremiereFallback />}><HomePage /></PageSuspense> },
+      { path: "archive", element: <PageSuspense><ArchivePage /></PageSuspense> },
+      { path: "stories", element: <PageSuspense><StoriesPage /></PageSuspense> },
+      { path: "studio", element: <PageSuspense><CreativeStudioPage /></PageSuspense> },
+      { path: "lab", element: <PageSuspense><LabPage /></PageSuspense> },
+      { path: "about", element: <PageSuspense><AboutPage /></PageSuspense> },
       { path: "gallery", element: <PageSuspense><GalleryPage /></PageSuspense> },
       { path: "gallery/:id", element: <PageSuspense><PhotoDetailPage /></PageSuspense> },
       { path: "courses", element: <PageSuspense><CoursesPage /></PageSuspense> },

@@ -148,11 +148,12 @@ describe("performance budgets", () => {
     expect(footerSource).toContain("PrefetchLink");
   });
 
-  it("keeps footer discovery links on real lazy-rendered sections", () => {
-    expect(footerSource).not.toContain('to="/about"');
+  it("keeps footer discovery links on real lazy-rendered pages", () => {
+    expect(footerSource).toContain('to="/about"');
     expect(footerSource).not.toContain('to="/faq"');
-    expect(footerSource).toContain('to="/#why"');
-    expect(footerSource).toContain('to="/booking#faq"');
+    expect(footerSource).toContain('to="/archive"');
+    expect(footerSource).toContain('to="/studio"');
+    expect(footerSource).toContain('to="/lab"');
     for (const localeFile of localeFiles) {
       const locale = JSON.parse(readFileSync(resolve(root, localeFile), "utf8"));
       expect(locale.nav.about).toBeTruthy();

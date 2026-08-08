@@ -2,6 +2,10 @@
   "nav": {
     "home": "首页",
     "gallery": "作品",
+    "archive": "档案",
+    "stories": "故事",
+    "studio": "创作室",
+    "lab": "实验室",
     "courses": "课程",
     "presets": "预设",
     "workshops": "活动",
@@ -27,6 +31,102 @@
     "booking": "预约",
     "editor": "修图",
     "account": "我的"
+  },
+  "platform": {
+    "routes": {
+      "home": "回到当前首映体验",
+      "archive": "浏览概念研究与真实作品",
+      "stories": "阅读画面背后的现场笔记",
+      "studio": "编排胶片条、联系表与灵感板",
+      "lab": "打开项目中的练习系统",
+      "about": "了解这个个人项目如何制作"
+    },
+    "practice": {
+      "gallery": "原有公开人像作品库",
+      "editor": "本地人像暗房",
+      "compare": "前后效果对比台",
+      "courses": "课程目录练习模块",
+      "presets": "预设目录练习模块",
+      "workshops": "活动流程练习模块",
+      "shop": "印刷品与周边练习模块",
+      "booking": "预约流程练习模块",
+      "map": "地点现场笔记地图",
+      "account": "账户与控制台练习模块"
+    },
+    "command": {
+      "title": "搜索 NHB",
+      "placeholder": "搜索页面、工具或照片...",
+      "results": "搜索结果",
+      "suggestions": "建议入口",
+      "empty": "没有匹配的页面或照片"
+    },
+    "archive": {
+      "title": "生长中的影像档案",
+      "description": "持续更新的无人物概念研究、现场观察与独立标注的真实人像作品索引。",
+      "enter": "进入档案索引",
+      "filterTitle": "寻找一种画面温度",
+      "filterDescription": "按地点、季节、情绪或色彩筛选概念研究。",
+      "place": "地点",
+      "season": "季节",
+      "mood": "情绪",
+      "palette": "色彩",
+      "all": "全部",
+      "reset": "重置筛选",
+      "conceptTitle": "无人物概念研究",
+      "conceptDisclosure": "用于视觉探索的生成式品牌概念素材，不是真实客片。",
+      "empty": "当前组合下没有匹配的研究。",
+      "realTitle": "真实人像作品",
+      "realDescription": "经授权的真实照片保持独立标注，作为可信的作品来源。",
+      "openGallery": "查看完整真实作品库"
+    },
+    "stories": {
+      "title": "现场笔记",
+      "description": "关于雨、纸、玻璃、色彩，以及一张画面背后微小决定的视觉短文。",
+      "readStudy": "打开完整研究"
+    },
+    "studio": {
+      "title": "本地创作室",
+      "description": "把本地图片编排为胶片条、联系表、明信片或灵感板，无需上传即可导出。",
+      "openDarkroom": "打开人像暗房",
+      "controls": "画面编排控制",
+      "modeLabel": "编排格式",
+      "modes": {
+        "filmstrip": "胶片条",
+        "contact-sheet": "联系表",
+        "postcard": "明信片",
+        "moodboard": "灵感板"
+      },
+      "addImages": "添加本地图片",
+      "imageCount": "已选择 {{count}} 张图片",
+      "invalidFiles": "请选择浏览器支持的一张或多张图片。",
+      "restoreSamples": "恢复无人物样片",
+      "titleLabel": "标题",
+      "captionLabel": "注释",
+      "paperLabel": "纸张颜色",
+      "localOnly": "全部在本地渲染，不上传图片。"
+    },
+    "lab": {
+      "title": "练习实验室",
+      "description": "原有偏商业化的流程全部保留在这里，并明确作为产品与工程练习模块。",
+      "statusLabel": "本地实验室状态",
+      "online": "网络已连接",
+      "offline": "离线模式",
+      "modules": "可用练习模块"
+    },
+    "about": {
+      "title": "温柔的摄影游乐场",
+      "description": "奶黄包摄影是一个个人练习项目，用来探索视觉系统、浏览器图形、本地创作工具与无障碍交互。",
+      "disclosure": "这不是商业摄影服务。",
+      "principles": "项目如何继续生长",
+      "practiceTitle": "公开练习",
+      "practiceCopy": "每个新实验都以可用页面和测试交付，而不是停留在静态稿。",
+      "systemTitle": "统一视觉系统",
+      "systemCopy": "概念素材、真实作品、创作工具和旧模块保持清晰标注与结构隔离。",
+      "openTitle": "本地优先创作",
+      "openCopy": "只要浏览器能够完成，创作流程就尽量留在当前设备。",
+      "openStudio": "打开本地创作室",
+      "openLab": "查看练习实验室"
+    }
   },
   "hero": {
     "volBadge": "✦ Vol.1",
@@ -1569,6 +1669,16 @@
     "emptyDesc": "画布会先保持轻量，上传后再按需加载人脸模型。",
     "emptyBadgesLabel": "修图加载说明",
     "localOnly": "照片保留在当前设备",
+    "project": {
+      "controls": "本地项目控制",
+      "save": "保存本地项目",
+      "export": "导出 NHB 项目",
+      "import": "导入 NHB 项目",
+      "saving": "正在保存...",
+      "saved": "已保存到本地",
+      "failed": "项目操作失败",
+      "restore": "恢复上次本地项目"
+    },
     "manualFallback": "滤镜、文字和导出可先用",
     "dropHere": "将照片拖放到这里",
     "upload": "上传照片",

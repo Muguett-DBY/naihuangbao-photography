@@ -1,6 +1,7 @@
 import "../styles/pages.css";
 import "../styles/editor.css";
 import "../styles/darkroom-v2.css";
+import "../styles/platform-v3.css";
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowUpRight, ImagePlus, ShieldCheck, Sparkles, Zap, Upload, SlidersHorizontal } from "lucide-react";
@@ -10,6 +11,7 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { useSEO } from "../hooks/useSEO";
 import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
 import { editorSampleAssets, opticalArchiveById, type OpticalArchiveAsset } from "../data/optical-archive";
+import { getEditorProject, type EditorProjectSnapshot } from "../lib/editor-project-store";
 
 const PhotoEditorWorkspace = lazy(() => import("./PhotoEditorWorkspace"));
 const EDITOR_IMMERSIVE_IMAGES = [
@@ -33,6 +35,8 @@ export default function PhotoEditorPage() {
   const [studioReady, setStudioReady] = useState(false);
   const [initialFile, setInitialFile] = useState<File | null>(null);
   const [initialSample, setInitialSample] = useState<string | null>(null);
+  const [initialProject, setInitialProject] = useState<EditorProjectSnapshot | null>(null);
+  const [recoverableProject, setRecoverableProject] = useState<EditorProjectSnapshot | null>(null);
   const [sampleLoading, setSampleLoading] = useState<string | null>(null);
   const [sampleError, setSampleError] = useState(false);
   const uploadRef = useRef<HTMLInputElement>(null);
@@ -49,10 +53,28 @@ export default function PhotoEditorPage() {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, [studioReady]);
 
+  useEffect(() => {
+    let active = true;
+    void getEditorProject().then((project) => {
+      if (active && project) setRecoverableProject(project);
+    }).catch(() => undefined);
+    return () => { active = false; };
+  }, []);
+
   const openStudio = useCallback(() => {
     setInitialSample(null);
+    setInitialProject(null);
     setStudioReady(true);
   }, []);
+
+  const restoreProject = useCallback(() => {
+    if (!recoverableProject) return;
+    const file = new File([recoverableProject.source], recoverableProject.fileName, { type: recoverableProject.source.type, lastModified: recoverableProject.savedAt });
+    setInitialSample(null);
+    setInitialProject(recoverableProject);
+    setInitialFile(file);
+    setStudioReady(true);
+  }, [recoverableProject]);
 
   const handleUploadClick = useCallback(() => {
     uploadRef.current?.click();
@@ -62,6 +84,7 @@ export default function PhotoEditorPage() {
     const file = event.target.files?.[0];
     if (!file) return;
     setInitialSample(null);
+    setInitialProject(null);
     setInitialFile(file);
     setStudioReady(true);
     event.target.value = "";
@@ -76,6 +99,7 @@ export default function PhotoEditorPage() {
       const blob = await response.blob();
       const file = new File([blob], `${asset.id}.webp`, { type: blob.type || "image/webp" });
       setInitialSample(asset.id);
+      setInitialProject(null);
       setInitialFile(file);
       setStudioReady(true);
     } catch (error) {
@@ -91,7 +115,8 @@ export default function PhotoEditorPage() {
       <Suspense fallback={<EditorStudioFallback />}>
         <PhotoEditorWorkspace
           initialFile={initialFile}
-          skipInitialFaceDetection={Boolean(initialSample)}
+          initialProject={initialProject}
+          skipInitialFaceDetection={initialProject?.skipFaceDetection ?? Boolean(initialSample)}
         />
       </Suspense>
     );
@@ -149,6 +174,7 @@ export default function PhotoEditorPage() {
                   <ImagePlus size={18} aria-hidden="true" />
                   <span>{t("editor.upload")}</span>
                 </button>
+                {recoverableProject ? <button type="button" className="editor-project-restore" onClick={restoreProject}>{t("editor.project.restore")}</button> : null}
               </div>
               <span className="editor-darkroom-feature__index" aria-hidden="true">D / 01</span>
             </div>

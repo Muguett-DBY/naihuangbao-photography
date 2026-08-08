@@ -3,12 +3,12 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const galleryItems = [
-  { id: "gallery-jiangnan-01", title: "南京江南感写真｜女生约拍", caption: "奶黄包摄影南京女生写真，江南感风格" },
-  { id: "gallery-jiangnan-02", title: "南京探店写真｜室内约拍", caption: "南京室内写真约拍，柔雾胶片感" },
-  { id: "gallery-street-01", title: "南京街拍写真｜室外约拍", caption: "南京街拍女生写真，自然光日常记录" },
-  { id: "gallery-couple-01", title: "南京情侣约拍｜室外写真", caption: "南京情侣约拍，自然甜蜜风格" },
-  { id: "gallery-sweet-01", title: "南京甜系写真｜室内棚拍", caption: "南京甜系女生写真，温柔柔雾风格" },
-  { id: "gallery-park-01", title: "南京公园写真｜自然光约拍", caption: "南京公园女生写真，自然柔光风格" },
+  { id: "gallery-jiangnan-01", title: "伞下春光", caption: "南京园林中的江南感人像作品" },
+  { id: "gallery-urban-01", title: "台阶午后", caption: "南京室内台阶场景的都市人像作品" },
+  { id: "gallery-garden-01", title: "绿意裙摆", caption: "南京公园绿意与纸伞人像作品" },
+  { id: "gallery-sweet-01", title: "黄 hoodie 街角", caption: "南京街区日常人像作品" },
+  { id: "gallery-flower-01", title: "花墙紫调", caption: "南京花墙前的柔和人像作品" },
+  { id: "gallery-daily-01", title: "廊下白衬衫", caption: "南京公园廊下的日常人像作品" },
 ];
 
 const SITE_ORIGIN = "https://shoot.custard.top";
@@ -16,6 +16,11 @@ const LANGS = ["zh-CN", "en", "ja", "ko"];
 
 const STATIC_PAGES = [
   { path: "/", priority: 1.0, changefreq: "weekly" },
+  { path: "/archive", priority: 0.9, changefreq: "weekly" },
+  { path: "/stories", priority: 0.8, changefreq: "weekly" },
+  { path: "/studio", priority: 0.8, changefreq: "monthly" },
+  { path: "/lab", priority: 0.7, changefreq: "monthly" },
+  { path: "/about", priority: 0.7, changefreq: "monthly" },
   { path: "/gallery", priority: 0.9, changefreq: "weekly" },
   { path: "/booking", priority: 0.9, changefreq: "monthly" },
   { path: "/courses", priority: 0.7, changefreq: "weekly" },
