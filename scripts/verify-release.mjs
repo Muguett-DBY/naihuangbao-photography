@@ -1,14 +1,21 @@
 const args = new Map(process.argv.slice(2).map((value, index, values) => value.startsWith("--") ? [value.slice(2), values[index + 1]] : null).filter(Boolean));
 const origin = (args.get("origin") || "https://shoot.custard.top").replace(/\/$/, "");
+const canonicalOrigin = (args.get("canonical-origin") || "https://shoot.custard.top").replace(/\/$/, "");
 const expectedCommit = args.get("commit");
 const cacheBust = Date.now();
 
 async function request(path, options = {}) {
   const separator = path.includes("?") ? "&" : "?";
-  const response = await fetch(`${origin}${path}${separator}acceptance=${cacheBust}`, {
-    redirect: options.redirect ?? "follow",
-    headers: { "Cache-Control": "no-cache", Accept: options.accept ?? "text/html,application/json" },
-  });
+  let response;
+  try {
+    response = await fetch(`${origin}${path}${separator}acceptance=${cacheBust}`, {
+      redirect: options.redirect ?? "follow",
+      headers: { "Cache-Control": "no-cache", Accept: options.accept ?? "text/html,application/json" },
+      signal: AbortSignal.timeout(options.timeout ?? 20_000),
+    });
+  } catch (error) {
+    throw new Error(`${path} request failed: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+  }
   if (response.status !== (options.status ?? 200)) throw new Error(`${path} returned ${response.status}`);
   return response;
 }
@@ -33,7 +40,7 @@ const criticalPaths = ["/", "/archive", archiveRoute, "/stories", storyRoute, "/
 for (const path of criticalPaths) {
   const html = await (await request(path)).text();
   if (!html.includes('id="root"')) throw new Error(`${path} is missing the app root`);
-  if ((path === archiveRoute || path === storyRoute) && (!html.includes("application/ld+json") || !html.includes(`${origin}${path}`))) {
+  if ((path === archiveRoute || path === storyRoute) && (!html.includes("application/ld+json") || !html.includes(`${canonicalOrigin}${path}`))) {
     throw new Error(`${path} is missing route-specific static SEO metadata`);
   }
 }
