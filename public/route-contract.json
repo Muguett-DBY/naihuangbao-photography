@@ -39,6 +39,15 @@
       "scope": "primary"
     },
     {
+      "path": "/projects",
+      "scope": "primary"
+    },
+    {
+      "path": "/share/:slug",
+      "scope": "primary",
+      "dynamic": true
+    },
+    {
       "path": "/about",
       "scope": "primary"
     },

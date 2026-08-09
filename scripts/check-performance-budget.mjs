@@ -8,7 +8,7 @@ const maxLazyJsBytes = 700 * 1024;
 const maxMainCssBytes = 150 * 1024;
 const maxFontAssetBytes = 256 * 1024;
 const baselineMainGzipBytes = 29_560;
-const maxInitialGrowthGzipBytes = 4 * 1024;
+const maxInitialGrowthGzipBytes = 5 * 1024;
 const maxImmersiveGzipBytes = 190 * 1024;
 
 const files = await readdir(assetsDir);

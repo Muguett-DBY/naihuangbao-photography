@@ -1,0 +1,207 @@
+.workspace-project__publish {
+  padding: clamp(2rem, 5vw, 4.5rem) clamp(1rem, 4vw, 4rem);
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.workspace-project__publish > header,
+.published-project__body > header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(16rem, .6fr);
+  gap: 1.5rem;
+  align-items: end;
+}
+
+.workspace-project__publish h2,
+.published-project__body h2 {
+  margin: .4rem 0 0;
+  font-size: clamp(1.8rem, 4vw, 4rem);
+  line-height: .95;
+}
+
+.workspace-project__publish-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  margin-top: 1.5rem;
+}
+
+.workspace-project__publish-actions button,
+.workspace-project__publish-actions a,
+.published-project__intro button,
+.published-project__intro a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  min-height: 2.8rem;
+  padding: .7rem 1rem;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  text-decoration: none;
+}
+
+.workspace-project__versions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: .55rem;
+  margin-top: 1.25rem;
+}
+
+.workspace-project__versions article {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .2rem .8rem;
+  align-items: center;
+  padding: .85rem;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.workspace-project__versions article > span {
+  grid-row: span 2;
+  color: var(--workspace-accent);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.workspace-project__versions article small {
+  font-family: ui-monospace, monospace;
+  opacity: .55;
+}
+
+.workspace-project__versions article button {
+  grid-column: 1 / -1;
+  margin-top: .45rem;
+}
+
+.published-project {
+  min-height: 100vh;
+  background: #f8f3e8;
+  color: #24332c;
+}
+
+.published-project__hero {
+  position: relative;
+  display: grid;
+  min-height: min(88vh, 58rem);
+  overflow: hidden;
+  background: #1d2823;
+  color: #fffaf0;
+}
+
+.published-project__hero > picture,
+.published-project__hero > picture img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.published-project__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(20, 27, 23, .76), rgba(20, 27, 23, .12) 68%), linear-gradient(0deg, rgba(20, 27, 23, .55), transparent 45%);
+}
+
+.published-project__intro {
+  position: relative;
+  z-index: 1;
+  align-self: end;
+  width: min(54rem, 90vw);
+  padding: clamp(7rem, 16vh, 12rem) clamp(1.2rem, 6vw, 6rem) clamp(5rem, 10vh, 8rem);
+}
+
+.published-project__intro h1 {
+  margin: .65rem 0 1rem;
+  font-size: clamp(3.1rem, 9vw, 8.8rem);
+  line-height: .82;
+}
+
+.published-project__intro p {
+  max-width: 38rem;
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
+}
+
+.published-project__intro > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin-top: 1.5rem;
+}
+
+.published-project__hero > footer {
+  position: absolute;
+  z-index: 1;
+  right: clamp(1rem, 4vw, 4rem);
+  bottom: 1.5rem;
+  display: flex;
+  gap: 1.2rem;
+  font-family: ui-monospace, monospace;
+  font-size: .68rem;
+}
+
+.published-project__body {
+  padding: clamp(3rem, 8vw, 8rem) clamp(1rem, 5vw, 5rem);
+}
+
+.published-project__grid {
+  columns: 3 20rem;
+  column-gap: .75rem;
+  margin-top: clamp(2rem, 5vw, 5rem);
+}
+
+.published-project__grid figure {
+  break-inside: avoid;
+  margin: 0 0 .75rem;
+}
+
+.published-project__grid picture,
+.published-project__grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.published-project__grid figcaption {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .7rem;
+  padding: .55rem 0 1rem;
+  font-size: .78rem;
+}
+
+.published-project__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.2rem clamp(1rem, 5vw, 5rem);
+  border-top: 1px solid rgba(36, 51, 44, .18);
+}
+
+.published-project-loading,
+.published-project-error {
+  min-height: 72vh;
+  display: grid;
+  place-content: center;
+  gap: .75rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .workspace-project__publish > header,
+  .published-project__body > header {
+    grid-template-columns: 1fr;
+  }
+
+  .published-project__hero {
+    min-height: 78svh;
+  }
+
+  .published-project__hero > footer {
+    left: 1rem;
+    right: 1rem;
+    justify-content: space-between;
+  }
+}

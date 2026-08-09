@@ -19,7 +19,7 @@ import { resolveViewTransitionKind } from "./view-transition";
 describe("NHB visual playground v4 contracts", () => {
   it("keeps concept studies complete and separate from authorized real work", () => {
     const realIds = new Set(galleryItems.map((photo) => photo.id));
-    expect(archiveProjects).toHaveLength(16);
+    expect(archiveProjects).toHaveLength(20);
     expect(new Set(archiveProjects.map((project) => project.id)).size).toBe(archiveProjects.length);
     for (const project of archiveProjects) {
       expect(project.kind).toBe("concept");
@@ -29,8 +29,8 @@ describe("NHB visual playground v4 contracts", () => {
       expect(project.media.length).toBeGreaterThan(0);
       expect(realIds.has(project.id)).toBe(false);
       for (const media of project.media) {
-        expect(media.src).toMatch(/^\/images\/(optical-archive|visual-os-v[56])\/.+\.webp$/);
-        expect(media.width).toBeGreaterThanOrEqual(1122);
+        expect(media.src).toMatch(/^\/images\/(optical-archive|visual-os-v[567])\/.+\.webp$/);
+        expect(media.width).toBeGreaterThanOrEqual(1024);
         expect(media.height).toBeGreaterThanOrEqual(900);
       }
     }
@@ -45,7 +45,7 @@ describe("NHB visual playground v4 contracts", () => {
     expect(result.facets.medium).toContain("生成式概念摄影");
     expect(createArchiveView(archiveProjects, { query: "玻璃" }).projects.length).toBeGreaterThan(0);
     expect(createArchiveView(archiveProjects, { query: "definitely-missing" }).projects).toHaveLength(0);
-    expect(archiveProjects).toHaveLength(16);
+    expect(archiveProjects).toHaveLength(20);
   });
 
   it("builds AVIF and WebP responsive sources for optical archive images", () => {
@@ -61,8 +61,8 @@ describe("NHB visual playground v4 contracts", () => {
   it("ships a deterministic validated archive manifest", () => {
     const manifest = JSON.parse(readFileSync(resolve(process.cwd(), "public/archive-manifest.json"), "utf8"));
     expect(manifest.schemaVersion).toBe(3);
-    expect(manifest.projects).toHaveLength(16);
-    expect(manifest.projects.flatMap((project: { media: unknown[] }) => project.media)).toHaveLength(38);
+    expect(manifest.projects).toHaveLength(20);
+    expect(manifest.projects.flatMap((project: { media: unknown[] }) => project.media)).toHaveLength(70);
     expect(manifest.generatedFrom).toBe("content/archive/projects/*/project.json");
     for (const media of manifest.projects.flatMap((project: { media: Array<Record<string, unknown>> }) => project.media)) {
       expect(media.dominantColor).toMatch(/^#[0-9a-f]{6}$/);

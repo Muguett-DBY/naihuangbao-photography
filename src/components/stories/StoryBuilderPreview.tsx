@@ -1,4 +1,5 @@
 import { Pencil } from "lucide-react";
+import type { CSSProperties } from "react";
 import { ImageWithFallback } from "../ImageWithFallback";
 import type { StoryProject } from "../../lib/story-project-store";
 
@@ -9,7 +10,7 @@ export function StoryBuilderPreview({ project, activeChapterId, onSelectChapter,
   device?: "desktop" | "mobile";
 }) {
   return (
-    <div className={`story-builder-preview story-builder-preview--${device}`} style={{ "--story-accent": project.accent } as React.CSSProperties}>
+    <div className={`story-builder-preview story-builder-preview--${device}`} style={{ "--story-accent": project.accent } as CSSProperties}>
       <header>
         <span>NHB / LIVE STORY PREVIEW</span>
         <h2>{project.title || "Untitled story"}</h2>
@@ -20,6 +21,14 @@ export function StoryBuilderPreview({ project, activeChapterId, onSelectChapter,
           <article
             key={chapter.id}
             className={`story-builder-preview__chapter story-builder-preview__chapter--${chapter.layout} ${chapter.id === activeChapterId ? "is-active" : ""}`}
+            data-scene-transition={chapter.scene.transition}
+            style={{
+              "--story-scene-duration": `${chapter.scene.durationMs}ms`,
+              "--story-scene-intensity": chapter.scene.intensity,
+              "--story-scene-depth": chapter.scene.depth,
+              "--story-scene-focus-x": `${chapter.scene.focusX * 100}%`,
+              "--story-scene-focus-y": `${chapter.scene.focusY * 100}%`,
+            } as CSSProperties}
           >
             <header>
               <span>{chapter.kicker}</span>

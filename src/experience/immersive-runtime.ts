@@ -20,6 +20,7 @@ export type ImmersiveRuntimeOptions = {
   scheduler: FrameScheduler;
   presets?: Readonly<Record<string, ScenePreset>>;
   onError?: (error: unknown) => void;
+  onTierChange?: (tier: ExperienceTier) => void;
 };
 
 const FRAME_WINDOW_SIZE = 120;
@@ -39,6 +40,7 @@ export class ImmersiveRuntime {
   private readonly scheduler: FrameScheduler;
   private readonly presets: Readonly<Record<string, ScenePreset>>;
   private readonly onError: (error: unknown) => void;
+  private readonly onTierChange: (tier: ExperienceTier) => void;
   private driver: SceneDriver | null = null;
   private unsubscribe: (() => void) | null = null;
   private pendingFrame: number | null = null;
@@ -69,11 +71,13 @@ export class ImmersiveRuntime {
     this.scheduler = options.scheduler;
     this.presets = options.presets ?? SCENE_PRESETS;
     this.onError = options.onError ?? ((error) => console.error("Immersive runtime error.", error));
+    this.onTierChange = options.onTierChange ?? (() => undefined);
     this.tierValue = options.tier;
     this.lastFrameTime = this.scheduler.now();
 
     if (options.tier === "static") {
       this.stateValue = "static";
+      this.notifyTierChange();
       return;
     }
 
@@ -83,6 +87,7 @@ export class ImmersiveRuntime {
       this.stateValue = "static";
       this.tierValue = "static";
       this.report(error);
+      this.notifyTierChange();
       return;
     }
 
@@ -91,6 +96,7 @@ export class ImmersiveRuntime {
     this.syncScene(snapshot);
     this.syncHighlight(snapshot);
     this.updateActivity();
+    this.notifyTierChange();
   }
 
   get state(): ImmersiveRuntimeState {
@@ -332,6 +338,7 @@ export class ImmersiveRuntime {
       && this.driver
     ) {
       this.tierValue = "medium";
+      this.notifyTierChange();
       this.mediumCadenceLimited = true;
       this.mediumSkipNextFrame = false;
       this.frameAccumulator = 0;
@@ -397,7 +404,16 @@ export class ImmersiveRuntime {
   private lockStatic(): void {
     this.tierValue = "static";
     this.stateValue = "static";
+    this.notifyTierChange();
     this.cleanupTerminal();
+  }
+
+  private notifyTierChange(): void {
+    try {
+      this.onTierChange(this.tierValue);
+    } catch (error) {
+      this.report(error);
+    }
   }
 
   private cleanupTerminal(): void {

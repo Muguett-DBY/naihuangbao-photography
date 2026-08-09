@@ -14,6 +14,7 @@ const COLLECTIONS = [
   { name: "optical-archive", webpQuality: 76, avifQuality: 58 },
   { name: "visual-os-v5", webpQuality: 80, avifQuality: 62 },
   { name: "visual-os-v6", webpQuality: 82, avifQuality: 64 },
+  { name: "visual-os-v7", webpQuality: 84, avifQuality: 66, deriveDetail: true },
 ];
 const SIZES = [
   { directory: "640", width: 640 },
@@ -33,20 +34,25 @@ async function processCollection(collection) {
   for (const file of sourceFiles) {
     const inputPath = resolve(rawDirectory, file);
     const baseName = file.replace(/\.[^.]+$/, "");
+    const variants = collection.deriveDetail
+      ? [{ suffix: "", square: false }, { suffix: "-detail", square: true }]
+      : [{ suffix: "", square: false }];
 
-    for (const size of SIZES) {
-      const outputDirectory = resolve(outputRoot, size.directory);
-      if (!existsSync(outputDirectory)) mkdirSync(outputDirectory, { recursive: true });
-
-      const image = sharp(inputPath).resize(size.width, undefined, {
-        fit: "inside",
-        withoutEnlargement: true,
-      });
-      await image.clone().webp({ quality: collection.webpQuality, effort: 5 }).toFile(resolve(outputDirectory, `${baseName}.webp`));
-      await image.clone().avif({ quality: collection.avifQuality, effort: 5 }).toFile(resolve(outputDirectory, `${baseName}.avif`));
+    for (const variant of variants) {
+      for (const size of SIZES) {
+        const outputDirectory = resolve(outputRoot, size.directory);
+        if (!existsSync(outputDirectory)) mkdirSync(outputDirectory, { recursive: true });
+        const width = variant.square ? Math.min(size.width, 1024) : size.width;
+        const image = variant.square
+          ? sharp(inputPath).resize(width, width, { fit: "cover", position: sharp.strategy.attention, withoutEnlargement: true })
+          : sharp(inputPath).resize(width, undefined, { fit: "inside", withoutEnlargement: true });
+        const outputName = `${baseName}${variant.suffix}`;
+        await image.clone().webp({ quality: collection.webpQuality, effort: 5 }).toFile(resolve(outputDirectory, `${outputName}.webp`));
+        await image.clone().avif({ quality: collection.avifQuality, effort: 5 }).toFile(resolve(outputDirectory, `${outputName}.avif`));
+      }
     }
 
-    console.log(`Built ${collection.name} variants for ${baseName}`);
+    console.log(`Built ${collection.name} variants for ${baseName}${collection.deriveDetail ? " and detail crop" : ""}`);
   }
 
   return sourceFiles.length;

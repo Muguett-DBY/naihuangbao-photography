@@ -1,4 +1,4 @@
-import { BookOpenText, Home, Images, Info, WandSparkles } from "lucide-react";
+import { FolderOpen, Home, Images, Info, WandSparkles } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -55,10 +55,10 @@ export function MobileBottomNav() {
         <span>{t("nav.create")}</span>
       </PrefetchLink>
       <MobileNavLink
-        to="/stories"
-        label={t("nav.stories")}
-        active={pathname === "/stories"}
-        icon={<BookOpenText size={21} aria-hidden="true" />}
+        to="/projects"
+        label={t("nav.projects")}
+        active={pathname === "/projects"}
+        icon={<FolderOpen size={21} aria-hidden="true" />}
       />
       <MobileNavLink
         to="/about"

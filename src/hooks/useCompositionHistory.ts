@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { CompositionImage, CompositionTextAlign } from "../types/composition";
+import type { CompositionArtboardPreset, CompositionImage, CompositionTextAlign } from "../types/composition";
 import type { CompositionMode } from "../lib/composition-layout";
 
 export type CompositionEditableState = {
@@ -11,6 +11,7 @@ export type CompositionEditableState = {
   paperColor: string;
   textAlign: CompositionTextAlign;
   titleScale: number;
+  artboardPreset: CompositionArtboardPreset;
   selectedImageId: string | null;
 };
 

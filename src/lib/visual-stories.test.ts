@@ -60,8 +60,28 @@ describe("visual stories v1", () => {
       alt: "Rain conservatory",
     });
     const restored = await parseStoryProjectFile(createStoryProjectFile(project));
+    expect(restored.version).toBe(2);
     expect(restored.name).toBe("Test story");
     expect(restored.chapters[0].media[0].projectId).toBe("weather-glasshouse");
+    expect(restored.chapters[0].scene).toMatchObject({ transition: "veil", durationMs: 850 });
+  });
+
+  it("migrates V1 stories to bounded SceneGraph chapter motion", async () => {
+    const legacy = {
+      id: "legacy-story",
+      version: 1,
+      projectType: "story",
+      name: "Legacy",
+      title: "Legacy title",
+      subtitle: "",
+      accent: "#56705d",
+      chapters: [{ id: "chapter-1", kicker: "01", title: "One", body: "Body", layout: "full", media: [] }],
+      createdAt: 1,
+      savedAt: 2,
+    };
+    const restored = await parseStoryProjectFile(new Blob([JSON.stringify(legacy)]));
+    expect(restored.version).toBe(2);
+    expect(restored.chapters[0].scene).toMatchObject({ transition: "veil", focusX: 0.5, focusY: 0.5 });
   });
 
   it("rejects malformed portable story projects", async () => {

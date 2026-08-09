@@ -1,0 +1,34 @@
+{
+  "id": "rain-glass-observatory-v7",
+  "kind": "concept",
+  "title": "Rain Glass Observatory",
+  "subtitle": "把雨、玻璃和水纹变成一套观察仪器",
+  "chapter": "18",
+  "year": 2026,
+  "summary": "四个无人雨景空间，从观察室走到温室、棱镜墙与水纹实验台。",
+  "statement": "雨不是覆盖画面的滤镜，而是一套改变空间边界的光学系统。玻璃上的水迹、地面的反射和纸灯的暖光共同形成可被颜色、材质与亮度检索的天气档案。",
+  "place": "虚构雨光观测站",
+  "season": "盛夏雨季",
+  "moods": ["潮湿", "沉静", "电影感", "低温"],
+  "palette": ["雾白", "银灰", "苔藓绿", "柔黄", "低饱和珊瑚"],
+  "techniques": ["雨滴折射", "玻璃焦散", "水面反射", "冷暖混光"],
+  "process": [
+    { "title": "建立雨的层次", "note": "把玻璃表面、空间内部和庭院外部拆成三种不同密度的雨。" },
+    { "title": "保留暖色锚点", "note": "用纸灯、琥珀桌和珊瑚玻璃让冷雨世界仍保持品牌温度。" },
+    { "title": "生成光学切片", "note": "细节构图聚焦水迹、棱镜和反射，供智能档案进行材质匹配。" }
+  ],
+  "related": ["cream-architecture-index", "botanical-specimen-index", "rain-light-laboratory"],
+  "media": [
+    { "src": "/images/visual-os-v7/05-rain-observatory.webp", "alt": "雨幕玻璃观测室、苔藓庭院与琥珀桌组成的无人空间", "note": "RAIN OBSERVATORY / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/05-rain-observatory-detail.webp", "alt": "玻璃雨迹、苔藓和琥珀反射的方形细节", "note": "RAIN OBSERVATORY / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/06-wet-greenhouse.webp", "alt": "雨后玻璃温室、纸叶灯和苔藓水渠组成的无人植物空间", "note": "WET GREENHOUSE / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/06-wet-greenhouse-detail.webp", "alt": "纸叶灯、雨玻璃和水渠反射的方形细节", "note": "WET GREENHOUSE / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/07-prismatic-rain.webp", "alt": "雨水覆盖的棱镜玻璃墙把珊瑚与苔藓光投向湿石地面", "note": "PRISMATIC RAIN / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/07-prismatic-rain-detail.webp", "alt": "棱镜玻璃、水滴和多色焦散的方形细节", "note": "PRISMATIC RAIN / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/08-water-table.webp", "alt": "暗色石室中的雨滴水台、苔藓水渠与珊瑚玻璃块", "note": "WATER TABLE / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/08-water-table-detail.webp", "alt": "水面雨纹、珊瑚玻璃和苔藓边缘的方形细节", "note": "WATER TABLE / DETAIL", "width": 1024, "height": 1024 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "天气光学", "玻璃材料研究"],
+  "keywords": ["雨", "玻璃", "水纹", "苔藓", "温室", "棱镜", "无人影像", "潮湿"]
+}

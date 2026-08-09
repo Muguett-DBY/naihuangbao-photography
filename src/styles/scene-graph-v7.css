@@ -1,0 +1,79 @@
+.cinematic-premiere[data-scene-graph] {
+  --scene-duration: 900ms;
+  --scene-intensity: .65;
+  --scene-depth: .5;
+  --scene-focus-x: 50%;
+  --scene-focus-y: 50%;
+}
+
+.cinematic-premiere[data-scene-graph] .cinematic-premiere__scene img {
+  object-position: var(--scene-focus-x) var(--scene-focus-y);
+}
+
+.cinematic-premiere[data-scene-graph] .cinematic-premiere__scene.is-active {
+  animation-duration: var(--scene-duration);
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(.22, .78, .2, 1);
+}
+
+.cinematic-premiere[data-scene-transition="veil"] .cinematic-premiere__scene.is-active {
+  animation-name: premiere-v7-veil;
+}
+
+.cinematic-premiere[data-scene-transition="focus"] .cinematic-premiere__scene.is-active {
+  animation-name: premiere-v7-focus;
+}
+
+.cinematic-premiere[data-scene-transition="drift"] .cinematic-premiere__scene.is-active {
+  animation-name: premiere-v7-drift;
+}
+
+.cinematic-premiere[data-scene-transition="slice"] .cinematic-premiere__scene.is-active {
+  animation-name: premiere-v7-slice;
+}
+
+.cinematic-premiere[data-scene-transition="cut"] .cinematic-premiere__scene.is-active {
+  animation-name: premiere-v7-cut;
+}
+
+.cinematic-premiere__director-cue {
+  grid-column: 2 / -1;
+  color: color-mix(in srgb, currentColor 52%, transparent);
+  font-size: .6rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+@keyframes premiere-v7-veil {
+  from { opacity: .2; clip-path: inset(0 52% 0 48%); transform: scale(calc(1.035 + var(--scene-depth) * .03)); }
+  to { opacity: 1; clip-path: inset(0); transform: scale(1); }
+}
+
+@keyframes premiere-v7-focus {
+  from { opacity: .35; filter: blur(calc(14px * var(--scene-intensity))); transform: scale(calc(1.08 + var(--scene-depth) * .04)); }
+  to { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+@keyframes premiere-v7-drift {
+  from { opacity: .25; transform: translate3d(calc(-4% * var(--scene-intensity)), calc(3% * var(--scene-depth)), 0) scale(1.04); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes premiere-v7-slice {
+  from { opacity: .3; clip-path: polygon(0 0, 20% 0, 8% 100%, 0 100%); transform: scale(1.045); }
+  to { opacity: 1; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); transform: scale(1); }
+}
+
+@keyframes premiere-v7-cut {
+  from { opacity: .72; transform: scale(1.012); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-premiere[data-scene-graph] .cinematic-premiere__scene.is-active {
+    animation: none;
+    clip-path: none;
+    filter: none;
+    transform: none;
+  }
+}

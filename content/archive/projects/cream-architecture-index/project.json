@@ -1,0 +1,34 @@
+{
+  "id": "cream-architecture-index",
+  "kind": "concept",
+  "title": "Cream Architecture Index",
+  "subtitle": "纸幕、石材与可以步入的晨光",
+  "chapter": "17",
+  "year": 2026,
+  "summary": "四座无人建筑练习，将奶油晨光变成可以收藏和重新编排的空间材料。",
+  "statement": "这组概念影像研究温柔并不等于缺少张力。纸幕、曲面石材、浅水和苔藓共同形成可被首页、Studio 与 Story 重复调用的空间语汇。",
+  "place": "虚构奶油建筑群",
+  "season": "初秋清晨",
+  "moods": ["温柔", "开阔", "安静", "先锋"],
+  "palette": ["奶油", "柔黄", "苔藓绿", "低饱和珊瑚", "深莓阴影"],
+  "techniques": ["建筑构图", "纸幕透光", "浅水反射", "方形细节裁切"],
+  "process": [
+    { "title": "建立空间骨架", "note": "先以圆、折线和长廊形成四种可以被快速识别的空间节奏。" },
+    { "title": "控制温柔色温", "note": "让柔黄只落在关键结构上，避免整幅画面落入单一奶油色。" },
+    { "title": "提取细节构图", "note": "每张完整空间都生成一个方形材料切片，用于检索、排版与故事节点。" }
+  ],
+  "related": ["rain-glass-observatory-v7", "botanical-specimen-index", "cream-light-pavilion"],
+  "media": [
+    { "src": "/images/visual-os-v7/01-cream-atrium.webp", "alt": "曲面奶油色中庭、浅水和苔藓石凳组成的无人物概念建筑", "note": "CREAM ATRIUM / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/01-cream-atrium-detail.webp", "alt": "奶油中庭水面与苔藓石材的方形细节", "note": "CREAM ATRIUM / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/02-paper-stair.webp", "alt": "折纸形墙面、浅色石阶与苔藓带组成的无人楼梯空间", "note": "PAPER STAIR / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/02-paper-stair-detail.webp", "alt": "折纸墙面、阶梯和苔藓纹理的方形细节", "note": "PAPER STAIR / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/03-paper-corridor.webp", "alt": "半透明纸幕长廊与珊瑚色矿石组成的无人晨光空间", "note": "PAPER CORRIDOR / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/03-paper-corridor-detail.webp", "alt": "透光纸幕、石柱和珊瑚矿石的方形细节", "note": "PAPER CORRIDOR / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/04-circular-gallery.webp", "alt": "圆形石材展厅、纸质天幕和三块苔藓石组成的无人空间", "note": "CIRCULAR GALLERY / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/04-circular-gallery-detail.webp", "alt": "圆形天光、苔藓石和浅珊瑚水面的方形细节", "note": "CIRCULAR GALLERY / DETAIL", "width": 1024, "height": 1024 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "建筑光线研究", "材料索引"],
+  "keywords": ["奶油建筑", "纸幕", "晨光", "石材", "苔藓", "浅水", "无人影像", "柔黄"]
+}

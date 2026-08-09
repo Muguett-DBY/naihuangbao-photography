@@ -1,4 +1,5 @@
 import "../../styles/studio-v2.css";
+import "../../styles/studio-v4.css";
 import {
   AlignCenter,
   AlignLeft,
@@ -16,7 +17,6 @@ import {
   Layers3,
   Plus,
   Redo2,
-  RotateCcw,
   Trash2,
   Undo2,
 } from "lucide-react";
@@ -44,11 +44,13 @@ import { safeLocalStorage } from "../../lib/browser-storage";
 import { DEFAULT_COMPOSITION_TRANSFORM, type CompositionImage, type CompositionTextAlign } from "../../types/composition";
 import { track } from "../../utils/track";
 import { exportStudioCanvas } from "../../lib/studio-export";
-import { StudioLayerControls } from "../../features/studio/StudioLayerControls";
 import { StudioRecipeRail, type CompositionRecipe } from "../../features/studio/StudioRecipeRail";
 import { StudioStorageStatus } from "../../features/studio/StudioStorageStatus";
+import { StudioArtboardControls } from "../../features/studio/StudioArtboardControls";
+import { StudioFrameControls } from "../../features/studio/StudioFrameControls";
+import { StudioWorkspaceBridge } from "../../features/studio/StudioWorkspaceBridge";
 import { setCreativeWorkDirty } from "../../lib/creative-work-state";
-
+import { useWorkspaceProjects } from "../../hooks/useWorkspaceProjects";
 export const compositionSampleImages: CompositionImage[] = [
   { id: "sample-garden", src: "/images/optical-archive/conservatory-after-rain-v1.webp", name: "Morning conservatory" },
   { id: "sample-prism", src: "/images/optical-archive/glass-fern-caustics-v1.webp", name: "Tactile optics" },
@@ -60,7 +62,6 @@ export const compositionSampleImages: CompositionImage[] = [
 const modes: CompositionMode[] = ["filmstrip", "contact-sheet", "postcard", "moodboard"];
 const paperColors = ["#fffaf0", "#f4e3b6", "#dfe7d8", "#e6b6a8", "#5b2438"];
 const LAST_PROJECT_KEY = "nhb-last-composition-project";
-
 type ProjectSummary = Pick<CompositionProjectSnapshot, "id" | "name" | "mode" | "savedAt"> & { imageCount: number };
 type ExportFormat = "png" | "webp" | "jpeg" | "avif";
 
@@ -74,6 +75,7 @@ function createInitialState(): CompositionEditableState {
     paperColor: paperColors[0],
     textAlign: "left",
     titleScale: 1,
+    artboardPreset: "auto",
     selectedImageId: compositionSampleImages[0].id,
   };
 }
@@ -104,9 +106,9 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
   const [activeVersionId, setActiveVersionId] = useState<string | null>(null);
   const [exportBackend, setExportBackend] = useState<"worker" | "main-thread" | null>(null);
   const { state, update, replace, undo, redo, canUndo, canRedo } = useCompositionHistory(createInitialState());
+  const { activeProject, linkResource } = useWorkspaceProjects();
   const inkColor = state.paperColor === "#5b2438" ? "#fffaf0" : "#203128";
   const selectedImage = state.images.find((image) => image.id === state.selectedImageId) ?? null;
-
   const revokeObjectUrls = useCallback(() => {
     objectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     objectUrlsRef.current = [];
@@ -146,6 +148,7 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
       paperColor: snapshot.paperColor,
       textAlign: snapshot.textAlign,
       titleScale: snapshot.titleScale,
+      artboardPreset: snapshot.artboardPreset,
       images: restoredImages,
       selectedImageId: restoredImages[0]?.id ?? null,
     });
@@ -162,6 +165,7 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
     paperColor: state.paperColor,
     textAlign: state.textAlign,
     titleScale: state.titleScale,
+    artboardPreset: state.artboardPreset,
     images: state.images,
   }), [createdAt, projectId, state]);
 
@@ -208,6 +212,11 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
   }, [buildSnapshot, hydrated]);
   useEffect(() => () => setCreativeWorkDirty("composition", false), []);
 
+  const workspaceLinked = Boolean(activeProject?.compositionIds.includes(projectId) && activeProject.activeSurface === "studio");
+  useEffect(() => {
+    if (hydrated && activeProject && !workspaceLinked) linkResource("studio", projectId);
+  }, [activeProject, hydrated, linkResource, projectId, workspaceLinked]);
+
   const imageCountLabel = useMemo(() => t("platform.studio.imageCount", { count: state.images.length }), [state.images.length, t]);
   const markRendered = useCallback(() => setRendered(true), []);
 
@@ -228,10 +237,10 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
   };
 
   const updateSelectedTransform = (patch: Partial<typeof DEFAULT_COMPOSITION_TRANSFORM>) => {
-    if (!selectedImage) return;
+    if (!selectedImage || selectedImage.locked) return;
     update((current) => ({
       ...current,
-      images: current.images.map((image) => image.id === selectedImage.id
+      images: current.images.map((image) => (image.id === selectedImage.id || (selectedImage.groupId && image.groupId === selectedImage.groupId)) && !image.locked
         ? { ...image, transform: { ...DEFAULT_COMPOSITION_TRANSFORM, ...image.transform, ...patch } }
         : image),
     }));
@@ -331,12 +340,33 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
     await refreshVersions(projectId);
   };
 
-  const updateSelectedLayer = (patch: Pick<CompositionImage, "visible" | "opacity" | "blendMode">) => {
+  const updateSelectedLayer = (patch: Partial<Pick<CompositionImage, "visible" | "opacity" | "blendMode" | "locked" | "groupId">>) => {
     if (!selectedImage) return;
     update((current) => ({
       ...current,
       images: current.images.map((image) => image.id === selectedImage.id ? { ...image, ...patch } : image),
     }));
+  };
+
+  const updateSelectedLook = (patch: Partial<Pick<CompositionImage, "adjustments" | "crop" | "mask">>) => {
+    if (!selectedImage || selectedImage.locked) return;
+    update((current) => ({
+      ...current,
+      images: current.images.map((image) => image.id === selectedImage.id ? { ...image, ...patch } : image),
+    }));
+  };
+
+  const importWorkspaceAssets = () => {
+    if (!activeProject) return;
+    const knownSources = new Set(state.images.map((image) => image.src));
+    const additions = activeProject.assets
+      .filter((asset) => !knownSources.has(asset.src))
+      .slice(0, Math.max(0, 12 - state.images.length))
+      .map((asset) => ({ id: `workspace-${asset.assetId}`, src: asset.src, name: asset.title, transform: { ...DEFAULT_COMPOSITION_TRANSFORM } }));
+    if (!additions.length) return;
+    update((current) => ({ ...current, images: [...current.images, ...additions], selectedImageId: additions[0]?.id ?? current.selectedImageId }));
+    linkResource("studio", projectId);
+    track("studio_workspace_assets_imported", { count: additions.length });
   };
 
   const applyRecipe = (recipe: CompositionRecipe) => {
@@ -351,8 +381,6 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
     }));
     track("studio_recipe_applied", { recipe: recipe.id });
   };
-
-  const transform = { ...DEFAULT_COMPOSITION_TRANSFORM, ...selectedImage?.transform };
 
   return (
     <div className={`studio-workspace${embedded ? " studio-workspace--embedded" : ""}`} data-create-workspace="composition">
@@ -381,6 +409,7 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
           </div>
         ) : null}
         <StudioStorageStatus />
+        {activeProject ? <StudioWorkspaceBridge name={activeProject.name} assetCount={activeProject.assets.length} disabled={!activeProject.assets.length || state.images.length >= 12} onLoad={importWorkspaceAssets} /> : null}
       </section>
 
       <StudioRecipeRail onApply={applyRecipe} />
@@ -403,6 +432,7 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
           <div className="studio-mode-control" role="group" aria-label={t("platform.studio.modeLabel")}>
             {modes.map((item) => <button type="button" key={item} className={state.mode === item ? "is-active" : ""} onClick={() => update({ mode: item })}>{t(`platform.studio.modes.${item}` as never)}</button>)}
           </div>
+          <StudioArtboardControls value={state.artboardPreset} onChange={(artboardPreset) => update({ artboardPreset })} />
         </section>
 
         <section>
@@ -416,9 +446,9 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
               <div key={image.id} title={image.name} className={image.id === state.selectedImageId ? "is-selected" : ""}>
                 <button type="button" className="studio-image-select" onClick={() => update({ selectedImageId: image.id })} aria-label={`Select ${image.name}`}><img src={image.src} alt="" /></button>
                 <span>
-                  <button type="button" onClick={() => moveImage(image.id, -1)} disabled={index === 0} aria-label={`Move ${image.name} left`}><ArrowUp size={12} aria-hidden="true" /></button>
-                  <button type="button" onClick={() => moveImage(image.id, 1)} disabled={index === state.images.length - 1} aria-label={`Move ${image.name} right`}><ArrowDown size={12} aria-hidden="true" /></button>
-                  <button type="button" onClick={() => update((current) => ({ ...current, images: current.images.filter((entry) => entry.id !== image.id), selectedImageId: current.selectedImageId === image.id ? current.images.find((entry) => entry.id !== image.id)?.id ?? null : current.selectedImageId }))} aria-label={`${t("common.remove", "Remove")} ${image.name}`}><Trash2 size={12} aria-hidden="true" /></button>
+                  <button type="button" onClick={() => moveImage(image.id, -1)} disabled={index === 0 || image.locked} aria-label={`Move ${image.name} left`}><ArrowUp size={12} aria-hidden="true" /></button>
+                  <button type="button" onClick={() => moveImage(image.id, 1)} disabled={index === state.images.length - 1 || image.locked} aria-label={`Move ${image.name} right`}><ArrowDown size={12} aria-hidden="true" /></button>
+                  <button type="button" disabled={image.locked} onClick={() => update((current) => ({ ...current, images: current.images.filter((entry) => entry.id !== image.id), selectedImageId: current.selectedImageId === image.id ? current.images.find((entry) => entry.id !== image.id)?.id ?? null : current.selectedImageId }))} aria-label={`${t("common.remove", "Remove")} ${image.name}`}><Trash2 size={12} aria-hidden="true" /></button>
                 </span>
               </div>
             ))}
@@ -427,18 +457,7 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
           {error ? <p className="studio-error" role="alert">{error}</p> : null}
         </section>
 
-        {selectedImage ? (
-          <section className="studio-transform-controls">
-            <span className="studio-control-index">03 / FRAME TRANSFORM</span>
-            <strong>{selectedImage.name}</strong>
-            <label><span>ZOOM <output>{transform.zoom.toFixed(2)}×</output></span><input type="range" min="1" max="2.4" step="0.05" value={transform.zoom} onChange={(event) => updateSelectedTransform({ zoom: Number(event.target.value) })} /></label>
-            <label><span>HORIZONTAL <output>{Math.round(transform.offsetX * 100)}</output></span><input type="range" min="-1" max="1" step="0.05" value={transform.offsetX} onChange={(event) => updateSelectedTransform({ offsetX: Number(event.target.value) })} /></label>
-            <label><span>VERTICAL <output>{Math.round(transform.offsetY * 100)}</output></span><input type="range" min="-1" max="1" step="0.05" value={transform.offsetY} onChange={(event) => updateSelectedTransform({ offsetY: Number(event.target.value) })} /></label>
-            <label><span>ROTATE <output>{transform.rotation}°</output></span><input type="range" min="-12" max="12" step="1" value={transform.rotation} onChange={(event) => updateSelectedTransform({ rotation: Number(event.target.value) })} /></label>
-            <StudioLayerControls image={selectedImage} onChange={updateSelectedLayer} />
-            <button type="button" onClick={() => updateSelectedTransform(DEFAULT_COMPOSITION_TRANSFORM)}><RotateCcw size={15} aria-hidden="true" />RESET FRAME</button>
-          </section>
-        ) : null}
+        {selectedImage ? <StudioFrameControls image={selectedImage} onTransform={updateSelectedTransform} onLayerChange={updateSelectedLayer} onLookChange={updateSelectedLook} /> : null}
 
         <section>
           <span className="studio-control-index">04 / TYPE</span>
@@ -464,7 +483,7 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
       <main className="studio-preview">
         <div className="studio-preview__bar"><span><Layers3 size={16} aria-hidden="true" /> {t(`platform.studio.modes.${state.mode}` as never)}</span><small>{imageCountLabel}{exportBackend ? ` / EXPORT ${exportBackend === "worker" ? "WORKER" : "MAIN"}` : ""}</small></div>
         <div className={`studio-canvas-frame studio-canvas-frame--${state.mode}`}>
-          <CompositionCanvas ref={canvasRef} mode={state.mode} images={state.images} title={state.title} caption={state.caption} paperColor={state.paperColor} inkColor={inkColor} textAlign={state.textAlign} titleScale={state.titleScale} onRendered={markRendered} />
+          <CompositionCanvas ref={canvasRef} mode={state.mode} images={state.images} title={state.title} caption={state.caption} paperColor={state.paperColor} inkColor={inkColor} textAlign={state.textAlign} titleScale={state.titleScale} artboardPreset={state.artboardPreset} onRendered={markRendered} />
         </div>
         <div className="studio-export-actions">
           <button type="button" onClick={() => void exportComposition("png")} disabled={!rendered}><Download size={18} aria-hidden="true" /> PNG</button>

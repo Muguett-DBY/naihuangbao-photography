@@ -13,6 +13,9 @@ describe("Visual Content OS", () => {
     expect(visualAssets.every((asset) => asset.projectIds.length > 0)).toBe(true);
     expect(visualAssets.every((asset) => asset.provenance.sourceAsset)).toBe(true);
     expect(visualAssets.filter((asset) => asset.src.includes("visual-os-v6"))).toHaveLength(7);
+    expect(visualAssets.filter((asset) => asset.src.includes("visual-os-v7"))).toHaveLength(32);
+    expect(visualAssets.every((asset) => asset.analysis.semanticVector.length === 18)).toBe(true);
+    expect(visualAssets.every((asset) => /^[0-9a-f]{16}$/.test(asset.analysis.perceptualHash))).toBe(true);
   });
 
   it("links story media back to registered assets", () => {

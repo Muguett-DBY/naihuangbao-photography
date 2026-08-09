@@ -1,9 +1,10 @@
-import { Bookmark, Check, Copy, Palette, Sparkles, Trash2 } from "lucide-react";
+import { Bookmark, Check, Copy, FolderPlus, Palette, Sparkles, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
 import { archiveProjects } from "../data/living-archive";
 import { visualAssetById, visualAssets } from "../data/visual-assets";
 import { useArchiveCollection } from "../hooks/useArchiveCollection";
+import { useWorkspaceProjects } from "../hooks/useWorkspaceProjects";
 import {
   createArchiveExhibitionQuery,
   parseArchiveAssetIds,
@@ -28,6 +29,7 @@ export function ArchiveDiscoveryDeck() {
   const [mode, setMode] = useState<ArchiveDiscoveryMode>("hybrid");
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
   const collection = useArchiveCollection();
+  const workspace = useWorkspaceProjects();
   const requestedAsset = visualAssetById.get(searchParams.get("similar") ?? "");
   const reference = requestedAsset ?? defaultAsset;
   const ranked = useMemo(
@@ -86,7 +88,7 @@ export function ArchiveDiscoveryDeck() {
       </div>
 
       <div className="archive-discovery__workspace">
-        <article className="archive-discovery__reference">
+        <article className="archive-discovery__reference" data-reference-asset={reference.id}>
           <ImageWithFallback src={reference.src} alt={reference.alt} title={reference.alt} priority sizes="(max-width: 780px) 100vw, 46vw" tone="cream" />
           <div>
             <span>REFERENCE / {reference.orientation.toUpperCase()}</span>
@@ -99,6 +101,10 @@ export function ArchiveDiscoveryDeck() {
               <button type="button" className={collection.has(reference.id) ? "is-saved" : undefined} onClick={() => collection.toggle(reference.id)}>
                 {collection.has(reference.id) ? <Check size={16} aria-hidden="true" /> : <Bookmark size={16} aria-hidden="true" />}
                 {collection.has(reference.id) ? "已加入展览" : "加入展览"}
+              </button>
+              <button type="button" className={workspace.hasAsset(reference.id) ? "is-saved" : undefined} onClick={() => workspace.toggleAsset(reference, referenceProject?.title)}>
+                {workspace.hasAsset(reference.id) ? <Check size={16} aria-hidden="true" /> : <FolderPlus size={16} aria-hidden="true" />}
+                {workspace.hasAsset(reference.id) ? "已在项目" : "加入项目"}
               </button>
               {referenceProject ? <PrefetchLink to={`/archive/${referenceProject.id}`}>打开项目</PrefetchLink> : null}
             </div>
@@ -119,6 +125,9 @@ export function ArchiveDiscoveryDeck() {
                   <small>色 {Math.round(colorSimilarity * 100)} · 材 {Math.round(materialSimilarity * 100)}</small>
                   <button type="button" className={collection.has(asset.id) ? "is-saved" : undefined} onClick={() => collection.toggle(asset.id)} title="加入展览" aria-label={`加入展览：${asset.alt}`}>
                     {collection.has(asset.id) ? <Check size={15} aria-hidden="true" /> : <Bookmark size={15} aria-hidden="true" />}
+                  </button>
+                  <button type="button" className={workspace.hasAsset(asset.id) ? "is-saved" : undefined} onClick={() => workspace.toggleAsset(asset, project?.title)} title="加入项目" aria-label={`加入项目：${asset.alt}`}>
+                    {workspace.hasAsset(asset.id) ? <Check size={15} aria-hidden="true" /> : <FolderPlus size={15} aria-hidden="true" />}
                   </button>
                 </div>
               </article>

@@ -1,4 +1,5 @@
 import "../styles/optical-garden.css";
+import "../styles/scene-graph-v7.css";
 import {
   useCallback,
   useEffect,
@@ -10,9 +11,11 @@ import {
 import { Aperture, ArrowUpRight, Images } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { visualWorldById, visualWorlds, type VisualWorldId } from "../data/visual-worlds";
+import { premiereSceneGraphs } from "../data/premiere-scene-graphs";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { PrefetchLink } from "./shared/PrefetchLink";
 import { visualAssetTransitionName } from "../lib/view-transition";
+import { applySceneNodeStyle, getSceneIndexForProgress } from "../lib/scene-graph";
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
@@ -37,7 +40,7 @@ function applyPremierePointer(root: HTMLDivElement, x: number, y: number) {
   host.style.setProperty("--premiere-pointer-position-y", `${(50 + y * 30).toFixed(2)}%`);
 }
 
-function usePremiereInteraction(rootRef: RefObject<HTMLDivElement | null>) {
+function usePremiereInteraction(rootRef: RefObject<HTMLDivElement | null>, sceneCount: number, onScrollScene: (index: number) => void) {
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -51,6 +54,7 @@ function usePremiereInteraction(rootRef: RefObject<HTMLDivElement | null>) {
     let pointerTargetY = 0;
     let pointerX = 0;
     let pointerY = 0;
+    let lastScrollScene = 0;
 
     const applyStaticFrame = () => {
       root.dataset.premiereMotion = "reduced";
@@ -79,6 +83,13 @@ function usePremiereInteraction(rootRef: RefObject<HTMLDivElement | null>) {
       root.dataset.premiereMotion = "full";
       applyPremiereProgress(root, progress);
       applyPremierePointer(root, pointerX, pointerY);
+      if (bounds.top < -8) {
+        const nextScene = getSceneIndexForProgress(progress, sceneCount);
+        if (nextScene !== lastScrollScene) {
+          lastScrollScene = nextScene;
+          onScrollScene(nextScene);
+        }
+      }
 
       if (Math.abs(deltaX) > 0.002 || Math.abs(deltaY) > 0.002) {
         frame = window.requestAnimationFrame(update);
@@ -137,7 +148,7 @@ function usePremiereInteraction(rootRef: RefObject<HTMLDivElement | null>) {
       host.removeEventListener("pointerleave", handlePointerLeave);
       motionQuery.removeEventListener("change", handleMotionChange);
     };
-  }, [rootRef]);
+  }, [onScrollScene, rootRef, sceneCount]);
 }
 
 export function CinematicPremiere() {
@@ -149,8 +160,8 @@ export function CinematicPremiere() {
   const [view, setView] = useState<PremiereView>("concept");
   const [worldId, setWorldId] = useState<VisualWorldId>("dawn");
   const activeWorld = visualWorldById[worldId];
-  const premiereScenes = activeWorld.frames;
-  usePremiereInteraction(rootRef);
+  const sceneGraph = premiereSceneGraphs[worldId];
+  const premiereScenes = sceneGraph.nodes;
 
   const activateScene = useCallback((nextIndex: number) => {
     const normalizedIndex = (nextIndex + premiereScenes.length) % premiereScenes.length;
@@ -166,6 +177,8 @@ export function CinematicPremiere() {
       return next;
     });
   }, [premiereScenes.length]);
+
+  usePremiereInteraction(rootRef, premiereScenes.length, activateScene);
 
   const selectWorld = useCallback((nextWorldId: VisualWorldId) => {
     if (nextWorldId === worldId) return;
@@ -208,6 +221,11 @@ export function CinematicPremiere() {
 
   const activeScene = premiereScenes[activeIndex];
 
+  useEffect(() => {
+    const root = rootRef.current;
+    if (root) applySceneNodeStyle(root, activeScene);
+  }, [activeScene]);
+
   return (
     <div
       ref={rootRef}
@@ -221,12 +239,15 @@ export function CinematicPremiere() {
       data-active-scene={activeScene.id}
       data-active-asset={activeScene.assetId}
       data-loaded-scenes={loadedScenes.size}
+      data-scene-graph={sceneGraph.id}
     >
       <div className="cinematic-premiere__stage" aria-hidden="true">
         {premiereScenes.map((scene, index) => (
           <div
             className={`cinematic-premiere__scene${index === activeIndex ? " is-active" : ""}`}
             data-premiere-scene={scene.id}
+            data-scene-transition={scene.transition}
+            style={{ "--node-depth": scene.depth, "--node-intensity": scene.intensity } as React.CSSProperties}
             key={scene.id}
           >
             {loadedScenes.has(index) ? (
@@ -336,6 +357,7 @@ export function CinematicPremiere() {
           <div className="cinematic-premiere__readout" aria-live="polite">
             <span>{String(activeIndex + 1).padStart(2, "0")} / {String(premiereScenes.length).padStart(2, "0")}</span>
             <strong>{t(activeScene.labelKey as never)}</strong>
+            <small className="cinematic-premiere__director-cue">{activeScene.transition.toUpperCase()} / {Math.round(activeScene.durationMs / 10) / 100}s</small>
             <PrefetchLink
               to={`/archive?similar=${encodeURIComponent(activeScene.assetId)}`}
               aria-label={`${t("visualWorlds.explore" as never)}：${t(activeScene.labelKey as never)}`}

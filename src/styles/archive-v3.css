@@ -239,7 +239,7 @@
 
 .archive-discovery__neighbors article > div {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 34px;
+  grid-template-columns: minmax(0, 1fr) 34px 34px;
   gap: 3px 8px;
   align-items: center;
   padding-top: 10px;
@@ -268,6 +268,10 @@
   background: transparent;
   color: inherit;
   cursor: pointer;
+}
+
+.archive-discovery__neighbors article > div button:last-of-type {
+  grid-column: 3;
 }
 
 .archive-discovery__neighbors article > div button.is-saved {

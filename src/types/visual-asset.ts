@@ -26,6 +26,15 @@ export type VisualAsset = {
   focalPoint: { x: number; y: number };
   palette: string[];
   descriptors: string[];
+  analysis: {
+    luminance: number;
+    contrast: number;
+    saturation: number;
+    perceptualHash: string;
+    composition: string[];
+    semanticVector: number[];
+    searchText: string;
+  };
   projectIds: string[];
   storyLinks: VisualAssetLink[];
   provenance: {
@@ -36,7 +45,7 @@ export type VisualAsset = {
 };
 
 export type VisualAssetManifest = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   generatedFrom: string[];
   stats: {
     assets: number;

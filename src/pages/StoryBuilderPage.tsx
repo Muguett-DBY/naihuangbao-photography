@@ -1,5 +1,6 @@
 import "../styles/platform-v3.css";
 import "../styles/story-builder.css";
+import "../styles/story-director-v7.css";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Download, FilePlus2, ImagePlus, LayoutTemplate, Monitor, PanelsTopLeft, Plus, Save, Smartphone, Trash2, Upload, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ImageWithFallback } from "../components/ImageWithFallback";
@@ -7,6 +8,7 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import { StoryBuilderPreview } from "../components/stories/StoryBuilderPreview";
 import { StoryTimeline } from "../components/stories/StoryTimeline";
+import { SceneDirectorControls } from "../components/stories/SceneDirectorControls";
 import { archiveProjects } from "../data/living-archive";
 import { visualAssetById } from "../data/visual-assets";
 import { readArchiveCollection } from "../hooks/useArchiveCollection";
@@ -25,6 +27,7 @@ import {
 } from "../lib/story-project-store";
 import type { StoryLayout } from "../types/visual-story";
 import { setCreativeWorkDirty } from "../lib/creative-work-state";
+import { useWorkspaceProjects } from "../hooks/useWorkspaceProjects";
 
 const LAST_STORY_KEY = "nhb:last-story-project";
 const layouts: Array<{ id: StoryLayout; label: string }> = [
@@ -79,6 +82,7 @@ export function StoryBuilderPage() {
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
   const hydratedRef = useRef(false);
   const importRef = useRef<HTMLInputElement>(null);
+  const { activeProject, linkResource } = useWorkspaceProjects();
 
   const refreshProjects = useCallback(async () => setProjects(await listStoryProjects()), []);
 
@@ -116,6 +120,10 @@ export function StoryBuilderPage() {
     return () => window.clearTimeout(timeout);
   }, [project]);
   useEffect(() => () => setCreativeWorkDirty("story", false), []);
+  const workspaceLinked = Boolean(project && activeProject?.storyIds.includes(project.id) && activeProject.activeSurface === "story");
+  useEffect(() => {
+    if (project && activeProject && !workspaceLinked) linkResource("story", project.id);
+  }, [activeProject, linkResource, project, workspaceLinked]);
   useEffect(() => {
     if (!notice) return undefined;
     const timeout = window.setTimeout(() => setNotice(""), 2_600);
@@ -202,12 +210,19 @@ export function StoryBuilderPage() {
   };
 
   const importArchiveExhibition = () => {
-    const frames = readArchiveCollection().map((assetId) => visualAssetById.get(assetId)).filter(Boolean).map((asset): StoryProjectFrame => ({
+    const workspaceFrames = activeProject?.assets.map((asset): StoryProjectFrame => ({
+      id: `workspace-${asset.assetId}`,
+      projectId: activeProject.id,
+      src: asset.src,
+      alt: asset.alt,
+    })) ?? [];
+    const legacyFrames = readArchiveCollection().map((assetId) => visualAssetById.get(assetId)).filter(Boolean).map((asset): StoryProjectFrame => ({
       id: `asset-${asset!.id}`,
       projectId: asset!.projectIds[0] ?? "visual-archive",
       src: asset!.src,
       alt: asset!.alt,
     }));
+    const frames = workspaceFrames.length ? workspaceFrames : legacyFrames;
     if (!frames.length) {
       setNotice("ARCHIVE EXHIBITION IS EMPTY");
       return;
@@ -258,7 +273,7 @@ export function StoryBuilderPage() {
     <PageTransition className="story-builder-page">
       <header className="story-builder-topbar">
         <PrefetchLink to="/create" title="Back to Create"><ArrowLeft size={18} aria-hidden="true" /></PrefetchLink>
-        <div><span>NHB / STORY BUILDER 2.0</span><strong>{notice || status}</strong></div>
+        <div><span>NHB / STORY BUILDER 3.0</span><strong>{notice || status}</strong></div>
         <div className="story-builder-topbar__actions">
           <button type="button" title="New project" onClick={createNewProject}><FilePlus2 size={18} aria-hidden="true" /></button>
           <button type="button" title="Duplicate project" onClick={duplicateProject}><Plus size={18} aria-hidden="true" /></button>
@@ -305,6 +320,7 @@ export function StoryBuilderPage() {
             <label>Heading<input value={activeChapter.title} onChange={(event) => updateActiveChapter((chapter) => ({ ...chapter, title: event.target.value }))} /></label>
             <label>Body<textarea rows={4} value={activeChapter.body} onChange={(event) => updateActiveChapter((chapter) => ({ ...chapter, body: event.target.value }))} /></label>
             <div className="story-builder-layouts" role="group" aria-label="Chapter layout">{layouts.map((layout) => <button type="button" key={layout.id} className={activeChapter.layout === layout.id ? "is-active" : ""} onClick={() => updateActiveChapter((chapter) => ({ ...chapter, layout: layout.id }))}><LayoutTemplate size={14} aria-hidden="true" />{layout.label}</button>)}</div>
+            <SceneDirectorControls value={activeChapter.scene} onChange={(scene) => updateActiveChapter((chapter) => ({ ...chapter, scene }))} />
           </section>
 
           <section>

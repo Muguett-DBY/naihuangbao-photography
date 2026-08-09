@@ -1,0 +1,111 @@
+.studio-workspace[data-create-workspace="composition"] {
+  --studio-v4-accent: #d25f62;
+  --studio-v4-moss: #557261;
+}
+
+.studio-workspace-bridge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .75rem 0 0;
+  border-top: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.studio-workspace-bridge > span {
+  display: grid;
+  gap: .15rem;
+}
+
+.studio-workspace-bridge small {
+  color: color-mix(in srgb, currentColor 62%, transparent);
+  font-size: .66rem;
+}
+
+.studio-workspace-bridge button,
+.studio-artboard-control button,
+.studio-adjustment-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .38rem;
+}
+
+.studio-artboard-control {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: .35rem;
+  margin-top: .65rem;
+}
+
+.studio-artboard-control button {
+  min-width: 0;
+  min-height: 2.6rem;
+  padding: .45rem .25rem;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  background: transparent;
+  font-size: .64rem;
+}
+
+.studio-artboard-control button.is-active,
+.studio-adjustment-controls__modes button.is-active,
+.studio-layer-controls button.is-active {
+  border-color: var(--studio-v4-accent);
+  color: var(--studio-v4-accent);
+  background: color-mix(in srgb, var(--studio-v4-accent) 9%, transparent);
+}
+
+.studio-adjustment-controls {
+  display: grid;
+  gap: .7rem;
+  margin-top: .7rem;
+  padding-top: .8rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.studio-adjustment-controls__modes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .35rem;
+}
+
+.studio-adjustment-controls__modes button {
+  min-width: 0;
+  padding: .48rem .2rem;
+  border: 1px solid color-mix(in srgb, currentColor 17%, transparent);
+  background: transparent;
+  font-size: .62rem;
+}
+
+.studio-adjustment-controls > label {
+  display: grid;
+  gap: .25rem;
+}
+
+.studio-adjustment-controls > label span {
+  display: flex;
+  justify-content: space-between;
+  gap: .75rem;
+  font-size: .64rem;
+}
+
+.studio-canvas-frame canvas {
+  transition: aspect-ratio .35s ease, opacity .2s ease;
+}
+
+@media (max-width: 760px) {
+  .studio-workspace-bridge {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .studio-artboard-control {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .studio-canvas-frame canvas {
+    transition: none;
+  }
+}

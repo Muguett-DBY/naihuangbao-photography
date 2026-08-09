@@ -17,6 +17,8 @@ export const routeContract = [
   { path: "/create", scope: "primary" },
   { path: "/create/story", scope: "primary" },
   { path: "/studio", scope: "primary" },
+  { path: "/projects", scope: "primary" },
+  { path: "/share/:slug", scope: "primary", dynamic: true },
   { path: "/about", scope: "primary" },
   { path: "/editor", scope: "primary" },
   { path: "/practice", scope: "practice" },
