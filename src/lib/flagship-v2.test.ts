@@ -53,18 +53,13 @@ describe("flagship v2 experience contracts", () => {
     expect(css).toContain(".editor-hold-original");
   });
 
-  it("ships the seasonal rain letter as a lazy, scroll-driven chapter", () => {
+  it("keeps seasonal concept art out of the streamlined homepage runtime", () => {
     const home = read("src/pages/HomePage.tsx");
-    const chapter = read("src/components/RainLetterPremiere.tsx");
-    const css = read("src/styles/rain-letter.css");
 
-    expect(home).toContain('lazy(() => import("../components/RainLetterPremiere")');
-    expect(home).toContain("<RainLetterPremiere />");
-    expect(chapter).toContain("IntersectionObserver");
-    expect(chapter).toContain("requestAnimationFrame");
-    expect(chapter).toContain("--rain-letter-progress");
-    expect(css).toContain(".rain-letter__sticky");
-    expect(css).toContain("prefers-reduced-motion: reduce");
+    expect(home).not.toContain("RainLetterPremiere");
+    expect(home).not.toContain("rain-letter");
+    expect(home).toContain("<VisualLightTable />");
+    expect(home).toContain("<HomeVisualSystem />");
   });
 
   it("keeps generated concept art responsive and outside real portfolio data", () => {

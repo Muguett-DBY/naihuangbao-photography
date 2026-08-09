@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router";
 import { useGlobalVisualEffects } from "../hooks/useGlobalVisualEffects";
 import { CustomCursor } from "./CustomCursor";
 import { FilmGrain } from "./FilmGrain";
@@ -12,6 +13,8 @@ import { ScrollProgress } from "./ScrollProgress";
  * native browser primitives and does not hijack scrolling.
  */
 export default function GlobalEffects() {
+  const { pathname } = useLocation();
+  const isCalmHome = pathname === "/";
   useGlobalVisualEffects();
 
   useEffect(() => {
@@ -24,8 +27,8 @@ export default function GlobalEffects() {
   return (
     <>
       <ScrollProgress />
-      <CustomCursor />
-      <FilmGrain />
+      {!isCalmHome && <CustomCursor />}
+      {!isCalmHome && <FilmGrain />}
     </>
   );
 }

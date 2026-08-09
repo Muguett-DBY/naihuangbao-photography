@@ -381,22 +381,9 @@ test.describe("six-width public route contract", () => {
         await page.goto(route.path, { waitUntil: "domcontentloaded" });
         await settleRoute(page);
         if (route.path === "/") {
-          const canvas = page.locator(".immersive-experience");
-          await expect(canvas).toHaveCount(1);
-          const canvasLayer = await canvas.evaluate((element) => {
-            const rect = element.getBoundingClientRect();
-            const style = getComputedStyle(element);
-            const masthead = document.querySelector(".site-nav");
-            return {
-              rect: [rect.left, rect.top, rect.width, rect.height],
-              pointerEvents: style.pointerEvents,
-              zIndex: Number.parseInt(style.zIndex, 10),
-              mastheadZIndex: masthead ? Number.parseInt(getComputedStyle(masthead).zIndex, 10) : 0,
-            };
-          });
-          expect(canvasLayer.rect).toEqual([0, 0, viewport.width, viewport.height]);
-          expect(canvasLayer.pointerEvents).toBe("none");
-          expect(canvasLayer.zIndex).toBeLessThan(canvasLayer.mastheadZIndex);
+          await expect(page.locator(".cinematic-premiere")).toHaveCount(1);
+          await expect(page.locator(".immersive-experience")).toHaveCount(0);
+          await expect(page.locator('[data-optical-scene="home"]')).toHaveCount(0);
         }
         await expect(page.locator("main"), `${route.path}: exactly one main landmark`).toHaveCount(1);
         await expectNoOverflowOrLayerCollision(page, route.path, route.action);
@@ -452,7 +439,7 @@ test.describe("short desktop hero contract", () => {
   });
 });
 
-test.describe("desktop chapter console contract", () => {
+test.describe("desktop chapter index contract", () => {
   test.use({ serviceWorkers: "block", viewport: { width: 1440, height: 900 } });
 
   test.beforeEach(async ({ page }) => {
@@ -464,45 +451,34 @@ test.describe("desktop chapter console contract", () => {
     await mockPublicApi(page);
   });
 
-  test("sticks below the masthead and reports the active home chapter", async ({ page }) => {
+  test("stays in document flow and reports the active home chapter", async ({ page }) => {
     await page.goto("/");
     await settleRoute(page);
 
     const chapterConsole = page.locator(".home-index-strip");
     await expect(chapterConsole).toHaveAttribute("data-active-chapter", "premiere");
+    const chapterPosition = await chapterConsole.evaluate((element) => getComputedStyle(element).position);
+    expect(["static", "relative"]).toContain(chapterPosition);
     await chapterConsole.locator('a[href="#visual-system"]').click();
     await expect(chapterConsole).toHaveAttribute("data-active-chapter", "visual-system");
     await expect(chapterConsole.locator('a[href="#visual-system"]')).toHaveAttribute("aria-current", "location");
     await expect(page.locator(".site-nav")).toHaveClass(/is-scrolled/);
 
-    const geometry = await page.evaluate(() => {
-      const masthead = document.querySelector<HTMLElement>(".site-nav")!.getBoundingClientRect();
-      const chapterIndex = document.querySelector<HTMLElement>(".home-index-strip")!.getBoundingClientRect();
-      return {
-        chapterTop: Math.round(chapterIndex.top),
-        mastheadBottom: Math.round(masthead.bottom),
-      };
-    });
-    expect(
-      Math.abs(geometry.chapterTop - geometry.mastheadBottom),
-      `chapter console geometry: ${JSON.stringify(geometry)}`,
-    ).toBeLessThanOrEqual(2);
-
     await chapterConsole.locator('a[href="#make-something"]').click();
     await expect(chapterConsole).toHaveAttribute("data-active-chapter", "make-something");
     const anchorGeometry = await page.evaluate(() => {
-      const chapterIndex = document.querySelector<HTMLElement>(".home-index-strip")!.getBoundingClientRect();
+      const masthead = document.querySelector<HTMLElement>(".site-nav")!.getBoundingClientRect();
       const section = document.querySelector<HTMLElement>("#make-something")!.getBoundingClientRect();
       return {
-        chapterBottom: Math.round(chapterIndex.bottom),
+        mastheadBottom: Math.round(masthead.bottom),
         sectionTop: Math.round(section.top),
       };
     });
-    expect(anchorGeometry.sectionTop).toBeGreaterThanOrEqual(anchorGeometry.chapterBottom - 2);
+    expect(anchorGeometry.sectionTop).toBeGreaterThanOrEqual(anchorGeometry.mastheadBottom - 2);
   });
 });
 
-test.describe("optical scene and mobile dock contract", () => {
+test.describe("route chrome and mobile dock contract", () => {
   test.use({ serviceWorkers: "block" });
 
   test.beforeEach(async ({ page }) => {
@@ -519,16 +495,27 @@ test.describe("optical scene and mobile dock contract", () => {
     { width: 430, height: 932 },
     { width: 1440, height: 900 },
   ]) {
-    test(`${viewport.width}px keeps optical chrome bounded and non-interactive`, async ({ page }) => {
+    test(`${viewport.width}px keeps route chrome bounded and the home lightweight`, async ({ page }) => {
       await page.setViewportSize(viewport);
 
       for (const route of [
-        { path: "/", host: ".hero-home", scene: "home" },
+        { path: "/", host: ".hero-home", scene: null },
         { path: "/gallery", host: ".gallery-page-hero", scene: "gallery" },
         { path: "/courses", host: ".page-hero", scene: "courses" },
       ]) {
         await page.goto(route.path);
         await settleRoute(page);
+        if (route.path === "/") {
+          await expect(page.locator(".immersive-experience")).toHaveCount(0);
+          await expect(page.locator('[data-optical-scene="home"]')).toHaveCount(0);
+          const heroText = await page.locator(".hero-title").evaluate((title) => ({
+            clipped: title.scrollWidth > title.clientWidth + 1,
+            insideViewport: title.getBoundingClientRect().right <= window.innerWidth,
+          }));
+          expect(heroText).toEqual({ clipped: false, insideViewport: true });
+          continue;
+        }
+
         const chrome = page.locator(`[data-optical-scene="${route.scene}"]`);
         await expect(chrome).toHaveCount(1);
         await expect(chrome).toHaveAttribute("aria-hidden", "true");
@@ -549,13 +536,6 @@ test.describe("optical scene and mobile dock contract", () => {
         }, route.host);
         expect(geometry).toEqual({ contained: true, pointerEvents: "none" });
 
-        if (route.path === "/") {
-          const heroText = await page.locator(".hero-title").evaluate((title) => ({
-            clipped: title.scrollWidth > title.clientWidth + 1,
-            insideViewport: title.getBoundingClientRect().right <= window.innerWidth,
-          }));
-          expect(heroText).toEqual({ clipped: false, insideViewport: true });
-        }
       }
 
       if (viewport.width <= 768) {

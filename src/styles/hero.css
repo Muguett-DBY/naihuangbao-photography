@@ -843,6 +843,10 @@ html[data-immersive-ready="true"] .hero-home[data-immersive-anchor="home"] .hero
 }
 
 /* Lightweight cover used before the lazy homepage bundle is ready. */
+.site-shell:has(.home-premiere-fallback) .site-footer {
+  visibility: hidden;
+}
+
 .home-premiere-fallback .cinematic-premiere {
   position: absolute;
   z-index: 1;

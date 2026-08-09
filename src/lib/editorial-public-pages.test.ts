@@ -10,11 +10,14 @@ describe("editorial public-page reconstruction contracts", () => {
     const home = read("src/pages/HomePage.tsx");
 
     expect(home).toContain('className="hero hero-home"');
-    expect(home).toContain('className="hero-contact-sheet"');
-    expect(home).toContain('className="hero-issue-line"');
+    expect(home).toContain("<CinematicPremiere />");
     expect(home).toContain('className="hero-cover-primary-btn"');
     expect(home).toContain("<HomeVisualSystem />");
     expect(home).toContain('className="home-playground-portals"');
+    expect(home).not.toContain('className="hero-contact-sheet"');
+    expect(home).not.toContain('className="hero-issue-line"');
+    expect(home).not.toContain("OpticalSceneChrome");
+    expect(home).not.toContain("useImmersiveAnchor");
     expect(home).not.toContain("hero-glow-orb");
     expect(home).not.toContain("float-element");
     expect(home).not.toContain("deco-svg-path");
@@ -23,25 +26,15 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(home).not.toContain("<Divider");
   });
 
-  it("keeps the home story readable without a pinned horizontal scroll", () => {
-    const story = read("src/components/FilmStripStory.tsx");
+  it("keeps the flagship home focused on five distinct sections", () => {
+    const home = read("src/pages/HomePage.tsx");
 
-    expect(story).toContain('aria-labelledby="field-notes-title"');
-    expect(story).toContain('className="field-notes-stage"');
-    expect(story).toContain('className="field-notes-rail"');
-    expect(story).toContain('className="field-notes-grid"');
-    expect(story).toContain("setActiveIndex(index)");
-    expect(story).toContain("onPointerEnter");
-    expect(story).toContain("onFocus");
-    expect(story).toContain("field-note is-active");
-    expect(story).toContain("data-motion-group");
-    expect(story).toContain("data-motion-item");
-    expect(story).toContain("ImageWithFallback");
-    expect(story).toContain("index === 0 || index === 4");
-    expect(story).toContain("66vw");
-    expect(story).not.toContain("ScrollTrigger");
-    expect(story).not.toContain("gsap");
-    expect(story).not.toContain("pin: true");
+    for (const id of ["premiere", "light-table", "visual-system", "portals", "make-something"]) {
+      expect(home).toContain(`id: "${id}"`);
+    }
+    expect(home).not.toContain("RainLetterPremiere");
+    expect(home).not.toContain("HomeCreativePulse");
+    expect(home).not.toContain("FilmStripStory");
   });
 
   it("connects the home editorial sections to scoped reveal motion", () => {
@@ -51,17 +44,27 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(home).toContain("usePageRevealEffects(rootRef)");
   });
 
-  it("keeps the soft CTA magnet off the React render path and honors reduced motion", () => {
+  it("localizes every retained homepage section in all public locales", () => {
+    for (const locale of ["zh-CN", "en", "ja", "ko"]) {
+      const messages = JSON.parse(read(`src/i18n/locales/${locale}.json`));
+      expect(messages.platform.home.lightTable.title).toBeTruthy();
+      expect(messages.platform.home.system.nodes.archive).toBeTruthy();
+      expect(messages.platform.home.portals.title).toBeTruthy();
+      expect(messages.platform.home.final.title).toBeTruthy();
+      expect(messages.platform.home.palette.cream).toBeTruthy();
+    }
+  });
+
+  it("keeps homepage controls free of pointer-follow animation loops", () => {
     const home = read("src/pages/HomePage.tsx");
-    const magnet = read("src/components/shared/SoftMagnet.tsx");
+    const premiere = read("src/components/CinematicPremiere.tsx");
     const css = read("src/styles/home-premiere.css");
 
-    expect(home).toContain("<SoftMagnet");
-    expect(magnet).toContain("window.requestAnimationFrame");
-    expect(magnet).toContain("prefers-reduced-motion: reduce");
-    expect(magnet).not.toContain("useState");
-    expect(css).toContain("--soft-magnet-x");
-    expect(css).toMatch(/@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.soft-magnet\s*\{[^}]*transform:\s*none !important/s);
+    expect(home).not.toContain("SoftMagnet");
+    expect(premiere).not.toContain('addEventListener("pointermove"');
+    expect(premiere).not.toContain("applyPremierePointer");
+    expect(css).not.toContain("--premiere-pointer");
+    expect(css).toContain("@media (prefers-reduced-motion: reduce)");
   });
 
   it("keeps a desktop chapter console in sync without a continuous scroll listener", () => {
@@ -81,9 +84,10 @@ describe("editorial public-page reconstruction contracts", () => {
     expect(chapterIndex).not.toContain('addEventListener("scroll"');
     expect(header).toContain("new ResizeObserver(syncNavigationHeight)");
     expect(header).toContain('style.setProperty("--nav-h"');
-    expect(css).toMatch(/@media \(min-width: 981px\)[\s\S]*?\.home-index-strip\s*\{[^}]*position:\s*sticky[^}]*top:\s*var\(--nav-h,\s*64px\)/s);
+    expect(css).toMatch(/@media \(min-width: 981px\)[\s\S]*?\.home-index-strip\s*\{[^}]*position:\s*relative/s);
+    expect(css).not.toContain("backdrop-filter: blur(14px)");
     expect(css).toContain(".home-index-strip a.is-active");
-    expect(premiereCss).toContain("scroll-margin-top: calc(var(--nav-h, 64px) + 74px)");
+    expect(premiereCss).toContain("scroll-margin-top: calc(var(--nav-h, 64px) + 18px)");
   });
 
   it("adds a desktop-only optical focus response to gallery photographs", () => {
@@ -102,7 +106,8 @@ describe("editorial public-page reconstruction contracts", () => {
 
     expect(home).toContain('import { HomeVisualSystem } from "../components/HomeVisualSystem"');
     expect(home).toContain("<HomeVisualSystem />");
-    expect(system).toContain("requestAnimationFrame");
+    expect(system).not.toContain("requestAnimationFrame");
+    expect(system).not.toContain("onPointerMove");
     expect(system).toContain("aria-pressed");
     expect(system).toContain('role="group"');
     expect(system).toContain('aria-label="NHB system areas"');
@@ -185,12 +190,13 @@ describe("editorial public-page reconstruction contracts", () => {
     const heroBlock = heroCss.match(/\.hero\.hero-home\s*\{(?<body>[^}]*)\}/s)?.groups?.body ?? "";
     expect(heroBlock).toContain("min-height:");
     expect(heroBlock).toContain("max-height:");
-    expect(heroCss).toContain(".hero-contact-sheet");
+    expect(read("src/pages/HomePage.tsx")).not.toContain("hero-contact-sheet");
     expect(heroCss).not.toContain("hero-glow-orb");
     expect(heroCss).not.toContain("hero-cover-design");
     expect(heroBlock).not.toMatch(/background(?:-image)?\s*:[^;]*gradient\(/s);
-    expect(premiereCss).toMatch(/\.cinematic-premiere__stage\s*\{[^}]*clip-path:\s*inset\(/s);
-    expect(premiereCss).toMatch(/\.cinematic-premiere__reel button\s*\{[^}]*min-height:\s*48px/s);
+    expect(premiereCss).not.toContain("clip-path");
+    expect(premiereCss).toMatch(/\.cinematic-premiere__navigator\s*\{[^}]*min-height:\s*62px/s);
+    expect(premiereCss).toMatch(/\.cinematic-premiere__scene-dots button\s*\{[^}]*width:\s*28px[^}]*height:\s*36px/s);
     expect(premiereCss).toContain("content-visibility: auto");
     expect(galleryCss).toContain(".gallery-page-contact-sheet");
     expect(pagesCss).toContain(".photo-detail-contact-sheet");

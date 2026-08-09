@@ -90,13 +90,14 @@ describe("performance budgets", () => {
   it("shows the premiere cover while the lazy homepage chunk loads", () => {
     expect(routerSource).toContain("function HomePremiereFallback()");
     expect(routerSource).toContain('className="hero hero-home home-premiere-fallback"');
-    expect(routerSource).toContain("optical-garden-hero-v1.avif");
+    expect(routerSource).toContain("01-cream-paper-pavilion.avif");
     expect(routerSource).toContain('fetchPriority="high"');
     expect(routerSource).toContain('<a className="hero-create-primary" href="/create"');
     expect(routerSource).toContain('<a className="hero-cover-primary-btn" href="/archive"');
-    expect(routerSource).toContain('<a className="hero-gallery-link" href="/stories"');
+    expect(routerSource).not.toContain('<a className="hero-gallery-link" href="/stories"');
     expect(routerSource).not.toContain('href="/booking"');
     expect(routerSource).toContain('fallback={<HomePremiereFallback />}');
+    expect(allCss).toContain(":has(.home-premiere-fallback) .site-footer");
     expect(routerSource).toContain('const HomePage = lazy(routeLoaders["/"])');
   });
 
@@ -209,17 +210,18 @@ describe("performance budgets", () => {
     expect(headerSource).toContain("loadAndChangeLanguage");
   });
 
-  it("defers below-fold homepage modules and progressively loads premiere scenes", () => {
-    expect(homeSource).toContain('import("../components/FilmStripStory")');
-    expect(homeSource).toContain('import("../components/RainLetterPremiere")');
+  it("keeps the homepage runtime focused and progressively loads premiere scenes", () => {
     expect(homeSource).toContain("<VisualLightTable />");
     expect(homeSource).toContain("<HomeVisualSystem />");
-    expect(homeSource).toContain("<HomeCreativePulse />");
+    expect(homeSource).not.toContain("FilmStripStory");
+    expect(homeSource).not.toContain("RainLetterPremiere");
+    expect(homeSource).not.toContain("HomeCreativePulse");
     expect(homeSource).not.toContain("BookingConversionSection");
-    expect(homeSource).toContain("opticalGardenFrames.slice(0, 3)");
+    expect(homeSource).not.toContain("useImmersiveAnchor");
     expect(premiereSource).toContain("loadedScenes.has(index)");
     expect(premiereSource).toContain("priority={index === 0}");
     expect(premiereSource).toContain("data-loaded-scenes");
+    expect(premiereSource).not.toContain('addEventListener("pointermove"');
     expect(premiereSource).not.toContain("conceptPremiereTrailFrames");
   });
 

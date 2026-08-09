@@ -9,9 +9,6 @@
   }
 }
 
-[data-runtime-quality="balanced"] .cinematic-premiere__optical-lens,
-[data-runtime-quality="economy"] .cinematic-premiere__optical-lens,
-[data-runtime-quality="economy"] .cinematic-premiere__registration,
 [data-runtime-quality="economy"] .project-dock__pulse {
   display: none;
 }
