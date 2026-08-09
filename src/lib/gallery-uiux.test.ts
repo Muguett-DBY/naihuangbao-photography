@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
-const read = (path: string) => readFileSync(resolve(root, path), "utf8");
+const read = (path: string) => [path, ...(path === "src/components/Gallery.tsx" ? ["src/features/gallery/GalleryCommandCenter.tsx", "src/features/gallery/GalleryResults.tsx", "src/features/gallery/gallery-discovery.ts"] : [])].map((file) => readFileSync(resolve(root, file), "utf8")).join("\n");
 
 describe("gallery discovery UI/UX contracts", () => {
   it("ships a cohesive command center with persistent view state and reset recovery", () => {
@@ -36,7 +36,7 @@ describe("gallery discovery UI/UX contracts", () => {
     expect(gallerySource).toContain('const urlAlbum = searchParams.get("album")');
     expect(gallerySource).toContain('const urlDate = searchParams.get("date")');
     expect(gallerySource).toContain('const urlSort = searchParams.get("sort")');
-    expect(gallerySource).toContain("useState<string>(initialState.album)");
+    expect(gallerySource).toContain("useState(initialState.album)");
     expect(gallerySource).toContain("useState<DateRange>(initialState.dateRange)");
     expect(gallerySource).toContain("useState<SortMode>(initialState.sort)");
     expect(gallerySource).toContain("setAlbumFilter(item.album");

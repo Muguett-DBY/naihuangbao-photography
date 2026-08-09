@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import type { RouteLoaderPath } from "./route-contract";
 
 export type RouteLoader = () => Promise<{ default: ComponentType }>;
 
@@ -7,6 +8,7 @@ function asDefault<T extends ComponentType>(component: T) {
 }
 
 export const routeLoaders = {
+  $practice: () => import("../features/practice/PracticeLayout").then((module) => asDefault(module.PracticeLayout)),
   "/": () => import("../pages/HomePage").then((module) => asDefault(module.HomePage)),
   "/archive": () => import("../pages/ArchivePage").then((module) => asDefault(module.ArchivePage)),
   "/archive/:id": () => import("../pages/ArchiveProjectPage").then((module) => asDefault(module.ArchiveProjectPage)),
@@ -38,4 +40,4 @@ export const routeLoaders = {
     await import("../styles/admin.css");
     return import("../components/AdminDashboard");
   },
-} satisfies Record<string, RouteLoader>;
+} satisfies Record<RouteLoaderPath | "$practice", RouteLoader>;

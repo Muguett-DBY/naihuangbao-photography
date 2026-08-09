@@ -9,6 +9,7 @@ const responsiveImageDirectories = [
   "/images/concept-premiere/",
   "/images/optical-archive/",
   "/images/visual-os-v5/",
+  "/images/visual-os-v6/",
 ] as const;
 
 const conceptPremiereSourceWidths: Readonly<Record<string, number>> = Object.freeze({
@@ -67,6 +68,11 @@ export function getResponsiveImageSourceWidth(src: string): number {
   if (path.startsWith("/images/concept-premiere/")) return conceptPremiereSourceWidths[fileName] ?? 1200;
   if (path.startsWith("/images/optical-archive/")) return opticalArchiveSourceWidths[fileName] ?? 1200;
   if (path.startsWith("/images/visual-os-v5/")) return 1536;
+  if (path.startsWith("/images/visual-os-v6/")) {
+    return ["05-paper-rain-macro.webp", "06-archive-drawers.webp", "07-night-glass-garden.webp"].includes(fileName)
+      ? 1122
+      : 1672;
+  }
   return 1200;
 }
 

@@ -9,7 +9,7 @@ const chatHelperPath = resolve(root, "functions/_chat.ts");
 const adminChatApiPath = resolve(root, "functions/api/admin/chat.ts");
 const widgetPath = resolve(root, "src/components/PublicChatWidget.tsx");
 const launcherPath = resolve(root, "src/components/PublicChatLauncher.tsx");
-const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
+const rootLayoutSource = ["src/layouts/RootLayout.tsx", "src/features/practice/PracticeLayout.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const adminSource = readFileSync(resolve(root, "src/components/AdminDashboard.tsx"), "utf8");
 const adminCss = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
 const globalCss = [
@@ -178,9 +178,9 @@ describe("public AI chat integration", () => {
     const launcherSource = readFileSync(launcherPath, "utf8");
 
     expect(rootLayoutSource).toContain("PublicChatWidget");
-    expect(rootLayoutSource).toContain('lazy(() => import("../components/PublicChatWidget")');
+    expect(rootLayoutSource).toContain('lazy(() => import("../../components/PublicChatWidget")');
     expect(rootLayoutSource).toContain("<PublicChatLauncher");
-    expect(rootLayoutSource).toContain("<PublicChatWidget open={chatOpen} onClose");
+    expect(rootLayoutSource).toContain("<PublicChatWidget open onClose");
     expect(launcherSource).toContain("chat.launcherLabel");
     expect(launcherSource).not.toContain('fetch("/api/chat"');
     expect(widgetSource).toContain('fetch("/api/chat"');

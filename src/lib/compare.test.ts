@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
-const read = (path: string) => readFileSync(resolve(root, path), "utf8");
+const read = (path: string) => [path, ...(path === "src/components/Gallery.tsx" ? ["src/features/gallery/GalleryResults.tsx"] : [])].map((file) => readFileSync(resolve(root, file), "utf8")).join("\n");
 
 describe("photo compare system", () => {
   it("ships a useCompare hook with toggle/clear/remove and a 2-item limit", () => {

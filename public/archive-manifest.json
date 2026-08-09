@@ -3,6 +3,200 @@
   "generatedFrom": "content/archive/projects/*/project.json",
   "projects": [
     {
+      "id": "coral-afterglow-room",
+      "kind": "concept",
+      "title": "Coral Afterglow Room",
+      "subtitle": "从珊瑚折射走进深莓暗房",
+      "chapter": "16",
+      "year": 2026,
+      "summary": "一束珊瑚色折射光穿过玻璃与丝带，最后停在深莓色的印样室。",
+      "statement": "这是一段从明亮到夜色的色彩叙事。白昼的折射、暗房的印样台与雨夜玻璃花园共享同一条暖光，让三个独立空间成为连续章节。",
+      "place": "虚构余晖暗房",
+      "season": "黄昏至夜晚",
+      "moods": [
+        "先锋",
+        "浓郁",
+        "静谧"
+      ],
+      "palette": [
+        "低饱和珊瑚",
+        "深莓",
+        "奶油",
+        "苔藓"
+      ],
+      "techniques": [
+        "色玻璃折射",
+        "低照度印样",
+        "雨夜反射"
+      ],
+      "process": [
+        {
+          "title": "固定色彩弧线",
+          "note": "让奶油丝带与光谱形成一条明确的运动方向。"
+        },
+        {
+          "title": "压低环境亮度",
+          "note": "只保留印样台和安全灯，使深莓空间仍然可读。"
+        },
+        {
+          "title": "用雨结束",
+          "note": "以湿玻璃和圆镜把室内余光带回夜间花园。"
+        }
+      ],
+      "related": [
+        "night-projection-room",
+        "rain-light-laboratory"
+      ],
+      "media": [
+        {
+          "src": "/images/visual-os-v6/03-coral-chamber.webp",
+          "alt": "珊瑚色光学空间、玻璃与丝带组成的无人物概念影像",
+          "width": 1672,
+          "height": 941,
+          "dominantColor": "#825239",
+          "blurDataUrl": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAAAwBACdASoYAA4APxl0slEspqSisAgBkCMJaACdMoMljEHG7ki8VvIRVgAA/qiGI1CsfoGCDJmr2l2rHCwtBSFI4/IkMoo+PD3gu0/8SHXLQWFxQi6DlBCCekiCZDw+XIv87uNA4V/5OJdwRkb/pFPgwUMsKJObsQBMAAAA",
+          "aspectRatio": 1.7768,
+          "avif": "/images/visual-os-v6/03-coral-chamber.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v6/640/03-coral-chamber.webp",
+            "width960": "/images/visual-os-v6/960/03-coral-chamber.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v6/04-berry-print-room.webp",
+          "alt": "深莓暗房、发光印样台与苔藓水景组成的无人物概念影像",
+          "width": 1672,
+          "height": 941,
+          "dominantColor": "#3d2c22",
+          "blurDataUrl": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAADQAwCdASoYAA4APxl8tlCsqCUisAgBkCMJQBOgA8J/CVtlc690wlAA/tqEPO9c171Op27Y5gSM2O3EsBg4J4Rpj0N33ZASW1xHp3V/TJ3eGKi7bd0Z20r/U4JIw67W6uYbx5Z2KD917RZsreAC3QgTxAu84Ki4aQ8tXjAA",
+          "aspectRatio": 1.7768,
+          "avif": "/images/visual-os-v6/04-berry-print-room.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v6/640/04-berry-print-room.webp",
+            "width960": "/images/visual-os-v6/960/04-berry-print-room.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v6/07-night-glass-garden.webp",
+          "alt": "雨夜玻璃、山茶枝、圆镜与深莓丝带组成的无人物概念影像",
+          "width": 1122,
+          "height": 1402,
+          "dominantColor": "#1e1d12",
+          "blurDataUrl": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAACwBACdASoYAB4APvloqVCqpiQit+gBUB8JQBh1haxaTUkz9ju+3FAONaLdHa4AAP7w7LNAI12PUSIHyXTO1k+x1Ib6dtf/HRZWpRzzx8YgQkwaAJrK0uFn3y+5jxwJq0Bc3C1dWAMZpnyLO1Cms21HwYVnYXvugwOIMNDZla48AA==",
+          "aspectRatio": 0.8003,
+          "avif": "/images/visual-os-v6/07-night-glass-garden.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v6/640/07-night-glass-garden.webp",
+            "width960": "/images/visual-os-v6/960/07-night-glass-garden.webp"
+          }
+        }
+      ],
+      "publishedAt": "2026-08-09",
+      "mediums": [
+        "生成式概念摄影",
+        "光学装置"
+      ],
+      "keywords": [
+        "珊瑚",
+        "深莓",
+        "暗房",
+        "折射",
+        "雨夜",
+        "丝带",
+        "无人影像"
+      ]
+    },
+    {
+      "id": "cream-light-pavilion",
+      "kind": "concept",
+      "title": "Cream Light Pavilion",
+      "subtitle": "纸、浅水与可以触摸的晨光",
+      "chapter": "14",
+      "year": 2026,
+      "summary": "用纸幕、浅水和一条柔黄丝带搭出一间缓慢醒来的光亭。",
+      "statement": "这组无人概念影像研究光如何被纸张、水面和粗糙石材重新塑形。它既是首页的晨光世界，也是可以继续被检索、编排和创作的稳定视觉素材。",
+      "place": "虚构纸光亭",
+      "season": "清晨",
+      "moods": [
+        "温柔",
+        "明亮",
+        "安静"
+      ],
+      "palette": [
+        "奶油",
+        "柔黄",
+        "苔藓",
+        "低饱和珊瑚"
+      ],
+      "techniques": [
+        "纸幕透光",
+        "浅水焦散",
+        "微距材质"
+      ],
+      "process": [
+        {
+          "title": "搭出留白",
+          "note": "先用大面积纸幕建立可以承载界面文字的安静区域。"
+        },
+        {
+          "title": "引入水光",
+          "note": "让浅水把固定的晨光变成缓慢变化的第二层影像。"
+        },
+        {
+          "title": "留下触感",
+          "note": "以毛边纸、苔藓和雨滴保留材料的真实尺度。"
+        }
+      ],
+      "related": [
+        "rain-light-laboratory",
+        "paper-tide"
+      ],
+      "media": [
+        {
+          "src": "/images/visual-os-v6/01-cream-pavilion.webp",
+          "alt": "奶油色纸光亭、浅水、镜片与柔黄丝带组成的无人物概念影像",
+          "width": 1672,
+          "height": 941,
+          "dominantColor": "#c5b594",
+          "blurDataUrl": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABQBACdASoYAA4APxl2slCspySisAgBkCMJQBOmUABp1MlfkFN4zC2GZ3YAAP6ZrzEGBjsoGvfzl+uEImDyrHyR9+rjv6psef5c9cTLzuhUfJArOhywkdYmhkwAzZ+g87bNAzuE1LYrnAAA",
+          "aspectRatio": 1.7768,
+          "avif": "/images/visual-os-v6/01-cream-pavilion.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v6/640/01-cream-pavilion.webp",
+            "width960": "/images/visual-os-v6/960/01-cream-pavilion.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v6/05-paper-rain-macro.webp",
+          "alt": "手工纸、雨滴、苔藓与棱镜珊瑚光组成的微距概念影像",
+          "width": 1122,
+          "height": 1402,
+          "dominantColor": "#948066",
+          "blurDataUrl": "data:image/webp;base64,UklGRtAAAABXRUJQVlA4IMQAAABQBQCdASoYAB4APxl2sVEspySisAgBkCMJQBXDhA7EzRuVynQvJcijXbmlWw04WnxPDfQA+mcZ/WLIIO38NE+DqaEpPsubb0wp3RJdUAcflHkXP8LYoRTMd1uOFrWC3n1or4U6M9vCrSI0YG4UnN+xHgvPwScl/sW3ZO2eb8ssUvoajBOyyCNHbc8+q2IaRyn1jUkrvyG1bMEOoQrkOzQ/bOQMf2kBjVymgHEnzuECMXIcXZgqpVSXafEbg295kzIaZAAA",
+          "aspectRatio": 0.8003,
+          "avif": "/images/visual-os-v6/05-paper-rain-macro.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v6/640/05-paper-rain-macro.webp",
+            "width960": "/images/visual-os-v6/960/05-paper-rain-macro.webp"
+          }
+        }
+      ],
+      "publishedAt": "2026-08-09",
+      "mediums": [
+        "生成式概念摄影",
+        "材料研究"
+      ],
+      "keywords": [
+        "纸",
+        "晨光",
+        "浅水",
+        "奶油",
+        "苔藓",
+        "微距",
+        "无人影像"
+      ]
+    },
+    {
       "id": "darkroom-herbarium",
       "kind": "concept",
       "title": "Darkroom Herbarium",
@@ -982,6 +1176,96 @@
         "蓝调曝光",
         "雨窗前景",
         "夜色分层"
+      ]
+    },
+    {
+      "id": "rain-light-laboratory",
+      "kind": "concept",
+      "title": "Rain Light Laboratory",
+      "subtitle": "雨后温室与透明档案",
+      "chapter": "15",
+      "year": 2026,
+      "summary": "湿玻璃、苔藓石台和透明抽屉共同组成一间可探索的雨光实验室。",
+      "statement": "这组影像把自然空间与档案系统放在同一个湿润场景里：光先穿过温室，再进入抽屉和联系表，成为可被保存与重组的材料。",
+      "place": "虚构雨光实验室",
+      "season": "雨后",
+      "moods": [
+        "湿润",
+        "通透",
+        "生长"
+      ],
+      "palette": [
+        "苔藓",
+        "奶油",
+        "玻璃绿",
+        "柔黄"
+      ],
+      "techniques": [
+        "玻璃反射",
+        "空间分层",
+        "档案静物"
+      ],
+      "process": [
+        {
+          "title": "让雨进入室内",
+          "note": "保留玻璃上的水痕和地面反射，建立完整的湿度。"
+        },
+        {
+          "title": "整理光的样本",
+          "note": "把抽象联系表、植物和丝带放进透明抽屉形成材料索引。"
+        },
+        {
+          "title": "连接空间",
+          "note": "用同一组苔藓绿与柔黄把温室和档案柜连成一个世界。"
+        }
+      ],
+      "related": [
+        "cream-light-pavilion",
+        "weather-glasshouse"
+      ],
+      "media": [
+        {
+          "src": "/images/visual-os-v6/02-rain-conservatory.webp",
+          "alt": "雨后玻璃温室、苔藓石台与棱镜光组成的无人物概念影像",
+          "width": 1672,
+          "height": 941,
+          "dominantColor": "#5f5843",
+          "blurDataUrl": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADQAwCdASoYAA4APxl2slEspySisAgBkCMJYwCdABjGqBveifS9LkAA+KrqYec+VH8ZCtMCk1L3OXLPd7/EbICUMnaq41svlVsxHSKEDvEmtfqFslxrYY0hqZ8zfAOUHfOcAJ97RxmYox3xAAA=",
+          "aspectRatio": 1.7768,
+          "avif": "/images/visual-os-v6/02-rain-conservatory.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v6/640/02-rain-conservatory.webp",
+            "width960": "/images/visual-os-v6/960/02-rain-conservatory.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v6/06-archive-drawers.webp",
+          "alt": "透明抽屉、抽象联系表、苔藓与黄色丝带组成的概念档案影像",
+          "width": 1122,
+          "height": 1402,
+          "dominantColor": "#635a43",
+          "blurDataUrl": "data:image/webp;base64,UklGRuYAAABXRUJQVlA4INoAAACQBQCdASoYAB4APxl2sVCspySisAgBkCMJQBjP5gANmTm0u9Dcj0imQ1oU1zAZ799DSG8gwAD+0UeomSQm841CEIBkHp/39b8eZbbJgkrsewtgn1FquGs9CddIhcqFKlv+x4ykBiPidc3Uje1OQKABCW9HuDZX+OfG5QOPUGmpFrrlsKkNZtu3fdpe4UulqgYH8MZqUqsjGy85XJaCDA5t84cywhe5XvhfuSVohmDtSUfj423Go9wxBMkzdr0E8It7DWKgpSP+XlqxbAvpAjM/3bb1t05d5gAAAA==",
+          "aspectRatio": 0.8003,
+          "avif": "/images/visual-os-v6/06-archive-drawers.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v6/640/06-archive-drawers.webp",
+            "width960": "/images/visual-os-v6/960/06-archive-drawers.webp"
+          }
+        }
+      ],
+      "publishedAt": "2026-08-09",
+      "mediums": [
+        "生成式概念摄影",
+        "档案装置"
+      ],
+      "keywords": [
+        "雨",
+        "玻璃",
+        "苔藓",
+        "抽屉",
+        "档案",
+        "联系表",
+        "无人影像"
       ]
     },
     {

@@ -1,4 +1,4 @@
-import { ArrowRight, Search, RotateCcw, SlidersHorizontal, X } from "lucide-react";
+import { ArrowRight, Search, RotateCcw, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { archiveProjects } from "../data/living-archive";
@@ -7,6 +7,8 @@ import { createArchiveView, type ArchiveFacet, type ArchiveFilters } from "../li
 import { photoTransitionName } from "../lib/photo-transition";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { PrefetchLink } from "./shared/PrefetchLink";
+import { ArchiveDiscoveryDeck } from "./ArchiveDiscoveryDeck";
+import { getVisualAssetBySource } from "../data/visual-assets";
 
 const initialFilters: ArchiveFilters = {
   place: "all",
@@ -79,10 +81,12 @@ export function LivingArchiveExplorer() {
         </div>
       </section>
 
+      <ArchiveDiscoveryDeck />
+
       <section className="archive-concept-section" aria-labelledby="archive-concept-title">
         <header className="platform-section-head">
           <div>
-            <span className="platform-index">02 / CONCEPT STUDIES</span>
+            <span className="platform-index">03 / CONCEPT STUDIES</span>
             <h2 id="archive-concept-title">{t("platform.archive.conceptTitle")}</h2>
           </div>
           <p>{t("platform.archive.conceptDisclosure")}</p>
@@ -121,6 +125,11 @@ export function LivingArchiveExplorer() {
                 <PrefetchLink className="archive-project__open" to={`/archive/${project.id}`}>
                   打开完整研究 <ArrowRight size={17} aria-hidden="true" />
                 </PrefetchLink>
+                {getVisualAssetBySource(project.media[0]?.src) ? (
+                  <PrefetchLink className="archive-project__similar" to={`/archive?similar=${getVisualAssetBySource(project.media[0]?.src)!.id}#archive-discovery`}>
+                    <Sparkles size={15} aria-hidden="true" /> 查找相似画面
+                  </PrefetchLink>
+                ) : null}
               </div>
             </article>
           ))}
@@ -131,7 +140,7 @@ export function LivingArchiveExplorer() {
       <section className="archive-real-work" aria-labelledby="archive-real-title">
         <header className="platform-section-head">
           <div>
-            <span className="platform-index">03 / REAL WORK</span>
+            <span className="platform-index">04 / REAL WORK</span>
             <h2 id="archive-real-title">{t("platform.archive.realTitle")}</h2>
           </div>
           <p>{t("platform.archive.realDescription")}</p>

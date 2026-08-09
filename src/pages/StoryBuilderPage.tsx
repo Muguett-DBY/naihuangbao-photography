@@ -1,12 +1,15 @@
 import "../styles/platform-v3.css";
 import "../styles/story-builder.css";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Download, FilePlus2, ImagePlus, LayoutTemplate, Plus, Save, Trash2, Upload, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Download, FilePlus2, ImagePlus, LayoutTemplate, Monitor, PanelsTopLeft, Plus, Save, Smartphone, Trash2, Upload, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import { StoryBuilderPreview } from "../components/stories/StoryBuilderPreview";
+import { StoryTimeline } from "../components/stories/StoryTimeline";
 import { archiveProjects } from "../data/living-archive";
+import { visualAssetById } from "../data/visual-assets";
+import { readArchiveCollection } from "../hooks/useArchiveCollection";
 import { useSEO } from "../hooks/useSEO";
 import {
   createStoryChapter,
@@ -21,6 +24,7 @@ import {
   type StoryProjectFrame,
 } from "../lib/story-project-store";
 import type { StoryLayout } from "../types/visual-story";
+import { setCreativeWorkDirty } from "../lib/creative-work-state";
 
 const LAST_STORY_KEY = "nhb:last-story-project";
 const layouts: Array<{ id: StoryLayout; label: string }> = [
@@ -28,6 +32,11 @@ const layouts: Array<{ id: StoryLayout; label: string }> = [
   { id: "columns", label: "Columns" },
   { id: "contact", label: "Contact" },
   { id: "quiet", label: "Quiet" },
+  { id: "diptych", label: "Diptych" },
+  { id: "compare", label: "Compare" },
+  { id: "annotation", label: "Annotate" },
+  { id: "interlude", label: "Interlude" },
+  { id: "constellation", label: "Constellation" },
 ];
 
 const archiveFrames = archiveProjects.flatMap((project) => project.media.map((media, index): StoryProjectFrame => ({
@@ -66,6 +75,8 @@ export function StoryBuilderPage() {
   const [projects, setProjects] = useState<StoryProject[]>([]);
   const [activeChapterId, setActiveChapterId] = useState("");
   const [status, setStatus] = useState("LOADING LOCAL PROJECTS");
+  const [notice, setNotice] = useState("");
+  const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
   const hydratedRef = useRef(false);
   const importRef = useRef<HTMLInputElement>(null);
 
@@ -91,17 +102,25 @@ export function StoryBuilderPage() {
 
   useEffect(() => {
     if (!project || !hydratedRef.current) return;
+    setCreativeWorkDirty("story", true);
     const timeout = window.setTimeout(() => {
       const snapshot = { ...project, savedAt: Date.now() };
       void saveStoryProject(snapshot).then(() => {
         setProjects((current) => [snapshot, ...current.filter((entry) => entry.id !== snapshot.id)]);
         localStorage.setItem(LAST_STORY_KEY, snapshot.id);
         setStatus("SAVED LOCALLY");
+        setCreativeWorkDirty("story", false);
       });
     }, 500);
     setStatus("SAVING...");
     return () => window.clearTimeout(timeout);
   }, [project]);
+  useEffect(() => () => setCreativeWorkDirty("story", false), []);
+  useEffect(() => {
+    if (!notice) return undefined;
+    const timeout = window.setTimeout(() => setNotice(""), 2_600);
+    return () => window.clearTimeout(timeout);
+  }, [notice]);
 
   const activeChapter = useMemo(
     () => project?.chapters.find((chapter) => chapter.id === activeChapterId) ?? project?.chapters[0],
@@ -171,6 +190,40 @@ export function StoryBuilderPage() {
     updateProject((current) => ({ ...current, chapters }));
   };
 
+  const reorderChapter = (sourceId: string, targetId: string) => {
+    if (!project) return;
+    const sourceIndex = project.chapters.findIndex((chapter) => chapter.id === sourceId);
+    const targetIndex = project.chapters.findIndex((chapter) => chapter.id === targetId);
+    if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return;
+    const chapters = [...project.chapters];
+    const [moved] = chapters.splice(sourceIndex, 1);
+    chapters.splice(targetIndex, 0, moved);
+    updateProject((current) => ({ ...current, chapters }));
+  };
+
+  const importArchiveExhibition = () => {
+    const frames = readArchiveCollection().map((assetId) => visualAssetById.get(assetId)).filter(Boolean).map((asset): StoryProjectFrame => ({
+      id: `asset-${asset!.id}`,
+      projectId: asset!.projectIds[0] ?? "visual-archive",
+      src: asset!.src,
+      alt: asset!.alt,
+    }));
+    if (!frames.length) {
+      setNotice("ARCHIVE EXHIBITION IS EMPTY");
+      return;
+    }
+    const chapterLayouts: StoryLayout[] = ["diptych", "annotation", "constellation", "interlude"];
+    const additions = Array.from({ length: Math.ceil(frames.length / 2) }, (_, index) => ({
+      ...createStoryChapter((project?.chapters.length ?? 0) + index, frames.slice(index * 2, index * 2 + 2)),
+      kicker: `${String((project?.chapters.length ?? 0) + index + 1).padStart(2, "0")} / EXHIBITION`,
+      title: `展览线索 ${index + 1}`,
+      layout: chapterLayouts[index % chapterLayouts.length],
+    }));
+    updateProject((current) => ({ ...current, chapters: [...current.chapters, ...additions] }));
+    setActiveChapterId(additions[0]!.id);
+    setNotice(`${frames.length} ARCHIVE FRAMES IMPORTED`);
+  };
+
   const removeChapter = () => {
     if (!project || !activeChapter || project.chapters.length === 1) return;
     const chapters = project.chapters.filter((chapter) => chapter.id !== activeChapter.id);
@@ -193,9 +246,9 @@ export function StoryBuilderPage() {
       await saveStoryProject(next);
       await openProject(next);
       await refreshProjects();
-      setStatus("PROJECT IMPORTED");
+      setNotice("PROJECT IMPORTED");
     } catch {
-      setStatus("IMPORT FAILED");
+      setNotice("IMPORT FAILED");
     }
   };
 
@@ -205,11 +258,12 @@ export function StoryBuilderPage() {
     <PageTransition className="story-builder-page">
       <header className="story-builder-topbar">
         <PrefetchLink to="/create" title="Back to Create"><ArrowLeft size={18} aria-hidden="true" /></PrefetchLink>
-        <div><span>NHB / STORY BUILDER 1.0</span><strong>{status}</strong></div>
+        <div><span>NHB / STORY BUILDER 2.0</span><strong>{notice || status}</strong></div>
         <div className="story-builder-topbar__actions">
           <button type="button" title="New project" onClick={createNewProject}><FilePlus2 size={18} aria-hidden="true" /></button>
           <button type="button" title="Duplicate project" onClick={duplicateProject}><Plus size={18} aria-hidden="true" /></button>
           <button type="button" title="Import project" onClick={() => importRef.current?.click()}><Upload size={18} aria-hidden="true" /></button>
+          <button type="button" title="Import archive exhibition" onClick={importArchiveExhibition}><PanelsTopLeft size={18} aria-hidden="true" /></button>
           <button type="button" title="Export project" onClick={() => downloadBlob(createStoryProjectFile(project), `${project.name.replace(/\s+/g, "-").toLowerCase()}.nhb-story`)}><Download size={18} aria-hidden="true" /></button>
           <input ref={importRef} type="file" accept=".nhb-story,application/json" hidden onChange={(event) => void importProject(event.target.files?.[0])} />
         </div>
@@ -222,7 +276,14 @@ export function StoryBuilderPage() {
       </aside>
 
       <section className="story-builder-workspace">
-        <div className="story-builder-canvas"><StoryBuilderPreview project={project} activeChapterId={activeChapter.id} onSelectChapter={setActiveChapterId} /></div>
+        <div className="story-builder-canvas">
+          <StoryTimeline chapters={project.chapters} activeChapterId={activeChapter.id} onSelect={setActiveChapterId} onReorder={reorderChapter} onAdd={addChapter} />
+          <div className="story-builder-device-switch" role="group" aria-label="Preview size">
+            <button type="button" className={previewDevice === "desktop" ? "is-active" : undefined} aria-pressed={previewDevice === "desktop"} onClick={() => setPreviewDevice("desktop")}><Monitor size={15} aria-hidden="true" />DESKTOP</button>
+            <button type="button" className={previewDevice === "mobile" ? "is-active" : undefined} aria-pressed={previewDevice === "mobile"} onClick={() => setPreviewDevice("mobile")}><Smartphone size={15} aria-hidden="true" />MOBILE</button>
+          </div>
+          <StoryBuilderPreview project={project} activeChapterId={activeChapter.id} onSelectChapter={setActiveChapterId} device={previewDevice} />
+        </div>
         <aside className="story-builder-controls">
           <section>
             <span className="platform-index">01 / STORY</span>

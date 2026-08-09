@@ -1,0 +1,29 @@
+{
+  "id": "coral-afterglow-room",
+  "kind": "concept",
+  "title": "Coral Afterglow Room",
+  "subtitle": "从珊瑚折射走进深莓暗房",
+  "chapter": "16",
+  "year": 2026,
+  "summary": "一束珊瑚色折射光穿过玻璃与丝带，最后停在深莓色的印样室。",
+  "statement": "这是一段从明亮到夜色的色彩叙事。白昼的折射、暗房的印样台与雨夜玻璃花园共享同一条暖光，让三个独立空间成为连续章节。",
+  "place": "虚构余晖暗房",
+  "season": "黄昏至夜晚",
+  "moods": ["先锋", "浓郁", "静谧"],
+  "palette": ["低饱和珊瑚", "深莓", "奶油", "苔藓"],
+  "techniques": ["色玻璃折射", "低照度印样", "雨夜反射"],
+  "process": [
+    { "title": "固定色彩弧线", "note": "让奶油丝带与光谱形成一条明确的运动方向。" },
+    { "title": "压低环境亮度", "note": "只保留印样台和安全灯，使深莓空间仍然可读。" },
+    { "title": "用雨结束", "note": "以湿玻璃和圆镜把室内余光带回夜间花园。" }
+  ],
+  "related": ["night-projection-room", "rain-light-laboratory"],
+  "media": [
+    { "src": "/images/visual-os-v6/03-coral-chamber.webp", "alt": "珊瑚色光学空间、玻璃与丝带组成的无人物概念影像", "width": 1672, "height": 941 },
+    { "src": "/images/visual-os-v6/04-berry-print-room.webp", "alt": "深莓暗房、发光印样台与苔藓水景组成的无人物概念影像", "width": 1672, "height": 941 },
+    { "src": "/images/visual-os-v6/07-night-glass-garden.webp", "alt": "雨夜玻璃、山茶枝、圆镜与深莓丝带组成的无人物概念影像", "width": 1122, "height": 1402 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "光学装置"],
+  "keywords": ["珊瑚", "深莓", "暗房", "折射", "雨夜", "丝带", "无人影像"]
+}

@@ -4,7 +4,12 @@ export type CompositionImage = {
   name: string;
   blob?: Blob;
   transform?: CompositionImageTransform;
+  visible?: boolean;
+  opacity?: number;
+  blendMode?: CompositionBlendMode;
 };
+
+export type CompositionBlendMode = "source-over" | "multiply" | "screen" | "soft-light";
 
 export type CompositionImageTransform = {
   zoom: number;

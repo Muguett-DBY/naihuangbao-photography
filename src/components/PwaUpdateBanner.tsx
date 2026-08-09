@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshCw, X } from "lucide-react";
 import { logAndIgnore } from "../lib/errors";
+import { hasUnsavedCreativeWork, subscribeCreativeWorkState } from "../lib/creative-work-state";
 
 const UPDATE_CHECK_INTERVAL_MS = 5 * 60 * 1000;
 
@@ -9,6 +10,7 @@ export function PwaUpdateBanner() {
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [creativeDirty, setCreativeDirty] = useState(hasUnsavedCreativeWork);
   const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
   const reloadFallbackRef = useRef<number | null>(null);
   const refreshButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -115,6 +117,8 @@ export function PwaUpdateBanner() {
     };
   }, []);
 
+  useEffect(() => subscribeCreativeWorkState(setCreativeDirty), []);
+
   useEffect(() => {
     if (!visible) return undefined;
     const node = containerRef.current;
@@ -149,12 +153,16 @@ export function PwaUpdateBanner() {
       aria-describedby="pwa-update-text"
     >
       <RefreshCw size={16} className="pwa-update-icon" />
-      <p id="pwa-update-text">{refreshing ? t("pwaUpdate.refreshing", "Refreshing to the latest version") : t("pwaUpdate.text", "A new version is available")}</p>
+      <p id="pwa-update-text">{refreshing
+        ? t("pwaUpdate.refreshing", "Refreshing to the latest version")
+        : creativeDirty
+          ? t("pwaUpdate.savingCreativeWork", "Creative work is still saving. Update will unlock when it is safe.")
+          : t("pwaUpdate.text", "A new version is available")}</p>
       <button
         ref={refreshButtonRef}
         type="button"
         className="pwa-update-btn"
-        disabled={refreshing}
+        disabled={refreshing || creativeDirty}
         onClick={() => {
           setRefreshing(true);
           const waitingWorker = registrationRef.current?.waiting;
@@ -167,7 +175,7 @@ export function PwaUpdateBanner() {
           reloadFallbackRef.current = window.setTimeout(() => window.location.reload(), 600);
         }}
       >
-        {refreshing ? t("pwaUpdate.refreshingAction", "Refreshing") : t("pwaUpdate.refresh", "Refresh")}
+        {refreshing ? t("pwaUpdate.refreshingAction", "Refreshing") : creativeDirty ? t("pwaUpdate.waitForSave", "Saving") : t("pwaUpdate.refresh", "Refresh")}
       </button>
       <button
         type="button"

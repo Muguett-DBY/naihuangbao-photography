@@ -36,6 +36,7 @@ const PhotoDetailPage = lazy(routeLoaders["/gallery/:id"]);
 const PhotoEditorPage = lazy(routeLoaders["/editor"]);
 const ComparePage = lazy(routeLoaders["/compare"]);
 const AdminDashboard = lazy(routeLoaders["/admin"]);
+const PracticeLayout = lazy(routeLoaders.$practice);
 
 function AdminRoute() {
   const { t } = useTranslation();
@@ -146,25 +147,30 @@ export const router = createBrowserRouter([
       { path: "create", element: <PageSuspense><CreateHubPage /></PageSuspense> },
       { path: "create/story", element: <PageSuspense><StoryBuilderPage /></PageSuspense> },
       { path: "studio", element: <PageSuspense><CreativeStudioPage /></PageSuspense> },
-      { path: "practice", element: <PageSuspense><PracticePage /></PageSuspense> },
-      { path: "lab", element: <Navigate to="/practice" replace /> },
       { path: "about", element: <PageSuspense><AboutPage /></PageSuspense> },
-      { path: "gallery", element: <PageSuspense><GalleryPage /></PageSuspense> },
-      { path: "gallery/:id", element: <PageSuspense><PhotoDetailPage /></PageSuspense> },
-      { path: "courses", element: <PageSuspense><CoursesPage /></PageSuspense> },
-      { path: "courses/:id", element: <PageSuspense><CourseDetailPage /></PageSuspense> },
-      { path: "products", element: <PageSuspense><ProductsPage /></PageSuspense> },
-      { path: "presets/:id", element: <PageSuspense><PresetDetailPage /></PageSuspense> },
-      { path: "workshops", element: <PageSuspense><WorkshopsPage /></PageSuspense> },
-      { path: "workshops/:id", element: <PageSuspense><WorkshopDetailPage /></PageSuspense> },
-      { path: "shop", element: <PageSuspense><ShopPage /></PageSuspense> },
-      { path: "shop/:id", element: <PageSuspense><ShopDetailPage /></PageSuspense> },
-      { path: "booking", element: <PageSuspense><BookingPage /></PageSuspense> },
-      { path: "map", element: <PageSuspense><MapPage /></PageSuspense> },
-      { path: "login", element: <PageSuspense><LoginPage /></PageSuspense> },
-      { path: "dashboard", element: <PageSuspense><DashboardPage /></PageSuspense> },
       { path: "editor", element: <PageSuspense><PhotoEditorPage /></PageSuspense> },
-      { path: "compare", element: <PageSuspense><ComparePage /></PageSuspense> },
+      {
+        element: <PageSuspense><PracticeLayout /></PageSuspense>,
+        children: [
+          { path: "practice", element: <PageSuspense><PracticePage /></PageSuspense> },
+          { path: "lab", element: <Navigate to="/practice" replace /> },
+          { path: "gallery", element: <PageSuspense><GalleryPage /></PageSuspense> },
+          { path: "gallery/:id", element: <PageSuspense><PhotoDetailPage /></PageSuspense> },
+          { path: "courses", element: <PageSuspense><CoursesPage /></PageSuspense> },
+          { path: "courses/:id", element: <PageSuspense><CourseDetailPage /></PageSuspense> },
+          { path: "products", element: <PageSuspense><ProductsPage /></PageSuspense> },
+          { path: "presets/:id", element: <PageSuspense><PresetDetailPage /></PageSuspense> },
+          { path: "workshops", element: <PageSuspense><WorkshopsPage /></PageSuspense> },
+          { path: "workshops/:id", element: <PageSuspense><WorkshopDetailPage /></PageSuspense> },
+          { path: "shop", element: <PageSuspense><ShopPage /></PageSuspense> },
+          { path: "shop/:id", element: <PageSuspense><ShopDetailPage /></PageSuspense> },
+          { path: "booking", element: <PageSuspense><BookingPage /></PageSuspense> },
+          { path: "map", element: <PageSuspense><MapPage /></PageSuspense> },
+          { path: "login", element: <PageSuspense><LoginPage /></PageSuspense> },
+          { path: "dashboard", element: <PageSuspense><DashboardPage /></PageSuspense> },
+          { path: "compare", element: <PageSuspense><ComparePage /></PageSuspense> },
+        ],
+      },
       { path: "*", element: <NotFound /> },
     ],
   },

@@ -21,7 +21,7 @@
       "kicker": "02 / AIR",
       "title": "风被织物看见",
       "body": "半透明织物把不可见的空气变成慢动作。奶油色在苔藓庭院里不再是背景，而是一条移动的光路。",
-      "layout": "columns",
+      "layout": "diptych",
       "media": [{ "projectId": "weather-glasshouse", "mediaIndex": 1 }, { "projectId": "optical-garden", "mediaIndex": 0 }]
     },
     {
@@ -29,7 +29,7 @@
       "kicker": "03 / REFRACTION",
       "title": "山茶在雨玻璃之后失焦",
       "body": "水珠把一朵花拆成多个色域。重要的不是恢复清晰，而是保留这段短暂的视觉偏差。",
-      "layout": "quiet",
+      "layout": "annotation",
       "media": [{ "projectId": "weather-glasshouse", "mediaIndex": 2 }]
     },
     {
@@ -37,7 +37,7 @@
       "kicker": "04 / TRACE",
       "title": "最后只留下纸的纤维",
       "body": "天气退场之后，光仍停在材料内部。纸张把此前的绿色、黄色和珊瑚色压缩成可以触摸的余像。",
-      "layout": "contact",
+      "layout": "constellation",
       "media": [{ "projectId": "material-index", "mediaIndex": 2 }, { "projectId": "light-workshop", "mediaIndex": 1 }, { "projectId": "light-workshop", "mediaIndex": 2 }]
     }
   ]

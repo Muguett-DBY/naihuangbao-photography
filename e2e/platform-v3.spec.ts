@@ -14,7 +14,7 @@ test("@critical V4 信息架构、档案分层与发布清单可用", async ({ p
   await expect(page.locator(".platform-hero h1")).toContainText("影像档案");
   await expect(page.locator('.nav-menu--inline a[href="/archive"]')).toBeVisible();
   await expect(page.locator('.nav-menu--inline a[href="/create"]')).toBeVisible();
-  await expect(page.locator(".archive-project")).toHaveCount(13);
+  await expect(page.locator(".archive-project")).toHaveCount(16);
   await expect(page.locator(".archive-real-item")).toHaveCount(6);
   await expect(page.locator(".archive-constellation")).toBeVisible();
   await expect(page.locator(".archive-concept-section")).toContainText("不是真实客片");
@@ -36,7 +36,7 @@ test("@critical 档案筛选只影响概念研究且不混入真实作品", asyn
   await expect(page.locator(".archive-project")).toHaveCount(2);
   await expect(page.locator(".archive-real-item")).toHaveCount(6);
   await page.getByRole("button", { name: "重置筛选" }).click();
-  await expect(page.locator(".archive-project")).toHaveCount(13);
+  await expect(page.locator(".archive-project")).toHaveCount(16);
 });
 
 test("@critical 命令面板可键盘搜索并进入统一创作工作区", async ({ page }) => {

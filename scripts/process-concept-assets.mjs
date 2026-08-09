@@ -13,6 +13,7 @@ const COLLECTIONS = [
   { name: "concept-premiere", webpQuality: 82, avifQuality: 65 },
   { name: "optical-archive", webpQuality: 76, avifQuality: 58 },
   { name: "visual-os-v5", webpQuality: 80, avifQuality: 62 },
+  { name: "visual-os-v6", webpQuality: 82, avifQuality: 64 },
 ];
 const SIZES = [
   { directory: "640", width: 640 },

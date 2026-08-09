@@ -3,7 +3,12 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
-const read = (path: string) => readFileSync(resolve(root, path), "utf8");
+const read = (path: string) => {
+  const extras = path === "src/components/BookingModal.tsx"
+    ? ["src/features/booking/BookingStepRail.tsx", "src/features/booking/BookingFormSteps.tsx", "src/features/booking/BookingOutcomeViews.tsx"]
+    : path === "src/layouts/RootLayout.tsx" ? ["src/features/practice/PracticeLayout.tsx"] : [];
+  return [path, ...extras].map((file) => readFileSync(resolve(root, file), "utf8")).join("\n");
+};
 
 describe("public booking conversion shell", () => {
   it("organizes the complete booking journey as numbered semantic groups", () => {
@@ -31,7 +36,10 @@ describe("public booking conversion shell", () => {
   });
 
   it("gives authentication modes and location search complete keyboard semantics", () => {
-    const login = read("src/pages/LoginPage.tsx");
+    const login = [
+      read("src/pages/LoginPage.tsx"),
+      read("src/features/auth/AuthMediaPanel.tsx"),
+    ].join("\n");
     const locationSearch = read("src/components/LocationSearch.tsx");
 
     expect(login).toContain('className="auth-page-media"');
@@ -96,7 +104,7 @@ describe("public booking conversion shell", () => {
 
     expect(bookingModal).toContain("accountLinked");
     expect(bookingModal).toContain("setAccountLinked");
-    expect(bookingModal).toContain("const showDashboard = accountLinked");
+    expect(bookingModal).toContain("showDashboard={props.accountLinked}");
     expect(bookingModal).not.toContain("DASHBOARD_EMAIL_PATTERN");
     expect(bookingModal).not.toContain("isDashboardCompatibleContact");
     expect(bookingModal).toContain("nextStepLinked");

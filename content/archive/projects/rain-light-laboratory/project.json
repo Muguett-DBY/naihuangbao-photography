@@ -1,0 +1,28 @@
+{
+  "id": "rain-light-laboratory",
+  "kind": "concept",
+  "title": "Rain Light Laboratory",
+  "subtitle": "雨后温室与透明档案",
+  "chapter": "15",
+  "year": 2026,
+  "summary": "湿玻璃、苔藓石台和透明抽屉共同组成一间可探索的雨光实验室。",
+  "statement": "这组影像把自然空间与档案系统放在同一个湿润场景里：光先穿过温室，再进入抽屉和联系表，成为可被保存与重组的材料。",
+  "place": "虚构雨光实验室",
+  "season": "雨后",
+  "moods": ["湿润", "通透", "生长"],
+  "palette": ["苔藓", "奶油", "玻璃绿", "柔黄"],
+  "techniques": ["玻璃反射", "空间分层", "档案静物"],
+  "process": [
+    { "title": "让雨进入室内", "note": "保留玻璃上的水痕和地面反射，建立完整的湿度。" },
+    { "title": "整理光的样本", "note": "把抽象联系表、植物和丝带放进透明抽屉形成材料索引。" },
+    { "title": "连接空间", "note": "用同一组苔藓绿与柔黄把温室和档案柜连成一个世界。" }
+  ],
+  "related": ["cream-light-pavilion", "weather-glasshouse"],
+  "media": [
+    { "src": "/images/visual-os-v6/02-rain-conservatory.webp", "alt": "雨后玻璃温室、苔藓石台与棱镜光组成的无人物概念影像", "width": 1672, "height": 941 },
+    { "src": "/images/visual-os-v6/06-archive-drawers.webp", "alt": "透明抽屉、抽象联系表、苔藓与黄色丝带组成的概念档案影像", "width": 1122, "height": 1402 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "档案装置"],
+  "keywords": ["雨", "玻璃", "苔藓", "抽屉", "档案", "联系表", "无人影像"]
+}

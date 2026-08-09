@@ -15,6 +15,7 @@ export default defineConfig({
     ],
   },
   build: {
+    manifest: true,
     assetsInlineLimit: 0,
     chunkSizeWarningLimit: 700,
     rollupOptions: {
@@ -84,7 +85,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       injectRegister: "script-defer",
       manifest: false,
       includeAssets: [
@@ -96,8 +97,8 @@ export default defineConfig({
         "icons/pwa-maskable-512.png",
       ],
       workbox: {
-        skipWaiting: true,
-        clientsClaim: true,
+        skipWaiting: false,
+        clientsClaim: false,
         cleanupOutdatedCaches: true,
         navigateFallback: "index.html",
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
@@ -107,6 +108,7 @@ export default defineConfig({
           "**/images/concept-premiere/**/*",
           "**/images/optical-archive/**/*",
           "**/images/visual-os-v5/**/*",
+          "**/images/visual-os-v6/**/*",
           "**/immersive-vendor-*.js",
           "**/face-api-vendor-*.js",
           "**/map-vendor-*.js",
@@ -143,13 +145,14 @@ export default defineConfig({
                 && (url.pathname.startsWith("/images/gallery/")
                   || url.pathname.startsWith("/images/concept-premiere/")
                   || url.pathname.startsWith("/images/optical-archive/")
-                  || url.pathname.startsWith("/images/visual-os-v5/"));
+                  || url.pathname.startsWith("/images/visual-os-v5/")
+                  || url.pathname.startsWith("/images/visual-os-v6/"));
             },
             handler: "CacheFirst",
             options: {
-              cacheName: "visual-archive-images-v5",
+              cacheName: "visual-archive-images-v6",
               expiration: {
-                maxEntries: 180,
+                maxEntries: 220,
                 maxAgeSeconds: 60 * 60 * 24 * 90,
               },
               cacheableResponse: {
@@ -158,12 +161,12 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: ({ url }) => ["/archive-manifest.json", "/story-manifest.json", "/release.json"].includes(url.pathname),
+            urlPattern: ({ url }) => ["/archive-manifest.json", "/story-manifest.json", "/visual-asset-manifest.json", "/route-contract.json", "/release.json"].includes(url.pathname),
             handler: "StaleWhileRevalidate",
             options: {
-              cacheName: "visual-platform-manifests-v4",
+              cacheName: "visual-platform-manifests-v6",
               expiration: {
-                maxEntries: 4,
+                maxEntries: 6,
                 maxAgeSeconds: 60 * 60 * 24 * 7,
               },
             },
