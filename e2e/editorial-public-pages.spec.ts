@@ -46,4 +46,21 @@ test.describe("editorial public pages", () => {
     await page.locator(".quiz-book-button").click();
     await expect(page.locator("#booking-package")).toBeVisible();
   });
+
+  test("Japanese and Korean keep the booking brand identity localized", async ({ page }) => {
+    const locales = [
+      { language: "ja", brand: "奶黄んぼ写真撮影" },
+      { language: "ko", brand: "나이황바오 사진촬영" },
+    ];
+
+    await page.goto("/about");
+    for (const { language, brand } of locales) {
+      await page.evaluate((nextLanguage) => window.localStorage.setItem("lang", nextLanguage), language);
+      await page.reload();
+
+      await expect(page.locator("html")).toHaveAttribute("lang", language);
+      await expect(page.locator(".brand-copy strong")).toHaveText(brand);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(brand);
+    }
+  });
 });

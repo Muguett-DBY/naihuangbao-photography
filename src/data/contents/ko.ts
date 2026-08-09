@@ -2,8 +2,8 @@ import type { SiteContent } from "../../types/content";
 
 export const defaultSiteContent: SiteContent = {
   siteConfig: {
-    brandName: "Naihuangbao Photography",
-    city: "Nanjing",
+    brandName: "나이황바오 사진촬영",
+    city: "난징",
     domain: "shoot.custard.top",
     tagline: "난징 여성 인물 및 커플 촬영",
     description: "난징에서 여성 인물, 커플, 편안한 도심 산책 촬영을 진행하는 개인 사진가입니다. 사전 스타일 상담과 전체 포즈 가이드를 제공합니다.",
@@ -60,7 +60,7 @@ export const defaultSiteContent: SiteContent = {
     details: { eyebrow: "상세", title: "장비, 가격, 정책을 명확하게", intro: "예약 전에 장비, 추가 서비스, 정책을 확인하세요." },
     notice: { eyebrow: "프로세스", title: "처음이신가요? 이렇게 진행됩니다", intro: "샤오홍슈 DM부터 촬영, 선택, 납품까지 모든 단계를 미리 안내해 드립니다." },
     why: { eyebrow: "선택 이유", title: "명확한 경계, 편안한 촬영", intro: "편안함과 권한을 사전 논의. 현장 포즈 가이드로 초보자도 안심." },
-    about: { eyebrow: "소개", title: "Naihuangbao Photography", intro: "예약 문의", body: "난징 기반의 개인 사진작가. 여성 사진 및 커플 사진 전문. 소프트 필름 감성으로 일상, 장난, 동반 촬영.", bookingTitle: "부드럽고 자연스러운 사진을 원하시나요?", profileLinkLabel: "샤오홍슈 프로필 보기" },
+    about: { eyebrow: "소개", title: "나이황바오 사진촬영", intro: "예약 문의", body: "난징 기반의 개인 사진작가. 여성 사진 및 커플 사진 전문. 소프트 필름 감성으로 일상, 장난, 동반 촬영.", bookingTitle: "부드럽고 자연스러운 사진을 원하시나요?", profileLinkLabel: "샤오홍슈 프로필 보기" },
     midCta: { eyebrow: "다음 단계", title: "이 스타일이 마음에 드시나요?", intro: "샤오홍슈 DM으로 연락주세요. 빠른 답변. 천천히 상담해 드립니다.", actionLabel: "샤오홍슈 DM" },
     footer: { tagline: "셔터를 누를 때마다 부드러운 빛을 담습니다." },
     safety: { title: "촬영 가이드라인 및 개인정보 약속", paragraphs: ["사진은 기본 공개되지 않습니다. 명시적 승인을 받은 사진만 게시됩니다.", "경계, 스타일, 편안함을 사전 논의. 초보자도 현장 포즈 가이드 제공."] },
