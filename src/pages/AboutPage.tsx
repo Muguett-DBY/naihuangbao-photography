@@ -62,7 +62,7 @@ export function AboutPage() {
               tone="cream"
             />
           ) : null}
-          <span aria-hidden="true">{siteConfig.city} / PORTRAIT</span>
+          <span aria-hidden="true">{siteConfig.city} / {t("aboutPage.portraitLabel")}</span>
         </div>
       </section>
 

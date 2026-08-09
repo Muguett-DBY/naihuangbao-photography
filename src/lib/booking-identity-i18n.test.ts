@@ -63,6 +63,12 @@ describe("booking-first identity and locale completeness", () => {
     expect(enContent).not.toContain("Personal practice project");
     expect(jaContent).not.toContain("個人練習プロジェクト");
     expect(koContent).not.toContain("개인 연습 프로젝트");
+    expect(jaContent).toContain('brandName: "奶黄んぼ写真撮影"');
+    expect(jaContent).toContain('city: "南京"');
+    expect(jaContent).toContain('about: { eyebrow: "紹介", title: "奶黄んぼ写真撮影"');
+    expect(koContent).toContain('brandName: "나이황바오 사진촬영"');
+    expect(koContent).toContain('city: "난징"');
+    expect(koContent).toContain('about: { eyebrow: "소개", title: "나이황바오 사진촬영"');
 
     for (const locale of localeFiles) {
       const messages = JSON.parse(read(`src/i18n/locales/${locale}.json`));

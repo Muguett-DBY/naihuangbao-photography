@@ -2,8 +2,8 @@ import type { SiteContent } from "../../types/content";
 
 export const defaultSiteContent: SiteContent = {
   siteConfig: {
-    brandName: "Naihuangbao Photography",
-    city: "Nanjing",
+    brandName: "奶黄んぼ写真撮影",
+    city: "南京",
     domain: "shoot.custard.top",
     tagline: "南京・女性ポートレートとカップル撮影",
     description: "南京を拠点に、女性ポートレート、カップル写真、自然な街歩き撮影を行う個人写真家です。事前相談とポージングガイド付き。",
@@ -60,7 +60,7 @@ export const defaultSiteContent: SiteContent = {
     details: { eyebrow: "詳細", title: "機材、料金、ポリシーを明確に", intro: "ご予約前に機材、追加サービス、予約ポリシーをご確認ください。" },
     notice: { eyebrow: "流れ", title: "初めての方も安心の流れ", intro: "小红书DMから撮影、セレクト、納品まで、すべてのステップを事前にご説明します。" },
     why: { eyebrow: "選ばれる理由", title: "明確な境界、リラックスした撮影", intro: "事前に快適さと権限を確認。当日はポーズガイド付きで初心者も安心。" },
-    about: { eyebrow: "About", title: "Naihuangbao Photography", intro: "予約問い合わせ", body: "南京を拠点とする個人写真家。女性ポートレートとカップル写真を専門とし、ソフトフィルム調の作風。", bookingTitle: "優しく自然な写真を撮りませんか？", profileLinkLabel: "小红书プロフィールを見る" },
+    about: { eyebrow: "紹介", title: "奶黄んぼ写真撮影", intro: "予約問い合わせ", body: "南京を拠点とする個人写真家。女性ポートレートとカップル写真を専門とし、ソフトフィルム調の作風。", bookingTitle: "優しく自然な写真を撮りませんか？", profileLinkLabel: "小红书プロフィールを見る" },
     midCta: { eyebrow: "次のステップ", title: "このスタイル気に入りましたか？", intro: "小红书DMでご連絡ください。すぐにお返事します。ゆっくりご相談ください。", actionLabel: "小红书DM" },
     footer: { tagline: "シャッターを切るたびに、優しい光を灯します。" },
     safety: { title: "撮影ガイドラインとプライバシーについて", paragraphs: ["写真はデフォルトで公開されません。明示的な許可を得たもののみ掲載します。", "境界、スタイル、快適さを事前に確認。初心者にはその場でポーズガイドを提供。"] },
