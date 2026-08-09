@@ -1,14 +1,19 @@
 import "../styles/platform-v3.css";
 import "../styles/archive-v3.css";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { ArchiveConstellation } from "../components/ArchiveConstellation";
 import { LivingArchiveExplorer } from "../components/LivingArchiveExplorer";
 import { PageTransition } from "../components/shared/PageTransition";
 import { useSEO } from "../hooks/useSEO";
+import { getVisualAsset } from "../data/visual-assets";
+import { visualAssetTransitionName } from "../lib/view-transition";
 
 export function ArchivePage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const selectedAsset = getVisualAsset(searchParams.get("similar") ?? undefined);
   useSEO({ titleKey: "platform.archive.title", descKey: "platform.archive.description", path: "/archive" });
 
   return (
@@ -16,12 +21,13 @@ export function ArchivePage() {
       <section className="platform-hero platform-hero--archive">
         <div className="platform-hero__media" aria-hidden="true">
           <ImageWithFallback
-            src="/images/optical-archive/optical-garden-hero-v1.webp?v=20260808-1"
+            src={selectedAsset?.src ?? "/images/optical-archive/optical-garden-hero-v1.webp?v=20260808-1"}
             alt=""
             title={t("platform.archive.title")}
             priority
             sizes="100vw"
             tone="sage"
+            transitionName={selectedAsset ? visualAssetTransitionName(selectedAsset.id) : undefined}
           />
           <ImageWithFallback
             src="/images/optical-archive/camellia-prism-macro-v1.webp?v=20260808-1"

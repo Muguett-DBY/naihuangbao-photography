@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
-const read = (path: string) => readFileSync(resolve(root, path), "utf8");
+const read = (path: string) => [path, ...(path === "src/components/Gallery.tsx" ? ["src/features/gallery/GalleryResults.tsx"] : [])].map((file) => readFileSync(resolve(root, file), "utf8")).join("\n");
 
 describe("quick view modal", () => {
   it("ships a QuickView component with focus trap, Escape close, and return focus", () => {

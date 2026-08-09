@@ -235,6 +235,16 @@
     "camelliaPrismAlt": "Rain-covered coral camellia with a small optical prism",
     "paperRippleAlt": "Abstract light study of rice paper, optical glass, water ripples and bamboo shadows"
   },
+  "visualWorlds": {
+    "label": "Visual worlds",
+    "index": "Choose the light",
+    "explore": "Enter the archive through this frame",
+    "dawn": { "label": "Cream dawn", "note": "A gentle opening shaped by paper, shallow water and warm morning light" },
+    "rain": { "label": "Moss after rain", "note": "Wet glass, moss and refracted light form an after-rain chamber" },
+    "afterglow": { "label": "Coral afterglow", "note": "Coral warmth gradually enters a deep-berry print room" },
+    "frames": { "pavilion": "Paper-light pavilion", "conservatory": "Rain conservatory", "coral": "Coral refraction room", "printRoom": "Berry print room", "paper": "Rain light on paper", "drawers": "Translucent archive", "nightGarden": "Night glass garden" },
+    "alt": { "pavilion": "No-person concept image of a cream paper pavilion, shallow water, a lens and yellow ribbon", "conservatory": "No-person concept image of a rain-wet conservatory, moss plinths and prism light", "coral": "No-person concept image of a coral optical chamber with glass and flowing silk", "printRoom": "No-person concept image of a deep-berry darkroom with a luminous print table and moss water garden", "paper": "Macro concept image of handmade paper, rain drops, moss and coral prism light", "drawers": "Concept archive image of glass drawers, abstract contact sheets, moss and yellow ribbon", "nightGarden": "No-person concept image of rain glass, camellia leaves, a round mirror and deep-berry ribbon" }
+  },
   "rainLetter": {
     "chapter": "Rain Letter",
     "eyebrow": "NHB Seasonal Premiere / Chapter Two",

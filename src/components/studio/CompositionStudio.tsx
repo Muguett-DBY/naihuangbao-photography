@@ -43,6 +43,11 @@ import type { CompositionMode } from "../../lib/composition-layout";
 import { safeLocalStorage } from "../../lib/browser-storage";
 import { DEFAULT_COMPOSITION_TRANSFORM, type CompositionImage, type CompositionTextAlign } from "../../types/composition";
 import { track } from "../../utils/track";
+import { exportStudioCanvas } from "../../lib/studio-export";
+import { StudioLayerControls } from "../../features/studio/StudioLayerControls";
+import { StudioRecipeRail, type CompositionRecipe } from "../../features/studio/StudioRecipeRail";
+import { StudioStorageStatus } from "../../features/studio/StudioStorageStatus";
+import { setCreativeWorkDirty } from "../../lib/creative-work-state";
 
 export const compositionSampleImages: CompositionImage[] = [
   { id: "sample-garden", src: "/images/optical-archive/conservatory-after-rain-v1.webp", name: "Morning conservatory" },
@@ -96,6 +101,8 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
   const [hydrated, setHydrated] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"loading" | "saving" | "saved" | "error">("loading");
   const [error, setError] = useState("");
+  const [activeVersionId, setActiveVersionId] = useState<string | null>(null);
+  const [exportBackend, setExportBackend] = useState<"worker" | "main-thread" | null>(null);
   const { state, update, replace, undo, redo, canUndo, canRedo } = useCompositionHistory(createInitialState());
   const inkColor = state.paperColor === "#5b2438" ? "#fffaf0" : "#203128";
   const selectedImage = state.images.find((image) => image.id === state.selectedImageId) ?? null;
@@ -178,12 +185,14 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
 
   useEffect(() => {
     if (!hydrated) return;
+    setCreativeWorkDirty("composition", true);
     setSaveStatus("saving");
     const timeout = window.setTimeout(() => {
       const snapshot = buildSnapshot();
       void saveCompositionProject(snapshot)
         .then(() => {
           setSaveStatus("saved");
+          setCreativeWorkDirty("composition", false);
           safeLocalStorage.setItem(LAST_PROJECT_KEY, snapshot.id);
           setProjects((current) => [{
             id: snapshot.id,
@@ -197,6 +206,7 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
     }, 500);
     return () => window.clearTimeout(timeout);
   }, [buildSnapshot, hydrated]);
+  useEffect(() => () => setCreativeWorkDirty("composition", false), []);
 
   const imageCountLabel = useMemo(() => t("platform.studio.imageCount", { count: state.images.length }), [state.images.length, t]);
   const markRendered = useCallback(() => setRendered(true), []);
@@ -238,18 +248,22 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
     });
   };
 
-  const exportComposition = (format: ExportFormat) => {
+  const exportComposition = async (format: ExportFormat) => {
     const canvas = canvasRef.current;
     if (!canvas || !rendered) return;
     const mime = format === "jpeg" ? "image/jpeg" : `image/${format}`;
-    canvas.toBlob((blob) => {
-      if (!blob || (format === "avif" && blob.type !== "image/avif")) {
+    try {
+      const { blob, backend } = await exportStudioCanvas(canvas, mime, format === "png" ? undefined : 0.92);
+      if (format === "avif" && blob.type !== "image/avif") {
         setError(t("platform.studio.unsupportedExport", "This browser cannot export AVIF from canvas."));
         return;
       }
+      setExportBackend(backend);
       downloadBlob(blob, `nhb-${state.mode}-${Date.now()}.${format === "jpeg" ? "jpg" : format}`);
       track("studio_export", { mode: state.mode, format, imageCount: state.images.length });
-    }, mime, format === "png" ? undefined : 0.92);
+    } catch {
+      setError(t("platform.studio.unsupportedExport", "This browser cannot export the selected format."));
+    }
   };
 
   const exportProject = async () => {
@@ -277,6 +291,7 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
     setCreatedAt(now);
     replace(next);
     setVersions([]);
+    setActiveVersionId(null);
     setSaveStatus("saving");
   };
 
@@ -299,6 +314,7 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
     const snapshot = await getCompositionProject(id);
     if (!snapshot) return;
     applySnapshot(snapshot);
+    setActiveVersionId(null);
     await refreshVersions(snapshot.id);
   };
 
@@ -309,8 +325,31 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
   };
 
   const saveVersion = async () => {
-    await createCompositionVersion(buildSnapshot(), `${state.projectName} / ${versions.length + 1}`);
+    const branch = activeVersionId ? `branch-${versions.filter((version) => version.parentVersionId === activeVersionId).length + 1}` : "main";
+    const version = await createCompositionVersion(buildSnapshot(), `${state.projectName} / ${versions.length + 1}`, activeVersionId ?? undefined, branch);
+    setActiveVersionId(version?.id ?? null);
     await refreshVersions(projectId);
+  };
+
+  const updateSelectedLayer = (patch: Pick<CompositionImage, "visible" | "opacity" | "blendMode">) => {
+    if (!selectedImage) return;
+    update((current) => ({
+      ...current,
+      images: current.images.map((image) => image.id === selectedImage.id ? { ...image, ...patch } : image),
+    }));
+  };
+
+  const applyRecipe = (recipe: CompositionRecipe) => {
+    update((current) => ({
+      ...current,
+      mode: recipe.mode,
+      paperColor: recipe.paperColor,
+      title: recipe.title,
+      caption: recipe.caption,
+      titleScale: recipe.titleScale,
+      images: current.images.map((image) => ({ ...image, visible: true, opacity: recipe.opacity, blendMode: recipe.blendMode })),
+    }));
+    track("studio_recipe_applied", { recipe: recipe.id });
   };
 
   const transform = { ...DEFAULT_COMPOSITION_TRANSFORM, ...selectedImage?.transform };
@@ -338,10 +377,13 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
         {versions.length ? (
           <div className="studio-project-shelf__versions" aria-label="Project versions">
             <span>VERSIONS</span>
-            {versions.map((version) => <button type="button" key={version.id} onClick={() => applySnapshot(version.snapshot)}>{version.label}<small>{new Date(version.createdAt).toLocaleTimeString()}</small></button>)}
+            {versions.map((version) => <button type="button" className={activeVersionId === version.id ? "is-active" : undefined} key={version.id} onClick={() => { setActiveVersionId(version.id); applySnapshot(version.snapshot); }}>{version.label}<small>{version.branch.toUpperCase()} · {new Date(version.createdAt).toLocaleTimeString()}</small></button>)}
           </div>
         ) : null}
+        <StudioStorageStatus />
       </section>
+
+      <StudioRecipeRail onApply={applyRecipe} />
 
       <aside className="studio-controls" aria-label={t("platform.studio.controls")}>
         <section className="studio-project-control">
@@ -393,6 +435,7 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
             <label><span>HORIZONTAL <output>{Math.round(transform.offsetX * 100)}</output></span><input type="range" min="-1" max="1" step="0.05" value={transform.offsetX} onChange={(event) => updateSelectedTransform({ offsetX: Number(event.target.value) })} /></label>
             <label><span>VERTICAL <output>{Math.round(transform.offsetY * 100)}</output></span><input type="range" min="-1" max="1" step="0.05" value={transform.offsetY} onChange={(event) => updateSelectedTransform({ offsetY: Number(event.target.value) })} /></label>
             <label><span>ROTATE <output>{transform.rotation}°</output></span><input type="range" min="-12" max="12" step="1" value={transform.rotation} onChange={(event) => updateSelectedTransform({ rotation: Number(event.target.value) })} /></label>
+            <StudioLayerControls image={selectedImage} onChange={updateSelectedLayer} />
             <button type="button" onClick={() => updateSelectedTransform(DEFAULT_COMPOSITION_TRANSFORM)}><RotateCcw size={15} aria-hidden="true" />RESET FRAME</button>
           </section>
         ) : null}
@@ -419,15 +462,15 @@ export function CompositionStudio({ embedded = false }: { embedded?: boolean }) 
       </aside>
 
       <main className="studio-preview">
-        <div className="studio-preview__bar"><span><Layers3 size={16} aria-hidden="true" /> {t(`platform.studio.modes.${state.mode}` as never)}</span><small>{imageCountLabel}</small></div>
+        <div className="studio-preview__bar"><span><Layers3 size={16} aria-hidden="true" /> {t(`platform.studio.modes.${state.mode}` as never)}</span><small>{imageCountLabel}{exportBackend ? ` / EXPORT ${exportBackend === "worker" ? "WORKER" : "MAIN"}` : ""}</small></div>
         <div className={`studio-canvas-frame studio-canvas-frame--${state.mode}`}>
           <CompositionCanvas ref={canvasRef} mode={state.mode} images={state.images} title={state.title} caption={state.caption} paperColor={state.paperColor} inkColor={inkColor} textAlign={state.textAlign} titleScale={state.titleScale} onRendered={markRendered} />
         </div>
         <div className="studio-export-actions">
-          <button type="button" onClick={() => exportComposition("png")} disabled={!rendered}><Download size={18} aria-hidden="true" /> PNG</button>
-          <button type="button" onClick={() => exportComposition("webp")} disabled={!rendered}><FileImage size={18} aria-hidden="true" /> WebP</button>
-          <button type="button" onClick={() => exportComposition("jpeg")} disabled={!rendered}><FileImage size={18} aria-hidden="true" /> JPEG</button>
-          <button type="button" onClick={() => exportComposition("avif")} disabled={!rendered}><FileImage size={18} aria-hidden="true" /> AVIF</button>
+          <button type="button" onClick={() => void exportComposition("png")} disabled={!rendered}><Download size={18} aria-hidden="true" /> PNG</button>
+          <button type="button" onClick={() => void exportComposition("webp")} disabled={!rendered}><FileImage size={18} aria-hidden="true" /> WebP</button>
+          <button type="button" onClick={() => void exportComposition("jpeg")} disabled={!rendered}><FileImage size={18} aria-hidden="true" /> JPEG</button>
+          <button type="button" onClick={() => void exportComposition("avif")} disabled={!rendered}><FileImage size={18} aria-hidden="true" /> AVIF</button>
           <span>{t("platform.studio.localOnly")}</span>
         </div>
       </main>

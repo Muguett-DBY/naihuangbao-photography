@@ -25,13 +25,14 @@ const BOOKING_IMMERSIVE_IMAGES = [
 export function BookingPage() {
   const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
-  const { openBookingModal } = useBookingModal();
+  const { openBookingModal, warmBookingModal } = useBookingModal();
 
   useSEO({ titleKey: "seo.bookingTitle", descKey: "seo.bookingDesc", path: "/booking" });
   usePageRevealEffects(rootRef);
   useEffect(() => {
     track("booking_page_view");
-  }, []);
+    warmBookingModal();
+  }, [warmBookingModal]);
 
   return (
     <PageTransition ref={rootRef} className="booking-page booking-page--editorial">
@@ -66,7 +67,14 @@ export function BookingPage() {
             <span className="booking-quick-marker">APPOINTMENT DESK / 01</span>
             <h2>{t("bookingPage.readyTitle")}</h2>
             <p>{t("bookingPage.readyDesc")}</p>
-            <button type="button" className="booking-quick-cta-btn" onClick={() => openBookingModal()}>
+            <button
+              type="button"
+              className="booking-quick-cta-btn"
+              onPointerEnter={warmBookingModal}
+              onFocus={warmBookingModal}
+              onTouchStart={warmBookingModal}
+              onClick={() => openBookingModal()}
+            >
               <CalendarCheck size={18} aria-hidden="true" />
               {t("bookingPage.startBooking")}
             </button>

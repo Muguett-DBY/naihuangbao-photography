@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, CalendarCheck, X, RefreshCw, CheckCircle2, Circle, Clock, WalletCards } from "lucide-react";
+import { ArrowRight, CalendarCheck, X, RefreshCw, WalletCards } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { BookingCalendar, type DateInfo } from "../BookingCalendar";
 import { BOOKING_TIME_SLOT_KEYS, BookingTimeSlotPicker, isBookingTimeSlotUnavailable } from "../BookingTimeSlotPicker";
@@ -13,107 +13,15 @@ import { getApiError, readJsonResponse } from "../../lib/http";
 import { useBookingPolicy } from "../../hooks/useBookingPolicy";
 import { isBookableBusinessDate } from "../../utils/businessDate";
 import type { Booking, WaitlistEntry } from "../../types/dashboard";
-
-const timelineSteps = [
-  { key: "pending", icon: Clock },
-  { key: "contacted", icon: Circle },
-  { key: "done", icon: CheckCircle2 },
-] as const;
-
-function getStepIndex(status: string): number {
-  if (status === "canceled" || status === "cancelled") return -1;
-  return timelineSteps.findIndex((s) => s.key === status);
-}
-
-function canManageBooking(status: string): boolean {
-  return status === "pending" || status === "confirmed";
-}
-
-function isCancelledBooking(status: string): boolean {
-  return status === "canceled" || status === "cancelled";
-}
-
-type StatusHelpKey =
-  | "dashboard.statusHelp.cancelled"
-  | "dashboard.statusHelp.done"
-  | "dashboard.statusHelp.confirmed"
-  | "dashboard.statusHelp.pending";
-
-type TimeSlotRecovery = {
-  canKeepDate?: boolean;
-  requestedTime?: string;
-  suggestedTime?: string;
-  availableTimeSlots?: string[];
-};
-
-type RescheduleRecoveryState = TimeSlotRecovery & {
-  bookingId: string;
-  preferredDate: string;
-};
-
-function getStatusHelpKey(status: string): StatusHelpKey {
-  if (isCancelledBooking(status)) return "dashboard.statusHelp.cancelled";
-  if (status === "done") return "dashboard.statusHelp.done";
-  if (status === "contacted" || status === "confirmed") return "dashboard.statusHelp.confirmed";
-  return "dashboard.statusHelp.pending";
-}
-
-function formatPaymentAmount(amountCents: number | null, currency: string | null): string | null {
-  if (amountCents == null || !currency) return null;
-  try {
-    return new Intl.NumberFormat(undefined, {
-      style: "currency",
-      currency: currency.toUpperCase(),
-    }).format(amountCents / (currency.toLowerCase() === "jpy" ? 1 : 100));
-  } catch {
-    return `${amountCents / 100} ${currency.toUpperCase()}`;
-  }
-}
-
-function BookingTimeline({ status }: { status: string }) {
-  const { t } = useTranslation();
-  const currentStep = getStepIndex(status);
-  const isCancelled = currentStep === -1;
-
-  if (isCancelled) {
-    return (
-      <div className="booking-timeline booking-timeline--cancelled">
-        <div className="booking-timeline-step is-cancelled">
-          <X size={14} />
-          <span>{t("dashboard.status.cancelled")}</span>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="booking-timeline">
-      {timelineSteps.map((step, idx) => {
-        const Icon = step.icon;
-        const isCompleted = idx < currentStep;
-        const isCurrent = idx === currentStep;
-        return (
-          <div
-            key={step.key}
-            className={`booking-timeline-step${isCompleted ? " is-completed" : ""}${isCurrent ? " is-current" : ""}`}
-          >
-            <div className="booking-timeline-icon">
-              {isCompleted ? <CheckCircle2 size={16} /> : <Icon size={16} />}
-            </div>
-            <div className="booking-timeline-info">
-              <span className="booking-timeline-label">
-                {t(`dashboard.status.${step.key}`)}
-              </span>
-            </div>
-            {idx < timelineSteps.length - 1 && (
-              <div className={`booking-timeline-connector${isCompleted ? " is-completed" : ""}`} />
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+import {
+  BookingTimeline,
+  canManageBooking,
+  formatPaymentAmount,
+  getStatusHelpKey,
+  isCancelledBooking,
+  type RescheduleRecoveryState,
+  type TimeSlotRecovery,
+} from "../../features/booking/BookingDashboardStatus";
 
 export function BookingsTab() {
   const { t } = useTranslation();

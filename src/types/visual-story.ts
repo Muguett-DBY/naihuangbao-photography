@@ -1,6 +1,6 @@
 import type { ArchiveMedia } from "./living-archive";
 
-export type StoryLayout = "full" | "columns" | "contact" | "quiet";
+export type StoryLayout = "full" | "columns" | "contact" | "quiet" | "diptych" | "compare" | "annotation" | "interlude" | "constellation";
 
 export type VisualStoryChapter = {
   id: string;

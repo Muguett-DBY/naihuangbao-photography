@@ -18,14 +18,14 @@ const allCss = [
 ].map((p) => readFileSync(resolve(root, p), "utf8")).join("\n");
 const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
 const i18nSource = readFileSync(resolve(root, "src/i18n/index.ts"), "utf8");
-const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
+const rootLayoutSource = ["src/layouts/RootLayout.tsx", "src/features/practice/PracticeLayout.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const routerSource = readFileSync(resolve(root, "src/router.tsx"), "utf8");
 const routePreloadSource = readFileSync(resolve(root, "src/lib/route-preload.ts"), "utf8");
 const routeLoadersSource = readFileSync(resolve(root, "src/routing/route-loaders.ts"), "utf8");
 const scrollProgressSource = readFileSync(resolve(root, "src/components/ScrollProgress.tsx"), "utf8");
 const html = readFileSync(resolve(root, "index.html"), "utf8");
 const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
-const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
+const gallerySource = ["src/components/Gallery.tsx", "src/features/gallery/GalleryCommandCenter.tsx", "src/features/gallery/GalleryResults.tsx", "src/features/gallery/gallery-discovery.ts"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const homeSource = readFileSync(resolve(root, "src/pages/HomePage.tsx"), "utf8");
 const premiereSource = readFileSync(resolve(root, "src/components/CinematicPremiere.tsx"), "utf8");
 const quickViewSource = readFileSync(resolve(root, "src/components/QuickView.tsx"), "utf8");
@@ -136,7 +136,7 @@ describe("performance budgets", () => {
   it("lazy-loads gallery images and non-critical chunks", () => {
     expect(gallerySource).toContain('loading="lazy"');
     expect(gallerySource).toContain('lazy(() => import("./Lightbox"))');
-    expect(rootLayoutSource).toContain('lazy(() => import("../components/PublicChatWidget")');
+    expect(rootLayoutSource).toContain('lazy(() => import("../../components/PublicChatWidget")');
     expect(routeLoadersSource).toContain('import("../styles/admin.css")');
   });
 
@@ -253,9 +253,10 @@ describe("performance budgets", () => {
   it("keeps gallery photos out of the precache and runtime-caches them", () => {
     // Verify Vite PWA config runtime-caches gallery images
     expect(viteConfig).toContain("runtimeCaching");
-    expect(viteConfig).toContain("visual-archive-images-v5");
+    expect(viteConfig).toContain("visual-archive-images-v6");
     expect(viteConfig).toContain('/images/optical-archive/');
     expect(viteConfig).toContain('/images/visual-os-v5/');
+    expect(viteConfig).toContain('/images/visual-os-v6/');
     expect(viteConfig).toContain('/story-manifest.json');
     expect(viteConfig).toContain('handler: "CacheFirst"');
     expect(viteConfig).toContain("NetworkFirst");

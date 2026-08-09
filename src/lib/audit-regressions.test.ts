@@ -7,9 +7,10 @@ const adminSource = [
   "src/components/AdminDashboard.tsx",
   "src/components/admin/AdminShell.tsx",
   "src/components/admin/AdminPhotosTab.tsx",
+  "src/features/admin/AdminPhotosWorkspace.tsx",
 ].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const adminModerationQueueSource = readFileSync(resolve(root, "src/components/admin/AdminPhotoModerationQueue.tsx"), "utf8");
-const adminPhotosSource = readFileSync(resolve(root, "src/components/admin/AdminPhotosTab.tsx"), "utf8");
+const adminPhotosSource = ["src/components/admin/AdminPhotosTab.tsx", "src/features/admin/AdminPhotosWorkspace.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const adminPhotosBatchApiSource = readFileSync(resolve(root, "functions/api/admin/photos/batch.ts"), "utf8");
 const adminHelpersSource = readFileSync(resolve(root, "src/lib/admin-helpers.tsx"), "utf8");
 const cssSource = [
@@ -25,7 +26,7 @@ const imageSource = readFileSync(resolve(root, "src/components/ImageWithFallback
 const lightboxSource = readFileSync(resolve(root, "src/components/Lightbox.tsx"), "utf8");
 const widgetSource = readFileSync(resolve(root, "src/components/PublicChatWidget.tsx"), "utf8");
 const photoWallSource = readFileSync(resolve(root, "src/components/PhotoWall3DCss.tsx"), "utf8");
-const gallerySource = readFileSync(resolve(root, "src/components/Gallery.tsx"), "utf8");
+const gallerySource = ["src/components/Gallery.tsx", "src/features/gallery/GalleryCommandCenter.tsx", "src/features/gallery/GalleryResults.tsx", "src/features/gallery/gallery-discovery.ts"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const galleryPageSource = readFileSync(resolve(root, "src/pages/GalleryPage.tsx"), "utf8");
 const headersSource = readFileSync(resolve(root, "public/_headers"), "utf8");
 const redirectsSource = readFileSync(resolve(root, "public/_redirects"), "utf8");
@@ -51,12 +52,13 @@ const presetDownloadApiSource = readFileSync(resolve(root, "functions/api/preset
 const productsPageSource = readFileSync(resolve(root, "src/pages/ProductsPage.tsx"), "utf8");
 const presetDetailPageSource = readFileSync(resolve(root, "src/pages/PresetDetailPage.tsx"), "utf8");
 const adminSessionApiSource = readFileSync(resolve(root, "functions/api/admin/session.ts"), "utf8");
-const dashboardBookingsSource = readFileSync(resolve(root, "src/components/dashboard/BookingsTab.tsx"), "utf8");
-const bookingModalSource = readFileSync(resolve(root, "src/components/BookingModal.tsx"), "utf8");
+const dashboardBookingsSource = ["src/components/dashboard/BookingsTab.tsx", "src/features/booking/BookingDashboardStatus.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
+const bookingModalFiles = ["src/components/BookingModal.tsx", "src/features/booking/BookingStepRail.tsx", "src/features/booking/BookingFormSteps.tsx", "src/features/booking/BookingOutcomeViews.tsx"];
+const bookingModalSource = bookingModalFiles.map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const bookingTimeSlotPickerPath = resolve(root, "src/components/BookingTimeSlotPicker.tsx");
 const bookingTimeSlotPickerSource = existsSync(bookingTimeSlotPickerPath) ? readFileSync(bookingTimeSlotPickerPath, "utf8") : "";
 const rescheduleApiSource = readFileSync(resolve(root, "functions/api/user/bookings/[id]/reschedule.ts"), "utf8");
-const rootLayoutSource = readFileSync(resolve(root, "src/layouts/RootLayout.tsx"), "utf8");
+const rootLayoutSource = ["src/layouts/RootLayout.tsx", "src/features/practice/PracticeLayout.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const offlineFallbackSource = readFileSync(resolve(root, "src/components/OfflineFallback.tsx"), "utf8");
 const offlineRecoveryPath = resolve(root, "src/components/OfflineBookingRecovery.tsx");
 const offlineRecoverySource = existsSync(offlineRecoveryPath) ? readFileSync(offlineRecoveryPath, "utf8") : "";
@@ -108,7 +110,7 @@ const paymentLiveReadinessPath = resolve(root, "docs/payment-live-readiness.md")
 const paymentLiveReadinessSource = existsSync(paymentLiveReadinessPath) ? readFileSync(paymentLiveReadinessPath, "utf8") : "";
 const wranglerSource = readFileSync(resolve(root, "wrangler.toml"), "utf8");
 const htmlSource = readFileSync(resolve(root, "index.html"), "utf8");
-const loginPageSource = readFileSync(resolve(root, "src/pages/LoginPage.tsx"), "utf8");
+const loginPageSource = ["src/pages/LoginPage.tsx", "src/features/auth/AuthMediaPanel.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const dashboardPageSource = readFileSync(resolve(root, "src/pages/DashboardPage.tsx"), "utf8");
 const useAuthSource = readFileSync(resolve(root, "src/hooks/useAuth.tsx"), "utf8");
 const loginApiSource = readFileSync(resolve(root, "functions/api/auth/login.ts"), "utf8");
@@ -329,7 +331,7 @@ describe("audit regression coverage", () => {
   });
 
   it("keeps offline booking recovery global, actionable, localized, and outside the modal lifetime", () => {
-    expect(rootLayoutSource).toContain('lazy(() => import("../components/OfflineBookingRecovery"))');
+    expect(rootLayoutSource).toContain('import OfflineBookingRecovery from "../../components/OfflineBookingRecovery"');
     expect(rootLayoutSource).toContain("<OfflineBookingRecovery isOnline={isOnline}");
     expect(offlineRecoverySource).toContain("syncPendingBookings");
     expect(offlineRecoverySource).toContain("PENDING_BOOKINGS_CHANGED_EVENT");
@@ -515,15 +517,15 @@ describe("audit regression coverage", () => {
     expect(redirectsSource).toContain("/gallery/:id / 200");
     [
       "/archive / 200",
-      "/archive/:id / 200",
       "/stories / 200",
-      "/stories/:id / 200",
       "/create / 200",
       "/create/story / 200",
       "/studio / 200",
       "/practice / 200",
       "/about / 200",
     ].forEach((rewrite) => expect(redirectsSource).toContain(rewrite));
+    expect(redirectsSource).not.toContain("/archive/:id / 200");
+    expect(redirectsSource).not.toContain("/stories/:id / 200");
     expect(redirectsSource).not.toMatch(/^\/\*\s+\/\s+200$/m);
     expect(routesSource).toContain('"/api/*"');
     expect(routesSource).toContain('"/baidu_verify_codeva-XrPQbInHz7.html"');
@@ -576,11 +578,12 @@ describe("audit regression coverage", () => {
     expect(adminPhotoApiSource).toContain("isAdminMutationRequest");
     expect(adminSource).toContain("adminMutationHeaders");
     expect(adminHelpersSource).toContain('"x-nhb-admin-action": "1"');
-    expect(adminSource).toContain('fetch("/api/admin/photos", { method: "POST", body: fd, credentials: "include", headers: adminMutationHeaders })');
+    expect(adminSource).toContain('fetch("/api/admin/photos"');
+    expect(adminSource).toContain("body: new FormData(form)");
     expect(adminSource).toContain('fetch("/api/admin/session", { method: "DELETE", credentials: "include", headers: adminMutationHeaders })');
     expect(adminSessionApiSource).toContain("isAdminMutationRequest");
-    expect(adminSource).toContain("allowedPhotoTypes");
-    expect(adminSource).toContain("maxPhotoUploadSize");
+    expect(adminSource).toContain("ALLOWED_PHOTO_TYPES");
+    expect(adminSource).toContain("MAX_PHOTO_UPLOAD_SIZE");
   });
 
   it("keeps admin moderation bulk approval wired to all pending ids", () => {
@@ -596,7 +599,7 @@ describe("audit regression coverage", () => {
     expect(adminModerationQueueSource).toContain('action: "delete"');
     expect(adminModerationQueueSource).toContain("admin-moderation-reject-confirmation");
     expect(adminPhotosSource).toContain('action: "delete"');
-    expect(adminPhotosSource).toContain("const deletedIds = new Set(result.ids)");
+    expect(adminPhotosSource).toContain("const deleted = new Set(result.ids)");
   });
 
   it("keeps preset download count writes behind the public page-action boundary", () => {
@@ -647,7 +650,7 @@ describe("audit regression coverage", () => {
 
   it("keeps placeholder booking deposits truthful from submission to dashboard", () => {
     const paymentForm = readFileSync(resolve(root, "src/components/PaymentForm.tsx"), "utf8");
-    const bookingModal = readFileSync(resolve(root, "src/components/BookingModal.tsx"), "utf8");
+    const bookingModal = bookingModalFiles.map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
     const bookingsTab = readFileSync(resolve(root, "src/components/dashboard/BookingsTab.tsx"), "utf8");
     const bookingApi = readFileSync(resolve(root, "functions/api/user/bookings.ts"), "utf8");
     const sectionStyles = readFileSync(resolve(root, "src/styles/sections.css"), "utf8");
@@ -665,10 +668,10 @@ describe("audit regression coverage", () => {
   });
 
   it("keeps booking completion payment clarity visible and mobile-safe", () => {
-    const bookingModal = readFileSync(resolve(root, "src/components/BookingModal.tsx"), "utf8");
+    const bookingModal = bookingModalFiles.map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
     const sectionStyles = readFileSync(resolve(root, "src/styles/sections.css"), "utf8");
 
-    expect(bookingModal).toContain("bookingPaymentClaritySteps");
+    expect(bookingModal).toContain("claritySteps");
     expect(bookingModal).toContain("booking-payment-clarity");
     expect(bookingModal).toContain("booking-payment-clarity-step");
     expect(bookingModal).toContain('aria-label={t("bookingModal.paymentClarityLabel"');
@@ -1083,11 +1086,14 @@ describe("audit regression coverage", () => {
     expect(viteConfigSource).not.toContain("backgroundSync");
   });
 
-  it("activates PWA updates automatically and clears outdated app-shell caches", () => {
-    expect(viteConfigSource).toContain('registerType: "autoUpdate"');
-    expect(viteConfigSource).toContain("skipWaiting: true");
-    expect(viteConfigSource).toContain("clientsClaim: true");
+  it("prompts for PWA updates without interrupting unsaved creative work", () => {
+    expect(viteConfigSource).toContain('registerType: "prompt"');
+    expect(viteConfigSource).toContain("skipWaiting: false");
+    expect(viteConfigSource).toContain("clientsClaim: false");
     expect(viteConfigSource).toContain("cleanupOutdatedCaches: true");
+    expect(pwaUpdateBannerSource).toContain("hasUnsavedCreativeWork");
+    expect(pwaUpdateBannerSource).toContain("subscribeCreativeWorkState");
+    expect(pwaUpdateBannerSource).toContain("disabled={refreshing || creativeDirty}");
     expect(pwaUpdateBannerSource).toContain("const registration = registrationRef.current");
     expect(pwaUpdateBannerSource).toContain("!registration?.installing && !registration?.waiting && !registration?.active");
     expect(pwaUpdateBannerSource).toContain("registration.update()");

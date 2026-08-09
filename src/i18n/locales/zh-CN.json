@@ -235,6 +235,16 @@
     "camelliaPrismAlt": "带雨滴的珊瑚色山茶花与小型棱镜",
     "paperRippleAlt": "宣纸、光学玻璃、水纹与竹影组成的抽象光影"
   },
+  "visualWorlds": {
+    "label": "视觉世界",
+    "index": "选择光线",
+    "explore": "沿这张画面进入档案",
+    "dawn": { "label": "奶油晨光", "note": "纸、浅水与柔黄晨光组成的温柔开场" },
+    "rain": { "label": "雨后苔庭", "note": "湿润玻璃、苔藓与折射光组成的雨后空间" },
+    "afterglow": { "label": "珊瑚夜光", "note": "珊瑚暖光逐渐进入深莓暗房" },
+    "frames": { "pavilion": "纸光亭", "conservatory": "雨后温室", "coral": "珊瑚折射室", "printRoom": "深莓印样室", "paper": "纸上雨光", "drawers": "透明档案柜", "nightGarden": "夜间玻璃花园" },
+    "alt": { "pavilion": "奶油色纸光亭、浅水、镜片与柔黄丝带组成的无人物概念影像", "conservatory": "雨后玻璃温室、苔藓石台与棱镜光组成的无人物概念影像", "coral": "珊瑚色光学空间、玻璃与丝带组成的无人物概念影像", "printRoom": "深莓暗房、发光印样台与苔藓水景组成的无人物概念影像", "paper": "手工纸、雨滴、苔藓与棱镜珊瑚光组成的微距概念影像", "drawers": "透明抽屉、抽象联系表、苔藓与黄色丝带组成的概念档案影像", "nightGarden": "雨夜玻璃、山茶枝、圆镜与深莓丝带组成的无人物概念影像" }
+  },
   "rainLetter": {
     "chapter": "雨信",
     "eyebrow": "NHB 季节首映 / 第二章",

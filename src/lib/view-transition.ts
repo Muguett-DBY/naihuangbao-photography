@@ -40,3 +40,7 @@ export function finishViewTransition(pathname: string) {
   window.setTimeout(() => delete document.documentElement.dataset.transitionKind, 700);
   return metric;
 }
+
+export function visualAssetTransitionName(assetId: string) {
+  return `visual-asset-${assetId.replace(/[^a-z0-9-]/gi, "-").toLowerCase()}`;
+}

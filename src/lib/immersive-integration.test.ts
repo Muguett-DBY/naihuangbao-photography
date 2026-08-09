@@ -11,7 +11,13 @@ import {
 const root = process.cwd();
 
 function read(path: string) {
-  return readFileSync(resolve(root, path), "utf8");
+  const extras = path === "src/components/Gallery.tsx"
+    ? ["src/features/gallery/GalleryResults.tsx"]
+    : path === "src/pages/PhotoEditorWorkspace.tsx"
+      ? ["src/features/editor/useEditorState.ts", "src/features/editor/useEditorImageEngine.ts", "src/features/editor/PhotoEditorWorkspaceView.tsx"]
+      : path === "src/layouts/RootLayout.tsx" ? ["src/features/practice/PracticeLayout.tsx"]
+        : path === "src/pages/LoginPage.tsx" ? ["src/features/auth/AuthMediaPanel.tsx"] : [];
+  return [path, ...extras].map((file) => readFileSync(resolve(root, file), "utf8")).join("\n");
 }
 
 describe("immersive experience integration", () => {

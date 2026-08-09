@@ -1,0 +1,152 @@
+import { access, readFile, readdir, writeFile } from "node:fs/promises";
+import { basename, dirname, extname, join, relative } from "node:path";
+
+const root = process.cwd();
+const archiveManifestPath = join(root, "public", "archive-manifest.json");
+const storySourcePath = join(root, "content", "stories");
+const publicOutputPath = join(root, "public", "visual-asset-manifest.json");
+const appOutputPath = join(root, "src", "data", "visual-assets.generated.json");
+const archiveManifest = JSON.parse(await readFile(archiveManifestPath, "utf8"));
+
+function stableAssetId(src) {
+  return src
+    .replace(/^\/images\//, "")
+    .replace(/\.(?:avif|webp|png|jpe?g)$/i, "")
+    .replace(/[^a-z0-9]+/gi, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
+}
+
+function unique(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+function colorVector(hex) {
+  const normalized = /^#[0-9a-f]{6}$/i.test(hex) ? hex.slice(1) : "7f7568";
+  return [0, 2, 4].map((offset) => Number.parseInt(normalized.slice(offset, offset + 2), 16));
+}
+
+function orientation(width, height) {
+  if (Math.abs(width / height - 1) < 0.08) return "square";
+  return width > height ? "landscape" : "portrait";
+}
+
+async function resolveSourceAsset(src) {
+  const collection = src.match(/^\/images\/([^/]+)\//)?.[1];
+  if (!collection) return undefined;
+  const candidate = join(root, "source-assets", collection, "raw", `${basename(src, extname(src))}.png`);
+  try {
+    await access(candidate);
+    return relative(root, candidate).replaceAll("\\", "/");
+  } catch {
+    return undefined;
+  }
+}
+
+const assetsBySource = new Map();
+for (const project of archiveManifest.projects) {
+  for (const media of project.media) {
+    const existing = assetsBySource.get(media.src);
+    if (existing && (existing.width !== media.width || existing.height !== media.height)) {
+      throw new Error(`Visual asset ${media.src} has conflicting dimensions`);
+    }
+    const directory = dirname(media.src).replaceAll("\\", "/");
+    const avifName = basename(media.src).replace(/\.webp$/i, ".avif");
+    const descriptors = unique([
+      project.chapter,
+      project.place,
+      project.season,
+      ...project.moods,
+      ...project.palette,
+      ...project.techniques,
+      ...project.mediums,
+      ...project.keywords,
+    ]);
+    if (existing) {
+      existing.projectIds.push(project.id);
+      existing.palette = unique([...existing.palette, ...project.palette]);
+      existing.descriptors = unique([...existing.descriptors, ...descriptors]);
+      continue;
+    }
+    assetsBySource.set(media.src, {
+      id: stableAssetId(media.src),
+      src: media.src,
+      avif: media.avif,
+      responsive: {
+        width640: media.responsive.width640,
+        width960: media.responsive.width960,
+        width640Avif: `${directory}/640/${avifName}`,
+        width960Avif: `${directory}/960/${avifName}`,
+      },
+      alt: media.alt,
+      note: media.note,
+      width: media.width,
+      height: media.height,
+      aspectRatio: media.aspectRatio,
+      orientation: orientation(media.width, media.height),
+      dominantColor: media.dominantColor,
+      colorVector: colorVector(media.dominantColor),
+      focalPoint: media.focalPoint ?? { x: 0.5, y: 0.5 },
+      palette: unique(project.palette),
+      descriptors,
+      projectIds: [project.id],
+      storyLinks: [],
+      provenance: {
+        kind: "generated-concept",
+        sourceAsset: await resolveSourceAsset(media.src),
+        usage: "personal-practice",
+      },
+    });
+  }
+}
+
+const storyDirectories = (await readdir(storySourcePath, { withFileTypes: true }))
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name)
+  .sort((left, right) => left.localeCompare(right, "en"));
+const projectById = new Map(archiveManifest.projects.map((project) => [project.id, project]));
+
+for (const directory of storyDirectories) {
+  const story = JSON.parse(await readFile(join(storySourcePath, directory, "story.json"), "utf8"));
+  for (const chapter of story.chapters) {
+    for (const reference of chapter.media) {
+      const media = projectById.get(reference.projectId)?.media?.[reference.mediaIndex];
+      const asset = media ? assetsBySource.get(media.src) : undefined;
+      if (!asset) throw new Error(`Story ${story.id}/${chapter.id} references a missing visual asset`);
+      if (!asset.storyLinks.some((link) => link.id === story.id && link.chapterId === chapter.id)) {
+        asset.storyLinks.push({ id: story.id, chapterId: chapter.id });
+      }
+    }
+  }
+}
+
+const assets = [...assetsBySource.values()]
+  .map((asset) => ({
+    ...asset,
+    projectIds: unique(asset.projectIds).sort(),
+    storyLinks: asset.storyLinks.sort((left, right) => `${left.id}/${left.chapterId}`.localeCompare(`${right.id}/${right.chapterId}`, "en")),
+  }))
+  .sort((left, right) => left.id.localeCompare(right.id, "en"));
+const ids = new Set();
+for (const asset of assets) {
+  if (ids.has(asset.id)) throw new Error(`Duplicate visual asset id: ${asset.id}`);
+  ids.add(asset.id);
+}
+
+const manifest = {
+  schemaVersion: 1,
+  generatedFrom: [
+    "content/archive/projects/*/project.json",
+    "content/stories/*/story.json",
+  ],
+  stats: {
+    assets: assets.length,
+    projects: archiveManifest.projects.length,
+    stories: storyDirectories.length,
+  },
+  assets,
+};
+
+await writeFile(appOutputPath, `${JSON.stringify(assets, null, 2)}\n`, "utf8");
+await writeFile(publicOutputPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+console.log(`Content OS built: ${assets.length} assets across ${manifest.stats.projects} projects and ${manifest.stats.stories} stories.`);

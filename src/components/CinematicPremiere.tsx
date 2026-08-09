@@ -7,22 +7,14 @@ import {
   type KeyboardEvent,
   type RefObject,
 } from "react";
-import { Aperture, Images } from "lucide-react";
+import { Aperture, ArrowUpRight, Images } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import {
-  opticalArchiveById,
-} from "../data/optical-archive";
+import { visualWorldById, visualWorlds, type VisualWorldId } from "../data/visual-worlds";
 import { ImageWithFallback } from "./ImageWithFallback";
+import { PrefetchLink } from "./shared/PrefetchLink";
+import { visualAssetTransitionName } from "../lib/view-transition";
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
-
-const premiereScenes = [
-  { ...opticalArchiveById["garden-hero"], labelKey: "opticalArchive.frames.garden" },
-  { ...opticalArchiveById["rain-corridor"], labelKey: "opticalArchive.frames.corridor" },
-  { ...opticalArchiveById["lens-stilllife"], labelKey: "opticalArchive.frames.stilllife" },
-  { ...opticalArchiveById["paper-ripple"], labelKey: "opticalArchive.frames.paper" },
-  { ...opticalArchiveById["moon-gate-night"], labelKey: "opticalArchive.frames.night" },
-] as const;
 
 type PremiereView = "concept" | "portfolio";
 
@@ -155,6 +147,9 @@ export function CinematicPremiere() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [loadedScenes, setLoadedScenes] = useState(() => new Set([0]));
   const [view, setView] = useState<PremiereView>("concept");
+  const [worldId, setWorldId] = useState<VisualWorldId>("dawn");
+  const activeWorld = visualWorldById[worldId];
+  const premiereScenes = activeWorld.frames;
   usePremiereInteraction(rootRef);
 
   const activateScene = useCallback((nextIndex: number) => {
@@ -170,7 +165,27 @@ export function CinematicPremiere() {
       next.add(normalizedIndex);
       return next;
     });
-  }, []);
+  }, [premiereScenes.length]);
+
+  const selectWorld = useCallback((nextWorldId: VisualWorldId) => {
+    if (nextWorldId === worldId) return;
+    const commit = () => {
+      setWorldId(nextWorldId);
+      setActiveIndex(0);
+      setLoadedScenes(new Set([0]));
+      const root = rootRef.current;
+      if (root) {
+        root.dataset.visualWorld = nextWorldId;
+        root.dataset.sceneDirection = "forward";
+      }
+    };
+    const motionReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const transitionDocument = document as Document & {
+      startViewTransition?: (update: () => void) => unknown;
+    };
+    if (motionReduced || !transitionDocument.startViewTransition) commit();
+    else transitionDocument.startViewTransition(commit);
+  }, [worldId]);
 
   const selectView = useCallback((nextView: PremiereView) => {
     setView(nextView);
@@ -202,7 +217,9 @@ export function CinematicPremiere() {
       data-premiere-pointer="idle"
       data-premiere-active="true"
       data-premiere-view={view}
+      data-visual-world={worldId}
       data-active-scene={activeScene.id}
+      data-active-asset={activeScene.assetId}
       data-loaded-scenes={loadedScenes.size}
     >
       <div className="cinematic-premiere__stage" aria-hidden="true">
@@ -220,6 +237,7 @@ export function CinematicPremiere() {
                 tone="ink"
                 priority={index === 0}
                 sizes="(max-width: 980px) 100vw, 62vw"
+                transitionName={index === activeIndex ? visualAssetTransitionName(scene.assetId) : undefined}
               />
             ) : null}
           </div>
@@ -270,6 +288,23 @@ export function CinematicPremiere() {
         </button>
       </div>
 
+      <div className="cinematic-premiere__worlds" role="group" aria-label={t("visualWorlds.label" as never)}>
+        <span>{t("visualWorlds.index" as never)}</span>
+        {visualWorlds.map((world, index) => (
+          <button
+            type="button"
+            key={world.id}
+            className={world.id === worldId ? "is-active" : undefined}
+            aria-pressed={world.id === worldId}
+            title={t(world.noteKey as never)}
+            onClick={() => selectWorld(world.id)}
+          >
+            <small>{String(index + 1).padStart(2, "0")}</small>
+            <strong>{t(world.labelKey as never)}</strong>
+          </button>
+        ))}
+      </div>
+
       {view === "concept" ? (
         <>
           <div
@@ -301,6 +336,13 @@ export function CinematicPremiere() {
           <div className="cinematic-premiere__readout" aria-live="polite">
             <span>{String(activeIndex + 1).padStart(2, "0")} / {String(premiereScenes.length).padStart(2, "0")}</span>
             <strong>{t(activeScene.labelKey as never)}</strong>
+            <PrefetchLink
+              to={`/archive?similar=${encodeURIComponent(activeScene.assetId)}`}
+              aria-label={`${t("visualWorlds.explore" as never)}：${t(activeScene.labelKey as never)}`}
+              title={t("visualWorlds.explore" as never)}
+            >
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </PrefetchLink>
           </div>
         </>
       ) : null}

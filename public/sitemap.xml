@@ -4,7 +4,7 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://shoot.custard.top/</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -45,7 +45,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive" />
@@ -56,7 +56,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/stories</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/stories" />
@@ -67,7 +67,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/create</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/create" />
@@ -78,7 +78,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/create/story</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/create/story" />
@@ -89,7 +89,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/studio</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/studio" />
@@ -100,7 +100,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/practice</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/practice" />
@@ -111,7 +111,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/about</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/about" />
@@ -122,7 +122,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/gallery</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery" />
@@ -133,7 +133,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/map</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/map" />
@@ -143,8 +143,40 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/map" />
   </url>
   <url>
+    <loc>https://shoot.custard.top/archive/coral-afterglow-room</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/coral-afterglow-room" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/coral-afterglow-room?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/coral-afterglow-room?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/coral-afterglow-room?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/coral-afterglow-room" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v6/03-coral-chamber.webp</image:loc>
+      <image:title>Coral Afterglow Room</image:title>
+      <image:caption>从珊瑚折射走进深莓暗房</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/cream-light-pavilion</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/cream-light-pavilion" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/cream-light-pavilion?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/cream-light-pavilion?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/cream-light-pavilion?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/cream-light-pavilion" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v6/01-cream-pavilion.webp</image:loc>
+      <image:title>Cream Light Pavilion</image:title>
+      <image:caption>纸、浅水与可以触摸的晨光</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://shoot.custard.top/archive/darkroom-herbarium</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/darkroom-herbarium" />
@@ -160,7 +192,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/light-workshop</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/light-workshop" />
@@ -176,7 +208,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/material-index</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/material-index" />
@@ -192,7 +224,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/morning-conservatory</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/morning-conservatory" />
@@ -208,7 +240,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/night-projection-room</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/night-projection-room" />
@@ -224,7 +256,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/optical-garden</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/optical-garden" />
@@ -240,7 +272,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/paper-tide</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/paper-tide" />
@@ -256,7 +288,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/print-room</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/print-room" />
@@ -272,7 +304,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/prism-notes</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/prism-notes" />
@@ -288,7 +320,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/rain-atlas</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/rain-atlas" />
@@ -303,8 +335,24 @@
     </image:image>
   </url>
   <url>
+    <loc>https://shoot.custard.top/archive/rain-light-laboratory</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/rain-light-laboratory" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/rain-light-laboratory?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/rain-light-laboratory?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/rain-light-laboratory?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/rain-light-laboratory" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v6/02-rain-conservatory.webp</image:loc>
+      <image:title>Rain Light Laboratory</image:title>
+      <image:caption>雨后温室与透明档案</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://shoot.custard.top/archive/tactile-optics</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/tactile-optics" />
@@ -320,7 +368,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/weather-glasshouse</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/weather-glasshouse" />
@@ -336,7 +384,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/weather-print-room</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/weather-print-room" />
@@ -352,7 +400,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/stories/weather-into-paper</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/stories/weather-into-paper" />
@@ -368,7 +416,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/stories/quiet-machines-of-light</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/stories/quiet-machines-of-light" />
@@ -384,7 +432,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/stories/materials-after-rain</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/stories/materials-after-rain" />
@@ -400,7 +448,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/gallery/gallery-jiangnan-01</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-jiangnan-01" />
@@ -411,7 +459,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/gallery/gallery-urban-01</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-urban-01" />
@@ -422,7 +470,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/gallery/gallery-garden-01</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-garden-01" />
@@ -433,7 +481,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/gallery/gallery-sweet-01</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-sweet-01" />
@@ -444,7 +492,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/gallery/gallery-flower-01</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-flower-01" />
@@ -455,7 +503,7 @@
   </url>
   <url>
     <loc>https://shoot.custard.top/gallery/gallery-daily-01</loc>
-    <lastmod>2026-08-08</lastmod>
+    <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery/gallery-daily-01" />

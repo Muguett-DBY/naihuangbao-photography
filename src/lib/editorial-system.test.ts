@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8");
+const read = (path: string) => [path, ...(path === "src/layouts/RootLayout.tsx" ? ["src/features/practice/PracticeLayout.tsx"] : [])].map((file) => readFileSync(resolve(process.cwd(), file), "utf8")).join("\n");
 
 describe("editorial design system", () => {
   it("defines the Field Notes semantic tokens", () => {
@@ -63,7 +63,8 @@ describe("editorial design system", () => {
 
     expect(header).not.toContain("onOpenChat");
     expect(layout).toContain("<Header />");
-    expect(layout).toContain("const showPublicChat = isPracticeRoute && !isCreativeWorkspace");
+    expect(layout).toContain("function PracticeChrome()");
+    expect(layout).toContain("{showChat &&");
     expect(chatCss).toMatch(/@media \(max-width: 768px\)[\s\S]*\.public-chat-launcher \{\s*display: none;/);
     expect(shellCss).toContain("padding-bottom: var(--mobile-bottom-nav-offset)");
   });

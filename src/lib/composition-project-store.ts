@@ -1,17 +1,20 @@
 import type { CompositionImage, CompositionTextAlign } from "../types/composition";
 import type { CompositionMode } from "./composition-layout";
 import { runLocalStudioRequest } from "./local-studio-db";
+import { deleteLocalProjectFile, getLocalProjectStorageStatus, readLocalProjectFile, writeLocalProjectFile } from "./local-project-files";
 
 export const COMPOSITION_AUTOSAVE_ID = "composition-autosave";
 const MAX_VERSIONS_PER_PROJECT = 8;
+const COMPOSITION_MIRROR_INTERVAL_MS = 5_000;
+const lastMirrorWrite = new Map<string, number>();
 
-export type StoredCompositionImage = Pick<CompositionImage, "id" | "name" | "src" | "transform"> & {
+export type StoredCompositionImage = Pick<CompositionImage, "id" | "name" | "src" | "transform" | "visible" | "opacity" | "blendMode"> & {
   blob?: Blob;
 };
 
 export type CompositionProjectSnapshot = {
   id: string;
-  version: 2;
+  version: 3;
   projectType: "composition";
   name: string;
   mode: CompositionMode;
@@ -31,11 +34,13 @@ export type CompositionVersionSnapshot = {
   label: string;
   createdAt: number;
   snapshot: CompositionProjectSnapshot;
+  parentVersionId?: string;
+  branch: string;
 };
 
-type LegacyCompositionProject = Omit<CompositionProjectSnapshot, "version" | "textAlign" | "titleScale" | "createdAt"> & {
-  version: 1;
-};
+type LegacyV1CompositionProject = Omit<CompositionProjectSnapshot, "version" | "textAlign" | "titleScale" | "createdAt"> & { version: 1 };
+type LegacyV2CompositionProject = Omit<CompositionProjectSnapshot, "version"> & { version: 2 };
+type LegacyCompositionProject = LegacyV1CompositionProject | LegacyV2CompositionProject;
 
 type PortableImage = Omit<StoredCompositionImage, "blob"> & {
   blob?: { type: string; data: string };
@@ -63,18 +68,22 @@ function base64ToBlob(data: string, type: string) {
 
 function migrateProject(project: CompositionProjectSnapshot | LegacyCompositionProject): CompositionProjectSnapshot {
   const now = project.savedAt || Date.now();
+  const textAlign = project.version === 1 ? "left" : project.textAlign;
+  const titleScale = project.version === 1 ? 1 : project.titleScale;
+  const createdAt = project.version === 1 ? now : project.createdAt;
   return {
     ...project,
     id: project.id || COMPOSITION_AUTOSAVE_ID,
-    version: 2,
-    textAlign: "left",
-    titleScale: 1,
-    createdAt: now,
-    ...(project.version === 2 ? {
-      textAlign: project.textAlign,
-      titleScale: project.titleScale,
-      createdAt: project.createdAt,
-    } : {}),
+    version: 3,
+    textAlign,
+    titleScale,
+    createdAt,
+    images: project.images.map((image) => ({
+      ...image,
+      visible: image.visible ?? true,
+      opacity: image.opacity ?? 1,
+      blendMode: image.blendMode ?? "source-over",
+    })),
   };
 }
 
@@ -85,18 +94,26 @@ export function createCompositionProjectId() {
 }
 
 export async function saveCompositionProject(project: CompositionProjectSnapshot) {
-  if (!("indexedDB" in window)) return;
-  await runLocalStudioRequest("compositions", "readwrite", (store) => store.put(project));
+  if ("indexedDB" in window) {
+    await runLocalStudioRequest("compositions", "readwrite", (store) => store.put(project));
+  }
+  const now = Date.now();
+  if (now - (lastMirrorWrite.get(project.id) ?? 0) < COMPOSITION_MIRROR_INTERVAL_MS) return;
+  const mirrored = await writeLocalProjectFile("compositions", `${project.id}.nhb`, await createCompositionProjectFile(project));
+  if (mirrored) lastMirrorWrite.set(project.id, now);
 }
 
 export async function getCompositionProject(id = COMPOSITION_AUTOSAVE_ID) {
-  if (!("indexedDB" in window)) return null;
-  const project = await runLocalStudioRequest<CompositionProjectSnapshot | LegacyCompositionProject | undefined>(
-    "compositions",
-    "readonly",
-    (store) => store.get(id),
-  );
-  return project ? migrateProject(project) : null;
+  if ("indexedDB" in window) {
+    const project = await runLocalStudioRequest<CompositionProjectSnapshot | LegacyCompositionProject | undefined>(
+      "compositions",
+      "readonly",
+      (store) => store.get(id),
+    );
+    if (project) return migrateProject(project);
+  }
+  const mirror = await readLocalProjectFile("compositions", `${id}.nhb`);
+  return mirror ? parseCompositionProjectFile(mirror) : null;
 }
 
 export async function listCompositionProjects() {
@@ -110,8 +127,9 @@ export async function listCompositionProjects() {
 }
 
 export async function deleteCompositionProject(id: string) {
-  if (!("indexedDB" in window)) return;
-  await runLocalStudioRequest("compositions", "readwrite", (store) => store.delete(id));
+  if ("indexedDB" in window) await runLocalStudioRequest("compositions", "readwrite", (store) => store.delete(id));
+  lastMirrorWrite.delete(id);
+  await deleteLocalProjectFile("compositions", `${id}.nhb`);
 }
 
 export async function createCompositionProjectFile(project: CompositionProjectSnapshot) {
@@ -120,6 +138,9 @@ export async function createCompositionProjectFile(project: CompositionProjectSn
     name: image.name,
     src: image.blob ? "" : image.src,
     transform: image.transform,
+    visible: image.visible,
+    opacity: image.opacity,
+    blendMode: image.blendMode,
     blob: image.blob ? {
       type: image.blob.type || "image/jpeg",
       data: bytesToBase64(new Uint8Array(await image.blob.arrayBuffer())),
@@ -132,7 +153,7 @@ export async function createCompositionProjectFile(project: CompositionProjectSn
 export async function parseCompositionProjectFile(file: Blob): Promise<CompositionProjectSnapshot> {
   const portable = JSON.parse(await file.text()) as PortableCompositionProject | LegacyCompositionProject;
   if (
-    ![1, 2].includes(portable.version)
+    ![1, 2, 3].includes(portable.version)
     || portable.projectType !== "composition"
     || !portable.id
     || !Array.isArray(portable.images)
@@ -147,6 +168,9 @@ export async function parseCompositionProjectFile(file: Blob): Promise<Compositi
       name: image.name,
       src: image.src,
       transform: image.transform,
+      visible: image.visible ?? true,
+      opacity: image.opacity ?? 1,
+      blendMode: image.blendMode ?? "source-over",
       blob: image.blob && "data" in image.blob ? base64ToBlob(image.blob.data, image.blob.type) : undefined,
     })),
   };
@@ -163,13 +187,13 @@ export function createCompositionSnapshot(
     textAlign: input.textAlign ?? "left",
     titleScale: input.titleScale ?? 1,
     createdAt: input.createdAt ?? now,
-    version: 2,
+    version: 3,
     projectType: "composition",
     savedAt: now,
   } satisfies CompositionProjectSnapshot;
 }
 
-export async function createCompositionVersion(project: CompositionProjectSnapshot, label: string) {
+export async function createCompositionVersion(project: CompositionProjectSnapshot, label: string, parentVersionId?: string, branch = "main") {
   if (!("indexedDB" in window)) return null;
   const createdAt = Date.now();
   const version: CompositionVersionSnapshot = {
@@ -178,6 +202,8 @@ export async function createCompositionVersion(project: CompositionProjectSnapsh
     label: label.trim() || `Version ${new Date(createdAt).toLocaleString()}`,
     createdAt,
     snapshot: { ...project, savedAt: createdAt },
+    parentVersionId,
+    branch,
   };
   await runLocalStudioRequest("compositionVersions", "readwrite", (store) => store.put(version));
   const versions = await listCompositionVersions(project.id);
@@ -194,5 +220,10 @@ export async function listCompositionVersions(projectId: string) {
     "readonly",
     (store) => store.getAll(),
   );
-  return versions.filter((entry) => entry.projectId === projectId).sort((left, right) => right.createdAt - left.createdAt);
+  return versions
+    .filter((entry) => entry.projectId === projectId)
+    .map((entry) => ({ ...entry, branch: entry.branch ?? "main" }))
+    .sort((left, right) => right.createdAt - left.createdAt);
 }
+
+export { getLocalProjectStorageStatus };

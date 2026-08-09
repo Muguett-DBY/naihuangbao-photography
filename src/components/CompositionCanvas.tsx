@@ -27,6 +27,8 @@ function drawCover(context: CanvasRenderingContext2D, image: HTMLImageElement, x
   const sourceX = Math.max(0, Math.min(maxX, maxX * (0.5 + transform.offsetX / 2)));
   const sourceY = Math.max(0, Math.min(maxY, maxY * (0.5 + transform.offsetY / 2)));
   context.save();
+  context.globalAlpha = Math.max(0, Math.min(1, source.opacity ?? 1));
+  context.globalCompositeOperation = source.blendMode ?? "source-over";
   context.beginPath();
   context.rect(x, y, width, height);
   context.clip();
@@ -64,7 +66,7 @@ export const CompositionCanvas = forwardRef<HTMLCanvasElement, CompositionCanvas
     let cancelled = false;
 
     async function render(context: CanvasRenderingContext2D) {
-      const loaded = (await Promise.all(images.map(async (source) => {
+      const loaded = (await Promise.all(images.filter((source) => source.visible !== false).map(async (source) => {
         try {
           return { image: await loadDecodedImage(source.src), source };
         } catch {

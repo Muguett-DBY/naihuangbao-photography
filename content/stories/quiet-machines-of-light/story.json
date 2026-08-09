@@ -13,7 +13,7 @@
       "kicker": "01 / MORNING",
       "title": "工作台在日出前启动",
       "body": "没有按钮，也没有屏幕。纸张的角度、玻璃的位置和窗边的光共同构成第一台机器。",
-      "layout": "full",
+      "layout": "annotation",
       "media": [{ "projectId": "light-workshop", "mediaIndex": 0 }]
     },
     {
@@ -21,7 +21,7 @@
       "kicker": "02 / OPTICS",
       "title": "折射是一种没有声音的动作",
       "body": "焦散在水面和植物之间移动。镜头没有冻结它，而是为这段移动留下足够的空气。",
-      "layout": "quiet",
+      "layout": "interlude",
       "media": [{ "projectId": "light-workshop", "mediaIndex": 1 }]
     },
     {
@@ -29,7 +29,7 @@
       "kicker": "03 / LOOP",
       "title": "水盘把竹影送回墙面",
       "body": "一次反射形成新的取景框，真实植物退到画外，只留下被水重新编排的轮廓。",
-      "layout": "columns",
+      "layout": "compare",
       "media": [{ "projectId": "light-workshop", "mediaIndex": 2 }, { "projectId": "paper-tide", "mediaIndex": 0 }]
     },
     {

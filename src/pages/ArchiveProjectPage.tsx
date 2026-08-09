@@ -7,7 +7,9 @@ import { NotFound } from "../components/NotFound";
 import { PageTransition } from "../components/shared/PageTransition";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import { archiveProjects } from "../data/living-archive";
+import { getVisualAssetBySource } from "../data/visual-assets";
 import { useSEO } from "../hooks/useSEO";
+import { visualAssetTransitionName } from "../lib/view-transition";
 
 export function ArchiveProjectPage() {
   const { id } = useParams();
@@ -28,6 +30,7 @@ export function ArchiveProjectPage() {
   });
 
   if (!project) return <NotFound />;
+  const heroAsset = getVisualAssetBySource(project.media[0].src);
 
   return (
     <PageTransition className="archive-study-page">
@@ -39,6 +42,7 @@ export function ArchiveProjectPage() {
           priority
           sizes="100vw"
           tone="sage"
+          transitionName={heroAsset ? visualAssetTransitionName(heroAsset.id) : undefined}
         />
         <div className="archive-study-hero__scrim" aria-hidden="true" />
         <div className="archive-study-hero__copy">

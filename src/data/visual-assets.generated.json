@@ -1,0 +1,2361 @@
+[
+  {
+    "id": "optical-archive-archive-contact-sheet-v1",
+    "src": "/images/optical-archive/archive-contact-sheet-v1.webp",
+    "avif": "/images/optical-archive/archive-contact-sheet-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/archive-contact-sheet-v1.webp",
+      "width960": "/images/optical-archive/960/archive-contact-sheet-v1.webp",
+      "width640Avif": "/images/optical-archive/640/archive-contact-sheet-v1.avif",
+      "width960Avif": "/images/optical-archive/960/archive-contact-sheet-v1.avif"
+    },
+    "alt": "植物、建筑与雨景底片组成的摄影联系表",
+    "width": 1448,
+    "height": 1086,
+    "aspectRatio": 1.3333,
+    "orientation": "landscape",
+    "dominantColor": "#8d887e",
+    "colorVector": [
+      141,
+      136,
+      126
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "深莓",
+      "柔黄",
+      "苔藓"
+    ],
+    "descriptors": [
+      "04",
+      "NHB 暗房",
+      "秋",
+      "安静",
+      "温暖",
+      "手作",
+      "深莓",
+      "柔黄",
+      "苔藓",
+      "暖色局部光",
+      "联系表叙事",
+      "植物拓印",
+      "生成式概念摄影",
+      "空间研究"
+    ],
+    "projectIds": [
+      "darkroom-herbarium"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/archive-contact-sheet-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-bamboo-shadow-ribbon-v1",
+    "src": "/images/optical-archive/bamboo-shadow-ribbon-v1.webp",
+    "avif": "/images/optical-archive/bamboo-shadow-ribbon-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/bamboo-shadow-ribbon-v1.webp",
+      "width960": "/images/optical-archive/960/bamboo-shadow-ribbon-v1.webp",
+      "width640Avif": "/images/optical-archive/640/bamboo-shadow-ribbon-v1.avif",
+      "width960Avif": "/images/optical-archive/960/bamboo-shadow-ribbon-v1.avif"
+    },
+    "alt": "奶油色墙面、竹影、古玻璃与珊瑚色丝带",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#7f7055",
+    "colorVector": [
+      127,
+      112,
+      85
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "苔藓",
+      "柔黄"
+    ],
+    "descriptors": [
+      "03",
+      "纸上工作室",
+      "盛夏",
+      "安静",
+      "抽象",
+      "轻盈",
+      "奶油",
+      "苔藓",
+      "柔黄",
+      "透射光",
+      "纸张肌理",
+      "水纹投影",
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "projectIds": [
+      "paper-tide"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/bamboo-shadow-ribbon-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-booking-garden-table-v1",
+    "src": "/images/optical-archive/booking-garden-table-v1.webp",
+    "avif": "/images/optical-archive/booking-garden-table-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/booking-garden-table-v1.webp",
+      "width960": "/images/optical-archive/960/booking-garden-table-v1.webp",
+      "width640Avif": "/images/optical-archive/640/booking-garden-table-v1.avif",
+      "width960Avif": "/images/optical-archive/960/booking-garden-table-v1.avif"
+    },
+    "alt": "雨后花园窗边的空白卡片、茶杯与山茶花",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#55523f",
+    "colorVector": [
+      85,
+      82,
+      63
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "珊瑚"
+    ],
+    "descriptors": [
+      "06",
+      "NHB 印样室",
+      "冬",
+      "手作",
+      "明亮",
+      "收藏",
+      "奶油",
+      "柔黄",
+      "珊瑚",
+      "艺术微喷",
+      "纸张配对",
+      "编辑排序",
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "projectIds": [
+      "print-room"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/booking-garden-table-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-camellia-prism-macro-v1",
+    "src": "/images/optical-archive/camellia-prism-macro-v1.webp",
+    "avif": "/images/optical-archive/camellia-prism-macro-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/camellia-prism-macro-v1.webp",
+      "width960": "/images/optical-archive/960/camellia-prism-macro-v1.webp",
+      "width640Avif": "/images/optical-archive/640/camellia-prism-macro-v1.avif",
+      "width960Avif": "/images/optical-archive/960/camellia-prism-macro-v1.avif"
+    },
+    "alt": "带雨滴的珊瑚色山茶花与小型棱镜",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#807869",
+    "colorVector": [
+      128,
+      120,
+      105
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "珊瑚",
+      "玻璃蓝"
+    ],
+    "descriptors": [
+      "02",
+      "室内光桌",
+      "春",
+      "明亮",
+      "实验",
+      "细腻",
+      "奶油",
+      "珊瑚",
+      "玻璃蓝",
+      "桌面布光",
+      "棱镜色散",
+      "微距切片",
+      "生成式概念摄影",
+      "静物研究"
+    ],
+    "projectIds": [
+      "prism-notes"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/camellia-prism-macro-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-color-glass-study-v1",
+    "src": "/images/optical-archive/color-glass-study-v1.webp",
+    "avif": "/images/optical-archive/color-glass-study-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/color-glass-study-v1.webp",
+      "width960": "/images/optical-archive/960/color-glass-study-v1.webp",
+      "width640Avif": "/images/optical-archive/640/color-glass-study-v1.avif",
+      "width960Avif": "/images/optical-archive/960/color-glass-study-v1.avif"
+    },
+    "alt": "彩色光学玻璃、雨水与胶片组成的色彩研究",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#968b73",
+    "colorVector": [
+      150,
+      139,
+      115
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "深莓",
+      "苔藓",
+      "玻璃蓝"
+    ],
+    "descriptors": [
+      "05",
+      "南京旧城",
+      "梅雨",
+      "雨后",
+      "电影感",
+      "深邃",
+      "深莓",
+      "苔藓",
+      "玻璃蓝",
+      "蓝调曝光",
+      "雨窗前景",
+      "夜色分层",
+      "生成式概念摄影",
+      "静物研究"
+    ],
+    "projectIds": [
+      "rain-atlas"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/color-glass-study-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-conservatory-after-rain-v1",
+    "src": "/images/optical-archive/conservatory-after-rain-v1.webp",
+    "avif": "/images/optical-archive/conservatory-after-rain-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/conservatory-after-rain-v1.webp",
+      "width960": "/images/optical-archive/960/conservatory-after-rain-v1.webp",
+      "width640Avif": "/images/optical-archive/640/conservatory-after-rain-v1.avif",
+      "width960Avif": "/images/optical-archive/960/conservatory-after-rain-v1.avif"
+    },
+    "alt": "雨后空温室、奶油薄纱、湿润石面与花园晨光",
+    "note": "雨后温室的第一束光",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#695f4e",
+    "colorVector": [
+      105,
+      95,
+      78
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "苔藓",
+      "珊瑚"
+    ],
+    "descriptors": [
+      "07",
+      "晨光温室",
+      "早春",
+      "晨光",
+      "温柔",
+      "空间",
+      "奶油",
+      "苔藓",
+      "珊瑚",
+      "建筑分层",
+      "反射控制",
+      "自然光等待",
+      "生成式概念摄影",
+      "空间研究"
+    ],
+    "projectIds": [
+      "morning-conservatory"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/conservatory-after-rain-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-corridor-shadow-study-v1",
+    "src": "/images/optical-archive/corridor-shadow-study-v1.webp",
+    "avif": "/images/optical-archive/corridor-shadow-study-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/corridor-shadow-study-v1.webp",
+      "width960": "/images/optical-archive/960/corridor-shadow-study-v1.webp",
+      "width640Avif": "/images/optical-archive/640/corridor-shadow-study-v1.avif",
+      "width960Avif": "/images/optical-archive/960/corridor-shadow-study-v1.avif"
+    },
+    "alt": "空走廊里的植物影子、苔藓绿长凳与珊瑚色织物",
+    "note": "沿墙面移动的植物影子",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#9a8265",
+    "colorVector": [
+      154,
+      130,
+      101
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "苔藓",
+      "珊瑚"
+    ],
+    "descriptors": [
+      "07",
+      "晨光温室",
+      "早春",
+      "晨光",
+      "温柔",
+      "空间",
+      "奶油",
+      "苔藓",
+      "珊瑚",
+      "建筑分层",
+      "反射控制",
+      "自然光等待",
+      "生成式概念摄影",
+      "空间研究"
+    ],
+    "projectIds": [
+      "morning-conservatory"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/corridor-shadow-study-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-course-light-study-v1",
+    "src": "/images/optical-archive/course-light-study-v1.webp",
+    "avif": "/images/optical-archive/course-light-study-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/course-light-study-v1.webp",
+      "width960": "/images/optical-archive/960/course-light-study-v1.webp",
+      "width640Avif": "/images/optical-archive/640/course-light-study-v1.avif",
+      "width960Avif": "/images/optical-archive/960/course-light-study-v1.avif"
+    },
+    "alt": "空白笔记本、测光表、镜片与茉莉组成的课程静物",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#9c9386",
+    "colorVector": [
+      156,
+      147,
+      134
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "珊瑚"
+    ],
+    "descriptors": [
+      "06",
+      "NHB 印样室",
+      "冬",
+      "手作",
+      "明亮",
+      "收藏",
+      "奶油",
+      "柔黄",
+      "珊瑚",
+      "艺术微喷",
+      "纸张配对",
+      "编辑排序",
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "projectIds": [
+      "print-room"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/course-light-study-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-darkroom-light-table-v1",
+    "src": "/images/optical-archive/darkroom-light-table-v1.webp",
+    "avif": "/images/optical-archive/darkroom-light-table-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/darkroom-light-table-v1.webp",
+      "width960": "/images/optical-archive/960/darkroom-light-table-v1.webp",
+      "width640Avif": "/images/optical-archive/640/darkroom-light-table-v1.avif",
+      "width960Avif": "/images/optical-archive/960/darkroom-light-table-v1.avif"
+    },
+    "alt": "暖色光桌、胶片与植物照片组成的无人暗房",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#53412d",
+    "colorVector": [
+      83,
+      65,
+      45
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "深莓",
+      "柔黄",
+      "苔藓"
+    ],
+    "descriptors": [
+      "04",
+      "NHB 暗房",
+      "秋",
+      "安静",
+      "温暖",
+      "手作",
+      "深莓",
+      "柔黄",
+      "苔藓",
+      "暖色局部光",
+      "联系表叙事",
+      "植物拓印",
+      "生成式概念摄影",
+      "空间研究"
+    ],
+    "projectIds": [
+      "darkroom-herbarium"
+    ],
+    "storyLinks": [
+      {
+        "id": "materials-after-rain",
+        "chapterId": "drawer"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/darkroom-light-table-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-glass-fern-caustics-v1",
+    "src": "/images/optical-archive/glass-fern-caustics-v1.webp",
+    "avif": "/images/optical-archive/glass-fern-caustics-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/glass-fern-caustics-v1.webp",
+      "width960": "/images/optical-archive/960/glass-fern-caustics-v1.webp",
+      "width640Avif": "/images/optical-archive/640/glass-fern-caustics-v1.avif",
+      "width960Avif": "/images/optical-archive/960/glass-fern-caustics-v1.avif"
+    },
+    "alt": "旧玻璃、水面与蕨类在亚麻布上形成的真实折射光",
+    "note": "玻璃边缘形成的细小焦散",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#867562",
+    "colorVector": [
+      134,
+      117,
+      98
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "深莓"
+    ],
+    "descriptors": [
+      "08",
+      "纸上实验室",
+      "初夏",
+      "触觉",
+      "明亮",
+      "安静",
+      "奶油",
+      "柔黄",
+      "深莓",
+      "微距静物",
+      "真实折射",
+      "纸张透光",
+      "生成式概念摄影",
+      "静物研究"
+    ],
+    "projectIds": [
+      "tactile-optics"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/glass-fern-caustics-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-optical-garden-hero-v1",
+    "src": "/images/optical-archive/optical-garden-hero-v1.webp",
+    "avif": "/images/optical-archive/optical-garden-hero-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/optical-garden-hero-v1.webp",
+      "width960": "/images/optical-archive/960/optical-garden-hero-v1.webp",
+      "width640Avif": "/images/optical-archive/640/optical-garden-hero-v1.avif",
+      "width960Avif": "/images/optical-archive/960/optical-garden-hero-v1.avif"
+    },
+    "alt": "雨后江南庭院、月门与水面倒影组成的无人物概念影像",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#857c65",
+    "colorVector": [
+      133,
+      124,
+      101
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "苔藓",
+      "珊瑚"
+    ],
+    "descriptors": [
+      "01",
+      "南京",
+      "初夏",
+      "温柔",
+      "雨后",
+      "通透",
+      "奶油",
+      "苔藓",
+      "珊瑚",
+      "低机位反射",
+      "柔雾高光",
+      "分层景深",
+      "生成式概念摄影",
+      "空间研究"
+    ],
+    "projectIds": [
+      "optical-garden"
+    ],
+    "storyLinks": [
+      {
+        "id": "weather-into-paper",
+        "chapterId": "fabric"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/optical-garden-hero-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-paper-ripple-study-v1",
+    "src": "/images/optical-archive/paper-ripple-study-v1.webp",
+    "avif": "/images/optical-archive/paper-ripple-study-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/paper-ripple-study-v1.webp",
+      "width960": "/images/optical-archive/960/paper-ripple-study-v1.webp",
+      "width640Avif": "/images/optical-archive/640/paper-ripple-study-v1.avif",
+      "width960Avif": "/images/optical-archive/960/paper-ripple-study-v1.avif"
+    },
+    "alt": "宣纸、光学玻璃、水纹与竹影组成的抽象光影",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#b1a17e",
+    "colorVector": [
+      177,
+      161,
+      126
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "苔藓",
+      "柔黄"
+    ],
+    "descriptors": [
+      "03",
+      "纸上工作室",
+      "盛夏",
+      "安静",
+      "抽象",
+      "轻盈",
+      "奶油",
+      "苔藓",
+      "柔黄",
+      "透射光",
+      "纸张肌理",
+      "水纹投影",
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "projectIds": [
+      "paper-tide"
+    ],
+    "storyLinks": [
+      {
+        "id": "quiet-machines-of-light",
+        "chapterId": "reflection"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/paper-ripple-study-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-paper-water-lab-v1",
+    "src": "/images/optical-archive/paper-water-lab-v1.webp",
+    "avif": "/images/optical-archive/paper-water-lab-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/paper-water-lab-v1.webp",
+      "width960": "/images/optical-archive/960/paper-water-lab-v1.webp",
+      "width640Avif": "/images/optical-archive/640/paper-water-lab-v1.avif",
+      "width960Avif": "/images/optical-archive/960/paper-water-lab-v1.avif"
+    },
+    "alt": "手工纸、水盘、植物标本与深莓色线组成的无人桌面实验",
+    "note": "水纹落在纸张和植物标本上",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#8b7d67",
+    "colorVector": [
+      139,
+      125,
+      103
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "深莓"
+    ],
+    "descriptors": [
+      "08",
+      "纸上实验室",
+      "初夏",
+      "触觉",
+      "明亮",
+      "安静",
+      "奶油",
+      "柔黄",
+      "深莓",
+      "微距静物",
+      "真实折射",
+      "纸张透光",
+      "生成式概念摄影",
+      "静物研究"
+    ],
+    "projectIds": [
+      "tactile-optics"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/paper-water-lab-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-print-folio-v1",
+    "src": "/images/optical-archive/print-folio-v1.webp",
+    "avif": "/images/optical-archive/print-folio-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/print-folio-v1.webp",
+      "width960": "/images/optical-archive/960/print-folio-v1.webp",
+      "width640Avif": "/images/optical-archive/640/print-folio-v1.avif",
+      "width960Avif": "/images/optical-archive/960/print-folio-v1.avif"
+    },
+    "alt": "植物与建筑艺术微喷、收藏夹和玻璃镇纸",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#988d7b",
+    "colorVector": [
+      152,
+      141,
+      123
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "珊瑚"
+    ],
+    "descriptors": [
+      "06",
+      "NHB 印样室",
+      "冬",
+      "手作",
+      "明亮",
+      "收藏",
+      "奶油",
+      "柔黄",
+      "珊瑚",
+      "艺术微喷",
+      "纸张配对",
+      "编辑排序",
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "projectIds": [
+      "print-room"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/print-folio-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-print-room-morning-v2",
+    "src": "/images/optical-archive/print-room-morning-v2.webp",
+    "avif": "/images/optical-archive/print-room-morning-v2.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/print-room-morning-v2.webp",
+      "width960": "/images/optical-archive/960/print-room-morning-v2.webp",
+      "width640Avif": "/images/optical-archive/640/print-room-morning-v2.avif",
+      "width960Avif": "/images/optical-archive/960/print-room-morning-v2.avif"
+    },
+    "alt": "清晨无人印样室、奶油色艺术纸与苔藓绿工作台",
+    "note": "从色样到纸面的最后一步",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#8b7759",
+    "colorVector": [
+      139,
+      119,
+      89
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "玻璃蓝",
+      "苔藓",
+      "柔黄"
+    ],
+    "descriptors": [
+      "09",
+      "雨窗与印样室",
+      "梅雨末期",
+      "蓝调",
+      "收藏",
+      "安静",
+      "玻璃蓝",
+      "苔藓",
+      "柔黄",
+      "混合色温",
+      "色样编辑",
+      "纸面输出",
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "projectIds": [
+      "weather-print-room"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/print-room-morning-v2.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-prism-lens-stilllife-v1",
+    "src": "/images/optical-archive/prism-lens-stilllife-v1.webp",
+    "avif": "/images/optical-archive/prism-lens-stilllife-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/prism-lens-stilllife-v1.webp",
+      "width960": "/images/optical-archive/960/prism-lens-stilllife-v1.webp",
+      "width640Avif": "/images/optical-archive/640/prism-lens-stilllife-v1.avif",
+      "width960Avif": "/images/optical-archive/960/prism-lens-stilllife-v1.avif"
+    },
+    "alt": "镜头、棱镜、山茶花与胶片组成的光学静物",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#8a7e68",
+    "colorVector": [
+      138,
+      126,
+      104
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "珊瑚",
+      "玻璃蓝"
+    ],
+    "descriptors": [
+      "02",
+      "室内光桌",
+      "春",
+      "明亮",
+      "实验",
+      "细腻",
+      "奶油",
+      "珊瑚",
+      "玻璃蓝",
+      "桌面布光",
+      "棱镜色散",
+      "微距切片",
+      "生成式概念摄影",
+      "静物研究"
+    ],
+    "projectIds": [
+      "prism-notes"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/prism-lens-stilllife-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-rain-moon-gate-night-v1",
+    "src": "/images/optical-archive/rain-moon-gate-night-v1.webp",
+    "avif": "/images/optical-archive/rain-moon-gate-night-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/rain-moon-gate-night-v1.webp",
+      "width960": "/images/optical-archive/960/rain-moon-gate-night-v1.webp",
+      "width640Avif": "/images/optical-archive/640/rain-moon-gate-night-v1.avif",
+      "width960Avif": "/images/optical-archive/960/rain-moon-gate-night-v1.avif"
+    },
+    "alt": "雨后蓝调时刻里透过月门看到的江南夜巷",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#282828",
+    "colorVector": [
+      40,
+      40,
+      40
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "深莓",
+      "苔藓",
+      "玻璃蓝"
+    ],
+    "descriptors": [
+      "05",
+      "南京旧城",
+      "梅雨",
+      "雨后",
+      "电影感",
+      "深邃",
+      "深莓",
+      "苔藓",
+      "玻璃蓝",
+      "蓝调曝光",
+      "雨窗前景",
+      "夜色分层",
+      "生成式概念摄影",
+      "静物研究"
+    ],
+    "projectIds": [
+      "rain-atlas"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/rain-moon-gate-night-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-rain-observation-room-v1",
+    "src": "/images/optical-archive/rain-observation-room-v1.webp",
+    "avif": "/images/optical-archive/rain-observation-room-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/rain-observation-room-v1.webp",
+      "width960": "/images/optical-archive/960/rain-observation-room-v1.webp",
+      "width640Avif": "/images/optical-archive/640/rain-observation-room-v1.avif",
+      "width960Avif": "/images/optical-archive/960/rain-observation-room-v1.avif"
+    },
+    "alt": "蓝调雨窗、苔藓绿玻璃瓶与深莓色滤镜组成的无人观察室",
+    "note": "蓝调时刻的天气观察架",
+    "width": 1535,
+    "height": 1024,
+    "aspectRatio": 1.499,
+    "orientation": "landscape",
+    "dominantColor": "#3f4b5a",
+    "colorVector": [
+      63,
+      75,
+      90
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "玻璃蓝",
+      "苔藓",
+      "柔黄"
+    ],
+    "descriptors": [
+      "09",
+      "雨窗与印样室",
+      "梅雨末期",
+      "蓝调",
+      "收藏",
+      "安静",
+      "玻璃蓝",
+      "苔藓",
+      "柔黄",
+      "混合色温",
+      "色样编辑",
+      "纸面输出",
+      "生成式概念摄影",
+      "材料研究"
+    ],
+    "projectIds": [
+      "weather-print-room"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/rain-observation-room-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "optical-archive-rain-window-corridor-v1",
+    "src": "/images/optical-archive/rain-window-corridor-v1.webp",
+    "avif": "/images/optical-archive/rain-window-corridor-v1.avif",
+    "responsive": {
+      "width640": "/images/optical-archive/640/rain-window-corridor-v1.webp",
+      "width960": "/images/optical-archive/960/rain-window-corridor-v1.webp",
+      "width640Avif": "/images/optical-archive/640/rain-window-corridor-v1.avif",
+      "width960Avif": "/images/optical-archive/960/rain-window-corridor-v1.avif"
+    },
+    "alt": "透过雨滴玻璃看到的空旷江南长廊",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#3d3a2d",
+    "colorVector": [
+      61,
+      58,
+      45
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "苔藓",
+      "珊瑚"
+    ],
+    "descriptors": [
+      "01",
+      "南京",
+      "初夏",
+      "温柔",
+      "雨后",
+      "通透",
+      "奶油",
+      "苔藓",
+      "珊瑚",
+      "低机位反射",
+      "柔雾高光",
+      "分层景深",
+      "生成式概念摄影",
+      "空间研究"
+    ],
+    "projectIds": [
+      "optical-garden"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/optical-archive/raw/rain-window-corridor-v1.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-01-dawn-studio",
+    "src": "/images/visual-os-v5/01-dawn-studio.webp",
+    "avif": "/images/visual-os-v5/01-dawn-studio.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/01-dawn-studio.webp",
+      "width960": "/images/visual-os-v5/960/01-dawn-studio.webp",
+      "width640Avif": "/images/visual-os-v5/640/01-dawn-studio.avif",
+      "width960Avif": "/images/visual-os-v5/960/01-dawn-studio.avif"
+    },
+    "alt": "晨光中的空工作室、手工纸和光学玻璃",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#837767",
+    "colorVector": [
+      131,
+      119,
+      103
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "苔藓"
+    ],
+    "descriptors": [
+      "10",
+      "南京",
+      "盛夏",
+      "温柔",
+      "明亮",
+      "实验",
+      "奶油",
+      "柔黄",
+      "苔藓",
+      "晨光分层",
+      "光学折射",
+      "水面反射",
+      "生成式概念摄影",
+      "材料研究",
+      "工作室",
+      "晨光",
+      "手工纸",
+      "玻璃",
+      "水面",
+      "折射",
+      "空场",
+      "奶油色"
+    ],
+    "projectIds": [
+      "light-workshop"
+    ],
+    "storyLinks": [
+      {
+        "id": "quiet-machines-of-light",
+        "chapterId": "workbench"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/01-dawn-studio.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-02-optical-caustic",
+    "src": "/images/visual-os-v5/02-optical-caustic.webp",
+    "avif": "/images/visual-os-v5/02-optical-caustic.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/02-optical-caustic.webp",
+      "width960": "/images/visual-os-v5/960/02-optical-caustic.webp",
+      "width640Avif": "/images/visual-os-v5/640/02-optical-caustic.avif",
+      "width960Avif": "/images/visual-os-v5/960/02-optical-caustic.avif"
+    },
+    "alt": "玻璃、水与蕨叶形成的微距焦散光影",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#8c7e6b",
+    "colorVector": [
+      140,
+      126,
+      107
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "苔藓"
+    ],
+    "descriptors": [
+      "10",
+      "南京",
+      "盛夏",
+      "温柔",
+      "明亮",
+      "实验",
+      "奶油",
+      "柔黄",
+      "苔藓",
+      "晨光分层",
+      "光学折射",
+      "水面反射",
+      "生成式概念摄影",
+      "材料研究",
+      "工作室",
+      "晨光",
+      "手工纸",
+      "玻璃",
+      "水面",
+      "折射",
+      "空场",
+      "奶油色"
+    ],
+    "projectIds": [
+      "light-workshop"
+    ],
+    "storyLinks": [
+      {
+        "id": "quiet-machines-of-light",
+        "chapterId": "caustic"
+      },
+      {
+        "id": "weather-into-paper",
+        "chapterId": "paper"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/02-optical-caustic.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-03-rain-conservatory",
+    "src": "/images/visual-os-v5/03-rain-conservatory.webp",
+    "avif": "/images/visual-os-v5/03-rain-conservatory.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/03-rain-conservatory.webp",
+      "width960": "/images/visual-os-v5/960/03-rain-conservatory.webp",
+      "width640Avif": "/images/visual-os-v5/640/03-rain-conservatory.avif",
+      "width960Avif": "/images/visual-os-v5/960/03-rain-conservatory.avif"
+    },
+    "alt": "雨后无人温室长廊与湿润玻璃",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#545441",
+    "colorVector": [
+      84,
+      84,
+      65
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "苔藓",
+      "奶油",
+      "珊瑚"
+    ],
+    "descriptors": [
+      "11",
+      "南京",
+      "梅雨",
+      "湿润",
+      "通透",
+      "漂浮",
+      "苔藓",
+      "奶油",
+      "珊瑚",
+      "雨玻璃折射",
+      "材料动态",
+      "低饱和分色",
+      "生成式概念摄影",
+      "天气研究",
+      "温室",
+      "雨玻璃",
+      "织物",
+      "山茶",
+      "折射"
+    ],
+    "projectIds": [
+      "weather-glasshouse"
+    ],
+    "storyLinks": [
+      {
+        "id": "weather-into-paper",
+        "chapterId": "corridor"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/03-rain-conservatory.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-04-color-lab",
+    "src": "/images/visual-os-v5/04-color-lab.webp",
+    "avif": "/images/visual-os-v5/04-color-lab.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/04-color-lab.webp",
+      "width960": "/images/visual-os-v5/960/04-color-lab.webp",
+      "width640Avif": "/images/visual-os-v5/640/04-color-lab.avif",
+      "width960Avif": "/images/visual-os-v5/960/04-color-lab.avif"
+    },
+    "alt": "颜料、空白底片形状与植物标本组成的色彩实验桌",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#706f6d",
+    "colorVector": [
+      112,
+      111,
+      109
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "苔藓",
+      "深莓"
+    ],
+    "descriptors": [
+      "12",
+      "南京",
+      "盛夏",
+      "理性",
+      "触觉",
+      "安静",
+      "奶油",
+      "苔藓",
+      "深莓",
+      "俯拍编排",
+      "档案式构图",
+      "透射微距",
+      "生成式概念摄影",
+      "档案设计",
+      "色彩实验",
+      "档案",
+      "手工纸",
+      "蕨叶",
+      "底片",
+      "颜料",
+      "微距",
+      "索引"
+    ],
+    "projectIds": [
+      "material-index"
+    ],
+    "storyLinks": [
+      {
+        "id": "materials-after-rain",
+        "chapterId": "pigment"
+      },
+      {
+        "id": "materials-after-rain",
+        "chapterId": "stage"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/04-color-lab.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-05-night-print-room",
+    "src": "/images/visual-os-v5/05-night-print-room.webp",
+    "avif": "/images/visual-os-v5/05-night-print-room.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/05-night-print-room.webp",
+      "width960": "/images/visual-os-v5/960/05-night-print-room.webp",
+      "width640Avif": "/images/visual-os-v5/640/05-night-print-room.avif",
+      "width960Avif": "/images/visual-os-v5/960/05-night-print-room.avif"
+    },
+    "alt": "深莓色安全灯下的无人暗房与显影盘",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#380c05",
+    "colorVector": [
+      56,
+      12,
+      5
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "深莓",
+      "奶油",
+      "苔藓"
+    ],
+    "descriptors": [
+      "13",
+      "南京",
+      "夏夜",
+      "电影感",
+      "深夜",
+      "专注",
+      "深莓",
+      "奶油",
+      "苔藓",
+      "安全灯色域",
+      "体积光",
+      "静物舞台",
+      "生成式概念摄影",
+      "光线装置",
+      "暗房",
+      "投影",
+      "安全灯",
+      "显影",
+      "静物",
+      "夜晚"
+    ],
+    "projectIds": [
+      "night-projection-room"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/05-night-print-room.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-06-fabric-moss-garden",
+    "src": "/images/visual-os-v5/06-fabric-moss-garden.webp",
+    "avif": "/images/visual-os-v5/06-fabric-moss-garden.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/06-fabric-moss-garden.webp",
+      "width960": "/images/visual-os-v5/960/06-fabric-moss-garden.webp",
+      "width640Avif": "/images/visual-os-v5/640/06-fabric-moss-garden.avif",
+      "width960Avif": "/images/visual-os-v5/960/06-fabric-moss-garden.avif"
+    },
+    "alt": "苔藓庭院中随风移动的奶油色半透明织物",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#554d3e",
+    "colorVector": [
+      85,
+      77,
+      62
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "苔藓",
+      "奶油",
+      "珊瑚"
+    ],
+    "descriptors": [
+      "11",
+      "南京",
+      "梅雨",
+      "湿润",
+      "通透",
+      "漂浮",
+      "苔藓",
+      "奶油",
+      "珊瑚",
+      "雨玻璃折射",
+      "材料动态",
+      "低饱和分色",
+      "生成式概念摄影",
+      "天气研究",
+      "温室",
+      "雨玻璃",
+      "织物",
+      "山茶",
+      "折射"
+    ],
+    "projectIds": [
+      "weather-glasshouse"
+    ],
+    "storyLinks": [
+      {
+        "id": "weather-into-paper",
+        "chapterId": "fabric"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/06-fabric-moss-garden.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-07-bamboo-water",
+    "src": "/images/visual-os-v5/07-bamboo-water.webp",
+    "avif": "/images/visual-os-v5/07-bamboo-water.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/07-bamboo-water.webp",
+      "width960": "/images/visual-os-v5/960/07-bamboo-water.webp",
+      "width640Avif": "/images/visual-os-v5/640/07-bamboo-water.avif",
+      "width960Avif": "/images/visual-os-v5/960/07-bamboo-water.avif"
+    },
+    "alt": "水盘把竹影反射到奶油色墙面",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#97836d",
+    "colorVector": [
+      151,
+      131,
+      109
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "苔藓"
+    ],
+    "descriptors": [
+      "10",
+      "南京",
+      "盛夏",
+      "温柔",
+      "明亮",
+      "实验",
+      "奶油",
+      "柔黄",
+      "苔藓",
+      "晨光分层",
+      "光学折射",
+      "水面反射",
+      "生成式概念摄影",
+      "材料研究",
+      "工作室",
+      "晨光",
+      "手工纸",
+      "玻璃",
+      "水面",
+      "折射",
+      "空场",
+      "奶油色"
+    ],
+    "projectIds": [
+      "light-workshop"
+    ],
+    "storyLinks": [
+      {
+        "id": "quiet-machines-of-light",
+        "chapterId": "reflection"
+      },
+      {
+        "id": "weather-into-paper",
+        "chapterId": "paper"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/07-bamboo-water.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-08-archive-drawers",
+    "src": "/images/visual-os-v5/08-archive-drawers.webp",
+    "avif": "/images/visual-os-v5/08-archive-drawers.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/08-archive-drawers.webp",
+      "width960": "/images/visual-os-v5/960/08-archive-drawers.webp",
+      "width640Avif": "/images/visual-os-v5/640/08-archive-drawers.avif",
+      "width960Avif": "/images/visual-os-v5/960/08-archive-drawers.avif"
+    },
+    "alt": "打开的木质档案抽屉与蕨叶、滤色片和空白联系表",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#50483e",
+    "colorVector": [
+      80,
+      72,
+      62
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "苔藓",
+      "深莓"
+    ],
+    "descriptors": [
+      "12",
+      "南京",
+      "盛夏",
+      "理性",
+      "触觉",
+      "安静",
+      "奶油",
+      "苔藓",
+      "深莓",
+      "俯拍编排",
+      "档案式构图",
+      "透射微距",
+      "生成式概念摄影",
+      "档案设计",
+      "色彩实验",
+      "档案",
+      "手工纸",
+      "蕨叶",
+      "底片",
+      "颜料",
+      "微距",
+      "索引"
+    ],
+    "projectIds": [
+      "material-index"
+    ],
+    "storyLinks": [
+      {
+        "id": "materials-after-rain",
+        "chapterId": "drawer"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/08-archive-drawers.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-09-paper-light",
+    "src": "/images/visual-os-v5/09-paper-light.webp",
+    "avif": "/images/visual-os-v5/09-paper-light.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/09-paper-light.webp",
+      "width960": "/images/visual-os-v5/960/09-paper-light.webp",
+      "width640Avif": "/images/visual-os-v5/640/09-paper-light.avif",
+      "width960Avif": "/images/visual-os-v5/960/09-paper-light.avif"
+    },
+    "alt": "透射光穿过奶油、苔藓与珊瑚色手工纸纤维",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#6f5a2f",
+    "colorVector": [
+      111,
+      90,
+      47
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "苔藓",
+      "深莓"
+    ],
+    "descriptors": [
+      "12",
+      "南京",
+      "盛夏",
+      "理性",
+      "触觉",
+      "安静",
+      "奶油",
+      "苔藓",
+      "深莓",
+      "俯拍编排",
+      "档案式构图",
+      "透射微距",
+      "生成式概念摄影",
+      "档案设计",
+      "色彩实验",
+      "档案",
+      "手工纸",
+      "蕨叶",
+      "底片",
+      "颜料",
+      "微距",
+      "索引"
+    ],
+    "projectIds": [
+      "material-index"
+    ],
+    "storyLinks": [
+      {
+        "id": "materials-after-rain",
+        "chapterId": "fiber"
+      },
+      {
+        "id": "materials-after-rain",
+        "chapterId": "stage"
+      },
+      {
+        "id": "weather-into-paper",
+        "chapterId": "paper"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/09-paper-light.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-10-rain-glass-camellia",
+    "src": "/images/visual-os-v5/10-rain-glass-camellia.webp",
+    "avif": "/images/visual-os-v5/10-rain-glass-camellia.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/10-rain-glass-camellia.webp",
+      "width960": "/images/visual-os-v5/960/10-rain-glass-camellia.webp",
+      "width640Avif": "/images/visual-os-v5/640/10-rain-glass-camellia.avif",
+      "width960Avif": "/images/visual-os-v5/960/10-rain-glass-camellia.avif"
+    },
+    "alt": "雨玻璃后方的白色山茶与彩色折射",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#5f5539",
+    "colorVector": [
+      95,
+      85,
+      57
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "苔藓",
+      "奶油",
+      "珊瑚"
+    ],
+    "descriptors": [
+      "11",
+      "南京",
+      "梅雨",
+      "湿润",
+      "通透",
+      "漂浮",
+      "苔藓",
+      "奶油",
+      "珊瑚",
+      "雨玻璃折射",
+      "材料动态",
+      "低饱和分色",
+      "生成式概念摄影",
+      "天气研究",
+      "温室",
+      "雨玻璃",
+      "织物",
+      "山茶",
+      "折射"
+    ],
+    "projectIds": [
+      "weather-glasshouse"
+    ],
+    "storyLinks": [
+      {
+        "id": "weather-into-paper",
+        "chapterId": "glass"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/10-rain-glass-camellia.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-11-projection-room",
+    "src": "/images/visual-os-v5/11-projection-room.webp",
+    "avif": "/images/visual-os-v5/11-projection-room.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/11-projection-room.webp",
+      "width960": "/images/visual-os-v5/960/11-projection-room.webp",
+      "width640Avif": "/images/visual-os-v5/640/11-projection-room.avif",
+      "width960Avif": "/images/visual-os-v5/960/11-projection-room.avif"
+    },
+    "alt": "空房间中的模拟投影机把光束投向手工纸屏幕",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#342415",
+    "colorVector": [
+      52,
+      36,
+      21
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "深莓",
+      "奶油",
+      "苔藓"
+    ],
+    "descriptors": [
+      "13",
+      "南京",
+      "夏夜",
+      "电影感",
+      "深夜",
+      "专注",
+      "深莓",
+      "奶油",
+      "苔藓",
+      "安全灯色域",
+      "体积光",
+      "静物舞台",
+      "生成式概念摄影",
+      "光线装置",
+      "暗房",
+      "投影",
+      "安全灯",
+      "显影",
+      "静物",
+      "夜晚"
+    ],
+    "projectIds": [
+      "night-projection-room"
+    ],
+    "storyLinks": [
+      {
+        "id": "quiet-machines-of-light",
+        "chapterId": "projection"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/11-projection-room.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v5-12-film-still-life",
+    "src": "/images/visual-os-v5/12-film-still-life.webp",
+    "avif": "/images/visual-os-v5/12-film-still-life.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v5/640/12-film-still-life.webp",
+      "width960": "/images/visual-os-v5/960/12-film-still-life.webp",
+      "width640Avif": "/images/visual-os-v5/640/12-film-still-life.avif",
+      "width960Avif": "/images/visual-os-v5/960/12-film-still-life.avif"
+    },
+    "alt": "底片框、苔藓色陶器、光学玻璃和珊瑚色细绳静物",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#98886f",
+    "colorVector": [
+      152,
+      136,
+      111
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "深莓",
+      "奶油",
+      "苔藓"
+    ],
+    "descriptors": [
+      "13",
+      "南京",
+      "夏夜",
+      "电影感",
+      "深夜",
+      "专注",
+      "深莓",
+      "奶油",
+      "苔藓",
+      "安全灯色域",
+      "体积光",
+      "静物舞台",
+      "生成式概念摄影",
+      "光线装置",
+      "暗房",
+      "投影",
+      "安全灯",
+      "显影",
+      "静物",
+      "夜晚"
+    ],
+    "projectIds": [
+      "night-projection-room"
+    ],
+    "storyLinks": [
+      {
+        "id": "materials-after-rain",
+        "chapterId": "stage"
+      }
+    ],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v5/raw/12-film-still-life.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v6-01-cream-pavilion",
+    "src": "/images/visual-os-v6/01-cream-pavilion.webp",
+    "avif": "/images/visual-os-v6/01-cream-pavilion.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v6/640/01-cream-pavilion.webp",
+      "width960": "/images/visual-os-v6/960/01-cream-pavilion.webp",
+      "width640Avif": "/images/visual-os-v6/640/01-cream-pavilion.avif",
+      "width960Avif": "/images/visual-os-v6/960/01-cream-pavilion.avif"
+    },
+    "alt": "奶油色纸光亭、浅水、镜片与柔黄丝带组成的无人物概念影像",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#c5b594",
+    "colorVector": [
+      197,
+      181,
+      148
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "苔藓",
+      "低饱和珊瑚"
+    ],
+    "descriptors": [
+      "14",
+      "虚构纸光亭",
+      "清晨",
+      "温柔",
+      "明亮",
+      "安静",
+      "奶油",
+      "柔黄",
+      "苔藓",
+      "低饱和珊瑚",
+      "纸幕透光",
+      "浅水焦散",
+      "微距材质",
+      "生成式概念摄影",
+      "材料研究",
+      "纸",
+      "晨光",
+      "浅水",
+      "微距",
+      "无人影像"
+    ],
+    "projectIds": [
+      "cream-light-pavilion"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v6/raw/01-cream-pavilion.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v6-02-rain-conservatory",
+    "src": "/images/visual-os-v6/02-rain-conservatory.webp",
+    "avif": "/images/visual-os-v6/02-rain-conservatory.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v6/640/02-rain-conservatory.webp",
+      "width960": "/images/visual-os-v6/960/02-rain-conservatory.webp",
+      "width640Avif": "/images/visual-os-v6/640/02-rain-conservatory.avif",
+      "width960Avif": "/images/visual-os-v6/960/02-rain-conservatory.avif"
+    },
+    "alt": "雨后玻璃温室、苔藓石台与棱镜光组成的无人物概念影像",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#5f5843",
+    "colorVector": [
+      95,
+      88,
+      67
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "苔藓",
+      "奶油",
+      "玻璃绿",
+      "柔黄"
+    ],
+    "descriptors": [
+      "15",
+      "虚构雨光实验室",
+      "雨后",
+      "湿润",
+      "通透",
+      "生长",
+      "苔藓",
+      "奶油",
+      "玻璃绿",
+      "柔黄",
+      "玻璃反射",
+      "空间分层",
+      "档案静物",
+      "生成式概念摄影",
+      "档案装置",
+      "雨",
+      "玻璃",
+      "抽屉",
+      "档案",
+      "联系表",
+      "无人影像"
+    ],
+    "projectIds": [
+      "rain-light-laboratory"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v6/raw/02-rain-conservatory.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v6-03-coral-chamber",
+    "src": "/images/visual-os-v6/03-coral-chamber.webp",
+    "avif": "/images/visual-os-v6/03-coral-chamber.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v6/640/03-coral-chamber.webp",
+      "width960": "/images/visual-os-v6/960/03-coral-chamber.webp",
+      "width640Avif": "/images/visual-os-v6/640/03-coral-chamber.avif",
+      "width960Avif": "/images/visual-os-v6/960/03-coral-chamber.avif"
+    },
+    "alt": "珊瑚色光学空间、玻璃与丝带组成的无人物概念影像",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#825239",
+    "colorVector": [
+      130,
+      82,
+      57
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "苔藓"
+    ],
+    "descriptors": [
+      "16",
+      "虚构余晖暗房",
+      "黄昏至夜晚",
+      "先锋",
+      "浓郁",
+      "静谧",
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "苔藓",
+      "色玻璃折射",
+      "低照度印样",
+      "雨夜反射",
+      "生成式概念摄影",
+      "光学装置",
+      "珊瑚",
+      "暗房",
+      "折射",
+      "雨夜",
+      "丝带",
+      "无人影像"
+    ],
+    "projectIds": [
+      "coral-afterglow-room"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v6/raw/03-coral-chamber.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v6-04-berry-print-room",
+    "src": "/images/visual-os-v6/04-berry-print-room.webp",
+    "avif": "/images/visual-os-v6/04-berry-print-room.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v6/640/04-berry-print-room.webp",
+      "width960": "/images/visual-os-v6/960/04-berry-print-room.webp",
+      "width640Avif": "/images/visual-os-v6/640/04-berry-print-room.avif",
+      "width960Avif": "/images/visual-os-v6/960/04-berry-print-room.avif"
+    },
+    "alt": "深莓暗房、发光印样台与苔藓水景组成的无人物概念影像",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#3d2c22",
+    "colorVector": [
+      61,
+      44,
+      34
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "苔藓"
+    ],
+    "descriptors": [
+      "16",
+      "虚构余晖暗房",
+      "黄昏至夜晚",
+      "先锋",
+      "浓郁",
+      "静谧",
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "苔藓",
+      "色玻璃折射",
+      "低照度印样",
+      "雨夜反射",
+      "生成式概念摄影",
+      "光学装置",
+      "珊瑚",
+      "暗房",
+      "折射",
+      "雨夜",
+      "丝带",
+      "无人影像"
+    ],
+    "projectIds": [
+      "coral-afterglow-room"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v6/raw/04-berry-print-room.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v6-05-paper-rain-macro",
+    "src": "/images/visual-os-v6/05-paper-rain-macro.webp",
+    "avif": "/images/visual-os-v6/05-paper-rain-macro.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v6/640/05-paper-rain-macro.webp",
+      "width960": "/images/visual-os-v6/960/05-paper-rain-macro.webp",
+      "width640Avif": "/images/visual-os-v6/640/05-paper-rain-macro.avif",
+      "width960Avif": "/images/visual-os-v6/960/05-paper-rain-macro.avif"
+    },
+    "alt": "手工纸、雨滴、苔藓与棱镜珊瑚光组成的微距概念影像",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#948066",
+    "colorVector": [
+      148,
+      128,
+      102
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "苔藓",
+      "低饱和珊瑚"
+    ],
+    "descriptors": [
+      "14",
+      "虚构纸光亭",
+      "清晨",
+      "温柔",
+      "明亮",
+      "安静",
+      "奶油",
+      "柔黄",
+      "苔藓",
+      "低饱和珊瑚",
+      "纸幕透光",
+      "浅水焦散",
+      "微距材质",
+      "生成式概念摄影",
+      "材料研究",
+      "纸",
+      "晨光",
+      "浅水",
+      "微距",
+      "无人影像"
+    ],
+    "projectIds": [
+      "cream-light-pavilion"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v6/raw/05-paper-rain-macro.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v6-06-archive-drawers",
+    "src": "/images/visual-os-v6/06-archive-drawers.webp",
+    "avif": "/images/visual-os-v6/06-archive-drawers.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v6/640/06-archive-drawers.webp",
+      "width960": "/images/visual-os-v6/960/06-archive-drawers.webp",
+      "width640Avif": "/images/visual-os-v6/640/06-archive-drawers.avif",
+      "width960Avif": "/images/visual-os-v6/960/06-archive-drawers.avif"
+    },
+    "alt": "透明抽屉、抽象联系表、苔藓与黄色丝带组成的概念档案影像",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#635a43",
+    "colorVector": [
+      99,
+      90,
+      67
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "苔藓",
+      "奶油",
+      "玻璃绿",
+      "柔黄"
+    ],
+    "descriptors": [
+      "15",
+      "虚构雨光实验室",
+      "雨后",
+      "湿润",
+      "通透",
+      "生长",
+      "苔藓",
+      "奶油",
+      "玻璃绿",
+      "柔黄",
+      "玻璃反射",
+      "空间分层",
+      "档案静物",
+      "生成式概念摄影",
+      "档案装置",
+      "雨",
+      "玻璃",
+      "抽屉",
+      "档案",
+      "联系表",
+      "无人影像"
+    ],
+    "projectIds": [
+      "rain-light-laboratory"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v6/raw/06-archive-drawers.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v6-07-night-glass-garden",
+    "src": "/images/visual-os-v6/07-night-glass-garden.webp",
+    "avif": "/images/visual-os-v6/07-night-glass-garden.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v6/640/07-night-glass-garden.webp",
+      "width960": "/images/visual-os-v6/960/07-night-glass-garden.webp",
+      "width640Avif": "/images/visual-os-v6/640/07-night-glass-garden.avif",
+      "width960Avif": "/images/visual-os-v6/960/07-night-glass-garden.avif"
+    },
+    "alt": "雨夜玻璃、山茶枝、圆镜与深莓丝带组成的无人物概念影像",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#1e1d12",
+    "colorVector": [
+      30,
+      29,
+      18
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "苔藓"
+    ],
+    "descriptors": [
+      "16",
+      "虚构余晖暗房",
+      "黄昏至夜晚",
+      "先锋",
+      "浓郁",
+      "静谧",
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "苔藓",
+      "色玻璃折射",
+      "低照度印样",
+      "雨夜反射",
+      "生成式概念摄影",
+      "光学装置",
+      "珊瑚",
+      "暗房",
+      "折射",
+      "雨夜",
+      "丝带",
+      "无人影像"
+    ],
+    "projectIds": [
+      "coral-afterglow-room"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v6/raw/07-night-glass-garden.png",
+      "usage": "personal-practice"
+    }
+  }
+]

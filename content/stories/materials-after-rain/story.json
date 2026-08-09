@@ -13,7 +13,7 @@
       "kicker": "01 / COLOR",
       "title": "先把颜色从物体上取下来",
       "body": "颜料被放进浅碟，色彩暂时不属于任何画面。它们像等待组合的音符，保持独立又彼此牵引。",
-      "layout": "full",
+      "layout": "annotation",
       "media": [{ "projectId": "material-index", "mediaIndex": 0 }]
     },
     {
@@ -21,7 +21,7 @@
       "kicker": "02 / ORDER",
       "title": "抽屉建立材料之间的距离",
       "body": "档案不是把所有东西压平。深度、遮挡和空白让每一种材料拥有自己的读取速度。",
-      "layout": "columns",
+      "layout": "diptych",
       "media": [{ "projectId": "material-index", "mediaIndex": 1 }, { "projectId": "darkroom-herbarium", "mediaIndex": 0 }]
     },
     {
@@ -29,7 +29,7 @@
       "kicker": "03 / SURFACE",
       "title": "纸的边缘是一条微型地形",
       "body": "放大之后，纸张不再洁白平整。纤维、阴影和透射光形成一片可以进入的地貌。",
-      "layout": "quiet",
+      "layout": "interlude",
       "media": [{ "projectId": "material-index", "mediaIndex": 2 }]
     },
     {
@@ -37,7 +37,7 @@
       "kicker": "04 / ASSEMBLY",
       "title": "最后让所有材料站上同一座小舞台",
       "body": "空白底片框、陶器、玻璃与细绳没有固定答案。索引结束于一次开放的重新组合。",
-      "layout": "contact",
+      "layout": "constellation",
       "media": [{ "projectId": "night-projection-room", "mediaIndex": 2 }, { "projectId": "material-index", "mediaIndex": 0 }, { "projectId": "material-index", "mediaIndex": 2 }]
     }
   ]

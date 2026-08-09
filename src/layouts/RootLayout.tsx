@@ -1,12 +1,7 @@
 import { Suspense, lazy, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
-import { PublicChatLauncher } from "../components/PublicChatLauncher";
-import { PublicPhotosProvider } from "../hooks/usePublicPhotos";
 import { SiteContentProvider } from "../hooks/useSiteContent";
-import { useBookingModal } from "../features/booking/BookingContext";
-import { BookingProvider } from "../features/booking/BookingProvider";
-import { AuthProvider } from "../hooks/useAuth";
 import { Header } from "../components/shared/Header";
 import { Footer } from "../components/shared/Footer";
 import { ErrorBoundary } from "../components/ErrorBoundary";
@@ -21,7 +16,6 @@ import { RouteHashScroller } from "../components/shared/RouteHashScroller";
 import { RouteLoadingState } from "../components/shared/RouteLoadingState";
 import { ImmersiveExperienceGate } from "../experience/ImmersiveExperienceGate";
 import { ExperienceProvider, useExperienceStore } from "../experience/ExperienceProvider";
-import { useExperiencePause } from "../experience/useExperiencePause";
 import { resolveRoutePreset } from "../experience/scene-presets";
 import { OPEN_COMMAND_PALETTE_EVENT } from "../lib/command-palette";
 import { RouteExperienceTelemetry } from "../components/shared/RouteExperienceTelemetry";
@@ -31,9 +25,6 @@ import { RouteIndexingPolicy } from "../components/shared/RouteIndexingPolicy";
 // can paint and become interactive without coupling them to route code.
 const GlobalEffects = lazy(() => import("../components/GlobalEffects"));
 const CommandPalette = lazy(() => import("../components/CommandPalette").then((module) => ({ default: module.CommandPalette })));
-
-const PublicChatWidget = lazy(() => import("../components/PublicChatWidget"));
-const OfflineBookingRecovery = lazy(() => import("../components/OfflineBookingRecovery"));
 
 function DeferredCommandPalette() {
   const [requested, setRequested] = useState(false);
@@ -70,14 +61,8 @@ function focusWithTemporaryTabIndex(target: HTMLElement) {
   }
 }
 
-function ExperienceStateBridge({ pathname, chatOpen }: {
-  pathname: string;
-  chatOpen: boolean;
-}) {
+function ExperienceStateBridge({ pathname }: { pathname: string }) {
   const store = useExperienceStore();
-  const { isBookingOpen } = useBookingModal();
-  useExperiencePause("chat", chatOpen);
-  useExperiencePause("booking", isBookingOpen);
 
   useEffect(() => {
     store.setRoute(resolveRoutePreset(pathname));
@@ -96,7 +81,6 @@ function ExperienceStateBridge({ pathname, chatOpen }: {
 export function RootLayout() {
   const { t } = useTranslation();
   const location = useLocation();
-  const [chatOpen, setChatOpen] = useState(false);
   const isOnline = useOnlineStatus();
 
   const handleSkipClick = useCallback((e: React.MouseEvent) => {
@@ -107,9 +91,6 @@ export function RootLayout() {
 
   const isEditor = location.pathname === "/editor";
   const isCreativeWorkspace = isEditor || location.pathname === "/create" || location.pathname.startsWith("/create/") || location.pathname === "/studio";
-  const practicePrefixes = ["/practice", "/gallery", "/courses", "/products", "/presets", "/workshops", "/shop", "/booking", "/map", "/login", "/dashboard", "/compare"];
-  const isPracticeRoute = practicePrefixes.some((prefix) => location.pathname === prefix || location.pathname.startsWith(`${prefix}/`));
-  const showPublicChat = isPracticeRoute && !isCreativeWorkspace;
   const routePreset = resolveRoutePreset(location.pathname);
 
   return (
@@ -170,21 +151,13 @@ export function RootLayout() {
           </Suspense>
         </ErrorBoundary>
       )}
-      <AuthProvider>
-        <BookingProvider>
-          <SiteContentProvider>
-            <PublicPhotosProvider>
-              <ExperienceProvider>
-                <ExperienceStateBridge pathname={location.pathname} chatOpen={chatOpen} />
+      <SiteContentProvider>
+        <ExperienceProvider>
+                <ExperienceStateBridge pathname={location.pathname} />
                 {routePreset && <ImmersiveExperienceGate />}
                 <ToastProvider>
                   <Header />
                   <DeferredCommandPalette />
-                  {isPracticeRoute && !isEditor && (
-                    <Suspense fallback={null}>
-                      <OfflineBookingRecovery isOnline={isOnline} />
-                    </Suspense>
-                  )}
                   <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
                     <ErrorBoundary>
                       <Suspense fallback={<RouteLoadingState />}>
@@ -192,32 +165,13 @@ export function RootLayout() {
                       </Suspense>
                     </ErrorBoundary>
                   </main>
-                  {showPublicChat && (
-                    <div className={`public-chat-widget${location.pathname === "/" ? " is-home" : ""}${chatOpen ? " is-open" : ""}`}>
-                      <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((v) => !v)} />
-                      {chatOpen ? (
-                        <Suspense
-                          fallback={
-                            <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
-                              {t("common.loading")}
-                            </div>
-                          }
-                        >
-                          <PublicChatWidget open={chatOpen} onClose={() => setChatOpen(false)} />
-                        </Suspense>
-                      ) : null}
-                    </div>
-                  )}
                   <Footer />
                   {!isCreativeWorkspace && <MobileBottomNav />}
                   <ScrollToTop />
                   <PwaInstallBanner />
                 </ToastProvider>
-              </ExperienceProvider>
-            </PublicPhotosProvider>
-          </SiteContentProvider>
-        </BookingProvider>
-      </AuthProvider>
+        </ExperienceProvider>
+      </SiteContentProvider>
     </div>
   );
 }

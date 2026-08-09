@@ -14,6 +14,7 @@ const storyDirectories = (await readdir(sourcePath, { withFileTypes: true }))
   .sort((left, right) => left.localeCompare(right, "en"));
 const ids = new Set();
 const stories = [];
+const storyLayouts = new Set(["full", "columns", "contact", "quiet", "diptych", "compare", "annotation", "interlude", "constellation"]);
 
 for (const directory of storyDirectories) {
   const story = JSON.parse(await readFile(join(sourcePath, directory, "story.json"), "utf8"));
@@ -33,7 +34,7 @@ for (const directory of storyDirectories) {
   const chapterIds = new Set();
   const chapters = [];
   for (const chapter of story.chapters) {
-    if (!chapter.id || chapterIds.has(chapter.id) || !["full", "columns", "contact", "quiet"].includes(chapter.layout)) {
+    if (!chapter.id || chapterIds.has(chapter.id) || !storyLayouts.has(chapter.layout)) {
       throw new Error(`Story ${story.id} has an invalid chapter id or layout`);
     }
     if (!chapter.title || !chapter.body || !Array.isArray(chapter.media) || chapter.media.length === 0) {

@@ -34,7 +34,7 @@
           "kicker": "02 / AIR",
           "title": "风被织物看见",
           "body": "半透明织物把不可见的空气变成慢动作。奶油色在苔藓庭院里不再是背景，而是一条移动的光路。",
-          "layout": "columns",
+          "layout": "diptych",
           "media": [
             {
               "src": "/images/visual-os-v5/06-fabric-moss-garden.webp",
@@ -59,7 +59,7 @@
           "kicker": "03 / REFRACTION",
           "title": "山茶在雨玻璃之后失焦",
           "body": "水珠把一朵花拆成多个色域。重要的不是恢复清晰，而是保留这段短暂的视觉偏差。",
-          "layout": "quiet",
+          "layout": "annotation",
           "media": [
             {
               "src": "/images/visual-os-v5/10-rain-glass-camellia.webp",
@@ -76,7 +76,7 @@
           "kicker": "04 / TRACE",
           "title": "最后只留下纸的纤维",
           "body": "天气退场之后，光仍停在材料内部。纸张把此前的绿色、黄色和珊瑚色压缩成可以触摸的余像。",
-          "layout": "contact",
+          "layout": "constellation",
           "media": [
             {
               "src": "/images/visual-os-v5/09-paper-light.webp",
@@ -121,7 +121,7 @@
           "kicker": "01 / MORNING",
           "title": "工作台在日出前启动",
           "body": "没有按钮，也没有屏幕。纸张的角度、玻璃的位置和窗边的光共同构成第一台机器。",
-          "layout": "full",
+          "layout": "annotation",
           "media": [
             {
               "src": "/images/visual-os-v5/01-dawn-studio.webp",
@@ -138,7 +138,7 @@
           "kicker": "02 / OPTICS",
           "title": "折射是一种没有声音的动作",
           "body": "焦散在水面和植物之间移动。镜头没有冻结它，而是为这段移动留下足够的空气。",
-          "layout": "quiet",
+          "layout": "interlude",
           "media": [
             {
               "src": "/images/visual-os-v5/02-optical-caustic.webp",
@@ -155,7 +155,7 @@
           "kicker": "03 / LOOP",
           "title": "水盘把竹影送回墙面",
           "body": "一次反射形成新的取景框，真实植物退到画外，只留下被水重新编排的轮廓。",
-          "layout": "columns",
+          "layout": "compare",
           "media": [
             {
               "src": "/images/visual-os-v5/07-bamboo-water.webp",
@@ -209,7 +209,7 @@
           "kicker": "01 / COLOR",
           "title": "先把颜色从物体上取下来",
           "body": "颜料被放进浅碟，色彩暂时不属于任何画面。它们像等待组合的音符，保持独立又彼此牵引。",
-          "layout": "full",
+          "layout": "annotation",
           "media": [
             {
               "src": "/images/visual-os-v5/04-color-lab.webp",
@@ -226,7 +226,7 @@
           "kicker": "02 / ORDER",
           "title": "抽屉建立材料之间的距离",
           "body": "档案不是把所有东西压平。深度、遮挡和空白让每一种材料拥有自己的读取速度。",
-          "layout": "columns",
+          "layout": "diptych",
           "media": [
             {
               "src": "/images/visual-os-v5/08-archive-drawers.webp",
@@ -251,7 +251,7 @@
           "kicker": "03 / SURFACE",
           "title": "纸的边缘是一条微型地形",
           "body": "放大之后，纸张不再洁白平整。纤维、阴影和透射光形成一片可以进入的地貌。",
-          "layout": "quiet",
+          "layout": "interlude",
           "media": [
             {
               "src": "/images/visual-os-v5/09-paper-light.webp",
@@ -268,7 +268,7 @@
           "kicker": "04 / ASSEMBLY",
           "title": "最后让所有材料站上同一座小舞台",
           "body": "空白底片框、陶器、玻璃与细绳没有固定答案。索引结束于一次开放的重新组合。",
-          "layout": "contact",
+          "layout": "constellation",
           "media": [
             {
               "src": "/images/visual-os-v5/12-film-still-life.webp",

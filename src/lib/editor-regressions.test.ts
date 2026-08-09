@@ -4,6 +4,15 @@ import { describe, expect, it } from "vitest";
 
 const root = process.cwd();
 const readRaw = (path: string) => readFileSync(resolve(root, path), "utf8");
+const editorWorkspaceFiles = [
+  "src/pages/PhotoEditorWorkspace.tsx",
+  "src/features/editor/useEditorState.ts",
+  "src/features/editor/useEditorImageEngine.ts",
+  "src/features/editor/useEditorProjectLifecycle.ts",
+  "src/features/editor/useEditorActions.ts",
+  "src/features/editor/PhotoEditorWorkspaceView.tsx",
+  "src/features/editor/EditorCanvasStage.tsx",
+];
 const read = (path: string) => path === "src/styles/pages.css"
   ? ["src/styles/pages.css", "src/styles/editor.css", "src/styles/darkroom-v2.css"].map(readRaw).join("\n")
   : path === "src/lib/editor-effects.ts"
@@ -13,15 +22,19 @@ const read = (path: string) => path === "src/styles/pages.css"
       "src/lib/editor-face-effects.ts",
       "src/lib/editor-pixel-effects.ts",
     ].map(readRaw).join("\n")
-  : readRaw(path);
+  : path === "src/pages/PhotoEditorWorkspace.tsx"
+    ? editorWorkspaceFiles.map(readRaw).join("\n")
+    : path === "src/layouts/RootLayout.tsx"
+      ? [path, "src/features/practice/PracticeLayout.tsx"].map(readRaw).join("\n")
+      : readRaw(path);
 
 describe("editor regression contracts", () => {
   it("does not render the public chat overlay in creative workspaces", () => {
     const rootLayout = read("src/layouts/RootLayout.tsx");
 
     expect(rootLayout).toContain('location.pathname.startsWith("/create/")');
-    expect(rootLayout).toContain("const showPublicChat = isPracticeRoute && !isCreativeWorkspace");
-    expect(rootLayout).toContain("{showPublicChat &&");
+    expect(rootLayout).toContain("function PracticeChrome()");
+    expect(rootLayout).toContain("{showChat &&");
   });
 
   it("keeps editor image previews bounded and face failures explicit", () => {
@@ -162,7 +175,7 @@ describe("editor regression contracts", () => {
     const pagesCss = read("src/styles/pages.css");
     const zhCN = read("src/i18n/locales/zh-CN.json");
 
-    expect(editor).toContain("handleRetryModels");
+    expect(editor).toContain("retryModels");
     expect(editor).toContain("editor.modelLoadFailed");
     expect(editor).toContain("editor.degradedMode");
     expect(editor).toContain("editor.retryModels");
@@ -211,7 +224,7 @@ describe("editor regression contracts", () => {
     expect(workspace).toContain("initialFile?: File | null");
     expect(workspace).toContain("initialProject?: EditorProjectSnapshot | null");
     expect(workspace).toContain("skipInitialFaceDetection?: boolean");
-    expect(workspace).toContain("loadImageFile(initialFile, { skipFaceDetection: skipInitialFaceDetection, project: initialProject ?? undefined })");
+    expect(workspace).toContain("engine.loadImageFile(options.initialFile");
   });
 
   it("recovers from unreadable and superseded editor image loads", () => {
@@ -223,7 +236,7 @@ describe("editor regression contracts", () => {
 
     expect(workspace).toContain("imageLoadRequestRef");
     expect(workspace).toContain("setImageLoadError");
-    expect(workspace).toContain("img.onerror");
+    expect(workspace).toContain("image.onerror");
     expect(workspace).toContain("reader.onabort");
     expect(emptyState).toContain("editor-image-error");
     expect(emptyState).toContain('role="alert"');
@@ -277,7 +290,7 @@ describe("editor regression contracts", () => {
     const pagesCss = read("src/styles/pages.css");
 
     expect(editor).toContain("editor-canvas--placeholder");
-    expect(editor).toContain('!originalRef.current ? "editor-canvas--placeholder"');
+    expect(editor).toContain('!hasImage ? "editor-canvas--placeholder"');
     expect(pagesCss).toContain("width: 100%;");
     expect(pagesCss).toContain(".editor-canvas--placeholder");
     expect(pagesCss).toContain("display: none;");

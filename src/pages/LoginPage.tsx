@@ -10,10 +10,9 @@ import { useAuth } from "../hooks/useAuth";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { useToast } from "../components/shared/Toast";
 import { useSEO } from "../hooks/useSEO";
-import { useImmersiveAnchor } from "../experience/useImmersiveAnchor";
+import { AuthMediaPanel } from "../features/auth/AuthMediaPanel";
 
 type ResetStep = "forgot" | "token" | "done";
-const LOGIN_IMMERSIVE_IMAGES = ["/images/gallery/gallery-daily-01.webp"];
 
 export function LoginPage() {
   const { t } = useTranslation();
@@ -59,37 +58,6 @@ export function LoginPage() {
     path: "/login",
   });
   usePageRevealEffects(rootRef);
-  const authMediaAnchor = useImmersiveAnchor({
-    id: "login-media",
-    preset: "login",
-    imageUrls: LOGIN_IMMERSIVE_IMAGES,
-  });
-
-  const renderAuthMedia = () => (
-    <aside
-      ref={authMediaAnchor}
-      className="auth-page-media"
-      aria-label={t("auth.visualLabel")}
-      data-immersive-anchor="login"
-    >
-      <picture>
-        <source srcSet="/images/gallery/gallery-daily-01.avif" type="image/avif" />
-        <source srcSet="/images/gallery/gallery-daily-01.webp" type="image/webp" />
-        <img
-          src="/images/gallery/gallery-daily-01.webp"
-          alt={t("auth.visualImageAlt")}
-          width={1200}
-          height={1600}
-          fetchPriority="high"
-        />
-      </picture>
-      <div className="auth-page-media-copy">
-        <span>{t("auth.visualEyebrow")}</span>
-        <h2>{t("auth.visualTitle")}</h2>
-        <p>{t("auth.visualDescription")}</p>
-      </div>
-    </aside>
-  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -196,7 +164,7 @@ export function LoginPage() {
       <ErrorBoundary>
         <PageTransition ref={rootRef} className="auth-page auth-page--reset">
           <div className="auth-page-layout" id="top">
-            {renderAuthMedia()}
+            <AuthMediaPanel />
             <section className="auth-page-panel" aria-labelledby="auth-page-title">
               <div className="login-box">
             <div className="login-card">
@@ -345,7 +313,7 @@ export function LoginPage() {
     <ErrorBoundary>
       <PageTransition ref={rootRef} className="auth-page">
         <div className="auth-page-layout" id="top">
-          {renderAuthMedia()}
+          <AuthMediaPanel />
           <section className="auth-page-panel" aria-labelledby="auth-page-title">
             <div className="login-box">
           <div className="login-card">

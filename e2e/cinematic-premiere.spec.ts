@@ -82,14 +82,14 @@ test.describe("cinematic homepage premiere", () => {
     expect(openingGeometry).toEqual({ titleInside: true, actionsInside: true });
 
     await reelButtons.nth(1).hover();
-    await expect(premiere).toHaveAttribute("data-active-scene", "rain-corridor");
+    await expect(premiere).toHaveAttribute("data-active-scene", "paper");
     await expect(premiere).toHaveAttribute("data-loaded-scenes", "2");
     await expect(premiere.locator(".cinematic-premiere__scene img")).toHaveCount(2);
-    await expect(premiere.locator(".cinematic-premiere__readout")).toContainText("Rain-window corridor");
+    await expect(premiere.locator(".cinematic-premiere__readout")).toContainText("Rain light on paper");
 
     await reelButtons.nth(1).focus();
     await page.keyboard.press("ArrowRight");
-    await expect(premiere).toHaveAttribute("data-active-scene", "lens-stilllife");
+    await expect(premiere).toHaveAttribute("data-active-scene", "coral");
     await expect(reelButtons.nth(2)).toBeFocused();
 
     const heroBounds = await hero.boundingBox();

@@ -16,9 +16,9 @@ describe("bundle analyzer", () => {
     expect(source).toContain("bundle-report.json");
   });
 
-  it("is wired into the build:full pipeline after the perf budget", () => {
+  it("is wired into the build:full pipeline after global and route budgets", () => {
     const pkg = read("package.json");
     expect(pkg).toContain("bundle:analyze");
-    expect(pkg).toMatch(/perf:budget && npm run bundle:analyze/);
+    expect(pkg).toMatch(/perf:budget && npm run perf:routes && npm run bundle:analyze/);
   });
 });

@@ -18,10 +18,14 @@ describe("visual stories v1", () => {
       expect(story.chapters.length).toBeGreaterThanOrEqual(3);
       expect(story.accent).toMatch(/^#[0-9a-f]{6}$/i);
       for (const chapter of story.chapters) {
-        expect(["full", "columns", "contact", "quiet"]).toContain(chapter.layout);
+        expect(["full", "columns", "contact", "quiet", "diptych", "compare", "annotation", "interlude", "constellation"]).toContain(chapter.layout);
         expect(chapter.media.length).toBeGreaterThan(0);
         expect(chapter.media.every((media) => media.src.startsWith("/images/"))).toBe(true);
       }
+    }
+    const publishedLayouts = new Set(visualStories.flatMap((story) => story.chapters.map((chapter) => chapter.layout)));
+    for (const layout of ["diptych", "compare", "annotation", "interlude", "constellation"]) {
+      expect(publishedLayouts.has(layout as never)).toBe(true);
     }
 
     const contentRoot = resolve(process.cwd(), "content/stories");
@@ -62,5 +66,19 @@ describe("visual stories v1", () => {
 
   it("rejects malformed portable story projects", async () => {
     await expect(parseStoryProjectFile(new Blob([JSON.stringify({ version: 1 })]))).rejects.toThrow("Invalid NHB story project");
+  });
+
+  it("ships a draggable dual-device builder and route-specific static SEO pipeline", () => {
+    const builder = readFileSync(resolve(process.cwd(), "src/pages/StoryBuilderPage.tsx"), "utf8");
+    const timeline = readFileSync(resolve(process.cwd(), "src/components/stories/StoryTimeline.tsx"), "utf8");
+    const routeShells = readFileSync(resolve(process.cwd(), "scripts/build-route-shells.mjs"), "utf8");
+    const pkg = JSON.parse(readFileSync(resolve(process.cwd(), "package.json"), "utf8"));
+    expect(builder).toContain("readArchiveCollection");
+    expect(builder).toContain("previewDevice");
+    expect(timeline).toContain("draggable");
+    expect(timeline).toContain("onDrop");
+    expect(routeShells).toContain("application/ld+json");
+    expect(routeShells).toContain("data-static-route-shell");
+    expect(pkg.scripts["build:app"]).toContain("seo:routes");
   });
 });
