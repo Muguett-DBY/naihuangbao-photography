@@ -52,7 +52,7 @@ describe("workspace project store", () => {
     const project = updateWorkspaceProject(addWorkspaceAsset(createWorkspaceProject(), asset(1)), { description: "Portable study" });
     const file = await createWorkspaceProjectPackage(project);
     const payload = JSON.parse(await file.text());
-    expect(payload).toMatchObject({ format: "nhbpack", version: 2, compositionFiles: [], stories: [] });
+    expect(payload).toMatchObject({ format: "nhbpack", version: 3, compositionFiles: [], stories: [], creativeDocuments: [], vaultManifest: [] });
     const restored = await parseWorkspaceProjectPackage(file);
     expect(restored.id).toBe(project.id);
     expect(restored.assets[0].assetId).toBe("asset-1");

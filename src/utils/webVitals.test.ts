@@ -41,6 +41,12 @@ describe("webVitals rating thresholds", () => {
     expect(_rateForTests("TTFB", 1800)).toBe("needs-improvement");
     expect(_rateForTests("TTFB", 1801)).toBe("poor");
   });
+
+  it("rates longest main-thread tasks for interaction risk", () => {
+    expect(_rateForTests("LONG_TASK", 50)).toBe("good");
+    expect(_rateForTests("LONG_TASK", 120)).toBe("needs-improvement");
+    expect(_rateForTests("LONG_TASK", 220)).toBe("poor");
+  });
 });
 
 describe("initWebVitals", () => {

@@ -9,9 +9,9 @@ export type ProductRoute = {
 export const primaryNavigation: ProductRoute[] = [
   { id: "home", to: "/", labelKey: "nav.home", descriptionKey: "platform.routes.home", keywords: ["home", "首页", "start"] },
   { id: "archive", to: "/archive", labelKey: "nav.archive", descriptionKey: "platform.routes.archive", keywords: ["archive", "档案", "photos", "作品"] },
+  { id: "vault", to: "/vault", labelKey: "nav.vault", descriptionKey: "platform.routes.vault", keywords: ["vault", "素材", "原图", "import", "assets"] },
   { id: "create", to: "/create", labelKey: "nav.create", descriptionKey: "platform.routes.create", keywords: ["create", "创作", "studio", "darkroom", "contact sheet", "filmstrip"] },
   { id: "projects", to: "/projects", labelKey: "nav.projects", descriptionKey: "platform.routes.projects", keywords: ["projects", "项目", "workspace", "collection", "board"] },
-  { id: "about", to: "/about", labelKey: "nav.about", descriptionKey: "platform.routes.about", keywords: ["about", "关于", "project"] },
 ];
 
 export const practiceNavigation: ProductRoute[] = [

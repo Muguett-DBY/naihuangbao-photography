@@ -1,0 +1,30 @@
+{
+  "id": "nocturne-exhibition-v8",
+  "kind": "concept",
+  "title": "Quiet Nocturne Exhibition",
+  "subtitle": "为夜场主题搭建的四个无人投影空间",
+  "chapter": "25",
+  "year": 2026,
+  "summary": "纸拱门、玻璃光柱、悬浮纸场与微型舞台，让深色页面拥有自己的真实影像世界。",
+  "statement": "夜场不是把白天素材压暗。它需要更大的黑色留白、更清晰的光束方向和可被长时间观看的低饱和色彩。四个空间分别测试入口、图腾、场域和舞台。",
+  "place": "虚构夜间影像馆",
+  "season": "无季节夜场",
+  "moods": ["夜曲", "沉浸", "克制", "电影感"],
+  "palette": ["炭黑", "奶油", "柔黄", "苔藓绿", "低饱和珊瑚"],
+  "techniques": ["投影构图", "暗场曝光", "内部发光", "纸质舞台设计"],
+  "process": [
+    { "title": "保留黑场", "note": "让暗部成为空间而不是信息损失，光束只负责建立路径。" },
+    { "title": "建立三种距离", "note": "入口、光柱和悬浮纸场分别提供远景、中景与穿行感。" },
+    { "title": "落到舞台", "note": "最后用黑纸、珊瑚镜与苔藓屏幕压缩成一张图形化收束帧。" }
+  ],
+  "related": ["optical-water-v8", "coral-print-room-v8", "night-projection-room"],
+  "media": [
+    { "src": "/images/visual-os-v8/17-night-projection-arch.webp", "alt": "暗色展厅中的奶油纸拱门被柔黄、苔藓与珊瑚投影穿过", "note": "NIGHT PROJECTION ARCH", "width": 1672, "height": 941 },
+    { "src": "/images/visual-os-v8/18-nocturne-glass-column.webp", "alt": "透明、烟灰、琥珀与苔藓玻璃块组成的夜间发光柱", "note": "NOCTURNE GLASS COLUMN", "width": 1122, "height": 1402 },
+    { "src": "/images/visual-os-v8/19-lantern-paper-field.webp", "alt": "深色空间中悬浮的半透明手工纸平面形成温柔发光场", "note": "LUMINOUS PAPER FIELD", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v8/20-midnight-optical-stage.webp", "alt": "黑纸微型舞台被椭圆光束、珊瑚镜与苔藓玻璃屏切开", "note": "MIDNIGHT OPTICAL STAGE", "width": 1254, "height": 1254 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "投影装置", "夜场空间"],
+  "keywords": ["夜场", "投影", "拱门", "玻璃光柱", "悬浮纸", "舞台", "暗色", "无人影像"]
+}

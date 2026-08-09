@@ -1,0 +1,30 @@
+{
+  "id": "tactile-materials-v8",
+  "kind": "concept",
+  "title": "Tactile Material Finale",
+  "subtitle": "瓷、纸、苔藓与纤维组成的触觉收束章节",
+  "chapter": "26",
+  "year": 2026,
+  "summary": "四张从雕塑到微距的材料练习，为 V8 视觉世界提供安静而有质感的结尾。",
+  "statement": "当画面从空间退回到材料，观看速度也应降低。瓷环、半透明纤维、苔藓石与纸张地层把此前的颜色和结构压缩为可近距离检查的触感。",
+  "place": "虚构材料静物台",
+  "season": "初秋室内",
+  "moods": ["触觉", "平衡", "亲密", "收束"],
+  "palette": ["瓷白", "奶油", "柔黄", "苔藓绿", "低饱和珊瑚", "深莓"],
+  "techniques": ["静物平衡", "透射微距", "低视点雕塑摄影", "纸纤维放大"],
+  "process": [
+    { "title": "建立重量", "note": "用瓷环与苔藓石提供真实重心，让薄纸不显得轻飘。" },
+    { "title": "进入纤维", "note": "通过背光微距把纸边、棉线和半透明层次变成主要信息。" },
+    { "title": "压缩色谱", "note": "最终地层帧一次容纳完整品牌色域，但只留下一个受光焦点。" }
+  ],
+  "related": ["paper-architecture-v8", "botanical-cabinet-v8", "coral-print-room-v8"],
+  "media": [
+    { "src": "/images/visual-os-v8/21-porcelain-paper-totem.webp", "alt": "瓷环、柔黄折纸、苔藓石与珊瑚陶片组成的纵向平衡图腾", "note": "PORCELAIN PAPER TOTEM", "width": 1122, "height": 1402 },
+    { "src": "/images/visual-os-v8/22-translucent-fiber-fold.webp", "alt": "逆光照亮半透明手工纸折边、苔藓线与远处珊瑚平面", "note": "TRANSLUCENT FIBER FOLD", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v8/23-ceramic-moss-balance.webp", "alt": "珊瑚陶瓷弧悬在苔藓石与奶油纸平面上方保持平衡", "note": "CERAMIC MOSS BALANCE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v8/24-handmade-paper-macro.webp", "alt": "奶油、柔黄、苔藓、珊瑚与深莓手工纸形成纤维地层", "note": "HANDMADE PAPER MACRO", "width": 1536, "height": 1024 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "材料微距", "静物造型"],
+  "keywords": ["瓷器", "手工纸", "苔藓", "纤维", "微距", "平衡", "材料", "无人影像"]
+}

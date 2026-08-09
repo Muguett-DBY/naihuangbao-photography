@@ -17,6 +17,10 @@
       "staticShell": true
     },
     {
+      "path": "/vault",
+      "scope": "primary"
+    },
+    {
       "path": "/stories",
       "scope": "primary"
     },
@@ -28,6 +32,14 @@
     },
     {
       "path": "/create",
+      "scope": "primary"
+    },
+    {
+      "path": "/compose",
+      "scope": "primary"
+    },
+    {
+      "path": "/curate",
       "scope": "primary"
     },
     {

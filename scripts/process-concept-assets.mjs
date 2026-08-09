@@ -15,6 +15,7 @@ const COLLECTIONS = [
   { name: "visual-os-v5", webpQuality: 80, avifQuality: 62 },
   { name: "visual-os-v6", webpQuality: 82, avifQuality: 64 },
   { name: "visual-os-v7", webpQuality: 84, avifQuality: 66, deriveDetail: true },
+  { name: "visual-os-v8", webpQuality: 84, avifQuality: 66 },
 ];
 const SIZES = [
   { directory: "640", width: 640 },

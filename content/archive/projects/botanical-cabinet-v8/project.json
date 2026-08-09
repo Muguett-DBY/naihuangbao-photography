@@ -1,0 +1,30 @@
+{
+  "id": "botanical-cabinet-v8",
+  "kind": "concept",
+  "title": "Botanical Cabinet of Light",
+  "subtitle": "苔藓、蕨影与玻璃标本组成的无文字自然目录",
+  "chapter": "23",
+  "year": 2026,
+  "summary": "四种观看植物的方法：俯拍抽屉、影子索引、种荚展台与玻璃植物柜。",
+  "statement": "这不是科学标本的仿制，而是一次关于如何分类触感、影子和透明度的个人练习。植物保留真实的不规则，纸张与玻璃只负责建立观看秩序。",
+  "place": "虚构植物光柜",
+  "season": "盛夏末",
+  "moods": ["自然史", "理性", "柔软", "静谧"],
+  "palette": ["苔藓绿", "奶油", "草黄色", "低饱和珊瑚", "炭黑"],
+  "techniques": ["档案俯拍", "植物投影", "微距景深", "玻璃夹层"],
+  "process": [
+    { "title": "取消标签", "note": "不使用任何文字，让间距、底材与透明层承担分类功能。" },
+    { "title": "交换实体与影子", "note": "让真实苔藓、蕨叶投影和玻璃中的压叶并列出现。" },
+    { "title": "保留有机误差", "note": "网格保持严格，但每个种荚、纤维和叶脉都维持不规则。" }
+  ],
+  "related": ["tactile-materials-v8", "paper-architecture-v8", "botanical-specimen-index"],
+  "media": [
+    { "src": "/images/visual-os-v8/09-moss-specimen-drawer.webp", "alt": "奶油标本抽屉中排列的苔藓、种子、薄纸与珊瑚矿石", "note": "MOSS SPECIMEN DRAWER", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v8/10-fern-shadow-index.webp", "alt": "蕨叶影子穿过多层半透明奶油与柔黄色纸张", "note": "FERN SHADOW INDEX", "width": 1122, "height": 1402 },
+    { "src": "/images/visual-os-v8/11-seed-pod-museum.webp", "alt": "种荚与植物石头在纸质小展台上形成横向节奏", "note": "SEED POD MUSEUM", "width": 1672, "height": 941 },
+    { "src": "/images/visual-os-v8/12-botanical-glass-herbarium.webp", "alt": "压叶悬在透明与琥珀玻璃之间并投下层叠植物光影", "note": "GLASS HERBARIUM", "width": 1254, "height": 1254 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "植物档案", "材料研究"],
+  "keywords": ["苔藓", "蕨叶", "种荚", "标本", "玻璃", "影子", "档案", "无人影像"]
+}

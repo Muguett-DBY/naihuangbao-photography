@@ -11,6 +11,9 @@ const routeBudgets = {
   "src/pages/CreativeStudioPage.tsx": 300 * 1024,
   "src/pages/StoryBuilderPage.tsx": 300 * 1024,
   "src/pages/ProjectsPage.tsx": 300 * 1024,
+  "src/pages/AssetVaultPage.tsx": 300 * 1024,
+  "src/pages/SceneComposerPage.tsx": 320 * 1024,
+  "src/pages/CreativeCuratorPage.tsx": 300 * 1024,
   "src/pages/PublishedProjectPage.tsx": 280 * 1024,
   "src/pages/PhotoEditorPage.tsx": 760 * 1024,
 };

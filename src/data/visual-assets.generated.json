@@ -7219,5 +7219,2625 @@
       "sourceAsset": "source-assets/visual-os-v7/raw/16-night-light-lab.png",
       "usage": "personal-practice"
     }
+  },
+  {
+    "id": "visual-os-v8-01-cream-paper-pavilion",
+    "src": "/images/visual-os-v8/01-cream-paper-pavilion.webp",
+    "avif": "/images/visual-os-v8/01-cream-paper-pavilion.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/01-cream-paper-pavilion.webp",
+      "width960": "/images/visual-os-v8/960/01-cream-paper-pavilion.webp",
+      "width640Avif": "/images/visual-os-v8/640/01-cream-paper-pavilion.avif",
+      "width960Avif": "/images/visual-os-v8/960/01-cream-paper-pavilion.avif"
+    },
+    "alt": "晨光中的奶油手工纸亭、琥珀玻璃与苔藓陶瓷块",
+    "note": "PAPER PAVILION",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#b1976f",
+    "colorVector": [
+      177,
+      151,
+      111
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓"
+    ],
+    "descriptors": [
+      "21",
+      "虚构纸建筑工作室",
+      "初秋晨光",
+      "温柔",
+      "先锋",
+      "安静",
+      "几何",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓",
+      "纸结构搭建",
+      "侧逆光",
+      "负空间构图",
+      "微型建筑摄影",
+      "生成式概念摄影",
+      "纸建筑",
+      "材料造型",
+      "手工纸",
+      "建筑",
+      "晨光",
+      "琥珀玻璃",
+      "苔藓",
+      "珊瑚",
+      "无人影像",
+      "Tender Paper Architecture",
+      "从奶油纸亭到珊瑚轨道的晨光建筑练习",
+      "四个由手工纸、玻璃与陶瓷搭成的无人微型空间，测试温柔色彩如何承载先锋结构。",
+      "柔和不等于缺少张力。折痕、悬挑、轨道和负空间让纸张获得建筑尺度，同时以晨光、苔藓和克制珊瑚保留奶黄包的温度。"
+    ],
+    "analysis": {
+      "luminance": 0.602,
+      "contrast": 0.1614,
+      "saturation": 0.26,
+      "perceptualHash": "80c0d0d1f9e9f9ff",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.35716,
+        -0.31057,
+        0.23293,
+        -0.12423,
+        0.2174,
+        -0.17081,
+        0.17081,
+        -0.17081,
+        0.20187,
+        -0.13976,
+        0.29504,
+        -0.29504,
+        0.27952,
+        -0.29504,
+        0.2174,
+        -0.09317,
+        0.23293,
+        -0.24846
+      ],
+      "searchText": "21 虚构纸建筑工作室 初秋晨光 温柔 先锋 安静 几何 奶油 柔黄 苔藓绿 低饱和珊瑚 深莓 纸结构搭建 侧逆光 负空间构图 微型建筑摄影 生成式概念摄影 纸建筑 材料造型 手工纸 建筑 晨光 琥珀玻璃 苔藓 珊瑚 无人影像 Tender Paper Architecture 从奶油纸亭到珊瑚轨道的晨光建筑练习 四个由手工纸、玻璃与陶瓷搭成的无人微型空间，测试温柔色彩如何承载先锋结构。 柔和不等于缺少张力。折痕、悬挑、轨道和负空间让纸张获得建筑尺度，同时以晨光、苔藓和克制珊瑚保留奶黄包的温度。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "paper-architecture-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/01-cream-paper-pavilion.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-02-cut-paper-staircase",
+    "src": "/images/visual-os-v8/02-cut-paper-staircase.webp",
+    "avif": "/images/visual-os-v8/02-cut-paper-staircase.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/02-cut-paper-staircase.webp",
+      "width960": "/images/visual-os-v8/960/02-cut-paper-staircase.webp",
+      "width640Avif": "/images/visual-os-v8/640/02-cut-paper-staircase.avif",
+      "width960Avif": "/images/visual-os-v8/960/02-cut-paper-staircase.avif"
+    },
+    "alt": "纵向纸阶梯、柔黄薄纸与深莓色块组成的雕塑空间",
+    "note": "CUT PAPER STAIRCASE",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#7f7661",
+    "colorVector": [
+      127,
+      118,
+      97
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓"
+    ],
+    "descriptors": [
+      "21",
+      "虚构纸建筑工作室",
+      "初秋晨光",
+      "温柔",
+      "先锋",
+      "安静",
+      "几何",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓",
+      "纸结构搭建",
+      "侧逆光",
+      "负空间构图",
+      "微型建筑摄影",
+      "生成式概念摄影",
+      "纸建筑",
+      "材料造型",
+      "手工纸",
+      "建筑",
+      "晨光",
+      "琥珀玻璃",
+      "苔藓",
+      "珊瑚",
+      "无人影像",
+      "Tender Paper Architecture",
+      "从奶油纸亭到珊瑚轨道的晨光建筑练习",
+      "四个由手工纸、玻璃与陶瓷搭成的无人微型空间，测试温柔色彩如何承载先锋结构。",
+      "柔和不等于缺少张力。折痕、悬挑、轨道和负空间让纸张获得建筑尺度，同时以晨光、苔藓和克制珊瑚保留奶黄包的温度。"
+    ],
+    "analysis": {
+      "luminance": 0.4636,
+      "contrast": 0.16,
+      "saturation": 0.116,
+      "perceptualHash": "90d87c3c1c387070",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.35716,
+        -0.31057,
+        0.23293,
+        -0.12423,
+        0.2174,
+        -0.17081,
+        0.17081,
+        -0.17081,
+        0.20187,
+        -0.13976,
+        0.29504,
+        -0.29504,
+        0.27952,
+        -0.29504,
+        0.2174,
+        -0.09317,
+        0.23293,
+        -0.24846
+      ],
+      "searchText": "21 虚构纸建筑工作室 初秋晨光 温柔 先锋 安静 几何 奶油 柔黄 苔藓绿 低饱和珊瑚 深莓 纸结构搭建 侧逆光 负空间构图 微型建筑摄影 生成式概念摄影 纸建筑 材料造型 手工纸 建筑 晨光 琥珀玻璃 苔藓 珊瑚 无人影像 Tender Paper Architecture 从奶油纸亭到珊瑚轨道的晨光建筑练习 四个由手工纸、玻璃与陶瓷搭成的无人微型空间，测试温柔色彩如何承载先锋结构。 柔和不等于缺少张力。折痕、悬挑、轨道和负空间让纸张获得建筑尺度，同时以晨光、苔藓和克制珊瑚保留奶黄包的温度。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "paper-architecture-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/02-cut-paper-staircase.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-03-custard-sun-window",
+    "src": "/images/visual-os-v8/03-custard-sun-window.webp",
+    "avif": "/images/visual-os-v8/03-custard-sun-window.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/03-custard-sun-window.webp",
+      "width960": "/images/visual-os-v8/960/03-custard-sun-window.webp",
+      "width640Avif": "/images/visual-os-v8/640/03-custard-sun-window.avif",
+      "width960Avif": "/images/visual-os-v8/960/03-custard-sun-window.avif"
+    },
+    "alt": "半透明奶黄色纸窗把几何晨光投向奶油色地面",
+    "note": "CUSTARD SUN WINDOW",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#8f794f",
+    "colorVector": [
+      143,
+      121,
+      79
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓"
+    ],
+    "descriptors": [
+      "21",
+      "虚构纸建筑工作室",
+      "初秋晨光",
+      "温柔",
+      "先锋",
+      "安静",
+      "几何",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓",
+      "纸结构搭建",
+      "侧逆光",
+      "负空间构图",
+      "微型建筑摄影",
+      "生成式概念摄影",
+      "纸建筑",
+      "材料造型",
+      "手工纸",
+      "建筑",
+      "晨光",
+      "琥珀玻璃",
+      "苔藓",
+      "珊瑚",
+      "无人影像",
+      "Tender Paper Architecture",
+      "从奶油纸亭到珊瑚轨道的晨光建筑练习",
+      "四个由手工纸、玻璃与陶瓷搭成的无人微型空间，测试温柔色彩如何承载先锋结构。",
+      "柔和不等于缺少张力。折痕、悬挑、轨道和负空间让纸张获得建筑尺度，同时以晨光、苔藓和克制珊瑚保留奶黄包的温度。"
+    ],
+    "analysis": {
+      "luminance": 0.4807,
+      "contrast": 0.194,
+      "saturation": 0.2498,
+      "perceptualHash": "0e1e1e1e1e1e3e04",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.35716,
+        -0.31057,
+        0.23293,
+        -0.12423,
+        0.2174,
+        -0.17081,
+        0.17081,
+        -0.17081,
+        0.20187,
+        -0.13976,
+        0.29504,
+        -0.29504,
+        0.27952,
+        -0.29504,
+        0.2174,
+        -0.09317,
+        0.23293,
+        -0.24846
+      ],
+      "searchText": "21 虚构纸建筑工作室 初秋晨光 温柔 先锋 安静 几何 奶油 柔黄 苔藓绿 低饱和珊瑚 深莓 纸结构搭建 侧逆光 负空间构图 微型建筑摄影 生成式概念摄影 纸建筑 材料造型 手工纸 建筑 晨光 琥珀玻璃 苔藓 珊瑚 无人影像 Tender Paper Architecture 从奶油纸亭到珊瑚轨道的晨光建筑练习 四个由手工纸、玻璃与陶瓷搭成的无人微型空间，测试温柔色彩如何承载先锋结构。 柔和不等于缺少张力。折痕、悬挑、轨道和负空间让纸张获得建筑尺度，同时以晨光、苔藓和克制珊瑚保留奶黄包的温度。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "paper-architecture-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/03-custard-sun-window.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-04-coral-paper-orbit",
+    "src": "/images/visual-os-v8/04-coral-paper-orbit.webp",
+    "avif": "/images/visual-os-v8/04-coral-paper-orbit.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/04-coral-paper-orbit.webp",
+      "width960": "/images/visual-os-v8/960/04-coral-paper-orbit.webp",
+      "width640Avif": "/images/visual-os-v8/640/04-coral-paper-orbit.avif",
+      "width960Avif": "/images/visual-os-v8/960/04-coral-paper-orbit.avif"
+    },
+    "alt": "珊瑚纸弧围绕奶油纸体块与苔藓石盘形成轨道",
+    "note": "CORAL PAPER ORBIT",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": 1,
+    "orientation": "square",
+    "dominantColor": "#b69983",
+    "colorVector": [
+      182,
+      153,
+      131
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓"
+    ],
+    "descriptors": [
+      "21",
+      "虚构纸建筑工作室",
+      "初秋晨光",
+      "温柔",
+      "先锋",
+      "安静",
+      "几何",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓",
+      "纸结构搭建",
+      "侧逆光",
+      "负空间构图",
+      "微型建筑摄影",
+      "生成式概念摄影",
+      "纸建筑",
+      "材料造型",
+      "手工纸",
+      "建筑",
+      "晨光",
+      "琥珀玻璃",
+      "苔藓",
+      "珊瑚",
+      "无人影像",
+      "Tender Paper Architecture",
+      "从奶油纸亭到珊瑚轨道的晨光建筑练习",
+      "四个由手工纸、玻璃与陶瓷搭成的无人微型空间，测试温柔色彩如何承载先锋结构。",
+      "柔和不等于缺少张力。折痕、悬挑、轨道和负空间让纸张获得建筑尺度，同时以晨光、苔藓和克制珊瑚保留奶黄包的温度。"
+    ],
+    "analysis": {
+      "luminance": 0.6184,
+      "contrast": 0.1614,
+      "saturation": 0.1979,
+      "perceptualHash": "3f3b2f0f0b073300",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.35716,
+        -0.31057,
+        0.23293,
+        -0.12423,
+        0.2174,
+        -0.17081,
+        0.17081,
+        -0.17081,
+        0.20187,
+        -0.13976,
+        0.29504,
+        -0.29504,
+        0.27952,
+        -0.29504,
+        0.2174,
+        -0.09317,
+        0.23293,
+        -0.24846
+      ],
+      "searchText": "21 虚构纸建筑工作室 初秋晨光 温柔 先锋 安静 几何 奶油 柔黄 苔藓绿 低饱和珊瑚 深莓 纸结构搭建 侧逆光 负空间构图 微型建筑摄影 生成式概念摄影 纸建筑 材料造型 手工纸 建筑 晨光 琥珀玻璃 苔藓 珊瑚 无人影像 Tender Paper Architecture 从奶油纸亭到珊瑚轨道的晨光建筑练习 四个由手工纸、玻璃与陶瓷搭成的无人微型空间，测试温柔色彩如何承载先锋结构。 柔和不等于缺少张力。折痕、悬挑、轨道和负空间让纸张获得建筑尺度，同时以晨光、苔藓和克制珊瑚保留奶黄包的温度。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "paper-architecture-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/04-coral-paper-orbit.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-05-water-glass-prism-table",
+    "src": "/images/visual-os-v8/05-water-glass-prism-table.webp",
+    "avif": "/images/visual-os-v8/05-water-glass-prism-table.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/05-water-glass-prism-table.webp",
+      "width960": "/images/visual-os-v8/960/05-water-glass-prism-table.webp",
+      "width640Avif": "/images/visual-os-v8/640/05-water-glass-prism-table.avif",
+      "width960Avif": "/images/visual-os-v8/960/05-water-glass-prism-table.avif"
+    },
+    "alt": "玻璃光桌上的水杯与棱镜把晨光分散到手工纸上",
+    "note": "WATER PRISM TABLE",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#867c67",
+    "colorVector": [
+      134,
+      124,
+      103
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "透明",
+      "奶油",
+      "苔藓灰",
+      "琥珀",
+      "低饱和珊瑚"
+    ],
+    "descriptors": [
+      "22",
+      "虚构光学材料实验室",
+      "雨后清晨",
+      "清澈",
+      "潮湿",
+      "克制",
+      "实验性",
+      "透明",
+      "奶油",
+      "苔藓灰",
+      "琥珀",
+      "低饱和珊瑚",
+      "真实折射",
+      "雨滴微距",
+      "磨砂叠层",
+      "焦散投影",
+      "生成式概念摄影",
+      "光学研究",
+      "玻璃材料",
+      "水",
+      "玻璃",
+      "折射",
+      "雨滴",
+      "焦散",
+      "磨砂",
+      "棱镜",
+      "无人影像",
+      "Water & Glass Instruments",
+      "把水、雨与玻璃整理成四件温柔光学仪器",
+      "从水棱镜桌到琥珀焦散房间，观察透明材料如何把同一束光拆成不同节奏。",
+      "玻璃不是装饰层，而是会主动编辑画面的透镜。折射、凝结、磨砂与焦散分别改变颜色、清晰度和空间边界，形成可被本地智能策展读取的光学谱系。"
+    ],
+    "analysis": {
+      "luminance": 0.487,
+      "contrast": 0.179,
+      "saturation": 0.1209,
+      "perceptualHash": "f0fcfefffff08040",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.25307,
+        -0.23901,
+        0.12653,
+        -0.23901,
+        0.12653,
+        -0.23901,
+        0.30931,
+        -0.29525,
+        0.21089,
+        -0.28119,
+        0.22495,
+        -0.22495,
+        0.16871,
+        -0.33743,
+        0.18277,
+        -0.18277,
+        0.26713,
+        -0.21089
+      ],
+      "searchText": "22 虚构光学材料实验室 雨后清晨 清澈 潮湿 克制 实验性 透明 奶油 苔藓灰 琥珀 低饱和珊瑚 真实折射 雨滴微距 磨砂叠层 焦散投影 生成式概念摄影 光学研究 玻璃材料 水 玻璃 折射 雨滴 焦散 磨砂 棱镜 无人影像 Water & Glass Instruments 把水、雨与玻璃整理成四件温柔光学仪器 从水棱镜桌到琥珀焦散房间，观察透明材料如何把同一束光拆成不同节奏。 玻璃不是装饰层，而是会主动编辑画面的透镜。折射、凝结、磨砂与焦散分别改变颜色、清晰度和空间边界，形成可被本地智能策展读取的光学谱系。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "optical-water-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/05-water-glass-prism-table.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-06-rain-lens-grid",
+    "src": "/images/visual-os-v8/06-rain-lens-grid.webp",
+    "avif": "/images/visual-os-v8/06-rain-lens-grid.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/06-rain-lens-grid.webp",
+      "width960": "/images/visual-os-v8/960/06-rain-lens-grid.webp",
+      "width640Avif": "/images/visual-os-v8/640/06-rain-lens-grid.avif",
+      "width960Avif": "/images/visual-os-v8/960/06-rain-lens-grid.avif"
+    },
+    "alt": "覆有雨滴的玻璃镜阵折射奶油纸、苔藓与珊瑚线",
+    "note": "RAIN LENS GRID",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#4d4435",
+    "colorVector": [
+      77,
+      68,
+      53
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "透明",
+      "奶油",
+      "苔藓灰",
+      "琥珀",
+      "低饱和珊瑚"
+    ],
+    "descriptors": [
+      "22",
+      "虚构光学材料实验室",
+      "雨后清晨",
+      "清澈",
+      "潮湿",
+      "克制",
+      "实验性",
+      "透明",
+      "奶油",
+      "苔藓灰",
+      "琥珀",
+      "低饱和珊瑚",
+      "真实折射",
+      "雨滴微距",
+      "磨砂叠层",
+      "焦散投影",
+      "生成式概念摄影",
+      "光学研究",
+      "玻璃材料",
+      "水",
+      "玻璃",
+      "折射",
+      "雨滴",
+      "焦散",
+      "磨砂",
+      "棱镜",
+      "无人影像",
+      "Water & Glass Instruments",
+      "把水、雨与玻璃整理成四件温柔光学仪器",
+      "从水棱镜桌到琥珀焦散房间，观察透明材料如何把同一束光拆成不同节奏。",
+      "玻璃不是装饰层，而是会主动编辑画面的透镜。折射、凝结、磨砂与焦散分别改变颜色、清晰度和空间边界，形成可被本地智能策展读取的光学谱系。"
+    ],
+    "analysis": {
+      "luminance": 0.27,
+      "contrast": 0.1703,
+      "saturation": 0.0915,
+      "perceptualHash": "0153139f5b525212",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "dark",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.25405,
+        -0.23994,
+        0.12703,
+        -0.22582,
+        0.12703,
+        -0.25405,
+        0.31051,
+        -0.28228,
+        0.21171,
+        -0.28228,
+        0.22582,
+        -0.22582,
+        0.16937,
+        -0.33873,
+        0.18348,
+        -0.18348,
+        0.26816,
+        -0.21171
+      ],
+      "searchText": "22 虚构光学材料实验室 雨后清晨 清澈 潮湿 克制 实验性 透明 奶油 苔藓灰 琥珀 低饱和珊瑚 真实折射 雨滴微距 磨砂叠层 焦散投影 生成式概念摄影 光学研究 玻璃材料 水 玻璃 折射 雨滴 焦散 磨砂 棱镜 无人影像 Water & Glass Instruments 把水、雨与玻璃整理成四件温柔光学仪器 从水棱镜桌到琥珀焦散房间，观察透明材料如何把同一束光拆成不同节奏。 玻璃不是装饰层，而是会主动编辑画面的透镜。折射、凝结、磨砂与焦散分别改变颜色、清晰度和空间边界，形成可被本地智能策展读取的光学谱系。 centered mid-focus dark soft-contrast"
+    },
+    "projectIds": [
+      "optical-water-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/06-rain-lens-grid.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-07-frosted-glass-tide",
+    "src": "/images/visual-os-v8/07-frosted-glass-tide.webp",
+    "avif": "/images/visual-os-v8/07-frosted-glass-tide.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/07-frosted-glass-tide.webp",
+      "width960": "/images/visual-os-v8/960/07-frosted-glass-tide.webp",
+      "width640Avif": "/images/visual-os-v8/640/07-frosted-glass-tide.avif",
+      "width960Avif": "/images/visual-os-v8/960/07-frosted-glass-tide.avif"
+    },
+    "alt": "磨砂与波纹玻璃像缓慢潮汐一样叠过奶油纸平面",
+    "note": "FROSTED GLASS TIDE",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#c3baaa",
+    "colorVector": [
+      195,
+      186,
+      170
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "透明",
+      "奶油",
+      "苔藓灰",
+      "琥珀",
+      "低饱和珊瑚"
+    ],
+    "descriptors": [
+      "22",
+      "虚构光学材料实验室",
+      "雨后清晨",
+      "清澈",
+      "潮湿",
+      "克制",
+      "实验性",
+      "透明",
+      "奶油",
+      "苔藓灰",
+      "琥珀",
+      "低饱和珊瑚",
+      "真实折射",
+      "雨滴微距",
+      "磨砂叠层",
+      "焦散投影",
+      "生成式概念摄影",
+      "光学研究",
+      "玻璃材料",
+      "水",
+      "玻璃",
+      "折射",
+      "雨滴",
+      "焦散",
+      "磨砂",
+      "棱镜",
+      "无人影像",
+      "Water & Glass Instruments",
+      "把水、雨与玻璃整理成四件温柔光学仪器",
+      "从水棱镜桌到琥珀焦散房间，观察透明材料如何把同一束光拆成不同节奏。",
+      "玻璃不是装饰层，而是会主动编辑画面的透镜。折射、凝结、磨砂与焦散分别改变颜色、清晰度和空间边界，形成可被本地智能策展读取的光学谱系。"
+    ],
+    "analysis": {
+      "luminance": 0.7324,
+      "contrast": 0.0743,
+      "saturation": 0.0988,
+      "perceptualHash": "1f3f3f3f03001000",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "bright",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.2539,
+        -0.23979,
+        0.12695,
+        -0.22569,
+        0.12695,
+        -0.23979,
+        0.31032,
+        -0.28211,
+        0.21158,
+        -0.29622,
+        0.22569,
+        -0.22569,
+        0.16927,
+        -0.33853,
+        0.18337,
+        -0.18337,
+        0.268,
+        -0.21158
+      ],
+      "searchText": "22 虚构光学材料实验室 雨后清晨 清澈 潮湿 克制 实验性 透明 奶油 苔藓灰 琥珀 低饱和珊瑚 真实折射 雨滴微距 磨砂叠层 焦散投影 生成式概念摄影 光学研究 玻璃材料 水 玻璃 折射 雨滴 焦散 磨砂 棱镜 无人影像 Water & Glass Instruments 把水、雨与玻璃整理成四件温柔光学仪器 从水棱镜桌到琥珀焦散房间，观察透明材料如何把同一束光拆成不同节奏。 玻璃不是装饰层，而是会主动编辑画面的透镜。折射、凝结、磨砂与焦散分别改变颜色、清晰度和空间边界，形成可被本地智能策展读取的光学谱系。 centered mid-focus bright soft-contrast"
+    },
+    "projectIds": [
+      "optical-water-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/07-frosted-glass-tide.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-08-amber-caustic-room",
+    "src": "/images/visual-os-v8/08-amber-caustic-room.webp",
+    "avif": "/images/visual-os-v8/08-amber-caustic-room.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/08-amber-caustic-room.webp",
+      "width960": "/images/visual-os-v8/960/08-amber-caustic-room.webp",
+      "width640Avif": "/images/visual-os-v8/640/08-amber-caustic-room.avif",
+      "width960Avif": "/images/visual-os-v8/960/08-amber-caustic-room.avif"
+    },
+    "alt": "琥珀玻璃墙在奶油模型房间与深莓地面投下液态焦散",
+    "note": "AMBER CAUSTIC ROOM",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": 1,
+    "orientation": "square",
+    "dominantColor": "#5b3721",
+    "colorVector": [
+      91,
+      55,
+      33
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "透明",
+      "奶油",
+      "苔藓灰",
+      "琥珀",
+      "低饱和珊瑚"
+    ],
+    "descriptors": [
+      "22",
+      "虚构光学材料实验室",
+      "雨后清晨",
+      "清澈",
+      "潮湿",
+      "克制",
+      "实验性",
+      "透明",
+      "奶油",
+      "苔藓灰",
+      "琥珀",
+      "低饱和珊瑚",
+      "真实折射",
+      "雨滴微距",
+      "磨砂叠层",
+      "焦散投影",
+      "生成式概念摄影",
+      "光学研究",
+      "玻璃材料",
+      "水",
+      "玻璃",
+      "折射",
+      "雨滴",
+      "焦散",
+      "磨砂",
+      "棱镜",
+      "无人影像",
+      "Water & Glass Instruments",
+      "把水、雨与玻璃整理成四件温柔光学仪器",
+      "从水棱镜桌到琥珀焦散房间，观察透明材料如何把同一束光拆成不同节奏。",
+      "玻璃不是装饰层，而是会主动编辑画面的透镜。折射、凝结、磨砂与焦散分别改变颜色、清晰度和空间边界，形成可被本地智能策展读取的光学谱系。"
+    ],
+    "analysis": {
+      "luminance": 0.2408,
+      "contrast": 0.1721,
+      "saturation": 0.2259,
+      "perceptualHash": "0062267e7e3e0e00",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "dark",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.25405,
+        -0.23994,
+        0.12703,
+        -0.22582,
+        0.12703,
+        -0.25405,
+        0.31051,
+        -0.28228,
+        0.21171,
+        -0.28228,
+        0.22582,
+        -0.22582,
+        0.16937,
+        -0.33873,
+        0.18348,
+        -0.18348,
+        0.26816,
+        -0.21171
+      ],
+      "searchText": "22 虚构光学材料实验室 雨后清晨 清澈 潮湿 克制 实验性 透明 奶油 苔藓灰 琥珀 低饱和珊瑚 真实折射 雨滴微距 磨砂叠层 焦散投影 生成式概念摄影 光学研究 玻璃材料 水 玻璃 折射 雨滴 焦散 磨砂 棱镜 无人影像 Water & Glass Instruments 把水、雨与玻璃整理成四件温柔光学仪器 从水棱镜桌到琥珀焦散房间，观察透明材料如何把同一束光拆成不同节奏。 玻璃不是装饰层，而是会主动编辑画面的透镜。折射、凝结、磨砂与焦散分别改变颜色、清晰度和空间边界，形成可被本地智能策展读取的光学谱系。 centered mid-focus dark soft-contrast"
+    },
+    "projectIds": [
+      "optical-water-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/08-amber-caustic-room.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-09-moss-specimen-drawer",
+    "src": "/images/visual-os-v8/09-moss-specimen-drawer.webp",
+    "avif": "/images/visual-os-v8/09-moss-specimen-drawer.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/09-moss-specimen-drawer.webp",
+      "width960": "/images/visual-os-v8/960/09-moss-specimen-drawer.webp",
+      "width640Avif": "/images/visual-os-v8/640/09-moss-specimen-drawer.avif",
+      "width960Avif": "/images/visual-os-v8/960/09-moss-specimen-drawer.avif"
+    },
+    "alt": "奶油标本抽屉中排列的苔藓、种子、薄纸与珊瑚矿石",
+    "note": "MOSS SPECIMEN DRAWER",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#8f8875",
+    "colorVector": [
+      143,
+      136,
+      117
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "苔藓绿",
+      "奶油",
+      "草黄色",
+      "低饱和珊瑚",
+      "炭黑"
+    ],
+    "descriptors": [
+      "23",
+      "虚构植物光柜",
+      "盛夏末",
+      "自然史",
+      "理性",
+      "柔软",
+      "静谧",
+      "苔藓绿",
+      "奶油",
+      "草黄色",
+      "低饱和珊瑚",
+      "炭黑",
+      "档案俯拍",
+      "植物投影",
+      "微距景深",
+      "玻璃夹层",
+      "生成式概念摄影",
+      "植物档案",
+      "材料研究",
+      "苔藓",
+      "蕨叶",
+      "种荚",
+      "标本",
+      "玻璃",
+      "影子",
+      "档案",
+      "无人影像",
+      "Botanical Cabinet of Light",
+      "苔藓、蕨影与玻璃标本组成的无文字自然目录",
+      "四种观看植物的方法：俯拍抽屉、影子索引、种荚展台与玻璃植物柜。",
+      "这不是科学标本的仿制，而是一次关于如何分类触感、影子和透明度的个人练习。植物保留真实的不规则，纸张与玻璃只负责建立观看秩序。"
+    ],
+    "analysis": {
+      "luminance": 0.534,
+      "contrast": 0.2607,
+      "saturation": 0.1045,
+      "perceptualHash": "003e7e7e7e7e7e00",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "high-contrast"
+      ],
+      "semanticVector": [
+        0.30502,
+        -0.14525,
+        0.1743,
+        -0.15977,
+        0.1743,
+        -0.2324,
+        0.26145,
+        -0.27597,
+        0.21787,
+        -0.30502,
+        0.24692,
+        -0.18882,
+        0.31955,
+        -0.26145,
+        0.26145,
+        -0.14525,
+        0.18882,
+        -0.26145
+      ],
+      "searchText": "23 虚构植物光柜 盛夏末 自然史 理性 柔软 静谧 苔藓绿 奶油 草黄色 低饱和珊瑚 炭黑 档案俯拍 植物投影 微距景深 玻璃夹层 生成式概念摄影 植物档案 材料研究 苔藓 蕨叶 种荚 标本 玻璃 影子 档案 无人影像 Botanical Cabinet of Light 苔藓、蕨影与玻璃标本组成的无文字自然目录 四种观看植物的方法：俯拍抽屉、影子索引、种荚展台与玻璃植物柜。 这不是科学标本的仿制，而是一次关于如何分类触感、影子和透明度的个人练习。植物保留真实的不规则，纸张与玻璃只负责建立观看秩序。 centered mid-focus balanced-light high-contrast"
+    },
+    "projectIds": [
+      "botanical-cabinet-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/09-moss-specimen-drawer.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-10-fern-shadow-index",
+    "src": "/images/visual-os-v8/10-fern-shadow-index.webp",
+    "avif": "/images/visual-os-v8/10-fern-shadow-index.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/10-fern-shadow-index.webp",
+      "width960": "/images/visual-os-v8/960/10-fern-shadow-index.webp",
+      "width640Avif": "/images/visual-os-v8/640/10-fern-shadow-index.avif",
+      "width960Avif": "/images/visual-os-v8/960/10-fern-shadow-index.avif"
+    },
+    "alt": "蕨叶影子穿过多层半透明奶油与柔黄色纸张",
+    "note": "FERN SHADOW INDEX",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#bead87",
+    "colorVector": [
+      190,
+      173,
+      135
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "苔藓绿",
+      "奶油",
+      "草黄色",
+      "低饱和珊瑚",
+      "炭黑"
+    ],
+    "descriptors": [
+      "23",
+      "虚构植物光柜",
+      "盛夏末",
+      "自然史",
+      "理性",
+      "柔软",
+      "静谧",
+      "苔藓绿",
+      "奶油",
+      "草黄色",
+      "低饱和珊瑚",
+      "炭黑",
+      "档案俯拍",
+      "植物投影",
+      "微距景深",
+      "玻璃夹层",
+      "生成式概念摄影",
+      "植物档案",
+      "材料研究",
+      "苔藓",
+      "蕨叶",
+      "种荚",
+      "标本",
+      "玻璃",
+      "影子",
+      "档案",
+      "无人影像",
+      "Botanical Cabinet of Light",
+      "苔藓、蕨影与玻璃标本组成的无文字自然目录",
+      "四种观看植物的方法：俯拍抽屉、影子索引、种荚展台与玻璃植物柜。",
+      "这不是科学标本的仿制，而是一次关于如何分类触感、影子和透明度的个人练习。植物保留真实的不规则，纸张与玻璃只负责建立观看秩序。"
+    ],
+    "analysis": {
+      "luminance": 0.6808,
+      "contrast": 0.1733,
+      "saturation": 0.2182,
+      "perceptualHash": "30b0f1f3bf2f2f3f",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "bright",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.30502,
+        -0.15977,
+        0.1743,
+        -0.14525,
+        0.1743,
+        -0.2324,
+        0.26145,
+        -0.27597,
+        0.21787,
+        -0.30502,
+        0.24692,
+        -0.18882,
+        0.31955,
+        -0.26145,
+        0.26145,
+        -0.14525,
+        0.18882,
+        -0.26145
+      ],
+      "searchText": "23 虚构植物光柜 盛夏末 自然史 理性 柔软 静谧 苔藓绿 奶油 草黄色 低饱和珊瑚 炭黑 档案俯拍 植物投影 微距景深 玻璃夹层 生成式概念摄影 植物档案 材料研究 苔藓 蕨叶 种荚 标本 玻璃 影子 档案 无人影像 Botanical Cabinet of Light 苔藓、蕨影与玻璃标本组成的无文字自然目录 四种观看植物的方法：俯拍抽屉、影子索引、种荚展台与玻璃植物柜。 这不是科学标本的仿制，而是一次关于如何分类触感、影子和透明度的个人练习。植物保留真实的不规则，纸张与玻璃只负责建立观看秩序。 centered mid-focus bright soft-contrast"
+    },
+    "projectIds": [
+      "botanical-cabinet-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/10-fern-shadow-index.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-11-seed-pod-museum",
+    "src": "/images/visual-os-v8/11-seed-pod-museum.webp",
+    "avif": "/images/visual-os-v8/11-seed-pod-museum.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/11-seed-pod-museum.webp",
+      "width960": "/images/visual-os-v8/960/11-seed-pod-museum.webp",
+      "width640Avif": "/images/visual-os-v8/640/11-seed-pod-museum.avif",
+      "width960Avif": "/images/visual-os-v8/960/11-seed-pod-museum.avif"
+    },
+    "alt": "种荚与植物石头在纸质小展台上形成横向节奏",
+    "note": "SEED POD MUSEUM",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#927d47",
+    "colorVector": [
+      146,
+      125,
+      71
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "苔藓绿",
+      "奶油",
+      "草黄色",
+      "低饱和珊瑚",
+      "炭黑"
+    ],
+    "descriptors": [
+      "23",
+      "虚构植物光柜",
+      "盛夏末",
+      "自然史",
+      "理性",
+      "柔软",
+      "静谧",
+      "苔藓绿",
+      "奶油",
+      "草黄色",
+      "低饱和珊瑚",
+      "炭黑",
+      "档案俯拍",
+      "植物投影",
+      "微距景深",
+      "玻璃夹层",
+      "生成式概念摄影",
+      "植物档案",
+      "材料研究",
+      "苔藓",
+      "蕨叶",
+      "种荚",
+      "标本",
+      "玻璃",
+      "影子",
+      "档案",
+      "无人影像",
+      "Botanical Cabinet of Light",
+      "苔藓、蕨影与玻璃标本组成的无文字自然目录",
+      "四种观看植物的方法：俯拍抽屉、影子索引、种荚展台与玻璃植物柜。",
+      "这不是科学标本的仿制，而是一次关于如何分类触感、影子和透明度的个人练习。植物保留真实的不规则，纸张与玻璃只负责建立观看秩序。"
+    ],
+    "analysis": {
+      "luminance": 0.492,
+      "contrast": 0.1439,
+      "saturation": 0.2911,
+      "perceptualHash": "7f03030303037f7f",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.30567,
+        -0.16011,
+        0.17467,
+        -0.16011,
+        0.17467,
+        -0.23289,
+        0.262,
+        -0.27656,
+        0.21833,
+        -0.29111,
+        0.24744,
+        -0.18922,
+        0.32022,
+        -0.262,
+        0.262,
+        -0.14556,
+        0.18922,
+        -0.262
+      ],
+      "searchText": "23 虚构植物光柜 盛夏末 自然史 理性 柔软 静谧 苔藓绿 奶油 草黄色 低饱和珊瑚 炭黑 档案俯拍 植物投影 微距景深 玻璃夹层 生成式概念摄影 植物档案 材料研究 苔藓 蕨叶 种荚 标本 玻璃 影子 档案 无人影像 Botanical Cabinet of Light 苔藓、蕨影与玻璃标本组成的无文字自然目录 四种观看植物的方法：俯拍抽屉、影子索引、种荚展台与玻璃植物柜。 这不是科学标本的仿制，而是一次关于如何分类触感、影子和透明度的个人练习。植物保留真实的不规则，纸张与玻璃只负责建立观看秩序。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "botanical-cabinet-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/11-seed-pod-museum.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-12-botanical-glass-herbarium",
+    "src": "/images/visual-os-v8/12-botanical-glass-herbarium.webp",
+    "avif": "/images/visual-os-v8/12-botanical-glass-herbarium.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/12-botanical-glass-herbarium.webp",
+      "width960": "/images/visual-os-v8/960/12-botanical-glass-herbarium.webp",
+      "width640Avif": "/images/visual-os-v8/640/12-botanical-glass-herbarium.avif",
+      "width960Avif": "/images/visual-os-v8/960/12-botanical-glass-herbarium.avif"
+    },
+    "alt": "压叶悬在透明与琥珀玻璃之间并投下层叠植物光影",
+    "note": "GLASS HERBARIUM",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": 1,
+    "orientation": "square",
+    "dominantColor": "#5a4923",
+    "colorVector": [
+      90,
+      73,
+      35
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "苔藓绿",
+      "奶油",
+      "草黄色",
+      "低饱和珊瑚",
+      "炭黑"
+    ],
+    "descriptors": [
+      "23",
+      "虚构植物光柜",
+      "盛夏末",
+      "自然史",
+      "理性",
+      "柔软",
+      "静谧",
+      "苔藓绿",
+      "奶油",
+      "草黄色",
+      "低饱和珊瑚",
+      "炭黑",
+      "档案俯拍",
+      "植物投影",
+      "微距景深",
+      "玻璃夹层",
+      "生成式概念摄影",
+      "植物档案",
+      "材料研究",
+      "苔藓",
+      "蕨叶",
+      "种荚",
+      "标本",
+      "玻璃",
+      "影子",
+      "档案",
+      "无人影像",
+      "Botanical Cabinet of Light",
+      "苔藓、蕨影与玻璃标本组成的无文字自然目录",
+      "四种观看植物的方法：俯拍抽屉、影子索引、种荚展台与玻璃植物柜。",
+      "这不是科学标本的仿制，而是一次关于如何分类触感、影子和透明度的个人练习。植物保留真实的不规则，纸张与玻璃只负责建立观看秩序。"
+    ],
+    "analysis": {
+      "luminance": 0.2887,
+      "contrast": 0.225,
+      "saturation": 0.2178,
+      "perceptualHash": "000000081e3f7f7f",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "dark",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.30528,
+        -0.15991,
+        0.17445,
+        -0.14537,
+        0.17445,
+        -0.24713,
+        0.26167,
+        -0.2762,
+        0.21806,
+        -0.29074,
+        0.24713,
+        -0.18898,
+        0.31982,
+        -0.26167,
+        0.26167,
+        -0.14537,
+        0.18898,
+        -0.26167
+      ],
+      "searchText": "23 虚构植物光柜 盛夏末 自然史 理性 柔软 静谧 苔藓绿 奶油 草黄色 低饱和珊瑚 炭黑 档案俯拍 植物投影 微距景深 玻璃夹层 生成式概念摄影 植物档案 材料研究 苔藓 蕨叶 种荚 标本 玻璃 影子 档案 无人影像 Botanical Cabinet of Light 苔藓、蕨影与玻璃标本组成的无文字自然目录 四种观看植物的方法：俯拍抽屉、影子索引、种荚展台与玻璃植物柜。 这不是科学标本的仿制，而是一次关于如何分类触感、影子和透明度的个人练习。植物保留真实的不规则，纸张与玻璃只负责建立观看秩序。 centered mid-focus dark soft-contrast"
+    },
+    "projectIds": [
+      "botanical-cabinet-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/12-botanical-glass-herbarium.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-13-coral-pigment-press",
+    "src": "/images/visual-os-v8/13-coral-pigment-press.webp",
+    "avif": "/images/visual-os-v8/13-coral-pigment-press.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/13-coral-pigment-press.webp",
+      "width960": "/images/visual-os-v8/960/13-coral-pigment-press.webp",
+      "width640Avif": "/images/visual-os-v8/640/13-coral-pigment-press.avif",
+      "width960Avif": "/images/visual-os-v8/960/13-coral-pigment-press.avif"
+    },
+    "alt": "奶油色小型压印机把深莓颜料压在长条珊瑚手工纸上",
+    "note": "CORAL PIGMENT PRESS",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#6f5a4e",
+    "colorVector": [
+      111,
+      90,
+      78
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "炭黑"
+    ],
+    "descriptors": [
+      "24",
+      "虚构珊瑚印刷室",
+      "初秋午后",
+      "有力",
+      "触觉",
+      "图形化",
+      "克制",
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "炭黑",
+      "纸张压印",
+      "流体定格",
+      "模块俯拍",
+      "陶瓷负空间",
+      "生成式概念摄影",
+      "印刷实验",
+      "陶瓷造型",
+      "珊瑚",
+      "印刷",
+      "颜料",
+      "纸带",
+      "色彩系统",
+      "陶瓷",
+      "无人影像",
+      "Coral Print Room",
+      "颜料、纸带与陶瓷负空间构成的印刷动作",
+      "从压印到墨带、色彩桌与陶瓷孔洞，让珊瑚色成为动作而不是装饰。",
+      "品牌色只有在参与结构时才真正有意义。珊瑚颜料被压过滚筒、拉成长带、切成模块，再转化为陶瓷负空间，与奶油、苔藓和深莓形成稳定而不单调的色彩系统。"
+    ],
+    "analysis": {
+      "luminance": 0.3681,
+      "contrast": 0.0984,
+      "saturation": 0.1326,
+      "perceptualHash": "0f3f6f371b1e0f00",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.198,
+        -0.22846,
+        0.27415,
+        -0.24369,
+        0.16753,
+        -0.25892,
+        0.18276,
+        -0.27415,
+        0.198,
+        -0.198,
+        0.1523,
+        -0.30461,
+        0.27415,
+        -0.30461,
+        0.18276,
+        -0.1523,
+        0.198,
+        -0.33507
+      ],
+      "searchText": "24 虚构珊瑚印刷室 初秋午后 有力 触觉 图形化 克制 低饱和珊瑚 深莓 奶油 柔黄 苔藓绿 炭黑 纸张压印 流体定格 模块俯拍 陶瓷负空间 生成式概念摄影 印刷实验 陶瓷造型 珊瑚 印刷 颜料 纸带 色彩系统 陶瓷 无人影像 Coral Print Room 颜料、纸带与陶瓷负空间构成的印刷动作 从压印到墨带、色彩桌与陶瓷孔洞，让珊瑚色成为动作而不是装饰。 品牌色只有在参与结构时才真正有意义。珊瑚颜料被压过滚筒、拉成长带、切成模块，再转化为陶瓷负空间，与奶油、苔藓和深莓形成稳定而不单调的色彩系统。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "coral-print-room-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/13-coral-pigment-press.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-14-berry-ink-ribbons",
+    "src": "/images/visual-os-v8/14-berry-ink-ribbons.webp",
+    "avif": "/images/visual-os-v8/14-berry-ink-ribbons.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/14-berry-ink-ribbons.webp",
+      "width960": "/images/visual-os-v8/960/14-berry-ink-ribbons.webp",
+      "width640Avif": "/images/visual-os-v8/640/14-berry-ink-ribbons.avif",
+      "width960Avif": "/images/visual-os-v8/960/14-berry-ink-ribbons.avif"
+    },
+    "alt": "深莓与珊瑚墨带在半透明纸平面间形成连续曲线",
+    "note": "BERRY INK RIBBONS",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#e0bcab",
+    "colorVector": [
+      224,
+      188,
+      171
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "炭黑"
+    ],
+    "descriptors": [
+      "24",
+      "虚构珊瑚印刷室",
+      "初秋午后",
+      "有力",
+      "触觉",
+      "图形化",
+      "克制",
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "炭黑",
+      "纸张压印",
+      "流体定格",
+      "模块俯拍",
+      "陶瓷负空间",
+      "生成式概念摄影",
+      "印刷实验",
+      "陶瓷造型",
+      "珊瑚",
+      "印刷",
+      "颜料",
+      "纸带",
+      "色彩系统",
+      "陶瓷",
+      "无人影像",
+      "Coral Print Room",
+      "颜料、纸带与陶瓷负空间构成的印刷动作",
+      "从压印到墨带、色彩桌与陶瓷孔洞，让珊瑚色成为动作而不是装饰。",
+      "品牌色只有在参与结构时才真正有意义。珊瑚颜料被压过滚筒、拉成长带、切成模块，再转化为陶瓷负空间，与奶油、苔藓和深莓形成稳定而不单调的色彩系统。"
+    ],
+    "analysis": {
+      "luminance": 0.7615,
+      "contrast": 0.225,
+      "saturation": 0.2109,
+      "perceptualHash": "c7cfc1c1cfc3e3c3",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "bright",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.1989,
+        -0.2295,
+        0.2754,
+        -0.2295,
+        0.1683,
+        -0.2601,
+        0.1836,
+        -0.2601,
+        0.1989,
+        -0.2142,
+        0.153,
+        -0.306,
+        0.2754,
+        -0.306,
+        0.1836,
+        -0.153,
+        0.1989,
+        -0.33659
+      ],
+      "searchText": "24 虚构珊瑚印刷室 初秋午后 有力 触觉 图形化 克制 低饱和珊瑚 深莓 奶油 柔黄 苔藓绿 炭黑 纸张压印 流体定格 模块俯拍 陶瓷负空间 生成式概念摄影 印刷实验 陶瓷造型 珊瑚 印刷 颜料 纸带 色彩系统 陶瓷 无人影像 Coral Print Room 颜料、纸带与陶瓷负空间构成的印刷动作 从压印到墨带、色彩桌与陶瓷孔洞，让珊瑚色成为动作而不是装饰。 品牌色只有在参与结构时才真正有意义。珊瑚颜料被压过滚筒、拉成长带、切成模块，再转化为陶瓷负空间，与奶油、苔藓和深莓形成稳定而不单调的色彩系统。 centered mid-focus bright soft-contrast"
+    },
+    "projectIds": [
+      "coral-print-room-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/14-berry-ink-ribbons.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-15-printmakers-color-table",
+    "src": "/images/visual-os-v8/15-printmakers-color-table.webp",
+    "avif": "/images/visual-os-v8/15-printmakers-color-table.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/15-printmakers-color-table.webp",
+      "width960": "/images/visual-os-v8/960/15-printmakers-color-table.webp",
+      "width640Avif": "/images/visual-os-v8/640/15-printmakers-color-table.avif",
+      "width960Avif": "/images/visual-os-v8/960/15-printmakers-color-table.avif"
+    },
+    "alt": "珊瑚、柔黄、苔藓和深莓纸块与玻璃滚轴组成的俯拍色彩桌",
+    "note": "PRINTMAKER COLOR TABLE",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": 1,
+    "orientation": "square",
+    "dominantColor": "#8e7b67",
+    "colorVector": [
+      142,
+      123,
+      103
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "炭黑"
+    ],
+    "descriptors": [
+      "24",
+      "虚构珊瑚印刷室",
+      "初秋午后",
+      "有力",
+      "触觉",
+      "图形化",
+      "克制",
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "炭黑",
+      "纸张压印",
+      "流体定格",
+      "模块俯拍",
+      "陶瓷负空间",
+      "生成式概念摄影",
+      "印刷实验",
+      "陶瓷造型",
+      "珊瑚",
+      "印刷",
+      "颜料",
+      "纸带",
+      "色彩系统",
+      "陶瓷",
+      "无人影像",
+      "Coral Print Room",
+      "颜料、纸带与陶瓷负空间构成的印刷动作",
+      "从压印到墨带、色彩桌与陶瓷孔洞，让珊瑚色成为动作而不是装饰。",
+      "品牌色只有在参与结构时才真正有意义。珊瑚颜料被压过滚筒、拉成长带、切成模块，再转化为陶瓷负空间，与奶油、苔藓和深莓形成稳定而不单调的色彩系统。"
+    ],
+    "analysis": {
+      "luminance": 0.4921,
+      "contrast": 0.2398,
+      "saturation": 0.1541,
+      "perceptualHash": "c0fcc0381cf7f3c4",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.198,
+        -0.22846,
+        0.27415,
+        -0.24369,
+        0.16753,
+        -0.25892,
+        0.18276,
+        -0.27415,
+        0.198,
+        -0.198,
+        0.1523,
+        -0.30461,
+        0.27415,
+        -0.30461,
+        0.18276,
+        -0.1523,
+        0.198,
+        -0.33507
+      ],
+      "searchText": "24 虚构珊瑚印刷室 初秋午后 有力 触觉 图形化 克制 低饱和珊瑚 深莓 奶油 柔黄 苔藓绿 炭黑 纸张压印 流体定格 模块俯拍 陶瓷负空间 生成式概念摄影 印刷实验 陶瓷造型 珊瑚 印刷 颜料 纸带 色彩系统 陶瓷 无人影像 Coral Print Room 颜料、纸带与陶瓷负空间构成的印刷动作 从压印到墨带、色彩桌与陶瓷孔洞，让珊瑚色成为动作而不是装饰。 品牌色只有在参与结构时才真正有意义。珊瑚颜料被压过滚筒、拉成长带、切成模块，再转化为陶瓷负空间，与奶油、苔藓和深莓形成稳定而不单调的色彩系统。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "coral-print-room-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/15-printmakers-color-table.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-16-coral-ceramic-negative-space",
+    "src": "/images/visual-os-v8/16-coral-ceramic-negative-space.webp",
+    "avif": "/images/visual-os-v8/16-coral-ceramic-negative-space.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/16-coral-ceramic-negative-space.webp",
+      "width960": "/images/visual-os-v8/960/16-coral-ceramic-negative-space.webp",
+      "width640Avif": "/images/visual-os-v8/640/16-coral-ceramic-negative-space.avif",
+      "width960Avif": "/images/visual-os-v8/960/16-coral-ceramic-negative-space.avif"
+    },
+    "alt": "珊瑚陶瓷弧围绕奶油纸块和苔藓玻璃珠形成负空间",
+    "note": "CERAMIC NEGATIVE SPACE",
+    "width": 1692,
+    "height": 929,
+    "aspectRatio": 1.8213,
+    "orientation": "landscape",
+    "dominantColor": "#7c665c",
+    "colorVector": [
+      124,
+      102,
+      92
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "炭黑"
+    ],
+    "descriptors": [
+      "24",
+      "虚构珊瑚印刷室",
+      "初秋午后",
+      "有力",
+      "触觉",
+      "图形化",
+      "克制",
+      "低饱和珊瑚",
+      "深莓",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "炭黑",
+      "纸张压印",
+      "流体定格",
+      "模块俯拍",
+      "陶瓷负空间",
+      "生成式概念摄影",
+      "印刷实验",
+      "陶瓷造型",
+      "珊瑚",
+      "印刷",
+      "颜料",
+      "纸带",
+      "色彩系统",
+      "陶瓷",
+      "无人影像",
+      "Coral Print Room",
+      "颜料、纸带与陶瓷负空间构成的印刷动作",
+      "从压印到墨带、色彩桌与陶瓷孔洞，让珊瑚色成为动作而不是装饰。",
+      "品牌色只有在参与结构时才真正有意义。珊瑚颜料被压过滚筒、拉成长带、切成模块，再转化为陶瓷负空间，与奶油、苔藓和深莓形成稳定而不单调的色彩系统。"
+    ],
+    "analysis": {
+      "luminance": 0.4156,
+      "contrast": 0.1323,
+      "saturation": 0.1232,
+      "perceptualHash": "1e7cf8faf8787827",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.198,
+        -0.22846,
+        0.27415,
+        -0.24369,
+        0.16753,
+        -0.25892,
+        0.18276,
+        -0.27415,
+        0.198,
+        -0.198,
+        0.1523,
+        -0.30461,
+        0.27415,
+        -0.30461,
+        0.18276,
+        -0.1523,
+        0.198,
+        -0.33507
+      ],
+      "searchText": "24 虚构珊瑚印刷室 初秋午后 有力 触觉 图形化 克制 低饱和珊瑚 深莓 奶油 柔黄 苔藓绿 炭黑 纸张压印 流体定格 模块俯拍 陶瓷负空间 生成式概念摄影 印刷实验 陶瓷造型 珊瑚 印刷 颜料 纸带 色彩系统 陶瓷 无人影像 Coral Print Room 颜料、纸带与陶瓷负空间构成的印刷动作 从压印到墨带、色彩桌与陶瓷孔洞，让珊瑚色成为动作而不是装饰。 品牌色只有在参与结构时才真正有意义。珊瑚颜料被压过滚筒、拉成长带、切成模块，再转化为陶瓷负空间，与奶油、苔藓和深莓形成稳定而不单调的色彩系统。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "coral-print-room-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/16-coral-ceramic-negative-space.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-17-night-projection-arch",
+    "src": "/images/visual-os-v8/17-night-projection-arch.webp",
+    "avif": "/images/visual-os-v8/17-night-projection-arch.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/17-night-projection-arch.webp",
+      "width960": "/images/visual-os-v8/960/17-night-projection-arch.webp",
+      "width640Avif": "/images/visual-os-v8/640/17-night-projection-arch.avif",
+      "width960Avif": "/images/visual-os-v8/960/17-night-projection-arch.avif"
+    },
+    "alt": "暗色展厅中的奶油纸拱门被柔黄、苔藓与珊瑚投影穿过",
+    "note": "NIGHT PROJECTION ARCH",
+    "width": 1672,
+    "height": 941,
+    "aspectRatio": 1.7768,
+    "orientation": "landscape",
+    "dominantColor": "#332e22",
+    "colorVector": [
+      51,
+      46,
+      34
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "炭黑",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚"
+    ],
+    "descriptors": [
+      "25",
+      "虚构夜间影像馆",
+      "无季节夜场",
+      "夜曲",
+      "沉浸",
+      "克制",
+      "电影感",
+      "炭黑",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "投影构图",
+      "暗场曝光",
+      "内部发光",
+      "纸质舞台设计",
+      "生成式概念摄影",
+      "投影装置",
+      "夜场空间",
+      "夜场",
+      "投影",
+      "拱门",
+      "玻璃光柱",
+      "悬浮纸",
+      "舞台",
+      "暗色",
+      "无人影像",
+      "Quiet Nocturne Exhibition",
+      "为夜场主题搭建的四个无人投影空间",
+      "纸拱门、玻璃光柱、悬浮纸场与微型舞台，让深色页面拥有自己的真实影像世界。",
+      "夜场不是把白天素材压暗。它需要更大的黑色留白、更清晰的光束方向和可被长时间观看的低饱和色彩。四个空间分别测试入口、图腾、场域和舞台。"
+    ],
+    "analysis": {
+      "luminance": 0.181,
+      "contrast": 0.1782,
+      "saturation": 0.0724,
+      "perceptualHash": "000c0c0b0f0f3f23",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "dark",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.21461,
+        -0.31477,
+        0.32908,
+        -0.21461,
+        0.21461,
+        -0.186,
+        0.17169,
+        -0.24323,
+        0.22892,
+        -0.21461,
+        0.25754,
+        -0.20031,
+        0.28615,
+        -0.25754,
+        0.186,
+        -0.20031,
+        0.27184,
+        -0.17169
+      ],
+      "searchText": "25 虚构夜间影像馆 无季节夜场 夜曲 沉浸 克制 电影感 炭黑 奶油 柔黄 苔藓绿 低饱和珊瑚 投影构图 暗场曝光 内部发光 纸质舞台设计 生成式概念摄影 投影装置 夜场空间 夜场 投影 拱门 玻璃光柱 悬浮纸 舞台 暗色 无人影像 Quiet Nocturne Exhibition 为夜场主题搭建的四个无人投影空间 纸拱门、玻璃光柱、悬浮纸场与微型舞台，让深色页面拥有自己的真实影像世界。 夜场不是把白天素材压暗。它需要更大的黑色留白、更清晰的光束方向和可被长时间观看的低饱和色彩。四个空间分别测试入口、图腾、场域和舞台。 centered mid-focus dark soft-contrast"
+    },
+    "projectIds": [
+      "nocturne-exhibition-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/17-night-projection-arch.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-18-nocturne-glass-column",
+    "src": "/images/visual-os-v8/18-nocturne-glass-column.webp",
+    "avif": "/images/visual-os-v8/18-nocturne-glass-column.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/18-nocturne-glass-column.webp",
+      "width960": "/images/visual-os-v8/960/18-nocturne-glass-column.webp",
+      "width640Avif": "/images/visual-os-v8/640/18-nocturne-glass-column.avif",
+      "width960Avif": "/images/visual-os-v8/960/18-nocturne-glass-column.avif"
+    },
+    "alt": "透明、烟灰、琥珀与苔藓玻璃块组成的夜间发光柱",
+    "note": "NOCTURNE GLASS COLUMN",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#1b160e",
+    "colorVector": [
+      27,
+      22,
+      14
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "炭黑",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚"
+    ],
+    "descriptors": [
+      "25",
+      "虚构夜间影像馆",
+      "无季节夜场",
+      "夜曲",
+      "沉浸",
+      "克制",
+      "电影感",
+      "炭黑",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "投影构图",
+      "暗场曝光",
+      "内部发光",
+      "纸质舞台设计",
+      "生成式概念摄影",
+      "投影装置",
+      "夜场空间",
+      "夜场",
+      "投影",
+      "拱门",
+      "玻璃光柱",
+      "悬浮纸",
+      "舞台",
+      "暗色",
+      "无人影像",
+      "Quiet Nocturne Exhibition",
+      "为夜场主题搭建的四个无人投影空间",
+      "纸拱门、玻璃光柱、悬浮纸场与微型舞台，让深色页面拥有自己的真实影像世界。",
+      "夜场不是把白天素材压暗。它需要更大的黑色留白、更清晰的光束方向和可被长时间观看的低饱和色彩。四个空间分别测试入口、图腾、场域和舞台。"
+    ],
+    "analysis": {
+      "luminance": 0.0868,
+      "contrast": 0.1165,
+      "saturation": 0.0511,
+      "perceptualHash": "101818183818183e",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "dark",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.21461,
+        -0.31477,
+        0.32908,
+        -0.21461,
+        0.21461,
+        -0.186,
+        0.17169,
+        -0.24323,
+        0.22892,
+        -0.21461,
+        0.25754,
+        -0.20031,
+        0.28615,
+        -0.25754,
+        0.186,
+        -0.20031,
+        0.27184,
+        -0.17169
+      ],
+      "searchText": "25 虚构夜间影像馆 无季节夜场 夜曲 沉浸 克制 电影感 炭黑 奶油 柔黄 苔藓绿 低饱和珊瑚 投影构图 暗场曝光 内部发光 纸质舞台设计 生成式概念摄影 投影装置 夜场空间 夜场 投影 拱门 玻璃光柱 悬浮纸 舞台 暗色 无人影像 Quiet Nocturne Exhibition 为夜场主题搭建的四个无人投影空间 纸拱门、玻璃光柱、悬浮纸场与微型舞台，让深色页面拥有自己的真实影像世界。 夜场不是把白天素材压暗。它需要更大的黑色留白、更清晰的光束方向和可被长时间观看的低饱和色彩。四个空间分别测试入口、图腾、场域和舞台。 centered mid-focus dark soft-contrast"
+    },
+    "projectIds": [
+      "nocturne-exhibition-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/18-nocturne-glass-column.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-19-lantern-paper-field",
+    "src": "/images/visual-os-v8/19-lantern-paper-field.webp",
+    "avif": "/images/visual-os-v8/19-lantern-paper-field.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/19-lantern-paper-field.webp",
+      "width960": "/images/visual-os-v8/960/19-lantern-paper-field.webp",
+      "width640Avif": "/images/visual-os-v8/640/19-lantern-paper-field.avif",
+      "width960Avif": "/images/visual-os-v8/960/19-lantern-paper-field.avif"
+    },
+    "alt": "深色空间中悬浮的半透明手工纸平面形成温柔发光场",
+    "note": "LUMINOUS PAPER FIELD",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#5e411e",
+    "colorVector": [
+      94,
+      65,
+      30
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "炭黑",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚"
+    ],
+    "descriptors": [
+      "25",
+      "虚构夜间影像馆",
+      "无季节夜场",
+      "夜曲",
+      "沉浸",
+      "克制",
+      "电影感",
+      "炭黑",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "投影构图",
+      "暗场曝光",
+      "内部发光",
+      "纸质舞台设计",
+      "生成式概念摄影",
+      "投影装置",
+      "夜场空间",
+      "夜场",
+      "投影",
+      "拱门",
+      "玻璃光柱",
+      "悬浮纸",
+      "舞台",
+      "暗色",
+      "无人影像",
+      "Quiet Nocturne Exhibition",
+      "为夜场主题搭建的四个无人投影空间",
+      "纸拱门、玻璃光柱、悬浮纸场与微型舞台，让深色页面拥有自己的真实影像世界。",
+      "夜场不是把白天素材压暗。它需要更大的黑色留白、更清晰的光束方向和可被长时间观看的低饱和色彩。四个空间分别测试入口、图腾、场域和舞台。"
+    ],
+    "analysis": {
+      "luminance": 0.2689,
+      "contrast": 0.1641,
+      "saturation": 0.2501,
+      "perceptualHash": "11312372ffef6c00",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "dark",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.21461,
+        -0.31477,
+        0.32908,
+        -0.21461,
+        0.21461,
+        -0.186,
+        0.17169,
+        -0.24323,
+        0.22892,
+        -0.21461,
+        0.25754,
+        -0.20031,
+        0.28615,
+        -0.25754,
+        0.186,
+        -0.20031,
+        0.27184,
+        -0.17169
+      ],
+      "searchText": "25 虚构夜间影像馆 无季节夜场 夜曲 沉浸 克制 电影感 炭黑 奶油 柔黄 苔藓绿 低饱和珊瑚 投影构图 暗场曝光 内部发光 纸质舞台设计 生成式概念摄影 投影装置 夜场空间 夜场 投影 拱门 玻璃光柱 悬浮纸 舞台 暗色 无人影像 Quiet Nocturne Exhibition 为夜场主题搭建的四个无人投影空间 纸拱门、玻璃光柱、悬浮纸场与微型舞台，让深色页面拥有自己的真实影像世界。 夜场不是把白天素材压暗。它需要更大的黑色留白、更清晰的光束方向和可被长时间观看的低饱和色彩。四个空间分别测试入口、图腾、场域和舞台。 centered mid-focus dark soft-contrast"
+    },
+    "projectIds": [
+      "nocturne-exhibition-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/19-lantern-paper-field.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-20-midnight-optical-stage",
+    "src": "/images/visual-os-v8/20-midnight-optical-stage.webp",
+    "avif": "/images/visual-os-v8/20-midnight-optical-stage.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/20-midnight-optical-stage.webp",
+      "width960": "/images/visual-os-v8/960/20-midnight-optical-stage.webp",
+      "width640Avif": "/images/visual-os-v8/640/20-midnight-optical-stage.avif",
+      "width960Avif": "/images/visual-os-v8/960/20-midnight-optical-stage.avif"
+    },
+    "alt": "黑纸微型舞台被椭圆光束、珊瑚镜与苔藓玻璃屏切开",
+    "note": "MIDNIGHT OPTICAL STAGE",
+    "width": 1254,
+    "height": 1254,
+    "aspectRatio": 1,
+    "orientation": "square",
+    "dominantColor": "#342d27",
+    "colorVector": [
+      52,
+      45,
+      39
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "炭黑",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚"
+    ],
+    "descriptors": [
+      "25",
+      "虚构夜间影像馆",
+      "无季节夜场",
+      "夜曲",
+      "沉浸",
+      "克制",
+      "电影感",
+      "炭黑",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "投影构图",
+      "暗场曝光",
+      "内部发光",
+      "纸质舞台设计",
+      "生成式概念摄影",
+      "投影装置",
+      "夜场空间",
+      "夜场",
+      "投影",
+      "拱门",
+      "玻璃光柱",
+      "悬浮纸",
+      "舞台",
+      "暗色",
+      "无人影像",
+      "Quiet Nocturne Exhibition",
+      "为夜场主题搭建的四个无人投影空间",
+      "纸拱门、玻璃光柱、悬浮纸场与微型舞台，让深色页面拥有自己的真实影像世界。",
+      "夜场不是把白天素材压暗。它需要更大的黑色留白、更清晰的光束方向和可被长时间观看的低饱和色彩。四个空间分别测试入口、图腾、场域和舞台。"
+    ],
+    "analysis": {
+      "luminance": 0.1804,
+      "contrast": 0.1383,
+      "saturation": 0.0523,
+      "perceptualHash": "302020707e3f3700",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "dark",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.21461,
+        -0.31477,
+        0.32908,
+        -0.21461,
+        0.21461,
+        -0.186,
+        0.17169,
+        -0.24323,
+        0.22892,
+        -0.21461,
+        0.25754,
+        -0.20031,
+        0.28615,
+        -0.25754,
+        0.186,
+        -0.20031,
+        0.27184,
+        -0.17169
+      ],
+      "searchText": "25 虚构夜间影像馆 无季节夜场 夜曲 沉浸 克制 电影感 炭黑 奶油 柔黄 苔藓绿 低饱和珊瑚 投影构图 暗场曝光 内部发光 纸质舞台设计 生成式概念摄影 投影装置 夜场空间 夜场 投影 拱门 玻璃光柱 悬浮纸 舞台 暗色 无人影像 Quiet Nocturne Exhibition 为夜场主题搭建的四个无人投影空间 纸拱门、玻璃光柱、悬浮纸场与微型舞台，让深色页面拥有自己的真实影像世界。 夜场不是把白天素材压暗。它需要更大的黑色留白、更清晰的光束方向和可被长时间观看的低饱和色彩。四个空间分别测试入口、图腾、场域和舞台。 centered mid-focus dark soft-contrast"
+    },
+    "projectIds": [
+      "nocturne-exhibition-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/20-midnight-optical-stage.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-21-porcelain-paper-totem",
+    "src": "/images/visual-os-v8/21-porcelain-paper-totem.webp",
+    "avif": "/images/visual-os-v8/21-porcelain-paper-totem.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/21-porcelain-paper-totem.webp",
+      "width960": "/images/visual-os-v8/960/21-porcelain-paper-totem.webp",
+      "width640Avif": "/images/visual-os-v8/640/21-porcelain-paper-totem.avif",
+      "width960Avif": "/images/visual-os-v8/960/21-porcelain-paper-totem.avif"
+    },
+    "alt": "瓷环、柔黄折纸、苔藓石与珊瑚陶片组成的纵向平衡图腾",
+    "note": "PORCELAIN PAPER TOTEM",
+    "width": 1122,
+    "height": 1402,
+    "aspectRatio": 0.8003,
+    "orientation": "portrait",
+    "dominantColor": "#a2988b",
+    "colorVector": [
+      162,
+      152,
+      139
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "瓷白",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓"
+    ],
+    "descriptors": [
+      "26",
+      "虚构材料静物台",
+      "初秋室内",
+      "触觉",
+      "平衡",
+      "亲密",
+      "收束",
+      "瓷白",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓",
+      "静物平衡",
+      "透射微距",
+      "低视点雕塑摄影",
+      "纸纤维放大",
+      "生成式概念摄影",
+      "材料微距",
+      "静物造型",
+      "瓷器",
+      "手工纸",
+      "苔藓",
+      "纤维",
+      "微距",
+      "材料",
+      "无人影像",
+      "Tactile Material Finale",
+      "瓷、纸、苔藓与纤维组成的触觉收束章节",
+      "四张从雕塑到微距的材料练习，为 V8 视觉世界提供安静而有质感的结尾。",
+      "当画面从空间退回到材料，观看速度也应降低。瓷环、半透明纤维、苔藓石与纸张地层把此前的颜色和结构压缩为可近距离检查的触感。"
+    ],
+    "analysis": {
+      "luminance": 0.6013,
+      "contrast": 0.1094,
+      "saturation": 0.0909,
+      "perceptualHash": "c0c1c1c3f3f7c2e3",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.22468,
+        -0.31456,
+        0.23966,
+        -0.22468,
+        0.17975,
+        -0.19473,
+        0.17975,
+        -0.23966,
+        0.17975,
+        -0.22468,
+        0.25464,
+        -0.32953,
+        0.23966,
+        -0.26962,
+        0.23966,
+        -0.19473,
+        0.22468,
+        -0.22468
+      ],
+      "searchText": "26 虚构材料静物台 初秋室内 触觉 平衡 亲密 收束 瓷白 奶油 柔黄 苔藓绿 低饱和珊瑚 深莓 静物平衡 透射微距 低视点雕塑摄影 纸纤维放大 生成式概念摄影 材料微距 静物造型 瓷器 手工纸 苔藓 纤维 微距 材料 无人影像 Tactile Material Finale 瓷、纸、苔藓与纤维组成的触觉收束章节 四张从雕塑到微距的材料练习，为 V8 视觉世界提供安静而有质感的结尾。 当画面从空间退回到材料，观看速度也应降低。瓷环、半透明纤维、苔藓石与纸张地层把此前的颜色和结构压缩为可近距离检查的触感。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "tactile-materials-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/21-porcelain-paper-totem.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-22-translucent-fiber-fold",
+    "src": "/images/visual-os-v8/22-translucent-fiber-fold.webp",
+    "avif": "/images/visual-os-v8/22-translucent-fiber-fold.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/22-translucent-fiber-fold.webp",
+      "width960": "/images/visual-os-v8/960/22-translucent-fiber-fold.webp",
+      "width640Avif": "/images/visual-os-v8/640/22-translucent-fiber-fold.avif",
+      "width960Avif": "/images/visual-os-v8/960/22-translucent-fiber-fold.avif"
+    },
+    "alt": "逆光照亮半透明手工纸折边、苔藓线与远处珊瑚平面",
+    "note": "TRANSLUCENT FIBER FOLD",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#ce9876",
+    "colorVector": [
+      206,
+      152,
+      118
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "瓷白",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓"
+    ],
+    "descriptors": [
+      "26",
+      "虚构材料静物台",
+      "初秋室内",
+      "触觉",
+      "平衡",
+      "亲密",
+      "收束",
+      "瓷白",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓",
+      "静物平衡",
+      "透射微距",
+      "低视点雕塑摄影",
+      "纸纤维放大",
+      "生成式概念摄影",
+      "材料微距",
+      "静物造型",
+      "瓷器",
+      "手工纸",
+      "苔藓",
+      "纤维",
+      "微距",
+      "材料",
+      "无人影像",
+      "Tactile Material Finale",
+      "瓷、纸、苔藓与纤维组成的触觉收束章节",
+      "四张从雕塑到微距的材料练习，为 V8 视觉世界提供安静而有质感的结尾。",
+      "当画面从空间退回到材料，观看速度也应降低。瓷环、半透明纤维、苔藓石与纸张地层把此前的颜色和结构压缩为可近距离检查的触感。"
+    ],
+    "analysis": {
+      "luminance": 0.6321,
+      "contrast": 0.1705,
+      "saturation": 0.3446,
+      "perceptualHash": "fffffdcc88903020",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "balanced-light",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.22468,
+        -0.31456,
+        0.23966,
+        -0.22468,
+        0.17975,
+        -0.19473,
+        0.17975,
+        -0.23966,
+        0.17975,
+        -0.22468,
+        0.25464,
+        -0.32953,
+        0.23966,
+        -0.26962,
+        0.23966,
+        -0.19473,
+        0.22468,
+        -0.22468
+      ],
+      "searchText": "26 虚构材料静物台 初秋室内 触觉 平衡 亲密 收束 瓷白 奶油 柔黄 苔藓绿 低饱和珊瑚 深莓 静物平衡 透射微距 低视点雕塑摄影 纸纤维放大 生成式概念摄影 材料微距 静物造型 瓷器 手工纸 苔藓 纤维 微距 材料 无人影像 Tactile Material Finale 瓷、纸、苔藓与纤维组成的触觉收束章节 四张从雕塑到微距的材料练习，为 V8 视觉世界提供安静而有质感的结尾。 当画面从空间退回到材料，观看速度也应降低。瓷环、半透明纤维、苔藓石与纸张地层把此前的颜色和结构压缩为可近距离检查的触感。 centered mid-focus balanced-light soft-contrast"
+    },
+    "projectIds": [
+      "tactile-materials-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/22-translucent-fiber-fold.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-23-ceramic-moss-balance",
+    "src": "/images/visual-os-v8/23-ceramic-moss-balance.webp",
+    "avif": "/images/visual-os-v8/23-ceramic-moss-balance.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/23-ceramic-moss-balance.webp",
+      "width960": "/images/visual-os-v8/960/23-ceramic-moss-balance.webp",
+      "width640Avif": "/images/visual-os-v8/640/23-ceramic-moss-balance.avif",
+      "width960Avif": "/images/visual-os-v8/960/23-ceramic-moss-balance.avif"
+    },
+    "alt": "珊瑚陶瓷弧悬在苔藓石与奶油纸平面上方保持平衡",
+    "note": "CERAMIC MOSS BALANCE",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#272019",
+    "colorVector": [
+      39,
+      32,
+      25
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "瓷白",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓"
+    ],
+    "descriptors": [
+      "26",
+      "虚构材料静物台",
+      "初秋室内",
+      "触觉",
+      "平衡",
+      "亲密",
+      "收束",
+      "瓷白",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓",
+      "静物平衡",
+      "透射微距",
+      "低视点雕塑摄影",
+      "纸纤维放大",
+      "生成式概念摄影",
+      "材料微距",
+      "静物造型",
+      "瓷器",
+      "手工纸",
+      "苔藓",
+      "纤维",
+      "微距",
+      "材料",
+      "无人影像",
+      "Tactile Material Finale",
+      "瓷、纸、苔藓与纤维组成的触觉收束章节",
+      "四张从雕塑到微距的材料练习，为 V8 视觉世界提供安静而有质感的结尾。",
+      "当画面从空间退回到材料，观看速度也应降低。瓷环、半透明纤维、苔藓石与纸张地层把此前的颜色和结构压缩为可近距离检查的触感。"
+    ],
+    "analysis": {
+      "luminance": 0.1307,
+      "contrast": 0.0693,
+      "saturation": 0.0554,
+      "perceptualHash": "c0c0f078f8b8f8f8",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "dark",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.22552,
+        -0.31573,
+        0.24055,
+        -0.21048,
+        0.18042,
+        -0.21048,
+        0.18042,
+        -0.22552,
+        0.18042,
+        -0.22552,
+        0.25559,
+        -0.33076,
+        0.24055,
+        -0.27062,
+        0.24055,
+        -0.19545,
+        0.22552,
+        -0.22552
+      ],
+      "searchText": "26 虚构材料静物台 初秋室内 触觉 平衡 亲密 收束 瓷白 奶油 柔黄 苔藓绿 低饱和珊瑚 深莓 静物平衡 透射微距 低视点雕塑摄影 纸纤维放大 生成式概念摄影 材料微距 静物造型 瓷器 手工纸 苔藓 纤维 微距 材料 无人影像 Tactile Material Finale 瓷、纸、苔藓与纤维组成的触觉收束章节 四张从雕塑到微距的材料练习，为 V8 视觉世界提供安静而有质感的结尾。 当画面从空间退回到材料，观看速度也应降低。瓷环、半透明纤维、苔藓石与纸张地层把此前的颜色和结构压缩为可近距离检查的触感。 centered mid-focus dark soft-contrast"
+    },
+    "projectIds": [
+      "tactile-materials-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/23-ceramic-moss-balance.png",
+      "usage": "personal-practice"
+    }
+  },
+  {
+    "id": "visual-os-v8-24-handmade-paper-macro",
+    "src": "/images/visual-os-v8/24-handmade-paper-macro.webp",
+    "avif": "/images/visual-os-v8/24-handmade-paper-macro.avif",
+    "responsive": {
+      "width640": "/images/visual-os-v8/640/24-handmade-paper-macro.webp",
+      "width960": "/images/visual-os-v8/960/24-handmade-paper-macro.webp",
+      "width640Avif": "/images/visual-os-v8/640/24-handmade-paper-macro.avif",
+      "width960Avif": "/images/visual-os-v8/960/24-handmade-paper-macro.avif"
+    },
+    "alt": "奶油、柔黄、苔藓、珊瑚与深莓手工纸形成纤维地层",
+    "note": "HANDMADE PAPER MACRO",
+    "width": 1536,
+    "height": 1024,
+    "aspectRatio": 1.5,
+    "orientation": "landscape",
+    "dominantColor": "#4c3c2e",
+    "colorVector": [
+      76,
+      60,
+      46
+    ],
+    "focalPoint": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "palette": [
+      "瓷白",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓"
+    ],
+    "descriptors": [
+      "26",
+      "虚构材料静物台",
+      "初秋室内",
+      "触觉",
+      "平衡",
+      "亲密",
+      "收束",
+      "瓷白",
+      "奶油",
+      "柔黄",
+      "苔藓绿",
+      "低饱和珊瑚",
+      "深莓",
+      "静物平衡",
+      "透射微距",
+      "低视点雕塑摄影",
+      "纸纤维放大",
+      "生成式概念摄影",
+      "材料微距",
+      "静物造型",
+      "瓷器",
+      "手工纸",
+      "苔藓",
+      "纤维",
+      "微距",
+      "材料",
+      "无人影像",
+      "Tactile Material Finale",
+      "瓷、纸、苔藓与纤维组成的触觉收束章节",
+      "四张从雕塑到微距的材料练习，为 V8 视觉世界提供安静而有质感的结尾。",
+      "当画面从空间退回到材料，观看速度也应降低。瓷环、半透明纤维、苔藓石与纸张地层把此前的颜色和结构压缩为可近距离检查的触感。"
+    ],
+    "analysis": {
+      "luminance": 0.2434,
+      "contrast": 0.2283,
+      "saturation": 0.1204,
+      "perceptualHash": "000f1f0f071b0700",
+      "composition": [
+        "centered",
+        "mid-focus",
+        "dark",
+        "soft-contrast"
+      ],
+      "semanticVector": [
+        0.22552,
+        -0.31573,
+        0.24055,
+        -0.21048,
+        0.18042,
+        -0.21048,
+        0.18042,
+        -0.22552,
+        0.18042,
+        -0.22552,
+        0.25559,
+        -0.33076,
+        0.24055,
+        -0.27062,
+        0.24055,
+        -0.19545,
+        0.22552,
+        -0.22552
+      ],
+      "searchText": "26 虚构材料静物台 初秋室内 触觉 平衡 亲密 收束 瓷白 奶油 柔黄 苔藓绿 低饱和珊瑚 深莓 静物平衡 透射微距 低视点雕塑摄影 纸纤维放大 生成式概念摄影 材料微距 静物造型 瓷器 手工纸 苔藓 纤维 微距 材料 无人影像 Tactile Material Finale 瓷、纸、苔藓与纤维组成的触觉收束章节 四张从雕塑到微距的材料练习，为 V8 视觉世界提供安静而有质感的结尾。 当画面从空间退回到材料，观看速度也应降低。瓷环、半透明纤维、苔藓石与纸张地层把此前的颜色和结构压缩为可近距离检查的触感。 centered mid-focus dark soft-contrast"
+    },
+    "projectIds": [
+      "tactile-materials-v8"
+    ],
+    "storyLinks": [],
+    "provenance": {
+      "kind": "generated-concept",
+      "sourceAsset": "source-assets/visual-os-v8/raw/24-handmade-paper-macro.png",
+      "usage": "personal-practice"
+    }
   }
 ]

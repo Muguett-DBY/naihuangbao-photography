@@ -143,6 +143,22 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/map" />
   </url>
   <url>
+    <loc>https://shoot.custard.top/archive/botanical-cabinet-v8</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/botanical-cabinet-v8" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/botanical-cabinet-v8?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/botanical-cabinet-v8?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/botanical-cabinet-v8?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/botanical-cabinet-v8" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v8/09-moss-specimen-drawer.webp</image:loc>
+      <image:title>Botanical Cabinet of Light</image:title>
+      <image:caption>苔藓、蕨影与玻璃标本组成的无文字自然目录</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://shoot.custard.top/archive/botanical-specimen-index</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -188,6 +204,22 @@
       <image:loc>https://shoot.custard.top/images/visual-os-v7/13-coral-print-room.webp</image:loc>
       <image:title>Coral Night Laboratory</image:title>
       <image:caption>珊瑚安全灯下的纸、玻璃、水与深莓空间</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/coral-print-room-v8</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/coral-print-room-v8" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/coral-print-room-v8?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/coral-print-room-v8?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/coral-print-room-v8?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/coral-print-room-v8" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v8/13-coral-pigment-press.webp</image:loc>
+      <image:title>Coral Print Room</image:title>
+      <image:caption>颜料、纸带与陶瓷负空间构成的印刷动作</image:caption>
     </image:image>
   </url>
   <url>
@@ -303,6 +335,22 @@
     </image:image>
   </url>
   <url>
+    <loc>https://shoot.custard.top/archive/nocturne-exhibition-v8</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/nocturne-exhibition-v8" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/nocturne-exhibition-v8?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/nocturne-exhibition-v8?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/nocturne-exhibition-v8?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/nocturne-exhibition-v8" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v8/17-night-projection-arch.webp</image:loc>
+      <image:title>Quiet Nocturne Exhibition</image:title>
+      <image:caption>为夜场主题搭建的四个无人投影空间</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://shoot.custard.top/archive/optical-garden</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -316,6 +364,38 @@
       <image:loc>https://shoot.custard.top/images/optical-archive/optical-garden-hero-v1.webp</image:loc>
       <image:title>Optical Garden</image:title>
       <image:caption>雨后月门与缓慢折射</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/optical-water-v8</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/optical-water-v8" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/optical-water-v8?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/optical-water-v8?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/optical-water-v8?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/optical-water-v8" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v8/05-water-glass-prism-table.webp</image:loc>
+      <image:title>Water &amp; Glass Instruments</image:title>
+      <image:caption>把水、雨与玻璃整理成四件温柔光学仪器</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/paper-architecture-v8</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/paper-architecture-v8" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/paper-architecture-v8?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/paper-architecture-v8?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/paper-architecture-v8?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/paper-architecture-v8" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v8/01-cream-paper-pavilion.webp</image:loc>
+      <image:title>Tender Paper Architecture</image:title>
+      <image:caption>从奶油纸亭到珊瑚轨道的晨光建筑练习</image:caption>
     </image:image>
   </url>
   <url>
@@ -412,6 +492,22 @@
       <image:loc>https://shoot.custard.top/images/visual-os-v6/02-rain-conservatory.webp</image:loc>
       <image:title>Rain Light Laboratory</image:title>
       <image:caption>雨后温室与透明档案</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/tactile-materials-v8</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/tactile-materials-v8" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/tactile-materials-v8?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/tactile-materials-v8?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/tactile-materials-v8?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/tactile-materials-v8" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v8/21-porcelain-paper-totem.webp</image:loc>
+      <image:title>Tactile Material Finale</image:title>
+      <image:caption>瓷、纸、苔藓与纤维组成的触觉收束章节</image:caption>
     </image:image>
   </url>
   <url>

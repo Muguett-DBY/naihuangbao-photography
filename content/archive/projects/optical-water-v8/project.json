@@ -1,0 +1,30 @@
+{
+  "id": "optical-water-v8",
+  "kind": "concept",
+  "title": "Water & Glass Instruments",
+  "subtitle": "把水、雨与玻璃整理成四件温柔光学仪器",
+  "chapter": "22",
+  "year": 2026,
+  "summary": "从水棱镜桌到琥珀焦散房间，观察透明材料如何把同一束光拆成不同节奏。",
+  "statement": "玻璃不是装饰层，而是会主动编辑画面的透镜。折射、凝结、磨砂与焦散分别改变颜色、清晰度和空间边界，形成可被本地智能策展读取的光学谱系。",
+  "place": "虚构光学材料实验室",
+  "season": "雨后清晨",
+  "moods": ["清澈", "潮湿", "克制", "实验性"],
+  "palette": ["透明", "奶油", "苔藓灰", "琥珀", "低饱和珊瑚"],
+  "techniques": ["真实折射", "雨滴微距", "磨砂叠层", "焦散投影"],
+  "process": [
+    { "title": "校准折射", "note": "让水与棱镜产生真实光路，而不是添加后期彩虹。" },
+    { "title": "记录表面", "note": "用雨滴和磨砂玻璃分别测试清晰与模糊的边界。" },
+    { "title": "放大空间", "note": "最后把一块琥珀玻璃扩展成可进入的微型房间。" }
+  ],
+  "related": ["paper-architecture-v8", "nocturne-exhibition-v8", "rain-glass-observatory-v7"],
+  "media": [
+    { "src": "/images/visual-os-v8/05-water-glass-prism-table.webp", "alt": "玻璃光桌上的水杯与棱镜把晨光分散到手工纸上", "note": "WATER PRISM TABLE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v8/06-rain-lens-grid.webp", "alt": "覆有雨滴的玻璃镜阵折射奶油纸、苔藓与珊瑚线", "note": "RAIN LENS GRID", "width": 1122, "height": 1402 },
+    { "src": "/images/visual-os-v8/07-frosted-glass-tide.webp", "alt": "磨砂与波纹玻璃像缓慢潮汐一样叠过奶油纸平面", "note": "FROSTED GLASS TIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v8/08-amber-caustic-room.webp", "alt": "琥珀玻璃墙在奶油模型房间与深莓地面投下液态焦散", "note": "AMBER CAUSTIC ROOM", "width": 1254, "height": 1254 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "光学研究", "玻璃材料"],
+  "keywords": ["水", "玻璃", "折射", "雨滴", "焦散", "磨砂", "棱镜", "无人影像"]
+}

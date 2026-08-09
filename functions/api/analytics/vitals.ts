@@ -3,7 +3,7 @@ import { enforceRateLimit, rateLimited } from "../../_security";
 
 /**
  * POST /api/analytics/vitals
- * Receives Web Vitals metric reports (LCP, INP, CLS, FCP, TTFB) from client.
+ * Receives Web Vitals and longest-main-thread-task reports from the client.
  * Rate-limited to prevent abuse.
  * Public endpoint (no auth) — accepts anonymous, low-volume telemetry.
  */
@@ -28,7 +28,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return jsonResponse({ ok: true, degraded: true }, 200);
     }
 
-    const allowedMetrics = new Set(["LCP", "INP", "CLS", "FCP", "TTFB"]);
+    const allowedMetrics = new Set(["LCP", "INP", "CLS", "FCP", "TTFB", "LONG_TASK"]);
     const allowedRatings = new Set(["good", "needs-improvement", "poor"]);
 
     const stmt = db.prepare(

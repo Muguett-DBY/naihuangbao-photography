@@ -11,7 +11,25 @@ const responsiveImageDirectories = [
   "/images/visual-os-v5/",
   "/images/visual-os-v6/",
   "/images/visual-os-v7/",
+  "/images/visual-os-v8/",
 ] as const;
+
+const visualOsV8SourceWidths: Readonly<Record<string, number>> = Object.freeze({
+  "02-cut-paper-staircase.webp": 1122,
+  "04-coral-paper-orbit.webp": 1254,
+  "06-rain-lens-grid.webp": 1122,
+  "08-amber-caustic-room.webp": 1254,
+  "10-fern-shadow-index.webp": 1122,
+  "11-seed-pod-museum.webp": 1672,
+  "12-botanical-glass-herbarium.webp": 1254,
+  "14-berry-ink-ribbons.webp": 1122,
+  "15-printmakers-color-table.webp": 1254,
+  "16-coral-ceramic-negative-space.webp": 1692,
+  "17-night-projection-arch.webp": 1672,
+  "18-nocturne-glass-column.webp": 1122,
+  "20-midnight-optical-stage.webp": 1254,
+  "21-porcelain-paper-totem.webp": 1122,
+});
 
 const conceptPremiereSourceWidths: Readonly<Record<string, number>> = Object.freeze({
   "premiere-afterimage-v2.webp": 1200,
@@ -75,6 +93,7 @@ export function getResponsiveImageSourceWidth(src: string): number {
       : 1672;
   }
   if (path.startsWith("/images/visual-os-v7/")) return fileName.includes("-detail.") ? 1024 : 1536;
+  if (path.startsWith("/images/visual-os-v8/")) return visualOsV8SourceWidths[fileName] ?? 1536;
   return 1200;
 }
 

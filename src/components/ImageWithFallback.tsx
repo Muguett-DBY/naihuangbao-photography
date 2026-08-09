@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { getResponsiveImageAttrs } from "../lib/responsive-image";
 import { getResponsivePictureAttrs } from "../lib/responsive-picture";
+import { useVaultAssetUrl } from "../hooks/useVaultAssetUrl";
 import { FilmPlaceholder } from "./FilmPlaceholder";
 
 export const ImageWithFallback = memo(function ImageWithFallback({
@@ -26,12 +27,13 @@ export const ImageWithFallback = memo(function ImageWithFallback({
 }) {
   const [failed, setFailed] = useState(false);
   const [useDirectImg, setUseDirectImg] = useState(false);
+  const { resolvedSrc, resolving } = useVaultAssetUrl(src);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const pictureAttrs = !useDirectImg ? getResponsivePictureAttrs(src, sizes) : null;
+  const pictureAttrs = !useDirectImg ? getResponsivePictureAttrs(resolvedSrc, sizes) : null;
   const usePicture = Boolean(pictureAttrs && pictureAttrs.sources.length > 0);
-  const imageAttrs = !usePicture ? getResponsiveImageAttrs(src, sizes) : null;
+  const imageAttrs = !usePicture ? getResponsiveImageAttrs(resolvedSrc, sizes) : null;
 
   const handleError = () => {
     if (usePicture) {
@@ -59,17 +61,21 @@ export const ImageWithFallback = memo(function ImageWithFallback({
       wrapper.setAttribute("aria-busy", "true");
     }
     const image = imgRef.current;
-    if (!src || !image) {
-      if (!src) setFailed(true);
+    if (!resolvedSrc || !image) {
+      if (!resolvedSrc && !resolving) setFailed(true);
       return;
     }
 
     if (image.complete && image.naturalWidth > 0) {
       markLoaded();
     }
-  }, [markLoaded, src]);
+  }, [markLoaded, resolvedSrc, resolving]);
 
-  if (!src) {
+  if (resolving) {
+    return <div className={`img-blur-wrap gallery-image-placeholder tone-${tone} ${className || ""}`} aria-busy="true"><div className="gallery-skeleton" /></div>;
+  }
+
+  if (!resolvedSrc) {
     return <FilmPlaceholder title={title} tone={tone} />;
   }
 
@@ -130,7 +136,7 @@ export const ImageWithFallback = memo(function ImageWithFallback({
           decoding="async"
           width={960}
           height={1200}
-          {...(imageAttrs || { src })}
+          {...(imageAttrs || { src: resolvedSrc })}
           alt={alt}
           onError={() => setFailed(true)}
           onLoad={markLoaded}

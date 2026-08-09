@@ -1,12 +1,11 @@
-import { forwardRef, type ReactNode } from "react";
+import { forwardRef, type HTMLAttributes, type ReactNode } from "react";
 
-interface PageTransitionProps {
+interface PageTransitionProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
-  className?: string;
 }
 
 export const PageTransition = forwardRef<HTMLDivElement, PageTransitionProps>(function PageTransition(
-  { children, className },
+  { children, className, ...props },
   ref,
 ) {
   return (
@@ -15,6 +14,7 @@ export const PageTransition = forwardRef<HTMLDivElement, PageTransitionProps>(fu
       <div
         ref={ref}
         className={`page-transition${className ? ` ${className}` : ""}`}
+        {...props}
       >
         {children}
       </div>

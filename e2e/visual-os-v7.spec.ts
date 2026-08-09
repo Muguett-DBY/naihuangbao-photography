@@ -13,11 +13,11 @@ test("@critical V7 首页由 SceneGraph 滚动导演且保留首屏主操作", a
   await page.goto("/");
   const premiere = page.locator(".cinematic-premiere");
   await expect(premiere).toHaveAttribute("data-scene-graph", "premiere-dawn");
-  await expect(premiere).toHaveAttribute("data-active-asset", "visual-os-v7-01-cream-atrium");
+  await expect(premiere).toHaveAttribute("data-active-asset", "visual-os-v8-01-cream-paper-pavilion");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator("#premiere").getByRole("link", { name: /开始创作/ })).toBeVisible();
   await page.evaluate(() => window.scrollTo({ top: Math.round(window.innerHeight * 0.48), behavior: "instant" }));
-  await expect(premiere).not.toHaveAttribute("data-active-asset", "visual-os-v7-01-cream-atrium");
+  await expect(premiere).not.toHaveAttribute("data-active-asset", "visual-os-v8-01-cream-paper-pavilion");
   await expect(premiere).toHaveAttribute("data-scene-transition", /veil|focus|drift|slice|cut/);
   await expect(page.locator("html")).toHaveAttribute("data-runtime-quality", /full|balanced/);
 });
@@ -30,7 +30,7 @@ test("@critical V7 智能归档支持语义搜索、本地图像分析与 Projec
   await search.press("Enter");
   await expect(lab.locator(".archive-intelligence__results article").first()).toContainText(/CORAL|BERRY|珊瑚/);
 
-  const referencePath = resolve(process.cwd(), "public/images/visual-os-v7/05-rain-observatory.webp");
+  const referencePath = resolve(process.cwd(), "public/images/visual-os-v8/05-water-glass-prism-table.webp");
   await lab.locator('input[type="file"]').setInputFiles(referencePath);
   await expect(lab.getByRole("status")).toContainText("没有上传");
   await expect(lab.locator(".archive-intelligence__reference-preview")).toBeVisible();

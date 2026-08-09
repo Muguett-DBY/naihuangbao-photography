@@ -1,0 +1,30 @@
+{
+  "id": "paper-architecture-v8",
+  "kind": "concept",
+  "title": "Tender Paper Architecture",
+  "subtitle": "从奶油纸亭到珊瑚轨道的晨光建筑练习",
+  "chapter": "21",
+  "year": 2026,
+  "summary": "四个由手工纸、玻璃与陶瓷搭成的无人微型空间，测试温柔色彩如何承载先锋结构。",
+  "statement": "柔和不等于缺少张力。折痕、悬挑、轨道和负空间让纸张获得建筑尺度，同时以晨光、苔藓和克制珊瑚保留奶黄包的温度。",
+  "place": "虚构纸建筑工作室",
+  "season": "初秋晨光",
+  "moods": ["温柔", "先锋", "安静", "几何"],
+  "palette": ["奶油", "柔黄", "苔藓绿", "低饱和珊瑚", "深莓"],
+  "techniques": ["纸结构搭建", "侧逆光", "负空间构图", "微型建筑摄影"],
+  "process": [
+    { "title": "建立纸亭", "note": "用毛边纸、琥珀玻璃和陶瓷色块定义第一组材质语法。" },
+    { "title": "改变尺度", "note": "从低视点、纵向阶梯和窗影切换观看距离，避免重复静物节奏。" },
+    { "title": "加入轨道", "note": "以珊瑚弧线穿过奶油体块，给安静空间一个明确动作。" }
+  ],
+  "related": ["optical-water-v8", "tactile-materials-v8", "cream-architecture-index"],
+  "media": [
+    { "src": "/images/visual-os-v8/01-cream-paper-pavilion.webp", "alt": "晨光中的奶油手工纸亭、琥珀玻璃与苔藓陶瓷块", "note": "PAPER PAVILION", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v8/02-cut-paper-staircase.webp", "alt": "纵向纸阶梯、柔黄薄纸与深莓色块组成的雕塑空间", "note": "CUT PAPER STAIRCASE", "width": 1122, "height": 1402 },
+    { "src": "/images/visual-os-v8/03-custard-sun-window.webp", "alt": "半透明奶黄色纸窗把几何晨光投向奶油色地面", "note": "CUSTARD SUN WINDOW", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v8/04-coral-paper-orbit.webp", "alt": "珊瑚纸弧围绕奶油纸体块与苔藓石盘形成轨道", "note": "CORAL PAPER ORBIT", "width": 1254, "height": 1254 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "纸建筑", "材料造型"],
+  "keywords": ["手工纸", "建筑", "晨光", "奶油", "琥珀玻璃", "苔藓", "珊瑚", "无人影像"]
+}
