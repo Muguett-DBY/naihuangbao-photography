@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, MessageCircle } from "lucide-react";
 import { Button, Card } from "animal-island-ui";
 import { useTranslation } from "react-i18next";
@@ -23,12 +22,13 @@ export function Packages() {
       <div className="package-grid">
         {packages.map((item, index) => (
           <Card className={`package-card${index === 1 ? " is-popular" : ""}`} key={item.name}>
+            <span className="package-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
             {index === 1 && <span className="package-badge">{t("packages.recommend")}</span>}
             <div>
               <p>{item.duration}</p>
               <h3>{item.name}</h3>
-              <strong>
-                <AnimatedPrice price={item.price} ariaLabel={t("packages.priceLabel", { price: item.price })} />
+              <strong aria-label={t("packages.priceLabel", { price: item.price })}>
+                <span className="price-count">¥{item.price}</span>
               </strong>
               <span>{item.summary}</span>
             </div>
@@ -55,103 +55,4 @@ export function Packages() {
       </div>
     </Section>
   );
-}
-
-function AnimatedPrice({ price, ariaLabel }: { price: string; ariaLabel: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const frameRef = useRef<number | null>(null);
-  const [displayValue, setDisplayValue] = useState(() => initialPriceValue(price));
-  const [animationState, setAnimationState] = useState<"idle" | "running" | "settled">("idle");
-
-  const priceParts = useMemo(() => parsePrice(price), [price]);
-
-  useEffect(() => {
-    if (!priceParts) {
-      setDisplayValue(price);
-      return;
-    }
-
-    setDisplayValue(formatPrice(priceParts.start, priceParts));
-    setAnimationState("idle");
-  }, [price, priceParts]);
-
-  useEffect(() => {
-    const element = ref.current;
-    if (!element || !priceParts) return;
-    let started = false;
-
-    const startAnimation = () => {
-      if (started) return;
-      started = true;
-      setAnimationState("running");
-      const startedAt = performance.now();
-      const duration = 1450;
-
-      const tick = (now: number) => {
-        const progress = Math.min((now - startedAt) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const value = priceParts.start + (priceParts.target - priceParts.start) * eased;
-        setDisplayValue(formatPrice(value, priceParts));
-
-        if (progress < 1) {
-          frameRef.current = requestAnimationFrame(tick);
-          return;
-        }
-
-        setDisplayValue(formatPrice(priceParts.target, priceParts));
-        setAnimationState("settled");
-      };
-
-      frameRef.current = requestAnimationFrame(tick);
-    };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) startAnimation();
-      },
-      { threshold: 0.5, rootMargin: "0px 0px -8% 0px" },
-    );
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-      if (frameRef.current !== null) {
-        cancelAnimationFrame(frameRef.current);
-      }
-    };
-  }, [priceParts]);
-
-  return (
-    <span
-      ref={ref}
-      className={`price-count price-count-${animationState}`}
-      aria-label={ariaLabel}
-    >
-      {displayValue}
-    </span>
-  );
-}
-
-function parsePrice(price: string) {
-  const match = price.match(/^(\d+(?:\.\d+)?)(.*)$/);
-  if (!match) return null;
-  const target = Number(match[1]);
-  if (!Number.isFinite(target)) return null;
-  const decimals = match[1].includes(".") ? match[1].split(".")[1]?.length ?? 0 : 0;
-  const start = decimals > 0 ? target + 20 : target + 80;
-  return {
-    target,
-    start,
-    decimals,
-    suffix: match[2] ?? "",
-  };
-}
-
-function formatPrice(value: number, parts: NonNullable<ReturnType<typeof parsePrice>>) {
-  return `¥${value.toFixed(parts.decimals)}${parts.suffix}`;
-}
-
-function initialPriceValue(price: string) {
-  const parts = parsePrice(price);
-  return parts ? formatPrice(parts.start, parts) : price;
 }

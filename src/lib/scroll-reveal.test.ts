@@ -20,6 +20,6 @@ describe("scroll reveal", () => {
     expect(home).toContain("usePageRevealEffects(rootRef)");
     expect(home).toContain('id="book"');
     expect(home).not.toContain("useReveal");
-    expect(home.match(/data-motion-item/g) ?? []).toHaveLength(2);
+    expect(home.match(/data-motion-item/g) ?? []).toHaveLength(6);
   });
 });
