@@ -158,7 +158,7 @@ export function RootLayout() {
       <SiteContentProvider>
         <ExperienceProvider>
                 <ExperienceStateBridge pathname={location.pathname} />
-                {routePreset && <ImmersiveExperienceGate />}
+                {routePreset && location.pathname !== "/" && <ImmersiveExperienceGate />}
                 <WorkspaceProjectProvider>
                   <ToastProvider>
                     <Header />

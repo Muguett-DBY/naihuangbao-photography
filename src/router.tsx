@@ -62,47 +62,34 @@ function HomePremiereFallback() {
           <picture>
             <source
               type="image/avif"
-              srcSet="/images/optical-archive/640/optical-garden-hero-v1.avif?v=20260808-1 640w, /images/optical-archive/960/optical-garden-hero-v1.avif?v=20260808-1 960w, /images/optical-archive/optical-garden-hero-v1.avif?v=20260808-1 1672w"
+              srcSet="/images/visual-os-v8/640/01-cream-paper-pavilion.avif?v=20260809-8 640w, /images/visual-os-v8/960/01-cream-paper-pavilion.avif?v=20260809-8 960w, /images/visual-os-v8/01-cream-paper-pavilion.avif?v=20260809-8 1536w"
               sizes="100vw"
             />
             <source
               type="image/webp"
-              srcSet="/images/optical-archive/640/optical-garden-hero-v1.webp?v=20260808-1 640w, /images/optical-archive/960/optical-garden-hero-v1.webp?v=20260808-1 960w, /images/optical-archive/optical-garden-hero-v1.webp?v=20260808-1 1672w"
+              srcSet="/images/visual-os-v8/640/01-cream-paper-pavilion.webp?v=20260809-8 640w, /images/visual-os-v8/960/01-cream-paper-pavilion.webp?v=20260809-8 960w, /images/visual-os-v8/01-cream-paper-pavilion.webp?v=20260809-8 1536w"
               sizes="100vw"
             />
             <img
-              src="/images/optical-archive/optical-garden-hero-v1.webp?v=20260808-1"
+              src="/images/visual-os-v8/01-cream-paper-pavilion.webp?v=20260809-8"
               alt=""
-              width="1600"
-              height="900"
+              width="1536"
+              height="1024"
               loading="eager"
               fetchPriority="high"
               decoding="async"
             />
           </picture>
         </div>
-        <div className="cinematic-premiere__kinetic-type">
-          <span>NHB / PORTRAIT / 2026</span>
-          <span>FIELD NOTES / NANJING</span>
-        </div>
       </div>
       <div className="hero-solid-scrim" aria-hidden="true" />
       <div className="hero-editorial-copy">
-        <p className="hero-concept-label">
-          <span>{t("opticalArchive.label")}</span>
-          <span>{t("premiere.disclosure")}</span>
-        </p>
-        <p className="hero-issue-line">
-          <span>{t("hero.volBadge")}</span>
-          <span>2026</span>
-        </p>
+        <p className="hero-concept-label">{t("opticalArchive.label")}</p>
         <h1 className="hero-title">{t("seo.siteName")}</h1>
-        <p className="hero-field-note">NHB / PERSONAL VISUAL PLAYGROUND</p>
         <p className="hero-intro">{t("platform.playground.intro", "A personal visual playground for light, color, paper, and local creative tools.")}</p>
         <div className="hero-actions">
           <a className="hero-create-primary" href="/create">{t("platform.playground.startCreating", "Start creating")}</a>
           <a className="hero-cover-primary-btn" href="/archive">{t("nav.archive")}</a>
-          <a className="hero-gallery-link" href="/stories">{t("nav.stories")}</a>
         </div>
       </div>
     </section>

@@ -1,29 +1,43 @@
 import { ArrowRight, Move, Shuffle } from "lucide-react";
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useTranslation } from "react-i18next";
 import { archiveProjects } from "../data/living-archive";
 import { ImageWithFallback } from "./ImageWithFallback";
 import { PrefetchLink } from "./shared/PrefetchLink";
 
+const lightTableFrames = [
+  "optical-garden",
+  "morning-conservatory",
+  "prism-notes",
+  "tactile-optics",
+  "rain-atlas",
+  "weather-print-room",
+].map((id) => archiveProjects.find((project) => project.id === id))
+  .filter((project): project is NonNullable<typeof project> => Boolean(project));
+
+const paletteKeyByLabel: Record<string, string> = {
+  奶油: "cream",
+  苔藓: "moss",
+  珊瑚: "coral",
+  玻璃蓝: "glassBlue",
+  深莓: "berry",
+  柔黄: "yellow",
+};
+
 export function VisualLightTable() {
+  const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLElement>(null);
   const frameRef = useRef<number | null>(null);
   const pointerRef = useRef({ x: 0.5, y: 0.5 });
   const [activeIndex, setActiveIndex] = useState(0);
-  const frames = useMemo(() => [
-    "optical-garden",
-    "morning-conservatory",
-    "prism-notes",
-    "tactile-optics",
-    "rain-atlas",
-    "weather-print-room",
-  ].map((id) => archiveProjects.find((project) => project.id === id))
-    .filter((project): project is NonNullable<typeof project> => Boolean(project)), []);
-  const activeProject = frames[activeIndex] ?? frames[0];
+  const activeProject = lightTableFrames[activeIndex] ?? lightTableFrames[0];
+  const isChinese = i18n.resolvedLanguage?.startsWith("zh") ?? false;
 
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let isVisible = typeof IntersectionObserver === "undefined";
 
     const sync = () => {
       frameRef.current = null;
@@ -36,6 +50,7 @@ export function VisualLightTable() {
     };
 
     const schedule = () => {
+      if (!isVisible) return;
       if (frameRef.current === null) frameRef.current = window.requestAnimationFrame(sync);
     };
     const onPointerMove = (event: PointerEvent) => {
@@ -48,6 +63,14 @@ export function VisualLightTable() {
       schedule();
     };
 
+    const observer = typeof IntersectionObserver === "undefined"
+      ? null
+      : new IntersectionObserver(([entry]) => {
+        isVisible = Boolean(entry?.isIntersecting);
+        if (isVisible) schedule();
+      }, { rootMargin: "160px 0px", threshold: 0 });
+
+    observer?.observe(root);
     root.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule, { passive: true });
@@ -56,6 +79,7 @@ export function VisualLightTable() {
       root.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
+      observer?.disconnect();
       if (frameRef.current !== null) window.cancelAnimationFrame(frameRef.current);
     };
   }, []);
@@ -63,7 +87,7 @@ export function VisualLightTable() {
   if (!activeProject) return null;
 
   const selectRelative = (direction: number) => {
-    setActiveIndex((index) => (index + direction + frames.length) % frames.length);
+    setActiveIndex((index) => (index + direction + lightTableFrames.length) % lightTableFrames.length);
   };
 
   return (
@@ -86,15 +110,15 @@ export function VisualLightTable() {
       <header className="visual-light-table__heading">
         <span className="platform-index">01 / INTERACTIVE LIGHT TABLE</span>
         <div>
-          <h2 id="visual-light-table-title">把光放到桌面上</h2>
-          <p>移动指针，选择一张底片，再沿着颜色进入完整研究。</p>
+          <h2 id="visual-light-table-title">{t("platform.home.lightTable.title")}</h2>
+          <p>{t("platform.home.lightTable.intro")}</p>
         </div>
-        <span className="visual-light-table__hint"><Move size={16} aria-hidden="true" /> POINTER / ARROW KEYS</span>
+        <span className="visual-light-table__hint"><Move size={16} aria-hidden="true" /> {t("platform.home.lightTable.hint")}</span>
       </header>
 
       <div className="visual-light-table__stage">
         <div className="visual-light-table__surface" aria-label="Archive frames">
-          {frames.map((project, index) => (
+          {lightTableFrames.map((project, index) => (
             <button
               type="button"
               key={project.id}
@@ -108,7 +132,6 @@ export function VisualLightTable() {
                 src={project.media[0].src}
                 alt=""
                 title={project.title}
-                priority={index < 2}
                 sizes="(max-width: 760px) 70vw, 34vw"
                 tone={index % 2 ? "cream" : "sage"}
               />
@@ -118,16 +141,19 @@ export function VisualLightTable() {
         </div>
 
         <aside className="visual-light-table__inspector" aria-live="polite">
-          <span>{activeProject.chapter} / {activeProject.place} / {activeProject.season}</span>
+          <span>{activeProject.chapter} / {isChinese ? `${activeProject.place} / ${activeProject.season}` : t("platform.home.lightTable.studyMeta")}</span>
           <h3>{activeProject.title}</h3>
-          <strong>{activeProject.subtitle}</strong>
-          <p>{activeProject.summary}</p>
+          <strong>{isChinese ? activeProject.subtitle : t("platform.home.lightTable.studySubtitle")}</strong>
+          <p>{isChinese ? activeProject.summary : t("platform.home.lightTable.studyDescription", { title: activeProject.title })}</p>
           <div className="visual-light-table__chips">
-            {activeProject.palette.map((item) => <span key={item}>{item}</span>)}
+            {activeProject.palette.map((item) => {
+              const paletteKey = paletteKeyByLabel[item];
+              return <span key={item}>{paletteKey ? t(`platform.home.palette.${paletteKey}` as never) : item}</span>;
+            })}
           </div>
           <div className="visual-light-table__actions">
-            <button type="button" onClick={() => selectRelative(1)} aria-label="Next archive frame"><Shuffle size={17} aria-hidden="true" /></button>
-            <PrefetchLink to={`/archive/${activeProject.id}`}>打开研究 <ArrowRight size={17} aria-hidden="true" /></PrefetchLink>
+            <button type="button" onClick={() => selectRelative(1)} aria-label={t("platform.home.lightTable.next")}><Shuffle size={17} aria-hidden="true" /></button>
+            <PrefetchLink to={`/archive/${activeProject.id}`}>{t("platform.home.lightTable.open")} <ArrowRight size={17} aria-hidden="true" /></PrefetchLink>
           </div>
         </aside>
       </div>

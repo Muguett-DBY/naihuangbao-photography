@@ -179,16 +179,16 @@ async function sampleCanvas(page: Page): Promise<CanvasSample> {
 test.describe("immersive portrait archive", () => {
   test.use({ viewport: { width: 1440, height: 900 }, serviceWorkers: "block" });
 
-  test("reuses one nonblank canvas across flagship routes", async ({ page }) => {
+  test("keeps home image-led and reuses one nonblank canvas across immersive routes", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
 
     const canvas = page.locator(".immersive-experience-canvas");
-    await expect(page.locator("[data-immersive-anchor='home']")).toBeVisible();
-    await expect(canvas).toHaveAttribute("data-scene-preset", "home");
-    await expect.poll(async () => (await sampleCanvas(page)).changedPixels).toBeGreaterThan(500);
-    const originalCanvas = await canvas.elementHandle();
-    expect(originalCanvas).not.toBeNull();
+    await expect(page.locator(".cinematic-premiere__stage")).toBeVisible();
+    await expect(canvas).toHaveCount(0);
+    await page.dispatchEvent("body", "pointerdown");
+    await page.waitForTimeout(1_000);
+    expect(await immersiveResourceNames(page)).toEqual([]);
 
     await page.keyboard.press("Control+K");
     await expect(page.locator("#command-palette-input")).toBeVisible();
@@ -197,7 +197,9 @@ test.describe("immersive portrait archive", () => {
     await expect(page).toHaveURL(/\/gallery$/);
     await expect(page.locator("[data-immersive-anchor='gallery']")).toBeVisible();
     await expect(canvas).toHaveAttribute("data-scene-preset", "gallery");
-    expect(await canvas.evaluate((node, original) => node === original, originalCanvas)).toBe(true);
+    await expect.poll(async () => (await sampleCanvas(page)).changedPixels).toBeGreaterThan(500);
+    const originalCanvas = await canvas.elementHandle();
+    expect(originalCanvas).not.toBeNull();
 
     const detailLink = page.locator("[data-gallery-photo-id='gallery-urban-01'] .gallery-detail-link");
     await detailLink.scrollIntoViewIfNeeded();
@@ -224,16 +226,16 @@ test.describe("immersive portrait archive", () => {
   test("renders a framed nonblank scene without mobile overflow", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.goto("/");
+    await page.goto("/gallery");
 
     const canvas = page.locator(".immersive-experience-canvas");
     const siteNav = page.locator(".site-nav");
-    await expect(page.locator("[data-immersive-anchor='home']")).toBeVisible();
-    await expect(canvas).toHaveAttribute("data-scene-preset", "home");
+    await expect(page.locator("[data-immersive-anchor='gallery']")).toBeVisible();
+    await expect(canvas).toHaveAttribute("data-scene-preset", "gallery");
     await expect(siteNav).toHaveCSS("position", "fixed");
     expect((await siteNav.boundingBox())?.y).toBeLessThanOrEqual(1);
-    await expect(page.locator(".hero h1")).toBeVisible();
-    await expect(page.locator(".hero-gallery-link")).toBeVisible();
+    await expect(page.locator("h1")).toBeVisible();
+    await expect(page.locator(".gallery-page-contact-sheet")).toBeVisible();
     await expect.poll(async () => (await sampleCanvas(page)).changedPixels).toBeGreaterThan(250);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
@@ -345,10 +347,10 @@ test.describe("immersive portrait archive", () => {
     expect((await diagnostics(page))?.contextCount).toBe(1);
   });
 
-  test("keeps measured hero cadence within budget or adaptively downgrades", async ({ page }) => {
+  test("keeps measured gallery cadence within budget or adaptively downgrades", async ({ page }) => {
     test.setTimeout(30_000);
     await page.emulateMedia({ reducedMotion: "no-preference" });
-    await page.goto("/");
+    await page.goto("/gallery");
     await expect.poll(async () => (await diagnostics(page))?.tier).toBe("high");
     await page.waitForTimeout(6_000);
 
@@ -375,7 +377,6 @@ test.describe("immersive portrait archive", () => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await mockCatalogueApi(page);
     const routes = [
-      ["/", "home"],
       ["/gallery", "gallery"],
       ["/gallery/gallery-urban-01", "photo-detail"],
       ["/courses", "courses"],
@@ -394,7 +395,7 @@ test.describe("immersive portrait archive", () => {
       ["/missing-immersive-frame", "boundary"],
     ] as const;
 
-    await page.goto("/");
+    await page.goto("/gallery");
     const canvas = page.locator(".immersive-experience-canvas");
     await expect(canvas).toHaveCount(1);
     const originalCanvas = await canvas.elementHandle();
@@ -413,15 +414,15 @@ test.describe("immersive portrait archive", () => {
     }
   });
 
-  test("keeps reduced-motion visitors on the complete static hero", async ({ page }) => {
+  test("keeps reduced-motion visitors on the complete image-led home", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     await page.evaluate(() => window.dispatchEvent(new PointerEvent("pointerdown")));
     await page.waitForTimeout(1_000);
 
     await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
-    await expect(page.locator(".hero-contact-sheet img").first()).toBeVisible();
-    expect(await page.locator(".hero-contact-sheet").evaluate((element) => Number.parseFloat(getComputedStyle(element).opacity))).toBeGreaterThan(0.95);
+    await expect(page.locator(".cinematic-premiere__scene.is-active img")).toBeVisible();
+    await expect(page.locator(".hero-title")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.dataset.immersiveReady)).toBeUndefined();
     expect(await immersiveResourceNames(page)).toEqual([]);
   });
@@ -434,7 +435,7 @@ test.describe("immersive portrait archive", () => {
     await page.waitForTimeout(1_000);
 
     await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
-    await expect(page.locator(".hero-contact-sheet img").first()).toBeVisible();
+    await expect(page.locator(".cinematic-premiere__scene.is-active img")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.dataset.immersiveReady)).toBeUndefined();
     expect(await immersiveResourceNames(page)).toEqual([]);
   });
@@ -452,7 +453,7 @@ test.describe("immersive portrait archive", () => {
     await page.waitForTimeout(1_000);
 
     await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
-    await expect(page.locator(".hero-contact-sheet img").first()).toBeVisible();
+    await expect(page.locator(".cinematic-premiere__scene.is-active img")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.dataset.immersiveReady)).toBeUndefined();
     expect(await immersiveResourceNames(page)).toEqual([]);
   });

@@ -18,8 +18,14 @@ async function prepareHome(page: Page) {
   }));
 }
 
-test.describe("cinematic homepage premiere", () => {
-  test("shows the image-led premiere cover while the homepage chunk is still loading", async ({ page }) => {
+async function immersiveResources(page: Page) {
+  return page.evaluate(() => performance.getEntriesByType("resource")
+    .map((entry) => entry.name)
+    .filter((name) => /(?:ImmersiveExperience|immersive-vendor)-/.test(name)));
+}
+
+test.describe("calm cinematic homepage", () => {
+  test("shows the image-led cover while the homepage chunk is still loading", async ({ page }) => {
     await prepareHome(page);
     let delayedHomeChunk = false;
     await page.route(/\/assets\/HomePage-[^/]+\.js(?:\?.*)?$/, async (route) => {
@@ -43,123 +49,109 @@ test.describe("cinematic homepage premiere", () => {
     await expect(page.locator('.cinematic-premiere[data-premiere-phase="opening"]')).toBeVisible();
   });
 
-  test("keeps the director reel, visual modes, and real-work reveal responsive", async ({ page }) => {
+  test("keeps one clear hero hierarchy and one compact scene navigator", async ({ page }) => {
     await prepareHome(page);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
 
     const premiere = page.locator(".cinematic-premiere");
     const hero = page.locator(".hero-home");
-    const title = page.locator(".hero-title");
-    const archiveAction = page.locator(".hero-cover-primary-btn");
-    const reelButtons = premiere.locator(".cinematic-premiere__reel button");
-    const modeButtons = premiere.locator(".cinematic-premiere__mode button");
+    const dots = premiere.locator(".cinematic-premiere__scene-dots button");
+    const title = hero.locator(".hero-title");
+    const actions = hero.locator(".hero-actions");
+    const navigator = premiere.locator(".cinematic-premiere__navigator");
 
     await expect(premiere).toBeVisible();
     await expect(premiere).toHaveAttribute("data-premiere-phase", "opening");
     await expect(premiere.locator("[data-premiere-scene]")).toHaveCount(6);
-    await expect(reelButtons).toHaveCount(6);
-    await expect(modeButtons).toHaveCount(2);
+    await expect(dots).toHaveCount(6);
+    await expect(navigator).toBeVisible();
     await expect(premiere.locator(".cinematic-premiere__scene img")).toHaveCount(1);
     await expect(premiere).toHaveAttribute("data-loaded-scenes", "1");
-    await expect(page.locator(".hero-concept-label")).toContainText("Brand concept visuals");
+    await expect(page.locator(".hero-concept-label")).toContainText("CONCEPT ARCHIVE");
     await expect(title).toBeVisible();
-    await expect(archiveAction).toBeVisible();
-    await expect.poll(async () => premiere.locator(".cinematic-premiere__scene img").first().evaluate((image) => (
-      image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0
-    ))).toBe(true);
+    await expect(actions.getByRole("link")).toHaveCount(2);
     await expect(page.locator('#premiere img[fetchpriority="high"]')).toHaveCount(1);
+    await expect(premiere.locator(".cinematic-premiere__mode, .cinematic-premiere__worlds, .cinematic-premiere__reel, .cinematic-premiere__optical-lens")).toHaveCount(0);
+    await expect(page.locator(".project-dock, .nhb-cursor-dot, .film-grain-layer")).toHaveCount(0);
 
     const openingGeometry = await page.evaluate(() => {
       const heroBounds = document.querySelector<HTMLElement>(".hero-home")!.getBoundingClientRect();
       const titleBounds = document.querySelector<HTMLElement>(".hero-title")!.getBoundingClientRect();
       const actionsBounds = document.querySelector<HTMLElement>(".hero-actions")!.getBoundingClientRect();
+      const navigatorBounds = document.querySelector<HTMLElement>(".cinematic-premiere__navigator")!.getBoundingClientRect();
+      const overlaps = actionsBounds.left < navigatorBounds.right
+        && actionsBounds.right > navigatorBounds.left
+        && actionsBounds.top < navigatorBounds.bottom
+        && actionsBounds.bottom > navigatorBounds.top;
       return {
         titleInside: titleBounds.left >= heroBounds.left && titleBounds.right <= heroBounds.right,
         actionsInside: actionsBounds.top >= heroBounds.top && actionsBounds.bottom <= heroBounds.bottom,
+        controlsSeparated: !overlaps,
       };
     });
-    expect(openingGeometry).toEqual({ titleInside: true, actionsInside: true });
+    expect(openingGeometry).toEqual({ titleInside: true, actionsInside: true, controlsSeparated: true });
 
-    await reelButtons.nth(1).hover();
+    await dots.nth(1).click();
     await expect(premiere).toHaveAttribute("data-active-scene", "paper");
     await expect.poll(async () => Number(await premiere.getAttribute("data-loaded-scenes"))).toBeGreaterThanOrEqual(2);
-    await expect.poll(() => premiere.locator(".cinematic-premiere__scene img").count()).toBeGreaterThanOrEqual(2);
-    await expect(premiere.locator(".cinematic-premiere__readout")).toContainText("Rain light on paper");
+    await expect(premiere.locator(".cinematic-premiere__scene-meta")).not.toBeEmpty();
 
-    await reelButtons.nth(1).focus();
+    await dots.nth(1).focus();
     await page.keyboard.press("ArrowRight");
     await expect(premiere).toHaveAttribute("data-active-scene", "corridor");
-    await expect(reelButtons.nth(2)).toBeFocused();
-
-    const heroBounds = await hero.boundingBox();
-    expect(heroBounds).not.toBeNull();
-    if (heroBounds) {
-      await page.mouse.move(heroBounds.x + heroBounds.width * 0.82, heroBounds.y + heroBounds.height * 0.3);
-    }
-    await expect(premiere).toHaveAttribute("data-premiere-pointer", "active");
-    await expect(premiere.locator(".cinematic-premiere__optical-lens")).toHaveCSS("opacity", "1");
-    await expect.poll(async () => hero.evaluate((element) => (
-      Math.abs(Number.parseFloat(getComputedStyle(element).getPropertyValue("--premiere-pointer-x")))
-    ))).toBeGreaterThan(4);
-
-    await modeButtons.nth(1).click();
-    await expect(hero).toHaveAttribute("data-premiere-view", "portfolio");
-    await expect(modeButtons.nth(1)).toHaveAttribute("aria-pressed", "true");
-    await expect(premiere.locator(".cinematic-premiere__reel")).toHaveCount(0);
-    await expect(premiere.locator(".cinematic-premiere__readout")).toHaveCount(0);
-    await expect.poll(async () => page.locator(".hero-contact-sheet").evaluate((element) => (
-      Number.parseFloat(getComputedStyle(element).opacity)
-    ))).toBeGreaterThan(0.95);
+    await expect(dots.nth(2)).toBeFocused();
 
     await page.evaluate(() => {
       const heroHeight = document.querySelector<HTMLElement>(".hero-home")!.offsetHeight;
-      window.scrollTo(0, Math.round(heroHeight * 0.38));
+      window.scrollTo(0, Math.round(heroHeight * 0.42));
     });
-    await expect(premiere).toHaveAttribute("data-premiere-phase", "reveal");
+    await expect(premiere).toHaveAttribute("data-premiere-phase", /unfolding|reveal/);
+    await expect(page.locator(".home-index-strip a")).toHaveCount(5);
+    await expect(page.locator(".home-index-strip")).toHaveCSS("position", "relative");
 
-    const chapterConsole = page.locator(".home-index-strip");
-    await expect(chapterConsole.locator('a[href="#premiere"]')).toContainText("Optical Garden");
+    await page.dispatchEvent("body", "pointerdown");
+    await page.waitForTimeout(1_800);
+    await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
+    expect(await immersiveResources(page)).toEqual([]);
   });
 
-  test("keeps the mobile opening concept-led before revealing real work", async ({ page }) => {
+  test("keeps the narrow opening readable, interactive, and overflow-free", async ({ page }) => {
     await prepareHome(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
 
-    const conceptStage = page.locator(".cinematic-premiere__stage");
-    const realWork = page.locator(".hero-contact-sheet");
-    await expect.poll(async () => Number.parseFloat(await conceptStage.evaluate((element) => getComputedStyle(element).opacity))).toBeGreaterThan(0.75);
-    await expect.poll(async () => Number.parseFloat(await realWork.evaluate((element) => getComputedStyle(element).opacity))).toBeLessThan(0.08);
+    const premiere = page.locator(".cinematic-premiere");
+    const initialAsset = await premiere.getAttribute("data-active-asset");
+    await expect(page.locator(".hero-title")).toBeVisible();
+    await expect(page.locator(".hero-actions a")).toHaveCount(2);
+    await expect(page.locator(".cinematic-premiere__navigator")).toBeVisible();
+    await expect(page.locator(".cinematic-premiere__scene-dots button")).toHaveCount(6);
 
     await page.evaluate(() => {
       const hero = document.querySelector<HTMLElement>(".hero-home")!;
-      window.scrollTo(0, hero.offsetHeight * 0.42);
+      window.scrollTo(0, hero.offsetHeight * 0.48);
     });
-    await expect.poll(async () => Number.parseFloat(await realWork.evaluate((element) => getComputedStyle(element).opacity))).toBeGreaterThan(0.3);
+    await expect(premiere).not.toHaveAttribute("data-active-asset", initialAsset ?? "");
+    await expect(page.locator(".project-dock, .immersive-experience-canvas")).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
   test("reduces to a stable cover on motion-sensitive and failed-image paths", async ({ page }) => {
     await prepareHome(page);
-    await page.addInitScript(() => sessionStorage.setItem("nhb-disable-webgl", "1"));
-    await page.route("**/images/optical-archive/**", (route) => route.abort("failed"));
+    await page.route("**/images/visual-os-v8/**", (route) => route.abort("failed"));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
 
     const premiere = page.locator(".cinematic-premiere");
-    const hero = page.locator(".hero-home");
     await expect(premiere).toHaveAttribute("data-premiere-motion", "reduced");
     await expect(page.locator(".hero-title")).toBeVisible();
-    await expect(page.locator(".hero-cover-primary-btn")).toBeVisible();
+    await expect(page.locator(".hero-actions a")).toHaveCount(2);
     await expect(premiere.locator(".cinematic-premiere__stage")).toBeVisible();
-    await expect(premiere.locator(".cinematic-premiere__mode")).toHaveCSS("display", "none");
-    await expect(premiere.locator(".cinematic-premiere__reel")).toHaveCSS("display", "none");
-    await expect.poll(async () => page.locator(".hero-contact-sheet").evaluate((element) => (
-      Number.parseFloat(getComputedStyle(element).opacity)
-    ))).toBeGreaterThan(0.95);
-    await expect(hero).not.toHaveAttribute("data-premiere-view", "portfolio");
+    await expect(premiere.locator(".cinematic-premiere__navigator")).toBeVisible();
+    await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 });

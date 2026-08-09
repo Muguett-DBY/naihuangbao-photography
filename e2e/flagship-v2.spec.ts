@@ -12,32 +12,24 @@ test.describe("flagship v2 experience", () => {
     });
   });
 
-  test("rain letter advances one readable editorial note at a time", async ({ page }) => {
+  test("the streamlined home keeps five chapters in a clear document order", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/");
 
-    const section = page.locator(".rain-letter");
-    await expect(section).toBeAttached();
-    await page.evaluate(() => {
-      const element = document.querySelector<HTMLElement>(".rain-letter")!;
-      const progressDistance = element.offsetHeight - window.innerHeight;
-      window.scrollTo(0, element.offsetTop + progressDistance * 0.5);
-    });
-
-    await expect(section).toHaveAttribute("data-rain-phase", "window");
-    await expect(section.locator(".rain-letter__masthead")).toBeVisible();
-    await expect.poll(async () => section.locator(".rain-letter__note").evaluateAll((notes) => (
-      notes.filter((note) => getComputedStyle(note).visibility === "visible").length
-    ))).toBe(1);
-    await expect(section.locator(".rain-letter__note--2")).toBeVisible();
+    await expect(page.locator(".home-index-strip a")).toHaveCount(5);
+    const offsets = await page.locator("#premiere, #light-table, #visual-system, #portals, #make-something").evaluateAll(
+      (sections) => sections.map((section) => (section as HTMLElement).offsetTop),
+    );
+    expect(offsets).toEqual([...offsets].sort((first, second) => first - second));
+    await expect(page.locator(".rain-letter, .home-creative-pulse, .field-notes")).toHaveCount(0);
   });
 
-  test("mobile chapter rail keeps all eight chapters on one scrollable row", async ({ page }) => {
+  test("mobile chapter rail keeps all five chapters on one compact scrollable row", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/#rain-letter");
+    await page.goto("/#visual-system");
 
     const rail = page.locator(".home-index-strip");
-    await expect(rail.locator('a[href="#rain-letter"]')).toHaveClass(/is-active/);
+    await expect(rail.locator('a[href="#visual-system"]')).toHaveClass(/is-active/);
     await expect.poll(async () => rail.evaluate((element) => {
       const links = [...element.querySelectorAll("a")];
       const firstTop = links[0]?.offsetTop ?? 0;
@@ -45,10 +37,10 @@ test.describe("flagship v2 experience", () => {
         count: links.length,
         oneRow: links.every((link) => Math.abs(link.offsetTop - firstTop) <= 1),
       };
-    })).toMatchObject({ count: 8, oneRow: true });
+    })).toMatchObject({ count: 5, oneRow: true });
     const railHeight = await rail.evaluate((element) => element.scrollHeight);
-    expect(railHeight).toBeGreaterThanOrEqual(60);
-    expect(railHeight).toBeLessThanOrEqual(62);
+    expect(railHeight).toBeGreaterThanOrEqual(54);
+    expect(railHeight).toBeLessThanOrEqual(56);
   });
 
   test("gallery story mode opens an editorial photo walk", async ({ page }) => {

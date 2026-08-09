@@ -46,6 +46,52 @@
       "startCreating": "Start creating",
       "bookingDemo": "Booking flow experiment"
     },
+    "home": {
+      "lightTable": {
+        "title": "Put light on the table",
+        "intro": "Move across the surface, choose a frame, and follow its color into the complete study.",
+        "hint": "POINTER / ARROW KEYS",
+        "studyMeta": "VISUAL STUDY",
+        "studySubtitle": "A focused study in material, light, and sequence",
+        "studyDescription": "Open {{title}} to read the complete visual and process notes.",
+        "next": "Next archive frame",
+        "open": "Open study"
+      },
+      "palette": {
+        "cream": "Cream",
+        "moss": "Moss",
+        "coral": "Coral",
+        "glassBlue": "Glass blue",
+        "berry": "Deep berry",
+        "yellow": "Soft yellow"
+      },
+      "system": {
+        "title": "One image, more than one destination",
+        "intro": "Archive, creation, stories, and practice share one visual language while keeping clear working boundaries.",
+        "hint": "Choose an entrance",
+        "open": "Enter this area",
+        "count": "{{projects}} PROJECTS / {{frames}} FRAMES",
+        "footer": "LOCAL FIRST / RESTRAINED MOTION / IMAGE-LED HOME",
+        "nodes": {
+          "archive": "Enter a growing visual archive through color, weather, material, and making method.",
+          "create": "Compose, grade, version, and export in the browser without uploading your originals.",
+          "stories": "Arrange images, annotations, and process into a visual story made for scrolling.",
+          "practice": "Inspect product flows, interaction studies, and engineering exercises kept separate from the main archive."
+        }
+      },
+      "portals": {
+        "title": "Enter the whole system through one image",
+        "intro": "Browse the concept archive, open a local creative tool, or read the choices behind each experiment.",
+        "archive": "Explore concept projects through weather, color, and material.",
+        "create": "Compose, grade, save, and export your own visual project.",
+        "stories": "Read image notes, process decisions, and small technical experiments."
+      },
+      "final": {
+        "imageAlt": "An empty morning print room with cream art paper and a moss-green worktable",
+        "title": "Do not just look. Open one of your own images.",
+        "intro": "Create a contact sheet, filmstrip, visual story, or a portable NHB local project."
+      }
+    },
     "routes": {
       "home": "Return to the current premiere",
       "archive": "Explore visual studies and real work",

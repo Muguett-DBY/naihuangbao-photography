@@ -41,7 +41,7 @@ describe("immersive experience integration", () => {
     expect(chrome).toContain('aria-hidden="true"');
     expect(chrome).toContain("SCENE_PRESETS[preset]");
     expect(chrome).not.toMatch(/useEffect|requestAnimationFrame|addEventListener/);
-    expect(home).toContain('<OpticalSceneChrome preset="home"');
+    expect(home).not.toContain("OpticalSceneChrome");
     expect(gallery).toContain('<OpticalSceneChrome preset="gallery"');
     expect(pageHero).toContain("<OpticalSceneChrome");
     expect(css).toMatch(/\.optical-scene-chrome\s*\{[^}]*pointer-events:\s*none/s);
@@ -71,6 +71,7 @@ describe("immersive experience integration", () => {
 
     expect(rootLayout).not.toContain('from "three"');
     expect(rootLayout).not.toMatch(/from "\.\.\/experience\/ImmersiveExperience"/);
+    expect(rootLayout).toContain('location.pathname !== "/"');
     expect(gate).toContain('import("./ImmersiveExperience")');
     expect(gate).not.toContain('from "three"');
     expect(provider).not.toContain('from "three"');
@@ -210,18 +211,20 @@ describe("immersive experience integration", () => {
     expect(changed).not.toBe(first);
   });
 
-  it("registers every flagship page and publishes gallery focus without importing Three.js", () => {
+  it("keeps home image-led while immersive routes publish explicit anchors", () => {
     const home = read("src/pages/HomePage.tsx");
     const galleryPage = read("src/pages/GalleryPage.tsx");
     const photoDetail = read("src/pages/PhotoDetailPage.tsx");
     const gallery = read("src/components/Gallery.tsx");
     const canvas = read("src/experience/ImmersiveExperience.tsx");
 
-    for (const source of [home, galleryPage, photoDetail]) {
+    for (const source of [galleryPage, photoDetail]) {
       expect(source).toContain("useImmersiveAnchor");
       expect(source).not.toContain('from "three"');
     }
-    expect(home).toContain('data-immersive-anchor="home"');
+    expect(home).not.toContain("useImmersiveAnchor");
+    expect(home).not.toContain('data-immersive-anchor="home"');
+    expect(home).not.toContain('from "three"');
     expect(galleryPage).toContain('data-immersive-anchor="gallery"');
     expect(photoDetail).toContain('data-immersive-anchor="photo-detail"');
     expect(gallery).toContain("setHighlightedId");

@@ -7,17 +7,19 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("@critical V6 首页视觉世界切换后沿当前画面进入档案", async ({ page }) => {
+test("@critical V6 首页单一视觉世界可切换场景并沿当前画面进入档案", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
 
   const premiere = page.locator(".cinematic-premiere");
   await expect(premiere).toHaveAttribute("data-visual-world", "dawn");
-  await page.getByRole("group", { name: "视觉世界" }).getByRole("button", { name: /珊瑚夜光/ }).click();
-  await expect(premiere).toHaveAttribute("data-visual-world", "afterglow");
+  await expect(page.getByRole("group", { name: "视觉世界" })).toHaveCount(0);
+  const sceneButtons = premiere.locator(".cinematic-premiere__scene-dots button");
+  await expect(sceneButtons).toHaveCount(6);
+  await sceneButtons.last().click();
   await expect(premiere).toHaveAttribute("data-active-asset", "visual-os-v8-13-coral-pigment-press");
 
-  const archiveLink = page.getByRole("link", { name: /沿这张画面进入档案/ });
+  const archiveLink = premiere.locator(".cinematic-premiere__archive-link");
   await expect(archiveLink).toHaveAttribute("href", "/archive?similar=visual-os-v8-13-coral-pigment-press");
   await archiveLink.focus();
   await archiveLink.press("Enter");

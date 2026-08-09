@@ -11,7 +11,7 @@ export function ProjectDock() {
   const { pathname } = useLocation();
   const workspace = useWorkspaceProjects();
   const [open, setOpen] = useState(false);
-  const visible = pathname === "/" || primaryPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+  const visible = primaryPrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 
   if (!visible || !workspace.ready || !workspace.activeProject) return null;
   const project = workspace.activeProject;
