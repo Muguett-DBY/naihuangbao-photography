@@ -16,7 +16,7 @@ export const DetailNotFound = memo(function DetailNotFound({ message, backTo, ba
   return (
     <PageTransition>
       <section className="detail-state detail-state--not-found" role="status" aria-live="polite">
-        <span className="detail-state-marker">ARCHIVE / 404</span>
+        <span className="detail-state-marker">{t("common.markers.notFound")}</span>
         <FileQuestion size={36} aria-hidden="true" />
         <h1>{message}</h1>
         <p>{t("common.detailNotFoundHint")}</p>

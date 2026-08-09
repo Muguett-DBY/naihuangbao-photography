@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-const read = (path: string) => [path, ...(path === "src/layouts/RootLayout.tsx" ? ["src/features/practice/PracticeLayout.tsx"] : [])].map((file) => readFileSync(resolve(process.cwd(), file), "utf8")).join("\n");
+const read = (path: string) => [path, ...(path === "src/layouts/RootLayout.tsx" ? ["src/layouts/CustomerLayout.tsx", "src/features/practice/PracticeLayout.tsx"] : [])].map((file) => readFileSync(resolve(process.cwd(), file), "utf8")).join("\n");
 
 describe("editorial design system", () => {
   it("defines the Field Notes semantic tokens", () => {
@@ -105,7 +105,7 @@ describe("editorial design system", () => {
   it("renders the configured city in the soft portrait footer line", () => {
     const footer = read("src/components/shared/Footer.tsx");
 
-    expect(footer).toContain("{siteConfig.city} / LIGHT, PAPER &amp; LOCAL TOOLS");
+    expect(footer).toContain('{siteConfig.city} / {t("nav.brandDescriptor")}');
     expect(footer).not.toContain("NANJING / PORTRAITS, LIGHT");
   });
 

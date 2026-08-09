@@ -26,7 +26,10 @@
     "faq": "常见问题",
     "packages": "套餐",
     "backToHome": "回到首页",
-    "mainNavigation": "主导航"
+    "mainNavigation": "主导航",
+    "brandDescriptor": "南京写真与情侣约拍",
+    "preferences": "显示与语言设置",
+    "utilityMenu": "显示与语言设置"
   },
   "mobileNav": {
     "label": "移动端主要导航",
@@ -124,6 +127,26 @@
       "suggestions": "建议入口",
       "empty": "没有匹配的页面或照片"
     },
+    "projectDock": {
+      "ariaLabel": "当前视觉项目",
+      "activeProject": "当前项目",
+      "dockLabel": "NHB / 项目工作台",
+      "close": "关闭项目工作台",
+      "workspace": "工作区",
+      "removeAsset": "移除 {{title}}",
+      "empty": "先从影像档案收集画面。",
+      "openProject": "打开项目",
+      "compose": "开始编排",
+      "new": "新建",
+      "newProject": "视觉研究 {{count}}"
+    },
+    "optical": {
+      "softLight": "NHB 柔光",
+      "portraitDiary": "人像日记",
+      "gentle": "温柔",
+      "natural": "自然",
+      "noRush": "不赶时间"
+    },
     "archive": {
       "title": "生长中的影像档案",
       "description": "持续更新的无人物概念研究、现场观察与独立标注的真实人像作品索引。",
@@ -205,12 +228,12 @@
   },
   "hero": {
     "volBadge": "✦ Vol.1",
-    "brandPrefix": "个人视觉档案与本地创作工具",
-    "intro": "把光、纸张、天气与浏览器图形组织成可以探索、创作和继续生长的个人视觉系统。",
+    "brandPrefix": "南京女生写真与情侣约拍",
+    "intro": "把自然、柔和、带一点胶片感的日常，拍成可以反复翻看的南京记忆。适合第一次约拍的女生、情侣纪念和轻松的城市散步。",
     "trustTags": {
-      "privacy": "本地优先创作",
-      "guidance": "持续更新档案",
-      "styles": "视觉 / 交互 / 工具"
+      "privacy": "不默认公开客片",
+      "guidance": "全程动作引导",
+      "styles": "江南 / 街拍 / 公园"
     },
     "ctaView": "查看作品",
     "ctaBooking": "预约",
@@ -320,6 +343,15 @@
   "gallery": {
     "eyebrow": "Portfolio",
     "title": "作品集",
+    "featured": "精选作品",
+    "items": {
+      "gallery-jiangnan-01": { "title": "伞下春光", "location": "南京", "alt": "南京园林里手持纸伞的江南感女生写真拼图", "album": "江南系列" },
+      "gallery-urban-01": { "title": "台阶午后", "location": "南京", "alt": "南京室内台阶场景里的都市感女生写真拼图", "album": "城市漫步" },
+      "gallery-garden-01": { "title": "绿意裙摆", "location": "南京公园", "alt": "南京公园绿裙和纸伞的清新女生写真拼图", "album": "公园日常" },
+      "gallery-sweet-01": { "title": "黄 hoodie 街角", "location": "南京街区", "alt": "南京街区黄色连帽衫日常陪拍拼图", "album": "城市漫步" },
+      "gallery-flower-01": { "title": "花墙紫调", "location": "南京花墙", "alt": "白色花墙前紫色上衣女生写真拼图", "album": "公园日常" },
+      "gallery-daily-01": { "title": "廊下白衬衫", "location": "南京公园", "alt": "南京公园廊下白衬衫日常女生写真拼图", "album": "公园日常" }
+    },
     "intro": "真实作品按风格整理，点击可看大图",
     "description": "公园日常、江南感、城市街拍、室内写真和情侣约拍会分开筛选。这里只展示已授权公开的真实作品，不混入氛围图。",
     "otherAlbum": "其他",
@@ -523,6 +555,7 @@
     "popular": "热门选择",
     "recommend": "推荐",
     "bookThis": "预约这个套餐",
+    "priceLabel": "价格 {{price}}",
     "cta": "立即预约",
     "perSession": "/次",
     "priceFrom": "起",
@@ -543,6 +576,8 @@
     "equipmentTitle": "拍摄设备",
     "instantTitle": "拍立得",
     "timingTitle": "计时规则",
+    "timingFallbackTitle": "2小时起拍",
+    "timingFallbackDetail": "迟到15分钟开始计时，当天不可更改拍摄时间。",
     "noticeTitle": "预约须知",
     "detailItems": {
       "outfit": {
@@ -587,6 +622,7 @@
   },
   "process": {
     "eyebrow": "预约流程",
+    "ariaLabel": "拍摄流程",
     "steps": [
       {
         "title": "咨询风格",
@@ -693,7 +729,16 @@
   "bookingPage": {
     "readyTitle": "准备好开始了吗？",
     "readyDesc": "选择适合你的拍摄套餐，立即预约你的专属拍摄时间。",
-    "startBooking": "立即预约"
+    "startBooking": "立即预约",
+    "issue": "温柔约拍 / 南京",
+    "deskMarker": "预约台 / 第一步",
+    "configurator": "拍摄偏好配置",
+    "notes": "约拍须知"
+  },
+  "aboutPage": {
+    "role": "南京个人摄影师 · 女生写真 · 情侣约拍",
+    "bookingDesc": "先告诉我你喜欢的风格、日期和地点想法。没有明确方案也没关系，我们可以一起慢慢确定。",
+    "practiceLink": "查看摄影之外的创作练习"
   },
   "themeToggle": {
     "light": "浅色",
@@ -718,6 +763,7 @@
   },
   "loading": "加载中...",
   "notFound": {
+    "kicker": "遗失画面 / 404",
     "title": "页面未找到",
     "desc": "你访问的页面不存在或已被移除。",
     "cta": "返回首页"
@@ -889,7 +935,9 @@
     "explore": "探索",
     "services": "服务",
     "discover": "发现",
-    "copyright": "© {{year}} {{brand}}. 保留所有权利。"
+    "copyright": "© {{year}} {{brand}}. 保留所有权利。",
+    "bookingDesk": "预约咨询",
+    "bookingPrompt": "先看作品与套餐，再选择日期提交预约；也可以从小红书开始聊。"
   },
   "recentlyViewed": {
     "title": "最近浏览",
@@ -1258,7 +1306,14 @@
     "skipToFooter": "跳转到页脚",
     "skipLinksLabel": "跳转链接",
     "mainContentLabel": "主要内容",
-    "socialXiaohongshu": "小红书"
+    "socialXiaohongshu": "小红书",
+    "markers": {
+      "loading": "加载中 / 00",
+      "connection": "连接异常 / 01",
+      "empty": "档案 / 00",
+      "opening": "打开中 / 00",
+      "notFound": "档案 / 404"
+    }
   },
   "admin": {
     "tabs": {
@@ -1486,6 +1541,9 @@
     "typing": "正在输入..."
   },
   "dashboard": {
+    "commandKicker": "客户中心 / 私人档案",
+    "privateArchive": "私人档案",
+    "accountFile": "账户档案 / {{index}}",
     "title": "个人中心",
     "bookings": "我的预约",
     "purchases": "我的购买",
@@ -1661,6 +1719,7 @@
     }
   },
   "quiz": {
+    "frameQueued": "画面待载入",
     "start": "开始测试",
     "step1.title": "什么场合？",
     "step2.title": "喜欢什么风格？",
@@ -1702,6 +1761,7 @@
     "progress": "第{{current}}步，共{{total}}步"
   },
   "errorBoundary": {
+    "kicker": "恢复中心 / 错误",
     "title": "页面暂时没有加载成功",
     "message": "请重试一次，或稍后再回来查看。",
     "retry": "重试",
@@ -1709,9 +1769,11 @@
   },
   "seo": {
     "siteName": "奶黄包摄影",
-    "siteTagline": "奶黄包摄影 | 个人视觉档案",
-    "homeTitle": "奶黄包摄影 | 个人视觉档案与创作实验",
-    "homeDesc": "持续生长的个人视觉练习项目：探索摄影、互动叙事、浏览器图形和本地优先创作工具。",
+    "siteTagline": "奶黄包摄影 | 南京写真与情侣约拍",
+    "homeTitle": "奶黄包摄影 | 南京女生写真与情侣约拍",
+    "homeDesc": "南京个人摄影师，提供柔和自然的女生写真、情侣约拍与城市旅拍，支持在线查看套餐和预约档期。",
+    "aboutTitle": "关于摄影师 | 奶黄包摄影",
+    "aboutDesc": "认识奶黄包摄影：南京个人摄影师，专注女生写真、情侣约拍、拍前沟通和全程动作引导。",
     "galleryTitle": "作品集 | 奶黄包摄影",
     "galleryDesc": "南京写真摄影作品集——公园日常、江南感、街拍、室内写真和情侣约拍。真实授权作品展示。",
     "coursesTitle": "摄影课程 | 奶黄包摄影",

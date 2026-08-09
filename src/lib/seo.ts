@@ -1,5 +1,6 @@
 import { archiveProjects } from "../data/living-archive";
 import { defaultSiteContent } from "../data/content";
+import { galleryItems } from "../data/gallery";
 import type { SiteContent } from "../types/content";
 import { defaultShareImage, siteOrigin } from "./site-origin";
 
@@ -8,16 +9,17 @@ export function buildSeoMetadata(content: SiteContent = defaultSiteContent) {
   const description = content.siteConfig.description;
   const keywords = [
     content.siteConfig.brandName,
-    "个人视觉档案",
-    "视觉实验",
-    "互动叙事",
-    "浏览器图形",
-    "本地创作工具",
-    "摄影练习",
+    "南京约拍",
+    "南京写真",
+    "女生写真",
+    "情侣约拍",
+    "个人摄影师",
+    "自然光人像",
+    "城市旅拍",
     content.siteConfig.city,
   ].join(",");
-  const featuredImages = archiveProjects.slice(0, 4).map((project) => (
-    `${siteOrigin}${project.media[0].src.replace(/\?.*$/, "")}`
+  const featuredImages = galleryItems.slice(0, 4).map((photo) => (
+    `${siteOrigin}${photo.imageUrl.replace(/\?.*$/, "")}`
   ));
 
   return {
@@ -38,12 +40,30 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     "@type": "WebSite",
     "@id": `${metadata.origin}/#website`,
     name: content.siteConfig.brandName,
-    alternateName: "NHB Visual OS",
+    alternateName: "NHB Portrait Booking",
     description: metadata.description,
     url: `${metadata.origin}/`,
     image: [metadata.shareImage, ...metadata.featuredImages],
     inLanguage: ["zh-CN", "en", "ja", "ko"],
     keywords: metadata.keywords,
+  };
+
+  const gallerySchema = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    "@id": `${metadata.origin}/gallery#collection`,
+    name: "奶黄包摄影真实作品集",
+    description: "南京女生写真、情侣约拍与城市旅拍的真实授权作品。",
+    url: `${metadata.origin}/gallery`,
+    isPartOf: { "@id": `${metadata.origin}/#website` },
+    hasPart: galleryItems.map((photo) => ({
+      "@type": "Photograph",
+      name: photo.title,
+      description: photo.alt,
+      url: `${metadata.origin}/gallery/${photo.id}`,
+      image: `${metadata.origin}${photo.imageUrl.replace(/\?.*$/, "")}`,
+      contentLocation: photo.location,
+    })),
   };
 
   const archiveSchema = {
@@ -71,9 +91,9 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "首页", item: `${metadata.origin}/` },
-      { "@type": "ListItem", position: 2, name: "档案", item: `${metadata.origin}/archive` },
-      { "@type": "ListItem", position: 3, name: "故事", item: `${metadata.origin}/stories` },
-      { "@type": "ListItem", position: 4, name: "创作", item: `${metadata.origin}/create` },
+      { "@type": "ListItem", position: 2, name: "作品集", item: `${metadata.origin}/gallery` },
+      { "@type": "ListItem", position: 3, name: "预约", item: `${metadata.origin}/booking` },
+      { "@type": "ListItem", position: 4, name: "关于", item: `${metadata.origin}/about` },
     ],
   };
 
@@ -102,6 +122,9 @@ export function renderSeoHead(content: SiteContent = defaultSiteContent) {
     '<link rel="icon" href="/icons/pwa-icon.svg" />',
     '<script type="application/ld+json">',
     JSON.stringify(websiteSchema, null, 6),
+    "</script>",
+    '<script type="application/ld+json">',
+    JSON.stringify(gallerySchema, null, 6),
     "</script>",
     '<script type="application/ld+json">',
     JSON.stringify(archiveSchema, null, 6),

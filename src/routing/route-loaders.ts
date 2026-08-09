@@ -8,6 +8,8 @@ function asDefault<T extends ComponentType>(component: T) {
 }
 
 export const routeLoaders = {
+  $auth: () => import("../layouts/AuthLayout").then((module) => asDefault(module.AuthLayout)),
+  $customer: () => import("../layouts/CustomerLayout").then((module) => asDefault(module.CustomerLayout)),
   $practice: () => import("../features/practice/PracticeLayout").then((module) => asDefault(module.PracticeLayout)),
   "/": () => import("../pages/HomePage").then((module) => asDefault(module.HomePage)),
   "/archive": () => import("../pages/ArchivePage").then((module) => asDefault(module.ArchivePage)),
@@ -45,4 +47,4 @@ export const routeLoaders = {
     await import("../styles/admin.css");
     return import("../components/AdminDashboard");
   },
-} satisfies Record<RouteLoaderPath | "$practice", RouteLoader>;
+} satisfies Record<RouteLoaderPath | "$auth" | "$customer" | "$practice", RouteLoader>;

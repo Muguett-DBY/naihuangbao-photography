@@ -1,5 +1,6 @@
 import { ShieldCheck } from "lucide-react";
 import { Collapse } from "animal-island-ui";
+import { useTranslation } from "react-i18next";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { Section } from "./Section";
 
@@ -9,6 +10,7 @@ function splitStep(step: string) {
 }
 
 export function ProcessAndFaq() {
+  const { t } = useTranslation();
   const { faqs, processSteps, sectionCopy } = useSiteContent();
 
   return (
@@ -18,7 +20,7 @@ export function ProcessAndFaq() {
       title={sectionCopy.notice.title}
       intro={sectionCopy.notice.intro}
     >
-      <div className="process-scroll-wrap" aria-label="拍摄流程">
+      <div className="process-scroll-wrap" aria-label={t("process.ariaLabel")}>
         <div className="process-timeline">
           {processSteps.map((step, index) => {
             const { title, detail } = splitStep(step);

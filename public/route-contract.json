@@ -8,55 +8,55 @@
     },
     {
       "path": "/archive",
-      "scope": "primary"
+      "scope": "practice"
     },
     {
       "path": "/archive/:id",
-      "scope": "primary",
+      "scope": "practice",
       "dynamic": true,
       "staticShell": true
     },
     {
       "path": "/vault",
-      "scope": "primary"
+      "scope": "practice"
     },
     {
       "path": "/stories",
-      "scope": "primary"
+      "scope": "practice"
     },
     {
       "path": "/stories/:id",
-      "scope": "primary",
+      "scope": "practice",
       "dynamic": true,
       "staticShell": true
     },
     {
       "path": "/create",
-      "scope": "primary"
+      "scope": "practice"
     },
     {
       "path": "/compose",
-      "scope": "primary"
+      "scope": "practice"
     },
     {
       "path": "/curate",
-      "scope": "primary"
+      "scope": "practice"
     },
     {
       "path": "/create/story",
-      "scope": "primary"
+      "scope": "practice"
     },
     {
       "path": "/studio",
-      "scope": "primary"
+      "scope": "practice"
     },
     {
       "path": "/projects",
-      "scope": "primary"
+      "scope": "practice"
     },
     {
       "path": "/share/:slug",
-      "scope": "primary",
+      "scope": "practice",
       "dynamic": true
     },
     {
@@ -65,7 +65,7 @@
     },
     {
       "path": "/editor",
-      "scope": "primary"
+      "scope": "practice"
     },
     {
       "path": "/practice",
@@ -78,11 +78,11 @@
     },
     {
       "path": "/gallery",
-      "scope": "practice"
+      "scope": "primary"
     },
     {
       "path": "/gallery/:id",
-      "scope": "practice",
+      "scope": "primary",
       "dynamic": true
     },
     {
@@ -123,19 +123,19 @@
     },
     {
       "path": "/booking",
-      "scope": "practice"
+      "scope": "primary"
     },
     {
       "path": "/map",
-      "scope": "practice"
+      "scope": "primary"
     },
     {
       "path": "/login",
-      "scope": "practice"
+      "scope": "primary"
     },
     {
       "path": "/dashboard",
-      "scope": "practice"
+      "scope": "primary"
     },
     {
       "path": "/compare",

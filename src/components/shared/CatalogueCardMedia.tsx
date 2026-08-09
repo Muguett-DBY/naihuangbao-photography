@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 export type CatalogueMediaKind = "course" | "preset" | "workshop" | "object";
 
@@ -62,6 +63,7 @@ export function CatalogueCardMedia({
   index,
   kind,
 }: CatalogueCardMediaProps) {
+  const { t } = useTranslation();
   const [failedImageUrl, setFailedImageUrl] = useState<string | null>(null);
   const mediaClassName = `catalogue-card-media catalogue-card-media--${kind}${className ? ` ${className}` : ""}`;
   const canRenderSource = Boolean(imageUrl) && imageUrl !== failedImageUrl;
@@ -95,7 +97,7 @@ export function CatalogueCardMedia({
         <img src={primaryImage} alt="" loading="lazy" />
         <img src={secondaryImage} alt="" loading="lazy" />
       </span>
-      <span className="catalogue-fallback-label" aria-hidden="true">VISUAL STUDY</span>
+      <span className="catalogue-fallback-label" aria-hidden="true">{t("platform.home.lightTable.studyMeta")}</span>
       <span className="catalogue-fallback-reference" aria-hidden="true">{CATALOGUE_MEDIA_CODES[kind]} / NHB</span>
       {children}
       <OpticalMediaChrome index={index} kind={kind} />

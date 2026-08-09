@@ -12,8 +12,9 @@ test("@critical V4 信息架构、档案分层与发布清单可用", async ({ p
   await page.goto("/archive");
 
   await expect(page.locator(".platform-hero h1")).toContainText("影像档案");
-  await expect(page.locator('.nav-menu--inline a[href="/archive"]')).toBeVisible();
-  await expect(page.locator('.nav-menu--inline a[href="/create"]')).toBeVisible();
+  await expect(page.locator('.nav-menu--inline a[href="/gallery"]')).toBeVisible();
+  await expect(page.locator('.nav-menu--inline a[href="/booking"]')).toBeVisible();
+  await expect(page.locator('.nav-menu--inline a[href="/archive"], .nav-menu--inline a[href="/create"]')).toHaveCount(0);
   await expect(page.locator(".archive-project")).toHaveCount(26);
   await expect(page.locator(".archive-real-item")).toHaveCount(6);
   await expect(page.locator(".archive-constellation")).toBeVisible();
@@ -162,12 +163,14 @@ test("@critical Story Builder 本地保存章节并导出项目", async ({ page 
   await expect(page.getByLabel("Project name")).toHaveValue("Weather Builder Test");
 });
 
-test("@critical 首页光桌可交互并通向完整档案研究", async ({ page }) => {
+test("@critical 首页真实客片可切换并通向作品集与预约", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  const lightTable = page.locator(".visual-light-table");
-  await expect(lightTable).toBeVisible();
-  await expect(page.locator(".home-playground-portals")).toBeVisible();
+  const hero = page.locator(".home-booking-hero");
+  const heroImage = hero.locator(".home-booking-hero__media img");
+  const selectorButtons = hero.locator(".home-booking-hero__selector button");
+  await expect(hero).toBeVisible();
+  await expect(selectorButtons).toHaveCount(3);
   const chatOverlapsIndex = await page.evaluate(() => {
     const chat = document.querySelector(".public-chat-launcher")?.getBoundingClientRect();
     const index = document.querySelector(".home-index-strip")?.getBoundingClientRect();
@@ -178,15 +181,14 @@ test("@critical 首页光桌可交互并通向完整档案研究", async ({ page
       && chat.bottom > index.top);
   });
   expect(chatOverlapsIndex).toBe(false);
-  await expect(lightTable.locator(".visual-light-table__inspector h3")).toContainText("Optical Garden");
-  await lightTable.focus();
-  await page.keyboard.press("ArrowRight");
-  await expect(lightTable.locator(".visual-light-table__inspector h3")).toContainText("Morning Conservatory");
+  const initialSource = await heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc);
+  await selectorButtons.nth(1).click();
+  await expect(selectorButtons.nth(1)).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(() => heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc)).not.toBe(initialSource);
 
-  await lightTable.locator(".visual-light-table__inspector a").click();
-  await expect(page).toHaveURL(/\/archive\/morning-conservatory$/);
-  await expect(page.locator(".archive-study-page h1")).toContainText("Morning Conservatory");
-  await expect(page.locator(".archive-study-process")).toBeVisible();
+  await hero.locator('.home-booking-secondary[href="/gallery"]').click();
+  await expect(page).toHaveURL(/\/gallery$/);
+  await expect(page.locator(".gallery-page-contact-sheet")).toBeVisible();
 });
 
 test("@critical 暗房项目自动保存并能在刷新后恢复", async ({ page }) => {
@@ -222,7 +224,7 @@ test("@critical 窄屏与减少动态模式无横向溢出", async ({ page }) =>
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/archive");
   await expect(page.locator(".mobile-bottom-nav")).toBeVisible();
-  await expect(page.locator('.mobile-bottom-nav a[href="/create"]')).toBeVisible();
+  await expect(page.locator('.mobile-bottom-nav a[href="/booking"]')).toBeVisible();
   const layout = await page.evaluate(() => ({
     overflow: document.documentElement.scrollWidth - window.innerWidth,
     transitionKind: document.documentElement.dataset.transitionKind || "",

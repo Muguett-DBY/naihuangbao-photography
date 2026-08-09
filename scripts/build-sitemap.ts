@@ -16,15 +16,16 @@ const LANGS = ["zh-CN", "en", "ja", "ko"];
 
 const STATIC_PAGES = [
   { path: "/", priority: 1.0, changefreq: "weekly" },
-  { path: "/archive", priority: 0.9, changefreq: "weekly" },
+  { path: "/booking", priority: 0.9, changefreq: "weekly" },
+  { path: "/gallery", priority: 0.9, changefreq: "weekly" },
+  { path: "/about", priority: 0.8, changefreq: "monthly" },
+  { path: "/map", priority: 0.7, changefreq: "monthly" },
+  { path: "/archive", priority: 0.6, changefreq: "monthly" },
   { path: "/stories", priority: 0.8, changefreq: "weekly" },
-  { path: "/create", priority: 0.9, changefreq: "monthly" },
+  { path: "/create", priority: 0.6, changefreq: "monthly" },
   { path: "/create/story", priority: 0.7, changefreq: "monthly" },
   { path: "/studio", priority: 0.8, changefreq: "monthly" },
-  { path: "/practice", priority: 0.6, changefreq: "monthly" },
-  { path: "/about", priority: 0.7, changefreq: "monthly" },
-  { path: "/gallery", priority: 0.7, changefreq: "monthly" },
-  { path: "/map", priority: 0.5, changefreq: "monthly" },
+  { path: "/practice", priority: 0.5, changefreq: "monthly" },
 ];
 
 const today = new Date().toISOString().slice(0, 10);

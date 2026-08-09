@@ -1,0 +1,174 @@
+.about-booking-page {
+  --about-ink: #29332d;
+  --about-moss: #697b64;
+  --about-paper: #fbf7ef;
+  background: var(--about-paper);
+  color: var(--about-ink);
+}
+
+.about-booking-hero {
+  min-height: min(820px, 100svh);
+  padding-top: var(--nav-h, 72px);
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+}
+
+.about-booking-hero__copy,
+.about-booking-contact__copy {
+  padding: clamp(54px, 8vw, 124px);
+  align-self: center;
+}
+
+.about-booking-hero__copy > p,
+.about-booking-trust header > p,
+.about-booking-contact__copy > p {
+  margin: 0 0 18px;
+  color: var(--about-moss);
+  font: 800 12px/1.4 var(--font-ui);
+  text-transform: uppercase;
+}
+
+.about-booking-hero h1,
+.about-booking-trust h2,
+.about-booking-contact h2 {
+  margin: 0;
+  font-family: var(--font-display-cn);
+  font-size: clamp(44px, 6vw, 88px);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.about-booking-hero__copy > strong {
+  display: block;
+  margin-top: 24px;
+  color: #9a5f50;
+  font-size: 15px;
+}
+
+.about-booking-hero__copy > span,
+.about-booking-trust header > span,
+.about-booking-contact__copy > span {
+  display: block;
+  max-width: 620px;
+  margin-top: 18px;
+  color: #626c65;
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.about-booking-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
+}
+
+.about-booking-actions button,
+.about-booking-actions a,
+.about-booking-contact__copy button {
+  min-height: 50px;
+  padding: 0 21px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid var(--about-ink);
+  border-radius: 4px;
+  font-weight: 800;
+}
+
+.about-booking-actions button,
+.about-booking-contact__copy button {
+  background: var(--about-ink);
+  color: #fffaf0;
+}
+
+.about-booking-actions a { color: var(--about-ink); }
+
+.about-booking-hero__media,
+.about-booking-contact__media { position: relative; min-height: 620px; overflow: hidden; background: #ded6c8; }
+.about-booking-hero__media .img-blur-wrap,
+.about-booking-hero__media picture,
+.about-booking-hero__media img,
+.about-booking-contact__media .img-blur-wrap,
+.about-booking-contact__media picture,
+.about-booking-contact__media img { width: 100%; height: 100%; }
+.about-booking-hero__media img,
+.about-booking-contact__media img { object-fit: cover; }
+
+.about-booking-hero__media > span {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2;
+  color: #fff;
+  font: 800 11px/1 var(--font-ui);
+  text-shadow: 0 1px 6px #000;
+}
+
+.about-booking-trust {
+  padding: clamp(78px, 10vw, 150px) clamp(24px, 6vw, 96px);
+  background: #f0eadf;
+}
+
+.about-booking-trust header { max-width: 860px; margin-bottom: 54px; }
+
+.about-booking-trust__list { border-top: 1px solid rgb(41 51 45 / 18%); }
+
+.about-booking-trust__list article {
+  display: grid;
+  grid-template-columns: 120px minmax(180px, 0.55fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+  padding: 28px 0;
+  border-bottom: 1px solid rgb(41 51 45 / 18%);
+}
+
+.about-booking-trust__list article > span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #a66655;
+  font: 800 11px/1 var(--font-ui);
+}
+
+.about-booking-trust__list h3 { margin: 0; font-size: 21px; }
+.about-booking-trust__list p { margin: 0; color: #626c65; line-height: 1.75; }
+
+.about-booking-contact {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  min-height: 620px;
+  background: #6e8069;
+  color: #fffaf0;
+}
+
+.about-booking-contact__copy > p { color: #f2d6bc; }
+.about-booking-contact h2 { color: #fffaf0; }
+.about-booking-contact__copy > span { color: rgb(255 250 240 / 78%); }
+.about-booking-contact__copy button { margin-top: 30px; background: #fffaf0; color: #344238; border-color: #fffaf0; }
+
+.about-booking-practice-link {
+  width: fit-content;
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgb(255 250 240 / 70%);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 860px) {
+  .about-booking-hero,
+  .about-booking-contact { grid-template-columns: 1fr; }
+  .about-booking-hero__media { grid-row: 1; min-height: 58svh; }
+  .about-booking-hero__copy,
+  .about-booking-contact__copy { padding: 64px 22px 78px; }
+  .about-booking-contact__media { min-height: 52svh; }
+  .about-booking-trust { padding-inline: 22px; }
+  .about-booking-trust__list article { grid-template-columns: 56px minmax(0, 1fr); }
+  .about-booking-trust__list article p { grid-column: 2; }
+}

@@ -24,8 +24,8 @@ async function immersiveResources(page: Page) {
     .filter((name) => /(?:ImmersiveExperience|immersive-vendor)-/.test(name)));
 }
 
-test.describe("calm cinematic homepage", () => {
-  test("shows the image-led cover while the homepage chunk is still loading", async ({ page }) => {
+test.describe("booking-first homepage", () => {
+  test("shows a real-work booking cover while the homepage chunk is loading", async ({ page }) => {
     await prepareHome(page);
     let delayedHomeChunk = false;
     await page.route(/\/assets\/HomePage-[^/]+\.js(?:\?.*)?$/, async (route) => {
@@ -40,117 +40,89 @@ test.describe("calm cinematic homepage", () => {
     await expect.poll(() => delayedHomeChunk).toBe(true);
     await expect(fallback).toBeVisible();
     await expect(fallback.locator("h1")).toBeVisible();
-    await expect(fallback.locator(".hero-cover-primary-btn")).toBeVisible();
+    await expect(fallback.locator('a[href="/booking"]')).toBeVisible();
+    await expect(fallback.locator('a[href="/gallery"]')).toBeVisible();
     await expect(fallback.locator('img[fetchpriority="high"]')).toBeAttached();
     await expect(page.locator(".adm-loading-dots")).not.toBeVisible();
     expect(await fallback.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThan(580);
 
     await expect(fallback).toHaveCount(0, { timeout: 5_000 });
-    await expect(page.locator('.cinematic-premiere[data-premiere-phase="opening"]')).toBeVisible();
+    await expect(page.locator(".home-booking-hero")).toBeVisible();
   });
 
-  test("keeps one clear hero hierarchy and one compact scene navigator", async ({ page }) => {
+  test("keeps one clear booking hierarchy and a user-controlled real-photo selector", async ({ page }) => {
     await prepareHome(page);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
 
-    const premiere = page.locator(".cinematic-premiere");
-    const hero = page.locator(".hero-home");
-    const dots = premiere.locator(".cinematic-premiere__scene-dots button");
-    const title = hero.locator(".hero-title");
-    const actions = hero.locator(".hero-actions");
-    const navigator = premiere.locator(".cinematic-premiere__navigator");
+    const hero = page.locator(".home-booking-hero");
+    const title = hero.getByRole("heading", { level: 1 });
+    const actions = hero.locator(".home-booking-actions");
+    const selector = hero.getByRole("group", { name: "Gallery" });
+    const selectorButtons = selector.getByRole("button");
+    const heroImage = hero.locator(".home-booking-hero__media img");
 
-    await expect(premiere).toBeVisible();
-    await expect(premiere).toHaveAttribute("data-premiere-phase", "opening");
-    await expect(premiere.locator("[data-premiere-scene]")).toHaveCount(6);
-    await expect(dots).toHaveCount(6);
-    await expect(navigator).toBeVisible();
-    await expect(premiere.locator(".cinematic-premiere__scene img")).toHaveCount(1);
-    await expect(premiere).toHaveAttribute("data-loaded-scenes", "1");
-    await expect(page.locator(".hero-concept-label")).toContainText("CONCEPT ARCHIVE");
-    await expect(title).toBeVisible();
-    await expect(actions.getByRole("link")).toHaveCount(2);
+    await expect(hero).toBeVisible();
+    await expect(title).toHaveCount(1);
+    await expect(actions.getByRole("button")).toHaveCount(1);
+    await expect(actions.getByRole("link")).toHaveCount(1);
+    await expect(actions.getByRole("link")).toHaveAttribute("href", "/gallery");
+    await expect(selectorButtons).toHaveCount(3);
+    await expect(selectorButtons.first()).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator('#premiere img[fetchpriority="high"]')).toHaveCount(1);
-    await expect(premiere.locator(".cinematic-premiere__mode, .cinematic-premiere__worlds, .cinematic-premiere__reel, .cinematic-premiere__optical-lens")).toHaveCount(0);
-    await expect(page.locator(".project-dock, .nhb-cursor-dot, .film-grain-layer")).toHaveCount(0);
+    await expect(page.locator(".cinematic-premiere, .visual-light-table, .home-visual-system, .immersive-experience-canvas")).toHaveCount(0);
 
-    const openingGeometry = await page.evaluate(() => {
-      const heroBounds = document.querySelector<HTMLElement>(".hero-home")!.getBoundingClientRect();
-      const titleBounds = document.querySelector<HTMLElement>(".hero-title")!.getBoundingClientRect();
-      const actionsBounds = document.querySelector<HTMLElement>(".hero-actions")!.getBoundingClientRect();
-      const navigatorBounds = document.querySelector<HTMLElement>(".cinematic-premiere__navigator")!.getBoundingClientRect();
-      const overlaps = actionsBounds.left < navigatorBounds.right
-        && actionsBounds.right > navigatorBounds.left
-        && actionsBounds.top < navigatorBounds.bottom
-        && actionsBounds.bottom > navigatorBounds.top;
-      return {
-        titleInside: titleBounds.left >= heroBounds.left && titleBounds.right <= heroBounds.right,
-        actionsInside: actionsBounds.top >= heroBounds.top && actionsBounds.bottom <= heroBounds.bottom,
-        controlsSeparated: !overlaps,
-      };
-    });
-    expect(openingGeometry).toEqual({ titleInside: true, actionsInside: true, controlsSeparated: true });
+    const initialSource = await heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc);
+    await selectorButtons.nth(1).click();
+    await expect(selectorButtons.nth(1)).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(() => heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc)).not.toBe(initialSource);
 
-    await dots.nth(1).click();
-    await expect(premiere).toHaveAttribute("data-active-scene", "paper");
-    await expect.poll(async () => Number(await premiere.getAttribute("data-loaded-scenes"))).toBeGreaterThanOrEqual(2);
-    await expect(premiere.locator(".cinematic-premiere__scene-meta")).not.toBeEmpty();
+    await actions.getByRole("button").click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
 
-    await dots.nth(1).focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(premiere).toHaveAttribute("data-active-scene", "corridor");
-    await expect(dots.nth(2)).toBeFocused();
-
-    await page.evaluate(() => {
-      const heroHeight = document.querySelector<HTMLElement>(".hero-home")!.offsetHeight;
-      window.scrollTo(0, Math.round(heroHeight * 0.42));
-    });
-    await expect(premiere).toHaveAttribute("data-premiere-phase", /unfolding|reveal/);
     await expect(page.locator(".home-index-strip a")).toHaveCount(5);
-    await expect(page.locator(".home-index-strip")).toHaveCSS("position", "relative");
-
     await page.dispatchEvent("body", "pointerdown");
-    await page.waitForTimeout(1_800);
-    await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
+    await page.waitForTimeout(800);
     expect(await immersiveResources(page)).toEqual([]);
   });
 
-  test("keeps the narrow opening readable, interactive, and overflow-free", async ({ page }) => {
+  test("keeps the narrow booking cover readable, interactive, and overflow-free", async ({ page }) => {
     await prepareHome(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/");
 
-    const premiere = page.locator(".cinematic-premiere");
-    const initialAsset = await premiere.getAttribute("data-active-asset");
-    await expect(page.locator(".hero-title")).toBeVisible();
-    await expect(page.locator(".hero-actions a")).toHaveCount(2);
-    await expect(page.locator(".cinematic-premiere__navigator")).toBeVisible();
-    await expect(page.locator(".cinematic-premiere__scene-dots button")).toHaveCount(6);
+    const hero = page.locator(".home-booking-hero");
+    const selectorButtons = hero.locator(".home-booking-hero__selector button");
+    const heroImage = hero.locator(".home-booking-hero__media img");
+    const initialSource = await heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc);
 
-    await page.evaluate(() => {
-      const hero = document.querySelector<HTMLElement>(".hero-home")!;
-      window.scrollTo(0, hero.offsetHeight * 0.48);
-    });
-    await expect(premiere).not.toHaveAttribute("data-active-asset", initialAsset ?? "");
-    await expect(page.locator(".project-dock, .immersive-experience-canvas")).toHaveCount(0);
+    await expect(hero.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(hero.locator(".home-booking-primary")).toBeVisible();
+    await expect(hero.locator('.home-booking-secondary[href="/gallery"]')).toBeVisible();
+    await expect(selectorButtons).toHaveCount(3);
+
+    await selectorButtons.nth(2).click();
+    await expect(selectorButtons.nth(2)).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(() => heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc)).not.toBe(initialSource);
+    await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
-  test("reduces to a stable cover on motion-sensitive and failed-image paths", async ({ page }) => {
+  test("keeps a stable booking cover for motion-sensitive and failed-image paths", async ({ page }) => {
     await prepareHome(page);
-    await page.route("**/images/visual-os-v8/**", (route) => route.abort("failed"));
+    await page.route("**/images/gallery/**", (route) => route.abort("failed"));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
 
-    const premiere = page.locator(".cinematic-premiere");
-    await expect(premiere).toHaveAttribute("data-premiere-motion", "reduced");
-    await expect(page.locator(".hero-title")).toBeVisible();
-    await expect(page.locator(".hero-actions a")).toHaveCount(2);
-    await expect(premiere.locator(".cinematic-premiere__stage")).toBeVisible();
-    await expect(premiere.locator(".cinematic-premiere__navigator")).toBeVisible();
+    const hero = page.locator(".home-booking-hero");
+    await expect(hero.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(hero.locator(".home-booking-primary")).toBeVisible();
+    await expect(hero.locator('.home-booking-secondary[href="/gallery"]')).toBeVisible();
+    await expect(hero.locator(".home-booking-hero__media")).toBeVisible();
     await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });

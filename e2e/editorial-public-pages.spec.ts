@@ -1,15 +1,15 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("editorial public pages", () => {
-  test("mobile visual-system controls remain usable without overflow", async ({ page }) => {
+  test("mobile real-work selector remains usable without overflow", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto("/");
 
-    const visualSystem = page.locator("#visual-system");
-    await visualSystem.scrollIntoViewIfNeeded();
-    await expect(visualSystem).toBeVisible();
-    const geometry = await visualSystem.evaluate((section) => {
-      const controls = [...section.querySelectorAll<HTMLElement>(".home-visual-system__nodes button")].map((control) => {
+    const hero = page.locator(".home-booking-hero");
+    await expect(hero).toBeVisible();
+    const selector = hero.locator(".home-booking-hero__selector");
+    const geometry = await selector.evaluate((section) => {
+      const controls = [...section.querySelectorAll<HTMLElement>("button")].map((control) => {
         const rect = control.getBoundingClientRect();
         return { right: rect.right, left: rect.left, width: rect.width, height: rect.height };
       });
@@ -20,7 +20,7 @@ test.describe("editorial public pages", () => {
       };
     });
 
-    expect(geometry.controls).toHaveLength(4);
+    expect(geometry.controls).toHaveLength(3);
     expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.viewportWidth + 1);
     for (const control of geometry.controls) {
       expect(control.width).toBeGreaterThanOrEqual(44);

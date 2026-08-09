@@ -1,4 +1,5 @@
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { galleryItems } from "../data/gallery";
 import { resolvePublicPhotoSource } from "../lib/gallery-source";
 import { scheduleIdleTask } from "../lib/idle";
@@ -15,7 +16,10 @@ const PublicPhotosContext = createContext<PublicPhotosState>({
   remoteLoaded: false,
 });
 
+const localizedGalleryIds = new Set(galleryItems.map((photo) => photo.id));
+
 export function PublicPhotosProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
   const [remotePhotos, setRemotePhotos] = useState<PhotoItem[]>([]);
   const [remoteLoaded, setRemoteLoaded] = useState(false);
 
@@ -47,10 +51,19 @@ export function PublicPhotosProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const photos = useMemo(
-    () => resolvePublicPhotoSource(galleryItems, remotePhotos, remoteLoaded),
-    [remoteLoaded, remotePhotos],
-  );
+  const photos = useMemo(() => (
+    resolvePublicPhotoSource(galleryItems, remotePhotos, remoteLoaded).map((photo) => {
+      if (!localizedGalleryIds.has(photo.id)) return photo;
+      const key = `gallery.items.${photo.id}`;
+      return {
+        ...photo,
+        title: t(`${key}.title` as never),
+        location: t(`${key}.location` as never),
+        alt: t(`${key}.alt` as never),
+        album: t(`${key}.album` as never),
+      };
+    })
+  ), [remoteLoaded, remotePhotos, t]);
 
   const value = useMemo(() => ({ photos, remoteLoaded }), [photos, remoteLoaded]);
   return (

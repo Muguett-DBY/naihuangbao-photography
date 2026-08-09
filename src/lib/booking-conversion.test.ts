@@ -6,7 +6,7 @@ const root = process.cwd();
 const read = (path: string) => {
   const extras = path === "src/components/BookingModal.tsx"
     ? ["src/features/booking/BookingStepRail.tsx", "src/features/booking/BookingFormSteps.tsx", "src/features/booking/BookingOutcomeViews.tsx"]
-    : path === "src/layouts/RootLayout.tsx" ? ["src/features/practice/PracticeLayout.tsx"] : [];
+    : path === "src/layouts/RootLayout.tsx" ? ["src/layouts/CustomerLayout.tsx", "src/features/practice/PracticeLayout.tsx"] : [];
   return [path, ...extras].map((file) => readFileSync(resolve(root, file), "utf8")).join("\n");
 };
 

@@ -26,7 +26,10 @@
     "map": "지도",
     "editor": "편집기",
     "backToHome": "홈페이지로 돌아가기",
-    "mainNavigation": "주 내비게이션"
+    "mainNavigation": "주 내비게이션",
+    "brandDescriptor": "난징 인물 촬영 예약",
+    "preferences": "화면 및 언어 설정",
+    "utilityMenu": "화면 및 언어 설정"
   },
   "mobileNav": {
     "label": "모바일 주요 내비게이션",
@@ -124,6 +127,26 @@
       "suggestions": "추천 경로",
       "empty": "일치하는 페이지나 사진이 없습니다"
     },
+    "projectDock": {
+      "ariaLabel": "현재 비주얼 프로젝트",
+      "activeProject": "현재 프로젝트",
+      "dockLabel": "NHB / 프로젝트 도크",
+      "close": "프로젝트 도크 닫기",
+      "workspace": "워크스페이스",
+      "removeAsset": "{{title}} 제거",
+      "empty": "먼저 아카이브에서 프레임을 모아 보세요.",
+      "openProject": "프로젝트 열기",
+      "compose": "구성하기",
+      "new": "새로 만들기",
+      "newProject": "비주얼 연구 {{count}}"
+    },
+    "optical": {
+      "softLight": "NHB 소프트 라이트",
+      "portraitDiary": "인물 사진 일기",
+      "gentle": "부드럽게",
+      "natural": "자연스럽게",
+      "noRush": "천천히"
+    },
     "archive": {
       "title": "자라나는 이미지 아카이브",
       "description": "인물 없는 콘셉트 연구, 현장 관찰, 명확히 분리된 실제 인물 작품의 지속적인 인덱스입니다.",
@@ -205,12 +228,12 @@
   },
   "hero": {
     "volBadge": "✦ Vol.1",
-    "brandPrefix": "개인 비주얼 아카이브와 로컬 창작 도구",
-    "intro": "빛, 종이, 날씨와 브라우저 그래픽을 탐색하고 다시 만들 수 있는 성장형 비주얼 시스템입니다.",
+    "brandPrefix": "난징 여성 사진 & 커플 사진",
+    "intro": "부드럽고 필름 감성의 자연스러운 일상 사진을 오래 다시 보고 싶은 난징의 추억으로 남겨드립니다. 첫 촬영, 커플 기념일, 여유로운 도시 산책에 잘 어울립니다.",
     "trustTags": {
-      "privacy": "로컬 우선 창작",
-      "guidance": "계속 자라는 아카이브",
-      "styles": "비주얼 / 인터랙션 / 도구"
+      "privacy": "사진 기본 비공개",
+      "guidance": "전체 포즈 가이드",
+      "styles": "장난 / 거리 / 공원"
     },
     "ctaView": "갤러리 보기",
     "ctaBooking": "예약",
@@ -320,6 +343,15 @@
   "gallery": {
     "eyebrow": "포트폴리오",
     "title": "갤러리",
+    "featured": "대표 작품",
+    "items": {
+      "gallery-jiangnan-01": { "title": "우산 아래 봄빛", "location": "난징", "alt": "난징 정원에서 종이 우산을 든 장난 스타일 인물 콘택트 시트", "album": "장난 시리즈" },
+      "gallery-urban-01": { "title": "오후의 계단", "location": "난징", "alt": "난징 실내 계단에서 촬영한 도시 감성 인물 콘택트 시트", "album": "도시 산책" },
+      "gallery-garden-01": { "title": "초록 치맛자락", "location": "난징 공원", "alt": "초록 원피스와 종이 우산으로 촬영한 산뜻한 공원 인물 콘택트 시트", "album": "공원의 일상" },
+      "gallery-sweet-01": { "title": "노란 후디 골목", "location": "난징 거리", "alt": "노란 후디를 입고 걷는 일상적인 거리 인물 콘택트 시트", "album": "도시 산책" },
+      "gallery-flower-01": { "title": "꽃담의 보랏빛", "location": "난징 꽃담", "alt": "흰 꽃담 앞 보라색 옷차림의 부드러운 인물 콘택트 시트", "album": "공원의 일상" },
+      "gallery-daily-01": { "title": "회랑의 흰 셔츠", "location": "난징 공원", "alt": "공원 회랑 아래 흰 셔츠를 입은 자연스러운 인물 콘택트 시트", "album": "공원의 일상" }
+    },
     "intro": "스타일별로 정리된 실제 고객 사진 — 클릭하여 원본 보기",
     "description": "공원, 장난 감성, 거리, 실내 및 커플 촬영을 분류하여 보여줍니다. 승인된 실제 사진만 게시됩니다.",
     "otherAlbum": "기타",
@@ -523,6 +555,7 @@
     "popular": "인기",
     "recommend": "추천",
     "bookThis": "이 패키지 예약",
+    "priceLabel": "가격 {{price}}",
     "cta": "지금 예약",
     "perSession": "/회",
     "priceFrom": "부터",
@@ -543,6 +576,8 @@
     "equipmentTitle": "장비",
     "instantTitle": "즉석 카메라",
     "timingTitle": "시간 안내",
+    "timingFallbackTitle": "최소 2시간",
+    "timingFallbackDetail": "15분 이상 늦으면 도착 시점부터 계산하며 당일 시간 변경은 어렵습니다.",
     "noticeTitle": "예약 안내",
     "detailItems": {
       "outfit": {
@@ -587,6 +622,7 @@
   },
   "process": {
     "eyebrow": "진행 과정",
+    "ariaLabel": "촬영 진행 절차",
     "steps": [
       {
         "title": "상담",
@@ -673,7 +709,16 @@
   "bookingPage": {
     "readyTitle": "예약할 준비가 되셨나요?",
     "readyDesc": "촬영 패키지를 선택하고 지금 바로 예약하세요.",
-    "startBooking": "지금 예약하기"
+    "startBooking": "지금 예약하기",
+    "issue": "소프트 포트레이트 / 난징",
+    "deskMarker": "예약 데스크 / 1단계",
+    "configurator": "촬영 희망 설정",
+    "notes": "예약 안내"
+  },
+  "aboutPage": {
+    "role": "난징 개인 사진가 · 여성 인물 · 커플 촬영",
+    "bookingDesc": "원하는 분위기와 날짜, 장소 아이디어를 알려주세요. 아직 정하지 못했다면 천천히 함께 구성할 수 있습니다.",
+    "practiceLink": "사진 밖의 창작 실험 보기"
   },
   "themeToggle": {
     "light": "라이트",
@@ -698,6 +743,7 @@
   },
   "loading": "로딩 중...",
   "notFound": {
+    "kicker": "잃어버린 프레임 / 404",
     "title": "페이지를 찾을 수 없습니다",
     "desc": "요청하신 페이지가 존재하지 않거나 삭제되었습니다.",
     "cta": "홈으로 돌아가기"
@@ -730,8 +776,12 @@
     "subtitle": "정보를 남겨주시면 날짜를 확인해 드립니다",
     "name": "이름",
     "namePlaceholder": "어떻게 불러드릴까요?",
+    "nameRequired": "이름을 입력해 주세요.",
+    "nameTooShort": "2자 이상 입력해 주세요.",
     "contact": "연락처 (위챗/전화)",
     "contactPlaceholder": "전화번호 / 위챗 / 샤오홍슈 ID",
+    "contactRequired": "연락 방법을 입력해 주세요.",
+    "contactTooShort": "3자 이상 입력해 주세요.",
     "style": "선호 스타일",
     "stylePlaceholder": "예: 공원, 장난, 거리...",
     "selectPackage": "선호 패키지",
@@ -865,7 +915,9 @@
     "explore": "탐색",
     "services": "서비스",
     "discover": "발견",
-    "copyright": "© {{year}} {{brand}}. All rights reserved."
+    "copyright": "© {{year}} {{brand}}. All rights reserved.",
+    "bookingDesk": "예약 상담",
+    "bookingPrompt": "작품과 패키지를 확인한 뒤 날짜를 요청하거나 샤오홍슈 메시지로 먼저 상담하세요."
   },
   "recentlyViewed": {
     "title": "최근 본 사진",
@@ -1207,7 +1259,14 @@
     "skipToFooter": "푸터로 건너뛰기",
     "skipLinksLabel": "건너뛰기 링크",
     "mainContentLabel": "기본 콘텐츠",
-    "socialXiaohongshu": "시아오홍수"
+    "socialXiaohongshu": "시아오홍수",
+    "markers": {
+      "loading": "로딩 중 / 00",
+      "connection": "연결 / 01",
+      "empty": "아카이브 / 00",
+      "opening": "여는 중 / 00",
+      "notFound": "아카이브 / 404"
+    }
   },
   "admin": {
     "tabs": {
@@ -1434,7 +1493,12 @@
     "typing": "입력 중..."
   },
   "dashboard": {
+    "commandKicker": "고객 데스크 / 비공개 아카이브",
+    "privateArchive": "비공개 아카이브",
+    "accountFile": "계정 기록 / {{index}}",
     "title": "내 대시보드",
+    "overview": "개요",
+    "upcoming": "다가오는 일정",
     "bookings": "내 예약",
     "purchases": "내 구매",
     "courses": "내 강좌",
@@ -1607,6 +1671,7 @@
     }
   },
   "quiz": {
+    "frameQueued": "프레임 준비 중",
     "start": "테스트 시작",
     "step1.title": "어떤 상황?",
     "step2.title": "어떤 스타일이 좋아?",
@@ -1648,6 +1713,7 @@
     "progress": "단계 {{current}} / {{total}}"
   },
   "errorBoundary": {
+    "kicker": "복구 데스크 / 오류",
     "title": "이 섹션을 불러오지 못했습니다",
     "message": "다시 시도하거나 잠시 후 확인해 주세요.",
     "retry": "다시 시도",
@@ -1655,9 +1721,11 @@
   },
   "seo": {
     "siteName": "나이황바오 사진촬영",
-    "siteTagline": "NHB Photography | 개인 비주얼 아카이브",
-    "homeTitle": "NHB Photography | 개인 비주얼 아카이브와 창작 실험",
-    "homeDesc": "사진, 인터랙티브 스토리텔링, 브라우저 그래픽과 로컬 우선 창작 도구를 탐구하는 개인 연습 프로젝트입니다.",
+    "siteTagline": "NHB Photography | 난징 인물 촬영 예약",
+    "homeTitle": "나이황바오 사진촬영 | 난징 여성 인물 & 커플",
+    "homeDesc": "난징 개인 사진가의 부드럽고 자연스러운 여성 인물, 커플, 도시 산책 촬영. 패키지 확인과 온라인 예약을 지원합니다.",
+    "aboutTitle": "사진가 소개 | 나이황바오 사진촬영",
+    "aboutDesc": "난징에서 여성 인물과 커플 촬영을 진행하는 나이황바오 사진촬영. 사전 상담과 전체 포즈 가이드를 제공합니다.",
     "galleryTitle": "갤러리 | 나이황바오 사진촬영",
     "galleryDesc": "난징 포트레트 사진 갤러리 — 공원, 장난 감성, 거리, 실내 및 커플 촬영 작품을 둘러보세요.",
     "coursesTitle": "사진 강좌 | 나이황바오 사진촬영",
@@ -1743,6 +1811,15 @@
       "tools": "도구",
       "bg": "배경",
       "makeup": "메이크업"
+    },
+    "catDesc": {
+      "beauty": "피부와 밝기를 자연스럽게 정돈합니다",
+      "reshape": "얼굴 윤곽과 비율을 세밀하게 조정합니다",
+      "color": "색온도, 채도, 밝기를 조절합니다",
+      "filter": "완성 이미지의 분위기를 선택합니다",
+      "tools": "텍스트, 자르기, 비교, 내보내기를 사용합니다",
+      "bg": "배경을 정리해 피사체에 시선을 모읍니다",
+      "makeup": "메이크업 색상과 질감을 섬세하게 더합니다"
     },
     "smooth": "피부 보정",
     "slim": "얼굴 축소",
@@ -1993,6 +2070,13 @@
     "notFound": "사진을 찾을 수 없습니다",
     "about": "이 사진에 대해",
     "aboutDesc": "이 사진은 {{style}} 스타일로 촬영되었습니다. 로케션의 독특한 분위기와 아름다움을 담고 있습니다.",
+    "style": "스타일",
+    "location": "장소",
+    "album": "앨범",
+    "beforeAfter": "보정 전후",
+    "comparisonDesc": "원본과 보정본을 비교하세요. 슬라이더를 움직여 차이를 확인할 수 있습니다.",
+    "original": "원본",
+    "edited": "보정본",
     "ctaTitle": "이 스타일이 마음에 드시나요?",
     "ctaDesc": "유사한 세션을 예약하여 같은 스타일의 사진을 받아보세요",
     "bookSimilar": "유사 세션 예약",

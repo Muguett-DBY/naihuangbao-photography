@@ -20,7 +20,7 @@ export function DataState({ loading, error, empty, retry, icon, emptyText, error
   if (loading) {
     return (
       <div className="data-state data-state-loading" role="status" aria-live="polite" aria-busy="true">
-        <span className="data-state-marker">LOADING / 00</span>
+        <span className="data-state-marker">{t("common.markers.loading")}</span>
         <Loader2 size={28} className="data-state-spinner" aria-hidden="true" />
         <h2>{t("common.loading")}</h2>
         <p>{t("common.loadingHint")}</p>
@@ -31,7 +31,7 @@ export function DataState({ loading, error, empty, retry, icon, emptyText, error
   if (error) {
     return (
       <div className="data-state data-state-error" role="alert">
-        <span className="data-state-marker">CONNECTION / 01</span>
+        <span className="data-state-marker">{t("common.markers.connection")}</span>
         <h2>{t("common.loadError")}</h2>
         <p>{errorText || t("common.loadErrorHint")}</p>
         <div className="data-state-actions">
@@ -50,7 +50,7 @@ export function DataState({ loading, error, empty, retry, icon, emptyText, error
   if (empty) {
     return (
       <div className="data-state data-state-empty" role="status" aria-live="polite">
-        <span className="data-state-marker">ARCHIVE / 00</span>
+        <span className="data-state-marker">{t("common.markers.empty")}</span>
         {icon && <span className="data-state-icon" aria-hidden="true">{icon}</span>}
         <h2>{emptyText || t("common.noData")}</h2>
         <p>{t("common.emptyHint")}</p>

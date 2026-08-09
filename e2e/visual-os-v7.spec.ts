@@ -8,17 +8,22 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("@critical V7 首页由 SceneGraph 滚动导演且保留首屏主操作", async ({ page }) => {
+test("@critical 首页保持用户控制的客片切换与首屏预约操作", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  const premiere = page.locator(".cinematic-premiere");
-  await expect(premiere).toHaveAttribute("data-scene-graph", "premiere-dawn");
-  await expect(premiere).toHaveAttribute("data-active-asset", "visual-os-v8-01-cream-paper-pavilion");
+  const hero = page.locator(".home-booking-hero");
+  const heroImage = hero.locator(".home-booking-hero__media img");
+  const selectorButtons = hero.locator(".home-booking-hero__selector button");
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await expect(page.locator("#premiere").getByRole("link", { name: /开始创作/ })).toBeVisible();
+  await expect(hero.locator(".home-booking-primary")).toBeVisible();
+  await expect(selectorButtons).toHaveCount(3);
+  const initialSource = await heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc);
   await page.evaluate(() => window.scrollTo({ top: Math.round(window.innerHeight * 0.48), behavior: "instant" }));
-  await expect(premiere).not.toHaveAttribute("data-active-asset", "visual-os-v8-01-cream-paper-pavilion");
-  await expect(premiere).toHaveAttribute("data-scene-transition", /veil|focus|drift|slice|cut/);
+  await expect.poll(() => heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc)).toBe(initialSource);
+  await selectorButtons.nth(1).click();
+  await expect.poll(() => heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc)).not.toBe(initialSource);
+  await hero.locator(".home-booking-primary").click();
+  await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("data-runtime-quality", /full|balanced/);
 });
 
@@ -107,7 +112,12 @@ test("V7 减少动态和窄屏保持经济档、键盘可达且无横向溢出",
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-runtime-quality", "economy");
-  await expect(page.locator(".cinematic-premiere")).toHaveAttribute("data-premiere-motion", "reduced");
+  await expect(page.locator(".home-booking-hero")).toBeVisible();
+  const transitionDurationMs = await page.locator(".home-booking-hero__selector button").first().evaluate((button) => (
+    Number.parseFloat(getComputedStyle(button).transitionDuration) * 1_000
+  ));
+  expect(transitionDurationMs).toBeLessThanOrEqual(0.1);
+  await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
   await page.keyboard.press("Tab");
   await expect(page.locator(":focus-visible")).toBeVisible();

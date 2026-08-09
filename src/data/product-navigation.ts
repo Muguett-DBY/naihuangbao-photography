@@ -8,22 +8,23 @@ export type ProductRoute = {
 
 export const primaryNavigation: ProductRoute[] = [
   { id: "home", to: "/", labelKey: "nav.home", descriptionKey: "platform.routes.home", keywords: ["home", "首页", "start"] },
+  { id: "gallery", to: "/gallery", labelKey: "nav.gallery", descriptionKey: "platform.practice.gallery", keywords: ["gallery", "客片", "portfolio", "作品"] },
+  { id: "booking", to: "/booking", labelKey: "nav.booking", descriptionKey: "platform.practice.booking", keywords: ["booking", "预约", "calendar", "套餐"] },
+  { id: "about", to: "/about", labelKey: "nav.about", descriptionKey: "platform.routes.about", keywords: ["about", "关于", "photographer", "摄影师"] },
+];
+
+export const practiceNavigation: ProductRoute[] = [
   { id: "archive", to: "/archive", labelKey: "nav.archive", descriptionKey: "platform.routes.archive", keywords: ["archive", "档案", "photos", "作品"] },
   { id: "vault", to: "/vault", labelKey: "nav.vault", descriptionKey: "platform.routes.vault", keywords: ["vault", "素材", "原图", "import", "assets"] },
   { id: "create", to: "/create", labelKey: "nav.create", descriptionKey: "platform.routes.create", keywords: ["create", "创作", "studio", "darkroom", "contact sheet", "filmstrip"] },
   { id: "projects", to: "/projects", labelKey: "nav.projects", descriptionKey: "platform.routes.projects", keywords: ["projects", "项目", "workspace", "collection", "board"] },
-];
-
-export const practiceNavigation: ProductRoute[] = [
   { id: "studio", to: "/studio", labelKey: "nav.studio", descriptionKey: "platform.routes.studio", keywords: ["studio", "排版", "contact sheet", "filmstrip"] },
-  { id: "gallery", to: "/gallery", labelKey: "nav.gallery", descriptionKey: "platform.practice.gallery", keywords: ["gallery", "客片", "portfolio"] },
   { id: "editor", to: "/editor", labelKey: "nav.editor", descriptionKey: "platform.practice.editor", keywords: ["editor", "修图", "darkroom"] },
   { id: "compare", to: "/compare", labelKey: "photoCompare.title", descriptionKey: "platform.practice.compare", keywords: ["compare", "对比", "before after"] },
   { id: "courses", to: "/courses", labelKey: "nav.courses", descriptionKey: "platform.practice.courses", keywords: ["courses", "课程", "learning"] },
   { id: "presets", to: "/products", labelKey: "nav.presets", descriptionKey: "platform.practice.presets", keywords: ["presets", "预设", "color"] },
   { id: "workshops", to: "/workshops", labelKey: "nav.workshops", descriptionKey: "platform.practice.workshops", keywords: ["workshops", "活动", "events"] },
   { id: "shop", to: "/shop", labelKey: "nav.shop", descriptionKey: "platform.practice.shop", keywords: ["shop", "周边", "prints"] },
-  { id: "booking", to: "/booking", labelKey: "nav.booking", descriptionKey: "platform.practice.booking", keywords: ["booking", "预约", "calendar"] },
   { id: "map", to: "/map", labelKey: "nav.map", descriptionKey: "platform.practice.map", keywords: ["map", "地图", "locations"] },
   { id: "account", to: "/login", labelKey: "auth.login", descriptionKey: "platform.practice.account", keywords: ["account", "登录", "dashboard"] },
 ];
@@ -35,3 +36,11 @@ export const practiceHubRoute: ProductRoute = {
   descriptionKey: "platform.lab.description",
   keywords: ["practice", "lab", "实验室", "实验", "练习", "tools", "legacy"],
 };
+
+const projectDockRoutePrefixes = ["/archive", "/stories", "/create", "/studio", "/projects"] as const;
+
+export function isProjectDockRoute(pathname: string) {
+  return projectDockRoutePrefixes.some((prefix) => (
+    pathname === prefix || pathname.startsWith(`${prefix}/`)
+  ));
+}

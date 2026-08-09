@@ -107,7 +107,7 @@ export function GalleryResults(props: GalleryResultsProps) {
                         <ImageWithFallback src={item.imageUrl || ""} alt={item.alt} title={item.title} tone={GALLERY_TONES[photoIndex % GALLERY_TONES.length]} load priority={photoIndex < 6 || item.id === "gallery-daily-01"} sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw" transitionName={photoTransitionName(item.id)} />
                       )}
                       {isVideo && <span className="gallery-play-overlay" aria-hidden="true"><Play size={32} /></span>}
-                      {item.featured && <span className="gallery-featured-badge" aria-label="Featured">⭐</span>}
+                      {item.featured && <span className="gallery-featured-badge" aria-label={t("gallery.featured")}>★</span>}
                     </button>
                     <div className="gallery-masonry-overlay">
                       <span className="gallery-masonry-overlay-style">{t(`gallery.filters.${item.style}`, item.style)}</span>

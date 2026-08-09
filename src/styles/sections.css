@@ -3365,6 +3365,27 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
   line-height: 1.65;
 }
 
+.site-footer .footer-booking-link {
+  width: fit-content;
+  min-height: 44px;
+  gap: 8px;
+  border: 1px solid rgba(255, 248, 239, 0.42);
+  border-radius: var(--radius-control);
+  padding: 0 16px;
+  color: #4b3b37;
+  background: #f2dca1;
+  font-weight: 800;
+}
+
+.site-footer .footer-booking-link::after {
+  display: none;
+}
+
+.site-footer .footer-booking-link:hover {
+  color: #4b3b37;
+  background: #fff4d3;
+}
+
 .site-footer .footer-newsletter input {
   min-height: 44px;
   border-color: rgba(255, 248, 239, 0.32);

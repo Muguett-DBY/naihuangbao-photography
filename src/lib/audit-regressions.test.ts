@@ -58,7 +58,7 @@ const bookingModalSource = bookingModalFiles.map((path) => readFileSync(resolve(
 const bookingTimeSlotPickerPath = resolve(root, "src/components/BookingTimeSlotPicker.tsx");
 const bookingTimeSlotPickerSource = existsSync(bookingTimeSlotPickerPath) ? readFileSync(bookingTimeSlotPickerPath, "utf8") : "";
 const rescheduleApiSource = readFileSync(resolve(root, "functions/api/user/bookings/[id]/reschedule.ts"), "utf8");
-const rootLayoutSource = ["src/layouts/RootLayout.tsx", "src/features/practice/PracticeLayout.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
+const rootLayoutSource = ["src/layouts/RootLayout.tsx", "src/layouts/CustomerLayout.tsx", "src/features/practice/PracticeLayout.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const offlineFallbackSource = readFileSync(resolve(root, "src/components/OfflineFallback.tsx"), "utf8");
 const offlineRecoveryPath = resolve(root, "src/components/OfflineBookingRecovery.tsx");
 const offlineRecoverySource = existsSync(offlineRecoveryPath) ? readFileSync(offlineRecoveryPath, "utf8") : "";
@@ -331,7 +331,7 @@ describe("audit regression coverage", () => {
   });
 
   it("keeps offline booking recovery global, actionable, localized, and outside the modal lifetime", () => {
-    expect(rootLayoutSource).toContain('import OfflineBookingRecovery from "../../components/OfflineBookingRecovery"');
+    expect(rootLayoutSource).toContain('import OfflineBookingRecovery from "../components/OfflineBookingRecovery"');
     expect(rootLayoutSource).toContain("<OfflineBookingRecovery isOnline={isOnline}");
     expect(offlineRecoverySource).toContain("syncPendingBookings");
     expect(offlineRecoverySource).toContain("PENDING_BOOKINGS_CHANGED_EVENT");
@@ -538,9 +538,10 @@ describe("audit regression coverage", () => {
     expect(e2eConfigSource).toContain("webServer");
     expect(e2eConfigSource).toContain("127.0.0.1:4174");
     expect(e2eSmokeSource).toContain('page.goto("/")');
-    expect(e2eSmokeSource).toContain("openArchiveFromNav");
+    expect(e2eSmokeSource).toContain("openGalleryFromNav");
     expect(e2eSmokeSource).toContain("#site-navigation-menu");
-    expect(e2eSmokeSource).toContain('a[href="/archive"]');
+    expect(e2eSmokeSource).toContain('a[href="/gallery"]');
+    expect(e2eSmokeSource).toContain('a[href="/booking"]');
     expect(e2eSmokeSource).toContain('toHaveAttribute("data-theme"');
     expect(e2eSmokeSource).not.toContain("https://shoot.custard.top/");
     expect(e2eSmokeSource).not.toContain("waitForTimeout");
@@ -1034,10 +1035,10 @@ describe("audit regression coverage", () => {
   });
 
   it("lists indexable public routes without exposing account pages in the sitemap", () => {
-    for (const route of ["/", "/archive", "/stories", "/create", "/about", "/gallery", "/map"]) {
+    for (const route of ["/", "/booking", "/gallery", "/about", "/map", "/archive", "/stories", "/create"]) {
       expect(sitemapSource).toContain(`<loc>https://shoot.custard.top${route}</loc>`);
     }
-    for (const route of ["/booking", "/courses", "/products", "/workshops", "/shop"]) {
+    for (const route of ["/courses", "/products", "/workshops", "/shop"]) {
       expect(sitemapSource).not.toContain(`<loc>https://shoot.custard.top${route}</loc>`);
     }
     expect(sitemapSource).not.toContain("<loc>https://shoot.custard.top/login</loc>");

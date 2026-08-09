@@ -1,4 +1,4 @@
-import { Boxes, FolderOpen, Home, Images, WandSparkles } from "lucide-react";
+import { CalendarCheck, CircleUserRound, Home, Images, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -38,33 +38,33 @@ export function MobileBottomNav() {
         icon={<Home size={21} aria-hidden="true" />}
       />
       <MobileNavLink
-        to="/archive"
-        label={t("nav.archive")}
-        active={pathname.startsWith("/archive")}
+        to="/gallery"
+        label={t("mobileNav.gallery")}
+        active={pathname.startsWith("/gallery")}
         icon={<Images size={21} aria-hidden="true" />}
       />
       <PrefetchLink
-        to="/create"
-        className={`mobile-bottom-nav__item mobile-bottom-nav__booking${pathname.startsWith("/create") ? " is-active" : ""}`}
-        aria-current={pathname.startsWith("/create") ? "page" : undefined}
-        aria-label={t("nav.create")}
+        to="/booking"
+        className={`mobile-bottom-nav__item mobile-bottom-nav__booking${pathname.startsWith("/booking") ? " is-active" : ""}`}
+        aria-current={pathname.startsWith("/booking") ? "page" : undefined}
+        aria-label={t("mobileNav.booking")}
       >
         <span className="mobile-bottom-nav__icon mobile-bottom-nav__booking-icon">
-          <WandSparkles size={23} aria-hidden="true" />
+          <CalendarCheck size={23} aria-hidden="true" />
         </span>
-        <span>{t("nav.create")}</span>
+        <span>{t("mobileNav.booking")}</span>
       </PrefetchLink>
       <MobileNavLink
-        to="/projects"
-        label={t("nav.projects")}
-        active={pathname === "/projects"}
-        icon={<FolderOpen size={21} aria-hidden="true" />}
+        to="/about"
+        label={t("nav.about")}
+        active={pathname === "/about"}
+        icon={<UserRound size={21} aria-hidden="true" />}
       />
       <MobileNavLink
-        to="/vault"
-        label={t("nav.vault")}
-        active={pathname === "/vault"}
-        icon={<Boxes size={21} aria-hidden="true" />}
+        to="/dashboard"
+        label={t("mobileNav.account")}
+        active={pathname.startsWith("/dashboard") || pathname.startsWith("/login")}
+        icon={<CircleUserRound size={21} aria-hidden="true" />}
       />
     </nav>
   );

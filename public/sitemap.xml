@@ -44,10 +44,54 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/" />
   </url>
   <url>
-    <loc>https://shoot.custard.top/archive</loc>
+    <loc>https://shoot.custard.top/booking</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/booking" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/booking?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/booking?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/booking?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/booking" />
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/gallery</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/gallery?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery" />
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/about</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/about?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/about?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/about?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/about" />
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/map</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/map" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/map?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/map?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/map?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/map" />
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive" />
     <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive?lang=en" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive?lang=ja" />
@@ -69,7 +113,7 @@
     <loc>https://shoot.custard.top/create</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/create" />
     <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/create?lang=en" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/create?lang=ja" />
@@ -102,45 +146,12 @@
     <loc>https://shoot.custard.top/practice</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/practice" />
     <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/practice?lang=en" />
     <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/practice?lang=ja" />
     <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/practice?lang=ko" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/practice" />
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/about</loc>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/about" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/about?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/about?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/about?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/about" />
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/gallery</loc>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/gallery" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/gallery?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/gallery?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/gallery?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/gallery" />
-  </url>
-  <url>
-    <loc>https://shoot.custard.top/map</loc>
-    <lastmod>2026-08-09</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/map" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/map?lang=en" />
-    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/map?lang=ja" />
-    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/map?lang=ko" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/map" />
   </url>
   <url>
     <loc>https://shoot.custard.top/archive/botanical-cabinet-v8</loc>

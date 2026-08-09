@@ -148,8 +148,9 @@ describe("NHB visual playground v4 contracts", () => {
   it("defines a unique primary IA and route-specific transition intents", () => {
     const paths = [...primaryNavigation, practiceHubRoute, ...practiceNavigation].map((route) => route.to);
     expect(new Set(primaryNavigation.map((route) => route.to)).size).toBe(primaryNavigation.length);
+    expect(primaryNavigation.map((route) => route.to)).toEqual(["/", "/gallery", "/booking", "/about"]);
     expect(paths).toContain("/archive");
-    expect(primaryNavigation.map((route) => route.to)).toContain("/create");
+    expect(paths).toContain("/create");
     expect(paths).toContain("/studio");
     expect(paths).toContain("/practice");
     expect(paths).not.toContain("/lab");

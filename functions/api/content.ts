@@ -1,4 +1,4 @@
-import { contentKeys, defaultSiteContent, mergeSiteContent } from "../../src/data/content";
+import { contentKeys } from "../../src/data/content";
 import type { PartialSiteContent } from "../../src/types/content";
 import { jsonResponse, logWorkerError } from "../_responses";
 
@@ -17,10 +17,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       .bind(...contentKeys)
       .all<ContentRow>();
 
-    return jsonResponse({ content: mergeSiteContent(rowsToContent(rows.results)), source: "remote" });
+    return jsonResponse({ content: rowsToContent(rows.results), source: "remote" });
   } catch (error) {
     logWorkerError("Public content fallback", error, { route: "/api/content" });
-    return jsonResponse({ content: defaultSiteContent, source: "defaults" });
+    return jsonResponse({ content: {}, source: "defaults" });
   }
 };
 
