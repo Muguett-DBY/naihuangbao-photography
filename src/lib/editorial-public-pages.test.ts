@@ -103,7 +103,7 @@ describe("booking-first public-page contracts", () => {
     const aboutCss = read("src/styles/about-booking.css");
 
     expect(homeCss).toContain("aspect-ratio: 4 / 5");
-    expect(homeCss).toContain("height: min(70svh, 720px)");
+    expect(homeCss).toContain("height: min(68svh, 690px)");
     expect(homeCss).toContain("scroll-snap-type: x mandatory");
     expect(aboutCss).toContain("min-height: 620px");
     expect(homeCss).not.toContain("border-radius: 22px");

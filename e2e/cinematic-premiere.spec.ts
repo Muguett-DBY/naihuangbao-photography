@@ -60,6 +60,7 @@ test.describe("booking-first homepage", () => {
     const actions = hero.locator(".home-booking-actions");
     const selector = hero.getByRole("group", { name: "Gallery" });
     const selectorButtons = selector.getByRole("button");
+    const selectorMeta = selector.locator(".home-booking-hero__selector-meta");
     const heroImage = hero.locator(".home-booking-hero__media img");
 
     await expect(hero).toBeVisible();
@@ -68,13 +69,16 @@ test.describe("booking-first homepage", () => {
     await expect(actions.getByRole("link")).toHaveCount(1);
     await expect(actions.getByRole("link")).toHaveAttribute("href", "/gallery");
     await expect(selectorButtons).toHaveCount(3);
+    await expect(selectorMeta).toHaveAttribute("aria-live", "polite");
     await expect(selectorButtons.first()).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator('#premiere img[fetchpriority="high"]')).toHaveCount(1);
     await expect(page.locator(".cinematic-premiere, .visual-light-table, .home-visual-system, .immersive-experience-canvas")).toHaveCount(0);
 
     const initialSource = await heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc);
+    const nextTitle = await selectorButtons.nth(1).getAttribute("aria-label");
     await selectorButtons.nth(1).click();
     await expect(selectorButtons.nth(1)).toHaveAttribute("aria-pressed", "true");
+    await expect(selectorMeta).toContainText(nextTitle ?? "");
     await expect.poll(() => heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc)).not.toBe(initialSource);
 
     await actions.getByRole("button").click();

@@ -1,7 +1,7 @@
 import "../styles/home-booking.css";
 import { Suspense, lazy, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, CalendarCheck, CheckCircle2, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CalendarCheck, CheckCircle2, ShieldCheck } from "lucide-react";
 import { useBookingModal } from "../features/booking/BookingContext";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
@@ -35,6 +35,7 @@ export function HomePage() {
   );
   const heroPhotos = publicPhotos.slice(0, 3);
   const activeHero = heroPhotos.find((photo) => photo.id === activeHeroId) ?? heroPhotos[0];
+  const activeHeroIndex = Math.max(heroPhotos.findIndex((photo) => photo.id === activeHero?.id), 0);
   const featuredPhotos = publicPhotos.slice(0, 6);
   const finalPhoto = publicPhotos[2] ?? publicPhotos[0];
   const homeChapters = useMemo<HomeChapter[]>(
@@ -57,6 +58,7 @@ export function HomePage() {
         <div className="home-booking-hero__media">
           {activeHero ? (
             <ImageWithFallback
+              key={activeHero.id}
               src={activeHero.imageUrl}
               alt={activeHero.alt}
               title={activeHero.title}
@@ -66,13 +68,18 @@ export function HomePage() {
             />
           ) : null}
           <div className="home-booking-hero__film-mark" aria-hidden="true">
-            <span>01</span>
-            <span>{siteConfig.city}</span>
+            <span>{String(activeHeroIndex + 1).padStart(2, "0")} / {String(heroPhotos.length).padStart(2, "0")}</span>
+            <span>{siteConfig.city} · NHB</span>
           </div>
+          <div className="home-booking-hero__frame-corners" aria-hidden="true" />
         </div>
 
         <div className="home-booking-hero__copy">
           <p className="home-booking-kicker">{t("hero.brandPrefix")}</p>
+          <div className="home-booking-hero__edition">
+            <span>{siteConfig.city}</span>
+            <span>{t("nav.brandDescriptor")}</span>
+          </div>
           <h1 id="home-title">{siteConfig.brandName}</h1>
           <p className="home-booking-hero__intro">{t("hero.intro")}</p>
           <div className="home-booking-proof" aria-label={t("hero.trustTags.privacy")}>
@@ -100,36 +107,45 @@ export function HomePage() {
 
         {heroPhotos.length > 1 ? (
           <div className="home-booking-hero__selector" role="group" aria-label={t("gallery.title")}>
-            {heroPhotos.map((photo, index) => {
-              const isActive = photo.id === activeHero?.id;
-              return (
-                <button
-                  key={photo.id}
-                  type="button"
-                  className={isActive ? "is-active" : undefined}
-                  aria-pressed={isActive}
-                  aria-label={photo.title}
-                  onClick={() => setActiveHeroId(photo.id)}
-                >
-                  <ImageWithFallback
-                    src={photo.imageUrl}
-                    alt=""
-                    title={photo.title}
-                    sizes="88px"
-                    tone="cream"
-                  />
-                  <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                </button>
-              );
-            })}
+            <div className="home-booking-hero__selector-meta" aria-live="polite">
+              <span>{String(activeHeroIndex + 1).padStart(2, "0")}</span>
+              <div>
+                <strong>{activeHero?.title}</strong>
+                <small>{activeHero?.location}</small>
+              </div>
+            </div>
+            <div className="home-booking-hero__selector-frames">
+              {heroPhotos.map((photo, index) => {
+                const isActive = photo.id === activeHero?.id;
+                return (
+                  <button
+                    key={photo.id}
+                    type="button"
+                    className={isActive ? "is-active" : undefined}
+                    aria-pressed={isActive}
+                    aria-label={photo.title}
+                    onClick={() => setActiveHeroId(photo.id)}
+                  >
+                    <ImageWithFallback
+                      src={photo.imageUrl}
+                      alt=""
+                      title={photo.title}
+                      sizes="88px"
+                      tone="cream"
+                    />
+                    <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         ) : null}
       </section>
 
       <HomeChapterIndex ariaLabel={t("sectionNav.ariaLabel")} chapters={homeChapters} />
 
-      <section className="home-booking-featured" id="featured" aria-labelledby="home-featured-title">
-        <header className="home-booking-heading">
+      <section className="home-booking-featured" id="featured" aria-labelledby="home-featured-title" data-motion-group>
+        <header className="home-booking-heading" data-motion-item>
           <p>{sectionCopy.gallery.eyebrow}</p>
           <div>
             <h2 id="home-featured-title">{sectionCopy.gallery.title}</h2>
@@ -141,17 +157,28 @@ export function HomePage() {
         </header>
         <div className="home-booking-gallery">
           {featuredPhotos.map((photo, index) => (
-            <PrefetchLink key={photo.id} to={`/gallery/${photo.id}`} className={`home-booking-photo home-booking-photo--${index + 1}`}>
-              <ImageWithFallback
-                src={photo.imageUrl}
-                alt={photo.alt}
-                title={photo.title}
-                sizes="(max-width: 760px) 88vw, (max-width: 1100px) 44vw, 30vw"
-                tone="cream"
-              />
-              <span>
-                <small>{photo.location}</small>
-                <strong>{photo.title}</strong>
+            <PrefetchLink
+              key={photo.id}
+              to={`/gallery/${photo.id}`}
+              className={`home-booking-photo home-booking-photo--${index + 1}`}
+              data-motion-item
+            >
+              <span className="home-booking-photo__media">
+                <ImageWithFallback
+                  src={photo.imageUrl}
+                  alt={photo.alt}
+                  title={photo.title}
+                  sizes="(max-width: 760px) 88vw, (max-width: 1100px) 44vw, 52vw"
+                  tone="cream"
+                />
+                <span className="home-booking-photo__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              </span>
+              <span className="home-booking-photo__caption">
+                <span>
+                  <small>{photo.location}</small>
+                  <strong>{photo.title}</strong>
+                </span>
+                <ArrowUpRight size={18} aria-hidden="true" />
               </span>
             </PrefetchLink>
           ))}
@@ -166,8 +193,8 @@ export function HomePage() {
         </ErrorBoundary>
       </div>
 
-      <section className="home-booking-process" id="process" aria-labelledby="home-process-title">
-        <header className="home-booking-heading">
+      <section className="home-booking-process" id="process" aria-labelledby="home-process-title" data-motion-group>
+        <header className="home-booking-heading" data-motion-item>
           <p>{sectionCopy.notice.eyebrow}</p>
           <div>
             <h2 id="home-process-title">{sectionCopy.notice.title}</h2>
@@ -178,7 +205,7 @@ export function HomePage() {
           {processSteps.map((step, index) => {
             const { title, detail } = splitProcessStep(step);
             return (
-              <li key={step}>
+              <li key={step} data-motion-item>
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <div><h3>{title}</h3>{detail ? <p>{detail}</p> : null}</div>
               </li>
@@ -188,6 +215,7 @@ export function HomePage() {
       </section>
 
       <section className="home-booking-final" id="book" aria-labelledby="home-book-title" data-motion-group>
+        <span className="home-booking-final__index" aria-hidden="true">05</span>
         <div className="home-booking-final__media" data-motion-item>
           {finalPhoto ? (
             <ImageWithFallback
