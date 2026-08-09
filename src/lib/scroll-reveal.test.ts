@@ -18,7 +18,7 @@ describe("scroll reveal", () => {
     const home = read("src/pages/HomePage.tsx");
 
     expect(home).toContain("usePageRevealEffects(rootRef)");
-    expect(home).toContain('id="make-something" data-motion-group');
+    expect(home).toContain('id="book"');
     expect(home).not.toContain("useReveal");
     expect(home.match(/data-motion-item/g) ?? []).toHaveLength(2);
   });

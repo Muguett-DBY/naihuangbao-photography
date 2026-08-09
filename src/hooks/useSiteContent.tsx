@@ -50,7 +50,11 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const defaults = useMemo(() => defaultsMap[i18n.language] || zhCN, [i18n.language]);
-  const content = useMemo(() => mergeSiteContent(remoteContent, defaults), [remoteContent, defaults]);
+  const localizedRemoteContent = i18n.language === "zh-CN" ? remoteContent : null;
+  const content = useMemo(
+    () => mergeSiteContent(localizedRemoteContent, defaults),
+    [localizedRemoteContent, defaults],
+  );
 
   return (
     <SiteContentContext.Provider value={content}>

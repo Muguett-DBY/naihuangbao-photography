@@ -184,7 +184,7 @@ test.describe("immersive portrait archive", () => {
     await page.goto("/");
 
     const canvas = page.locator(".immersive-experience-canvas");
-    await expect(page.locator(".cinematic-premiere__stage")).toBeVisible();
+    await expect(page.locator(".home-booking-hero__media img")).toBeVisible();
     await expect(canvas).toHaveCount(0);
     await page.dispatchEvent("body", "pointerdown");
     await page.waitForTimeout(1_000);
@@ -421,8 +421,8 @@ test.describe("immersive portrait archive", () => {
     await page.waitForTimeout(1_000);
 
     await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
-    await expect(page.locator(".cinematic-premiere__scene.is-active img")).toBeVisible();
-    await expect(page.locator(".hero-title")).toBeVisible();
+    await expect(page.locator(".home-booking-hero__media img")).toBeVisible();
+    await expect(page.locator(".home-booking-hero h1")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.dataset.immersiveReady)).toBeUndefined();
     expect(await immersiveResourceNames(page)).toEqual([]);
   });
@@ -435,7 +435,7 @@ test.describe("immersive portrait archive", () => {
     await page.waitForTimeout(1_000);
 
     await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
-    await expect(page.locator(".cinematic-premiere__scene.is-active img")).toBeVisible();
+    await expect(page.locator(".home-booking-hero__media img")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.dataset.immersiveReady)).toBeUndefined();
     expect(await immersiveResourceNames(page)).toEqual([]);
   });
@@ -453,7 +453,7 @@ test.describe("immersive portrait archive", () => {
     await page.waitForTimeout(1_000);
 
     await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
-    await expect(page.locator(".cinematic-premiere__scene.is-active img")).toBeVisible();
+    await expect(page.locator(".home-booking-hero__media img")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.dataset.immersiveReady)).toBeUndefined();
     expect(await immersiveResourceNames(page)).toEqual([]);
   });

@@ -25,7 +25,7 @@ const read = (path: string) => path === "src/styles/pages.css"
   : path === "src/pages/PhotoEditorWorkspace.tsx"
     ? editorWorkspaceFiles.map(readRaw).join("\n")
     : path === "src/layouts/RootLayout.tsx"
-      ? [path, "src/features/practice/PracticeLayout.tsx"].map(readRaw).join("\n")
+      ? [path, "src/layouts/CustomerLayout.tsx", "src/features/practice/PracticeLayout.tsx"].map(readRaw).join("\n")
       : readRaw(path);
 
 describe("editor regression contracts", () => {
@@ -75,10 +75,10 @@ describe("editor regression contracts", () => {
 
     expect(rootLayout).toContain("<MobileBottomNav");
     expect(rootLayout).toContain("!isCreativeWorkspace && <MobileBottomNav");
-    expect(mobileNav).toContain('to="/archive"');
-    expect(mobileNav).toContain('to="/create"');
-    expect(mobileNav).toContain('to="/projects"');
-    expect(mobileNav).toContain('to="/vault"');
+    expect(mobileNav).toContain('to="/gallery"');
+    expect(mobileNav).toContain('to="/booking"');
+    expect(mobileNav).toContain('to="/about"');
+    expect(mobileNav).toContain('to="/dashboard"');
     expect(mobileNav).not.toContain("openBooking");
     expect(mobileNav).toContain('aria-current={active ? "page" : undefined}');
     expect(dashboard).toContain('to="/editor"');

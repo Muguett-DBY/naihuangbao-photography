@@ -17,7 +17,7 @@ test.describe("flagship v2 experience", () => {
     await page.goto("/");
 
     await expect(page.locator(".home-index-strip a")).toHaveCount(5);
-    const offsets = await page.locator("#premiere, #light-table, #visual-system, #portals, #make-something").evaluateAll(
+    const offsets = await page.locator("#premiere, #featured, #packages, #process, #book").evaluateAll(
       (sections) => sections.map((section) => (section as HTMLElement).offsetTop),
     );
     expect(offsets).toEqual([...offsets].sort((first, second) => first - second));
@@ -26,10 +26,10 @@ test.describe("flagship v2 experience", () => {
 
   test("mobile chapter rail keeps all five chapters on one compact scrollable row", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/#visual-system");
+    await page.goto("/#packages");
 
     const rail = page.locator(".home-index-strip");
-    await expect(rail.locator('a[href="#visual-system"]')).toHaveClass(/is-active/);
+    await expect(rail.locator('a[href="#packages"]')).toHaveClass(/is-active/);
     await expect.poll(async () => rail.evaluate((element) => {
       const links = [...element.querySelectorAll("a")];
       const firstTop = links[0]?.offsetTop ?? 0;
@@ -39,8 +39,8 @@ test.describe("flagship v2 experience", () => {
       };
     })).toMatchObject({ count: 5, oneRow: true });
     const railHeight = await rail.evaluate((element) => element.scrollHeight);
-    expect(railHeight).toBeGreaterThanOrEqual(54);
-    expect(railHeight).toBeLessThanOrEqual(56);
+    expect(railHeight).toBeGreaterThanOrEqual(58);
+    expect(railHeight).toBeLessThanOrEqual(62);
   });
 
   test("gallery story mode opens an editorial photo walk", async ({ page }) => {

@@ -26,7 +26,10 @@
     "map": "地図",
     "editor": "編集",
     "backToHome": "トップページに戻る",
-    "mainNavigation": "メインナビゲーション"
+    "mainNavigation": "メインナビゲーション",
+    "brandDescriptor": "南京ポートレート予約",
+    "preferences": "表示と言語の設定",
+    "utilityMenu": "表示と言語の設定"
   },
   "mobileNav": {
     "label": "モバイル主要ナビゲーション",
@@ -124,6 +127,26 @@
       "suggestions": "おすすめの入口",
       "empty": "一致するページや写真はありません"
     },
+    "projectDock": {
+      "ariaLabel": "現在のビジュアルプロジェクト",
+      "activeProject": "現在のプロジェクト",
+      "dockLabel": "NHB / プロジェクトドック",
+      "close": "プロジェクトドックを閉じる",
+      "workspace": "ワークスペース",
+      "removeAsset": "{{title}} を削除",
+      "empty": "まずアーカイブからフレームを集めてください。",
+      "openProject": "プロジェクトを開く",
+      "compose": "構成する",
+      "new": "新規",
+      "newProject": "ビジュアル研究 {{count}}"
+    },
+    "optical": {
+      "softLight": "NHB ソフトライト",
+      "portraitDiary": "ポートレート日記",
+      "gentle": "やさしく",
+      "natural": "自然に",
+      "noRush": "ゆっくり"
+    },
     "archive": {
       "title": "成長する映像アーカイブ",
       "description": "人物のいないコンセプト研究、観察記録、明確に分けた実作品のための更新型インデックス。",
@@ -205,12 +228,12 @@
   },
   "hero": {
     "volBadge": "✦ Vol.1",
-    "brandPrefix": "個人ビジュアルアーカイブとローカル制作ツール",
-    "intro": "光、紙、天気、ブラウザグラフィックスを、探索し制作できる成長型ビジュアルシステムとして編みます。",
+    "brandPrefix": "南京・女性写真・カップル写真",
+    "intro": "柔らかくフィルムライクな自然な日常ポートレートを、何度でも見返したくなる南京の思い出に。初めての方、カップルの記念日、街歩き撮影におすすめです。",
     "trustTags": {
-      "privacy": "ローカル優先の制作",
-      "guidance": "成長するアーカイブ",
-      "styles": "ビジュアル / 対話 / ツール"
+      "privacy": "写真はデフォルトで非公開",
+      "guidance": "ポージング完全ガイド",
+      "styles": "江南 / ストリート / 公園"
     },
     "ctaView": "ギャラリーを見る",
     "ctaBooking": "予約",
@@ -320,6 +343,15 @@
   "gallery": {
     "eyebrow": "ポートフォリオ",
     "title": "ギャラリー",
+    "featured": "注目作品",
+    "items": {
+      "gallery-jiangnan-01": { "title": "傘の下の春", "location": "南京", "alt": "南京の庭園で紙傘を持つ江南スタイルのポートレートコンタクトシート", "album": "江南シリーズ" },
+      "gallery-urban-01": { "title": "午後の階段", "location": "南京", "alt": "南京の屋内階段で撮影した都会的なポートレートコンタクトシート", "album": "街歩き" },
+      "gallery-garden-01": { "title": "緑の裾", "location": "南京の公園", "alt": "緑のドレスと紙傘による爽やかな公園ポートレートコンタクトシート", "album": "公園の日常" },
+      "gallery-sweet-01": { "title": "黄色いフーディーの街角", "location": "南京の街角", "alt": "黄色いフーディーで歩く日常ストリートポートレートコンタクトシート", "album": "街歩き" },
+      "gallery-flower-01": { "title": "花壁の紫", "location": "南京の花壁", "alt": "白い花壁の前で紫の服を着た柔らかなポートレートコンタクトシート", "album": "公園の日常" },
+      "gallery-daily-01": { "title": "回廊の白シャツ", "location": "南京の公園", "alt": "公園の回廊で白シャツを着た自然なポートレートコンタクトシート", "album": "公園の日常" }
+    },
     "intro": "スタイル別に整理された実際の撮影作品 — クリックで拡大表示",
     "description": "公園、江南、ストリート、屋内、カップル撮影をフィルター別に表示。許可を得た作品のみ掲載しています。",
     "otherAlbum": "その他",
@@ -523,6 +555,7 @@
     "popular": "人気",
     "recommend": "おすすめ",
     "bookThis": "このプランを予約",
+    "priceLabel": "料金 {{price}}",
     "cta": "今すぐ予約",
     "perSession": "/回",
     "priceFrom": "から",
@@ -543,6 +576,8 @@
     "equipmentTitle": "機材",
     "instantTitle": "インスタントカメラ",
     "timingTitle": "時間について",
+    "timingFallbackTitle": "最低2時間",
+    "timingFallbackDetail": "15分以上遅れた場合は到着時刻から計測し、当日の時間変更はできません。",
     "noticeTitle": "ご予約ガイド",
     "detailItems": {
       "outfit": {
@@ -587,6 +622,7 @@
   },
   "process": {
     "eyebrow": "ご予約の流れ",
+    "ariaLabel": "撮影の流れ",
     "steps": [
       {
         "title": "ご相談",
@@ -673,7 +709,16 @@
   "bookingPage": {
     "readyTitle": "予約する準備はできましたか？",
     "readyDesc": "お好みの撮影パッケージを選んで、今すぐセッションを予約しましょう。",
-    "startBooking": "今すぐ予約する"
+    "startBooking": "今すぐ予約する",
+    "issue": "柔らかな撮影 / 南京",
+    "deskMarker": "予約デスク / ステップ1",
+    "configurator": "撮影希望の設定",
+    "notes": "予約のご案内"
+  },
+  "aboutPage": {
+    "role": "南京の個人写真家 · 女性写真 · カップル撮影",
+    "bookingDesc": "好みの雰囲気、日程、場所のイメージを教えてください。まだ決まっていなくても、一緒にゆっくり考えられます。",
+    "practiceLink": "写真以外の制作実験を見る"
   },
   "themeToggle": {
     "light": "ライト",
@@ -698,6 +743,7 @@
   },
   "loading": "読み込み中...",
   "notFound": {
+    "kicker": "失われたフレーム / 404",
     "title": "ページが見つかりません",
     "desc": "お探しのページは存在しないか、削除されました。",
     "cta": "トップに戻る"
@@ -730,8 +776,12 @@
     "subtitle": "情報をご入力ください。日程を確認の上ご連絡します",
     "name": "お名前",
     "namePlaceholder": "お名前をお聞かせください",
+    "nameRequired": "お名前を入力してください。",
+    "nameTooShort": "2文字以上で入力してください。",
     "contact": "連絡先（WeChat/電話）",
     "contactPlaceholder": "電話番号 / WeChat / 小红书 ID",
+    "contactRequired": "連絡先を入力してください。",
+    "contactTooShort": "3文字以上で入力してください。",
     "style": "ご希望のスタイル",
     "stylePlaceholder": "例：公園、江南、ストリート...",
     "selectPackage": "ご希望のプラン",
@@ -865,7 +915,9 @@
     "explore": "探す",
     "services": "サービス",
     "discover": "発見",
-    "copyright": "© {{year}} {{brand}}. All rights reserved."
+    "copyright": "© {{year}} {{brand}}. All rights reserved.",
+    "bookingDesk": "予約相談",
+    "bookingPrompt": "作品とプランを見てから日程をリクエストするか、小红书のメッセージからご相談ください。"
   },
   "recentlyViewed": {
     "title": "最近閲覧",
@@ -1207,7 +1259,14 @@
     "skipToFooter": "フッターにスキップ",
     "skipLinksLabel": "スキップリンク",
     "mainContentLabel": "メインコンテンツ",
-    "socialXiaohongshu": "小紅書"
+    "socialXiaohongshu": "小紅書",
+    "markers": {
+      "loading": "読み込み中 / 00",
+      "connection": "接続 / 01",
+      "empty": "アーカイブ / 00",
+      "opening": "開いています / 00",
+      "notFound": "アーカイブ / 404"
+    }
   },
   "admin": {
     "tabs": {
@@ -1434,7 +1493,12 @@
     "typing": "入力中..."
   },
   "dashboard": {
+    "commandKicker": "クライアントデスク / 非公開アーカイブ",
+    "privateArchive": "非公開アーカイブ",
+    "accountFile": "アカウント記録 / {{index}}",
     "title": "マイダッシュボード",
+    "overview": "概要",
+    "upcoming": "今後の予定",
     "bookings": "予約一覧",
     "purchases": "購入一覧",
     "courses": "受講コース",
@@ -1607,6 +1671,7 @@
     }
   },
   "quiz": {
+    "frameQueued": "フレームを準備中",
     "start": "テストを始める",
     "step1.title": "どんな場面？",
     "step2.title": "どんなスタイルが好き？",
@@ -1648,6 +1713,7 @@
     "progress": "ステップ {{current}} / {{total}}"
   },
   "errorBoundary": {
+    "kicker": "復旧デスク / エラー",
     "title": "このセクションを読み込めませんでした",
     "message": "もう一度お試しください。時間をおいて再度確認してください。",
     "retry": "再試行",
@@ -1655,9 +1721,11 @@
   },
   "seo": {
     "siteName": "奶黄んぼ写真撮影",
-    "siteTagline": "NHB Photography | 個人ビジュアルアーカイブ",
-    "homeTitle": "NHB Photography | 個人ビジュアルアーカイブと制作実験",
-    "homeDesc": "写真、インタラクティブな物語、ブラウザグラフィックス、ローカル優先の制作ツールを探る個人練習プロジェクト。",
+    "siteTagline": "NHB Photography | 南京ポートレート予約",
+    "homeTitle": "奶黄包摄影 | 南京ポートレート・カップル撮影",
+    "homeDesc": "南京の個人写真家による柔らかく自然な女性ポートレート、カップル写真、街歩き撮影。プラン確認とオンライン予約に対応。",
+    "aboutTitle": "写真家について | 奶黄包摄影",
+    "aboutDesc": "南京を拠点に女性ポートレートとカップル撮影を行う奶黄包摄影。事前相談とポージングガイドを大切にしています。",
     "galleryTitle": "ギャラリー | 奶黄んぼ写真撮影",
     "galleryDesc": "南京ポートレート写真ギャラリー — 公園、江南、ストリート、屋内、カップル撮影の作品をご覧ください。",
     "coursesTitle": "写真講座 | 奶黄んぼ写真撮影",
@@ -1743,6 +1811,15 @@
       "tools": "ツール",
       "bg": "背景",
       "makeup": "メイク"
+    },
+    "catDesc": {
+      "beauty": "肌と明るさを自然に整えます",
+      "reshape": "顔の輪郭と比率を細かく調整します",
+      "color": "色温度、彩度、明るさを整えます",
+      "filter": "仕上がりの雰囲気を選びます",
+      "tools": "文字、切り抜き、比較、書き出しを使います",
+      "bg": "背景を整理し、視線を被写体に集めます",
+      "makeup": "メイクの色と質感を繊細に加えます"
     },
     "smooth": "肌補正",
     "slim": "小顔",
@@ -1993,6 +2070,13 @@
     "notFound": "写真が見つかりません",
     "about": "この写真について",
     "aboutDesc": "この写真は{{style}}スタイルで撮影されました。ロケーションの独特な雰囲気と美しさを捉えています。",
+    "style": "スタイル",
+    "location": "場所",
+    "album": "アルバム",
+    "beforeAfter": "ビフォー・アフター",
+    "comparisonDesc": "元の写真とレタッチ後を比較できます。スライダーを動かして違いをご覧ください。",
+    "original": "オリジナル",
+    "edited": "レタッチ後",
     "ctaTitle": "このスタイルがお気に入りですか？",
     "ctaDesc": "類似のセッションを予約して、同じような写真を手に入れましょう",
     "bookSimilar": "類似セッションを予約",

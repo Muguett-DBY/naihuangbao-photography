@@ -42,7 +42,7 @@ export function BookingPage() {
         subtitle={t("aboutBooking.desc")}
         image={opticalArchiveById["booking-table"].imageUrl}
         imageAlt={t(opticalArchiveById["booking-table"].altKey as never)}
-        issue="SOFT BOOKING / 07"
+        issue={t("bookingPage.issue")}
         immersivePreset="booking"
         immersiveImages={BOOKING_IMMERSIVE_IMAGES}
       />
@@ -64,7 +64,7 @@ export function BookingPage() {
             ))}
           </ol>
           <div className="booking-quick-cta-inner">
-            <span className="booking-quick-marker">APPOINTMENT DESK / 01</span>
+            <span className="booking-quick-marker">{t("bookingPage.deskMarker")}</span>
             <h2>{t("bookingPage.readyTitle")}</h2>
             <p>{t("bookingPage.readyDesc")}</p>
             <button
@@ -84,8 +84,8 @@ export function BookingPage() {
 
       <div className="booking-content-surface">
         <div className="booking-content-ledger" aria-hidden="true">
-          <span>SESSION CONFIGURATOR</span>
-          <span>SOFT BOOKING / YOUR NOTES</span>
+          <span>{t("bookingPage.configurator")}</span>
+          <span>{t("bookingPage.notes")}</span>
         </div>
 
         <ErrorBoundary>

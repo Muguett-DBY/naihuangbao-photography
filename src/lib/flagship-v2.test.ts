@@ -53,13 +53,15 @@ describe("flagship v2 experience contracts", () => {
     expect(css).toContain(".editor-hold-original");
   });
 
-  it("keeps seasonal concept art out of the streamlined homepage runtime", () => {
+  it("keeps concept systems out of the booking-first homepage runtime", () => {
     const home = read("src/pages/HomePage.tsx");
 
     expect(home).not.toContain("RainLetterPremiere");
     expect(home).not.toContain("rain-letter");
-    expect(home).toContain("<VisualLightTable />");
-    expect(home).toContain("<HomeVisualSystem />");
+    expect(home).not.toContain("VisualLightTable");
+    expect(home).not.toContain("HomeVisualSystem");
+    expect(home).toContain("usePublicPhotos");
+    expect(home).toContain("<Packages />");
   });
 
   it("keeps generated concept art responsive and outside real portfolio data", () => {

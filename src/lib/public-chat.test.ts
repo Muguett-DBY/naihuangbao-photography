@@ -9,7 +9,7 @@ const chatHelperPath = resolve(root, "functions/_chat.ts");
 const adminChatApiPath = resolve(root, "functions/api/admin/chat.ts");
 const widgetPath = resolve(root, "src/components/PublicChatWidget.tsx");
 const launcherPath = resolve(root, "src/components/PublicChatLauncher.tsx");
-const rootLayoutSource = ["src/layouts/RootLayout.tsx", "src/features/practice/PracticeLayout.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
+const rootLayoutSource = ["src/layouts/RootLayout.tsx", "src/layouts/CustomerLayout.tsx", "src/features/practice/PracticeLayout.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const adminSource = readFileSync(resolve(root, "src/components/AdminDashboard.tsx"), "utf8");
 const adminCss = readFileSync(resolve(root, "src/styles/admin.css"), "utf8");
 const globalCss = [
@@ -210,12 +210,13 @@ describe("public AI chat integration", () => {
     expect(existsSync(adminChatApiPath)).toBe(false);
   });
 
-  it("confines the public chat launcher to practice routes and avoids fixed-button overlap", () => {
+  it("keeps booking and practice destinations explicit while avoiding fixed-button overlap", () => {
     const navSource = readFileSync(resolve(root, "src/components/shared/Header.tsx"), "utf8");
     const launcherSource = readFileSync(launcherPath, "utf8");
 
-    expect(navSource).not.toContain("CalendarCheck");
-    expect(navSource).not.toContain('t("nav.booking")');
+    expect(navSource).toContain("CalendarCheck");
+    expect(navSource).toContain('t("nav.booking")');
+    expect(navSource).toContain('to="/booking"');
     expect(navSource).toContain('to="/practice"');
     expect(navSource).not.toContain("MessageCircle");
     expect(launcherSource).toContain("chat.launcherLabel");

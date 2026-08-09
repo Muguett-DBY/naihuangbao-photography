@@ -41,7 +41,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       return (
         <div className="error-boundary" role="alert" aria-live="assertive">
-          <span className="error-boundary-kicker">RECOVERY DESK / ERROR</span>
+          <span className="error-boundary-kicker">{i18n.t("errorBoundary.kicker")}</span>
           <div className="error-boundary-icon" aria-hidden="true">
             <AlertTriangle size={32} strokeWidth={1.5} />
           </div>

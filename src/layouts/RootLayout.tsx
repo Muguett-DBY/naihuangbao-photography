@@ -21,6 +21,7 @@ import { OPEN_COMMAND_PALETTE_EVENT } from "../lib/command-palette";
 import { RouteExperienceTelemetry } from "../components/shared/RouteExperienceTelemetry";
 import { RouteIndexingPolicy } from "../components/shared/RouteIndexingPolicy";
 import { WorkspaceProjectProvider } from "../hooks/useWorkspaceProjects";
+import { isProjectDockRoute } from "../data/product-navigation";
 
 // Optional cursor and texture effects stay in a separate chunk so the page
 // can paint and become interactive without coupling them to route code.
@@ -95,6 +96,7 @@ export function RootLayout() {
   const isEditor = location.pathname === "/editor";
   const isCreativeWorkspace = isEditor || location.pathname === "/create" || location.pathname.startsWith("/create/") || location.pathname === "/studio";
   const routePreset = resolveRoutePreset(location.pathname);
+  const showProjectDock = isProjectDockRoute(location.pathname);
 
   return (
     <div className={isEditor ? "site-shell is-editor" : "site-shell"}>
@@ -157,26 +159,26 @@ export function RootLayout() {
       )}
       <SiteContentProvider>
         <ExperienceProvider>
-                <ExperienceStateBridge pathname={location.pathname} />
-                {routePreset && location.pathname !== "/" && <ImmersiveExperienceGate />}
-                <WorkspaceProjectProvider>
-                  <ToastProvider>
-                    <Header />
-                    <DeferredCommandPalette />
-                    <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
-                      <ErrorBoundary>
-                        <Suspense fallback={<RouteLoadingState />}>
-                          <Outlet />
-                        </Suspense>
-                      </ErrorBoundary>
-                    </main>
-                    <Footer />
-                    <Suspense fallback={null}><ProjectDock /></Suspense>
-                    {!isCreativeWorkspace && <MobileBottomNav />}
-                    <ScrollToTop />
-                    <PwaInstallBanner />
-                  </ToastProvider>
-                </WorkspaceProjectProvider>
+          <ExperienceStateBridge pathname={location.pathname} />
+          {routePreset && location.pathname !== "/" && <ImmersiveExperienceGate />}
+          <WorkspaceProjectProvider>
+            <ToastProvider>
+              <Header />
+              <DeferredCommandPalette />
+              <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
+                <ErrorBoundary>
+                  <Suspense fallback={<RouteLoadingState />}>
+                    <Outlet />
+                  </Suspense>
+                </ErrorBoundary>
+              </main>
+              <Footer />
+              {showProjectDock && <Suspense fallback={null}><ProjectDock /></Suspense>}
+              {!isCreativeWorkspace && <MobileBottomNav />}
+              <ScrollToTop />
+              <PwaInstallBanner />
+            </ToastProvider>
+          </WorkspaceProjectProvider>
         </ExperienceProvider>
       </SiteContentProvider>
     </div>

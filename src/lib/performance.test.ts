@@ -18,7 +18,7 @@ const allCss = [
 ].map((p) => readFileSync(resolve(root, p), "utf8")).join("\n");
 const mainSource = readFileSync(resolve(root, "src/main.tsx"), "utf8");
 const i18nSource = readFileSync(resolve(root, "src/i18n/index.ts"), "utf8");
-const rootLayoutSource = ["src/layouts/RootLayout.tsx", "src/features/practice/PracticeLayout.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
+const rootLayoutSource = ["src/layouts/RootLayout.tsx", "src/layouts/CustomerLayout.tsx", "src/features/practice/PracticeLayout.tsx"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const routerSource = readFileSync(resolve(root, "src/router.tsx"), "utf8");
 const routePreloadSource = readFileSync(resolve(root, "src/lib/route-preload.ts"), "utf8");
 const routeLoadersSource = readFileSync(resolve(root, "src/routing/route-loaders.ts"), "utf8");
@@ -27,7 +27,6 @@ const html = readFileSync(resolve(root, "index.html"), "utf8");
 const viteConfig = readFileSync(resolve(root, "vite.config.ts"), "utf8");
 const gallerySource = ["src/components/Gallery.tsx", "src/features/gallery/GalleryCommandCenter.tsx", "src/features/gallery/GalleryResults.tsx", "src/features/gallery/gallery-discovery.ts"].map((path) => readFileSync(resolve(root, path), "utf8")).join("\n");
 const homeSource = readFileSync(resolve(root, "src/pages/HomePage.tsx"), "utf8");
-const premiereSource = readFileSync(resolve(root, "src/components/CinematicPremiere.tsx"), "utf8");
 const quickViewSource = readFileSync(resolve(root, "src/components/QuickView.tsx"), "utf8");
 const photoDetailSource = readFileSync(resolve(root, "src/pages/PhotoDetailPage.tsx"), "utf8");
 const headerSource = readFileSync(resolve(root, "src/components/shared/Header.tsx"), "utf8");
@@ -89,15 +88,13 @@ describe("performance budgets", () => {
 
   it("shows the premiere cover while the lazy homepage chunk loads", () => {
     expect(routerSource).toContain("function HomePremiereFallback()");
-    expect(routerSource).toContain('className="hero hero-home home-premiere-fallback"');
-    expect(routerSource).toContain("01-cream-paper-pavilion.avif");
+    expect(routerSource).toContain('className="hero home-premiere-fallback"');
+    expect(routerSource).toContain("gallery-jiangnan-01.avif");
     expect(routerSource).toContain('fetchPriority="high"');
-    expect(routerSource).toContain('<a className="hero-create-primary" href="/create"');
-    expect(routerSource).toContain('<a className="hero-cover-primary-btn" href="/archive"');
-    expect(routerSource).not.toContain('<a className="hero-gallery-link" href="/stories"');
-    expect(routerSource).not.toContain('href="/booking"');
+    expect(routerSource).toContain('<a className="hero-cover-primary-btn" href="/booking"');
+    expect(routerSource).toContain('<a className="hero-gallery-link" href="/gallery"');
+    expect(routerSource).not.toContain("01-cream-paper-pavilion");
     expect(routerSource).toContain('fallback={<HomePremiereFallback />}');
-    expect(allCss).toContain(":has(.home-premiere-fallback) .site-footer");
     expect(routerSource).toContain('const HomePage = lazy(routeLoaders["/"])');
   });
 
@@ -152,7 +149,8 @@ describe("performance budgets", () => {
     expect(footerSource).toContain('to="/about"');
     expect(footerSource).not.toContain('to="/faq"');
     expect(footerSource).toContain('to="/archive"');
-    expect(footerSource).toContain('to="/create"');
+    expect(footerSource).toContain('to="/booking"');
+    expect(footerSource).toContain('to="/booking#packages"');
     expect(footerSource).toContain('to="/practice"');
     for (const localeFile of localeFiles) {
       const locale = JSON.parse(readFileSync(resolve(root, localeFile), "utf8"));
@@ -210,19 +208,19 @@ describe("performance budgets", () => {
     expect(headerSource).toContain("loadAndChangeLanguage");
   });
 
-  it("keeps the homepage runtime focused and progressively loads premiere scenes", () => {
-    expect(homeSource).toContain("<VisualLightTable />");
-    expect(homeSource).toContain("<HomeVisualSystem />");
+  it("keeps the homepage runtime focused on booking without continuous animation systems", () => {
+    expect(homeSource).toContain("usePublicPhotos");
+    expect(homeSource).toContain("<Packages />");
+    expect(homeSource).toContain("useBookingModal");
+    expect(homeSource).not.toContain("VisualLightTable");
+    expect(homeSource).not.toContain("HomeVisualSystem");
     expect(homeSource).not.toContain("FilmStripStory");
     expect(homeSource).not.toContain("RainLetterPremiere");
     expect(homeSource).not.toContain("HomeCreativePulse");
     expect(homeSource).not.toContain("BookingConversionSection");
     expect(homeSource).not.toContain("useImmersiveAnchor");
-    expect(premiereSource).toContain("loadedScenes.has(index)");
-    expect(premiereSource).toContain("priority={index === 0}");
-    expect(premiereSource).toContain("data-loaded-scenes");
-    expect(premiereSource).not.toContain('addEventListener("pointermove"');
-    expect(premiereSource).not.toContain("conceptPremiereTrailFrames");
+    expect(homeSource).not.toContain("requestAnimationFrame");
+    expect(homeSource).not.toContain("setInterval");
   });
 
   it("keeps first-load reveal and scroll progress outside the app shell", () => {

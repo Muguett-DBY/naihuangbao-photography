@@ -15,7 +15,7 @@ function read(path: string) {
     ? ["src/features/gallery/GalleryResults.tsx"]
     : path === "src/pages/PhotoEditorWorkspace.tsx"
       ? ["src/features/editor/useEditorState.ts", "src/features/editor/useEditorImageEngine.ts", "src/features/editor/PhotoEditorWorkspaceView.tsx"]
-      : path === "src/layouts/RootLayout.tsx" ? ["src/features/practice/PracticeLayout.tsx"]
+      : path === "src/layouts/RootLayout.tsx" ? ["src/layouts/CustomerLayout.tsx", "src/features/practice/PracticeLayout.tsx"]
         : path === "src/pages/LoginPage.tsx" ? ["src/features/auth/AuthMediaPanel.tsx"] : [];
   return [path, ...extras].map((file) => readFileSync(resolve(root, file), "utf8")).join("\n");
 }

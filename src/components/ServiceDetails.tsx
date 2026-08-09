@@ -34,8 +34,8 @@ export function ServiceDetails() {
         <article className="service-detail-card">
           <Clock size={24} />
           <h3>{t("serviceDetails.timingTitle")}</h3>
-          <strong>{timingPolicy?.title ?? "2小时起拍"}</strong>
-          <span>{timingPolicy?.detail ?? "迟到15分钟开始计时，当天不可更改拍摄时间。"}</span>
+          <strong>{timingPolicy?.title ?? t("serviceDetails.timingFallbackTitle")}</strong>
+          <span>{timingPolicy?.detail ?? t("serviceDetails.timingFallbackDetail")}</span>
         </article>
         <article className="service-detail-card service-detail-card-wide">
           <ReceiptText size={24} />

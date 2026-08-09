@@ -77,11 +77,11 @@ test.describe("editorial booking, account, map, and comparison workspaces", () =
     await mapButton.click();
     const search = page.getByRole("combobox", { name: "Find a portrait location" });
     await expect(search).toBeVisible();
-    await search.fill("南京公");
+    await search.fill("Nanjing P");
     await expect(search).toHaveAttribute("aria-expanded", "true");
     await search.press("ArrowDown");
     await search.press("Enter");
-    await expect(search).toHaveValue("南京公园");
+    await expect(search).toHaveValue("Nanjing Park");
     await expect(search).toHaveAttribute("aria-expanded", "false");
 
     await page.getByRole("button", { name: "Clear location search" }).click();

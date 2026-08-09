@@ -68,7 +68,7 @@ const merchandise = {
 };
 
 const publicRoutes = [
-  { path: "/", action: ".hero-cover-primary-btn" },
+  { path: "/", action: ".home-booking-primary" },
   { path: "/gallery", action: ".gallery-search-input" },
   { path: "/gallery/gallery-urban-01", action: ".photo-detail-cta-link" },
   { path: "/courses", action: ".catalogue-card-footer" },
@@ -381,7 +381,8 @@ test.describe("six-width public route contract", () => {
         await page.goto(route.path, { waitUntil: "domcontentloaded" });
         await settleRoute(page);
         if (route.path === "/") {
-          await expect(page.locator(".cinematic-premiere")).toHaveCount(1);
+          await expect(page.locator(".home-booking-hero")).toHaveCount(1);
+          await expect(page.locator(".home-booking-hero__selector button")).toHaveCount(3);
           await expect(page.locator(".immersive-experience")).toHaveCount(0);
           await expect(page.locator('[data-optical-scene="home"]')).toHaveCount(0);
         }
@@ -408,9 +409,9 @@ test.describe("short desktop hero contract", () => {
   test("hero title and actions remain inside the cover while the next section stays visible", async ({ page }) => {
     await page.goto("/");
     await settleRoute(page);
-    const hero = page.locator(".hero-home:not(.home-premiere-fallback)");
-    const title = hero.locator(".hero-title");
-    const actions = hero.locator(".hero-actions");
+    const hero = page.locator(".home-booking-hero");
+    const title = hero.locator("h1");
+    const actions = hero.locator(".home-booking-actions");
     const index = page.locator(".home-index-strip");
 
     await expect(hero).toBeVisible();
@@ -451,24 +452,24 @@ test.describe("desktop chapter index contract", () => {
     await mockPublicApi(page);
   });
 
-  test("stays in document flow and reports the active home chapter", async ({ page }) => {
+  test("stays sticky and reports the active booking chapter", async ({ page }) => {
     await page.goto("/");
     await settleRoute(page);
 
     const chapterConsole = page.locator(".home-index-strip");
     await expect(chapterConsole).toHaveAttribute("data-active-chapter", "premiere");
     const chapterPosition = await chapterConsole.evaluate((element) => getComputedStyle(element).position);
-    expect(["static", "relative"]).toContain(chapterPosition);
-    await chapterConsole.locator('a[href="#visual-system"]').click();
-    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "visual-system");
-    await expect(chapterConsole.locator('a[href="#visual-system"]')).toHaveAttribute("aria-current", "location");
+    expect(chapterPosition).toBe("sticky");
+    await chapterConsole.locator('a[href="#featured"]').click();
+    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "featured");
+    await expect(chapterConsole.locator('a[href="#featured"]')).toHaveAttribute("aria-current", "location");
     await expect(page.locator(".site-nav")).toHaveClass(/is-scrolled/);
 
-    await chapterConsole.locator('a[href="#make-something"]').click();
-    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "make-something");
+    await chapterConsole.locator('a[href="#book"]').click();
+    await expect(chapterConsole).toHaveAttribute("data-active-chapter", "book");
     const anchorGeometry = await page.evaluate(() => {
       const masthead = document.querySelector<HTMLElement>(".site-nav")!.getBoundingClientRect();
-      const section = document.querySelector<HTMLElement>("#make-something")!.getBoundingClientRect();
+      const section = document.querySelector<HTMLElement>("#book")!.getBoundingClientRect();
       return {
         mastheadBottom: Math.round(masthead.bottom),
         sectionTop: Math.round(section.top),
@@ -499,7 +500,7 @@ test.describe("route chrome and mobile dock contract", () => {
       await page.setViewportSize(viewport);
 
       for (const route of [
-        { path: "/", host: ".hero-home", scene: null },
+        { path: "/", host: ".home-booking-hero", scene: null },
         { path: "/gallery", host: ".gallery-page-hero", scene: "gallery" },
         { path: "/courses", host: ".page-hero", scene: "courses" },
       ]) {
@@ -508,7 +509,7 @@ test.describe("route chrome and mobile dock contract", () => {
         if (route.path === "/") {
           await expect(page.locator(".immersive-experience")).toHaveCount(0);
           await expect(page.locator('[data-optical-scene="home"]')).toHaveCount(0);
-          const heroText = await page.locator(".hero-title").evaluate((title) => ({
+          const heroText = await page.locator(".home-booking-hero h1").evaluate((title) => ({
             clipped: title.scrollWidth > title.clientWidth + 1,
             insideViewport: title.getBoundingClientRect().right <= window.innerWidth,
           }));

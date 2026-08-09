@@ -1,11 +1,11 @@
 import {
+  CalendarCheck,
   Camera,
   FlaskConical,
   Languages,
   Menu,
   Search,
   Settings2,
-  WandSparkles,
   X,
 } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -233,7 +233,7 @@ export function Header() {
           </span>
           <span className="brand-copy">
             <strong>{siteConfig.brandName}</strong>
-            <small>NHB / VISUAL OPERATING SYSTEM</small>
+            <small>{t("nav.brandDescriptor")}</small>
           </span>
         </PrefetchLink>
 
@@ -278,15 +278,15 @@ export function Header() {
             </button>
             {utilityOpen && !compactNavigation ? (
               <div ref={utilityMenuRef} id="nav-utility-panel" className="nav-popover nav-utility-panel">
-                <span className="nav-popover-label">NHB / PREFERENCES</span>
+                <span className="nav-popover-label">{t("nav.preferences")}</span>
                 <UtilityControls onLanguageChange={toggleLang} languageLabel={languageLabel} menuLabel={utilityLabel} />
               </div>
             ) : null}
           </div>
 
-          <PrefetchLink className="nav-cta" to="/create">
-            <WandSparkles size={17} aria-hidden="true" />
-            {t("nav.create")}
+          <PrefetchLink className="nav-cta" to="/booking">
+            <CalendarCheck size={17} aria-hidden="true" />
+            {t("nav.booking")}
           </PrefetchLink>
 
           <button
@@ -323,8 +323,8 @@ export function Header() {
             <div className="nav-drawer-panel">
               <div className="nav-drawer-head">
                 <span>
-                  <strong>NHB / VISUAL OPERATING SYSTEM</strong>
-                  <small>{siteConfig.city} / PERSONAL VISUAL PRACTICE</small>
+                  <strong>{siteConfig.brandName}</strong>
+                  <small>{siteConfig.city} / {t("nav.brandDescriptor")}</small>
                 </span>
                 <button className="nav-drawer-close" type="button" onClick={() => setDrawerOpen(false)} aria-label={t("nav.close", "Close menu")}>
                   <X size={20} aria-hidden="true" />
@@ -347,7 +347,7 @@ export function Header() {
               </nav>
 
               <section className="nav-drawer-utilities" aria-labelledby="drawer-utility-label">
-                <span id="drawer-utility-label" className="nav-popover-label">NHB / PREFERENCES</span>
+                <span id="drawer-utility-label" className="nav-popover-label">{t("nav.preferences")}</span>
                 <UtilityControls onLanguageChange={toggleLang} languageLabel={languageLabel} menuLabel={utilityLabel} />
               </section>
 
@@ -356,9 +356,9 @@ export function Header() {
                   <Search size={18} aria-hidden="true" />
                   {t("platform.command.title")}
                 </button>
-                <PrefetchLink to="/create" onClick={() => setDrawerOpen(false)}>
-                  <WandSparkles size={18} aria-hidden="true" />
-                  {t("nav.create")}
+                <PrefetchLink to="/booking" onClick={() => setDrawerOpen(false)}>
+                  <CalendarCheck size={18} aria-hidden="true" />
+                  {t("nav.booking")}
                 </PrefetchLink>
                 <PrefetchLink className="nav-drawer-practice" to="/practice" onClick={() => setDrawerOpen(false)}>
                   <FlaskConical size={18} aria-hidden="true" />

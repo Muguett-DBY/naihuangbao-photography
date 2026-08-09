@@ -24,7 +24,7 @@ export function NotFound() {
         aria-labelledby="not-found-title"
         data-immersive-anchor="boundary"
       >
-        <span className="not-found-kicker">LOST FRAME / 404</span>
+        <span className="not-found-kicker">{t("notFound.kicker")}</span>
         <ArchiveX size={36} strokeWidth={1.5} aria-hidden="true" />
         <p className="not-found-code" aria-hidden="true">404</p>
         <h1 id="not-found-title">{t("notFound.title")}</h1>

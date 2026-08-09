@@ -1,4 +1,5 @@
 import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export type DashboardWorkspaceItem = {
   key: string;
@@ -18,6 +19,7 @@ export function DashboardWorkspace({
   ariaLabel,
   defaultActiveKey,
 }: DashboardWorkspaceProps) {
+  const { t } = useTranslation();
   const [activeKey, setActiveKey] = useState(defaultActiveKey ?? items[0]?.key ?? "");
   const [isMobile, setIsMobile] = useState(
     () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches,
@@ -64,7 +66,7 @@ export function DashboardWorkspace({
     <div className="dashboard-workspace">
       <nav className="dashboard-workspace-nav" aria-label={ariaLabel}>
         <div className="dashboard-workspace-rail-head">
-          <span>PRIVATE ARCHIVE</span>
+          <span>{t("dashboard.privateArchive")}</span>
           <strong>{ariaLabel}</strong>
         </div>
         <div
@@ -111,7 +113,7 @@ export function DashboardWorkspace({
         tabIndex={0}
       >
         <header className="dashboard-workspace-panel-head">
-          <span>ACCOUNT FILE / {String(items.indexOf(activeItem) + 1).padStart(2, "0")}</span>
+          <span>{t("dashboard.accountFile", { index: String(items.indexOf(activeItem) + 1).padStart(2, "0") })}</span>
           <div>
             <span aria-hidden="true">{activeItem.icon}</span>
             <h2>{activeItem.label}</h2>

@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { SCENE_PRESETS, type ScenePresetId } from "../../experience/scene-presets";
 
 type OpticalSceneChromeProps = {
@@ -50,6 +51,7 @@ export const OpticalSceneChrome = memo(function OpticalSceneChrome({
   preset,
   chapter,
 }: OpticalSceneChromeProps) {
+  const { t } = useTranslation();
   const scene = SCENE_PRESETS[preset];
   const sceneChapter = chapter ?? CHAPTERS[preset];
 
@@ -65,8 +67,8 @@ export const OpticalSceneChrome = memo(function OpticalSceneChrome({
       <span className="optical-scene-corner optical-scene-corner--br" />
 
       <div className="optical-scene-status">
-        <span className="optical-scene-live"><i /> NHB SOFT LIGHT</span>
-        <span>PORTRAIT DIARY</span>
+        <span className="optical-scene-live"><i /> {t("platform.optical.softLight")}</span>
+        <span>{t("platform.optical.portraitDiary")}</span>
       </div>
 
       <div className="optical-scene-focus">
@@ -79,15 +81,15 @@ export const OpticalSceneChrome = memo(function OpticalSceneChrome({
       </div>
 
       <div className="optical-scene-readout">
-        <span>GENTLE</span>
+        <span>{t("platform.optical.gentle")}</span>
         <strong>{EXPOSURE[preset]}</strong>
-        <span>NATURAL</span>
-        <span>NO RUSH</span>
+        <span>{t("platform.optical.natural")}</span>
+        <span>{t("platform.optical.noRush")}</span>
       </div>
 
       <div className="optical-scene-chapter">
         <strong>{sceneChapter}</strong>
-        <span>{scene.id.replace("-", " ")}</span>
+        <span>NHB / {EXPOSURE[preset]}</span>
       </div>
     </div>
   );

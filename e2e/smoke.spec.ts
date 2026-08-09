@@ -20,21 +20,21 @@ async function uploadEditorPhoto(page: Page, file: EditorUploadFile) {
   await fileChooser.setFiles(file);
 }
 
-async function openArchiveFromNav(page: Page) {
+async function openGalleryFromNav(page: Page) {
   await expect(page.locator(".site-nav")).toBeVisible();
-  const inlineArchiveLink = page.locator('.nav-menu--inline a[href="/archive"]').first();
+  const inlineGalleryLink = page.locator('.nav-menu--inline a[href="/gallery"]').first();
   if ((page.viewportSize()?.width ?? 1280) > 980) {
-    await expect(inlineArchiveLink).toBeVisible();
-    await inlineArchiveLink.click();
+    await expect(inlineGalleryLink).toBeVisible();
+    await inlineGalleryLink.click();
     return;
   }
 
   const hamburger = page.locator(".hamburger");
   await expect(hamburger).toBeVisible();
   await hamburger.click();
-  const overlayArchiveLink = page.locator('#site-navigation-menu a[href="/archive"]').first();
-  await expect(overlayArchiveLink).toBeVisible();
-  await overlayArchiveLink.click();
+  const overlayGalleryLink = page.locator('#site-navigation-menu a[href="/gallery"]').first();
+  await expect(overlayGalleryLink).toBeVisible();
+  await overlayGalleryLink.click();
 }
 
 test.describe("shoot.custard.top", () => {
@@ -49,7 +49,8 @@ test.describe("shoot.custard.top", () => {
   test("首页加载正确", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/奶黄包摄影|Naihuangbao Photography/);
-    await expect(page.locator(".hero")).toBeVisible();
+    await expect(page.locator(".home-booking-hero")).toBeVisible();
+    await expect(page.locator(".home-booking-hero h1")).toHaveCount(1);
     await expect(page.locator(".site-nav")).toBeVisible();
   });
 
@@ -94,7 +95,7 @@ test.describe("shoot.custard.top", () => {
     });
 
     await page.goto("/");
-    await expect(page.locator(".hero")).toBeVisible();
+    await expect(page.locator(".home-booking-hero")).toBeVisible();
     const runtime = await page.evaluate(() => {
       const runtimeGsap = (window as Window & {
         gsap?: { version?: string; matchMedia?: unknown };
@@ -112,9 +113,9 @@ test.describe("shoot.custard.top", () => {
 
   test("导航链接可点击跳转", async ({ page }) => {
     await page.goto("/");
-    await openArchiveFromNav(page);
-    await expect(page).toHaveURL(/\/archive$/);
-    await expect(page.locator("#archive-index")).toBeVisible();
+    await openGalleryFromNav(page);
+    await expect(page).toHaveURL(/\/gallery$/);
+    await expect(page.locator(".gallery-page-contact-sheet")).toBeVisible();
   });
 
   test("Lightbox 打开和关闭", async ({ page }) => {
@@ -130,15 +131,17 @@ test.describe("shoot.custard.top", () => {
     await expect(lightbox).toHaveCount(0, { timeout: 10000 });
   });
 
-  test("首页视觉系统可切换并保留档案入口", async ({ page }) => {
+  test("首页真实客片可切换并保留作品入口", async ({ page }) => {
     await page.goto("/");
-    const visualSystem = page.locator("#visual-system");
-    await visualSystem.scrollIntoViewIfNeeded();
-    await expect(visualSystem).toBeVisible();
-    await expect(visualSystem.locator(".home-visual-system__nodes button")).toHaveCount(4);
-    await visualSystem.getByRole("button", { name: /Visual Stories/ }).click();
-    await expect(visualSystem.locator(".home-visual-system__preview-copy")).toContainText("Visual Stories");
-    await expect(page.locator('.home-playground-portals a[href="/archive"]')).toBeVisible();
+    const hero = page.locator(".home-booking-hero");
+    const heroImage = hero.locator(".home-booking-hero__media img");
+    const controls = hero.locator(".home-booking-hero__selector button");
+    await expect(controls).toHaveCount(3);
+    const initialSource = await heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc);
+    await controls.nth(1).click();
+    await expect(controls.nth(1)).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(() => heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc)).not.toBe(initialSource);
+    await expect(hero.locator('.home-booking-secondary[href="/gallery"]')).toBeVisible();
   });
 
   test("首页过渡动画不会替换已呈现内容", async ({ page }) => {
@@ -149,7 +152,9 @@ test.describe("shoot.custard.top", () => {
       };
       const rememberFeatured = (node: Node) => {
         if (!(node instanceof Element)) return;
-        const featured = node.id === "visual-system" ? node : node.querySelector("#visual-system");
+        const featured = node.matches(".home-booking-hero__media")
+          ? node
+          : node.querySelector(".home-booking-hero__media");
         if (!featured || featured === state.current) return;
         state.current = featured;
       };
@@ -172,8 +177,9 @@ test.describe("shoot.custard.top", () => {
     });
 
     await page.goto("/");
-    await page.locator("#visual-system").scrollIntoViewIfNeeded();
-    await expect(page.locator(".home-visual-system__preview")).toBeVisible({ timeout: 10000 });
+    const heroMedia = page.locator(".home-booking-hero__media");
+    await expect(heroMedia).toBeVisible({ timeout: 10000 });
+    await page.locator(".home-booking-hero__selector button").nth(1).click();
     const detachments = await page.evaluate(() => (
       window as Window & { __featuredDomDetachments?: number }
     ).__featuredDomDetachments ?? 0);
@@ -182,8 +188,8 @@ test.describe("shoot.custard.top", () => {
 
   test("首页入口卡片不嵌套交互控件", async ({ page }) => {
     await page.goto("/");
-    await page.locator("#portals").scrollIntoViewIfNeeded();
-    const firstCard = page.locator(".home-playground-portals > div > a").first();
+    await page.locator("#featured").scrollIntoViewIfNeeded();
+    const firstCard = page.locator(".home-booking-photo").first();
     await expect(firstCard).toBeVisible({ timeout: 10000 });
     await expect(firstCard.locator("button, a, [tabindex]"))
       .toHaveCount(0);
@@ -363,15 +369,15 @@ test.describe("shoot.custard.top", () => {
     await expect.poll(() => page.evaluate(() => localStorage.getItem("nhb-pwa-installed"))).toBe("true");
   });
 
-  test("移动端导航可打开档案页", async ({ page }) => {
+  test("移动端导航可打开作品集", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-    await openArchiveFromNav(page);
-    await expect(page).toHaveURL(/\/archive$/);
-    await expect(page.locator("#archive-index")).toBeVisible();
+    await openGalleryFromNav(page);
+    await expect(page).toHaveURL(/\/gallery$/);
+    await expect(page.locator(".gallery-page-contact-sheet")).toBeVisible();
   });
 
-  test("移动端底部导航覆盖核心路径并打开创作工具", async ({ page }) => {
+  test("移动端底部导航覆盖约拍核心路径", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
@@ -379,17 +385,18 @@ test.describe("shoot.custard.top", () => {
     await expect(bottomNav).toBeVisible();
     await expect(bottomNav.locator('a[href="/"]')).toHaveAttribute("aria-current", "page");
 
-    await bottomNav.locator('a[href="/archive"]').click();
-    await expect(page).toHaveURL(/\/archive$/);
-    await expect(bottomNav.locator('a[href="/archive"]')).toHaveAttribute("aria-current", "page");
+    await bottomNav.locator('a[href="/gallery"]').click();
+    await expect(page).toHaveURL(/\/gallery$/);
+    await expect(bottomNav.locator('a[href="/gallery"]')).toHaveAttribute("aria-current", "page");
 
-    await bottomNav.locator('a[href="/create"]').click();
-    await expect(page).toHaveURL(/\/create$/);
-    await expect(page.locator(".studio-canvas-frame canvas")).toBeVisible();
+    await bottomNav.locator('a[href="/booking"]').click();
+    await expect(page).toHaveURL(/\/booking$/);
+    await expect(bottomNav.locator('a[href="/booking"]')).toHaveAttribute("aria-current", "page");
+    await expect(page.locator(".booking-quick-cta")).toBeVisible();
 
-    await page.locator('.create-toolrail a[href="/editor"]').click();
-    await expect(page).toHaveURL(/\/editor$/);
-    await expect(page.locator(".editor-root")).toBeVisible();
-    await expect(page.locator(".mobile-bottom-nav")).toHaveCount(0);
+    await bottomNav.locator('a[href="/about"]').click();
+    await expect(page).toHaveURL(/\/about$/);
+    await expect(bottomNav.locator('a[href="/about"]')).toHaveAttribute("aria-current", "page");
+    await expect(page.locator(".about-booking-page h1")).toBeVisible();
   });
 });

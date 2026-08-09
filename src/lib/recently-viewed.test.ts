@@ -43,7 +43,7 @@ describe("recently viewed photos", () => {
   it("keeps visit history on detail and dashboard surfaces instead of the flagship home", () => {
     const home = read("src/pages/HomePage.tsx");
     expect(home).not.toContain("RecentlyViewedStrip");
-    expect(home).toContain("HomeVisualSystem");
+    expect(home).toContain("usePublicPhotos");
   });
 
   it("ships localized recently viewed copy in all locales", () => {

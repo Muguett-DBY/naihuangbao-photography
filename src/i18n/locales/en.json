@@ -26,7 +26,10 @@
     "map": "Map",
     "editor": "Editor",
     "backToHome": "Back to homepage",
-    "mainNavigation": "Main navigation"
+    "mainNavigation": "Main navigation",
+    "brandDescriptor": "Nanjing Portrait Booking",
+    "preferences": "Display and language settings",
+    "utilityMenu": "Display and language settings"
   },
   "mobileNav": {
     "label": "Primary mobile navigation",
@@ -124,6 +127,26 @@
       "suggestions": "Suggested destinations",
       "empty": "No matching page or photograph"
     },
+    "projectDock": {
+      "ariaLabel": "Current visual project",
+      "activeProject": "Active project",
+      "dockLabel": "NHB / Project Dock",
+      "close": "Close project dock",
+      "workspace": "Workspace",
+      "removeAsset": "Remove {{title}}",
+      "empty": "Collect frames from the Archive to begin.",
+      "openProject": "Open project",
+      "compose": "Compose",
+      "new": "New",
+      "newProject": "Visual study {{count}}"
+    },
+    "optical": {
+      "softLight": "NHB soft light",
+      "portraitDiary": "Portrait diary",
+      "gentle": "Gentle",
+      "natural": "Natural",
+      "noRush": "No rush"
+    },
     "archive": {
       "title": "Living Archive",
       "description": "A growing index of no-person concept studies, field observations, and clearly separated real portrait work.",
@@ -205,12 +228,12 @@
   },
   "hero": {
     "volBadge": "✦ Vol.1",
-    "brandPrefix": "Personal visual archive and local creative tools",
-    "intro": "A living visual system where light, paper, weather, and browser graphics can be explored, remixed, and carried forward.",
+    "brandPrefix": "Nanjing Portrait & Couple Photography",
+    "intro": "Soft, film-like, natural everyday portraits, captured as Nanjing memories you'll want to revisit. Made for first-timers, couple anniversaries, and relaxed city walks.",
     "trustTags": {
-      "privacy": "Local-first making",
-      "guidance": "A living archive",
-      "styles": "Visuals / Interaction / Tools"
+      "privacy": "Photos private by default",
+      "guidance": "Full posing guidance",
+      "styles": "Jiangnan / Street / Park"
     },
     "ctaView": "View Gallery",
     "ctaBooking": "Book",
@@ -320,6 +343,15 @@
   "gallery": {
     "eyebrow": "Portfolio",
     "title": "Gallery",
+    "featured": "Featured work",
+    "items": {
+      "gallery-jiangnan-01": { "title": "Spring Beneath the Parasol", "location": "Nanjing", "alt": "A Jiangnan-style portrait contact sheet with a paper parasol in a Nanjing garden", "album": "Jiangnan Series" },
+      "gallery-urban-01": { "title": "Afternoon Steps", "location": "Nanjing", "alt": "An urban portrait contact sheet on indoor steps in Nanjing", "album": "City Walks" },
+      "gallery-garden-01": { "title": "Green Hemline", "location": "Nanjing Park", "alt": "A fresh park portrait contact sheet with a green dress and paper parasol", "album": "Park Days" },
+      "gallery-sweet-01": { "title": "Yellow Hoodie Corner", "location": "Nanjing Streets", "alt": "A casual street portrait contact sheet in a yellow hoodie", "album": "City Walks" },
+      "gallery-flower-01": { "title": "Violet by the Flowers", "location": "Nanjing Flower Wall", "alt": "A soft portrait contact sheet in violet beside a white flower wall", "album": "Park Days" },
+      "gallery-daily-01": { "title": "White Shirt by the Veranda", "location": "Nanjing Park", "alt": "A relaxed portrait contact sheet in a white shirt beneath a park veranda", "album": "Park Days" }
+    },
     "intro": "Real client photos organized by style — click to view full size",
     "description": "Park shoots, Jiangnan vibes, street style, indoor portraits and couple sessions are filtered separately. Only authorized real client works are shown here.",
     "otherAlbum": "Other",
@@ -523,6 +555,7 @@
     "popular": "Popular",
     "recommend": "Recommend",
     "bookThis": "Book this package",
+    "priceLabel": "Price {{price}}",
     "cta": "Book Now",
     "perSession": "/session",
     "priceFrom": "from",
@@ -543,6 +576,8 @@
     "equipmentTitle": "Equipment",
     "instantTitle": "Instant Camera",
     "timingTitle": "Timing",
+    "timingFallbackTitle": "Minimum 2 hours",
+    "timingFallbackDetail": "Timing starts after a 15-minute delay; same-day time changes are unavailable.",
     "noticeTitle": "Booking Notes",
     "detailItems": {
       "outfit": {
@@ -587,6 +622,7 @@
   },
   "process": {
     "eyebrow": "How It Works",
+    "ariaLabel": "Photography session process",
     "steps": [
       {
         "title": "Consultation",
@@ -673,7 +709,16 @@
   "bookingPage": {
     "readyTitle": "Ready to book?",
     "readyDesc": "Choose your preferred photography package and book your session now.",
-    "startBooking": "Book Now"
+    "startBooking": "Book Now",
+    "issue": "SOFT PORTRAITS / NANJING",
+    "deskMarker": "BOOKING DESK / STEP ONE",
+    "configurator": "SESSION PREFERENCES",
+    "notes": "BOOKING NOTES"
+  },
+  "aboutPage": {
+    "role": "Nanjing personal photographer · Portraits · Couples",
+    "bookingDesc": "Share the mood, date, and place you have in mind. If you are unsure, we can shape the session together at an easy pace.",
+    "practiceLink": "See creative experiments beyond photography"
   },
   "themeToggle": {
     "light": "Light",
@@ -698,6 +743,7 @@
   },
   "loading": "Loading...",
   "notFound": {
+    "kicker": "Lost frame / 404",
     "title": "Page Not Found",
     "desc": "The page you're looking for doesn't exist or has been removed.",
     "cta": "Back to Home"
@@ -730,8 +776,12 @@
     "subtitle": "Leave your info and I'll confirm the date",
     "name": "Your Name",
     "namePlaceholder": "What should I call you?",
+    "nameRequired": "Please enter your name.",
+    "nameTooShort": "Please enter at least 2 characters.",
     "contact": "Contact (WeChat/Phone)",
     "contactPlaceholder": "Phone / WeChat / Xiaohongshu ID",
+    "contactRequired": "Please enter a contact method.",
+    "contactTooShort": "Please enter at least 3 characters.",
     "style": "Preferred Style",
     "stylePlaceholder": "e.g. Park, Jiangnan, Street...",
     "selectPackage": "Preferred Package",
@@ -865,7 +915,9 @@
     "explore": "Explore",
     "services": "Services",
     "discover": "Discover",
-    "copyright": "© {{year}} {{brand}}. All rights reserved."
+    "copyright": "© {{year}} {{brand}}. All rights reserved.",
+    "bookingDesk": "BOOKING DESK",
+    "bookingPrompt": "Browse the work and packages, then request a date online or begin with a Xiaohongshu message."
   },
   "recentlyViewed": {
     "title": "Recently viewed",
@@ -905,7 +957,6 @@
     "clearAll": "Clear all",
     "hint": "Add one more photo to start comparing",
       "backToGallery": "Back to gallery",
-      "adjacentNav": "Adjacent photos",
     "empty": "Add up to 2 photos to compare side by side.",
     "needTwo": "Add one more photo to compare side by side.",
     "browseGallery": "Browse gallery",
@@ -1208,7 +1259,14 @@
     "skipToFooter": "Skip to footer",
     "skipLinksLabel": "Skip links",
     "mainContentLabel": "Main content",
-    "socialXiaohongshu": "Xiaohongshu"
+    "socialXiaohongshu": "Xiaohongshu",
+    "markers": {
+      "loading": "Loading / 00",
+      "connection": "Connection / 01",
+      "empty": "Archive / 00",
+      "opening": "Opening / 00",
+      "notFound": "Archive / 404"
+    }
   },
   "admin": {
     "tabs": {
@@ -1435,6 +1493,9 @@
     "typing": "typing..."
   },
   "dashboard": {
+    "commandKicker": "Client desk / Private archive",
+    "privateArchive": "Private archive",
+    "accountFile": "Account file / {{index}}",
     "title": "My Dashboard",
     "overview": "Overview",
     "upcoming": "upcoming",
@@ -1610,6 +1671,7 @@
     }
   },
   "quiz": {
+    "frameQueued": "Frame queued",
     "start": "Take the Quiz",
     "step1.title": "What's the occasion?",
     "step2.title": "What style do you like?",
@@ -1651,6 +1713,7 @@
     "progress": "Step {{current}} of {{total}}"
   },
   "errorBoundary": {
+    "kicker": "Recovery desk / Error",
     "title": "This section did not load",
     "message": "Please try again, or come back a little later.",
     "retry": "Retry",
@@ -1658,9 +1721,11 @@
   },
   "seo": {
     "siteName": "Naihuangbao Photography",
-    "siteTagline": "NHB Photography | Personal Visual Archive",
-    "homeTitle": "NHB Photography | Personal Visual Archive and Creative Lab",
-    "homeDesc": "A living personal practice project exploring photography, interactive storytelling, browser graphics, and local-first creative tools.",
+    "siteTagline": "NHB Photography | Nanjing Portrait Booking",
+    "homeTitle": "Naihuangbao Photography | Nanjing Portraits & Couples",
+    "homeDesc": "A Nanjing personal photographer for soft, natural portraits, couple sessions, and city walks, with clear packages and online booking.",
+    "aboutTitle": "About the Photographer | Naihuangbao Photography",
+    "aboutDesc": "Meet Naihuangbao Photography, a Nanjing personal photographer focused on portraits, couples, thoughtful planning, and full posing guidance.",
     "galleryTitle": "Portfolio | Naihuangbao Photography",
     "galleryDesc": "Browse our portfolio of Nanjing portrait photography — park shoots, Jiangnan vibes, street style, indoor portraits and couple sessions.",
     "coursesTitle": "Photography Courses | Naihuangbao Photography",
@@ -2001,6 +2066,7 @@
   },
   "photoDetail": {
     "backToGallery": "Back to Gallery",
+    "adjacentNav": "Adjacent photos",
     "notFound": "Photo not found",
     "about": "About This Photo",
     "aboutDesc": "This photo was taken in {{style}} style. It captures the unique atmosphere and beauty of the location.",

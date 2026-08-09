@@ -8,13 +8,16 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("@critical V8 首页使用新素材世界且内容契约完整", async ({ page, request }) => {
+test("@critical 首页使用真实授权作品且约拍内容契约完整", async ({ page, request }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  const premiere = page.locator(".cinematic-premiere");
-  await expect(premiere).toHaveAttribute("data-active-asset", "visual-os-v8-01-cream-paper-pavilion");
-  await page.evaluate(() => window.scrollTo({ top: Math.round(innerHeight * 0.55), behavior: "instant" }));
-  await expect(premiere).not.toHaveAttribute("data-active-asset", "visual-os-v8-01-cream-paper-pavilion");
+  await expect(page.locator(".home-booking-hero h1")).toHaveCount(1);
+  await expect(page.locator(".home-booking-hero__selector button")).toHaveCount(3);
+  await expect(page.locator(".home-booking-photo")).toHaveCount(6);
+  await expect(page.locator(".home-booking-packages .package-card")).toHaveCount(3);
+  await expect(page.locator(".home-booking-process__steps li")).toHaveCount(5);
+  await expect(page.locator(".home-booking-final button")).toBeVisible();
+  await expect(page.locator(".cinematic-premiere, .visual-light-table, .home-visual-system")).toHaveCount(0);
 
   const routes = await (await request.get("/route-contract.json")).json();
   const assets = await (await request.get("/visual-asset-manifest.json")).json();

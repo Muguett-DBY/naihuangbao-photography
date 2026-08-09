@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
@@ -22,10 +23,11 @@ import {
   UsersRound,
   type LucideIcon,
 } from "lucide-react";
-import { packages } from "../data/packages";
 import { useBookingModal } from "../features/booking/BookingContext";
 import { useInView } from "../hooks/useInView";
 import { usePublicPhotos } from "../hooks/usePublicPhotos";
+import { useSiteContent } from "../hooks/useSiteContent";
+import type { PackageItem } from "../types/content";
 import { ImageWithFallback } from "./ImageWithFallback";
 
 type Answers = {
@@ -88,38 +90,38 @@ const STEPS: QuizStep[] = [
   },
 ];
 
-function recommendPackage(answers: Answers, t: (key: string, fallback: string) => string) {
+function recommendPackage(answers: Answers, t: TFunction, availablePackages: PackageItem[]) {
   const { occasion, style, season, people } = answers;
 
-  let pkgName: string;
+  let packageIndex: 0 | 1;
   let reason: string;
 
   if (people === "couplePeople" || occasion === "couple") {
-    pkgName = "室外约拍";
-    reason = t("quiz.recommendations.couple", "情侣约拍适合在自然光下的公园或街区漫步，捕捉两人最放松的状态。");
+    packageIndex = 1;
+    reason = t("quiz.recommendations.couple");
   } else if (people === "familyPeople" || occasion === "family") {
-    pkgName = "室外约拍";
-    reason = t("quiz.recommendations.family", "家庭合影在户外自然环境中更能展现温馨氛围，适合全家一起互动。");
+    packageIndex = 1;
+    reason = t("quiz.recommendations.family");
   } else if (people === "group" || occasion === "friends") {
-    pkgName = "室外约拍";
-    reason = t("quiz.recommendations.group", "闺蜜或好友合拍在户外场景中更容易拍出自然欢快的氛围。");
+    packageIndex = 1;
+    reason = t("quiz.recommendations.group");
   } else if (style === "artistic" || style === "modern") {
-    pkgName = "室内写真";
-    reason = t("quiz.recommendations.studio", "艺术创意和都市时尚风格更适合在室内棚拍，光线和场景更可控。");
+    packageIndex = 0;
+    reason = t("quiz.recommendations.studio");
   } else if (occasion === "birthday") {
-    pkgName = "室内写真";
-    reason = t("quiz.recommendations.birthday", "生日纪念在室内布置主题场景，氛围感更强，不受天气影响。");
+    packageIndex = 0;
+    reason = t("quiz.recommendations.birthday");
   } else if (season === "winter" || season === "summer") {
-    pkgName = "室内写真";
-    reason = t("quiz.recommendations.weather", "冬暖夏凉的室内环境让拍摄更舒适，复古或自然风格同样出彩。");
+    packageIndex = 0;
+    reason = t("quiz.recommendations.weather");
   } else {
-    pkgName = "室外约拍";
+    packageIndex = 1;
     reason = season === "spring"
-      ? t("quiz.recommendations.spring", "春花烂漫的南京户外是最美的天然影棚，自然清新或复古胶片风格都很好看。")
-      : t("quiz.recommendations.autumn", "秋叶金黄的南京户外是最美的天然影棚，自然清新或复古胶片风格都很好看。");
+      ? t("quiz.recommendations.spring")
+      : t("quiz.recommendations.autumn");
   }
 
-  const matched = packages.find((p) => p.name === pkgName) ?? packages[1];
+  const matched = availablePackages[packageIndex] ?? availablePackages[0];
   return { package: matched, reason };
 }
 
@@ -141,6 +143,7 @@ export function StyleQuiz({
   deferPreview?: boolean;
 }) {
   const { t } = useTranslation();
+  const { packages } = useSiteContent();
   const { openBookingModal } = useBookingModal();
   const { photos } = usePublicPhotos();
   const { ref: previewGateRef, inView: previewInView } = useInView<HTMLDivElement>({ threshold: 0.1 });
@@ -166,7 +169,7 @@ export function StyleQuiz({
 
     if (currentStep === totalSteps - 1) {
       setCurrentStep(totalSteps);
-      setResult(recommendPackage(nextAnswers, t));
+      setResult(recommendPackage(nextAnswers, t, packages));
       return;
     }
 
@@ -244,7 +247,7 @@ export function StyleQuiz({
               </motion.div>
             ) : (
               <div className="quiz-preview-pending" aria-hidden="true">
-                <span>FRAME QUEUED</span>
+                <span>{t("quiz.frameQueued")}</span>
                 <i />
               </div>
             )}

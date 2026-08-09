@@ -32,7 +32,7 @@ export function DashboardPage() {
       <PageTransition ref={rootRef} className="dashboard-page dashboard-page--editorial">
         <header className="dashboard-command-header" id="top">
           <div className="dashboard-command-inner">
-            <span className="dashboard-command-kicker">CLIENT DESK / PRIVATE ARCHIVE</span>
+            <span className="dashboard-command-kicker">{t("dashboard.commandKicker")}</span>
             <h1>{t("dashboard.title")}</h1>
           </div>
         </header>
@@ -109,7 +109,7 @@ export function DashboardPage() {
       <header className="dashboard-command-header" id="top">
         <div className="dashboard-command-inner">
           <div className="dashboard-command-copy">
-            <span className="dashboard-command-kicker">CLIENT DESK / PRIVATE ARCHIVE</span>
+            <span className="dashboard-command-kicker">{t("dashboard.commandKicker")}</span>
             <h1>{t("dashboard.title")}</h1>
             <p>{t("dashboard.welcomeDesc", "Here's what's happening with your account.")}</p>
           </div>

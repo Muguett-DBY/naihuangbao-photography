@@ -7,24 +7,24 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("@critical V6 首页单一视觉世界可切换场景并沿当前画面进入档案", async ({ page }) => {
+test("@critical 首页真实客片可切换并进入完整作品集", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
 
-  const premiere = page.locator(".cinematic-premiere");
-  await expect(premiere).toHaveAttribute("data-visual-world", "dawn");
-  await expect(page.getByRole("group", { name: "视觉世界" })).toHaveCount(0);
-  const sceneButtons = premiere.locator(".cinematic-premiere__scene-dots button");
-  await expect(sceneButtons).toHaveCount(6);
-  await sceneButtons.last().click();
-  await expect(premiere).toHaveAttribute("data-active-asset", "visual-os-v8-13-coral-pigment-press");
+  const hero = page.locator(".home-booking-hero");
+  const heroImage = hero.locator(".home-booking-hero__media img");
+  const workButtons = hero.getByRole("group", { name: "作品集" }).getByRole("button");
+  await expect(workButtons).toHaveCount(3);
+  const initialSource = await heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc);
+  await workButtons.last().click();
+  await expect(workButtons.last()).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(() => heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc)).not.toBe(initialSource);
 
-  const archiveLink = premiere.locator(".cinematic-premiere__archive-link");
-  await expect(archiveLink).toHaveAttribute("href", "/archive?similar=visual-os-v8-13-coral-pigment-press");
-  await archiveLink.focus();
-  await archiveLink.press("Enter");
-  await expect(page).toHaveURL(/\/archive\?similar=visual-os-v8-13-coral-pigment-press/);
-  await expect(page.locator(".archive-discovery__reference h3")).toHaveText("Coral Print Room");
+  const galleryLink = hero.locator('.home-booking-secondary[href="/gallery"]');
+  await galleryLink.focus();
+  await galleryLink.press("Enter");
+  await expect(page).toHaveURL(/\/gallery$/);
+  await expect(page.locator(".gallery-page-contact-sheet")).toBeVisible();
 });
 
 test("@critical V6 档案相似度模式、本地展览和深链保持一致", async ({ page }) => {

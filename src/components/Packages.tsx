@@ -28,7 +28,7 @@ export function Packages() {
               <p>{item.duration}</p>
               <h3>{item.name}</h3>
               <strong>
-                <AnimatedPrice price={item.price} />
+                <AnimatedPrice price={item.price} ariaLabel={t("packages.priceLabel", { price: item.price })} />
               </strong>
               <span>{item.summary}</span>
             </div>
@@ -57,7 +57,7 @@ export function Packages() {
   );
 }
 
-function AnimatedPrice({ price }: { price: string }) {
+function AnimatedPrice({ price, ariaLabel }: { price: string; ariaLabel: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const frameRef = useRef<number | null>(null);
   const [displayValue, setDisplayValue] = useState(() => initialPriceValue(price));
@@ -125,7 +125,7 @@ function AnimatedPrice({ price }: { price: string }) {
     <span
       ref={ref}
       className={`price-count price-count-${animationState}`}
-      aria-label={`价格 ${price}`}
+      aria-label={ariaLabel}
     >
       {displayValue}
     </span>

@@ -92,7 +92,8 @@ describe("editorial catalogue routes", () => {
 
     expect(media).toContain("CATALOGUE_FALLBACK_IMAGES");
     expect(media).toContain('data-fallback="true"');
-    expect(media).toContain("VISUAL STUDY");
+    expect(media).toContain('t("platform.home.lightTable.studyMeta")');
+    expect(media).not.toContain(">VISUAL STUDY<");
     expect(media).toContain('loading="lazy"');
     expect(media).not.toContain("Math.random");
 
