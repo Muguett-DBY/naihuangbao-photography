@@ -96,7 +96,7 @@ export function ArchiveIntelligenceLab() {
     <section className="archive-intelligence" aria-labelledby="archive-intelligence-title">
       <header className="platform-section-head">
         <div><span className="platform-index">01 / INTELLIGENT ARCHIVE</span><h2 id="archive-intelligence-title">用语言、颜色或一张参考图寻找画面</h2></div>
-        <p>70 张画面的分析在构建时完成。搜索、相似度和参考图取色都只在本地运行。</p>
+        <p>{visualAssets.length} 张画面的分析在构建时完成。搜索、相似度和参考图取色都只在本地运行。</p>
       </header>
 
       <div className="archive-intelligence__controls">

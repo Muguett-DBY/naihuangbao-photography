@@ -1,7 +1,8 @@
 import { safeLocalStorage } from "./browser-storage";
 import type { WorkspaceProject } from "../types/workspace-project";
-import type { PublishedProjectDraft, PublishedProjectReceipt, PublishedProjectSnapshot, PublishedProjectVersion } from "../types/published-project";
+import type { PublishedProjectDraft, PublishedProjectReceipt, PublishedProjectSnapshot, PublishedProjectVersion, ResolvedPublishedProjectSnapshot } from "../types/published-project";
 import { isPublicAssetSource, MAX_PUBLISHED_ASSETS } from "./project-publish-contract";
+import { migrateWorkspaceProject } from "./workspace-project-store";
 
 const PUBLICATION_REGISTRY_KEY = "nhb-publication-registry-v1";
 
@@ -27,6 +28,7 @@ function portableProject(project: WorkspaceProject): WorkspaceProject {
     name: project.name.trim().slice(0, 80) || "Untitled visual project",
     description: project.description.trim().slice(0, 600),
     assets,
+    vaultAssetIds: project.vaultAssetIds.filter((id) => assets.some((asset) => asset.assetId === id)),
     coverAssetId: assets.some((asset) => asset.assetId === project.coverAssetId) ? project.coverAssetId : assets[0]?.assetId,
   };
 }
@@ -62,12 +64,12 @@ export async function publishWorkspaceProject(project: WorkspaceProject): Promis
   return body;
 }
 
-export async function fetchPublishedProject(slug: string, version?: number): Promise<PublishedProjectSnapshot> {
+export async function fetchPublishedProject(slug: string, version?: number): Promise<ResolvedPublishedProjectSnapshot> {
   const suffix = version ? `?version=${version}` : "";
   const response = await fetch(`/api/projects/published/${encodeURIComponent(slug)}${suffix}`);
   const body = await response.json().catch(() => ({})) as PublishedProjectSnapshot & { error?: string };
   if (!response.ok) throw new Error(body.error || "Published project unavailable");
-  return body;
+  return { ...body, project: migrateWorkspaceProject(body.project) };
 }
 
 export async function listPublishedProjectVersions(slug: string): Promise<PublishedProjectVersion[]> {

@@ -22,9 +22,9 @@ describe("Visual OS V7 worlds", () => {
       const attrs = getResponsivePictureAttrs(asset.imageUrl, "100vw");
       expect(existsSync(publicPath(asset.imageUrl))).toBe(true);
       expect(attrs.sources).toHaveLength(2);
-      expect(attrs.sources[0]?.srcSet).toContain("/images/visual-os-v7/640/");
+      expect(attrs.sources[0]?.srcSet).toContain("/images/visual-os-v8/640/");
       expect(attrs.sources[0]?.srcSet).toContain(".avif");
-      expect(attrs.sources[1]?.srcSet).toContain("/images/visual-os-v7/960/");
+      expect(attrs.sources[1]?.srcSet).toContain("/images/visual-os-v8/960/");
       expect(attrs.sources[1]?.srcSet).toContain(".webp");
     }
   });

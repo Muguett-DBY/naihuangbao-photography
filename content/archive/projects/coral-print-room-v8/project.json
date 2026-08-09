@@ -1,0 +1,30 @@
+{
+  "id": "coral-print-room-v8",
+  "kind": "concept",
+  "title": "Coral Print Room",
+  "subtitle": "颜料、纸带与陶瓷负空间构成的印刷动作",
+  "chapter": "24",
+  "year": 2026,
+  "summary": "从压印到墨带、色彩桌与陶瓷孔洞，让珊瑚色成为动作而不是装饰。",
+  "statement": "品牌色只有在参与结构时才真正有意义。珊瑚颜料被压过滚筒、拉成长带、切成模块，再转化为陶瓷负空间，与奶油、苔藓和深莓形成稳定而不单调的色彩系统。",
+  "place": "虚构珊瑚印刷室",
+  "season": "初秋午后",
+  "moods": ["有力", "触觉", "图形化", "克制"],
+  "palette": ["低饱和珊瑚", "深莓", "奶油", "柔黄", "苔藓绿", "炭黑"],
+  "techniques": ["纸张压印", "流体定格", "模块俯拍", "陶瓷负空间"],
+  "process": [
+    { "title": "让颜色运动", "note": "先通过滚筒和连续墨带把珊瑚色变成明确方向。" },
+    { "title": "整理工作台", "note": "以俯拍模块验证全品牌色域可以共存而不显杂乱。" },
+    { "title": "提炼孔洞", "note": "最后只保留一个陶瓷弧与三个材质锚点，让动作沉静下来。" }
+  ],
+  "related": ["tactile-materials-v8", "nocturne-exhibition-v8", "print-room"],
+  "media": [
+    { "src": "/images/visual-os-v8/13-coral-pigment-press.webp", "alt": "奶油色小型压印机把深莓颜料压在长条珊瑚手工纸上", "note": "CORAL PIGMENT PRESS", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v8/14-berry-ink-ribbons.webp", "alt": "深莓与珊瑚墨带在半透明纸平面间形成连续曲线", "note": "BERRY INK RIBBONS", "width": 1122, "height": 1402 },
+    { "src": "/images/visual-os-v8/15-printmakers-color-table.webp", "alt": "珊瑚、柔黄、苔藓和深莓纸块与玻璃滚轴组成的俯拍色彩桌", "note": "PRINTMAKER COLOR TABLE", "width": 1254, "height": 1254 },
+    { "src": "/images/visual-os-v8/16-coral-ceramic-negative-space.webp", "alt": "珊瑚陶瓷弧围绕奶油纸块和苔藓玻璃珠形成负空间", "note": "CERAMIC NEGATIVE SPACE", "width": 1692, "height": 929 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "印刷实验", "陶瓷造型"],
+  "keywords": ["珊瑚", "深莓", "印刷", "颜料", "纸带", "色彩系统", "陶瓷", "无人影像"]
+}

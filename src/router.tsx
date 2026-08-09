@@ -11,9 +11,12 @@ export const preloadRoute = createRoutePreloader(routeLoaders);
 const HomePage = lazy(routeLoaders["/"]);
 const ArchivePage = lazy(routeLoaders["/archive"]);
 const ArchiveProjectPage = lazy(routeLoaders["/archive/:id"]);
+const AssetVaultPage = lazy(routeLoaders["/vault"]);
 const StoriesPage = lazy(routeLoaders["/stories"]);
 const VisualStoryPage = lazy(routeLoaders["/stories/:id"]);
 const CreateHubPage = lazy(routeLoaders["/create"]);
+const SceneComposerPage = lazy(routeLoaders["/compose"]);
+const CreativeCuratorPage = lazy(routeLoaders["/curate"]);
 const StoryBuilderPage = lazy(routeLoaders["/create/story"]);
 const CreativeStudioPage = lazy(routeLoaders["/studio"]);
 const ProjectsPage = lazy(routeLoaders["/projects"]);
@@ -144,9 +147,12 @@ export const router = createBrowserRouter([
       { index: true, element: <PageSuspense fallback={<HomePremiereFallback />}><HomePage /></PageSuspense> },
       { path: "archive", element: <PageSuspense><ArchivePage /></PageSuspense> },
       { path: "archive/:id", element: <PageSuspense><ArchiveProjectPage /></PageSuspense> },
+      { path: "vault", element: <PageSuspense><AssetVaultPage /></PageSuspense> },
       { path: "stories", element: <PageSuspense><StoriesPage /></PageSuspense> },
       { path: "stories/:id", element: <PageSuspense><VisualStoryPage /></PageSuspense> },
       { path: "create", element: <PageSuspense><CreateHubPage /></PageSuspense> },
+      { path: "compose", element: <PageSuspense><SceneComposerPage /></PageSuspense> },
+      { path: "curate", element: <PageSuspense><CreativeCuratorPage /></PageSuspense> },
       { path: "create/story", element: <PageSuspense><StoryBuilderPage /></PageSuspense> },
       { path: "studio", element: <PageSuspense><CreativeStudioPage /></PageSuspense> },
       { path: "projects", element: <PageSuspense><ProjectsPage /></PageSuspense> },

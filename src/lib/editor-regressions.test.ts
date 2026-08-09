@@ -78,7 +78,7 @@ describe("editor regression contracts", () => {
     expect(mobileNav).toContain('to="/archive"');
     expect(mobileNav).toContain('to="/create"');
     expect(mobileNav).toContain('to="/projects"');
-    expect(mobileNav).toContain('to="/about"');
+    expect(mobileNav).toContain('to="/vault"');
     expect(mobileNav).not.toContain("openBooking");
     expect(mobileNav).toContain('aria-current={active ? "page" : undefined}');
     expect(dashboard).toContain('to="/editor"');

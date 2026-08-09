@@ -29,6 +29,6 @@ describe("SceneGraph director", () => {
     expect(graphs).toHaveLength(3);
     expect(graphs.every((graph) => graph.nodes.length === 6)).toBe(true);
     expect(new Set(graphs.flatMap((graph) => graph.nodes.map((node) => node.transition))).size).toBe(5);
-    expect(graphs.flatMap((graph) => graph.nodes).every((node) => node.assetId.startsWith("visual-os-v7-"))).toBe(true);
+    expect(graphs.flatMap((graph) => graph.nodes).every((node) => node.assetId.startsWith("visual-os-v8-"))).toBe(true);
   });
 });

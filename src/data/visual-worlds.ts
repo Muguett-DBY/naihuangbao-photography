@@ -15,26 +15,26 @@ export type VisualWorld = {
   frames: readonly VisualWorldFrame[];
 };
 
-const version = "20260809-2";
-const image = (fileName: string) => `/images/visual-os-v7/${fileName}?v=${version}`;
+const version = "20260809-8";
+const image = (fileName: string) => `/images/visual-os-v8/${fileName}?v=${version}`;
 
 const frames = {
-  pavilion: { id: "pavilion", imageUrl: image("01-cream-atrium.webp"), labelKey: "visualWorlds.frames.pavilion", altKey: "visualWorlds.alt.pavilion", assetId: "visual-os-v7-01-cream-atrium" },
-  paper: { id: "paper", imageUrl: image("02-paper-stair.webp"), labelKey: "visualWorlds.frames.paper", altKey: "visualWorlds.alt.paper", assetId: "visual-os-v7-02-paper-stair" },
-  corridor: { id: "corridor", imageUrl: image("03-paper-corridor.webp"), labelKey: "visualWorlds.frames.paper", altKey: "visualWorlds.alt.paper", assetId: "visual-os-v7-03-paper-corridor" },
-  gallery: { id: "gallery", imageUrl: image("04-circular-gallery.webp"), labelKey: "visualWorlds.frames.pavilion", altKey: "visualWorlds.alt.pavilion", assetId: "visual-os-v7-04-circular-gallery" },
-  conservatory: { id: "conservatory", imageUrl: image("05-rain-observatory.webp"), labelKey: "visualWorlds.frames.conservatory", altKey: "visualWorlds.alt.conservatory", assetId: "visual-os-v7-05-rain-observatory" },
-  greenhouse: { id: "greenhouse", imageUrl: image("06-wet-greenhouse.webp"), labelKey: "visualWorlds.frames.conservatory", altKey: "visualWorlds.alt.conservatory", assetId: "visual-os-v7-06-wet-greenhouse" },
-  prism: { id: "prism", imageUrl: image("07-prismatic-rain.webp"), labelKey: "visualWorlds.frames.paper", altKey: "visualWorlds.alt.paper", assetId: "visual-os-v7-07-prismatic-rain" },
-  water: { id: "water", imageUrl: image("08-water-table.webp"), labelKey: "visualWorlds.frames.paper", altKey: "visualWorlds.alt.paper", assetId: "visual-os-v7-08-water-table" },
-  specimens: { id: "specimens", imageUrl: image("09-moss-specimens.webp"), labelKey: "visualWorlds.frames.drawers", altKey: "visualWorlds.alt.drawers", assetId: "visual-os-v7-09-moss-specimens" },
-  cabinet: { id: "cabinet", imageUrl: image("10-pressed-cabinet.webp"), labelKey: "visualWorlds.frames.drawers", altKey: "visualWorlds.alt.drawers", assetId: "visual-os-v7-10-pressed-cabinet" },
-  botanical: { id: "botanical", imageUrl: image("11-glass-botanical-lab.webp"), labelKey: "visualWorlds.frames.conservatory", altKey: "visualWorlds.alt.conservatory", assetId: "visual-os-v7-11-glass-botanical-lab" },
-  drawers: { id: "drawers", imageUrl: image("12-seed-index.webp"), labelKey: "visualWorlds.frames.drawers", altKey: "visualWorlds.alt.drawers", assetId: "visual-os-v7-12-seed-index" },
-  coral: { id: "coral", imageUrl: image("13-coral-print-room.webp"), labelKey: "visualWorlds.frames.coral", altKey: "visualWorlds.alt.coral", assetId: "visual-os-v7-13-coral-print-room" },
-  printRoom: { id: "print-room", imageUrl: image("14-berry-glass-chamber.webp"), labelKey: "visualWorlds.frames.printRoom", altKey: "visualWorlds.alt.printRoom", assetId: "visual-os-v7-14-berry-glass-chamber" },
-  amber: { id: "amber", imageUrl: image("15-amber-trays.webp"), labelKey: "visualWorlds.frames.coral", altKey: "visualWorlds.alt.coral", assetId: "visual-os-v7-15-amber-trays" },
-  nightGarden: { id: "night-garden", imageUrl: image("16-night-light-lab.webp"), labelKey: "visualWorlds.frames.nightGarden", altKey: "visualWorlds.alt.nightGarden", assetId: "visual-os-v7-16-night-light-lab" },
+  pavilion: { id: "pavilion", imageUrl: image("01-cream-paper-pavilion.webp"), labelKey: "visualWorlds.frames.pavilion", altKey: "visualWorlds.alt.pavilion", assetId: "visual-os-v8-01-cream-paper-pavilion" },
+  paper: { id: "paper", imageUrl: image("02-cut-paper-staircase.webp"), labelKey: "visualWorlds.frames.paper", altKey: "visualWorlds.alt.paper", assetId: "visual-os-v8-02-cut-paper-staircase" },
+  corridor: { id: "corridor", imageUrl: image("03-custard-sun-window.webp"), labelKey: "visualWorlds.frames.paper", altKey: "visualWorlds.alt.paper", assetId: "visual-os-v8-03-custard-sun-window" },
+  gallery: { id: "gallery", imageUrl: image("04-coral-paper-orbit.webp"), labelKey: "visualWorlds.frames.pavilion", altKey: "visualWorlds.alt.pavilion", assetId: "visual-os-v8-04-coral-paper-orbit" },
+  conservatory: { id: "conservatory", imageUrl: image("05-water-glass-prism-table.webp"), labelKey: "visualWorlds.frames.conservatory", altKey: "visualWorlds.alt.conservatory", assetId: "visual-os-v8-05-water-glass-prism-table" },
+  greenhouse: { id: "greenhouse", imageUrl: image("06-rain-lens-grid.webp"), labelKey: "visualWorlds.frames.conservatory", altKey: "visualWorlds.alt.conservatory", assetId: "visual-os-v8-06-rain-lens-grid" },
+  prism: { id: "prism", imageUrl: image("07-frosted-glass-tide.webp"), labelKey: "visualWorlds.frames.paper", altKey: "visualWorlds.alt.paper", assetId: "visual-os-v8-07-frosted-glass-tide" },
+  water: { id: "water", imageUrl: image("08-amber-caustic-room.webp"), labelKey: "visualWorlds.frames.paper", altKey: "visualWorlds.alt.paper", assetId: "visual-os-v8-08-amber-caustic-room" },
+  specimens: { id: "specimens", imageUrl: image("09-moss-specimen-drawer.webp"), labelKey: "visualWorlds.frames.drawers", altKey: "visualWorlds.alt.drawers", assetId: "visual-os-v8-09-moss-specimen-drawer" },
+  cabinet: { id: "cabinet", imageUrl: image("10-fern-shadow-index.webp"), labelKey: "visualWorlds.frames.drawers", altKey: "visualWorlds.alt.drawers", assetId: "visual-os-v8-10-fern-shadow-index" },
+  botanical: { id: "botanical", imageUrl: image("11-seed-pod-museum.webp"), labelKey: "visualWorlds.frames.conservatory", altKey: "visualWorlds.alt.conservatory", assetId: "visual-os-v8-11-seed-pod-museum" },
+  drawers: { id: "drawers", imageUrl: image("12-botanical-glass-herbarium.webp"), labelKey: "visualWorlds.frames.drawers", altKey: "visualWorlds.alt.drawers", assetId: "visual-os-v8-12-botanical-glass-herbarium" },
+  coral: { id: "coral", imageUrl: image("13-coral-pigment-press.webp"), labelKey: "visualWorlds.frames.coral", altKey: "visualWorlds.alt.coral", assetId: "visual-os-v8-13-coral-pigment-press" },
+  printRoom: { id: "print-room", imageUrl: image("14-berry-ink-ribbons.webp"), labelKey: "visualWorlds.frames.printRoom", altKey: "visualWorlds.alt.printRoom", assetId: "visual-os-v8-14-berry-ink-ribbons" },
+  amber: { id: "amber", imageUrl: image("15-printmakers-color-table.webp"), labelKey: "visualWorlds.frames.coral", altKey: "visualWorlds.alt.coral", assetId: "visual-os-v8-15-printmakers-color-table" },
+  nightGarden: { id: "night-garden", imageUrl: image("17-night-projection-arch.webp"), labelKey: "visualWorlds.frames.nightGarden", altKey: "visualWorlds.alt.nightGarden", assetId: "visual-os-v8-17-night-projection-arch" },
 } as const satisfies Record<string, VisualWorldFrame>;
 
 export const visualWorlds: readonly VisualWorld[] = [

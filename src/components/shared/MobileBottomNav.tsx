@@ -1,4 +1,4 @@
-import { FolderOpen, Home, Images, Info, WandSparkles } from "lucide-react";
+import { Boxes, FolderOpen, Home, Images, WandSparkles } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -61,10 +61,10 @@ export function MobileBottomNav() {
         icon={<FolderOpen size={21} aria-hidden="true" />}
       />
       <MobileNavLink
-        to="/about"
-        label={t("nav.about")}
-        active={pathname === "/about"}
-        icon={<Info size={21} aria-hidden="true" />}
+        to="/vault"
+        label={t("nav.vault")}
+        active={pathname === "/vault"}
+        icon={<Boxes size={21} aria-hidden="true" />}
       />
     </nav>
   );

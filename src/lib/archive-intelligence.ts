@@ -69,9 +69,9 @@ export function searchVisualAssets(query: string, assets: readonly VisualAsset[]
   const tokens = tokenizeArchiveQuery(query);
   if (!tokens.length) {
     return assets
-      .filter((asset) => asset.src.includes("visual-os-v7"))
+      .filter((asset) => asset.src.includes("visual-os-v8"))
       .slice(0, limit)
-      .map((asset) => ({ asset, score: 1, reason: "V7 NEW MATERIAL" }));
+      .map((asset) => ({ asset, score: 1, reason: "V8 NEW MATERIAL" }));
   }
   const queryVector = vectorizeArchiveQuery(query);
   return assets

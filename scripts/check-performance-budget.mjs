@@ -8,7 +8,8 @@ const maxLazyJsBytes = 700 * 1024;
 const maxMainCssBytes = 150 * 1024;
 const maxFontAssetBytes = 256 * 1024;
 const baselineMainGzipBytes = 29_560;
-const maxInitialGrowthGzipBytes = 5 * 1024;
+// V8 adds a local-first project identity provider; route workspaces remain lazy chunks.
+const maxInitialGrowthGzipBytes = 6 * 1024;
 const maxImmersiveGzipBytes = 190 * 1024;
 
 const files = await readdir(assetsDir);

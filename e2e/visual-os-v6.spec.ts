@@ -15,18 +15,18 @@ test("@critical V6 首页视觉世界切换后沿当前画面进入档案", asyn
   await expect(premiere).toHaveAttribute("data-visual-world", "dawn");
   await page.getByRole("group", { name: "视觉世界" }).getByRole("button", { name: /珊瑚夜光/ }).click();
   await expect(premiere).toHaveAttribute("data-visual-world", "afterglow");
-  await expect(premiere).toHaveAttribute("data-active-asset", "visual-os-v7-13-coral-print-room");
+  await expect(premiere).toHaveAttribute("data-active-asset", "visual-os-v8-13-coral-pigment-press");
 
   const archiveLink = page.getByRole("link", { name: /沿这张画面进入档案/ });
-  await expect(archiveLink).toHaveAttribute("href", "/archive?similar=visual-os-v7-13-coral-print-room");
+  await expect(archiveLink).toHaveAttribute("href", "/archive?similar=visual-os-v8-13-coral-pigment-press");
   await archiveLink.focus();
   await archiveLink.press("Enter");
-  await expect(page).toHaveURL(/\/archive\?similar=visual-os-v7-13-coral-print-room/);
-  await expect(page.locator(".archive-discovery__reference h3")).toHaveText("Coral Night Laboratory");
+  await expect(page).toHaveURL(/\/archive\?similar=visual-os-v8-13-coral-pigment-press/);
+  await expect(page.locator(".archive-discovery__reference h3")).toHaveText("Coral Print Room");
 });
 
 test("@critical V6 档案相似度模式、本地展览和深链保持一致", async ({ page }) => {
-  await page.goto("/archive?similar=visual-os-v7-13-coral-print-room");
+  await page.goto("/archive?similar=visual-os-v8-13-coral-pigment-press");
 
   const discovery = page.locator(".archive-discovery");
   await expect(discovery.locator(".archive-discovery__neighbors article")).toHaveCount(6);
@@ -35,12 +35,12 @@ test("@critical V6 档案相似度模式、本地展览和深链保持一致", a
 
   await discovery.locator(".archive-discovery__reference").getByRole("button", { name: "加入展览" }).click();
   await expect(page.locator(".archive-exhibition h3")).toHaveText("我的临时展览 · 1");
-  await expect.poll(() => page.evaluate(() => localStorage.getItem("nhb-archive-exhibition-v1"))).toContain("visual-os-v7-13-coral-print-room");
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("nhb-archive-exhibition-v1"))).toContain("visual-os-v8-13-coral-pigment-press");
 
   const neighbor = discovery.locator(".archive-discovery__neighbor-image").first();
   await neighbor.click();
-  await expect(page).not.toHaveURL(/similar=visual-os-v7-13-coral-print-room$/);
-  await expect(discovery.locator(".archive-discovery__reference")).not.toHaveAttribute("data-reference-asset", "visual-os-v7-13-coral-print-room");
+  await expect(page).not.toHaveURL(/similar=visual-os-v8-13-coral-pigment-press$/);
+  await expect(discovery.locator(".archive-discovery__reference")).not.toHaveAttribute("data-reference-asset", "visual-os-v8-13-coral-pigment-press");
 });
 
 test("@critical V6 Studio 配方、图层、OPFS 状态与分支快照可用", async ({ page }) => {
@@ -98,13 +98,13 @@ test("@critical V6 路由契约、内容清单与静态详情页可直接访问"
   expect(routesResponse.ok()).toBe(true);
   const routes = await routesResponse.json();
   expect(routes.schemaVersion).toBe(1);
-  expect(routes.routes).toHaveLength(30);
+  expect(routes.routes).toHaveLength(33);
 
   const assetsResponse = await request.get("/visual-asset-manifest.json");
   expect(assetsResponse.ok()).toBe(true);
   const assets = await assetsResponse.json();
   expect(assets.schemaVersion).toBe(2);
-  expect(assets.assets).toHaveLength(70);
+  expect(assets.assets).toHaveLength(94);
 
   const projectResponse = await request.get("/archive/coral-afterglow-room/");
   expect(projectResponse.ok()).toBe(true);

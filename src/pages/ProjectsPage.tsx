@@ -1,10 +1,14 @@
 import "../styles/published-project-v7.css";
 import "../styles/workspace-v7.css";
+import "../styles/workspace-v8.css";
 import { CloudUpload, Copy, Download, ExternalLink, FileUp, FolderOpen, Images, Layers3, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useWorkspaceProjects } from "../hooks/useWorkspaceProjects";
 import { createWorkspaceProjectPackage, parseWorkspaceProjectPackage } from "../lib/workspace-project-package";
 import { ImageWithFallback } from "../components/ImageWithFallback";
+import { ProjectCommandCenter } from "../components/projects/ProjectCommandCenter";
+import { ProjectSyncPanel } from "../components/projects/ProjectSyncPanel";
+import { ExhibitionControls } from "../components/projects/ExhibitionControls";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import {
   fetchPublishedProject,
@@ -98,11 +102,11 @@ export function ProjectsPage() {
     <div className="workspace-page">
       <header className="workspace-page__hero">
         <div>
-          <span>NHB / PROJECT MEMORY / V7</span>
-          <h1>Visual projects,<br />kept in one place.</h1>
+          <span>NHB / PROJECT OPERATING SYSTEM / V8</span>
+          <h1>Your visual work,<br />ready to resume.</h1>
         </div>
         <div className="workspace-page__hero-copy">
-          <p>Archive selections, compositions, and visual stories now share one local-first project identity.</p>
+          <p>References, original files, directed scenes, compositions, stories, and published editions now share one durable project identity.</p>
           <div>
             <button type="button" onClick={() => workspace.createProject(`Visual study ${workspace.projects.length + 1}`)}><Plus size={17} aria-hidden="true" />New project</button>
             <button type="button" onClick={() => fileInputRef.current?.click()}><FileUp size={17} aria-hidden="true" />Import .nhbpack</button>
@@ -117,10 +121,12 @@ export function ProjectsPage() {
           <button type="button" key={entry.id} className={entry.id === project?.id ? "is-active" : undefined} onClick={() => workspace.setActiveProjectId(entry.id)}>
             <span>{String(index + 1).padStart(2, "0")}</span>
             <strong>{entry.name}</strong>
-            <small>{entry.assets.length} FRAMES / {entry.compositionIds.length + entry.storyIds.length} OUTPUTS</small>
+            <small>{entry.assets.length} FRAMES / {entry.creativeDocumentIds.length + entry.compositionIds.length + entry.storyIds.length} OUTPUTS</small>
           </button>
         ))}
       </nav>
+
+      {project ? <ProjectCommandCenter project={project} events={workspace.events} /> : null}
 
       {project ? (
         <main className="workspace-project" style={{ "--workspace-accent": project.accent } as CSSProperties}>
@@ -156,6 +162,7 @@ export function ProjectsPage() {
               <div><span>02 / PUBLISH</span><h2 id="workspace-publish-title">Immutable project editions</h2></div>
               <p>Only public archive URLs are included. Browser-only uploads stay on this device.</p>
             </header>
+            <ExhibitionControls value={project.exhibition} onChange={(exhibition) => workspace.updateActiveProject({ exhibition })} />
             <div className="workspace-project__publish-actions">
               <button type="button" onClick={() => void publishProject()} disabled={publishing || !project.assets.length}><CloudUpload size={17} aria-hidden="true" />{publishing ? "PUBLISHING" : publication ? "PUBLISH NEW VERSION" : "PUBLISH PROJECT"}</button>
               {publication ? <button type="button" onClick={() => void copyPublicationLink()}><Copy size={17} aria-hidden="true" />COPY LINK</button> : null}
@@ -174,6 +181,8 @@ export function ProjectsPage() {
               </div>
             ) : <p className="workspace-project__publish-empty">No published edition yet.</p>}
           </section>
+
+          <ProjectSyncPanel project={project} />
 
           <footer className="workspace-project__footer">
             <div><span>NEXT SURFACE</span><PrefetchLink to="/create">Compose from this project</PrefetchLink><PrefetchLink to="/create/story">Build a visual story</PrefetchLink></div>

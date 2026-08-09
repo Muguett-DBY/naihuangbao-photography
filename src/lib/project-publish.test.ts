@@ -6,7 +6,7 @@ import { validatePublishedProjectDraft } from "./project-publish-contract";
 function project(): WorkspaceProject {
   return {
     id: "workspace-test",
-    version: 1,
+    version: 2,
     projectType: "workspace",
     name: "  Rain Glass Study  ",
     description: "A personal practice project.",
@@ -15,11 +15,16 @@ function project(): WorkspaceProject {
       { assetId: "public", src: "/images/visual-os-v7/05-rain-observatory.webp", alt: "Rain observatory", title: "Rain observatory", source: "archive", addedAt: 1 },
       { assetId: "local", src: "blob:local-only", alt: "Local", title: "Local", source: "upload", addedAt: 2 },
     ],
+    vaultAssetIds: [],
+    creativeDocumentIds: [],
     compositionIds: ["composition-1"],
     storyIds: ["story-1"],
     activeSurface: "publish",
+    status: "active",
+    exhibition: { theme: "paper", density: "editorial", motion: "calm", showIndex: true },
     createdAt: 1,
     updatedAt: 2,
+    lastOpenedAt: 2,
   };
 }
 

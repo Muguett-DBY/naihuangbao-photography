@@ -32,11 +32,11 @@ if (expectedCommit && !String(release.commit).startsWith(expectedCommit)) {
 if (release.routeSchemaVersion !== routes.schemaVersion) throw new Error("Release route schema mismatch");
 if (release.stats?.archiveProjects !== archive.projects.length) throw new Error("Release archive count mismatch");
 if (release.stats?.stories !== stories.stories.length) throw new Error("Release story count mismatch");
-if (assets.schemaVersion !== 2 || assets.stats?.assets < 70) throw new Error(`Visual asset manifest is incomplete: ${assets.stats?.assets}`);
+if (assets.schemaVersion !== 2 || assets.stats?.assets < 94) throw new Error(`Visual asset manifest is incomplete: ${assets.stats?.assets}`);
 
 const archiveRoute = `/archive/${archive.projects[0].id}`;
 const storyRoute = `/stories/${stories.stories[0].id}`;
-const criticalPaths = ["/", "/archive", archiveRoute, "/stories", storyRoute, "/create", "/create/story", "/studio", "/editor", "/practice"];
+const criticalPaths = ["/", "/archive", archiveRoute, "/stories", storyRoute, "/create", "/vault", "/compose", "/curate", "/projects", "/create/story", "/studio", "/editor", "/practice"];
 for (const path of criticalPaths) {
   const html = await (await request(path)).text();
   if (!html.includes('id="root"')) throw new Error(`${path} is missing the app root`);
@@ -45,8 +45,8 @@ for (const path of criticalPaths) {
   }
 }
 
-const leadAsset = assets.assets.find((asset) => asset.src.includes("visual-os-v6"));
-if (!leadAsset) throw new Error("Visual OS V6 asset missing from manifest");
+const leadAsset = assets.assets.find((asset) => asset.src.includes("visual-os-v8"));
+if (!leadAsset) throw new Error("Visual OS V8 asset missing from manifest");
 await request(leadAsset.responsive.width640Avif, { accept: "image/avif" });
 
 console.log(`Release accepted at ${origin}: ${criticalPaths.length} routes, ${routes.routes.length} route contracts, ${archive.projects.length} archive projects, ${stories.stories.length} stories, ${assets.stats.assets} assets, commit ${String(release.commit).slice(0, 12)}.`);

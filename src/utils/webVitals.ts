@@ -1,13 +1,13 @@
 /**
  * Web Vitals real-user-monitoring (RUM) collector.
  *
- * Captures LCP, INP, CLS, FCP, TTFB via PerformanceObserver, batches them,
+ * Captures LCP, INP, CLS, FCP, TTFB, and longest main-thread task,
  * and ships to /api/analytics/vitals using `navigator.sendBeacon` (or fetch fallback).
  *
  * Production-only. No-op in dev to avoid noisy logs.
  */
 
-type MetricName = "LCP" | "INP" | "CLS" | "FCP" | "TTFB";
+type MetricName = "LCP" | "INP" | "CLS" | "FCP" | "TTFB" | "LONG_TASK";
 type Rating = "good" | "needs-improvement" | "poor";
 
 type MetricReport = {
@@ -40,6 +40,7 @@ export function initWebVitals() {
   observeCLS();
   observeFCP();
   observeTTFB();
+  observeLongTask();
 
   flushTimer = setInterval(flush, FLUSH_INTERVAL_MS);
 
@@ -128,6 +129,20 @@ function observeTTFB() {
   }
 }
 
+function observeLongTask() {
+  if (!("PerformanceObserver" in window)) return;
+  try {
+    let longest = 0;
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) longest = Math.max(longest, entry.duration);
+    });
+    observer.observe({ type: "longtask", buffered: true });
+    recordOnHidden("LONG_TASK", () => longest);
+  } catch {
+    /* Long-task timing not supported */
+  }
+}
+
 function recordOnHidden(metric: MetricName, getValue: () => number) {
   const handler = () => {
     if (document.visibilityState === "hidden") {
@@ -174,6 +189,11 @@ function rate(metric: MetricName, value: number): Rating {
   if (metric === "TTFB") {
     if (value <= 800) return "good";
     if (value <= 1800) return "needs-improvement";
+    return "poor";
+  }
+  if (metric === "LONG_TASK") {
+    if (value <= 50) return "good";
+    if (value <= 200) return "needs-improvement";
     return "poor";
   }
   return "good";
