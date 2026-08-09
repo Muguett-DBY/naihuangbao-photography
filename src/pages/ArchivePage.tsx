@@ -1,5 +1,6 @@
 import "../styles/platform-v3.css";
 import "../styles/archive-v3.css";
+import "../styles/archive-intelligence-v7.css";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
 import { ImageWithFallback } from "../components/ImageWithFallback";
@@ -9,6 +10,7 @@ import { PageTransition } from "../components/shared/PageTransition";
 import { useSEO } from "../hooks/useSEO";
 import { getVisualAsset } from "../data/visual-assets";
 import { visualAssetTransitionName } from "../lib/view-transition";
+import { ArchiveIntelligenceLab } from "../components/ArchiveIntelligenceLab";
 
 export function ArchivePage() {
   const { t } = useTranslation();
@@ -46,6 +48,7 @@ export function ArchivePage() {
           <a href="#archive-index" className="platform-hero__jump">{t("platform.archive.enter")} <span aria-hidden="true">↓</span></a>
         </div>
       </section>
+      <ArchiveIntelligenceLab />
       <ArchiveConstellation />
       <div id="archive-index"><LivingArchiveExplorer /></div>
     </PageTransition>

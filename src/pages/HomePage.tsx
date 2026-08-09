@@ -28,6 +28,7 @@ import { SoftMagnet } from "../components/shared/SoftMagnet";
 import { VisualLightTable } from "../components/VisualLightTable";
 import { HomeVisualSystem } from "../components/HomeVisualSystem";
 import { HomeCreativePulse } from "../components/HomeCreativePulse";
+import { galleryItems } from "../data/gallery";
 
 const FilmStripStory = lazy(() =>
   import("../components/FilmStripStory").then((module) => ({ default: module.FilmStripStory })),
@@ -43,7 +44,10 @@ export function HomePage() {
   const { photos } = usePublicPhotos();
 
   const coverPhotos = useMemo(
-    () => photos.filter((photo) => photo.visibility === "public").slice(0, 3),
+    () => {
+      const publicPhotos = photos.filter((photo) => photo.visibility === "public");
+      return (publicPhotos.length ? publicPhotos : galleryItems.filter((photo) => photo.clientAuthorized && photo.visibility === "public")).slice(0, 3);
+    },
     [photos],
   );
   const immersiveImages = useMemo(() => {

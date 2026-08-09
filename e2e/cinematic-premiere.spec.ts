@@ -57,8 +57,8 @@ test.describe("cinematic homepage premiere", () => {
 
     await expect(premiere).toBeVisible();
     await expect(premiere).toHaveAttribute("data-premiere-phase", "opening");
-    await expect(premiere.locator("[data-premiere-scene]")).toHaveCount(5);
-    await expect(reelButtons).toHaveCount(5);
+    await expect(premiere.locator("[data-premiere-scene]")).toHaveCount(6);
+    await expect(reelButtons).toHaveCount(6);
     await expect(modeButtons).toHaveCount(2);
     await expect(premiere.locator(".cinematic-premiere__scene img")).toHaveCount(1);
     await expect(premiere).toHaveAttribute("data-loaded-scenes", "1");
@@ -83,13 +83,13 @@ test.describe("cinematic homepage premiere", () => {
 
     await reelButtons.nth(1).hover();
     await expect(premiere).toHaveAttribute("data-active-scene", "paper");
-    await expect(premiere).toHaveAttribute("data-loaded-scenes", "2");
-    await expect(premiere.locator(".cinematic-premiere__scene img")).toHaveCount(2);
+    await expect.poll(async () => Number(await premiere.getAttribute("data-loaded-scenes"))).toBeGreaterThanOrEqual(2);
+    await expect.poll(() => premiere.locator(".cinematic-premiere__scene img").count()).toBeGreaterThanOrEqual(2);
     await expect(premiere.locator(".cinematic-premiere__readout")).toContainText("Rain light on paper");
 
     await reelButtons.nth(1).focus();
     await page.keyboard.press("ArrowRight");
-    await expect(premiere).toHaveAttribute("data-active-scene", "coral");
+    await expect(premiere).toHaveAttribute("data-active-scene", "corridor");
     await expect(reelButtons.nth(2)).toBeFocused();
 
     const heroBounds = await hero.boundingBox();

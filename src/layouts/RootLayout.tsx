@@ -20,11 +20,14 @@ import { resolveRoutePreset } from "../experience/scene-presets";
 import { OPEN_COMMAND_PALETTE_EVENT } from "../lib/command-palette";
 import { RouteExperienceTelemetry } from "../components/shared/RouteExperienceTelemetry";
 import { RouteIndexingPolicy } from "../components/shared/RouteIndexingPolicy";
+import { WorkspaceProjectProvider } from "../hooks/useWorkspaceProjects";
 
 // Optional cursor and texture effects stay in a separate chunk so the page
 // can paint and become interactive without coupling them to route code.
 const GlobalEffects = lazy(() => import("../components/GlobalEffects"));
 const CommandPalette = lazy(() => import("../components/CommandPalette").then((module) => ({ default: module.CommandPalette })));
+const ProjectDock = lazy(() => import("../components/ProjectDock").then((module) => ({ default: module.ProjectDock })));
+const AdaptiveQualityGovernor = lazy(() => import("../experience/AdaptiveQualityGovernor").then((module) => ({ default: module.AdaptiveQualityGovernor })));
 
 function DeferredCommandPalette() {
   const [requested, setRequested] = useState(false);
@@ -100,6 +103,7 @@ export function RootLayout() {
       <RouteHashScroller />
       <RouteIndexingPolicy />
       <RouteExperienceTelemetry pathname={location.pathname} />
+      <Suspense fallback={null}><AdaptiveQualityGovernor /></Suspense>
       <nav className="skip-links" aria-label={t("common.skipLinksLabel", "Skip links")}>
         <a
           href="#main-content"
@@ -155,21 +159,24 @@ export function RootLayout() {
         <ExperienceProvider>
                 <ExperienceStateBridge pathname={location.pathname} />
                 {routePreset && <ImmersiveExperienceGate />}
-                <ToastProvider>
-                  <Header />
-                  <DeferredCommandPalette />
-                  <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
-                    <ErrorBoundary>
-                      <Suspense fallback={<RouteLoadingState />}>
-                        <Outlet />
-                      </Suspense>
-                    </ErrorBoundary>
-                  </main>
-                  <Footer />
-                  {!isCreativeWorkspace && <MobileBottomNav />}
-                  <ScrollToTop />
-                  <PwaInstallBanner />
-                </ToastProvider>
+                <WorkspaceProjectProvider>
+                  <ToastProvider>
+                    <Header />
+                    <DeferredCommandPalette />
+                    <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
+                      <ErrorBoundary>
+                        <Suspense fallback={<RouteLoadingState />}>
+                          <Outlet />
+                        </Suspense>
+                      </ErrorBoundary>
+                    </main>
+                    <Footer />
+                    <Suspense fallback={null}><ProjectDock /></Suspense>
+                    {!isCreativeWorkspace && <MobileBottomNav />}
+                    <ScrollToTop />
+                    <PwaInstallBanner />
+                  </ToastProvider>
+                </WorkspaceProjectProvider>
         </ExperienceProvider>
       </SiteContentProvider>
     </div>

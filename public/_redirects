@@ -11,6 +11,9 @@
 /create/story/ / 200
 /studio / 200
 /studio/ / 200
+/projects / 200
+/projects/ / 200
+/share/:slug / 200
 /about / 200
 /about/ / 200
 /editor / 200

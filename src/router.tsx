@@ -16,6 +16,8 @@ const VisualStoryPage = lazy(routeLoaders["/stories/:id"]);
 const CreateHubPage = lazy(routeLoaders["/create"]);
 const StoryBuilderPage = lazy(routeLoaders["/create/story"]);
 const CreativeStudioPage = lazy(routeLoaders["/studio"]);
+const ProjectsPage = lazy(routeLoaders["/projects"]);
+const PublishedProjectPage = lazy(routeLoaders["/share/:slug"]);
 const LabPage = lazy(routeLoaders["/lab"]);
 const PracticePage = lazy(routeLoaders["/practice"]);
 const AboutPage = lazy(routeLoaders["/about"]);
@@ -147,6 +149,8 @@ export const router = createBrowserRouter([
       { path: "create", element: <PageSuspense><CreateHubPage /></PageSuspense> },
       { path: "create/story", element: <PageSuspense><StoryBuilderPage /></PageSuspense> },
       { path: "studio", element: <PageSuspense><CreativeStudioPage /></PageSuspense> },
+      { path: "projects", element: <PageSuspense><ProjectsPage /></PageSuspense> },
+      { path: "share/:slug", element: <PageSuspense><PublishedProjectPage /></PageSuspense> },
       { path: "about", element: <PageSuspense><AboutPage /></PageSuspense> },
       { path: "editor", element: <PageSuspense><PhotoEditorPage /></PageSuspense> },
       {

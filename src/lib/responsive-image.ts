@@ -10,6 +10,7 @@ const responsiveImageDirectories = [
   "/images/optical-archive/",
   "/images/visual-os-v5/",
   "/images/visual-os-v6/",
+  "/images/visual-os-v7/",
 ] as const;
 
 const conceptPremiereSourceWidths: Readonly<Record<string, number>> = Object.freeze({
@@ -73,6 +74,7 @@ export function getResponsiveImageSourceWidth(src: string): number {
       ? 1122
       : 1672;
   }
+  if (path.startsWith("/images/visual-os-v7/")) return fileName.includes("-detail.") ? 1024 : 1536;
   return 1200;
 }
 

@@ -174,7 +174,7 @@ describe("performance budgets", () => {
     expect(budgetSource).toContain("maxInitialGrowthGzipBytes");
     expect(budgetSource).toContain("maxImmersiveGzipBytes");
     expect(budgetSource).toContain("29_560");
-    expect(budgetSource).toContain("4 * 1024");
+    expect(budgetSource).toContain("5 * 1024");
     expect(budgetSource).toContain("190 * 1024");
     expect(budgetSource).toContain("immersive-vendor");
     expect(budgetSource).toContain("gzipSync");

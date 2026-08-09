@@ -1,0 +1,34 @@
+{
+  "id": "coral-night-laboratory",
+  "kind": "concept",
+  "title": "Coral Night Laboratory",
+  "subtitle": "珊瑚安全灯下的纸、玻璃、水与深莓空间",
+  "chapter": "20",
+  "year": 2026,
+  "summary": "四个夜间无人实验空间，为温柔视觉系统加入更深、更戏剧化的暗部。",
+  "statement": "夜间世界不依赖霓虹和夸张辉光。纸张、暗房水盘、莓色玻璃和苔藓以真实材质承接珊瑚安全灯，让沉浸式页面拥有稳定的深色视觉语言。",
+  "place": "虚构珊瑚暗房",
+  "season": "冬夜",
+  "moods": ["夜间", "亲密", "先锋", "安静"],
+  "palette": ["深莓", "尘粉珊瑚", "暖奶油", "苔藓绿", "琥珀"],
+  "techniques": ["暗房安全灯", "玻璃折射", "湿纸反射", "深色空间分层"],
+  "process": [
+    { "title": "压低环境亮度", "note": "先保留完整暗部，再用纸张和玻璃接住局部暖光。" },
+    { "title": "避免霓虹化", "note": "所有珊瑚和莓色都附着在真实材质上，不使用漂浮光球或无来源辉光。" },
+    { "title": "保留绿色呼吸", "note": "在深色空间中加入苔藓，让夜间世界仍与晨光和雨景保持连接。" }
+  ],
+  "related": ["botanical-specimen-index", "rain-glass-observatory-v7", "coral-afterglow-room"],
+  "media": [
+    { "src": "/images/visual-os-v7/13-coral-print-room.webp", "alt": "珊瑚与深莓纸张悬挂在无人暗房水盘上方", "note": "CORAL PRINT ROOM / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/13-coral-print-room-detail.webp", "alt": "湿纸、暗房水盘和珊瑚安全灯反射的方形细节", "note": "CORAL PRINT ROOM / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/14-berry-glass-chamber.webp", "alt": "深莓玻璃房、悬浮奶油纸圆和苔藓岛组成的无人夜间空间", "note": "BERRY GLASS CHAMBER / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/14-berry-glass-chamber-detail.webp", "alt": "深莓玻璃、奶油纸圆和苔藓反射的方形细节", "note": "BERRY GLASS CHAMBER / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/15-amber-trays.webp", "alt": "暗色石台上排列着琥珀与珊瑚玻璃水盘和纸张碎片", "note": "AMBER TRAYS / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/15-amber-trays-detail.webp", "alt": "琥珀水盘、湿纸、苔藓纤维和镜片的方形细节", "note": "AMBER TRAYS / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/16-night-light-lab.webp", "alt": "深莓石室中悬浮着奶油纸带，珊瑚玻璃与苔藓槽投下焦散", "note": "NIGHT LIGHT LAB / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/16-night-light-lab-detail.webp", "alt": "奶油纸带、珊瑚玻璃、苔藓和光学焦散的方形细节", "note": "NIGHT LIGHT LAB / DETAIL", "width": 1024, "height": 1024 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "夜间装置", "暗房材料研究"],
+  "keywords": ["珊瑚", "深莓", "暗房", "纸张", "玻璃", "水盘", "苔藓", "无人影像"]
+}

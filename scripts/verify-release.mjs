@@ -32,7 +32,7 @@ if (expectedCommit && !String(release.commit).startsWith(expectedCommit)) {
 if (release.routeSchemaVersion !== routes.schemaVersion) throw new Error("Release route schema mismatch");
 if (release.stats?.archiveProjects !== archive.projects.length) throw new Error("Release archive count mismatch");
 if (release.stats?.stories !== stories.stories.length) throw new Error("Release story count mismatch");
-if (assets.stats?.assets < 38) throw new Error(`Visual asset manifest is incomplete: ${assets.stats?.assets}`);
+if (assets.schemaVersion !== 2 || assets.stats?.assets < 70) throw new Error(`Visual asset manifest is incomplete: ${assets.stats?.assets}`);
 
 const archiveRoute = `/archive/${archive.projects[0].id}`;
 const storyRoute = `/stories/${stories.stories[0].id}`;

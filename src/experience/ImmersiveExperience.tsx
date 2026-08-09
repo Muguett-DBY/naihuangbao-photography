@@ -5,6 +5,7 @@ import { isImmersiveCanvasReady } from "./experience-controller";
 import { useExperienceRuntimeBridge, useExperienceStore } from "./ExperienceProvider";
 import { ImmersiveRuntime } from "./immersive-runtime";
 import { createThreeSceneDriver } from "./three-scene-driver";
+import { RUNTIME_QUALITY_EVENT } from "../lib/adaptive-quality";
 
 const placeholderColor = new Color();
 
@@ -55,6 +56,7 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
         cancel: (frame) => window.cancelAnimationFrame(frame),
         now: () => performance.now(),
       },
+      onTierChange: (nextTier) => window.dispatchEvent(new CustomEvent(RUNTIME_QUALITY_EVENT, { detail: { tier: nextTier } })),
     });
     const ownsContext = runtime.tier !== "static";
     if (ownsContext) activeContextCount += 1;
@@ -129,6 +131,7 @@ export function ImmersiveExperience({ tier }: ImmersiveExperienceProps) {
       if (ownsContext) activeContextCount = Math.max(0, activeContextCount - 1);
       if (runtimeRef.current === runtime) runtimeRef.current = null;
       if (window.__nhbExperience === diagnostics) delete window.__nhbExperience;
+      window.dispatchEvent(new CustomEvent(RUNTIME_QUALITY_EVENT, { detail: { tier: "static" } }));
       delete document.documentElement.dataset.immersiveReady;
     };
   }, [runtimeBridge, store, tier]);

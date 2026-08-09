@@ -1,4 +1,10 @@
-import type { CompositionImage, CompositionTextAlign } from "../types/composition";
+import {
+  DEFAULT_COMPOSITION_ADJUSTMENTS,
+  DEFAULT_COMPOSITION_CROP,
+  type CompositionArtboardPreset,
+  type CompositionImage,
+  type CompositionTextAlign,
+} from "../types/composition";
 import type { CompositionMode } from "./composition-layout";
 import { runLocalStudioRequest } from "./local-studio-db";
 import { deleteLocalProjectFile, getLocalProjectStorageStatus, readLocalProjectFile, writeLocalProjectFile } from "./local-project-files";
@@ -8,13 +14,13 @@ const MAX_VERSIONS_PER_PROJECT = 8;
 const COMPOSITION_MIRROR_INTERVAL_MS = 5_000;
 const lastMirrorWrite = new Map<string, number>();
 
-export type StoredCompositionImage = Pick<CompositionImage, "id" | "name" | "src" | "transform" | "visible" | "opacity" | "blendMode"> & {
+export type StoredCompositionImage = Pick<CompositionImage, "id" | "name" | "src" | "transform" | "visible" | "opacity" | "blendMode" | "locked" | "groupId" | "crop" | "adjustments" | "mask"> & {
   blob?: Blob;
 };
 
 export type CompositionProjectSnapshot = {
   id: string;
-  version: 3;
+  version: 4;
   projectType: "composition";
   name: string;
   mode: CompositionMode;
@@ -23,6 +29,7 @@ export type CompositionProjectSnapshot = {
   paperColor: string;
   textAlign: CompositionTextAlign;
   titleScale: number;
+  artboardPreset: CompositionArtboardPreset;
   images: StoredCompositionImage[];
   createdAt: number;
   savedAt: number;
@@ -38,9 +45,10 @@ export type CompositionVersionSnapshot = {
   branch: string;
 };
 
-type LegacyV1CompositionProject = Omit<CompositionProjectSnapshot, "version" | "textAlign" | "titleScale" | "createdAt"> & { version: 1 };
-type LegacyV2CompositionProject = Omit<CompositionProjectSnapshot, "version"> & { version: 2 };
-type LegacyCompositionProject = LegacyV1CompositionProject | LegacyV2CompositionProject;
+type LegacyV1CompositionProject = Omit<CompositionProjectSnapshot, "version" | "textAlign" | "titleScale" | "artboardPreset" | "createdAt"> & { version: 1 };
+type LegacyV2CompositionProject = Omit<CompositionProjectSnapshot, "version" | "artboardPreset"> & { version: 2 };
+type LegacyV3CompositionProject = Omit<CompositionProjectSnapshot, "version" | "artboardPreset"> & { version: 3 };
+type LegacyCompositionProject = LegacyV1CompositionProject | LegacyV2CompositionProject | LegacyV3CompositionProject;
 
 type PortableImage = Omit<StoredCompositionImage, "blob"> & {
   blob?: { type: string; data: string };
@@ -74,15 +82,20 @@ function migrateProject(project: CompositionProjectSnapshot | LegacyCompositionP
   return {
     ...project,
     id: project.id || COMPOSITION_AUTOSAVE_ID,
-    version: 3,
+    version: 4,
     textAlign,
     titleScale,
     createdAt,
+    artboardPreset: project.version === 4 ? project.artboardPreset : "auto",
     images: project.images.map((image) => ({
       ...image,
       visible: image.visible ?? true,
       opacity: image.opacity ?? 1,
       blendMode: image.blendMode ?? "source-over",
+      locked: image.locked ?? false,
+      crop: { ...DEFAULT_COMPOSITION_CROP, ...image.crop },
+      adjustments: { ...DEFAULT_COMPOSITION_ADJUSTMENTS, ...image.adjustments },
+      mask: image.mask ?? "none",
     })),
   };
 }
@@ -141,6 +154,11 @@ export async function createCompositionProjectFile(project: CompositionProjectSn
     visible: image.visible,
     opacity: image.opacity,
     blendMode: image.blendMode,
+    locked: image.locked,
+    groupId: image.groupId,
+    crop: image.crop,
+    adjustments: image.adjustments,
+    mask: image.mask,
     blob: image.blob ? {
       type: image.blob.type || "image/jpeg",
       data: bytesToBase64(new Uint8Array(await image.blob.arrayBuffer())),
@@ -153,7 +171,7 @@ export async function createCompositionProjectFile(project: CompositionProjectSn
 export async function parseCompositionProjectFile(file: Blob): Promise<CompositionProjectSnapshot> {
   const portable = JSON.parse(await file.text()) as PortableCompositionProject | LegacyCompositionProject;
   if (
-    ![1, 2, 3].includes(portable.version)
+    ![1, 2, 3, 4].includes(portable.version)
     || portable.projectType !== "composition"
     || !portable.id
     || !Array.isArray(portable.images)
@@ -171,14 +189,19 @@ export async function parseCompositionProjectFile(file: Blob): Promise<Compositi
       visible: image.visible ?? true,
       opacity: image.opacity ?? 1,
       blendMode: image.blendMode ?? "source-over",
+      locked: image.locked ?? false,
+      groupId: image.groupId,
+      crop: { ...DEFAULT_COMPOSITION_CROP, ...image.crop },
+      adjustments: { ...DEFAULT_COMPOSITION_ADJUSTMENTS, ...image.adjustments },
+      mask: image.mask ?? "none",
       blob: image.blob && "data" in image.blob ? base64ToBlob(image.blob.data, image.blob.type) : undefined,
     })),
   };
 }
 
 export function createCompositionSnapshot(
-  input: Omit<CompositionProjectSnapshot, "id" | "version" | "projectType" | "textAlign" | "titleScale" | "createdAt" | "savedAt">
-    & Partial<Pick<CompositionProjectSnapshot, "id" | "textAlign" | "titleScale" | "createdAt">>,
+  input: Omit<CompositionProjectSnapshot, "id" | "version" | "projectType" | "textAlign" | "titleScale" | "artboardPreset" | "createdAt" | "savedAt">
+    & Partial<Pick<CompositionProjectSnapshot, "id" | "textAlign" | "titleScale" | "artboardPreset" | "createdAt">>,
 ) {
   const now = Date.now();
   return {
@@ -186,8 +209,9 @@ export function createCompositionSnapshot(
     id: input.id ?? COMPOSITION_AUTOSAVE_ID,
     textAlign: input.textAlign ?? "left",
     titleScale: input.titleScale ?? 1,
+    artboardPreset: input.artboardPreset ?? "auto",
     createdAt: input.createdAt ?? now,
-    version: 3,
+    version: 4,
     projectType: "composition",
     savedAt: now,
   } satisfies CompositionProjectSnapshot;

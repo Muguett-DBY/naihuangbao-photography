@@ -1,0 +1,34 @@
+{
+  "id": "botanical-specimen-index",
+  "kind": "concept",
+  "title": "Botanical Specimen Index",
+  "subtitle": "苔藓、纸张、玻璃与种子的无字目录",
+  "chapter": "19",
+  "year": 2026,
+  "summary": "从玻璃罩、抽屉和植物实验室到种子微距，建立一套无人自然材料索引。",
+  "statement": "这组影像把植物从装饰退回到材料本身。苔藓的湿度、叶脉的结构、玻璃的折射和纸张的纤维成为智能档案可以解释的视觉特征。",
+  "place": "虚构植物标本研究所",
+  "season": "初秋",
+  "moods": ["自然史", "精密", "柔和", "好奇"],
+  "palette": ["纸张奶油", "苔藓绿", "鼠尾草", "琥珀", "尘粉珊瑚"],
+  "techniques": ["静物索引", "玻璃层叠", "微距材料", "模块构图"],
+  "process": [
+    { "title": "去除说明文字", "note": "用物体的位置、比例和重复关系建立无需标签也可以阅读的目录。" },
+    { "title": "分离材料信号", "note": "让苔藓、叶片、玻璃和纸在不同画面中拥有清晰纹理。" },
+    { "title": "连接空间与微距", "note": "四张空间和四张细节共同支持从整体氛围到局部材质的检索。" }
+  ],
+  "related": ["cream-architecture-index", "rain-glass-observatory-v7", "coral-night-laboratory"],
+  "media": [
+    { "src": "/images/visual-os-v7/09-moss-specimens.webp", "alt": "奶油色标本室中排列着多组玻璃罩苔藓景观", "note": "MOSS SPECIMENS / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/09-moss-specimens-detail.webp", "alt": "玻璃罩、苔藓孢子与黄铜工具的方形细节", "note": "MOSS SPECIMENS / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/10-pressed-cabinet.webp", "alt": "打开的奶油色标本抽屉中保存着叶片、苔藓和矿石", "note": "PRESSED CABINET / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/10-pressed-cabinet-detail.webp", "alt": "压叶纸、苔藓和珊瑚矿石抽屉的方形细节", "note": "PRESSED CABINET / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/11-glass-botanical-lab.webp", "alt": "雾面玻璃植物实验室中悬浮着蕨叶与种荚", "note": "GLASS BOTANICAL LAB / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/11-glass-botanical-lab-detail.webp", "alt": "玻璃冷凝水、蕨叶与黄铜夹具的方形细节", "note": "GLASS BOTANICAL LAB / DETAIL", "width": 1024, "height": 1024 },
+    { "src": "/images/visual-os-v7/12-seed-index.webp", "alt": "奶油纸面上排列的种荚、叶片、苔藓、镜片与水滴", "note": "SEED INDEX / WIDE", "width": 1536, "height": 1024 },
+    { "src": "/images/visual-os-v7/12-seed-index-detail.webp", "alt": "种荚、苔藓纤维、玻璃镜片和珊瑚叶片的方形细节", "note": "SEED INDEX / DETAIL", "width": 1024, "height": 1024 }
+  ],
+  "publishedAt": "2026-08-09",
+  "mediums": ["生成式概念摄影", "植物静物", "材料档案"],
+  "keywords": ["植物标本", "苔藓", "叶片", "种子", "玻璃", "纸张", "自然史", "无人影像"]
+}

@@ -77,7 +77,7 @@ describe("editor regression contracts", () => {
     expect(rootLayout).toContain("!isCreativeWorkspace && <MobileBottomNav");
     expect(mobileNav).toContain('to="/archive"');
     expect(mobileNav).toContain('to="/create"');
-    expect(mobileNav).toContain('to="/stories"');
+    expect(mobileNav).toContain('to="/projects"');
     expect(mobileNav).toContain('to="/about"');
     expect(mobileNav).not.toContain("openBooking");
     expect(mobileNav).toContain('aria-current={active ? "page" : undefined}');

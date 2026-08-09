@@ -3,6 +3,194 @@
   "generatedFrom": "content/archive/projects/*/project.json",
   "projects": [
     {
+      "id": "botanical-specimen-index",
+      "kind": "concept",
+      "title": "Botanical Specimen Index",
+      "subtitle": "苔藓、纸张、玻璃与种子的无字目录",
+      "chapter": "19",
+      "year": 2026,
+      "summary": "从玻璃罩、抽屉和植物实验室到种子微距，建立一套无人自然材料索引。",
+      "statement": "这组影像把植物从装饰退回到材料本身。苔藓的湿度、叶脉的结构、玻璃的折射和纸张的纤维成为智能档案可以解释的视觉特征。",
+      "place": "虚构植物标本研究所",
+      "season": "初秋",
+      "moods": [
+        "自然史",
+        "精密",
+        "柔和",
+        "好奇"
+      ],
+      "palette": [
+        "纸张奶油",
+        "苔藓绿",
+        "鼠尾草",
+        "琥珀",
+        "尘粉珊瑚"
+      ],
+      "techniques": [
+        "静物索引",
+        "玻璃层叠",
+        "微距材料",
+        "模块构图"
+      ],
+      "process": [
+        {
+          "title": "去除说明文字",
+          "note": "用物体的位置、比例和重复关系建立无需标签也可以阅读的目录。"
+        },
+        {
+          "title": "分离材料信号",
+          "note": "让苔藓、叶片、玻璃和纸在不同画面中拥有清晰纹理。"
+        },
+        {
+          "title": "连接空间与微距",
+          "note": "四张空间和四张细节共同支持从整体氛围到局部材质的检索。"
+        }
+      ],
+      "related": [
+        "cream-architecture-index",
+        "rain-glass-observatory-v7",
+        "coral-night-laboratory"
+      ],
+      "media": [
+        {
+          "src": "/images/visual-os-v7/09-moss-specimens.webp",
+          "alt": "奶油色标本室中排列着多组玻璃罩苔藓景观",
+          "note": "MOSS SPECIMENS / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#938671",
+          "blurDataUrl": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAAAwBACdASoYABAAPxl2slEspySisAgBkCMJYwAD5hoN8ndO2WSeaEYW2DgA/o+bsQJn1s+1oUYKgRqURPULuO5d8GyMAQsbME7xDDPJQ7c6afRVdyxERXDlAnv8kwm5reQA9/5314vPGJswvhYOZpc40bLR/XUyUdw4qW5FAOhypS9RSmLrDzXojQXRbOAA",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/09-moss-specimens.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/09-moss-specimens.webp",
+            "width960": "/images/visual-os-v7/960/09-moss-specimens.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/09-moss-specimens-detail.webp",
+          "alt": "玻璃罩、苔藓孢子与黄铜工具的方形细节",
+          "note": "MOSS SPECIMENS / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#a0947f",
+          "blurDataUrl": "data:image/webp;base64,UklGRsYAAABXRUJQVlA4ILoAAABwBQCdASoYABgAPxmCuFYsqCUjqAgBkCMJZQDDNgDIZEHDGqLXOiMUf3SGJPnRkCcbMCsAAP61J7mIVw8bKZjo5Jd4gcpPZ5/yBLXJ5YCIeBNAutWgTdSr0K8tj5rs4HoJybMmmZ1lsK76zFX9R6pncNZWjgKngIeM/Zvdfl4XQ5jW5IGkI3VwKwDS/6BtJhgmt8IrQK3myHg081aqpFjdXt95tiIasXZ3lcgaEOAoy482CtMKxgaYAAA=",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/09-moss-specimens-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/09-moss-specimens-detail.webp",
+            "width960": "/images/visual-os-v7/960/09-moss-specimens-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/10-pressed-cabinet.webp",
+          "alt": "打开的奶油色标本抽屉中保存着叶片、苔藓和矿石",
+          "note": "PRESSED CABINET / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#80684b",
+          "blurDataUrl": "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAAAwBACdASoYABAAPxl0slEspqSisAgBkCMJQBOgMZZZK56V96uM6sh8f/gA/mDR2Z/xlFz9J//HCw6+l0DLHW+1VdOTq8aF2A4wDFdTuUC3ureZxnQ6gULOLEYaM7J2wW2HVFKzaHPFx2iZ1mcS9ZqQjBHmxeIuUqoCLlrRhq4FSYFcEuK5I4gA",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/10-pressed-cabinet.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/10-pressed-cabinet.webp",
+            "width960": "/images/visual-os-v7/960/10-pressed-cabinet.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/10-pressed-cabinet-detail.webp",
+          "alt": "压叶纸、苔藓和珊瑚矿石抽屉的方形细节",
+          "note": "PRESSED CABINET / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#8d7355",
+          "blurDataUrl": "data:image/webp;base64,UklGRuoAAABXRUJQVlA4IN4AAAAwBQCdASoYABgAPxmCuFYsqCUjqAgBkCMJYwDCgY0MXl38PstwLqCAZCU4Zgf+7KF0YAD+VfsVWgJo9Hgt+ovO3A39kSNP1ULqh+Y7VjoGoMBJWI/HE1Ak6kMq5e4oSIPU0sRho1CbqtWjRlWfmS5GKklKXy6rF38GfFmiIWcCOUza+3y6d5BZBmHI3w/1oilaSGqa9KVJwbl+zIux1AqER/a47yGsu1UiBpUna5Q9ULGwtmCyMjZzZR8RFb1LPWcIVQjcbbpuHHmt9WJkHChWiA5xMCnaWzpRNMi0AAA=",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/10-pressed-cabinet-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/10-pressed-cabinet-detail.webp",
+            "width960": "/images/visual-os-v7/960/10-pressed-cabinet-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/11-glass-botanical-lab.webp",
+          "alt": "雾面玻璃植物实验室中悬浮着蕨叶与种荚",
+          "note": "GLASS BOTANICAL LAB / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#b0af96",
+          "blurDataUrl": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQAwCdASoYABAAPxl2slEspySisAgBkCMJQBhQA9jIXL2FrFew6yAA/rPvTHyfKLC1voOWaJXCBeodVnIWLz+nw0hpBdvsRnn3S+cho208SBRJAWXQj/yUPMFShi1rXuGD7GiAXwAAAA==",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/11-glass-botanical-lab.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/11-glass-botanical-lab.webp",
+            "width960": "/images/visual-os-v7/960/11-glass-botanical-lab.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/11-glass-botanical-lab-detail.webp",
+          "alt": "玻璃冷凝水、蕨叶与黄铜夹具的方形细节",
+          "note": "GLASS BOTANICAL LAB / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#c1c0ac",
+          "blurDataUrl": "data:image/webp;base64,UklGRqAAAABXRUJQVlA4IJQAAABwBACdASoYABgAPxmCuFYsqCUjqAgBkCMJZQDDcAwhZRyJnqxtx1pUFeScIAD+l+rZ+jlQH0ggBRJUKLZbML6cifIb/rZGITxvhjlbXrzdbGb6CEYmwlT8JNigR/V3rP04SQg95ttXVk7oyxc2P0D6fiQEMZKZgvIItUVm+cbCDWwjWkXgGsz8mwIuESiUaVA5TAAA",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/11-glass-botanical-lab-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/11-glass-botanical-lab-detail.webp",
+            "width960": "/images/visual-os-v7/960/11-glass-botanical-lab-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/12-seed-index.webp",
+          "alt": "奶油纸面上排列的种荚、叶片、苔藓、镜片与水滴",
+          "note": "SEED INDEX / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#a28c71",
+          "blurDataUrl": "data:image/webp;base64,UklGRrwAAABXRUJQVlA4ILAAAAAwBACdASoYABAAPxl0slEspqSisAgBkCMJQBOmUAS4QVhI7u1+X+NNrQAA4BS4CtsSMuewHDz2E83+QivE1dCQKs9ITlt0iH9UlSDd32LSn6q08MEgRCAlq0jB3NIrLYw1pxQSIrPKTDC/xQzuisjK55j0Q7/0Mq7H2kZSA+k3dRfGxg+DFVLIC455MsYIz6lwhwozIZ4ZQqKWS8K0HVinlbU0rH59XigiwglWZ7egAA==",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/12-seed-index.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/12-seed-index.webp",
+            "width960": "/images/visual-os-v7/960/12-seed-index.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/12-seed-index-detail.webp",
+          "alt": "种荚、苔藓纤维、玻璃镜片和珊瑚叶片的方形细节",
+          "note": "SEED INDEX / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#a58d72",
+          "blurDataUrl": "data:image/webp;base64,UklGRvgAAABXRUJQVlA4IOwAAAAQBgCdASoYABgAPxmCt1YsqCUjqAgBkCMJQBUe5YMMEziDWdXbx+xzLqS4kUgwvjHI9D/xJk7UUUAA+V6/+cocoRra5CgPMgwgVl6AZCKLEFUcffoK1QRAn+BI2DtSEWAWPi9H0rj5u+DOXw6bBt01XD+5DgmkRaXz5wlkJ+IUSCTVlGsFui+K3714PifYea0NwqU9z92zVUYU10Ab9PXMayv22S3B9u2ViWCZ1KRbTcPMyHibjSQxmDgCp2f3iEpHWmDTeQ2N5NNTXjL6IONT1S62mEt29aN4k9Z/58f5nAHAtkQLKvW9RXAAAA==",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/12-seed-index-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/12-seed-index-detail.webp",
+            "width960": "/images/visual-os-v7/960/12-seed-index-detail.webp"
+          }
+        }
+      ],
+      "publishedAt": "2026-08-09",
+      "mediums": [
+        "生成式概念摄影",
+        "植物静物",
+        "材料档案"
+      ],
+      "keywords": [
+        "植物标本",
+        "苔藓",
+        "叶片",
+        "种子",
+        "玻璃",
+        "纸张",
+        "自然史",
+        "无人影像"
+      ]
+    },
+    {
       "id": "coral-afterglow-room",
       "kind": "concept",
       "title": "Coral Afterglow Room",
@@ -104,6 +292,382 @@
         "雨夜",
         "丝带",
         "无人影像"
+      ]
+    },
+    {
+      "id": "coral-night-laboratory",
+      "kind": "concept",
+      "title": "Coral Night Laboratory",
+      "subtitle": "珊瑚安全灯下的纸、玻璃、水与深莓空间",
+      "chapter": "20",
+      "year": 2026,
+      "summary": "四个夜间无人实验空间，为温柔视觉系统加入更深、更戏剧化的暗部。",
+      "statement": "夜间世界不依赖霓虹和夸张辉光。纸张、暗房水盘、莓色玻璃和苔藓以真实材质承接珊瑚安全灯，让沉浸式页面拥有稳定的深色视觉语言。",
+      "place": "虚构珊瑚暗房",
+      "season": "冬夜",
+      "moods": [
+        "夜间",
+        "亲密",
+        "先锋",
+        "安静"
+      ],
+      "palette": [
+        "深莓",
+        "尘粉珊瑚",
+        "暖奶油",
+        "苔藓绿",
+        "琥珀"
+      ],
+      "techniques": [
+        "暗房安全灯",
+        "玻璃折射",
+        "湿纸反射",
+        "深色空间分层"
+      ],
+      "process": [
+        {
+          "title": "压低环境亮度",
+          "note": "先保留完整暗部，再用纸张和玻璃接住局部暖光。"
+        },
+        {
+          "title": "避免霓虹化",
+          "note": "所有珊瑚和莓色都附着在真实材质上，不使用漂浮光球或无来源辉光。"
+        },
+        {
+          "title": "保留绿色呼吸",
+          "note": "在深色空间中加入苔藓，让夜间世界仍与晨光和雨景保持连接。"
+        }
+      ],
+      "related": [
+        "botanical-specimen-index",
+        "rain-glass-observatory-v7",
+        "coral-afterglow-room"
+      ],
+      "media": [
+        {
+          "src": "/images/visual-os-v7/13-coral-print-room.webp",
+          "alt": "珊瑚与深莓纸张悬挂在无人暗房水盘上方",
+          "note": "CORAL PRINT ROOM / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#4d2f1f",
+          "blurDataUrl": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAABQBACdASoYABAAPxl2slEspySisAgBkCMJbACdACFr/kBrGtqMhwAPIYygAP4j5SzW1yqh9o/r7pgZ249qHuJB3wIsBGrkjLYIk88Gi2CfBfNYJrZ+W3OSlhKZ+DZ2Qgdxbu0AJpMeds2lkA1ymZ9f5sfhtaxcAAA=",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/13-coral-print-room.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/13-coral-print-room.webp",
+            "width960": "/images/visual-os-v7/960/13-coral-print-room.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/13-coral-print-room-detail.webp",
+          "alt": "湿纸、暗房水盘和珊瑚安全灯反射的方形细节",
+          "note": "CORAL PRINT ROOM / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#503221",
+          "blurDataUrl": "data:image/webp;base64,UklGRrYAAABXRUJQVlA4IKoAAADQBACdASoYABgAPxmEuFYsqCUjqAgBkCMJZgC7ABI/WC1sq9vVJvNovU92wPkYAAD+2sZt6K43drERecdtM7Rtxa3MW2AK8/wbylg1IMmFxHvgA4MddgVzYq2RoPQR/0G6208f3t4UVOUMCwtfU7FzY5MpqFRpXeUx7NdHc1XejywUSpx6lobm50xac0dc3H7yC5md6OiWOXMvTGgEnBnmP/27+Gj+cAAAAA==",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/13-coral-print-room-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/13-coral-print-room-detail.webp",
+            "width960": "/images/visual-os-v7/960/13-coral-print-room-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/14-berry-glass-chamber.webp",
+          "alt": "深莓玻璃房、悬浮奶油纸圆和苔藓岛组成的无人夜间空间",
+          "note": "BERRY GLASS CHAMBER / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#552e27",
+          "blurDataUrl": "data:image/webp;base64,UklGRp4AAABXRUJQVlA4IJIAAAAwBACdASoYABAAPxl0slCspqSisAgBkCMJYgCdACF5IAmwUlj1fK1ZBoAA/s5q+DOKBnA9gs53AHSiIBxMw5pNR2hK2zoIKqyQHqYqS/1pHdTZA7J4yRL1SvEp8yWfuaaYhWDJgGpQIyZVFmEIOF1D74gfniP1jXRTghDEUyPpie6t/C4/AIYUyXtW6RehiHgAAA==",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/14-berry-glass-chamber.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/14-berry-glass-chamber.webp",
+            "width960": "/images/visual-os-v7/960/14-berry-glass-chamber.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/14-berry-glass-chamber-detail.webp",
+          "alt": "深莓玻璃、奶油纸圆和苔藓反射的方形细节",
+          "note": "BERRY GLASS CHAMBER / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#573329",
+          "blurDataUrl": "data:image/webp;base64,UklGRsgAAABXRUJQVlA4ILwAAABwBQCdASoYABgAPxmCuFasqCUjqAgBkCMJYgCdMoM8sNAA9YGmd1HTOJBsT971+lON1ogAAP7p8Q+1adtWCdbYfNKCbpdN3kdbaBhGFcpqsAh3MEVqrtvAYXMOs2KK3Ra9z/uWPFf+LDNHo86UlVDThpgSiqWB/joBXXdI0lEidYCjqyOWq8mSJ2kpmPXT7uaAfP0rFYOcZ005RAjkeoBzB5b3S03okqEWGT4XChI4p42BdeEqwy36AsUAAA==",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/14-berry-glass-chamber-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/14-berry-glass-chamber-detail.webp",
+            "width960": "/images/visual-os-v7/960/14-berry-glass-chamber-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/15-amber-trays.webp",
+          "alt": "暗色石台上排列着琥珀与珊瑚玻璃水盘和纸张碎片",
+          "note": "AMBER TRAYS / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#432918",
+          "blurDataUrl": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAACwAwCdASoYABAAPxl2slEspySisAgBkCMJQBWABCt+CLJmw6rcAAD+7pPMUvr2AG2ajIuVxL5hFTsLKd4rIf4iAvuML+FwQ+UxuOX9t9kuJ6olgBwqOUWrIE/VnV+pmXVbTVrLJ7ZNUaJdl8onSzTSZgNN6pI1WgAAAA==",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/15-amber-trays.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/15-amber-trays.webp",
+            "width960": "/images/visual-os-v7/960/15-amber-trays.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/15-amber-trays-detail.webp",
+          "alt": "琥珀水盘、湿纸、苔藓纤维和镜片的方形细节",
+          "note": "AMBER TRAYS / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#482e1c",
+          "blurDataUrl": "data:image/webp;base64,UklGRroAAABXRUJQVlA4IK4AAABQBQCdASoYABgAPxl8slMsp6QiqA1RkCMJQBZwAiE9lyzFZAHsVueqVd1qiRNV9TlxwLQA/u6DtEklWtEV4A8SdrrfX1g6Vh/ImvkBxumgDvE2g0iFbLGgIpDLxdXuYpjvtYdwoU2dwxQWYD5z8q8ildWVcnfcbcOAE48u8McUt1S5vqypwATBBQ+3io7EVAV0N6fUqek1ZK/yKtxO58VSXvpVDnObRKljz5Q/gAA=",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/15-amber-trays-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/15-amber-trays-detail.webp",
+            "width960": "/images/visual-os-v7/960/15-amber-trays-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/16-night-light-lab.webp",
+          "alt": "深莓石室中悬浮着奶油纸带，珊瑚玻璃与苔藓槽投下焦散",
+          "note": "NIGHT LIGHT LAB / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#372219",
+          "blurDataUrl": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAwBACdASoYABAAPxl0slEspqSisAgBkCMJYgCdMoACsXawI+nKhgV4gAAA/uvwGtyFTHJIb7LSisqxScs0Zqdt3mzraj0iuNnluiZDUDLZ2E6UoIgjadUa6iqyBVvRp3YZy9mAAAA=",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/16-night-light-lab.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/16-night-light-lab.webp",
+            "width960": "/images/visual-os-v7/960/16-night-light-lab.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/16-night-light-lab-detail.webp",
+          "alt": "奶油纸带、珊瑚玻璃、苔藓和光学焦散的方形细节",
+          "note": "NIGHT LIGHT LAB / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#40271e",
+          "blurDataUrl": "data:image/webp;base64,UklGRrAAAABXRUJQVlA4IKQAAABwBQCdASoYABgAPxl0tVOspiUisBgIAZAjCWIAuzMhgbaOGm9zyT2cbJbBWYG+H6x/4GwAAP7r/kObOgn2dhUXvHeg1gPJa6nJNiJBVr/ebbOb0Ys8JezsfJod+aQrjxm5RtM0tUbIFdZes4JZdia52gCTRIWBSBl+Bt0rIXG/iJIXHFQioS01Tfms9chZmkOArHM/JlDKcE5pe9W7kSM+kAAAAA==",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/16-night-light-lab-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/16-night-light-lab-detail.webp",
+            "width960": "/images/visual-os-v7/960/16-night-light-lab-detail.webp"
+          }
+        }
+      ],
+      "publishedAt": "2026-08-09",
+      "mediums": [
+        "生成式概念摄影",
+        "夜间装置",
+        "暗房材料研究"
+      ],
+      "keywords": [
+        "珊瑚",
+        "深莓",
+        "暗房",
+        "纸张",
+        "玻璃",
+        "水盘",
+        "苔藓",
+        "无人影像"
+      ]
+    },
+    {
+      "id": "cream-architecture-index",
+      "kind": "concept",
+      "title": "Cream Architecture Index",
+      "subtitle": "纸幕、石材与可以步入的晨光",
+      "chapter": "17",
+      "year": 2026,
+      "summary": "四座无人建筑练习，将奶油晨光变成可以收藏和重新编排的空间材料。",
+      "statement": "这组概念影像研究温柔并不等于缺少张力。纸幕、曲面石材、浅水和苔藓共同形成可被首页、Studio 与 Story 重复调用的空间语汇。",
+      "place": "虚构奶油建筑群",
+      "season": "初秋清晨",
+      "moods": [
+        "温柔",
+        "开阔",
+        "安静",
+        "先锋"
+      ],
+      "palette": [
+        "奶油",
+        "柔黄",
+        "苔藓绿",
+        "低饱和珊瑚",
+        "深莓阴影"
+      ],
+      "techniques": [
+        "建筑构图",
+        "纸幕透光",
+        "浅水反射",
+        "方形细节裁切"
+      ],
+      "process": [
+        {
+          "title": "建立空间骨架",
+          "note": "先以圆、折线和长廊形成四种可以被快速识别的空间节奏。"
+        },
+        {
+          "title": "控制温柔色温",
+          "note": "让柔黄只落在关键结构上，避免整幅画面落入单一奶油色。"
+        },
+        {
+          "title": "提取细节构图",
+          "note": "每张完整空间都生成一个方形材料切片，用于检索、排版与故事节点。"
+        }
+      ],
+      "related": [
+        "rain-glass-observatory-v7",
+        "botanical-specimen-index",
+        "cream-light-pavilion"
+      ],
+      "media": [
+        {
+          "src": "/images/visual-os-v7/01-cream-atrium.webp",
+          "alt": "曲面奶油色中庭、浅水和苔藓石凳组成的无人物概念建筑",
+          "note": "CREAM ATRIUM / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#967f57",
+          "blurDataUrl": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADwAwCdASoYABAAPxl0sVCspqSisAgBkCMJZACdMoACdC7sVbnlFuiAAM4HWzSrtR311WfCy1KgP08RYBYbwUJkFIU30IAhBeovShtC74l/3tUKMYgFyeEeenN8MwCoFtNtUCYmWwAAAA==",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/01-cream-atrium.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/01-cream-atrium.webp",
+            "width960": "/images/visual-os-v7/960/01-cream-atrium.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/01-cream-atrium-detail.webp",
+          "alt": "奶油中庭水面与苔藓石材的方形细节",
+          "note": "CREAM ATRIUM / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#9d8156",
+          "blurDataUrl": "data:image/webp;base64,UklGRqQAAABXRUJQVlA4IJgAAABQBQCdASoYABgAPxl0tlQspiUjMBgIAZAjCUATpzGQDkwGz5uTRBHhM+Z9UgeoTWm9Z8AA/UCKKoLhPVKPWgigthRyWNWyvLqDSaPYyk/HkELtQZV3p+KghOHtxMTrgLJu0lgidJYj2fpSVbhypBniZEcIXjjBq0DFaXyC1UpYT1ytOnMTxkCrPbYMIusWnNNUw+UISkAAAA==",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/01-cream-atrium-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/01-cream-atrium-detail.webp",
+            "width960": "/images/visual-os-v7/960/01-cream-atrium-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/02-paper-stair.webp",
+          "alt": "折纸形墙面、浅色石阶与苔藓带组成的无人楼梯空间",
+          "note": "PAPER STAIR / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#967851",
+          "blurDataUrl": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBACdASoYABAAPxl2slEspySisAgBkCMJaACdMoR3AChRSoQlVY8VgAD+EN86lyegFze0nAM7m4Dz6/HF83/MSE7PYUWe0iaFEeSJSuXbP58VVr4XrYjEV/2D6TZys2Rv1rG4UqHr52MhbAWJ6N3sh7X4plwXAAA=",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/02-paper-stair.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/02-paper-stair.webp",
+            "width960": "/images/visual-os-v7/960/02-paper-stair.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/02-paper-stair-detail.webp",
+          "alt": "折纸墙面、阶梯和苔藓纹理的方形细节",
+          "note": "PAPER STAIR / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#a1845b",
+          "blurDataUrl": "data:image/webp;base64,UklGRqIAAABXRUJQVlA4IJYAAADwBACdASoYABgAPxl8uVQsp6YjKAqpkCMJQBWAAaLvJ8Ny4p0/1EREyw01B7K77UAA/hHX+MFInC0KkvjyKFmXi1fU2dVU81fpTbir0ZYD8m1uQu/flPiUFGbVELGQJu4CY4v0Ho5kD9JJN+ToEDbMTMIT++uYiKH2OJrxaanGnEvyjfoFcqbue4KPkNY7EL+T1a4AAAA=",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/02-paper-stair-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/02-paper-stair-detail.webp",
+            "width960": "/images/visual-os-v7/960/02-paper-stair-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/03-paper-corridor.webp",
+          "alt": "半透明纸幕长廊与珊瑚色矿石组成的无人晨光空间",
+          "note": "PAPER CORRIDOR / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#ab9b7d",
+          "blurDataUrl": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADwAwCdASoYABAAPxl0sVCspqSisAgBkCMJYwCw7CKbYKtVTR8KpWvAAP3TOBUxoVxFt4sGoLBqHjG/cOZeLVc9wKUsxaSWJkb+D4RUBYPHgMQg6bHyUFBNRQ9fAAAA",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/03-paper-corridor.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/03-paper-corridor.webp",
+            "width960": "/images/visual-os-v7/960/03-paper-corridor.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/03-paper-corridor-detail.webp",
+          "alt": "透光纸幕、石柱和珊瑚矿石的方形细节",
+          "note": "PAPER CORRIDOR / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#b3a588",
+          "blurDataUrl": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAADQBACdASoYABgAPxlwtVCspiUisBgMAZAjCWUAuwAGhbgaZku6QBKucz7H2P49AAD82rxenS17rEY0Kr6416neIk8PvbmGKlb4mGLmFdfFjADKmEwR+5a60W/GhX1UU1kgFr8pzQ093RA4DWItOLKJIuPAExvZ8NdoNtum8a/AAA==",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/03-paper-corridor-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/03-paper-corridor-detail.webp",
+            "width960": "/images/visual-os-v7/960/03-paper-corridor-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/04-circular-gallery.webp",
+          "alt": "圆形石材展厅、纸质天幕和三块苔藓石组成的无人空间",
+          "note": "CIRCULAR GALLERY / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#806548",
+          "blurDataUrl": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwBACdASoYABAAPxl0slCspqSisAgBkCMJQBYdhA/jIlnIH23m+pN6qdAA/YIvKx4FlUJhgkWsqZMpc9RR44il+RniE28PcwtubvaZE3VWXmZBQJwM9WfgkfzWxn/mBfS3GopMSaUa0sAAAAA=",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/04-circular-gallery.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/04-circular-gallery.webp",
+            "width960": "/images/visual-os-v7/960/04-circular-gallery.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/04-circular-gallery-detail.webp",
+          "alt": "圆形天光、苔藓石和浅珊瑚水面的方形细节",
+          "note": "CIRCULAR GALLERY / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#8d7253",
+          "blurDataUrl": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAACwBACdASoYABgAPxl8t1SspyUjKAqpkCMJQBadAe/5IuK/cV2S1fM1p+mtnoAAAMqxp5oF9/ZpoFgfOzgO4IRI+Emor5gb1pitKiijqcpVb7B6GG9NMV49r6bYYAX+GFbDklVhQP6YEM6BHawrLfh7WNw58yanWhxe1zPh9GDpUh4vAAA=",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/04-circular-gallery-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/04-circular-gallery-detail.webp",
+            "width960": "/images/visual-os-v7/960/04-circular-gallery-detail.webp"
+          }
+        }
+      ],
+      "publishedAt": "2026-08-09",
+      "mediums": [
+        "生成式概念摄影",
+        "建筑光线研究",
+        "材料索引"
+      ],
+      "keywords": [
+        "奶油建筑",
+        "纸幕",
+        "晨光",
+        "石材",
+        "苔藓",
+        "浅水",
+        "无人影像",
+        "柔黄"
       ]
     },
     {
@@ -1176,6 +1740,194 @@
         "蓝调曝光",
         "雨窗前景",
         "夜色分层"
+      ]
+    },
+    {
+      "id": "rain-glass-observatory-v7",
+      "kind": "concept",
+      "title": "Rain Glass Observatory",
+      "subtitle": "把雨、玻璃和水纹变成一套观察仪器",
+      "chapter": "18",
+      "year": 2026,
+      "summary": "四个无人雨景空间，从观察室走到温室、棱镜墙与水纹实验台。",
+      "statement": "雨不是覆盖画面的滤镜，而是一套改变空间边界的光学系统。玻璃上的水迹、地面的反射和纸灯的暖光共同形成可被颜色、材质与亮度检索的天气档案。",
+      "place": "虚构雨光观测站",
+      "season": "盛夏雨季",
+      "moods": [
+        "潮湿",
+        "沉静",
+        "电影感",
+        "低温"
+      ],
+      "palette": [
+        "雾白",
+        "银灰",
+        "苔藓绿",
+        "柔黄",
+        "低饱和珊瑚"
+      ],
+      "techniques": [
+        "雨滴折射",
+        "玻璃焦散",
+        "水面反射",
+        "冷暖混光"
+      ],
+      "process": [
+        {
+          "title": "建立雨的层次",
+          "note": "把玻璃表面、空间内部和庭院外部拆成三种不同密度的雨。"
+        },
+        {
+          "title": "保留暖色锚点",
+          "note": "用纸灯、琥珀桌和珊瑚玻璃让冷雨世界仍保持品牌温度。"
+        },
+        {
+          "title": "生成光学切片",
+          "note": "细节构图聚焦水迹、棱镜和反射，供智能档案进行材质匹配。"
+        }
+      ],
+      "related": [
+        "cream-architecture-index",
+        "botanical-specimen-index",
+        "rain-light-laboratory"
+      ],
+      "media": [
+        {
+          "src": "/images/visual-os-v7/05-rain-observatory.webp",
+          "alt": "雨幕玻璃观测室、苔藓庭院与琥珀桌组成的无人空间",
+          "note": "RAIN OBSERVATORY / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#70695a",
+          "blurDataUrl": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAADQAwCdASoYABAAPxl2slEspySisAgBkCMJQBjeg6SBhxttJ6Rm+FgA/rCrUHkbjt3AK3DbGS4LKjyvNGORbxud69CTj/3JblAzi4i0OM0POhrD937J+YY67hBo4G60BK13PcNGXiHgk2ynTt3xbBHN8btAS6H8uedEC13HOcv2QPQJpuIAERaAJvWJAAAA",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/05-rain-observatory.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/05-rain-observatory.webp",
+            "width960": "/images/visual-os-v7/960/05-rain-observatory.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/05-rain-observatory-detail.webp",
+          "alt": "玻璃雨迹、苔藓和琥珀反射的方形细节",
+          "note": "RAIN OBSERVATORY / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#777870",
+          "blurDataUrl": "data:image/webp;base64,UklGRrQAAABXRUJQVlA4IKgAAACQBQCdASoYABgAPxlwtFCspiUisBgMAZAjCUAX6x/gMG/SPkdJJy/vs4iLa+Lj7nTjLdb4AAD+w5P3XZpsAZcki2oEi5e9B39B60puhf02RsAcVELpRkHpLm4TqDcWkxnhklOZXXQPP72D9C66LHCo8RYOnywIwJwDAc8zMShUuRN7PqiRtoQO2D1qR9uf8nGDFiDXwnCgdMqJT2VmMwcc8Y8A0lw4AAA=",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/05-rain-observatory-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/05-rain-observatory-detail.webp",
+            "width960": "/images/visual-os-v7/960/05-rain-observatory-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/06-wet-greenhouse.webp",
+          "alt": "雨后玻璃温室、纸叶灯和苔藓水渠组成的无人植物空间",
+          "note": "WET GREENHOUSE / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#5f5a4c",
+          "blurDataUrl": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAACwAwCdASoYABAAPxl0slEspqSisAgBkCMJYwC7AA5vllBfAXn4AADbkclhu4kN7m4Ot7U7bZtCdE2HCWjfmcubJEn1FNu8XQdHcHAQ/1Uj83zIMsvZ9wR01M5xW7RYhFYKJrIb4dkl+0QuFkOURlLOSuNJ+PAuUI49m4avFOeAUgBkwnc4/CBIjAAAAA==",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/06-wet-greenhouse.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/06-wet-greenhouse.webp",
+            "width960": "/images/visual-os-v7/960/06-wet-greenhouse.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/06-wet-greenhouse-detail.webp",
+          "alt": "纸叶灯、雨玻璃和水渠反射的方形细节",
+          "note": "WET GREENHOUSE / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#635c4e",
+          "blurDataUrl": "data:image/webp;base64,UklGRsAAAABXRUJQVlA4ILQAAACwBACdASoYABgAPxmAtFUsqCSjKAqpkCMJQBfJAZ0m90YwYRV1rfvVn6FU6NpoAN2vDSTbIBW/HWlHoZp+WLUDHO9zzFVhitXeefXwTU8BTeBdZyVt61dUkxr78ocv069QdrnumgJrMrCSSVU72mqyOvrQvSHLdfP0H5Vc2CWBFTKhbPXsWJp6AL1YKLofdxX3+trGJTLCt7RXPbn+h1DhG46qPOmIl/o/aWJ4jJcFOYgAAAA=",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/06-wet-greenhouse-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/06-wet-greenhouse-detail.webp",
+            "width960": "/images/visual-os-v7/960/06-wet-greenhouse-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/07-prismatic-rain.webp",
+          "alt": "雨水覆盖的棱镜玻璃墙把珊瑚与苔藓光投向湿石地面",
+          "note": "PRISMATIC RAIN / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#807862",
+          "blurDataUrl": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAABQBACdASoYABAAPxl0slCspqSisAgBkCMJYgC/OywBQgB2OWR5Y+54dvkAAM48o4xhoWSWDLrpI15LhV4c/5Japjjmtcyy3a7I0YV+pyBcSX/sRLfnwvDpQc3kdP+LM2DZbuOQmVfeF8CKkRKfFH/WE4zxn4yy4AkVl5kNPhvwpDFtWYdWwlYvPuAAAA==",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/07-prismatic-rain.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/07-prismatic-rain.webp",
+            "width960": "/images/visual-os-v7/960/07-prismatic-rain.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/07-prismatic-rain-detail.webp",
+          "alt": "棱镜玻璃、水滴和多色焦散的方形细节",
+          "note": "PRISMATIC RAIN / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#8c846f",
+          "blurDataUrl": "data:image/webp;base64,UklGRtwAAABXRUJQVlA4INAAAAAwBQCdASoYABgAPxmCuFasqCUjqAgBkCMJQBibAhxK84CvQBevNOyx09DigOYFEQzPuAD8Gn1PJufGZk8YmZspXV8BF90LDQW302fI3uEd0qjAhx2RvtiP7dnPsLBcuAtuJ/9QLiBbj5WwDPOu2InrJQtXo1ByPb3BDSiciCFMAqus8pITY5oveEDhe0TxDzs59ouDmVoaGxsnri9rfAkyVaJLlD9OGgLFgyfBBaJIDJeft4gXI2YDL+i2hui7SiYrYkq6e8seWLqlOTS5AAAA",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/07-prismatic-rain-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/07-prismatic-rain-detail.webp",
+            "width960": "/images/visual-os-v7/960/07-prismatic-rain-detail.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/08-water-table.webp",
+          "alt": "暗色石室中的雨滴水台、苔藓水渠与珊瑚玻璃块",
+          "note": "WATER TABLE / WIDE",
+          "width": 1536,
+          "height": 1024,
+          "dominantColor": "#63554b",
+          "blurDataUrl": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAADwAwCdASoYABAAPxl2sVCspySisAgBkCMJQBOgAlDB7BTGBIF9GOkAAPVad58L4wdU4dpmg3W1cTel7C0GSPn6FMuH9ykCoD6hJMFr1ItOroKsT/fu6Odvugo7eKXDgHpQMP7gsePmOHD+rQAAAA==",
+          "aspectRatio": 1.5,
+          "avif": "/images/visual-os-v7/08-water-table.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/08-water-table.webp",
+            "width960": "/images/visual-os-v7/960/08-water-table.webp"
+          }
+        },
+        {
+          "src": "/images/visual-os-v7/08-water-table-detail.webp",
+          "alt": "水面雨纹、珊瑚玻璃和苔藓边缘的方形细节",
+          "note": "WATER TABLE / DETAIL",
+          "width": 1024,
+          "height": 1024,
+          "dominantColor": "#6d584b",
+          "blurDataUrl": "data:image/webp;base64,UklGRqQAAABXRUJQVlA4IJgAAABwBQCdASoYABgAPxl+tFUsp6SjKAqpkCMJQBdkJ3Ax6kUQvhpEOrvi6pcfHEJQFLgWL/wAAPpzDzsvb0XnJjHeT3aCNNoupR7f+VPYCvIkFU3/78RL7vkybAzC8yniguyDLytWbxm/IUmqRgxbrE2j8T5d9RYy8B3UBsZPvXsh5uBYEkC/cvUq1+FJhxNmK2yEzqh61mAAAA==",
+          "aspectRatio": 1,
+          "avif": "/images/visual-os-v7/08-water-table-detail.avif",
+          "responsive": {
+            "width640": "/images/visual-os-v7/640/08-water-table-detail.webp",
+            "width960": "/images/visual-os-v7/960/08-water-table-detail.webp"
+          }
+        }
+      ],
+      "publishedAt": "2026-08-09",
+      "mediums": [
+        "生成式概念摄影",
+        "天气光学",
+        "玻璃材料研究"
+      ],
+      "keywords": [
+        "雨",
+        "玻璃",
+        "水纹",
+        "苔藓",
+        "温室",
+        "棱镜",
+        "无人影像",
+        "潮湿"
       ]
     },
     {

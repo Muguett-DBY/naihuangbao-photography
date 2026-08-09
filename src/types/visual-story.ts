@@ -1,4 +1,5 @@
 import type { ArchiveMedia } from "./living-archive";
+import type { SceneMotion } from "./scene-graph";
 
 export type StoryLayout = "full" | "columns" | "contact" | "quiet" | "diptych" | "compare" | "annotation" | "interlude" | "constellation";
 
@@ -9,6 +10,7 @@ export type VisualStoryChapter = {
   body: string;
   layout: StoryLayout;
   media: ArchiveMedia[];
+  scene?: SceneMotion;
 };
 
 export type VisualStory = {

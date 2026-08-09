@@ -5,6 +5,7 @@
     "archive": "Archive",
     "stories": "Stories",
     "create": "Create",
+    "projects": "Projects",
     "studio": "Studio",
     "lab": "Lab",
     "packages": "Packages",
@@ -48,6 +49,7 @@
       "archive": "Explore visual studies and real work",
       "stories": "Read field notes behind the images",
       "create": "Enter the local visual creation workspace",
+      "projects": "Manage local visual projects and creative threads",
       "studio": "Compose a filmstrip, contact sheet, or moodboard",
       "lab": "Open the project's practice systems",
       "about": "Learn how this personal project is made"

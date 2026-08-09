@@ -143,6 +143,22 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/map" />
   </url>
   <url>
+    <loc>https://shoot.custard.top/archive/botanical-specimen-index</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/botanical-specimen-index" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/botanical-specimen-index?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/botanical-specimen-index?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/botanical-specimen-index?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/botanical-specimen-index" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v7/09-moss-specimens.webp</image:loc>
+      <image:title>Botanical Specimen Index</image:title>
+      <image:caption>苔藓、纸张、玻璃与种子的无字目录</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://shoot.custard.top/archive/coral-afterglow-room</loc>
     <lastmod>2026-08-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -156,6 +172,38 @@
       <image:loc>https://shoot.custard.top/images/visual-os-v6/03-coral-chamber.webp</image:loc>
       <image:title>Coral Afterglow Room</image:title>
       <image:caption>从珊瑚折射走进深莓暗房</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/coral-night-laboratory</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/coral-night-laboratory" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/coral-night-laboratory?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/coral-night-laboratory?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/coral-night-laboratory?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/coral-night-laboratory" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v7/13-coral-print-room.webp</image:loc>
+      <image:title>Coral Night Laboratory</image:title>
+      <image:caption>珊瑚安全灯下的纸、玻璃、水与深莓空间</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/cream-architecture-index</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/cream-architecture-index" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/cream-architecture-index?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/cream-architecture-index?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/cream-architecture-index?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/cream-architecture-index" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v7/01-cream-atrium.webp</image:loc>
+      <image:title>Cream Architecture Index</image:title>
+      <image:caption>纸幕、石材与可以步入的晨光</image:caption>
     </image:image>
   </url>
   <url>
@@ -332,6 +380,22 @@
       <image:loc>https://shoot.custard.top/images/optical-archive/rain-moon-gate-night-v1.webp</image:loc>
       <image:title>Rain Atlas</image:title>
       <image:caption>蓝调时刻的南京雨信</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/archive/rain-glass-observatory-v7</loc>
+    <lastmod>2026-08-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://shoot.custard.top/archive/rain-glass-observatory-v7" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://shoot.custard.top/archive/rain-glass-observatory-v7?lang=en" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://shoot.custard.top/archive/rain-glass-observatory-v7?lang=ja" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://shoot.custard.top/archive/rain-glass-observatory-v7?lang=ko" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/archive/rain-glass-observatory-v7" />
+    <image:image>
+      <image:loc>https://shoot.custard.top/images/visual-os-v7/05-rain-observatory.webp</image:loc>
+      <image:title>Rain Glass Observatory</image:title>
+      <image:caption>把雨、玻璃和水纹变成一套观察仪器</image:caption>
     </image:image>
   </url>
   <url>

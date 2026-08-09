@@ -1,5 +1,6 @@
 import { access, readFile, readdir, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, join, relative } from "node:path";
+import sharp from "sharp";
 
 const root = process.cwd();
 const archiveManifestPath = join(root, "public", "archive-manifest.json");
@@ -31,16 +32,97 @@ function orientation(width, height) {
   return width > height ? "landscape" : "portrait";
 }
 
+function semanticTokens(values) {
+  const normalized = values.join(" ").normalize("NFKC").toLocaleLowerCase("zh-CN");
+  const words = normalized.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  const tokens = [...words];
+  for (const word of words) {
+    if (/^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]+$/u.test(word)) {
+      const characters = [...word];
+      tokens.push(...characters);
+      for (let index = 0; index < characters.length - 1; index += 1) tokens.push(`${characters[index]}${characters[index + 1]}`);
+    }
+  }
+  return unique(tokens);
+}
+
+function tokenHash(token) {
+  let hash = 2166136261;
+  for (let index = 0; index < token.length; index += 1) {
+    hash ^= token.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function semanticVector(values, dimensions = 18) {
+  const vector = Array.from({ length: dimensions }, () => 0);
+  for (const token of semanticTokens(values)) {
+    const hash = tokenHash(token);
+    vector[hash % dimensions] += (hash & 1) === 0 ? 1 : -1;
+  }
+  const magnitude = Math.sqrt(vector.reduce((sum, value) => sum + value * value, 0)) || 1;
+  return vector.map((value) => Number((value / magnitude).toFixed(5)));
+}
+
+async function analyzeImage(src, focalPoint, descriptors) {
+  const absolute = join(root, "public", src.replace(/^\//, ""));
+  const { data, info } = await sharp(absolute)
+    .resize(16, 16, { fit: "fill" })
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const luminances = [];
+  let saturation = 0;
+  for (let index = 0; index < data.length; index += info.channels) {
+    const red = data[index] / 255;
+    const green = data[index + 1] / 255;
+    const blue = data[index + 2] / 255;
+    luminances.push(red * 0.2126 + green * 0.7152 + blue * 0.0722);
+    saturation += Math.max(red, green, blue) - Math.min(red, green, blue);
+  }
+  const luminance = luminances.reduce((sum, value) => sum + value, 0) / luminances.length;
+  const contrast = Math.sqrt(luminances.reduce((sum, value) => sum + (value - luminance) ** 2, 0) / luminances.length);
+  const hashPixels = [];
+  const hashData = await sharp(absolute).resize(8, 8, { fit: "fill" }).grayscale().raw().toBuffer();
+  const hashAverage = [...hashData].reduce((sum, value) => sum + value, 0) / hashData.length;
+  for (let index = 0; index < hashData.length; index += 4) {
+    let nibble = 0;
+    for (let bit = 0; bit < 4; bit += 1) nibble |= (hashData[index + bit] >= hashAverage ? 1 : 0) << (3 - bit);
+    hashPixels.push(nibble.toString(16));
+  }
+  const composition = [
+    focalPoint.x < 0.4 ? "left-weighted" : focalPoint.x > 0.6 ? "right-weighted" : "centered",
+    focalPoint.y < 0.42 ? "high-focus" : focalPoint.y > 0.62 ? "low-focus" : "mid-focus",
+    luminance > 0.68 ? "bright" : luminance < 0.35 ? "dark" : "balanced-light",
+    contrast > 0.24 ? "high-contrast" : "soft-contrast",
+  ];
+  const searchText = unique([...descriptors, ...composition]).join(" ");
+  return {
+    luminance: Number(luminance.toFixed(4)),
+    contrast: Number(contrast.toFixed(4)),
+    saturation: Number((saturation / luminances.length).toFixed(4)),
+    perceptualHash: hashPixels.join(""),
+    composition,
+    semanticVector: semanticVector([...descriptors, ...composition]),
+    searchText,
+  };
+}
+
 async function resolveSourceAsset(src) {
   const collection = src.match(/^\/images\/([^/]+)\//)?.[1];
   if (!collection) return undefined;
-  const candidate = join(root, "source-assets", collection, "raw", `${basename(src, extname(src))}.png`);
-  try {
-    await access(candidate);
-    return relative(root, candidate).replaceAll("\\", "/");
-  } catch {
-    return undefined;
+  const baseName = basename(src, extname(src));
+  for (const sourceName of [baseName, baseName.replace(/-detail$/, "")]) {
+    const candidate = join(root, "source-assets", collection, "raw", `${sourceName}.png`);
+    try {
+      await access(candidate);
+      return relative(root, candidate).replaceAll("\\", "/");
+    } catch {
+      // Continue to the derived source fallback.
+    }
   }
+  return undefined;
 }
 
 const assetsBySource = new Map();
@@ -61,6 +143,10 @@ for (const project of archiveManifest.projects) {
       ...project.techniques,
       ...project.mediums,
       ...project.keywords,
+      project.title,
+      project.subtitle,
+      project.summary,
+      project.statement,
     ]);
     if (existing) {
       existing.projectIds.push(project.id);
@@ -68,6 +154,7 @@ for (const project of archiveManifest.projects) {
       existing.descriptors = unique([...existing.descriptors, ...descriptors]);
       continue;
     }
+    const focalPoint = media.focalPoint ?? { x: 0.5, y: 0.5 };
     assetsBySource.set(media.src, {
       id: stableAssetId(media.src),
       src: media.src,
@@ -86,9 +173,10 @@ for (const project of archiveManifest.projects) {
       orientation: orientation(media.width, media.height),
       dominantColor: media.dominantColor,
       colorVector: colorVector(media.dominantColor),
-      focalPoint: media.focalPoint ?? { x: 0.5, y: 0.5 },
+      focalPoint,
       palette: unique(project.palette),
       descriptors,
+      analysis: await analyzeImage(media.src, focalPoint, descriptors),
       projectIds: [project.id],
       storyLinks: [],
       provenance: {
@@ -134,7 +222,7 @@ for (const asset of assets) {
 }
 
 const manifest = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   generatedFrom: [
     "content/archive/projects/*/project.json",
     "content/stories/*/story.json",

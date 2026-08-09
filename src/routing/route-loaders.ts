@@ -17,6 +17,8 @@ export const routeLoaders = {
   "/create": () => import("../pages/CreateHubPage").then((module) => asDefault(module.CreateHubPage)),
   "/create/story": () => import("../pages/StoryBuilderPage").then((module) => asDefault(module.StoryBuilderPage)),
   "/studio": () => import("../pages/CreativeStudioPage").then((module) => asDefault(module.CreativeStudioPage)),
+  "/projects": () => import("../pages/ProjectsPage").then((module) => asDefault(module.ProjectsPage)),
+  "/share/:slug": () => import("../pages/PublishedProjectPage").then((module) => asDefault(module.PublishedProjectPage)),
   "/lab": () => import("../pages/LabPage").then((module) => asDefault(module.LabPage)),
   "/practice": () => import("../pages/LabPage").then((module) => asDefault(module.LabPage)),
   "/about": () => import("../pages/AboutPage").then((module) => asDefault(module.AboutPage)),

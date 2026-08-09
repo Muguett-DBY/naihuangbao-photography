@@ -8,9 +8,15 @@ export type CompositionSlot = {
   rotation: number;
 };
 
+import type { CompositionArtboardPreset } from "../types/composition";
+
 export type CompositionSize = { width: number; height: number };
 
-export function getCompositionSize(mode: CompositionMode): CompositionSize {
+export function getCompositionSize(mode: CompositionMode, preset: CompositionArtboardPreset = "auto"): CompositionSize {
+  if (preset === "landscape") return { width: 1800, height: 1200 };
+  if (preset === "portrait") return { width: 1200, height: 1600 };
+  if (preset === "square") return { width: 1400, height: 1400 };
+  if (preset === "story") return { width: 1080, height: 1920 };
   if (mode === "filmstrip") return { width: 1800, height: 1000 };
   if (mode === "postcard") return { width: 1600, height: 1100 };
   return { width: 1600, height: 1200 };

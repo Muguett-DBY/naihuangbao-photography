@@ -1,0 +1,49 @@
+@supports (content-visibility: auto) {
+  .archive-intelligence,
+  .workspace-project__publish,
+  .published-project__body,
+  .story-builder-preview__chapter,
+  .archive-discovery-deck {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+}
+
+[data-runtime-quality="balanced"] .cinematic-premiere__optical-lens,
+[data-runtime-quality="economy"] .cinematic-premiere__optical-lens,
+[data-runtime-quality="economy"] .cinematic-premiere__registration,
+[data-runtime-quality="economy"] .project-dock__pulse {
+  display: none;
+}
+
+[data-runtime-quality="balanced"] .cinematic-premiere__scene,
+[data-runtime-quality="balanced"] .story-builder-preview__chapter {
+  animation-duration: min(var(--scene-duration, 700ms), 700ms);
+}
+
+[data-runtime-quality="economy"] .cinematic-premiere__scene,
+[data-runtime-quality="economy"] .story-builder-preview__chapter,
+[data-runtime-quality="economy"] .archive-intelligence__node,
+[data-runtime-quality="economy"] .project-dock,
+[data-runtime-quality="economy"] .immersive-experience-canvas {
+  animation: none !important;
+  filter: none !important;
+  transition: none !important;
+  transform: none;
+}
+
+[data-runtime-quality="economy"] .cinematic-premiere__scene:not(.is-active) {
+  opacity: 0;
+}
+
+[data-runtime-quality="economy"] .project-dock__panel,
+[data-runtime-quality="economy"] .site-header,
+[data-runtime-quality="economy"] .mobile-bottom-nav {
+  backdrop-filter: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-intelligence__map {
+    scroll-behavior: auto;
+  }
+}
