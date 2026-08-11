@@ -34,7 +34,7 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
 
     if (isPaid) {
       const secret = getRequiredAuthSecret(context.env as AuthEnv);
-      const user = secret ? await getUserFromRequest(context.request, secret) : null;
+      const user = secret ? await getUserFromRequest(context.request, secret, context.env.DB) : null;
 
       if (user) {
         const purchase = await context.env.DB.prepare(

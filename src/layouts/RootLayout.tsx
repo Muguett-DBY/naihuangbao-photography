@@ -20,8 +20,7 @@ import { resolveRoutePreset } from "../experience/scene-presets";
 import { OPEN_COMMAND_PALETTE_EVENT } from "../lib/command-palette";
 import { RouteExperienceTelemetry } from "../components/shared/RouteExperienceTelemetry";
 import { RouteIndexingPolicy } from "../components/shared/RouteIndexingPolicy";
-import { WorkspaceProjectProvider } from "../hooks/useWorkspaceProjects";
-import { isProjectDockRoute } from "../data/product-navigation";
+import { isProjectDockRoute, isWorkspaceRoute } from "../data/product-navigation";
 
 // Optional cursor and texture effects stay in a separate chunk so the page
 // can paint and become interactive without coupling them to route code.
@@ -29,6 +28,29 @@ const GlobalEffects = lazy(() => import("../components/GlobalEffects"));
 const CommandPalette = lazy(() => import("../components/CommandPalette").then((module) => ({ default: module.CommandPalette })));
 const ProjectDock = lazy(() => import("../components/ProjectDock").then((module) => ({ default: module.ProjectDock })));
 const AdaptiveQualityGovernor = lazy(() => import("../experience/AdaptiveQualityGovernor").then((module) => ({ default: module.AdaptiveQualityGovernor })));
+const WorkspaceProjectScope = lazy(() => import("./WorkspaceProjectScope"));
+
+function RouteContent({ workspace, showProjectDock, mainLabel }: { workspace: boolean; showProjectDock: boolean; mainLabel: string }) {
+  const content = (
+    <>
+      <main id="main-content" aria-label={mainLabel}>
+        <ErrorBoundary>
+          <Suspense fallback={<RouteLoadingState />}>
+            <Outlet />
+          </Suspense>
+        </ErrorBoundary>
+      </main>
+      {showProjectDock && <Suspense fallback={null}><ProjectDock /></Suspense>}
+    </>
+  );
+
+  if (!workspace) return content;
+  return (
+    <Suspense fallback={<main id="main-content" aria-label={mainLabel}><RouteLoadingState /></main>}>
+      <WorkspaceProjectScope>{content}</WorkspaceProjectScope>
+    </Suspense>
+  );
+}
 
 function DeferredCommandPalette() {
   const [requested, setRequested] = useState(false);
@@ -97,6 +119,7 @@ export function RootLayout() {
   const isCreativeWorkspace = isEditor || location.pathname === "/create" || location.pathname.startsWith("/create/") || location.pathname === "/studio";
   const routePreset = resolveRoutePreset(location.pathname);
   const showProjectDock = isProjectDockRoute(location.pathname);
+  const workspace = isWorkspaceRoute(location.pathname);
 
   return (
     <div className={isEditor ? "site-shell is-editor" : "site-shell"}>
@@ -161,24 +184,15 @@ export function RootLayout() {
         <ExperienceProvider>
           <ExperienceStateBridge pathname={location.pathname} />
           {routePreset && location.pathname !== "/" && <ImmersiveExperienceGate />}
-          <WorkspaceProjectProvider>
-            <ToastProvider>
-              <Header />
-              <DeferredCommandPalette />
-              <main id="main-content" aria-label={t("common.mainContentLabel", "Main content")}>
-                <ErrorBoundary>
-                  <Suspense fallback={<RouteLoadingState />}>
-                    <Outlet />
-                  </Suspense>
-                </ErrorBoundary>
-              </main>
-              <Footer />
-              {showProjectDock && <Suspense fallback={null}><ProjectDock /></Suspense>}
-              {!isCreativeWorkspace && <MobileBottomNav />}
-              <ScrollToTop />
-              <PwaInstallBanner />
-            </ToastProvider>
-          </WorkspaceProjectProvider>
+          <ToastProvider>
+            <Header />
+            <DeferredCommandPalette />
+            <RouteContent workspace={workspace} showProjectDock={showProjectDock} mainLabel={t("common.mainContentLabel", "Main content")} />
+            <Footer />
+            {!isCreativeWorkspace && <MobileBottomNav />}
+            <ScrollToTop />
+            <PwaInstallBanner />
+          </ToastProvider>
         </ExperienceProvider>
       </SiteContentProvider>
     </div>

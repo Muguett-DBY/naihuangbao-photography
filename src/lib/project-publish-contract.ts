@@ -4,7 +4,19 @@ import type { PublishedProjectDraft } from "../types/published-project";
 export const MAX_PUBLISHED_ASSETS = 48;
 
 export function isPublicAssetSource(src: string) {
-  return src.startsWith("/images/") || /^https:\/\//i.test(src);
+  if (src.startsWith("/images/")) return true;
+  try {
+    const url = new URL(src);
+    return url.protocol === "https:" && url.hostname === "shoot.custard.top" && url.pathname.startsWith("/images/");
+  } catch {
+    return false;
+  }
+}
+
+export async function hashPublishedProject(project: WorkspaceProject | LegacyWorkspaceProject) {
+  const bytes = new TextEncoder().encode(JSON.stringify(project));
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 export function validatePublishedProjectDraft(value: unknown): value is PublishedProjectDraft {

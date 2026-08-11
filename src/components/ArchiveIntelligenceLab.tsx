@@ -142,7 +142,7 @@ export function ArchiveIntelligenceLab() {
               <ImageWithFallback src={asset.src} alt={asset.alt} title={asset.alt} sizes="(max-width: 720px) 50vw, 23vw" tone={index % 3 === 0 ? "sage" : "cream"} />
             </button>
             <div><span>{reason}</span><strong>{asset.note ?? asset.alt}</strong><small>{Math.round(score * 100)}% / {asset.analysis.composition.join(" · ")}</small></div>
-            <button type="button" className={workspace.hasAsset(asset.id) ? "is-saved" : undefined} onClick={() => workspace.toggleAsset(asset)} aria-label={`${workspace.hasAsset(asset.id) ? "Remove from" : "Add to"} project: ${asset.alt}`}>
+            <button type="button" data-action="toggle-project-asset" className={workspace.hasAsset(asset.id) ? "is-saved" : undefined} data-workspace-persistence={workspace.persisting ? "saving" : "idle"} aria-busy={workspace.persisting} onClick={() => void workspace.toggleAsset(asset)} aria-label={`${workspace.hasAsset(asset.id) ? "Remove from" : "Add to"} project: ${asset.alt}`}>
               {workspace.hasAsset(asset.id) ? <Check size={16} aria-hidden="true" /> : <FolderPlus size={16} aria-hidden="true" />}
             </button>
           </article>

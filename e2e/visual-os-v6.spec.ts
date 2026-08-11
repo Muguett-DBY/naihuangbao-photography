@@ -83,14 +83,14 @@ test("@critical V6 Story Builder 双设备、九布局和档案展览导入可�
 
   await expect(page.locator(".story-timeline")).toBeVisible();
   await expect(page.locator(".story-builder-layouts button")).toHaveCount(9);
-  await page.getByRole("group", { name: "Preview size" }).getByRole("button", { name: "MOBILE" }).click();
+  await page.locator('[data-preview-device="mobile"]').click();
   await expect(page.locator(".story-builder-preview")).toHaveClass(/story-builder-preview--mobile/);
-  await page.getByRole("group", { name: "Chapter layout" }).getByRole("button", { name: "Constellation" }).click();
+  await page.locator('[data-story-layout="constellation"]').click();
   await expect(page.locator(".story-builder-preview__chapter.is-active")).toHaveClass(/story-builder-preview__chapter--constellation/);
 
   const chapterCount = await page.locator(".story-timeline [role=listitem]").count();
-  await page.getByTitle("Import archive exhibition").click();
-  await expect(page.locator(".story-builder-topbar")).toContainText("2 ARCHIVE FRAMES IMPORTED");
+  await page.locator('[data-action="import-exhibition"]').click();
+  await expect(page.locator("[data-story-status]")).toContainText("已导入 2 张档案画面");
   await expect(page.locator(".story-timeline [role=listitem]")).toHaveCount(chapterCount + 1);
   await expect(page.locator(".story-builder-preview__chapter.is-active")).toContainText("展览线索 1");
 });

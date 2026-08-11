@@ -2,6 +2,7 @@ import { jsonResponse, badRequest, unavailable } from "../../../_responses";
 import { getOptionalUserId } from "../../../_auth";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../../_security";
 import { validateString, validateOptionalString, validatePositiveInt } from "../../../_validation";
+import { sendTransactionalNotificationSafely } from "../../../_notifications";
 
 type ApiEnv = Env & { AUTH_SECRET?: string };
 
@@ -46,8 +47,9 @@ export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
 
   try {
     const workshop = await context.env.DB.prepare(
-      `select id, max_participants, current_participants from workshops where id = ? and status = 'upcoming'`,
-    ).bind(id).first() as { id: string; max_participants: number; current_participants: number } | null;
+      `select id, title, event_date, location, price_cents, max_participants, current_participants
+       from workshops where id = ? and status = 'upcoming'`,
+    ).bind(id).first() as { id: string; title: string; event_date: string; location: string | null; price_cents: number; max_participants: number; current_participants: number } | null;
 
     if (!workshop) {
       return jsonResponse({ error: "活动不存在或已结束" }, 404);
@@ -95,6 +97,16 @@ export const onRequestPost: PagesFunction<ApiEnv> = async (context) => {
         `update workshops set current_participants = current_participants + ? where id = ?`,
       ).bind(participants, id),
     ]);
+
+    if (Number(workshop.price_cents ?? 0) <= 0) {
+      context.waitUntil(sendTransactionalNotificationSafely(context.env, "workshop_registration", contact, {
+        registrationId: regId,
+        workshopTitle: workshop.title,
+        eventDate: workshop.event_date,
+        location: workshop.location,
+        name,
+      }));
+    }
 
     return jsonResponse({ ok: true, id: regId, accountLinked: userId !== null }, 201);
   } catch (error) {

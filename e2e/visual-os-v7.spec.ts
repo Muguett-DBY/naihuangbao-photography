@@ -65,7 +65,7 @@ test("@critical V7 Studio 4 与 Story Director 共享项目素材和场景参数
   await page.goto("/create/story");
   const director = page.locator(".scene-director-controls");
   await expect(director).toBeVisible();
-  await director.getByRole("button", { name: "SLICE" }).click();
+  await director.locator('[data-scene-transition="slice"]').click();
   await expect(page.locator(".story-builder-preview__chapter.is-active")).toHaveAttribute("data-scene-transition", "slice");
   await director.locator('input[type="range"]').first().fill("1500");
   await expect(page.locator(".story-builder-preview__chapter.is-active")).toHaveAttribute("style", /1500ms/);
@@ -93,18 +93,21 @@ test("@critical V7 项目发布、版本恢复和公开分享页契约可用", a
   });
 
   await page.goto("/archive");
-  await page.locator(".archive-intelligence__results article").first().getByRole("button", { name: /Add to project/ }).click();
+  const addToProject = page.locator('.archive-intelligence__results article [data-action="toggle-project-asset"]').first();
+  await addToProject.click();
+  await expect(addToProject).toHaveClass(/is-saved/);
+  await expect(addToProject).toHaveAttribute("data-workspace-persistence", "idle");
   await page.goto("/projects");
-  await page.getByRole("button", { name: /PUBLISH PROJECT/ }).click();
-  await expect(page.getByRole("link", { name: /OPEN LIVE/ })).toHaveAttribute("href", "/share/visual-study-test");
+  await page.locator('[data-action="publish-project"]').click();
+  await expect(page.locator('[data-action="open-publication"]')).toHaveAttribute("href", "/share/visual-study-test");
   await expect(page.locator(".workspace-project__versions article")).toHaveCount(1);
-  await page.getByRole("button", { name: /RESTORE LOCAL/ }).click();
-  await expect(page.getByRole("status")).toContainText("restored");
+  await page.locator('[data-action="restore-version"]').click();
+  await expect(page.getByRole("status")).toContainText("已恢复");
 
   await page.goto("/share/visual-study-test");
   await expect(page.getByRole("heading", { level: 1, name: "Visual Study" })).toBeVisible();
   await expect(page.locator(".published-project__grid figure")).toHaveCount(1);
-  await expect(page.getByRole("button", { name: /REMIX LOCALLY/ })).toBeVisible();
+  await expect(page.locator(".published-project__intro button")).toBeVisible();
 });
 
 test("V7 减少动态和窄屏保持经济档、键盘可达且无横向溢出", async ({ page }) => {

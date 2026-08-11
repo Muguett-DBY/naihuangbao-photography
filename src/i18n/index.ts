@@ -2,10 +2,11 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import "./types";
 import { safeLocalStorage } from "../lib/browser-storage";
+import enMessages from "./locales/en.json";
 
 const localeLoaders = {
   "zh-CN": () => import("./locales/zh-CN.json").then((module) => module.default),
-  en: () => import("./locales/en.json").then((module) => module.default),
+  en: () => Promise.resolve(enMessages),
   ko: () => import("./locales/ko.json").then((module) => module.default),
   ja: () => import("./locales/ja.json").then((module) => module.default),
 } as const;
@@ -40,25 +41,31 @@ const pendingLocales = new Map<SupportedLanguage, Promise<Record<string, unknown
 function loadLocale(language: SupportedLanguage) {
   const existing = pendingLocales.get(language);
   if (existing) return existing;
-  const pending = localeLoaders[language]() as Promise<Record<string, unknown>>;
+  const pending = (localeLoaders[language]() as Promise<Record<string, unknown>>).catch((error) => {
+    pendingLocales.delete(language);
+    throw error;
+  });
   pendingLocales.set(language, pending);
   return pending;
 }
 
 async function initializeI18n() {
-  let messages: Record<string, unknown> = {};
-  try {
-    messages = await loadLocale(initialLanguage);
-  } catch {
-    // Rendering untranslated keys is preferable to blocking the entire app shell.
+  let messages: Record<string, unknown> = enMessages;
+  if (initialLanguage !== "en") {
+    try {
+      messages = await loadLocale(initialLanguage);
+    } catch (error) {
+      console.warn(`Locale ${initialLanguage} failed to load; using English fallback`, error);
+    }
   }
 
   await i18n.use(initReactI18next).init({
     resources: {
+      en: { translation: enMessages },
       [initialLanguage]: { translation: messages },
     },
     lng: initialLanguage,
-    fallbackLng: false,
+    fallbackLng: "en",
     returnObjects: true,
     interpolation: { escapeValue: false },
   });
@@ -71,8 +78,12 @@ export async function loadAndChangeLanguage(language: string) {
   if (!isSupportedLanguage(language)) return;
   await i18nReady;
   if (!i18n.hasResourceBundle(language, "translation")) {
-    const messages = await loadLocale(language);
-    i18n.addResourceBundle(language, "translation", messages, true, true);
+    try {
+      const messages = await loadLocale(language);
+      i18n.addResourceBundle(language, "translation", messages, true, true);
+    } catch (error) {
+      console.warn(`Locale ${language} failed to load; using English fallback`, error);
+    }
   }
   await i18n.changeLanguage(language);
 }

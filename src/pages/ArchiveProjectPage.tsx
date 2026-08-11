@@ -9,9 +9,11 @@ import { PrefetchLink } from "../components/shared/PrefetchLink";
 import { archiveProjects } from "../data/living-archive";
 import { getVisualAssetBySource } from "../data/visual-assets";
 import { useSEO } from "../hooks/useSEO";
+import { useWorkspaceCopy } from "../i18n/workspace-copy";
 import { visualAssetTransitionName } from "../lib/view-transition";
 
 export function ArchiveProjectPage() {
+  const { text } = useWorkspaceCopy();
   const { id } = useParams();
   const project = archiveProjects.find((entry) => entry.id === id);
   const relatedProjects = useMemo(
@@ -22,7 +24,7 @@ export function ArchiveProjectPage() {
   );
 
   useSEO({
-    title: project?.title ?? "Archive",
+    title: project?.title ?? text("backArchive"),
     descKey: "platform.archive.description",
     path: project ? `/archive/${project.id}` : "/archive",
     image: project?.media[0]?.src,
@@ -47,27 +49,27 @@ export function ArchiveProjectPage() {
         <div className="archive-study-hero__scrim" aria-hidden="true" />
         <div className="archive-study-hero__copy">
           <PrefetchLink to="/archive" className="archive-study-back">
-            <ArrowLeft size={17} aria-hidden="true" /> LIVING ARCHIVE
+            <ArrowLeft size={17} aria-hidden="true" /> {text("backArchive")}
           </PrefetchLink>
-          <span>{project.chapter} / {project.year} / CONCEPT STUDY</span>
+          <span>{project.chapter} / {project.year} / {text("conceptStudy")}</span>
           <h1>{project.title}</h1>
           <strong>{project.subtitle}</strong>
           <p>{project.summary}</p>
         </div>
       </header>
 
-      <main className="archive-study-body">
+      <div className="archive-study-body">
         <section className="archive-study-statement">
-          <span className="platform-index">01 / INTENT</span>
+          <span className="platform-index">01 / {text("intent")}</span>
           <blockquote>{project.statement}</blockquote>
           <dl>
-            <div><dt>PLACE</dt><dd>{project.place}</dd></div>
-            <div><dt>SEASON</dt><dd>{project.season}</dd></div>
-            <div><dt>MOOD</dt><dd>{project.moods.join(" / ")}</dd></div>
+            <div><dt>{text("place")}</dt><dd>{project.place}</dd></div>
+            <div><dt>{text("season")}</dt><dd>{project.season}</dd></div>
+            <div><dt>{text("mood")}</dt><dd>{project.moods.join(" / ")}</dd></div>
           </dl>
         </section>
 
-        <section className="archive-study-frames" aria-label={`${project.title} frames`}>
+        <section className="archive-study-frames" aria-label={text("framesLabel", { title: project.title })}>
           {project.media.map((media, index) => (
             <figure key={media.src} className={`archive-study-frame archive-study-frame--${index % 2 === 0 ? "wide" : "detail"}`}>
               <ImageWithFallback
@@ -84,8 +86,8 @@ export function ArchiveProjectPage() {
 
         <section className="archive-study-process">
           <header>
-            <span className="platform-index">02 / PROCESS</span>
-            <h2>画面如何形成</h2>
+            <span className="platform-index">02 / {text("process")}</span>
+            <h2>{text("processTitle")}</h2>
           </header>
           <ol>
             {project.process.map((step, index) => (
@@ -102,12 +104,12 @@ export function ArchiveProjectPage() {
         </section>
 
         <section className="archive-study-palette">
-          <span className="platform-index">03 / PALETTE</span>
+          <span className="platform-index">03 / {text("palette")}</span>
           <div>{project.palette.map((color) => <span key={color}><i aria-hidden="true" />{color}</span>)}</div>
         </section>
 
         <section className="archive-study-related">
-          <header><Layers3 size={21} aria-hidden="true" /><h2>继续沿着线索探索</h2></header>
+          <header><Layers3 size={21} aria-hidden="true" /><h2>{text("related")}</h2></header>
           <div>
             {relatedProjects.map((entry) => (
               <PrefetchLink to={`/archive/${entry.id}`} key={entry.id}>
@@ -118,7 +120,7 @@ export function ArchiveProjectPage() {
             ))}
           </div>
         </section>
-      </main>
+      </div>
     </PageTransition>
   );
 }

@@ -18,9 +18,18 @@ import {
   upsertCreativeKeyframe,
 } from "../lib/creative-document-store";
 import type { CreativeDocument, CreativeKeyframeProperty, CreativeLayer, CreativeScene } from "../types/creative-document";
+import { useWorkspaceCopy } from "../i18n/workspace-copy";
+
+const aspectLabels = {
+  landscape: "aspectLandscape",
+  portrait: "aspectPortrait",
+  square: "aspectSquare",
+  story: "aspectStory",
+} as const;
 
 export function SceneComposerPage() {
-  useSEO({ title: "Scene Composer", descKey: "platform.routes.composer", path: "/compose" });
+  const { text } = useWorkspaceCopy();
+  useSEO({ title: text("creativeDocument"), descKey: "platform.routes.composer", path: "/compose" });
   const workspace = useWorkspaceProjects();
   const project = workspace.activeProject;
   const previewShellRef = useRef<HTMLDivElement>(null);
@@ -52,6 +61,13 @@ export function SceneComposerPage() {
       setDocuments(stored.length ? stored : [next]);
       openDocument(next);
       workspace.linkResource("composer", next.id);
+    }).catch((error) => {
+      console.warn("Scene Composer storage is unavailable; continuing in memory", error);
+      const next = createCreativeDocument(project);
+      if (cancelled) return;
+      setDocuments([next]);
+      openDocument(next);
+      workspace.linkResource("composer", next.id);
     });
     return () => { cancelled = true; };
   }, [project?.id]);
@@ -62,7 +78,7 @@ export function SceneComposerPage() {
       void saveCreativeDocument(document).then(() => {
         setDocuments((current) => [document, ...current.filter((entry) => entry.id !== document.id)]);
         setSaved(true);
-      });
+      }).catch((error) => console.warn("Scene Composer could not persist this change", error));
     }, 420);
     return () => window.clearTimeout(timeout);
   }, [document, saved]);
@@ -158,32 +174,32 @@ export function SceneComposerPage() {
 
   const totalDuration = useMemo(() => document?.scenes.reduce((sum, scene) => sum + scene.durationMs, 0) ?? 0, [document?.scenes]);
 
-  if (!project || !document || !activeScene || !selectedLayer) return <div className="scene-composer-loading" role="status">Preparing Scene Composer...</div>;
+  if (!project || !document || !activeScene || !selectedLayer) return <div className="scene-composer-loading" role="status">{text("composerLoading")}</div>;
 
   return (
-    <main className="scene-composer" data-scene-composer="v8">
+    <div className="scene-composer" data-scene-composer="v8">
       <header className="scene-composer__bar">
-        <div><span>NHB / SCENE COMPOSER / V8</span><strong>{saved ? "SAVED LOCALLY" : "SAVING"}</strong></div>
-        <select aria-label="Creative document" value={document.id} onChange={(event) => { const next = documents.find((entry) => entry.id === event.target.value); if (next) openDocument(next); }}>{documents.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}</select>
+        <div><span>NHB / SCENE COMPOSER / V8</span><strong>{saved ? text("savedLocally") : text("saving")}</strong></div>
+        <select aria-label={text("creativeDocument")} value={document.id} onChange={(event) => { const next = documents.find((entry) => entry.id === event.target.value); if (next) openDocument(next); }}>{documents.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}</select>
         <div className="scene-composer__bar-actions">
-          <button type="button" onClick={createDocument} title="New creative document"><Plus size={17} aria-hidden="true" /></button>
-          <button type="button" onClick={() => void saveCreativeDocument(document).then(() => setSaved(true))} title="Save"><Save size={17} aria-hidden="true" /></button>
-          <button type="button" onClick={() => void deleteCreativeDocument(document.id).then(() => { const remaining = documents.filter((entry) => entry.id !== document.id); if (remaining[0]) { setDocuments(remaining); openDocument(remaining[0]); } else createDocument(); })} title="Delete document"><Trash2 size={17} aria-hidden="true" /></button>
+          <button type="button" onClick={createDocument} title={text("newDocument")}><Plus size={17} aria-hidden="true" /></button>
+          <button type="button" onClick={() => void saveCreativeDocument(document).then(() => setSaved(true)).catch((error) => console.warn("Scene Composer save failed", error))} title={text("save")}><Save size={17} aria-hidden="true" /></button>
+          <button type="button" onClick={() => void deleteCreativeDocument(document.id).then(() => { const remaining = documents.filter((entry) => entry.id !== document.id); if (remaining[0]) { setDocuments(remaining); openDocument(remaining[0]); } else createDocument(); }).catch((error) => console.warn("Scene Composer delete failed", error))} title={text("deleteDocument")}><Trash2 size={17} aria-hidden="true" /></button>
         </div>
       </header>
 
       <section className="scene-composer__stage">
         <aside className="scene-composer__project">
-          <span>ACTIVE PROJECT</span><h1>{project.name}</h1><p>{project.description}</p>
-          <div><FolderOpen size={17} aria-hidden="true" /><strong>{project.assets.length}</strong><small>AVAILABLE FRAMES</small></div>
-          <div><Copy size={17} aria-hidden="true" /><strong>{document.scenes.length}</strong><small>DIRECTED SCENES</small></div>
-          <footer>{(totalDuration / 1000).toFixed(1)} SEC / {document.aspect.toUpperCase()}</footer>
+          <span>{text("activeProject")}</span><h1>{project.name}</h1><p>{project.description}</p>
+          <div><FolderOpen size={17} aria-hidden="true" /><strong>{project.assets.length}</strong><small>{text("availableFrames")}</small></div>
+          <div><Copy size={17} aria-hidden="true" /><strong>{document.scenes.length}</strong><small>{text("directedScenes")}</small></div>
+          <footer>{text("secondsShort", { seconds: (totalDuration / 1000).toFixed(1) })} / {text(aspectLabels[document.aspect])}</footer>
         </aside>
 
         <div className="scene-composer__canvas">
           <header>
-            <div className="scene-composer__aspects">{(["landscape", "portrait", "square", "story"] as const).map((aspect) => <button type="button" key={aspect} className={document.aspect === aspect ? "is-active" : undefined} onClick={() => mutateDocument((current) => ({ ...current, aspect }))}>{aspect}</button>)}</div>
-            <button type="button" className="scene-composer__play" onClick={() => setPlaying((value) => !value)}>{playing ? <Pause size={17} aria-hidden="true" /> : <Play size={17} aria-hidden="true" />}{playing ? "PAUSE" : "PLAY STUDY"}</button>
+            <div className="scene-composer__aspects">{(["landscape", "portrait", "square", "story"] as const).map((aspect) => <button type="button" key={aspect} className={document.aspect === aspect ? "is-active" : undefined} onClick={() => mutateDocument((current) => ({ ...current, aspect }))}>{text(aspectLabels[aspect])}</button>)}</div>
+            <button type="button" className="scene-composer__play" onClick={() => setPlaying((value) => !value)}>{playing ? <Pause size={17} aria-hidden="true" /> : <Play size={17} aria-hidden="true" />}{playing ? text("pause") : text("playStudy")}</button>
           </header>
           <div ref={previewShellRef} className="scene-composer__preview-shell"><SceneComposerPreview scene={activeScene} aspect={document.aspect} selectedLayerId={selectedLayer.id} onSelectLayer={setSelectedLayerId} /></div>
         </div>
@@ -210,6 +226,6 @@ export function SceneComposerPage() {
         onMove={(sceneId, direction) => mutateDocument((current) => ({ ...current, scenes: moveCreativeScene(current.scenes, sceneId, direction) }))}
         onDelete={deleteScene}
       />
-    </main>
+    </div>
   );
 }

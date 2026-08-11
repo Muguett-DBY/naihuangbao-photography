@@ -198,12 +198,12 @@ describe("performance budgets", () => {
     expect(mainSource).toContain("StrictMode");
   });
 
-  it("loads only the active locale into the initial application graph", () => {
-    expect(i18nSource).toContain('import("./locales/en.json")');
+  it("keeps an English recovery bundle while lazy-loading every optional locale", () => {
+    expect(i18nSource).toContain('import enMessages from "./locales/en.json"');
     expect(i18nSource).toContain('import("./locales/zh-CN.json")');
     expect(i18nSource).toContain("loadAndChangeLanguage");
-    expect(i18nSource).not.toContain('import en from "./locales/en.json"');
     expect(i18nSource).not.toContain('import zhCN from "./locales/zh-CN.json"');
+    expect(i18nSource).toContain('fallbackLng: "en"');
     expect(mainSource).toContain("i18nReady.finally");
     expect(headerSource).toContain("loadAndChangeLanguage");
   });
@@ -253,12 +253,12 @@ describe("performance budgets", () => {
   it("keeps gallery photos out of the precache and runtime-caches them", () => {
     // Verify Vite PWA config runtime-caches gallery images
     expect(viteConfig).toContain("runtimeCaching");
-    expect(viteConfig).toContain("visual-archive-images-v6");
+    expect(viteConfig).toContain("visual-archive-images-v8");
     expect(viteConfig).toContain('/images/optical-archive/');
     expect(viteConfig).toContain('/images/visual-os-v5/');
     expect(viteConfig).toContain('/images/visual-os-v6/');
     expect(viteConfig).toContain('/story-manifest.json');
-    expect(viteConfig).toContain('handler: "CacheFirst"');
+    expect(viteConfig).toContain('handler: "NetworkFirst"');
     expect(viteConfig).toContain("NetworkFirst");
     // Verify precache excludes gallery images
     expect(viteConfig).toContain("globIgnores");

@@ -705,7 +705,11 @@ describe("Cloudflare Pages API behavior", () => {
             statements.push({ sql, values });
             return statement;
           }),
-          first: vi.fn(async () => null),
+          first: vi.fn(async () => (
+            sql.includes("session_version")
+              ? { id: "user-12345678", session_version: 0 }
+              : null
+          )),
           all: vi.fn(async () => ({
             results: sql.includes("from booking_waitlist") ? [waitlistRow] : [],
           })),
@@ -793,7 +797,10 @@ describe("Cloudflare Pages API behavior", () => {
         },
         body: JSON.stringify({ preferred_date: "2020-01-01" }),
       }),
-      env: { DB: createDb(), AUTH_SECRET: secret },
+      env: {
+        DB: createDb({ first: async () => ({ id: "user-12345678", session_version: 0 }) }),
+        AUTH_SECRET: secret,
+      },
       params: { id: "booking-12345678" },
     } as never);
     const body = (await response.json()) as { error?: string };
@@ -1508,13 +1515,22 @@ describe("Cloudflare Pages API behavior", () => {
   });
 
   it("creates a share link with privacy controls and no-store cache header", async () => {
+    const secret = "share-link-test-secret-with-32-characters";
+    const session = await createUserSession("user-share-owner", secret);
     const run = vi.fn(async () => ({ success: true }));
-    const db = createDb({ run });
+    const db = createDb({
+      first: async () => ({ id: "user-share-owner", session_version: 0 }),
+      run,
+    });
 
     const response = await createShareLink({
       request: jsonRequest("https://shoot.custard.top/api/share/create", {
         method: "POST",
-        headers: { "content-type": "application/json", "x-nhb-public-action": "1" },
+        headers: {
+          "content-type": "application/json",
+          "x-nhb-public-action": "1",
+          cookie: `nhb_user_session=${session}`,
+        },
         body: JSON.stringify({
           resourceType: "photo",
           resourceId: "photo-abc",
@@ -1523,7 +1539,7 @@ describe("Cloudflare Pages API behavior", () => {
           expiresInDays: 7,
         }),
       }),
-      env: { DB: db },
+      env: { DB: db, AUTH_SECRET: secret },
     } as never);
     const body = (await response.json()) as { ok: boolean; link: { token: string; requiresPassword: boolean; maxViews: number; expiresAt: string } };
 
@@ -1536,14 +1552,38 @@ describe("Cloudflare Pages API behavior", () => {
     expect(body.link.token).toHaveLength(24);
   });
 
-  it("rejects share link creation with invalid resource type", async () => {
+  it("rejects anonymous share-link creation without writing a record", async () => {
+    const db = createDb();
     const response = await createShareLink({
       request: jsonRequest("https://shoot.custard.top/api/share/create", {
         method: "POST",
         headers: { "content-type": "application/json", "x-nhb-public-action": "1" },
+        body: JSON.stringify({ resourceType: "photo", resourceId: "photo-abc" }),
+      }),
+      env: { DB: db, AUTH_SECRET: "share-link-test-secret-with-32-characters" },
+    } as never);
+
+    expect(response.status).toBe(401);
+    expect(db.statement.run).not.toHaveBeenCalled();
+  });
+
+  it("rejects share link creation with invalid resource type", async () => {
+    const secret = "share-link-test-secret-with-32-characters";
+    const session = await createUserSession("user-share-owner", secret);
+    const response = await createShareLink({
+      request: jsonRequest("https://shoot.custard.top/api/share/create", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-nhb-public-action": "1",
+          cookie: `nhb_user_session=${session}`,
+        },
         body: JSON.stringify({ resourceType: "invalid", resourceId: "x" }),
       }),
-      env: { DB: createDb() },
+      env: {
+        DB: createDb({ first: async () => ({ id: "user-share-owner", session_version: 0 }) }),
+        AUTH_SECRET: secret,
+      },
     } as never);
     const body = (await response.json()) as { error?: string };
 
@@ -1552,19 +1592,21 @@ describe("Cloudflare Pages API behavior", () => {
   });
 
   it("resolves a valid share link and increments view count", async () => {
-    const first = vi.fn(async () => ({
-      id: "share_1",
-      token: "abcdef0123456789abcdef01",
-      resource_type: "photo",
-      resource_id: "photo-1",
-      visibility: "public",
-      password_hash: null,
-      max_views: 10,
-      view_count: 3,
-      expires_at: null,
-      created_at: "2026-06-27T00:00:00.000Z",
-      created_by: "admin",
-    }));
+    const first = vi.fn()
+      .mockResolvedValueOnce({
+        id: "share_1",
+        token: "abcdef0123456789abcdef01",
+        resource_type: "photo",
+        resource_id: "photo-1",
+        visibility: "public",
+        password_hash: null,
+        max_views: 10,
+        view_count: 3,
+        expires_at: null,
+        created_at: "2026-06-27T00:00:00.000Z",
+        created_by: "admin",
+      })
+      .mockResolvedValueOnce({ view_count: 4 });
     const run = vi.fn(async () => ({ success: true, meta: { changes: 1 } }));
     const db = createDb({ first, run });
 
@@ -1583,6 +1625,7 @@ describe("Cloudflare Pages API behavior", () => {
     expect(body.ok).toBe(true);
     expect(body.viewCount).toBe(4);
     expect(body.resource.type).toBe("photo");
+    expect(db.prepare).toHaveBeenCalledWith(expect.stringContaining("returning view_count"));
   });
 
   it("returns 404 for unknown share tokens", async () => {

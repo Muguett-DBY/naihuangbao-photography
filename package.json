@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "packageManager": "npm@12.0.2",
   "engines": {
     "node": ">=22.22.0"
   },
@@ -13,14 +14,15 @@
     "stories:build": "node scripts/build-story-manifest.mjs",
     "content:build": "node scripts/build-content-os.mjs",
     "routes:build": "node --import tsx/esm scripts/build-route-contract.mts",
-    "build:app": "npm run avif && tsc -b && vite build && npm run seo:routes && npm run spa:404 && npm run release:manifest",
+    "build:app": "npm run avif && tsc -b && vite build && npm run seo:routes && npm run spa:404 && npm run release:manifest && npm run security:csp",
     "build": "npm run archive:build && npm run stories:build && npm run content:build && npm run routes:build && npm run seo:sync && npm run sitemap:build && npm run build:app",
     "build:full": "npm run build && npm run perf:budget && npm run perf:routes && npm run bundle:analyze",
     "preview": "vite preview --host 0.0.0.0",
     "sitemap:build": "node --import tsx/esm scripts/build-sitemap.ts",
     "bundle:analyze": "node scripts/analyze-bundle.mjs",
     "typecheck": "tsc -b --noEmit",
-    "architecture:check": "node scripts/check-architecture.mjs",
+    "architecture:check": "node scripts/check-architecture.mjs && npm run css:check",
+    "css:check": "node scripts/check-css-architecture.mjs",
     "deadcode:check": "knip --include files,dependencies,unlisted,binaries,duplicates",
     "lint": "npm run typecheck && npm run architecture:check && npm run deadcode:check",
     "test": "vitest run",
@@ -29,11 +31,14 @@
     "verify": "npm run lint && npm run test && npm run build:full",
     "verify:release": "npm run verify && npm run test:e2e",
     "cf:types": "wrangler types worker-configuration.d.ts",
+    "cf:types:check": "wrangler types worker-configuration.d.ts --check",
+    "db:migrate:check": "wrangler d1 migrations apply naihuangbao-photography --local",
     "seo:sync": "node --import tsx/esm scripts/sync-seo-shell.mjs",
     "seo:routes": "node scripts/build-route-shells.mjs",
     "spa:404": "node scripts/sync-spa-404.mjs",
     "release:manifest": "node scripts/write-release-manifest.mjs",
     "release:verify": "node scripts/verify-release.mjs",
+    "security:csp": "node scripts/finalize-csp.mjs",
     "perf:budget": "node scripts/check-performance-budget.mjs",
     "perf:routes": "node scripts/check-route-budgets.mjs",
     "assets:crop": "node scripts/crop-gallery-assets.mjs",
@@ -44,11 +49,11 @@
     "@fontsource/nunito": "^5.3.0",
     "animal-island-ui": "^1.5.1",
     "face-api.js": "^0.22.2",
-    "framer-motion": "^13.0.0",
+    "framer-motion": "^13.1.0",
     "gsap": "^3.15.0",
     "i18next": "^26.3.6",
     "leaflet": "^1.9.4",
-    "lucide-react": "^1.30.0",
+    "lucide-react": "^1.31.0",
     "photoswipe": "^5.4.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -60,7 +65,7 @@
   },
   "devDependencies": {
     "@babel/parser": "8.0.4",
-    "@cloudflare/workers-types": "^5.20260808.1",
+    "@cloudflare/workers-types": "^5.20260811.1",
     "@playwright/test": "^1.62.1",
     "@types/leaflet": "^1.9.22",
     "@types/node": "^26.2.0",
@@ -68,14 +73,14 @@
     "@types/react-dom": "^19.2.4",
     "@types/three": "0.185.4",
     "@vitejs/plugin-react": "6.0.3",
-    "knip": "^6.32.0",
+    "knip": "^6.32.1",
     "sharp": "^0.35.3",
-    "tsx": "^4.23.11",
+    "tsx": "^4.23.12",
     "typescript": "^7.0.2",
     "vite": "^8.2.1",
     "vite-plugin-pwa": "1.3.0",
     "vitest": "^4.1.10",
-    "wrangler": "4.120.0"
+    "wrangler": "4.120.1"
   },
   "overrides": {
     "@tensorflow/tfjs-core": {
@@ -85,6 +90,6 @@
   "allowScripts": {
     "esbuild@0.28.1": true,
     "sharp@0.34.5": true,
-    "workerd@1.20260801.1": true
+    "workerd@1.20260804.1": true
   }
 }

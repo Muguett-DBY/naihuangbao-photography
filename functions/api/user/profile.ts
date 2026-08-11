@@ -1,6 +1,6 @@
 import { jsonResponse, badRequest, unauthorized, unavailable } from "../../_responses";
-import { getUserFromRequest, hashPassword, generateSalt } from "../../_auth";
-import { getRequiredAuthSecret, requirePublicMutationRequest, timingSafeEqual } from "../../_security";
+import { getUserFromRequest, hashPassword, generateSalt, verifyPassword } from "../../_auth";
+import { getRequiredAuthSecret, requirePublicMutationRequest } from "../../_security";
 import { validateString, validateOptionalString, validateBody } from "../../_validation";
 
 type AuthEnv = Env & { AUTH_SECRET?: string };
@@ -22,7 +22,7 @@ export const onRequestPut: PagesFunction<AuthEnv> = async (context) => {
   const secret = getRequiredAuthSecret(context.env);
   if (!secret) return unauthorized("请先登录");
 
-  const user = await getUserFromRequest(context.request, secret);
+  const user = await getUserFromRequest(context.request, secret, context.env.DB);
   if (!user) return unauthorized("请先登录");
 
   if (!context.env.DB) {
@@ -74,8 +74,7 @@ export const onRequestPut: PagesFunction<AuthEnv> = async (context) => {
 
       if (!row) return unauthorized("用户不存在");
 
-      const currentHash = await hashPassword(currentPassword, row.salt);
-      if (!timingSafeEqual(currentHash, row.password_hash)) {
+      if (!(await verifyPassword(currentPassword, row.salt, row.password_hash))) {
         return badRequest("当前密码不正确");
       }
 
@@ -84,7 +83,9 @@ export const onRequestPut: PagesFunction<AuthEnv> = async (context) => {
       const now = new Date().toISOString();
 
       await context.env.DB.prepare(
-        `update users set password_hash = ?, salt = ?, updated_at = ? where id = ?`,
+        `update users
+         set password_hash = ?, salt = ?, session_version = session_version + 1, updated_at = ?
+         where id = ?`,
       ).bind(newHash, newSalt, now, user.userId).run();
 
       return jsonResponse({ ok: true });

@@ -2,6 +2,10 @@ import type { WorkspaceProject } from "../types/workspace-project";
 
 export const MAX_SYNC_PROJECT_BYTES = 280_000;
 export const MAX_SYNC_ASSET_BYTES = 12 * 1024 * 1024;
+export const MAX_SYNC_ASSETS_PER_USER = 100;
+export const MAX_SYNC_ASSET_BYTES_PER_USER = 256 * 1024 * 1024;
+export const MAX_SYNC_PROJECTS_PER_USER = 40;
+export const MAX_SYNC_PROJECT_VERSIONS = 20;
 
 const workspaceSurfaces = new Set(["archive", "vault", "composer", "studio", "story", "publish"]);
 const workspaceStatuses = new Set(["active", "paused", "published"]);

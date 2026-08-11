@@ -3,8 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { ImageWithFallback } from "../ImageWithFallback";
 import { PrefetchLink } from "../shared/PrefetchLink";
 import type { VisualStory } from "../../types/visual-story";
+import { useWorkspaceCopy } from "../../i18n/workspace-copy";
 
 export function VisualStoryReader({ story }: { story: VisualStory }) {
+  const { text } = useWorkspaceCopy();
   const rootRef = useRef<HTMLElement>(null);
   const [activeChapter, setActiveChapter] = useState(story.chapters[0]?.id ?? "");
 
@@ -56,16 +58,16 @@ export function VisualStoryReader({ story }: { story: VisualStory }) {
         <ImageWithFallback src={cover.src} alt={cover.alt} title={story.title} priority sizes="100vw" tone="sage" />
         <div className="visual-story-hero__shade" aria-hidden="true" />
         <div className="visual-story-hero__copy">
-          <PrefetchLink to="/stories" className="visual-story-back"><ArrowLeft size={17} aria-hidden="true" /> STORIES</PrefetchLink>
-          <span className="platform-index"><Sparkles size={14} aria-hidden="true" /> BRAND CONCEPT IMAGE / {story.readingMinutes} MIN</span>
+          <PrefetchLink to="/stories" className="visual-story-back"><ArrowLeft size={17} aria-hidden="true" /> {text("storyBack")}</PrefetchLink>
+          <span className="platform-index"><Sparkles size={14} aria-hidden="true" /> {text("brandConceptImage")} / {text("minutesShort", { count: story.readingMinutes })}</span>
           <h1>{story.title}</h1>
           <strong>{story.subtitle}</strong>
           <p>{story.summary}</p>
         </div>
-        <a className="visual-story-enter" href={`#${story.chapters[0].id}`}><BookOpenText size={18} aria-hidden="true" />进入故事</a>
+        <a className="visual-story-enter" href={`#${story.chapters[0].id}`}><BookOpenText size={18} aria-hidden="true" />{text("enterStory")}</a>
       </header>
 
-      <nav className="visual-story-index" aria-label="Story chapters">
+      <nav className="visual-story-index" aria-label={text("storyChapters")}>
         <span>{String(story.chapters.findIndex((chapter) => chapter.id === activeChapter) + 1).padStart(2, "0")} / {String(story.chapters.length).padStart(2, "0")}</span>
         <div>
           {story.chapters.map((chapter, index) => (
@@ -112,10 +114,10 @@ export function VisualStoryReader({ story }: { story: VisualStory }) {
       </div>
 
       <footer className="visual-story-ending">
-        <span className="platform-index">END / REMIX THE MATERIAL</span>
-        <h2>把这段故事改写成自己的顺序</h2>
-        <p>故事创建器会读取同一套视觉档案，项目只保存在当前浏览器。</p>
-        <PrefetchLink to="/create/story">打开 Story Builder <ArrowRight size={18} aria-hidden="true" /></PrefetchLink>
+        <span className="platform-index">{text("remixMaterial")}</span>
+        <h2>{text("remixTitle")}</h2>
+        <p>{text("remixHint")}</p>
+        <PrefetchLink to="/create/story">{text("openStoryBuilder")} <ArrowRight size={18} aria-hidden="true" /></PrefetchLink>
       </footer>
     </article>
   );

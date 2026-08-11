@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("keeps the site usable when browser storage is blocked", async ({ page }) => {
   const pageErrors: string[] = [];
-  page.on("pageerror", (error) => pageErrors.push(error.message));
+  page.on("pageerror", (error) => pageErrors.push(error.stack ?? error.message));
 
   await page.addInitScript(() => {
     for (const storageName of ["localStorage", "sessionStorage"] as const) {
@@ -13,6 +13,12 @@ test("keeps the site usable when browser storage is blocked", async ({ page }) =
         },
       });
     }
+    Object.defineProperty(window, "indexedDB", {
+      configurable: true,
+      get() {
+        throw new DOMException("IndexedDB access denied", "SecurityError");
+      },
+    });
   });
 
   await page.goto("/");
@@ -29,6 +35,26 @@ test("keeps the site usable when browser storage is blocked", async ({ page }) =
 
   await page.locator(".lang-toggle").click();
   await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
+  expect(pageErrors).toEqual([]);
+});
+
+test("falls back to an in-memory project when IndexedDB is unavailable", async ({ page }) => {
+  const pageErrors: string[] = [];
+  page.on("pageerror", (error) => pageErrors.push(error.stack ?? error.message));
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "indexedDB", {
+      configurable: true,
+      get() {
+        throw new DOMException("IndexedDB access denied", "SecurityError");
+      },
+    });
+  });
+
+  await page.goto("/projects");
+
+  await expect(page.locator(".workspace-page")).toBeVisible();
+  await expect(page.locator(".workspace-project-list button").first()).toBeVisible();
+  await expect(page.locator(".workspace-project")).toBeVisible();
   expect(pageErrors).toEqual([]);
 });
 

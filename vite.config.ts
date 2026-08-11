@@ -109,6 +109,8 @@ export default defineConfig({
           "**/images/optical-archive/**/*",
           "**/images/visual-os-v5/**/*",
           "**/images/visual-os-v6/**/*",
+          "**/images/visual-os-v7/**/*",
+          "**/images/visual-os-v8/**/*",
           "**/immersive-vendor-*.js",
           "**/face-api-vendor-*.js",
           "**/map-vendor-*.js",
@@ -146,14 +148,17 @@ export default defineConfig({
                   || url.pathname.startsWith("/images/concept-premiere/")
                   || url.pathname.startsWith("/images/optical-archive/")
                   || url.pathname.startsWith("/images/visual-os-v5/")
-                  || url.pathname.startsWith("/images/visual-os-v6/"));
+                  || url.pathname.startsWith("/images/visual-os-v6/")
+                  || url.pathname.startsWith("/images/visual-os-v7/")
+                  || url.pathname.startsWith("/images/visual-os-v8/"));
             },
-            handler: "CacheFirst",
+            handler: "NetworkFirst",
             options: {
-              cacheName: "visual-archive-images-v6",
+              cacheName: "visual-archive-images-v8",
+              networkTimeoutSeconds: 4,
               expiration: {
                 maxEntries: 220,
-                maxAgeSeconds: 60 * 60 * 24 * 90,
+                maxAgeSeconds: 60 * 60 * 24 * 7,
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -162,12 +167,13 @@ export default defineConfig({
           },
           {
             urlPattern: ({ url }) => ["/archive-manifest.json", "/story-manifest.json", "/visual-asset-manifest.json", "/route-contract.json", "/release.json"].includes(url.pathname),
-            handler: "StaleWhileRevalidate",
+            handler: "NetworkFirst",
             options: {
-              cacheName: "visual-platform-manifests-v6",
+              cacheName: "visual-platform-manifests-v8",
+              networkTimeoutSeconds: 3,
               expiration: {
                 maxEntries: 6,
-                maxAgeSeconds: 60 * 60 * 24 * 7,
+                maxAgeSeconds: 60 * 60,
               },
             },
           },

@@ -6,6 +6,8 @@
 const SHARE_TOKEN_LENGTH = 12;
 const MAX_VIEW_LIMIT = 1000;
 const MAX_EXPIRY_DAYS = 90;
+const SHARE_PASSWORD_ITERATIONS = 600_000;
+const SHARE_PASSWORD_PREFIX = "pbkdf2-sha256";
 
 export type ShareLinkType = "photo" | "album" | "gallery";
 export type ShareLinkVisibility = "public" | "unlisted";
@@ -45,25 +47,60 @@ function generateShareToken(): string {
 }
 
 export async function hashSharePassword(password: string): Promise<string> {
+  const salt = randomBase64Url(16);
+  const hash = await deriveSharePassword(password, salt, SHARE_PASSWORD_ITERATIONS);
+  return `${SHARE_PASSWORD_PREFIX}$${SHARE_PASSWORD_ITERATIONS}$${salt}$${hash}`;
+}
+
+async function deriveSharePassword(password: string, salt: string, iterations: number): Promise<string> {
   const encoder = new TextEncoder();
-  const data = encoder.encode(`nhb-share:${password}`);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    { name: "PBKDF2" },
+    false,
+    ["deriveBits"],
+  );
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", hash: "SHA-256", salt: encoder.encode(salt), iterations },
+    keyMaterial,
+    256,
+  );
+  return base64Url(bits);
 }
 
 export async function verifySharePassword(password: string, hash: string): Promise<boolean> {
   if (!hash) return true;
-  const computed = await hashSharePassword(password);
-  return timingSafeEqualHex(computed, hash);
+  const [prefix, rawIterations, salt, expected] = hash.split("$");
+  const iterations = Number(rawIterations);
+  if (prefix === SHARE_PASSWORD_PREFIX && Number.isSafeInteger(iterations) && iterations >= 100_000 && salt && expected) {
+    const computed = await deriveSharePassword(password, salt, iterations);
+    return timingSafeEqual(computed, expected);
+  }
+
+  const encoder = new TextEncoder();
+  const legacy = await crypto.subtle.digest("SHA-256", encoder.encode(`nhb-share:${password}`));
+  const computed = Array.from(new Uint8Array(legacy), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return timingSafeEqual(computed, hash);
 }
 
-function timingSafeEqualHex(a: string, b: string): boolean {
+function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let mismatch = 0;
   for (let i = 0; i < a.length; i += 1) {
     mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
   }
   return mismatch === 0;
+}
+
+function randomBase64Url(byteLength: number) {
+  return base64Url(crypto.getRandomValues(new Uint8Array(byteLength)).buffer);
+}
+
+function base64Url(buffer: ArrayBuffer) {
+  let binary = "";
+  for (const byte of new Uint8Array(buffer)) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
 }
 
 export function normalizeShareLinkInput(input: ShareLinkInput): {
@@ -92,7 +129,7 @@ export function normalizeShareLinkInput(input: ShareLinkInput): {
     : null;
   const password = input.password?.trim() ?? "";
   const passwordHash = password ? `pending:${password}` : null;
-  const createdBy = input.createdBy?.trim() || null;
+  const createdBy = null;
 
   return {
     resourceType,

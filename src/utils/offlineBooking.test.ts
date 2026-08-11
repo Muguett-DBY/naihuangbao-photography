@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   createPendingBookingRequestInit,
+  getPendingBookings,
   getPendingBookingSyncDisposition,
   summarizePendingBookingRecovery,
   type PendingBooking,
@@ -52,5 +53,22 @@ describe("offline booking sync", () => {
       failedCount: 1,
       totalCount: 2,
     });
+  });
+
+  it("falls back cleanly when browser policy blocks IndexedDB access", async () => {
+    const descriptor = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+    Object.defineProperty(globalThis, "indexedDB", {
+      configurable: true,
+      get() {
+        throw new DOMException("IndexedDB access denied", "SecurityError");
+      },
+    });
+
+    try {
+      await expect(getPendingBookings()).resolves.toEqual([]);
+    } finally {
+      if (descriptor) Object.defineProperty(globalThis, "indexedDB", descriptor);
+      else delete (globalThis as { indexedDB?: IDBFactory }).indexedDB;
+    }
   });
 });
