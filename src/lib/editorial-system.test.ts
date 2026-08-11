@@ -59,12 +59,15 @@ describe("editorial design system", () => {
     const chatCss = read("src/styles/chat.css");
     const header = read("src/components/shared/Header.tsx");
     const layout = read("src/layouts/RootLayout.tsx");
+    const rootLayoutOnly = readFileSync(resolve(process.cwd(), "src/layouts/RootLayout.tsx"), "utf8");
+    const practiceLayout = read("src/features/practice/PracticeLayout.tsx");
     const shellCss = read("src/styles/sections.css");
 
     expect(header).not.toContain("onOpenChat");
     expect(layout).toContain("<Header />");
-    expect(layout).toContain("function PracticeChrome()");
-    expect(layout).toContain("{showChat &&");
+    expect(rootLayoutOnly).not.toContain("PublicChatWidget");
+    expect(practiceLayout).toContain("function PracticeChrome()");
+    expect(practiceLayout).toContain("{chatOpen &&");
     expect(chatCss).toMatch(/@media \(max-width: 768px\)[\s\S]*\.public-chat-launcher \{\s*display: none;/);
     expect(shellCss).toContain("padding-bottom: var(--mobile-bottom-nav-offset)");
   });

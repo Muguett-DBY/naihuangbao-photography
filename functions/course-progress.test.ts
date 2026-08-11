@@ -42,6 +42,7 @@ function createProgressDb({
     const statement = {
       bind: vi.fn(() => statement),
       first: vi.fn(async () => {
+        if (normalized.includes("session_version")) return { id: "user-1", session_version: 0 };
         if (normalized.includes("from courses")) return { id: "course-1", price_cents: priceCents };
         if (normalized.includes("from course_purchases")) return purchased ? { id: "purchase-1" } : null;
         if (normalized.includes("from course_progress")) {

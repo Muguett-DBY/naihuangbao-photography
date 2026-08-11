@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { BarChart3, BookOpen, CheckCircle, Clock, FileText, Images, Lock, LogIn, Play, ShoppingCart } from "lucide-react";
 import { Button } from "animal-island-ui";
 import { usePageRevealEffects } from "../hooks/usePageRevealEffects";
-import { useNotification } from "../hooks/useNotification";
 import { useSEO } from "../hooks/useSEO";
 import { useJsonLd } from "../hooks/useJsonLd";
 import { PageTransition } from "../components/shared/PageTransition";
@@ -32,7 +31,6 @@ export function CourseDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { t, i18n } = useTranslation();
   const rootRef = useRef<HTMLDivElement>(null);
-  const { sendPaymentReceipt } = useNotification();
   const [activeModule, setActiveModule] = useState<string | null>(null);
   const [showPayment, setShowPayment] = useState(false);
   const [purchaseNotice, setPurchaseNotice] = useState<"pending" | null>(null);
@@ -377,19 +375,9 @@ export function CourseDetailPage() {
                 currency={course.currency || "usd"}
                 referenceId={course.id}
                 metadata={{ title: getTitle(course, lang) }}
-                onSuccess={async (paymentIntentId) => {
+                onSuccess={() => {
                   setShowPayment(false);
                   setPurchaseNotice(null);
-
-                  if (user?.email) {
-                    await sendPaymentReceipt(user.email, {
-                      paymentIntentId,
-                      purpose: "Course Purchase",
-                      amountCents: course.price_cents!,
-                      currency: course.currency || "usd",
-                      name: user.displayName || user.email,
-                    });
-                  }
                 }}
                 onPending={() => {
                   setShowPayment(false);

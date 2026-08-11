@@ -84,7 +84,7 @@ async function authenticate(context: EventContext<AuthEnv, string, unknown>) {
   const secret = getRequiredAuthSecret(context.env);
   if (!secret) return unauthorized("请先登录");
 
-  const user = await getUserFromRequest(context.request, secret);
+  const user = await getUserFromRequest(context.request, secret, context.env.DB);
   if (!user) return unauthorized("请先登录");
 
   if (!context.env.DB) {

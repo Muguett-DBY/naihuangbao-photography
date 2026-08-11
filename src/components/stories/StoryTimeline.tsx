@@ -2,6 +2,7 @@ import { GripVertical, Plus } from "lucide-react";
 import { useState, type DragEvent } from "react";
 import type { StoryProjectChapter } from "../../lib/story-project-store";
 import { ImageWithFallback } from "../ImageWithFallback";
+import { useWorkspaceCopy } from "../../i18n/workspace-copy";
 
 export function StoryTimeline({ chapters, activeChapterId, onSelect, onReorder, onAdd }: {
   chapters: StoryProjectChapter[];
@@ -10,6 +11,7 @@ export function StoryTimeline({ chapters, activeChapterId, onSelect, onReorder, 
   onReorder: (sourceId: string, targetId: string) => void;
   onAdd: () => void;
 }) {
+  const { text } = useWorkspaceCopy();
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const handleDrop = (event: DragEvent<HTMLElement>, targetId: string) => {
     event.preventDefault();
@@ -19,7 +21,7 @@ export function StoryTimeline({ chapters, activeChapterId, onSelect, onReorder, 
 
   return (
     <section className="story-timeline" aria-labelledby="story-timeline-title">
-      <header><div><strong id="story-timeline-title">CHAPTER TIMELINE</strong><small>拖拽重排，点击进入编辑</small></div><button type="button" onClick={onAdd}><Plus size={15} aria-hidden="true" />ADD</button></header>
+      <header><div><strong id="story-timeline-title">{text("chapterTimeline")}</strong><small>{text("reorderChapters")}</small></div><button type="button" onClick={onAdd}><Plus size={15} aria-hidden="true" />{text("add")}</button></header>
       <div role="list">
         {chapters.map((chapter, index) => (
           <article

@@ -34,7 +34,12 @@ function createRecordingDb(options: {
           record.values = values;
           return statement;
         }),
-        first: vi.fn(async () => options.first?.(sql, record.values) ?? null),
+        first: vi.fn(async () => {
+          if (sql.includes("session_version")) {
+            return { id: ownerUserId, session_version: 0 };
+          }
+          return options.first?.(sql, record.values) ?? null;
+        }),
         all: vi.fn(async () => ({ results: options.all?.(sql, record.values) ?? [] })),
         run: vi.fn(async () => ({ success: true })),
       };
@@ -114,6 +119,7 @@ describe("customer record ownership", () => {
     const response = await submitBooking({
       request: await bookingRequest(true),
       env: { DB: db, AUTH_SECRET: secret },
+      waitUntil: vi.fn(),
     } as never);
     const body = (await response.json()) as { accountLinked?: boolean };
     const insert = db.statements.find((entry) => entry.sql.includes("insert into booking_requests"));
@@ -129,6 +135,7 @@ describe("customer record ownership", () => {
     const response = await submitBooking({
       request: await bookingRequest(false),
       env: { DB: db, AUTH_SECRET: secret },
+      waitUntil: vi.fn(),
     } as never);
     const body = (await response.json()) as { accountLinked?: boolean };
     const insert = db.statements.find((entry) => entry.sql.includes("insert into booking_requests"));
@@ -171,6 +178,7 @@ describe("customer record ownership", () => {
       }),
       env: { DB: workshopDb, AUTH_SECRET: secret },
       params: { id: "workshop-123" },
+      waitUntil: vi.fn(),
     } as never);
     const workshopBody = (await workshopResponse.json()) as { accountLinked?: boolean };
     const workshopInsert = workshopDb.statements.find((entry) => entry.sql.includes("insert into workshop_registrations"));

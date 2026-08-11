@@ -28,18 +28,19 @@ import {
 import type { StoryLayout } from "../types/visual-story";
 import { setCreativeWorkDirty } from "../lib/creative-work-state";
 import { useWorkspaceProjects } from "../hooks/useWorkspaceProjects";
+import { useWorkspaceCopy, type WorkspaceCopyKey } from "../i18n/workspace-copy";
 
 const LAST_STORY_KEY = "nhb:last-story-project";
-const layouts: Array<{ id: StoryLayout; label: string }> = [
-  { id: "full", label: "Full" },
-  { id: "columns", label: "Columns" },
-  { id: "contact", label: "Contact" },
-  { id: "quiet", label: "Quiet" },
-  { id: "diptych", label: "Diptych" },
-  { id: "compare", label: "Compare" },
-  { id: "annotation", label: "Annotate" },
-  { id: "interlude", label: "Interlude" },
-  { id: "constellation", label: "Constellation" },
+const layouts: Array<{ id: StoryLayout; label: WorkspaceCopyKey }> = [
+  { id: "full", label: "layoutFull" },
+  { id: "columns", label: "layoutColumns" },
+  { id: "contact", label: "layoutContact" },
+  { id: "quiet", label: "layoutQuiet" },
+  { id: "diptych", label: "layoutDiptych" },
+  { id: "compare", label: "layoutCompare" },
+  { id: "annotation", label: "layoutAnnotation" },
+  { id: "interlude", label: "layoutInterlude" },
+  { id: "constellation", label: "layoutConstellation" },
 ];
 
 const archiveFrames = archiveProjects.flatMap((project) => project.media.map((media, index): StoryProjectFrame => ({
@@ -73,11 +74,12 @@ function downloadBlob(blob: Blob, fileName: string) {
 }
 
 export function StoryBuilderPage() {
-  useSEO({ title: "Story Builder", descKey: "platform.routes.create", path: "/create/story" });
+  const { text } = useWorkspaceCopy();
+  useSEO({ title: text("buildStory"), descKey: "platform.routes.create", path: "/create/story" });
   const [project, setProject] = useState<StoryProject | null>(null);
   const [projects, setProjects] = useState<StoryProject[]>([]);
   const [activeChapterId, setActiveChapterId] = useState("");
-  const [status, setStatus] = useState("LOADING LOCAL PROJECTS");
+  const [status, setStatus] = useState(text("loadingLocalProjects"));
   const [notice, setNotice] = useState("");
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
   const hydratedRef = useRef(false);
@@ -99,8 +101,17 @@ export function StoryBuilderPage() {
       setActiveChapterId(initial.chapters[0]?.id ?? "");
       localStorage.setItem(LAST_STORY_KEY, initial.id);
       hydratedRef.current = true;
-      setStatus("LOCAL AUTOSAVE READY");
-    })();
+      setStatus(text("autosaveReady"));
+    })().catch((error) => {
+      console.warn("Story Builder storage is unavailable; continuing in memory", error);
+      const initial = createStarterProject();
+      if (cancelled) return;
+      setProjects([initial]);
+      setProject(initial);
+      setActiveChapterId(initial.chapters[0]?.id ?? "");
+      hydratedRef.current = true;
+      setStatus(text("autosaveReady"));
+    });
     return () => { cancelled = true; };
   }, []);
 
@@ -112,11 +123,15 @@ export function StoryBuilderPage() {
       void saveStoryProject(snapshot).then(() => {
         setProjects((current) => [snapshot, ...current.filter((entry) => entry.id !== snapshot.id)]);
         localStorage.setItem(LAST_STORY_KEY, snapshot.id);
-        setStatus("SAVED LOCALLY");
+        setStatus(text("savedLocally"));
+        setCreativeWorkDirty("story", false);
+      }).catch((error) => {
+        console.warn("Story Builder could not persist this change", error);
+        setStatus(text("autosaveReady"));
         setCreativeWorkDirty("story", false);
       });
     }, 500);
-    setStatus("SAVING...");
+    setStatus(text("saving"));
     return () => window.clearTimeout(timeout);
   }, [project]);
   useEffect(() => () => setCreativeWorkDirty("story", false), []);
@@ -164,7 +179,7 @@ export function StoryBuilderPage() {
   const duplicateProject = async () => {
     if (!project) return;
     const now = Date.now();
-    const next = { ...project, id: createStoryProjectId(), name: `${project.name} copy`, createdAt: now, savedAt: now };
+    const next = { ...project, id: createStoryProjectId(), name: text("projectCopyName", { name: project.name }), createdAt: now, savedAt: now };
     await saveStoryProject(next);
     await openProject(next);
     await refreshProjects();
@@ -224,7 +239,7 @@ export function StoryBuilderPage() {
     }));
     const frames = workspaceFrames.length ? workspaceFrames : legacyFrames;
     if (!frames.length) {
-      setNotice("ARCHIVE EXHIBITION IS EMPTY");
+      setNotice(text("archiveEmpty"));
       return;
     }
     const chapterLayouts: StoryLayout[] = ["diptych", "annotation", "constellation", "interlude"];
@@ -236,7 +251,7 @@ export function StoryBuilderPage() {
     }));
     updateProject((current) => ({ ...current, chapters: [...current.chapters, ...additions] }));
     setActiveChapterId(additions[0]!.id);
-    setNotice(`${frames.length} ARCHIVE FRAMES IMPORTED`);
+    setNotice(text("archiveFramesImported", { count: frames.length }));
   };
 
   const removeChapter = () => {
@@ -261,81 +276,81 @@ export function StoryBuilderPage() {
       await saveStoryProject(next);
       await openProject(next);
       await refreshProjects();
-      setNotice("PROJECT IMPORTED");
+      setNotice(text("storyProjectImported"));
     } catch {
-      setNotice("IMPORT FAILED");
+      setNotice(text("storyImportFailed"));
     }
   };
 
-  if (!project || !activeChapter) return <div className="story-builder-loading">Loading Story Builder...</div>;
+  if (!project || !activeChapter) return <div className="story-builder-loading">{text("storyLoading")}</div>;
 
   return (
     <PageTransition className="story-builder-page">
       <header className="story-builder-topbar">
-        <PrefetchLink to="/create" title="Back to Create"><ArrowLeft size={18} aria-hidden="true" /></PrefetchLink>
-        <div><span>NHB / STORY BUILDER 3.0</span><strong>{notice || status}</strong></div>
+        <PrefetchLink to="/create" title={text("backCreate")}><ArrowLeft size={18} aria-hidden="true" /></PrefetchLink>
+        <div><span>NHB / STORY BUILDER 3.0</span><strong data-story-status>{notice || status}</strong></div>
         <div className="story-builder-topbar__actions">
-          <button type="button" title="New project" onClick={createNewProject}><FilePlus2 size={18} aria-hidden="true" /></button>
-          <button type="button" title="Duplicate project" onClick={duplicateProject}><Plus size={18} aria-hidden="true" /></button>
-          <button type="button" title="Import project" onClick={() => importRef.current?.click()}><Upload size={18} aria-hidden="true" /></button>
-          <button type="button" title="Import archive exhibition" onClick={importArchiveExhibition}><PanelsTopLeft size={18} aria-hidden="true" /></button>
-          <button type="button" title="Export project" onClick={() => downloadBlob(createStoryProjectFile(project), `${project.name.replace(/\s+/g, "-").toLowerCase()}.nhb-story`)}><Download size={18} aria-hidden="true" /></button>
+          <button type="button" data-action="new-project" title={text("newProject")} onClick={createNewProject}><FilePlus2 size={18} aria-hidden="true" /></button>
+          <button type="button" data-action="duplicate-project" title={text("duplicateProject")} onClick={duplicateProject}><Plus size={18} aria-hidden="true" /></button>
+          <button type="button" data-action="import-project" title={text("importStoryProject")} onClick={() => importRef.current?.click()}><Upload size={18} aria-hidden="true" /></button>
+          <button type="button" data-action="import-exhibition" title={text("importExhibition")} onClick={importArchiveExhibition}><PanelsTopLeft size={18} aria-hidden="true" /></button>
+          <button type="button" data-action="export-project" title={text("exportStoryProject")} onClick={() => downloadBlob(createStoryProjectFile(project), `${project.name.replace(/\s+/g, "-").toLowerCase()}.nhb-story`)}><Download size={18} aria-hidden="true" /></button>
           <input ref={importRef} type="file" accept=".nhb-story,application/json" hidden onChange={(event) => void importProject(event.target.files?.[0])} />
         </div>
       </header>
 
-      <aside className="story-builder-projects" aria-label="Story projects">
-        <header><span>PROJECTS / {projects.length}</span><button type="button" onClick={createNewProject} title="New project"><Plus size={16} aria-hidden="true" /></button></header>
+      <aside className="story-builder-projects" aria-label={text("storyProjects")}>
+        <header><span>{text("storyProjects")} / {projects.length}</span><button type="button" onClick={createNewProject} title={text("newProject")}><Plus size={16} aria-hidden="true" /></button></header>
         <div>{projects.map((entry) => <button type="button" key={entry.id} onClick={() => void openProject(entry)} className={entry.id === project.id ? "is-active" : ""}><strong>{entry.name}</strong><small>{entry.chapters.length} chapters</small></button>)}</div>
-        <button type="button" className="story-builder-delete-project" onClick={() => void removeCurrentProject()}><Trash2 size={15} aria-hidden="true" />Delete project</button>
+        <button type="button" className="story-builder-delete-project" onClick={() => void removeCurrentProject()}><Trash2 size={15} aria-hidden="true" />{text("deleteProject")}</button>
       </aside>
 
       <section className="story-builder-workspace">
         <div className="story-builder-canvas">
           <StoryTimeline chapters={project.chapters} activeChapterId={activeChapter.id} onSelect={setActiveChapterId} onReorder={reorderChapter} onAdd={addChapter} />
-          <div className="story-builder-device-switch" role="group" aria-label="Preview size">
-            <button type="button" className={previewDevice === "desktop" ? "is-active" : undefined} aria-pressed={previewDevice === "desktop"} onClick={() => setPreviewDevice("desktop")}><Monitor size={15} aria-hidden="true" />DESKTOP</button>
-            <button type="button" className={previewDevice === "mobile" ? "is-active" : undefined} aria-pressed={previewDevice === "mobile"} onClick={() => setPreviewDevice("mobile")}><Smartphone size={15} aria-hidden="true" />MOBILE</button>
+          <div className="story-builder-device-switch" role="group" aria-label={text("previewSize")}>
+            <button type="button" data-preview-device="desktop" className={previewDevice === "desktop" ? "is-active" : undefined} aria-pressed={previewDevice === "desktop"} onClick={() => setPreviewDevice("desktop")}><Monitor size={15} aria-hidden="true" />{text("desktop")}</button>
+            <button type="button" data-preview-device="mobile" className={previewDevice === "mobile" ? "is-active" : undefined} aria-pressed={previewDevice === "mobile"} onClick={() => setPreviewDevice("mobile")}><Smartphone size={15} aria-hidden="true" />{text("mobile")}</button>
           </div>
           <StoryBuilderPreview project={project} activeChapterId={activeChapter.id} onSelectChapter={setActiveChapterId} device={previewDevice} />
         </div>
         <aside className="story-builder-controls">
           <section>
             <span className="platform-index">01 / STORY</span>
-            <label>Project name<input value={project.name} onChange={(event) => updateProject((current) => ({ ...current, name: event.target.value }))} /></label>
-            <label>Title<input value={project.title} onChange={(event) => updateProject((current) => ({ ...current, title: event.target.value }))} /></label>
-            <label>Subtitle<textarea rows={2} value={project.subtitle} onChange={(event) => updateProject((current) => ({ ...current, subtitle: event.target.value }))} /></label>
-            <label>Accent<input type="color" value={project.accent} onChange={(event) => updateProject((current) => ({ ...current, accent: event.target.value }))} /></label>
+            <label>{text("projectName")}<input data-story-field="project-name" value={project.name} onChange={(event) => updateProject((current) => ({ ...current, name: event.target.value }))} /></label>
+            <label>{text("title")}<input value={project.title} onChange={(event) => updateProject((current) => ({ ...current, title: event.target.value }))} /></label>
+            <label>{text("subtitle")}<textarea rows={2} value={project.subtitle} onChange={(event) => updateProject((current) => ({ ...current, subtitle: event.target.value }))} /></label>
+            <label>{text("accent")}<input type="color" value={project.accent} onChange={(event) => updateProject((current) => ({ ...current, accent: event.target.value }))} /></label>
           </section>
 
           <section>
-            <header><span className="platform-index">02 / CHAPTERS</span><button type="button" onClick={addChapter}><Plus size={15} aria-hidden="true" />Add</button></header>
+            <header><span className="platform-index">02 / {text("chapters")}</span><button type="button" data-action="add-chapter" onClick={addChapter}><Plus size={15} aria-hidden="true" />{text("add")}</button></header>
             <div className="story-builder-chapter-tabs">{project.chapters.map((chapter, index) => <button type="button" key={chapter.id} onClick={() => setActiveChapterId(chapter.id)} className={chapter.id === activeChapter.id ? "is-active" : ""}>{String(index + 1).padStart(2, "0")}</button>)}</div>
             <div className="story-builder-order-actions">
-              <button type="button" title="Move chapter up" onClick={() => moveChapter(-1)}><ArrowUp size={16} aria-hidden="true" /></button>
-              <button type="button" title="Move chapter down" onClick={() => moveChapter(1)}><ArrowDown size={16} aria-hidden="true" /></button>
-              <button type="button" title="Remove chapter" disabled={project.chapters.length === 1} onClick={removeChapter}><Trash2 size={16} aria-hidden="true" /></button>
+              <button type="button" title={text("moveChapterUp")} onClick={() => moveChapter(-1)}><ArrowUp size={16} aria-hidden="true" /></button>
+              <button type="button" title={text("moveChapterDown")} onClick={() => moveChapter(1)}><ArrowDown size={16} aria-hidden="true" /></button>
+              <button type="button" title={text("removeChapter")} disabled={project.chapters.length === 1} onClick={removeChapter}><Trash2 size={16} aria-hidden="true" /></button>
             </div>
-            <label>Kicker<input value={activeChapter.kicker} onChange={(event) => updateActiveChapter((chapter) => ({ ...chapter, kicker: event.target.value }))} /></label>
-            <label>Heading<input value={activeChapter.title} onChange={(event) => updateActiveChapter((chapter) => ({ ...chapter, title: event.target.value }))} /></label>
-            <label>Body<textarea rows={4} value={activeChapter.body} onChange={(event) => updateActiveChapter((chapter) => ({ ...chapter, body: event.target.value }))} /></label>
-            <div className="story-builder-layouts" role="group" aria-label="Chapter layout">{layouts.map((layout) => <button type="button" key={layout.id} className={activeChapter.layout === layout.id ? "is-active" : ""} onClick={() => updateActiveChapter((chapter) => ({ ...chapter, layout: layout.id }))}><LayoutTemplate size={14} aria-hidden="true" />{layout.label}</button>)}</div>
+            <label>{text("kicker")}<input value={activeChapter.kicker} onChange={(event) => updateActiveChapter((chapter) => ({ ...chapter, kicker: event.target.value }))} /></label>
+            <label>{text("heading")}<input value={activeChapter.title} onChange={(event) => updateActiveChapter((chapter) => ({ ...chapter, title: event.target.value }))} /></label>
+            <label>{text("body")}<textarea rows={4} value={activeChapter.body} onChange={(event) => updateActiveChapter((chapter) => ({ ...chapter, body: event.target.value }))} /></label>
+            <div className="story-builder-layouts" role="group" aria-label={text("chapterLayout")}>{layouts.map((layout) => <button type="button" key={layout.id} data-story-layout={layout.id} className={activeChapter.layout === layout.id ? "is-active" : ""} onClick={() => updateActiveChapter((chapter) => ({ ...chapter, layout: layout.id }))}><LayoutTemplate size={14} aria-hidden="true" />{text(layout.label)}</button>)}</div>
             <SceneDirectorControls value={activeChapter.scene} onChange={(scene) => updateActiveChapter((chapter) => ({ ...chapter, scene }))} />
           </section>
 
           <section>
             <span className="platform-index">03 / SELECTED FRAMES</span>
-            <div className="story-builder-selected">{activeChapter.media.map((frame) => <div key={frame.id}><ImageWithFallback src={frame.src} alt="" title={frame.alt} sizes="90px" /><button type="button" title="Remove frame" onClick={() => updateActiveChapter((chapter) => ({ ...chapter, media: chapter.media.filter((entry) => entry.id !== frame.id) }))}><X size={13} aria-hidden="true" /></button></div>)}</div>
+            <div className="story-builder-selected">{activeChapter.media.map((frame) => <div key={frame.id}><ImageWithFallback src={frame.src} alt="" title={frame.alt} sizes="90px" /><button type="button" title={text("removeFrame")} onClick={() => updateActiveChapter((chapter) => ({ ...chapter, media: chapter.media.filter((entry) => entry.id !== frame.id) }))}><X size={13} aria-hidden="true" /></button></div>)}</div>
           </section>
 
           <section className="story-builder-archive">
             <span className="platform-index">04 / ARCHIVE FRAMES</span>
-            <div>{archiveFrames.map((frame) => <button type="button" key={frame.id} title={`Add ${frame.alt}`} onClick={() => addFrame(frame)} disabled={activeChapter.media.some((entry) => entry.id === frame.id)}><ImageWithFallback src={frame.src} alt="" title={frame.alt} sizes="110px" /><ImagePlus size={15} aria-hidden="true" /></button>)}</div>
+            <div>{archiveFrames.map((frame) => <button type="button" key={frame.id} title={text("addFrame", { title: frame.alt })} onClick={() => addFrame(frame)} disabled={activeChapter.media.some((entry) => entry.id === frame.id)}><ImageWithFallback src={frame.src} alt="" title={frame.alt} sizes="110px" /><ImagePlus size={15} aria-hidden="true" /></button>)}</div>
           </section>
         </aside>
       </section>
 
-      <footer className="story-builder-footer"><span><Save size={15} aria-hidden="true" />Projects remain in this browser</span><PrefetchLink to="/stories">View published stories <ArrowRight size={16} aria-hidden="true" /></PrefetchLink></footer>
+      <footer className="story-builder-footer"><span><Save size={15} aria-hidden="true" />{text("projectsStayLocal")}</span><PrefetchLink to="/stories">{text("viewPublishedStories")} <ArrowRight size={16} aria-hidden="true" /></PrefetchLink></footer>
     </PageTransition>
   );
 }

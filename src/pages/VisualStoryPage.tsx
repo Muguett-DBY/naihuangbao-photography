@@ -1,15 +1,17 @@
 import "../styles/story-v2.css";
 import { useParams } from "react-router";
+import { useTranslation } from "react-i18next";
 import { VisualStoryReader } from "../components/stories/VisualStoryReader";
 import { NotFound } from "../components/NotFound";
 import { getVisualStory } from "../data/visual-stories";
 import { useSEO } from "../hooks/useSEO";
 
 export function VisualStoryPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const story = getVisualStory(id);
   useSEO({
-    title: story?.title ?? "Stories",
+    title: story?.title ?? t("platform.stories.title"),
     descKey: "platform.stories.description",
     path: story ? `/stories/${story.id}` : "/stories",
     image: story?.chapters[0]?.media[0]?.src,

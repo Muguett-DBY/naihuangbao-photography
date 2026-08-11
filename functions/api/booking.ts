@@ -2,6 +2,7 @@ import { badRequest, jsonResponse, unavailable } from "../_responses";
 import { getOptionalUserId } from "../_auth";
 import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../_security";
 import { validateString, validateOptionalString } from "../_validation";
+import { sendTransactionalNotificationSafely } from "../_notifications";
 import {
   BOOKING_CAPACITY_PER_DAY,
   getBookingTimeSlotAvailability,
@@ -159,6 +160,14 @@ export const onRequestPost: PagesFunction<BookingEnv> = async (context) => {
         createdAt,
       )
       .run();
+
+    context.waitUntil(sendTransactionalNotificationSafely(context.env, "booking_confirmation", contact, {
+      bookingId: id,
+      packageName,
+      preferredDate,
+      preferredTime,
+      name,
+    }));
 
     return jsonResponse({ ok: true, id, accountLinked: userId !== null }, 201);
   } catch (error) {

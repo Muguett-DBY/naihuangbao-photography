@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type { VisualAsset } from "../types/visual-asset";
 import type { WorkspaceAssetReference, WorkspaceProject, WorkspaceProjectEvent, WorkspaceSurface } from "../types/workspace-project";
@@ -24,6 +24,7 @@ const LEGACY_EXHIBITION_KEY = "nhb-archive-exhibition-v1";
 
 type WorkspaceProjectContextValue = {
   ready: boolean;
+  persisting: boolean;
   projects: WorkspaceProject[];
   activeProject: WorkspaceProject | null;
   events: WorkspaceProjectEvent[];
@@ -34,7 +35,7 @@ type WorkspaceProjectContextValue = {
   addAsset: (asset: VisualAsset, title?: string) => void;
   addAssets: (assets: readonly VisualAsset[]) => void;
   removeAsset: (assetId: string) => void;
-  toggleAsset: (asset: VisualAsset, title?: string) => void;
+  toggleAsset: (asset: VisualAsset, title?: string) => Promise<void>;
   hasAsset: (assetId: string) => boolean;
   linkVaultAsset: (asset: WorkspaceAssetReference) => void;
   linkVaultAssets: (assets: readonly WorkspaceAssetReference[]) => void;
@@ -44,6 +45,10 @@ type WorkspaceProjectContextValue = {
 };
 
 const WorkspaceProjectContext = createContext<WorkspaceProjectContextValue | null>(null);
+
+function persistInBackground(task: Promise<unknown>) {
+  void task.catch((error) => console.warn("Workspace persistence is unavailable; continuing in memory", error));
+}
 
 async function createInitialProject() {
   const project = createWorkspaceProject();
@@ -65,39 +70,61 @@ async function createInitialProject() {
 
 export function WorkspaceProjectProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
+  const [pendingProjectWrites, setPendingProjectWrites] = useState(0);
   const [projects, setProjects] = useState<WorkspaceProject[]>([]);
   const [events, setEvents] = useState<WorkspaceProjectEvent[]>([]);
   const [activeProjectId, setActiveProjectIdState] = useState(() => safeLocalStorage.getItem(ACTIVE_PROJECT_KEY));
+  const projectWriteQueue = useRef<Promise<void>>(Promise.resolve());
+
+  const persistProject = useCallback((project: WorkspaceProject) => {
+    setPendingProjectWrites((count) => count + 1);
+    const write = projectWriteQueue.current.then(() => saveWorkspaceProject(project));
+    const handled = write
+      .catch((error) => console.warn("Workspace persistence is unavailable; continuing in memory", error))
+      .finally(() => setPendingProjectWrites((count) => Math.max(0, count - 1)));
+    projectWriteQueue.current = handled;
+    return handled;
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
-    void Promise.all([listWorkspaceProjects(), listWorkspaceEvents(undefined, 96)]).then(async ([storedProjects, storedEvents]) => {
-      const nextProjects = storedProjects.length ? storedProjects : [await createInitialProject()];
-      if (!storedProjects.length) await saveWorkspaceProject(nextProjects[0]);
-      if (cancelled) return;
-      const requestedId = activeProjectId;
-      const nextActiveId = nextProjects.some((project) => project.id === requestedId) ? requestedId! : nextProjects[0].id;
-      setProjects(nextProjects);
-      setEvents(storedEvents);
-      setActiveProjectIdState(nextActiveId);
-      safeLocalStorage.setItem(ACTIVE_PROJECT_KEY, nextActiveId);
-      setReady(true);
-    });
+    void Promise.all([listWorkspaceProjects(), listWorkspaceEvents(undefined, 96)])
+      .then(async ([storedProjects, storedEvents]) => {
+        const nextProjects = storedProjects.length ? storedProjects : [await createInitialProject()];
+        if (!storedProjects.length) void persistProject(nextProjects[0]);
+        if (cancelled) return;
+        const requestedId = activeProjectId;
+        const nextActiveId = nextProjects.some((project) => project.id === requestedId) ? requestedId! : nextProjects[0].id;
+        setProjects(nextProjects);
+        setEvents(storedEvents);
+        setActiveProjectIdState(nextActiveId);
+        safeLocalStorage.setItem(ACTIVE_PROJECT_KEY, nextActiveId);
+        setReady(true);
+      })
+      .catch(async (error) => {
+        console.warn("Workspace database is unavailable; using an in-memory project", error);
+        const project = await createInitialProject();
+        if (cancelled) return;
+        setProjects([project]);
+        setEvents([]);
+        setActiveProjectIdState(project.id);
+        setReady(true);
+      });
     return () => { cancelled = true; };
-  }, []);
+  }, [persistProject]);
 
   const activeProject = projects.find((project) => project.id === activeProjectId) ?? projects[0] ?? null;
 
   const recordEvent = useCallback((project: WorkspaceProject, type: WorkspaceProjectEvent["type"], summary: string, surface?: WorkspaceSurface) => {
     const event = createWorkspaceEvent(project, type, summary, surface);
     setEvents((current) => [event, ...current].slice(0, 96));
-    void saveWorkspaceEvent(event);
+    persistInBackground(saveWorkspaceEvent(event));
   }, []);
 
   const commit = useCallback((project: WorkspaceProject) => {
     setProjects((current) => [project, ...current.filter((entry) => entry.id !== project.id)]);
-    void saveWorkspaceProject(project);
-  }, []);
+    return persistProject(project);
+  }, [persistProject]);
 
   const setActiveProjectId = useCallback((id: string) => {
     setActiveProjectIdState(id);
@@ -106,10 +133,10 @@ export function WorkspaceProjectProvider({ children }: { children: ReactNode }) 
     if (project) {
       const opened = updateWorkspaceProject(project, { lastOpenedAt: Date.now() });
       setProjects((current) => [opened, ...current.filter((entry) => entry.id !== id)]);
-      void saveWorkspaceProject(opened);
+      void persistProject(opened);
       recordEvent(opened, "opened", `Resumed ${opened.name}`);
     }
-  }, [projects, recordEvent]);
+  }, [persistProject, projects, recordEvent]);
 
   const createProject = useCallback((name?: string) => {
     const project = createWorkspaceProject({ name });
@@ -120,7 +147,11 @@ export function WorkspaceProjectProvider({ children }: { children: ReactNode }) 
   }, [commit, recordEvent, setActiveProjectId]);
 
   const removeProject = useCallback(async (id: string) => {
-    await deleteWorkspaceProject(id);
+    try {
+      await deleteWorkspaceProject(id);
+    } catch (error) {
+      console.warn("Workspace project could not be removed from persistent storage", error);
+    }
     setProjects((current) => {
       const remaining = current.filter((project) => project.id !== id);
       if (remaining.length) {
@@ -128,11 +159,11 @@ export function WorkspaceProjectProvider({ children }: { children: ReactNode }) 
         return remaining;
       }
       const replacement = createWorkspaceProject();
-      void saveWorkspaceProject(replacement);
+      void persistProject(replacement);
       setActiveProjectId(replacement.id);
       return [replacement];
     });
-  }, [activeProjectId, setActiveProjectId]);
+  }, [activeProjectId, persistProject, setActiveProjectId]);
 
   const updateActiveProject = useCallback((patch: Partial<Pick<WorkspaceProject, "name" | "description" | "accent" | "activeSurface" | "coverAssetId" | "status" | "exhibition">>) => {
     if (activeProject) commit(updateWorkspaceProject(activeProject, patch));
@@ -165,8 +196,8 @@ export function WorkspaceProjectProvider({ children }: { children: ReactNode }) 
   const hasAsset = useCallback((assetId: string) => Boolean(activeProject?.assets.some((asset) => asset.assetId === assetId)), [activeProject]);
 
   const toggleAsset = useCallback((asset: VisualAsset, title?: string) => {
-    if (!activeProject) return;
-    commit(hasAsset(asset.id) ? removeWorkspaceAsset(activeProject, asset.id) : addWorkspaceAsset(activeProject, toWorkspaceAsset(asset, title)));
+    if (!activeProject) return Promise.resolve();
+    return commit(hasAsset(asset.id) ? removeWorkspaceAsset(activeProject, asset.id) : addWorkspaceAsset(activeProject, toWorkspaceAsset(asset, title)));
   }, [activeProject, commit, hasAsset]);
 
   const addVaultAsset = useCallback((asset: WorkspaceAssetReference) => {
@@ -203,6 +234,7 @@ export function WorkspaceProjectProvider({ children }: { children: ReactNode }) 
 
   const value = useMemo<WorkspaceProjectContextValue>(() => ({
     ready,
+    persisting: pendingProjectWrites > 0,
     projects,
     activeProject,
     events: events.filter((event) => event.projectId === activeProject?.id),
@@ -220,7 +252,7 @@ export function WorkspaceProjectProvider({ children }: { children: ReactNode }) 
     linkResource,
     checkpoint,
     importProject,
-  }), [ready, projects, activeProject, events, setActiveProjectId, createProject, removeProject, updateActiveProject, addAsset, addAssets, removeAsset, toggleAsset, hasAsset, addVaultAsset, addVaultAssets, linkResource, checkpoint, importProject]);
+  }), [ready, pendingProjectWrites, projects, activeProject, events, setActiveProjectId, createProject, removeProject, updateActiveProject, addAsset, addAssets, removeAsset, toggleAsset, hasAsset, addVaultAsset, addVaultAssets, linkResource, checkpoint, importProject]);
 
   return <WorkspaceProjectContext.Provider value={value}>{children}</WorkspaceProjectContext.Provider>;
 }

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { onRequestPost } from "./api/workshops/[id]/register";
 
 type RecordedStatement = {
@@ -60,6 +60,7 @@ describe("workshop registration capacity", () => {
       request: registrationRequest(),
       env: { DB: db },
       params: { id: "workshop-123" },
+      waitUntil: vi.fn(),
     } as never);
 
     expect(response.status).toBe(201);

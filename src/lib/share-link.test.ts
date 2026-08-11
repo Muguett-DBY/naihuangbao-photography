@@ -25,7 +25,7 @@ describe("share-link utilities", () => {
     expect(normalized.maxViews).toBe(25);
     expect(normalized.expiresAt).not.toBeNull();
     expect(normalized.passwordHash).not.toBeNull();
-    expect(normalized.createdBy).toBe("admin@example.com");
+    expect(normalized.createdBy).toBeNull();
   });
 
   it("rejects invalid resource types and missing resource ids", () => {
@@ -60,6 +60,9 @@ describe("share-link utilities", () => {
 
   it("verifies share password hashes with timing-safe comparison", async () => {
     const hash = await hashSharePassword("hunter2");
+    const secondHash = await hashSharePassword("hunter2");
+    expect(hash).toMatch(/^pbkdf2-sha256\$600000\$/);
+    expect(secondHash).not.toBe(hash);
     expect(await verifySharePassword("hunter2", hash)).toBe(true);
     expect(await verifySharePassword("wrong", hash)).toBe(false);
     expect(await verifySharePassword("anything", "")).toBe(true);

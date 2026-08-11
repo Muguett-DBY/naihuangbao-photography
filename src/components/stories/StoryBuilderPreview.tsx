@@ -2,6 +2,7 @@ import { Pencil } from "lucide-react";
 import type { CSSProperties } from "react";
 import { ImageWithFallback } from "../ImageWithFallback";
 import type { StoryProject } from "../../lib/story-project-store";
+import { useWorkspaceCopy } from "../../i18n/workspace-copy";
 
 export function StoryBuilderPreview({ project, activeChapterId, onSelectChapter, device = "desktop" }: {
   project: StoryProject;
@@ -9,11 +10,12 @@ export function StoryBuilderPreview({ project, activeChapterId, onSelectChapter,
   onSelectChapter: (id: string) => void;
   device?: "desktop" | "mobile";
 }) {
+  const { text } = useWorkspaceCopy();
   return (
     <div className={`story-builder-preview story-builder-preview--${device}`} style={{ "--story-accent": project.accent } as CSSProperties}>
       <header>
-        <span>NHB / LIVE STORY PREVIEW</span>
-        <h2>{project.title || "Untitled story"}</h2>
+        <span>NHB / {text("liveStoryPreview")}</span>
+        <h2>{project.title || text("untitledStory")}</h2>
         <p>{project.subtitle}</p>
       </header>
       <div>
@@ -32,13 +34,13 @@ export function StoryBuilderPreview({ project, activeChapterId, onSelectChapter,
           >
             <header>
               <span>{chapter.kicker}</span>
-              <button type="button" title="Edit chapter" aria-label={`Edit ${chapter.title}`} onClick={() => onSelectChapter(chapter.id)}><Pencil size={14} aria-hidden="true" /></button>
+              <button type="button" title={text("editChapter")} aria-label={text("editChapterLabel", { title: chapter.title })} onClick={() => onSelectChapter(chapter.id)}><Pencil size={14} aria-hidden="true" /></button>
               <h3>{chapter.title}</h3><p>{chapter.body}</p>
             </header>
             <div>
               {chapter.media.length > 0 ? chapter.media.map((media, mediaIndex) => (
                 <ImageWithFallback key={media.id} src={media.src} alt={media.alt} title={chapter.title} sizes="(max-width: 900px) 100vw, 46vw" priority={index === 0 && mediaIndex === 0} tone="sage" />
-              )) : <button type="button" onClick={() => onSelectChapter(chapter.id)}>从右侧档案加入画面</button>}
+              )) : <button type="button" onClick={() => onSelectChapter(chapter.id)}>{text("addFrameFromArchive")}</button>}
             </div>
           </article>
         ))}

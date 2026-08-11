@@ -1,5 +1,6 @@
 import { badRequest, jsonResponse, unavailable } from "../../_responses";
-import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../_security";
+import { getUserFromRequest } from "../../_auth";
+import { enforceRateLimit, getRequiredAuthSecret, rateLimited, requirePublicMutationRequest } from "../../_security";
 import {
   buildShareLinkRecord,
   hashSharePassword,
@@ -17,11 +18,17 @@ type CreateShareLinkBody = {
   createdBy?: string;
 };
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+type ShareEnv = Env & { AUTH_SECRET?: string };
+
+export const onRequestPost: PagesFunction<ShareEnv> = async (context) => {
   const publicActionError = requirePublicMutationRequest(context.request);
   if (publicActionError) return publicActionError;
 
-  const limit = await enforceRateLimit(context.request, context.env, "share-link-create", 30, 60 * 60);
+  const secret = getRequiredAuthSecret(context.env);
+  const user = secret ? await getUserFromRequest(context.request, secret, context.env.DB) : null;
+  if (!user) return jsonResponse({ error: "Sign in to create share links" }, 401);
+
+  const limit = await enforceRateLimit(context.request, context.env, `share-link-create:${user.userId}`, 30, 60 * 60);
   if (!limit.ok) return rateLimited(limit.retryAfter);
 
   const body = (await context.request.json().catch(() => ({}))) as CreateShareLinkBody;
@@ -35,7 +42,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       password: body.password,
       maxViews: body.maxViews,
       expiresInDays: body.expiresInDays,
-      createdBy: body.createdBy,
+      createdBy: user.userId,
     });
   } catch (error) {
     return badRequest(error instanceof Error ? error.message : "Invalid share link input");
@@ -45,11 +52,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     ? await hashSharePassword(normalized.passwordHash.replace(/^pending:/, ""))
     : null;
 
-  const record = buildShareLinkRecord(normalized, passwordHash);
+  const record = buildShareLinkRecord({ ...normalized, createdBy: user.userId }, passwordHash);
 
-  if (context.env.DB) {
-    try {
-      await context.env.DB.prepare(
+  try {
+    await context.env.DB.prepare(
         `insert into share_links (id, token, resource_type, resource_id, visibility, password_hash, max_views, view_count, expires_at, created_at, created_by)
          values (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)`,
       )
@@ -65,10 +71,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           record.createdAt,
           record.createdBy,
         )
-        .run();
-    } catch (error) {
-      return unavailable("Failed to persist share link", error, { route: "/api/share/create", method: "POST" });
-    }
+      .run();
+  } catch (error) {
+    return unavailable("Failed to persist share link", error, { route: "/api/share/create", method: "POST" });
   }
 
   return jsonResponse({

@@ -5,10 +5,26 @@ type AuthEnv = {
   CF_ACCESS_ADMIN_EMAILS?: string;
 };
 
+type SessionDatabase = {
+  prepare(query: string): {
+    bind(...values: unknown[]): {
+      first<T>(): Promise<T | null>;
+    };
+  };
+};
+
+type ValidatedUserSession = {
+  userId: string;
+  sessionVersion: number;
+};
+
 const adminCookieName = "nhb_admin_session";
 const userCookieName = "nhb_user_session";
 const maxAgeSeconds = 60 * 60 * 24 * 30;
 const adminMutationHeaderName = "x-nhb-admin-action";
+const legacyPasswordIterations = 100_000;
+const passwordIterations = 600_000;
+const passwordHashPrefix = "pbkdf2-sha256";
 
 export async function createAdminSession(env: AuthEnv) {
   if (!env.ADMIN_PASSWORD) {
@@ -70,14 +86,18 @@ export function clearAdminSessionCookie() {
 
 // ── User auth helpers ──
 
-export async function createUserSession(userId: string, secret: string) {
+export async function createUserSession(userId: string, secret: string, sessionVersion = 0) {
   const expiresAt = Math.floor(Date.now() / 1000) + maxAgeSeconds;
-  const payload = `${userId}.${expiresAt}`;
+  const payload = `${userId}.${sessionVersion}.${expiresAt}`;
   const signature = await sign(payload, secret);
   return `${payload}.${signature}`;
 }
 
-export async function getUserFromRequest(request: Request, secret: string): Promise<{ userId: string } | null> {
+export async function getUserFromRequest(
+  request: Request,
+  secret: string,
+  db?: SessionDatabase,
+): Promise<{ userId: string } | null> {
   const cookieHeader = request.headers.get("cookie") ?? "";
   const sessions = readCookies(cookieHeader, userCookieName);
   if (sessions.length === 0) {
@@ -86,9 +106,9 @@ export async function getUserFromRequest(request: Request, secret: string): Prom
 
   for (const session of sessions) {
     const result = await validateUserSession(session, secret);
-    if (result) {
-      return { userId: result };
-    }
+    if (!result) continue;
+    if (db && !(await sessionVersionMatches(db, result))) continue;
+    return { userId: result.userId };
   }
 
   return null;
@@ -96,25 +116,37 @@ export async function getUserFromRequest(request: Request, secret: string): Prom
 
 export async function getOptionalUserId(
   request: Request,
-  env: { AUTH_SECRET?: string },
+  env: { AUTH_SECRET?: string; DB?: SessionDatabase },
 ): Promise<string | null> {
   const secret = env.AUTH_SECRET?.trim();
   if (!secret || secret.length < 32) return null;
-  return (await getUserFromRequest(request, secret))?.userId ?? null;
+  return (await getUserFromRequest(request, secret, env.DB))?.userId ?? null;
 }
 
-async function validateUserSession(session: string, secret: string): Promise<string | null> {
+async function validateUserSession(session: string, secret: string): Promise<ValidatedUserSession | null> {
   const parts = session.split(".");
-  if (parts.length !== 3) return null;
+  if (parts.length !== 3 && parts.length !== 4) return null;
 
-  const [userId, expiresAt, signature] = parts;
-  if (!userId || !expiresAt || !signature) return null;
+  const legacy = parts.length === 3;
+  const [userId, versionOrExpiry, expiryOrSignature, currentSignature] = parts;
+  const sessionVersion = legacy ? 0 : Number(versionOrExpiry);
+  const expiresAt = legacy ? versionOrExpiry : expiryOrSignature;
+  const signature = legacy ? expiryOrSignature : currentSignature;
+  if (!userId || !expiresAt || !signature || !Number.isSafeInteger(sessionVersion) || sessionVersion < 0) return null;
   if (Number(expiresAt) <= Math.floor(Date.now() / 1000)) return null;
 
-  const expected = await sign(`${userId}.${expiresAt}`, secret);
+  const payload = legacy ? `${userId}.${expiresAt}` : `${userId}.${sessionVersion}.${expiresAt}`;
+  const expected = await sign(payload, secret);
   if (!timingSafeEqual(signature, expected)) return null;
 
-  return userId;
+  return { userId, sessionVersion };
+}
+
+async function sessionVersionMatches(db: SessionDatabase, session: ValidatedUserSession) {
+  const row = await db.prepare("select session_version from users where id = ?")
+    .bind(session.userId)
+    .first<{ session_version: number }>();
+  return row !== null && Number(row.session_version ?? 0) === session.sessionVersion;
 }
 
 export function userSessionCookie(session: string) {
@@ -159,6 +191,24 @@ async function sign(value: string, secret: string) {
 }
 
 export async function hashPassword(password: string, salt: string): Promise<string> {
+  const hash = await derivePasswordHash(password, salt, passwordIterations);
+  return `${passwordHashPrefix}$${passwordIterations}$${hash}`;
+}
+
+export async function verifyPassword(password: string, salt: string, storedHash: string) {
+  const modern = parsePasswordHash(storedHash);
+  const iterations = modern?.iterations ?? legacyPasswordIterations;
+  const expected = modern?.hash ?? storedHash;
+  const computed = await derivePasswordHash(password, salt, iterations);
+  return timingSafeEqual(computed, expected);
+}
+
+export function needsPasswordRehash(storedHash: string) {
+  const parsed = parsePasswordHash(storedHash);
+  return !parsed || parsed.iterations < passwordIterations;
+}
+
+async function derivePasswordHash(password: string, salt: string, iterations: number): Promise<string> {
   const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
@@ -173,13 +223,22 @@ export async function hashPassword(password: string, salt: string): Promise<stri
       name: "PBKDF2",
       hash: "SHA-256",
       salt: encoder.encode(salt),
-      iterations: 100000,
+      iterations,
     },
     keyMaterial,
     256,
   );
 
   return base64Url(bits);
+}
+
+function parsePasswordHash(value: string) {
+  const [algorithm, rawIterations, hash] = value.split("$");
+  const iterations = Number(rawIterations);
+  if (algorithm !== passwordHashPrefix || !Number.isSafeInteger(iterations) || iterations < legacyPasswordIterations || !hash) {
+    return null;
+  }
+  return { iterations, hash };
 }
 
 export function generateSalt(): string {

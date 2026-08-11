@@ -13,6 +13,7 @@ import {
 } from "../../lib/project-sync";
 import type { ProjectSyncReceipt, ProjectSyncVersion } from "../../types/project-sync";
 import type { WorkspaceProject } from "../../types/workspace-project";
+import { useWorkspaceCopy } from "../../i18n/workspace-copy";
 import { PrefetchLink } from "../shared/PrefetchLink";
 
 export function ProjectSyncPanel({ project }: { project: WorkspaceProject }) {
@@ -24,6 +25,7 @@ export function ProjectSyncPanel({ project }: { project: WorkspaceProject }) {
 }
 
 function ProjectSyncPanelContent({ project }: { project: WorkspaceProject }) {
+  const { text, locale } = useWorkspaceCopy();
   const auth = useAuth();
   const workspace = useWorkspaceProjects();
   const [syncing, setSyncing] = useState(false);
@@ -47,31 +49,35 @@ function ProjectSyncPanelContent({ project }: { project: WorkspaceProject }) {
 
   useEffect(() => {
     if (!auth.user) return;
-    const flush = () => void flushSyncQueue().then(({ completed }) => { if (completed) setNotice(`${completed} queued sync job restored.`); });
+    const flush = () => void flushSyncQueue().then(({ completed }) => { if (completed) setNotice(text("queuedSyncRestored", { count: completed })); });
     window.addEventListener("online", flush);
     if (navigator.onLine) flush();
     return () => window.removeEventListener("online", flush);
-  }, [auth.user?.id]);
+  }, [auth.user?.id, text]);
 
   const runSync = async (expectedRevision?: number) => {
     setSyncing(true);
     setConflict(null);
-    setNotice("Syncing project and eligible vault originals...");
+    setNotice(text("syncingProject"));
     try {
       const next = await syncWorkspaceProject(project, expectedRevision);
       setReceipt(next);
       setVersions(await listSyncedProjectVersions(project.id));
-      setNotice(`Cloud revision ${next.revision} saved / ${next.uploadedAssets} originals uploaded${next.skippedAssets ? ` / ${next.skippedAssets} skipped` : ""}.`);
-      workspace.checkpoint(`Synced cloud revision ${next.revision}`, "publish");
+      setNotice(text("cloudRevisionSaved", {
+        revision: next.revision,
+        uploaded: next.uploadedAssets,
+        skipped: next.skippedAssets ? text("skippedOriginals", { count: next.skippedAssets }) : "",
+      }));
+      workspace.checkpoint(text("syncedCheckpoint", { revision: next.revision }), "publish");
     } catch (error) {
       if (error instanceof ProjectSyncConflict) {
         setConflict(error);
-        setNotice("A newer cloud revision exists. Choose which copy should lead.");
+        setNotice(text("newerCloudNotice"));
       } else if (!navigator.onLine || error instanceof TypeError) {
         await queueWorkspaceSync(project, expectedRevision);
-        setNotice("Offline: this project was added to the local sync queue.");
+        setNotice(text("offlineQueued"));
       } else {
-        setNotice(error instanceof Error ? error.message : "Project sync failed.");
+        setNotice(error instanceof Error ? error.message : text("projectSyncFailed"));
       }
     } finally {
       setSyncing(false);
@@ -85,9 +91,9 @@ function ProjectSyncPanelContent({ project }: { project: WorkspaceProject }) {
       workspace.importProject({ ...snapshot.project, lastOpenedAt: Date.now(), updatedAt: Date.now() });
       setReceipt({ projectId: project.id, revision: snapshot.revision, contentHash: snapshot.contentHash, updatedAt: snapshot.updatedAt, uploadedAssets: 0, skippedAssets: 0 });
       setConflict(null);
-      setNotice(`Cloud revision ${snapshot.revision} restored locally.`);
+      setNotice(text("cloudRevisionRestored", { revision: snapshot.revision }));
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "Cloud restore failed.");
+      setNotice(error instanceof Error ? error.message : text("cloudRestoreFailed"));
     } finally {
       setSyncing(false);
     }
@@ -95,19 +101,19 @@ function ProjectSyncPanelContent({ project }: { project: WorkspaceProject }) {
 
   return (
     <section className="project-sync" aria-labelledby="project-sync-title">
-      <header><div><span>03 / CLOUD CONTINUITY</span><h2 id="project-sync-title">Continue on another device</h2></div><p>Optional account sync stores immutable project revisions. Local work remains usable offline.</p></header>
+      <header><div><span>03 / {text("cloudContinuity")}</span><h2 id="project-sync-title">{text("continueAnotherDevice")}</h2></div><p>{text("syncIntro")}</p></header>
       {!auth.user ? (
-        <div className="project-sync__signin"><LogIn size={21} aria-hidden="true" /><div><strong>Sign in when you want continuity.</strong><p>No account is required for local creation.</p></div><PrefetchLink to="/login">SIGN IN</PrefetchLink></div>
+        <div className="project-sync__signin"><LogIn size={21} aria-hidden="true" /><div><strong>{text("signInContinuity")}</strong><p>{text("noAccountRequired")}</p></div><PrefetchLink to="/login">{text("signIn")}</PrefetchLink></div>
       ) : (
         <>
           <div className="project-sync__status">
-            <span className={navigator.onLine ? "is-online" : "is-offline"}>{navigator.onLine ? <Cloud size={19} aria-hidden="true" /> : <WifiOff size={19} aria-hidden="true" />}<strong>{navigator.onLine ? "CLOUD READY" : "OFFLINE QUEUE"}</strong></span>
-            <span><GitBranch size={19} aria-hidden="true" /><strong>REVISION {receipt?.revision ?? 0}</strong><small>{receipt?.updatedAt ? new Date(receipt.updatedAt).toLocaleString() : "LOCAL ONLY"}</small></span>
-            <button type="button" onClick={() => void runSync()} disabled={syncing}><CloudUpload size={17} aria-hidden="true" />{syncing ? "SYNCING" : "SYNC NOW"}</button>
+            <span className={navigator.onLine ? "is-online" : "is-offline"}>{navigator.onLine ? <Cloud size={19} aria-hidden="true" /> : <WifiOff size={19} aria-hidden="true" />}<strong>{navigator.onLine ? text("cloudReady") : text("offlineQueue")}</strong></span>
+            <span><GitBranch size={19} aria-hidden="true" /><strong>{text("revisionNumber", { revision: receipt?.revision ?? 0 })}</strong><small>{receipt?.updatedAt ? new Date(receipt.updatedAt).toLocaleString(locale) : text("localOnlyShort")}</small></span>
+            <button type="button" onClick={() => void runSync()} disabled={syncing}><CloudUpload size={17} aria-hidden="true" />{syncing ? text("syncingShort") : text("syncNow")}</button>
           </div>
-          {conflict ? <div className="project-sync__conflict"><RefreshCw size={19} aria-hidden="true" /><div><strong>Cloud revision {conflict.remoteRevision} is newer.</strong><p>Pull it into this browser, or deliberately replace it with the current local project.</p></div><button type="button" onClick={() => void pullCloud()}><CloudDownload size={16} aria-hidden="true" />PULL CLOUD</button><button type="button" onClick={() => void runSync(conflict.remoteRevision)}><CloudUpload size={16} aria-hidden="true" />USE LOCAL</button></div> : null}
+          {conflict ? <div className="project-sync__conflict"><RefreshCw size={19} aria-hidden="true" /><div><strong>{text("cloudRevisionNewer", { revision: conflict.remoteRevision })}</strong><p>{text("syncConflictHint")}</p></div><button type="button" onClick={() => void pullCloud()}><CloudDownload size={16} aria-hidden="true" />{text("pullCloud")}</button><button type="button" onClick={() => void runSync(conflict.remoteRevision)}><CloudUpload size={16} aria-hidden="true" />{text("useLocal")}</button></div> : null}
           {notice ? <p className="project-sync__notice" role="status">{notice}</p> : null}
-          {versions.length ? <div className="project-sync__versions">{versions.slice(0, 8).map((version) => <article key={version.revision}><span>R{String(version.revision).padStart(2, "0")}</span><strong>{new Date(version.updatedAt).toLocaleString()}</strong><small>{version.contentHash.slice(0, 12)}</small><button type="button" onClick={() => void pullCloud(version.revision)}><CloudDownload size={14} aria-hidden="true" />RESTORE</button></article>)}</div> : null}
+          {versions.length ? <div className="project-sync__versions">{versions.slice(0, 8).map((version) => <article key={version.revision}><span>R{String(version.revision).padStart(2, "0")}</span><strong>{new Date(version.updatedAt).toLocaleString(locale)}</strong><small>{version.contentHash.slice(0, 12)}</small><button type="button" onClick={() => void pullCloud(version.revision)}><CloudDownload size={14} aria-hidden="true" />{text("restore")}</button></article>)}</div> : null}
         </>
       )}
     </section>

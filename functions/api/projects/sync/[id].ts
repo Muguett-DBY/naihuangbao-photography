@@ -1,10 +1,11 @@
 import { badRequest, jsonResponse, unavailable } from "../../../_responses";
 import { requireProjectSyncUser, type ProjectSyncEnv } from "../../../_project-sync";
-import { requirePublicMutationRequest } from "../../../_security";
-import { hashSyncProject, isSyncWorkspaceProject, MAX_SYNC_PROJECT_BYTES } from "../../../../src/lib/project-sync-contract";
+import { enforceRateLimit, rateLimited, requirePublicMutationRequest } from "../../../_security";
+import { hashSyncProject, isSyncWorkspaceProject, MAX_SYNC_PROJECT_BYTES, MAX_SYNC_PROJECTS_PER_USER, MAX_SYNC_PROJECT_VERSIONS } from "../../../../src/lib/project-sync-contract";
 
 type CurrentProjectRow = { revision: number; content_hash: string; object_key: string; updated_at: string };
 type VersionRow = { revision: number; content_hash: string; object_key: string; created_at: string };
+type StoredVersionRow = VersionRow & { id: string };
 
 function projectId(context: EventContext<ProjectSyncEnv, string, unknown>) {
   const value = String(context.params.id ?? "");
@@ -21,8 +22,8 @@ export const onRequestGet: PagesFunction<ProjectSyncEnv> = async (context) => {
     if (url.searchParams.get("versions") === "1") {
       const rows = await context.env.DB.prepare(
         `select revision, content_hash, object_key, created_at from workspace_project_versions
-         where user_id = ? and project_id = ? order by revision desc limit 50`,
-      ).bind(auth.userId, id).all<VersionRow>();
+         where user_id = ? and project_id = ? order by revision desc limit ?`,
+      ).bind(auth.userId, id, MAX_SYNC_PROJECT_VERSIONS).all<VersionRow>();
       return jsonResponse({ versions: rows.results.map((row) => ({ projectId: id, revision: row.revision, contentHash: row.content_hash, updatedAt: row.created_at })) }, 200, { "cache-control": "no-store" });
     }
 
@@ -52,6 +53,8 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
   if (actionError) return actionError;
   const auth = await requireProjectSyncUser(context.request, context.env);
   if (!auth.ok) return auth.response;
+  const limit = await enforceRateLimit(context.request, context.env, `project-sync-projects:${auth.userId}`, 120, 60 * 60);
+  if (!limit.ok) return rateLimited(limit.retryAfter, 120);
   const id = projectId(context);
   if (!id) return badRequest("Invalid project id");
   const raw = await context.request.text();
@@ -71,6 +74,21 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
     if (currentRevision !== expectedRevision) {
       return jsonResponse({ error: "Project changed on another device", conflict: true, remoteRevision: currentRevision, contentHash: current?.content_hash, updatedAt: current?.updated_at }, 409, { "cache-control": "no-store" });
     }
+    if (!current) {
+      const projectCount = await context.env.DB.prepare(
+        "select count(*) as project_count from synced_workspace_projects where user_id = ?",
+      ).bind(auth.userId).first<{ project_count: number }>();
+      if (Number(projectCount?.project_count ?? 0) >= MAX_SYNC_PROJECTS_PER_USER) {
+        return jsonResponse({ error: "Workspace project quota exceeded", limit: MAX_SYNC_PROJECTS_PER_USER }, 413, { "cache-control": "no-store" });
+      }
+    }
+    const versions = await context.env.DB.prepare(
+      `select id, revision, content_hash, object_key, created_at
+       from workspace_project_versions
+       where user_id = ? and project_id = ?
+       order by revision desc limit 100`,
+    ).bind(auth.userId, id).all<StoredVersionRow>();
+    const staleVersions = versions.results.slice(Math.max(0, MAX_SYNC_PROJECT_VERSIONS - 1));
     const revision = currentRevision + 1;
     const contentHash = await hashSyncProject(body.project);
     const updatedAt = new Date().toISOString();
@@ -80,17 +98,68 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
       httpMetadata: { contentType: "application/json; charset=utf-8", cacheControl: "private, no-store" },
       customMetadata: { userId: auth.userId, projectId: id, revision: String(revision), contentHash },
     });
-    await context.env.DB.batch([
+    const writeResults = await context.env.DB.batch([
       context.env.DB.prepare(
         `insert into synced_workspace_projects (user_id, project_id, revision, content_hash, object_key, updated_at)
-         values (?, ?, ?, ?, ?, ?)
-         on conflict(user_id, project_id) do update set revision = excluded.revision, content_hash = excluded.content_hash, object_key = excluded.object_key, updated_at = excluded.updated_at`,
-      ).bind(auth.userId, id, revision, contentHash, objectKey, updatedAt),
+         select ?, ?, ?, ?, ?, ?
+         where (select count(*) from synced_workspace_projects where user_id = ? and project_id <> ?) < ?
+           and (
+             (? = 0 and not exists (
+               select 1 from synced_workspace_projects where user_id = ? and project_id = ?
+             ))
+             or exists (
+               select 1 from synced_workspace_projects where user_id = ? and project_id = ? and revision = ?
+             )
+           )
+         on conflict(user_id, project_id) do update set
+           revision = excluded.revision,
+           content_hash = excluded.content_hash,
+           object_key = excluded.object_key,
+           updated_at = excluded.updated_at
+         where synced_workspace_projects.revision = ?`,
+      ).bind(
+        auth.userId, id, revision, contentHash, objectKey, updatedAt,
+        auth.userId, id, MAX_SYNC_PROJECTS_PER_USER,
+        expectedRevision, auth.userId, id,
+        auth.userId, id, expectedRevision,
+        expectedRevision,
+      ),
       context.env.DB.prepare(
         `insert into workspace_project_versions (id, user_id, project_id, revision, content_hash, object_key, created_at)
-         values (?, ?, ?, ?, ?, ?, ?)`,
-      ).bind(versionId, auth.userId, id, revision, contentHash, objectKey, updatedAt),
+         select ?, ?, ?, ?, ?, ?, ?
+         where exists (
+           select 1 from synced_workspace_projects
+           where user_id = ? and project_id = ? and revision = ? and object_key = ?
+         )`,
+      ).bind(
+        versionId, auth.userId, id, revision, contentHash, objectKey, updatedAt,
+        auth.userId, id, revision, objectKey,
+      ),
+      ...staleVersions.map((version) => context.env.DB.prepare(
+        `delete from workspace_project_versions
+         where id = ? and user_id = ? and exists (
+           select 1 from synced_workspace_projects
+           where user_id = ? and project_id = ? and revision = ? and object_key = ?
+         )`,
+      ).bind(version.id, auth.userId, auth.userId, id, revision, objectKey)),
     ]);
+    if (Number(writeResults[0]?.meta.changes ?? 0) !== 1) {
+      await context.env.PHOTO_BUCKET.delete(objectKey).catch(() => undefined);
+      objectKey = "";
+      const latest = await context.env.DB.prepare(
+        "select revision, content_hash, object_key, updated_at from synced_workspace_projects where user_id = ? and project_id = ?",
+      ).bind(auth.userId, id).first<CurrentProjectRow>();
+      if (latest || expectedRevision > 0) {
+        return jsonResponse({ error: "Project changed on another device", conflict: true, remoteRevision: Number(latest?.revision ?? 0), contentHash: latest?.content_hash, updatedAt: latest?.updated_at }, 409, { "cache-control": "no-store" });
+      }
+      return jsonResponse({ error: "Workspace project quota exceeded", limit: MAX_SYNC_PROJECTS_PER_USER }, 413, { "cache-control": "no-store" });
+    }
+    if (staleVersions.length > 0) {
+      context.waitUntil(
+        context.env.PHOTO_BUCKET.delete(staleVersions.map((version) => version.object_key))
+          .catch((error) => console.warn("Failed to prune workspace project versions", error)),
+      );
+    }
     return jsonResponse({ projectId: id, revision, contentHash, updatedAt }, 200, { "cache-control": "no-store" });
   } catch (error) {
     if (objectKey) await context.env.PHOTO_BUCKET.delete(objectKey).catch(() => undefined);

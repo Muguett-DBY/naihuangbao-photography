@@ -33,11 +33,11 @@ test("@critical V8 Asset Vault 导入、近重复过滤和项目批量关联闭�
   const input = page.locator('input[type="file"]').first();
   await input.setInputFiles(file);
   await expect(page.locator("[data-vault-asset]")).toHaveCount(1);
-  await expect(page.locator(".asset-vault__intake")).toContainText("1 originals indexed");
+  await expect(page.locator(".asset-vault__intake")).toHaveAttribute("data-indexed-count", "1");
 
   await input.setInputFiles(file);
   await expect(page.locator("[data-vault-asset]")).toHaveCount(1);
-  await expect(page.locator(".asset-vault__intake")).toContainText("near-duplicates skipped");
+  await expect(page.locator("[data-vault-notice]")).toContainText("跳过 1 张近似重复图");
 
   await page.goto("/projects");
   await expect(page.locator(".workspace-project__grid figure")).toHaveCount(1);
@@ -47,20 +47,20 @@ test("@critical V8 Asset Vault 导入、近重复过滤和项目批量关联闭�
 test("@critical V8 创意策展进入 Scene Composer 且场景生命周期稳定", async ({ page }) => {
   await page.goto("/curate");
   await expect(page.locator(".curator-sequence figure")).toHaveCount(12);
-  await page.getByRole("button", { name: "6 FRAMES" }).click();
-  await page.getByRole("button", { name: /CURATE AGAIN/ }).click();
+  await page.locator('[data-frame-count="6"]').click();
+  await page.locator('[data-action="curate"]').click();
   await expect(page.locator(".curator-sequence figure")).toHaveCount(6);
-  await page.getByRole("button", { name: /ADD TO PROJECT/ }).click();
-  await expect(page.getByRole("status")).toContainText("6 frames added");
-  await page.getByRole("button", { name: /OPEN IN COMPOSER/ }).click();
+  await page.locator('[data-action="add-to-project"]').click();
+  await expect(page.getByRole("status")).toContainText("已将 6 张画面加入");
+  await page.locator('[data-action="open-composer"]').click();
   await expect(page).toHaveURL(/\/compose$/);
   await expect(page.locator("[data-scene-composer=v8]")).toBeVisible();
   await expect(page.locator(".scene-timeline__track article")).toHaveCount(5);
 
-  await page.getByTitle("Duplicate scene").first().click();
+  await page.locator('[data-action="duplicate-scene"]').first().click();
   await expect(page.locator(".scene-timeline__track article")).toHaveCount(6);
   await expect(page.locator(".scene-composer-loading")).toHaveCount(0);
-  await page.getByTitle("Delete scene").last().click();
+  await page.locator('[data-action="delete-scene"]').last().click();
   await expect(page.locator(".scene-timeline__track article")).toHaveCount(5);
 });
 
@@ -70,12 +70,12 @@ test("@critical V8 项目指挥台、展览导演和无账户云同步状态可�
   await expect(page.locator('.project-command__surfaces a[href="/vault"]')).toBeVisible();
   await expect(page.locator('.project-command__surfaces a[href="/compose"]')).toBeVisible();
   await expect(page.locator('.project-command__surfaces a[href="/curate"]')).toBeVisible();
-  await page.getByRole("button", { name: /Night/ }).click();
-  await page.getByRole("button", { name: "IMMERSIVE" }).click();
-  await page.getByRole("button", { name: "FULL MOTION" }).click();
-  await expect(page.getByRole("button", { name: /Night/ })).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByRole("button", { name: "IMMERSIVE" })).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator(".project-sync__signin")).toContainText("No account is required");
+  await page.locator('[data-exhibition-theme="night"]').click();
+  await page.locator('[data-exhibition-density="immersive"]').click();
+  await page.locator('[data-exhibition-motion="full"]').click();
+  await expect(page.locator('[data-exhibition-theme="night"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator('[data-exhibition-density="immersive"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".project-sync__signin")).toContainText("本地创作无需账户");
 });
 
 test("@critical V8 展览引擎支持主题、索引、嵌入和固定历史版本", async ({ page }) => {

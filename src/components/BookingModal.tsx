@@ -5,7 +5,6 @@ import { BookingStepRail } from "../features/booking/BookingStepRail";
 import { BookingFormSteps, type BookingFormErrors } from "../features/booking/BookingFormSteps";
 import { BookingPaymentView, BookingSuccessView, WaitlistOutcomeView } from "../features/booking/BookingOutcomeViews";
 import { useBookingPolicy } from "../hooks/useBookingPolicy";
-import { useNotification } from "../hooks/useNotification";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
@@ -47,7 +46,6 @@ type BookingSubmitResponse = {
 export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
   const { t } = useTranslation();
   const { packages, siteConfig } = useSiteContent();
-  const { sendBookingConfirmation } = useNotification();
   const { policy: bookingPolicy } = useBookingPolicy();
   const [step, setStep] = useState<1 | 2>(1);
   const [selectedPkg, setSelectedPkg] = useState(initialPackage || "");
@@ -271,7 +269,6 @@ export function BookingModal({ initialPackage, onClose }: BookingModalProps) {
       setAccountLinked(data.accountLinked === true);
       setShowPayment(true);
       track("booking_submitted", { packageName: selectedPkg, bookingId: data.id, hasNotes: Boolean(trimmedNotes) });
-      await sendBookingConfirmation(trimmedContact, { bookingId: data.id, packageName: selectedPkg, preferredDate: date, preferredTime: time, name: trimmedName });
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : t("bookingModal.submitError"));
     } finally {

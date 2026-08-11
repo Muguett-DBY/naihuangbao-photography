@@ -34,7 +34,7 @@ describe("editor regression contracts", () => {
 
     expect(rootLayout).toContain('location.pathname.startsWith("/create/")');
     expect(rootLayout).toContain("function PracticeChrome()");
-    expect(rootLayout).toContain("{showChat &&");
+    expect(rootLayout).toContain("{chatOpen &&");
   });
 
   it("keeps editor image previews bounded and face failures explicit", () => {

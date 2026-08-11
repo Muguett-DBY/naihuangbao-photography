@@ -15,10 +15,14 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - run: npm install --global npm@12.0.2
+      - run: npm --version
       - run: npm ci
+      - run: npm run db:migrate:check
+      - run: npm run cf:types:check
       - run: npm run lint
       - run: npm test
-      - run: npm run build
-      - run: npm run perf:budget
+      - run: npm run build:full
+      - run: npm run deps:audit
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e:critical
+      - run: npm run test:e2e

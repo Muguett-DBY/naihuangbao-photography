@@ -66,7 +66,7 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     .bind(id, email, passwordHash, salt, displayName, now, now)
     .run();
 
-  const session = await createUserSession(id, secret);
+  const session = await createUserSession(id, secret, 0);
 
   return jsonResponse(
     { ok: true, user: { id, email, displayName } },

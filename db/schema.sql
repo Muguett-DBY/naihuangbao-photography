@@ -213,6 +213,7 @@ create table if not exists users (
   password_hash text not null,
   salt text not null,
   display_name text not null,
+  session_version integer not null default 0,
   created_at text not null,
   updated_at text not null
 );
@@ -451,6 +452,19 @@ create index if not exists idx_published_projects_slug_version
 
 create index if not exists idx_published_projects_project
   on published_projects (project_id, published_at desc);
+
+create table if not exists published_project_handles (
+  slug text primary key,
+  owner_user_id text not null,
+  project_id text not null,
+  latest_version integer not null default 0,
+  created_at text not null,
+  updated_at text not null,
+  foreign key (owner_user_id) references users(id) on delete cascade
+);
+
+create index if not exists idx_published_project_handles_owner
+  on published_project_handles (owner_user_id, updated_at desc);
 
 -- ---- Authenticated local-first project sync ----
 

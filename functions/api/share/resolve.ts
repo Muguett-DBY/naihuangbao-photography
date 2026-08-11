@@ -50,10 +50,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return jsonResponse({ error: "expired" }, 410);
     }
 
-    if (row.max_views !== null && row.view_count >= row.max_views) {
-      return jsonResponse({ error: "max_views_reached" }, 410);
-    }
-
     if (row.password_hash) {
       const supplied = body.password ?? "";
       if (!supplied) {
@@ -65,11 +61,20 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
     }
 
-    await context.env.DB.prepare(
-      `update share_links set view_count = view_count + 1 where id = ?`,
+    const claimed = await context.env.DB.prepare(
+      `update share_links
+       set view_count = view_count + 1
+       where id = ?
+         and (max_views is null or view_count < max_views)
+         and (expires_at is null or expires_at > ?)
+       returning view_count`,
     )
-      .bind(row.id)
-      .run();
+      .bind(row.id, new Date().toISOString())
+      .first<{ view_count: number }>();
+
+    if (!claimed) {
+      return jsonResponse({ error: row.expires_at && new Date(row.expires_at).getTime() <= Date.now() ? "expired" : "max_views_reached" }, 410);
+    }
 
     return jsonResponse({
       ok: true,
@@ -78,7 +83,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         id: row.resource_id,
         visibility: row.visibility,
       },
-      viewCount: row.view_count + 1,
+      viewCount: claimed.view_count,
     }, 200, { "cache-control": "no-store" });
   } catch (error) {
     return unavailable("Failed to resolve share link", error, { route: "/api/share/resolve", method: "POST" });

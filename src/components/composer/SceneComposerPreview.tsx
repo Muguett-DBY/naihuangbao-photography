@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { ImageWithFallback } from "../ImageWithFallback";
 import { interpolateLayerValue } from "../../lib/creative-document-store";
 import type { CreativeAspect, CreativeScene } from "../../types/creative-document";
+import { useWorkspaceCopy } from "../../i18n/workspace-copy";
 
 const aspectRatios: Record<CreativeAspect, string> = {
   landscape: "16 / 10",
@@ -31,6 +32,7 @@ export function SceneComposerPreview({ scene, aspect, selectedLayerId, onSelectL
   selectedLayerId: string;
   onSelectLayer: (id: string) => void;
 }) {
+  const { text } = useWorkspaceCopy();
   return (
     <div className={`scene-composer-preview transition-${scene.transition}`} style={{ aspectRatio: aspectRatios[aspect], background: scene.background }} data-composer-preview>
       <div className="scene-composer-preview__grid" aria-hidden="true" />
@@ -46,13 +48,13 @@ export function SceneComposerPreview({ scene, aspect, selectedLayerId, onSelectL
             opacity: layer.opacity,
             mixBlendMode: layer.blendMode,
           } as CSSProperties}
-          aria-label={`Select ${layer.name}`}
+          aria-label={text("selectLayer", { name: layer.name })}
         >
-          {layer.asset ? <ImageWithFallback src={layer.asset.src} alt={layer.asset.alt} title={layer.asset.title} sizes="70vw" priority tone="ink" /> : <span className="scene-composer-preview__empty">DROP / SELECT A FRAME</span>}
+          {layer.asset ? <ImageWithFallback src={layer.asset.src} alt={layer.asset.alt} title={layer.asset.title} sizes="70vw" priority tone="ink" /> : <span className="scene-composer-preview__empty">{text("emptyFrame")}</span>}
         </button>
       ))}
       <div className="scene-composer-preview__playhead" aria-hidden="true" />
-      <footer><span>{scene.name}</span><span>{(scene.durationMs / 1000).toFixed(1)} SEC</span></footer>
+      <footer><span>{scene.name}</span><span>{text("secondsShort", { seconds: (scene.durationMs / 1000).toFixed(1) })}</span></footer>
     </div>
   );
 }

@@ -8,7 +8,6 @@ type ResetTokenRow = {
   id: string;
   user_id: string;
   expires_at: string;
-  used: number;
 };
 
 type UserRow = {
@@ -51,10 +50,9 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
   // Hash the provided token to match stored hash
   const tokenHash = await sha256Hex(token);
 
-  // Find valid (unused, not expired) token
   const now = new Date().toISOString();
   const tokenRow = await db.prepare(
-    `select id, user_id, expires_at, used
+    `select id, user_id, expires_at
      from password_reset_tokens
      where token_hash = ? and used = 0`,
   ).bind(tokenHash).first<ResetTokenRow>();
@@ -63,20 +61,10 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
     return badRequest("无效的重置令牌");
   }
 
-  if (tokenRow.used !== 0) {
-    return badRequest("该令牌已被使用");
-  }
-
   if (tokenRow.expires_at < now) {
     return badRequest("该令牌已过期");
   }
 
-  // Mark token as used
-  await db.prepare(
-    `update password_reset_tokens set used = 1 where id = ?`,
-  ).bind(tokenRow.id).run();
-
-  // Update user's password
   const user = await db.prepare(
     `select id from users where id = ?`,
   ).bind(tokenRow.user_id).first<UserRow>();
@@ -89,8 +77,20 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
   const newHash = await hashPassword(newPassword, newSalt);
   const updatedAt = new Date().toISOString();
 
+  const claimed = await db.prepare(
+    `update password_reset_tokens
+     set used = 1
+     where id = ? and used = 0 and expires_at >= ?
+     returning user_id`,
+  ).bind(tokenRow.id, updatedAt).first<{ user_id: string }>();
+  if (!claimed || claimed.user_id !== user.id) {
+    return badRequest("该令牌已被使用或已过期");
+  }
+
   await db.prepare(
-    `update users set password_hash = ?, salt = ?, updated_at = ? where id = ?`,
+    `update users
+     set password_hash = ?, salt = ?, session_version = session_version + 1, updated_at = ?
+     where id = ?`,
   ).bind(newHash, newSalt, updatedAt, user.id).run();
 
   return jsonResponse({

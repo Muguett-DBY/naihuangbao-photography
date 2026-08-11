@@ -137,7 +137,7 @@ test("@critical 视觉故事支持章节索引、滚动进度与创建入口", a
   await secondChapter.evaluate((element) => element.scrollIntoView({ block: "center" }));
   await expect(page.locator('.visual-story-index a[aria-current="step"]')).toContainText("风被织物看见");
   await expect.poll(() => page.locator(".visual-story-reader").evaluate((element) => Number.parseFloat(getComputedStyle(element).getPropertyValue("--story-progress")))).toBeGreaterThan(0);
-  await expect(page.getByRole("link", { name: /打开 Story Builder/ })).toHaveAttribute("href", "/create/story");
+  await expect(page.locator('.visual-story-ending a[href="/create/story"]')).toBeVisible();
 });
 
 test("@critical Story Builder 本地保存章节并导出项目", async ({ page }) => {
@@ -150,17 +150,17 @@ test("@critical Story Builder 本地保存章节并导出项目", async ({ page 
   }));
   await page.goto("/create/story");
   await expect(page.locator(".story-builder-preview")).toBeVisible();
-  await page.getByLabel("Project name").fill("Weather Builder Test");
-  await expect(page.locator(".story-builder-topbar")).toContainText("SAVED LOCALLY", { timeout: 10_000 });
+  await page.locator('[data-story-field="project-name"]').fill("Weather Builder Test");
+  await expect(page.locator("[data-story-status]")).toContainText("已保存到本地", { timeout: 10_000 });
   const chapterCount = await page.locator(".story-builder-chapter-tabs button").count();
-  await page.locator(".story-builder-controls section").nth(1).getByRole("button", { name: "Add" }).click();
+  await page.locator('[data-action="add-chapter"]').click();
   await expect(page.locator(".story-builder-chapter-tabs button")).toHaveCount(chapterCount + 1);
 
   const downloadPromise = page.waitForEvent("download");
-  await page.getByTitle("Export project").click();
+  await page.locator('[data-action="export-project"]').click();
   expect((await downloadPromise).suggestedFilename()).toMatch(/\.nhb-story$/);
   await page.reload();
-  await expect(page.getByLabel("Project name")).toHaveValue("Weather Builder Test");
+  await expect(page.locator('[data-story-field="project-name"]')).toHaveValue("Weather Builder Test");
 });
 
 test("@critical 首页真实客片可切换并通向作品集与预约", async ({ page }) => {

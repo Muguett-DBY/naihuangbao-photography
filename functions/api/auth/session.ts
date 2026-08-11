@@ -12,7 +12,7 @@ export const onRequestGet: PagesFunction<AuthEnv> = async (context) => {
     return jsonResponse({ authenticated: false });
   }
 
-  const result = await getUserFromRequest(context.request, secret);
+  const result = await getUserFromRequest(context.request, secret, context.env.DB);
 
   if (!result) {
     return jsonResponse({ authenticated: false });

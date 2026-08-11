@@ -38,9 +38,21 @@ export const practiceHubRoute: ProductRoute = {
 };
 
 const projectDockRoutePrefixes = ["/archive", "/stories", "/create", "/studio", "/projects"] as const;
+const workspaceRoutePrefixes = [
+  ...projectDockRoutePrefixes,
+  "/vault",
+  "/compose",
+  "/curate",
+  "/share",
+  "/editor",
+] as const;
 
 export function isProjectDockRoute(pathname: string) {
   return projectDockRoutePrefixes.some((prefix) => (
     pathname === prefix || pathname.startsWith(`${prefix}/`)
   ));
+}
+
+export function isWorkspaceRoute(pathname: string) {
+  return workspaceRoutePrefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }

@@ -1,6 +1,6 @@
 import { jsonResponse, badRequest } from "../../_responses";
-import { hashPassword, createUserSession, userSessionCookie } from "../../_auth";
-import { authSecretUnavailable, enforceRateLimit, getRequiredAuthSecret, rateLimited, requirePublicMutationRequest, timingSafeEqual } from "../../_security";
+import { createUserSession, generateSalt, hashPassword, needsPasswordRehash, userSessionCookie, verifyPassword } from "../../_auth";
+import { authSecretUnavailable, enforceRateLimit, getRequiredAuthSecret, rateLimited, requirePublicMutationRequest } from "../../_security";
 
 type AuthEnv = Env & {
   AUTH_SECRET?: string;
@@ -31,23 +31,30 @@ export const onRequestPost: PagesFunction<AuthEnv> = async (context) => {
   }
 
   const user = await db
-    .prepare("select id, email, password_hash, salt, display_name from users where email = ?")
+    .prepare("select id, email, password_hash, salt, display_name, session_version from users where email = ?")
     .bind(email)
-    .first<{ id: string; email: string; password_hash: string; salt: string; display_name: string }>();
+    .first<{ id: string; email: string; password_hash: string; salt: string; display_name: string; session_version: number }>();
 
   if (!user) {
     return jsonResponse({ error: "邮箱或密码不正确" }, 401);
   }
 
-  const passwordHash = await hashPassword(password, user.salt);
-  if (!timingSafeEqual(passwordHash, user.password_hash)) {
+  if (!(await verifyPassword(password, user.salt, user.password_hash))) {
     return jsonResponse({ error: "邮箱或密码不正确" }, 401);
+  }
+
+  if (needsPasswordRehash(user.password_hash)) {
+    const salt = generateSalt();
+    const passwordHash = await hashPassword(password, salt);
+    await db.prepare("update users set password_hash = ?, salt = ?, updated_at = ? where id = ?")
+      .bind(passwordHash, salt, new Date().toISOString(), user.id)
+      .run();
   }
 
   const secret = getRequiredAuthSecret(context.env);
   if (!secret) return authSecretUnavailable();
 
-  const session = await createUserSession(user.id, secret);
+  const session = await createUserSession(user.id, secret, Number(user.session_version ?? 0));
 
   return jsonResponse(
     { ok: true, user: { id: user.id, email: user.email, displayName: user.display_name } },

@@ -1,7 +1,7 @@
 import { safeLocalStorage } from "./browser-storage";
 import type { WorkspaceProject } from "../types/workspace-project";
 import type { PublishedProjectDraft, PublishedProjectReceipt, PublishedProjectSnapshot, PublishedProjectVersion, ResolvedPublishedProjectSnapshot } from "../types/published-project";
-import { isPublicAssetSource, MAX_PUBLISHED_ASSETS } from "./project-publish-contract";
+import { hashPublishedProject, isPublicAssetSource, MAX_PUBLISHED_ASSETS } from "./project-publish-contract";
 import { migrateWorkspaceProject } from "./workspace-project-store";
 
 const PUBLICATION_REGISTRY_KEY = "nhb-publication-registry-v1";
@@ -33,15 +33,9 @@ function portableProject(project: WorkspaceProject): WorkspaceProject {
   };
 }
 
-async function sha256(value: string) {
-  const bytes = new TextEncoder().encode(value);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
 export async function createPublishedProjectDraft(project: WorkspaceProject): Promise<PublishedProjectDraft> {
   const portable = portableProject(project);
-  return { schemaVersion: 1, project: portable, contentHash: await sha256(JSON.stringify(portable)) };
+  return { schemaVersion: 1, project: portable, contentHash: await hashPublishedProject(portable) };
 }
 
 export function getLocalPublication(projectId: string) {

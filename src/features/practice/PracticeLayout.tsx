@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from "react";
-import { Outlet, useLocation } from "react-router";
+import { Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import { PublicChatLauncher } from "../../components/PublicChatLauncher";
 import { AuthProvider } from "../../hooks/useAuth";
@@ -14,30 +14,26 @@ function PracticeExperienceBridge({ chatOpen }: { chatOpen: boolean }) {
 
 function PracticeChrome() {
   const { t } = useTranslation();
-  const location = useLocation();
   const [chatOpen, setChatOpen] = useState(false);
-  const showChat = location.pathname !== "/editor";
 
   return (
     <>
       <PracticeExperienceBridge chatOpen={chatOpen} />
       <Outlet />
-      {showChat && (
-        <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
-          <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((open) => !open)} />
-          {chatOpen && (
-            <Suspense
-              fallback={
-                <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
-                  {t("common.loading")}
-                </div>
-              }
-            >
-              <PublicChatWidget open onClose={() => setChatOpen(false)} />
-            </Suspense>
-          )}
-        </div>
-      )}
+      <div className={`public-chat-widget${chatOpen ? " is-open" : ""}`}>
+        <PublicChatLauncher open={chatOpen} onToggle={() => setChatOpen((open) => !open)} />
+        {chatOpen && (
+          <Suspense
+            fallback={
+              <div className="public-chat-panel public-chat-panel-loading" role="status" aria-live="polite">
+                {t("common.loading")}
+              </div>
+            }
+          >
+            <PublicChatWidget open onClose={() => setChatOpen(false)} />
+          </Suspense>
+        )}
+      </div>
     </>
   );
 }

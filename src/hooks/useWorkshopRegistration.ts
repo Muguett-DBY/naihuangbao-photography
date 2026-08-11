@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useNotification } from "./useNotification";
 import { publicMutationHeaders } from "../lib/admin-helpers";
 import { getApiError, readJsonResponse } from "../lib/http";
 import type { Workshop } from "../types/content";
@@ -62,7 +61,6 @@ export function getWorkshopAvailability(
  */
 export function useWorkshopRegistration(workshop?: Workshop | null) {
   const { t, i18n } = useTranslation();
-  const { sendWorkshopRegistration } = useNotification();
   const [formName, setFormName] = useState("");
   const [formContact, setFormContact] = useState("");
   const [formMsg, setFormMsg] = useState("");
@@ -152,14 +150,6 @@ export function useWorkshopRegistration(workshop?: Workshop | null) {
 
         if (!requiresPayment) {
           setFormMsg(t("workshops.form.success"));
-
-          await sendWorkshopRegistration(formContact.trim(), {
-            registrationId: data.id,
-            workshopTitle: workshop ? workshop.title : "Workshop",
-            eventDate: workshop?.event_date,
-            location: workshop?.location,
-            name: formName.trim(),
-          });
         }
 
         return { registrationId: data.id, requiresPayment };
@@ -175,7 +165,7 @@ export function useWorkshopRegistration(workshop?: Workshop | null) {
     } finally {
       setSubmitting(false);
     }
-  }, [formName, formContact, workshop, t, sendWorkshopRegistration, checkAvailability]);
+  }, [formName, formContact, workshop, t, checkAvailability]);
 
   return {
     formName,

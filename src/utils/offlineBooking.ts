@@ -29,18 +29,25 @@ function notifyPendingBookingsChanged() {
 }
 
 function openDB(): Promise<IDBDatabase | null> {
-  if (typeof indexedDB === "undefined") return Promise.resolve(null);
-  return new Promise((resolve) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: "id" });
-      }
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => resolve(null);
-  });
+  try {
+    const factory = globalThis.indexedDB;
+    if (!factory) return Promise.resolve(null);
+
+    return new Promise((resolve) => {
+      const request = factory.open(DB_NAME, DB_VERSION);
+      request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME, { keyPath: "id" });
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => resolve(null);
+      request.onblocked = () => resolve(null);
+    });
+  } catch {
+    return Promise.resolve(null);
+  }
 }
 
 export async function savePendingBooking(booking: Omit<PendingBooking, "id" | "createdAt" | "status">): Promise<string | null> {
