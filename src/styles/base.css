@@ -98,7 +98,7 @@
   }
 }
 
-@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+@media (max-width: 760px), (pointer: coarse), (prefers-reduced-motion: reduce) {
   .film-grain-layer,
   .nhb-cursor-dot,
   .nhb-cursor-ring {

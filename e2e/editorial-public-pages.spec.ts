@@ -7,6 +7,8 @@ test.describe("editorial public pages", () => {
 
     const hero = page.locator(".home-booking-hero");
     await expect(hero).toBeVisible();
+    await expect(page.locator(".nhb-cursor-dot")).toBeHidden();
+    await expect(page.locator(".nhb-cursor-ring")).toBeHidden();
     const selector = hero.locator(".home-booking-hero__selector");
     const geometry = await selector.evaluate((section) => {
       const controls = [...section.querySelectorAll<HTMLElement>("button")].map((control) => {

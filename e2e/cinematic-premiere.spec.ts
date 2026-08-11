@@ -24,6 +24,21 @@ async function immersiveResources(page: Page) {
     .filter((name) => /(?:ImmersiveExperience|immersive-vendor)-/.test(name)));
 }
 
+async function heroPhotoFraming(page: Page) {
+  return page.locator(".home-booking-hero__photo").evaluate((wrapper) => {
+    const image = wrapper.querySelector("img");
+    if (!(image instanceof HTMLImageElement)) throw new Error("Hero photo is missing");
+    const rect = wrapper.getBoundingClientRect();
+    return {
+      objectFit: getComputedStyle(image).objectFit,
+      sourceRatio: image.naturalWidth / image.naturalHeight,
+      frameRatio: rect.width / rect.height,
+      frameWidth: rect.width,
+      frameHeight: rect.height,
+    };
+  });
+}
+
 test.describe("booking-first homepage", () => {
   test("shows a real-work booking cover while the homepage chunk is loading", async ({ page }) => {
     await prepareHome(page);
@@ -74,6 +89,10 @@ test.describe("booking-first homepage", () => {
     await expect(page.locator('#premiere img[fetchpriority="high"]')).toHaveCount(1);
     await expect(page.locator(".cinematic-premiere, .visual-light-table, .home-visual-system, .immersive-experience-canvas")).toHaveCount(0);
 
+    const desktopFraming = await heroPhotoFraming(page);
+    expect(desktopFraming.objectFit).toBe("contain");
+    expect(Math.abs(desktopFraming.sourceRatio - desktopFraming.frameRatio)).toBeLessThan(0.01);
+
     const initialSource = await heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc);
     const nextTitle = await selectorButtons.nth(1).getAttribute("aria-label");
     await selectorButtons.nth(1).click();
@@ -108,10 +127,35 @@ test.describe("booking-first homepage", () => {
     await expect(hero.locator('.home-booking-secondary[href="/gallery"]')).toBeVisible();
     await expect(selectorButtons).toHaveCount(3);
 
+    const mobileFraming = await heroPhotoFraming(page);
+    expect(mobileFraming.objectFit).toBe("contain");
+    expect(Math.abs(mobileFraming.sourceRatio - mobileFraming.frameRatio)).toBeLessThan(0.01);
+
     await selectorButtons.nth(2).click();
     await expect(selectorButtons.nth(2)).toHaveAttribute("aria-pressed", "true");
     await expect.poll(() => heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc)).not.toBe(initialSource);
     await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
+  test("keeps the complete portrait legible on ultra-wide screens", async ({ page }) => {
+    await prepareHome(page);
+    await page.setViewportSize({ width: 2560, height: 1080 });
+    await page.goto("/");
+
+    const hero = page.locator(".home-booking-hero");
+    const media = hero.locator(".home-booking-hero__media");
+    await expect(media).toHaveAttribute("data-photo-layout", "full-frame");
+
+    const [framing, mediaBox] = await Promise.all([
+      heroPhotoFraming(page),
+      media.boundingBox(),
+    ]);
+    expect(mediaBox).not.toBeNull();
+    expect(mediaBox!.width).toBeLessThanOrEqual(922);
+    expect(framing.objectFit).toBe("contain");
+    expect(Math.abs(framing.sourceRatio - framing.frameRatio)).toBeLessThan(0.01);
+    expect(framing.frameHeight).toBeGreaterThan(600);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
@@ -127,6 +171,7 @@ test.describe("booking-first homepage", () => {
     await expect(hero.locator(".home-booking-primary")).toBeVisible();
     await expect(hero.locator('.home-booking-secondary[href="/gallery"]')).toBeVisible();
     await expect(hero.locator(".home-booking-hero__media")).toBeVisible();
+    await expect(hero.locator(".home-booking-hero__photo")).toHaveAttribute("data-state", "image-unavailable");
     await expect(page.locator(".immersive-experience-canvas")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });

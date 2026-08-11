@@ -949,6 +949,9 @@ describe("audit regression coverage", () => {
     expect(photoMapSource).toContain("textContent");
     expect(presetPreviewSource).toContain("URL.revokeObjectURL");
     expect(customCursorSource).not.toContain("cursor: none");
+    expect(customCursorSource).toContain('data-visible="false"');
+    expect(customCursorSource).toContain('dot.dataset.visible = "true"');
+    expect(customCursorSource).toContain("if (!initialized) return");
     expect(bookingCalendarSource).toContain("calendarRef");
     expect(routeLoadingStateSource).not.toContain("dangerouslySetInnerHTML");
     expect(routeLoadingStateSource).toContain('role="status"');

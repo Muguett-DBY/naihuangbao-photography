@@ -55,10 +55,14 @@ export function HomePage() {
   return (
     <PageTransition ref={rootRef} className="home-booking-page">
       <section className="home-booking-hero" id="premiere" aria-labelledby="home-title">
-        <div className="home-booking-hero__media">
+        <div
+          className="home-booking-hero__media"
+          data-photo-layout="full-frame"
+        >
           {activeHero ? (
             <ImageWithFallback
               key={activeHero.id}
+              className="home-booking-hero__photo"
               src={activeHero.imageUrl}
               alt={activeHero.alt}
               title={activeHero.title}

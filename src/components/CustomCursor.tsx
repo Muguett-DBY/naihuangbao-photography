@@ -45,6 +45,8 @@ export function CustomCursor() {
       }
       settledFrames = 0;
       dot.style.transform = `translate3d(${targetX - 3}px, ${targetY - 3}px, 0)`;
+      dot.dataset.visible = "true";
+      ring.dataset.visible = "true";
 
       const target = event.target instanceof Element ? event.target : null;
       const clickable = target?.closest("a, button, [role='button'], input, select, textarea, label, .gallery-card, .package-card, .why-card");
@@ -59,6 +61,7 @@ export function CustomCursor() {
       ring.dataset.visible = "false";
     };
     const handleWindowEnter = () => {
+      if (!initialized) return;
       dot.dataset.visible = "true";
       ring.dataset.visible = "true";
     };
@@ -77,8 +80,8 @@ export function CustomCursor() {
 
   return (
     <>
-      <div ref={dotRef} className="nhb-cursor-dot" data-visible="true" aria-hidden="true" />
-      <div ref={ringRef} className="nhb-cursor-ring" data-visible="true" aria-hidden="true" />
+      <div ref={dotRef} className="nhb-cursor-dot" data-visible="false" aria-hidden="true" />
+      <div ref={ringRef} className="nhb-cursor-ring" data-visible="false" aria-hidden="true" />
     </>
   );
 }

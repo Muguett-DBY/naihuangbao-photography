@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import { getResponsiveImageAttrs } from "../lib/responsive-image";
+import { getResponsiveImageAttrs, getResponsiveImageDimensions } from "../lib/responsive-image";
 import { getResponsivePictureAttrs } from "../lib/responsive-picture";
 import { useVaultAssetUrl } from "../hooks/useVaultAssetUrl";
 import { FilmPlaceholder } from "./FilmPlaceholder";
@@ -34,6 +34,7 @@ export const ImageWithFallback = memo(function ImageWithFallback({
   const pictureAttrs = !useDirectImg ? getResponsivePictureAttrs(resolvedSrc, sizes) : null;
   const usePicture = Boolean(pictureAttrs && pictureAttrs.sources.length > 0);
   const imageAttrs = !usePicture ? getResponsiveImageAttrs(resolvedSrc, sizes) : null;
+  const intrinsicDimensions = getResponsiveImageDimensions(resolvedSrc);
 
   const handleError = () => {
     if (usePicture) {
@@ -76,7 +77,7 @@ export const ImageWithFallback = memo(function ImageWithFallback({
   }
 
   if (!resolvedSrc) {
-    return <FilmPlaceholder title={title} tone={tone} />;
+    return <FilmPlaceholder title={title} tone={tone} className={className} />;
   }
 
   if (!load) {
@@ -95,7 +96,7 @@ export const ImageWithFallback = memo(function ImageWithFallback({
   }
 
   if (failed) {
-    return <FilmPlaceholder title={title} tone={tone} />;
+    return <FilmPlaceholder title={title} tone={tone} className={className} />;
   }
 
   return (
@@ -118,8 +119,8 @@ export const ImageWithFallback = memo(function ImageWithFallback({
             loading={priority ? "eager" : "lazy"}
             fetchPriority={priority ? "high" : "auto"}
             decoding="async"
-            width={960}
-            height={1200}
+            width={intrinsicDimensions.width}
+            height={intrinsicDimensions.height}
             src={pictureAttrs.fallback.src}
             srcSet={pictureAttrs.fallback.srcSet}
             sizes={pictureAttrs.fallback.sizes}
@@ -134,8 +135,8 @@ export const ImageWithFallback = memo(function ImageWithFallback({
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : "auto"}
           decoding="async"
-          width={960}
-          height={1200}
+          width={intrinsicDimensions.width}
+          height={intrinsicDimensions.height}
           {...(imageAttrs || { src: resolvedSrc })}
           alt={alt}
           onError={() => setFailed(true)}
