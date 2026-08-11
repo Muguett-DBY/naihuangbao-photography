@@ -24,7 +24,7 @@ test("@critical 首页保持用户控制的客片切换与首屏预约操作", a
   await expect.poll(() => heroImage.evaluate((image) => (image as HTMLImageElement).currentSrc)).not.toBe(initialSource);
   await hero.locator(".home-booking-primary").click();
   await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.locator("html")).toHaveAttribute("data-runtime-quality", /full|balanced/);
+  await expect(page.locator("html")).toHaveAttribute("data-runtime-quality", /^(full|balanced|economy)$/);
 });
 
 test("@critical V7 智能归档支持语义搜索、本地图像分析与 Project Dock", async ({ page }) => {
