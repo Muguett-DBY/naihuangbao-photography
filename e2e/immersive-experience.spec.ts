@@ -349,6 +349,10 @@ test.describe("immersive portrait archive", () => {
 
   test("keeps measured gallery cadence within budget or adaptively downgrades", async ({ page }) => {
     test.setTimeout(30_000);
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "hardwareConcurrency", { configurable: true, get: () => 8 });
+      Object.defineProperty(navigator, "deviceMemory", { configurable: true, get: () => 8 });
+    });
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/gallery");
     await expect.poll(async () => (await diagnostics(page))?.tier).toBe("high");
