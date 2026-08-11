@@ -4,6 +4,14 @@ export type ResponsiveImageAttrs = {
   sizes?: string;
 };
 
+export type ResponsiveImageDimensions = {
+  width: number;
+  height: number;
+};
+
+const defaultImageDimensions: ResponsiveImageDimensions = Object.freeze({ width: 960, height: 1200 });
+const galleryImageDimensions: ResponsiveImageDimensions = Object.freeze({ width: 1200, height: 1600 });
+
 const responsiveImageDirectories = [
   "/images/gallery/",
   "/images/concept-premiere/",
@@ -95,6 +103,11 @@ export function getResponsiveImageSourceWidth(src: string): number {
   if (path.startsWith("/images/visual-os-v7/")) return fileName.includes("-detail.") ? 1024 : 1536;
   if (path.startsWith("/images/visual-os-v8/")) return visualOsV8SourceWidths[fileName] ?? 1536;
   return 1200;
+}
+
+export function getResponsiveImageDimensions(src: string): ResponsiveImageDimensions {
+  const path = src.replace(/\?.*$/, "");
+  return path.startsWith("/images/gallery/") ? galleryImageDimensions : defaultImageDimensions;
 }
 
 export function getResponsiveImageAttrs(src: string, sizes?: string): ResponsiveImageAttrs {
