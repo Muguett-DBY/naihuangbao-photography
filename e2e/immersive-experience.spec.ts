@@ -130,22 +130,24 @@ async function sampleCanvas(page: Page): Promise<CanvasSample> {
   await page.evaluate(() => {
     const target = document.querySelector(".immersive-experience-canvas");
     if (!target) return;
-    let style = document.querySelector<HTMLStyleElement>("style[data-immersive-e2e-mask]");
-    if (!style) {
-      style = document.createElement("style");
-      style.dataset.immersiveE2eMask = "true";
-      style.textContent = ".e2e-hide-from-immersive { visibility: hidden !important; }";
-      document.head.append(style);
-    }
     document.querySelectorAll("body *").forEach((element) => {
       if (element === target || element.contains(target) || target.contains(element)) return;
-      element.classList.add("e2e-hide-from-immersive");
+      if (!(element instanceof HTMLElement)) return;
+      element.dataset.immersiveE2eVisibility = element.style.getPropertyValue("visibility");
+      element.dataset.immersiveE2eVisibilityPriority = element.style.getPropertyPriority("visibility");
+      element.dataset.immersiveE2eMasked = "true";
+      element.style.setProperty("visibility", "hidden", "important");
     });
   });
 
   try {
     const rendered = await page.screenshot();
-    await canvas.evaluate((element) => element.classList.add("e2e-hide-from-immersive"));
+    await canvas.evaluate((element) => {
+      element.dataset.immersiveE2eVisibility = element.style.getPropertyValue("visibility");
+      element.dataset.immersiveE2eVisibilityPriority = element.style.getPropertyPriority("visibility");
+      element.dataset.immersiveE2eMasked = "true";
+      element.style.setProperty("visibility", "hidden", "important");
+    });
     const baseline = await page.screenshot();
     const renderedPixels = await sharp(rendered).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
     const baselinePixels = await sharp(baseline).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
@@ -168,10 +170,15 @@ async function sampleCanvas(page: Page): Promise<CanvasSample> {
     return { changedPixels, sampledPixels: renderedPixels.info.width * renderedPixels.info.height };
   } finally {
     await page.evaluate(() => {
-      document.querySelectorAll(".e2e-hide-from-immersive").forEach((element) => {
-        element.classList.remove("e2e-hide-from-immersive");
+      document.querySelectorAll<HTMLElement>("[data-immersive-e2e-masked='true']").forEach((element) => {
+        const visibility = element.dataset.immersiveE2eVisibility ?? "";
+        const priority = element.dataset.immersiveE2eVisibilityPriority ?? "";
+        if (visibility) element.style.setProperty("visibility", visibility, priority);
+        else element.style.removeProperty("visibility");
+        delete element.dataset.immersiveE2eVisibility;
+        delete element.dataset.immersiveE2eVisibilityPriority;
+        delete element.dataset.immersiveE2eMasked;
       });
-      document.querySelector("style[data-immersive-e2e-mask]")?.remove();
     });
   }
 }
