@@ -32,6 +32,7 @@ const headersSource = readFileSync(resolve(root, "public/_headers"), "utf8");
 const redirectsSource = readFileSync(resolve(root, "public/_redirects"), "utf8");
 const routesSource = readFileSync(resolve(root, "public/_routes.json"), "utf8");
 const spa404Source = readFileSync(resolve(root, "scripts/sync-spa-404.mjs"), "utf8");
+const cspFinalizerSource = readFileSync(resolve(root, "scripts/finalize-csp.mjs"), "utf8");
 const ciWorkflowSource = readFileSync(resolve(root, ".github/workflows/ci.yml"), "utf8");
 const useInViewSource = readFileSync(resolve(root, "src/hooks/useInView.ts"), "utf8");
 const e2eConfigSource = readFileSync(resolve(root, "e2e/playwright.config.ts"), "utf8");
@@ -502,11 +503,17 @@ describe("audit regression coverage", () => {
   });
 
   it("keeps security headers and local e2e targets in place", () => {
+    const cspHeader = headersSource.split(/\r?\n/).find((line) => line.trimStart().startsWith("Content-Security-Policy:"));
     expect(headersSource).toContain("Content-Security-Policy");
-    expect(headersSource).toContain("https://static.cloudflareinsights.com");
-    expect(headersSource).toContain("https://cloudflareinsights.com");
+    expect(cspHeader?.length).toBeLessThanOrEqual(2_000);
+    expect(headersSource).not.toContain("__CSP_SCRIPT_HASHES__");
     expect(headersSource).toContain("frame-ancestors 'none'");
     expect(headersSource).toContain("object-src 'none'");
+    expect(cspFinalizerSource).toContain('http-equiv="Content-Security-Policy"');
+    expect(cspFinalizerSource).toContain("script-src 'self'");
+    expect(cspFinalizerSource).toContain("https://static.cloudflareinsights.com");
+    expect(cspFinalizerSource).toContain("https://cloudflareinsights.com");
+    expect(cspFinalizerSource).toContain("inlineScriptHashes");
     expect(headersSource).not.toContain("/assets/*");
     expect(headersSource).not.toContain("Cache-Control: public, max-age=31536000");
     expect(headersSource).toContain("/sw.js\n  Cache-Control: no-cache, no-store, must-revalidate");
