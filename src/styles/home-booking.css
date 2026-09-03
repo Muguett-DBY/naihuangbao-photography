@@ -1390,32 +1390,8 @@ html:lang(en) .home-booking-hero h1 {
   50% { transform: translateY(-4px); }
 }
 
-.home-booking-actions .home-booking-law-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 13px 20px;
-  border-radius: 999px;
-  background: linear-gradient(126deg, #8a5f8f, #b1544e);
-  color: #fff;
-  font-weight: 800;
-  font-size: 14.5px;
-  text-decoration: none;
-  box-shadow: 0 6px 18px rgba(122, 84, 92, 0.3);
-  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
-}
-
-.home-booking-actions .home-booking-law-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 26px rgba(122, 84, 92, 0.38);
-}
-
+/* 入口统一收在 hero 下的学习中心横幅（.home-law-banner） */
 @media (max-width: 720px) {
-  .home-booking-actions .home-booking-law-cta {
-    grid-column: 1 / -1;
-    justify-content: center;
-  }
-
   .home-law-banner__cta {
     width: 100%;
     justify-content: center;

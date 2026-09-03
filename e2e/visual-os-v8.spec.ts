@@ -21,7 +21,7 @@ test("@critical 首页使用真实授权作品且约拍内容契约完整", asyn
 
   const routes = await (await request.get("/route-contract.json")).json();
   const assets = await (await request.get("/visual-asset-manifest.json")).json();
-  expect(routes.routes).toHaveLength(33);
+  expect(routes.routes).toHaveLength(36);
   expect(assets.assets).toHaveLength(94);
   expect(assets.assets.filter((asset: { src: string }) => asset.src.includes("visual-os-v8"))).toHaveLength(24);
 });

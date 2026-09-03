@@ -100,7 +100,7 @@ test("@critical V6 路由契约、内容清单与静态详情页可直接访问"
   expect(routesResponse.ok()).toBe(true);
   const routes = await routesResponse.json();
   expect(routes.schemaVersion).toBe(1);
-  expect(routes.routes).toHaveLength(33);
+  expect(routes.routes).toHaveLength(36);
 
   const assetsResponse = await request.get("/visual-asset-manifest.json");
   expect(assetsResponse.ok()).toBe(true);
