@@ -142,6 +142,20 @@
       "scope": "practice"
     },
     {
+      "path": "/law",
+      "scope": "primary"
+    },
+    {
+      "path": "/law/:subjectId",
+      "scope": "primary",
+      "dynamic": true
+    },
+    {
+      "path": "/law/learn/:lessonId",
+      "scope": "primary",
+      "dynamic": true
+    },
+    {
       "path": "/admin",
       "scope": "admin"
     }

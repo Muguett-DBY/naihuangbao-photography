@@ -52,3 +52,7 @@
 /dashboard/ / 200
 /compare / 200
 /compare/ / 200
+/law / 200
+/law/ / 200
+/law/:subjectId / 200
+/law/learn/:lessonId / 200
