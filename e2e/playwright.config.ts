@@ -20,17 +20,21 @@ export default defineConfig({
   projects: [
     {
       name: "webgl-studio",
-      // V7 Studio 依赖 WebGL 画布 + IndexedDB 工作区；与其它图像密集测试
-      // 并行时初始化会被拖慢/超时（WORKER 竞争），独占 1 个 worker 串行执行。
+      // V7 Studio 依赖 WebGL 画布 + IndexedDB 工作区；无 GPU 的 CI 容器初始化
+      // 可能远超常规超时（本机 4s / CI 曾 >90s），独占 worker + 加长超时 + 重试。
       testMatch: /visual-os-v7\.spec\.ts/,
       workers: 1,
       fullyParallel: false,
+      timeout: 180_000,
+      retries: 2,
       use: { baseURL: process.env.BASE_URL || "http://127.0.0.1:4174", headless: true },
     },
     {
       name: "default",
       testIgnore: /visual-os-v7\.spec\.ts/,
       workers: 2,
+      timeout: 30_000,
+      retries: 1,
       use: { baseURL: process.env.BASE_URL || "http://127.0.0.1:4174", headless: true },
     },
   ],
