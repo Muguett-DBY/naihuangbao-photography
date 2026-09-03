@@ -19,10 +19,10 @@ export default defineConfig({
     },
   projects: [
     {
-      name: "webgl-studio",
-      // V7 Studio 依赖 WebGL 画布 + IndexedDB 工作区；无 GPU 的 CI 容器初始化
-      // 可能远超常规超时（本机 4s / CI 曾 >90s），独占 worker + 加长超时 + 重试。
-      testMatch: /visual-os-v7\.spec\.ts/,
+      name: "env-sensitive",
+      // 环境敏感测试：V7 Studio（WebGL 画布 + IndexedDB）与沉浸画廊惯例测试
+      // 在无 GPU 的 CI 容器里初始化/测量远超常规预算，独占 worker + 加长超时 + 重试。
+      testMatch: /visual-os-v7\.spec\.ts|immersive-experience\.spec\.ts/,
       workers: 1,
       fullyParallel: false,
       timeout: 180_000,
@@ -31,7 +31,7 @@ export default defineConfig({
     },
     {
       name: "default",
-      testIgnore: /visual-os-v7\.spec\.ts/,
+      testIgnore: /visual-os-v7\.spec\.ts|immersive-experience\.spec\.ts/,
       workers: 2,
       timeout: 30_000,
       retries: 1,
