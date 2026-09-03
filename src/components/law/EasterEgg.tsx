@@ -7,6 +7,14 @@ import {
   type EggTrigger,
 } from "../../lib/law-progress";
 
+/** 学习区一律沉浸：隐藏摄影站导航，专注学习（各学习页面挂载时调用） */
+export function useLawImmersive() {
+  useEffect(() => {
+    document.body.classList.add("law-immersive");
+    return () => document.body.classList.remove("law-immersive");
+  }, []);
+}
+
 const LETTER: ReactNode = (
   <>
     <p className="law-egg__greet">给一直很努力的那个女孩子：</p>

@@ -266,6 +266,180 @@
   text-decoration: underline;
 }
 
+/* ── 考前计划卡 ── */
+.law-plan-card {
+  max-width: 1040px;
+  margin: clamp(18px, 3vw, 30px) auto 0;
+  border-radius: 22px;
+  padding: clamp(16px, 3vw, 26px);
+  background:
+    radial-gradient(500px 200px at 92% 0%, rgba(255, 214, 130, 0.4), transparent 70%),
+    linear-gradient(130deg, color-mix(in srgb, var(--law-accent, #b1544e) 10%, var(--paper)), var(--paper));
+  border: 1.5px solid color-mix(in srgb, var(--law-accent, #b1544e) 30%, var(--hairline));
+  box-shadow: var(--warm-shadow);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px 24px;
+  align-items: center;
+}
+
+.law-plan-card__countdown {
+  text-align: center;
+  padding: 10px 18px;
+  border-radius: 16px;
+  background: var(--paper);
+  border: 1.5px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.law-plan-card__label {
+  font-size: 12.5px;
+  font-weight: 900;
+  color: var(--text-muted);
+}
+
+.law-plan-card__countdown strong {
+  font-family: var(--font-display);
+  font-size: clamp(38px, 6vw, 54px);
+  line-height: 1.1;
+  color: var(--law-accent, #b1544e);
+}
+
+.law-plan-card__unit {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.law-plan-card__date {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.law-plan-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.law-plan-card__progress-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 13.5px;
+}
+
+.law-plan-card__progress-head b {
+  color: var(--law-accent, #b1544e);
+}
+
+.law-plan-card__bar,
+.law-plan-card__today-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--law-accent, #b1544e) 12%, var(--paper));
+  overflow: hidden;
+  margin: 4px 0;
+}
+
+.law-plan-card__bar span,
+.law-plan-card__today-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--law-accent, #b1544e), #f7c96b);
+  transition: width 0.7s var(--ease-out);
+}
+
+.law-plan-card__estimate {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.law-plan-card__estimate b {
+  color: var(--law-accent, #b1544e);
+}
+
+.law-plan-card__today {
+  border-top: 1.5px dashed var(--hairline);
+  padding-top: 10px;
+}
+
+.law-plan-card__today b {
+  font-size: 14px;
+}
+
+.law-plan-card__today span,
+.law-plan-card__today em {
+  display: block;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-style: normal;
+  line-height: 1.7;
+}
+
+.law-plan-card__today em {
+  font-weight: 800;
+  color: var(--law-accent, #b1544e);
+}
+
+.law-plan-card__tiers {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.law-plan-card__tier {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--hairline);
+  background: var(--paper);
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.18s, transform 0.18s;
+}
+
+.law-plan-card__tier:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--law-accent, #b1544e) 40%, var(--hairline));
+}
+
+.law-plan-card__tier.is-active {
+  border-color: var(--law-accent, #b1544e);
+  background: color-mix(in srgb, var(--law-accent, #b1544e) 9%, var(--paper));
+}
+
+.law-plan-card__tier b {
+  font-size: 14.5px;
+  color: var(--law-accent, #b1544e);
+}
+
+.law-plan-card__tier small {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .law-plan-card {
+    grid-template-columns: 1fr;
+  }
+
+  .law-plan-card__countdown strong {
+    font-size: 40px;
+  }
+}
+
 /* ── 沉浸专注模式（隐藏摄影站导航，全屏学习） ── */
 .law-immersive .site-nav,
 .law-immersive .site-footer,
@@ -333,6 +507,12 @@
   border-radius: 999px;
   background: linear-gradient(90deg, var(--law-accent), #f7c96b);
   transition: width 0.6s var(--ease-out);
+}
+
+.law-subject__goal-steps {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-muted);
 }
 
 /* ── 搜索 ── */

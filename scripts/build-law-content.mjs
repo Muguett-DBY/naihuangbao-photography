@@ -705,6 +705,7 @@ async function main() {
     stats[bookMeta.id] = {
       lessonCount: lessonsCount,
       chapterTitles: chapters.map((c) => c.title),
+      steps: stepsCount,
     };
     summary.push(
       `${bookMeta.name}: ${lessonsCount}课 / ${stepsCount}步 / leftover ${leftoverLines}行`,

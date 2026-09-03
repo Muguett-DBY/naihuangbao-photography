@@ -4,7 +4,7 @@ import type { LawBook, LawSubjectId } from "../types/law";
 import { collectSiblingTerms, loadLawBook } from "../data/law/loader";
 import { LessonPlayer } from "../components/law/player/LessonPlayer";
 import { LawMascot } from "../components/law/LawMascot";
-import { LawEggListener } from "../components/law/EasterEgg";
+import { LawEggListener, useLawImmersive } from "../components/law/EasterEgg";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
 
@@ -17,10 +17,7 @@ export function LawLessonPage() {
   const [error, setError] = useState<string | null>(null);
 
   // 沉浸专注模式：隐藏摄影站导航，全屏学习
-  useEffect(() => {
-    document.body.classList.add("law-immersive");
-    return () => document.body.classList.remove("law-immersive");
-  }, []);
+  useLawImmersive();
 
   const subjectId = useMemo<LawSubjectId | null>(() => {
     const match = SUBJECT_PATTERN.exec(lessonId ?? "");
