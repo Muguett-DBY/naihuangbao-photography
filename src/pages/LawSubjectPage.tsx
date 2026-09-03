@@ -3,11 +3,13 @@ import { Link, useParams } from "react-router";
 import { motion } from "framer-motion";
 import type { LawBook, LawChapter } from "../types/law";
 import { LAW_SUBJECT_MAP } from "../data/law/meta";
+import { graphicsOfSubject } from "../data/law/graphics";
 import { loadLawBook } from "../data/law/loader";
 import { getLawProgress } from "../lib/law-progress";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import { LawMascot } from "../components/law/LawMascot";
 import "../styles/law-academy.css";
+import "../styles/law-diagrams.css";
 
 function isLawSubjectId(value: string | undefined): value is keyof typeof LAW_SUBJECT_MAP {
   return !!value && value in LAW_SUBJECT_MAP;
@@ -81,6 +83,7 @@ export function LawSubjectPage() {
     "--law-accent": subject.accent,
     "--law-accent-soft": subject.accentSoft,
   } as CSSProperties;
+  const graphics = graphicsOfSubject(subject.id);
 
   return (
     <div className="law-academy law-subject" style={style}>
@@ -94,9 +97,42 @@ export function LawSubjectPage() {
           </div>
         </div>
         <div className="law-subject__hero-note">
-          想看哪一节课，点它就行。▸ 星星表示已掌握
+          想看哪一节课，点它就行。▸ 星星表示已掌握 · ✨ 是图解课
         </div>
       </header>
+
+      {graphics.length > 0 ? (
+        <section className="law-subject__graphics" aria-label={`${subject.name}图解课堂`}>
+          <header className="law-graphics-head">
+            <h2>📐 图解课堂 · 看动画理解概念</h2>
+            <span>不是念字——是把知识画出来动起来，先建立画面感再背诵</span>
+          </header>
+          <div className="law-graphics-grid">
+            {graphics.map((graphic, index) => (
+              <motion.div
+                key={graphic.lessonId}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ delay: index * 0.06 }}
+              >
+                <PrefetchLink
+                  to={`/law/graphic/${graphic.lessonId}`}
+                  className="law-graphic-card"
+                  style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
+                >
+                  <span className="law-graphic-card__kind">{graphicKindEmoji(graphic.kind)}</span>
+                  <span className="law-graphic-card__body">
+                    <strong>{graphic.title}</strong>
+                    <small>{graphic.intro}</small>
+                  </span>
+                  <span className="law-graphic-card__go">看动画 →</span>
+                </PrefetchLink>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <div className="law-subject__chapters">
         {book.chapters.map((chapter) => (
@@ -104,6 +140,7 @@ export function LawSubjectPage() {
             key={chapter.id}
             chapter={chapter}
             subjectId={book.id}
+            graphicIds={new Set(graphics.map((g) => g.lessonId))}
             accent={subject.accent}
             open={openChapter === chapter.id}
             onToggle={() =>
@@ -131,6 +168,7 @@ export function LawSubjectPage() {
 function ChapterTree({
   chapter,
   subjectId,
+  graphicIds,
   accent,
   open,
   onToggle,
@@ -139,6 +177,7 @@ function ChapterTree({
 }: {
   chapter: LawChapter;
   subjectId: string;
+  graphicIds: Set<string>;
   accent: string;
   open: boolean;
   onToggle: () => void;
@@ -175,11 +214,11 @@ function ChapterTree({
               <li key={lesson.id}>
                 <PrefetchLink
                   to={`/law/learn/${lesson.id}`}
-                  className={`law-lesson-link ${prog?.completedAt ? "is-done" : ""} ${lesson.featured ? "is-featured" : ""}`}
+                  className={`law-lesson-link ${prog?.completedAt ? "is-done" : ""} ${graphicIds.has(lesson.id) ? "is-featured" : ""}`}
                 >
                   <span className="law-lesson-link__no">{String(index + 1).padStart(2, "0")}</span>
                   <span className="law-lesson-link__title">
-                    {lesson.featured ? "✨ " : ""}
+                    {graphicIds.has(lesson.id) ? "📐 " : ""}
                     {lesson.title}
                   </span>
                   <span className="law-lesson-link__state">
@@ -205,5 +244,24 @@ function levelBadge(level: string): string {
       return "节";
     default:
       return "组";
+  }
+}
+
+function graphicKindEmoji(kind: string): string {
+  switch (kind) {
+    case "assemble":
+      return "🧩";
+    case "flow":
+      return "🔗";
+    case "tree":
+      return "🌳";
+    case "timeline":
+      return "🕰️";
+    case "balance":
+      return "⚖️";
+    case "stairs":
+      return "🪜";
+    default:
+      return "📊";
   }
 }

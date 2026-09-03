@@ -2,11 +2,13 @@ import { useMemo, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { LAW_SUBJECTS } from "../data/law/meta";
+import { LAW_GRAPHICS } from "../data/law/graphics";
 import lawStats from "../data/law/stats.json";
 import { subjectStats } from "../lib/law-progress";
 import { LawMascot } from "../components/law/LawMascot";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import "../styles/law-academy.css";
+import "../styles/law-diagrams.css";
 
 interface LawStats {
   [key: string]: { lessonCount: number; chapterTitles: string[] };
@@ -87,6 +89,42 @@ export function LawAcademyPage() {
         })}
       </section>
 
+      <section className="law-academy__graphics" aria-label="图解精选">
+        <header className="law-academy__graphics-head">
+          <h2>📐 图解课堂 —— 把概念"画"出来</h2>
+          <span>
+            犯罪构成为什么缺一不可？行为能力分几级？千年法制思想怎么变？——先看动画建立画面，再逐句背诵。
+          </span>
+        </header>
+        <div className="law-academy__graphics-grid">
+          {LAW_GRAPHICS.slice(0, 6).map((graphic, index) => {
+            const subject = LAW_SUBJECTS.find((item) => item.id === graphic.subject)!;
+            return (
+              <motion.div
+                key={graphic.lessonId}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ delay: index * 0.06 }}
+              >
+                <PrefetchLink
+                  to={`/law/graphic/${graphic.lessonId}`}
+                  className="law-graphic-card law-graphic-card--featured"
+                  style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
+                >
+                  <span className="law-graphic-card__kind">{graphicEmoji(graphic.kind)}</span>
+                  <span className="law-graphic-card__body">
+                    <small>{subject.name} · {graphic.title}</small>
+                    <strong>{graphic.title}</strong>
+                  </span>
+                  <span className="law-graphic-card__go">看动画 →</span>
+                </PrefetchLink>
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="law-academy__how">
         <h2>三步学习法：看懂 → 点透 → 记牢</h2>
         <ol>
@@ -116,4 +154,23 @@ export function LawAcademyPage() {
       </footer>
     </div>
   );
+}
+
+function graphicEmoji(kind: string): string {
+  switch (kind) {
+    case "assemble":
+      return "🧩";
+    case "flow":
+      return "🔗";
+    case "tree":
+      return "🌳";
+    case "timeline":
+      return "🕰️";
+    case "balance":
+      return "⚖️";
+    case "stairs":
+      return "🪜";
+    default:
+      return "📊";
+  }
 }

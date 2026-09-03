@@ -117,3 +117,41 @@ export function isCleanTerm(term: string | null | undefined): boolean {
   if (/^(的|了|是|在|与|和|或|对|从|把|被|并|而)/.test(text)) return false;
   return true;
 }
+
+/** ── 知识图解（真动画） ── */
+
+/** 图解类型：装配 / 流程 / 树 / 时间轴 / 天平 / 阶梯 */
+export type GraphicKind = "assemble" | "flow" | "tree" | "timeline" | "balance" | "stairs";
+
+export interface GraphicNode {
+  /** 节点名（如"犯罪客体"） */
+  label: string;
+  /** 该节点讲解（来自课本要点） */
+  detail: string;
+  /** 父节点索引（tree 用，-1 表示根） */
+  parent?: number;
+  /** 阶梯/时间轴专用 */
+  step?: string;
+}
+
+export interface LawGraphic {
+  /** 对应课时 id（知识点已在该课讲解） */
+  lessonId: string;
+  subject: LawSubjectId;
+  title: string;
+  kind: GraphicKind;
+  /** 一句话说明这张图在讲什么 */
+  intro: string;
+  /** 自动播放的解说步骤（与动画节点同步） */
+  captions: string[];
+  nodes: GraphicNode[];
+  /** balance 特别参数：左/右标题与差异行 */
+  balance?: { left: string; right: string; diffs: [string, string, string][] };
+  /** timeline 特别参数：色带 */
+  eras?: { label: string; color: string }[];
+}
+
+export interface LawGraphicRef {
+  graphic: LawGraphic;
+  lesson: LawLesson;
+}
