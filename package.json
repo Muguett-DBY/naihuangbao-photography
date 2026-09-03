@@ -31,7 +31,7 @@
     "deadcode:check": "knip --include files,dependencies,unlisted,binaries,duplicates",
     "lint": "npm run typecheck && npm run architecture:check && npm run deadcode:check",
     "test": "vitest run",
-    "test:e2e": "playwright test -c e2e/playwright.config.ts",
+    "test:e2e": "node scripts/run-e2e.mjs",
     "test:e2e:critical": "playwright test -c e2e/playwright.config.ts e2e/platform-v3.spec.ts",
     "verify": "npm run lint && npm run test && npm run build:full",
     "verify:release": "npm run verify && npm run test:e2e",

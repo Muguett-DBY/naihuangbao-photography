@@ -8,6 +8,40 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+// 注意：本测试必须排在本文件首位 —— 它依赖干净的 IndexedDB 工作区；
+// 若排在"智能归档/Project Dock"测试之后，前序测试会在同 worker 留下
+// 工作区状态，导致 /create 的媒体条（LOAD ASSETS）永久 disabled（V7 曾因此 flaky）。
+test("@critical V7 Studio 4 与 Story Director 共享项目素材和场景参数", async ({ page }) => {
+  test.slow();
+  await page.goto("/archive");
+  // 等待归档索引渲染完成（语义分析加载），避免"点到未就绪的资产"
+  await expect(page.locator(".archive-intelligence__results article").first()).toBeVisible();
+  await page.locator(".archive-intelligence__results article").first().getByRole("button", { name: /Add to project/ }).click();
+  // 确认真的有素材进了项目（0 素材时 /create 的 LOAD ASSETS 会永久 disabled）
+  await expect(page.locator(".project-dock__trigger")).toContainText("1");
+  await page.goto("/create");
+  await page.getByRole("group", { name: "Artboard preset" }).getByRole("button", { name: /9:16/ }).click();
+  await expect(page.locator(".studio-canvas-frame canvas")).toHaveAttribute("width", "1080");
+  await expect(page.locator(".studio-canvas-frame canvas")).toHaveAttribute("height", "1920");
+  await page.getByRole("button", { name: "ROUNDED" }).click();
+  await expect(page.getByRole("button", { name: "ROUNDED" })).toHaveClass(/is-active/);
+  await page.getByRole("button", { name: "Lock layer" }).click();
+  await expect(page.locator(".studio-transform-controls input[type=range]").first()).toBeDisabled();
+  // 前置面板操作会把页面滚到中线，LOAD ASSETS 位于长工作区下方：
+  // 与真实用户一致，先滚动到目标再交互
+  await page.getByRole("button", { name: /LOAD ASSETS/ }).scrollIntoViewIfNeeded();
+  await page.getByRole("button", { name: /LOAD ASSETS/ }).click();
+  await expect(page.locator(".studio-image-strip > div")).toHaveCount(6);
+
+  await page.goto("/create/story");
+  const director = page.locator(".scene-director-controls");
+  await expect(director).toBeVisible();
+  await director.locator('[data-scene-transition="slice"]').click();
+  await expect(page.locator(".story-builder-preview__chapter.is-active")).toHaveAttribute("data-scene-transition", "slice");
+  await director.locator('input[type="range"]').first().fill("1500");
+  await expect(page.locator(".story-builder-preview__chapter.is-active")).toHaveAttribute("style", /1500ms/);
+});
+
 test("@critical 首页保持用户控制的客片切换与首屏预约操作", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
@@ -46,29 +80,6 @@ test("@critical V7 智能归档支持语义搜索、本地图像分析与 Projec
   await dockTrigger.click();
   await expect(page.locator("#project-dock-panel")).toBeVisible();
   await expect(page.locator("#project-dock-panel .project-dock__assets button")).toHaveCount(1);
-});
-
-test("@critical V7 Studio 4 与 Story Director 共享项目素材和场景参数", async ({ page }) => {
-  await page.goto("/archive");
-  await page.locator(".archive-intelligence__results article").first().getByRole("button", { name: /Add to project/ }).click();
-  await page.goto("/create");
-  await page.getByRole("group", { name: "Artboard preset" }).getByRole("button", { name: /9:16/ }).click();
-  await expect(page.locator(".studio-canvas-frame canvas")).toHaveAttribute("width", "1080");
-  await expect(page.locator(".studio-canvas-frame canvas")).toHaveAttribute("height", "1920");
-  await page.getByRole("button", { name: "ROUNDED" }).click();
-  await expect(page.getByRole("button", { name: "ROUNDED" })).toHaveClass(/is-active/);
-  await page.getByRole("button", { name: "Lock layer" }).click();
-  await expect(page.locator(".studio-transform-controls input[type=range]").first()).toBeDisabled();
-  await page.getByRole("button", { name: /LOAD ASSETS/ }).click();
-  await expect(page.locator(".studio-image-strip > div")).toHaveCount(6);
-
-  await page.goto("/create/story");
-  const director = page.locator(".scene-director-controls");
-  await expect(director).toBeVisible();
-  await director.locator('[data-scene-transition="slice"]').click();
-  await expect(page.locator(".story-builder-preview__chapter.is-active")).toHaveAttribute("data-scene-transition", "slice");
-  await director.locator('input[type="range"]').first().fill("1500");
-  await expect(page.locator(".story-builder-preview__chapter.is-active")).toHaveAttribute("style", /1500ms/);
 });
 
 test("@critical V7 项目发布、版本恢复和公开分享页契约可用", async ({ page }) => {
@@ -125,3 +136,4 @@ test("V7 减少动态和窄屏保持经济档、键盘可达且无横向溢出",
   await page.keyboard.press("Tab");
   await expect(page.locator(":focus-visible")).toBeVisible();
 });
+
