@@ -1293,8 +1293,131 @@ html:lang(en) .home-booking-hero h1 {
   .home-booking-final__media img,
   .home-booking-final__copy button,
   .home-index-strip a,
-  .home-index-strip a::after {
+  .home-index-strip a::after,
+  .home-booking-law-cta,
+  .home-law-banner__cta {
     animation: none;
     transition: none;
+  }
+}
+
+/* ── 法硕考研学习中心入口横幅（主站显眼入口） ── */
+.home-law-banner {
+  position: relative;
+  margin: clamp(20px, 4vw, 40px) var(--section-inline) 8px;
+  border-radius: 22px;
+  padding: clamp(18px, 3.4vw, 30px) clamp(18px, 3.4vw, 34px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 22px;
+  background:
+    radial-gradient(520px 190px at 92% 0%, rgba(255, 214, 130, 0.55), transparent 70%),
+    linear-gradient(126deg, #8a5f8f 0%, #b1544e 52%, #d8897f 100%);
+  color: #fff;
+  box-shadow: 0 18px 44px rgba(122, 84, 92, 0.28);
+  overflow: hidden;
+}
+
+.home-law-banner::after {
+  content: "⚖️ 📜 🏛️ 🏠 🛡️";
+  position: absolute;
+  right: -14px;
+  bottom: -34px;
+  font-size: 74px;
+  opacity: 0.16;
+  letter-spacing: 10px;
+  pointer-events: none;
+  transform: rotate(-8deg);
+}
+
+.home-law-banner__mascot {
+  flex: none;
+}
+
+.home-law-banner__copy {
+  flex: 1;
+  min-width: 220px;
+}
+
+.home-law-banner__copy p {
+  margin: 0 0 4px;
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.86;
+}
+
+.home-law-banner__copy h2 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 3vw, 30px);
+  line-height: 1.25;
+}
+
+.home-law-banner__copy span {
+  font-size: 13.5px;
+  opacity: 0.9;
+  line-height: 1.7;
+}
+
+.home-law-banner__cta {
+  flex: none;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 26px;
+  border-radius: 999px;
+  background: #fff;
+  color: #a74e49;
+  font-weight: 900;
+  font-size: 15.5px;
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgba(70, 30, 38, 0.28);
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
+  animation: lawCtaFloat 2.8s ease-in-out infinite;
+}
+
+.home-law-banner__cta:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 14px 32px rgba(70, 30, 38, 0.34);
+}
+
+@keyframes lawCtaFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.home-booking-actions .home-booking-law-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 20px;
+  border-radius: 999px;
+  background: linear-gradient(126deg, #8a5f8f, #b1544e);
+  color: #fff;
+  font-weight: 800;
+  font-size: 14.5px;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(122, 84, 92, 0.3);
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s;
+}
+
+.home-booking-actions .home-booking-law-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(122, 84, 92, 0.38);
+}
+
+@media (max-width: 720px) {
+  .home-booking-actions .home-booking-law-cta {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
+  .home-law-banner__cta {
+    width: 100%;
+    justify-content: center;
   }
 }

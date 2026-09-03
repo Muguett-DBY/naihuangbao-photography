@@ -9,6 +9,10 @@
   },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "law:build": "node scripts/build-law-content.mjs",
+    "law:ocr": "python .tmp/ocr/ocr_law_pdfs.py",
+    "law:shot": "node scripts/shot-law.mjs",
+    "law:flow": "node scripts/flow-law.mjs",
     "avif": "node scripts/convert-to-avif.mjs",
     "archive:build": "node scripts/build-archive-manifest.mjs",
     "stories:build": "node scripts/build-story-manifest.mjs",

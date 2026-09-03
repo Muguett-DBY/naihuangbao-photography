@@ -65,6 +65,21 @@ npm run stories:build   # 校验并生成 Story 清单
 
 完整依赖方向和大文件治理规则见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)，开发与发布约定见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
+## 法硕考研学习中心（`/law`）
+
+主页横幅与首屏按钮接入的独立学习区：把《27 法硕背诵一本通》五册（法理学 / 宪法学 / 法制史 / 民法 / 刑法，共 931 页扫描 PDF）OCR 后逐页结构化，每个知识点以"观看动画 + 动手操作"的方式讲解，配套自动生成的自测题与本地进度。所有 OCR 原文按课时保留可对照，未归类的散页（封面 / 目录等）进入学科页附录，确保知识不遗漏。
+
+内容管线（不依赖网络，可重复执行）：
+
+```bash
+npm run law:ocr     # 并行 OCR 全部 PDF（需要 .tmp/ocr-venv，含 rapidocr）
+npm run law:build   # 解析 OCR 文本 → src/data/law/*.json + stats.json
+npm run law:shot    # Playwright 截图验证：node scripts/shot-law.mjs <url> <out.png>
+npm run law:flow    # 完整学习流程回归：node scripts/flow-law.mjs
+```
+
+`src/data/law/*.json` 由 `law:build` 生成，不要手改；每次 OCR 结果变化后重跑 `law:build` 即可。
+
 ## Cloudflare 配置
 
 Pages 构建设置：

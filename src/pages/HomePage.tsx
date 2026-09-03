@@ -13,6 +13,7 @@ import { ImageWithFallback } from "../components/ImageWithFallback";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { SectionSkeleton } from "../components/SectionSkeleton";
 import { HomeChapterIndex, type HomeChapter } from "../components/shared/HomeChapterIndex";
+import { LawMascot } from "../components/law/LawMascot";
 
 const Packages = lazy(() => import("../components/Packages").then((module) => ({ default: module.Packages })));
 
@@ -42,9 +43,10 @@ export function HomePage() {
     () => [
       { id: "premiere", index: "01", label: t("nav.home") },
       { id: "featured", index: "02", label: t("nav.gallery") },
-      { id: "packages", index: "03", label: t("nav.packages") },
-      { id: "process", index: "04", label: t("process.eyebrow") },
-      { id: "book", index: "05", label: t("nav.booking") },
+      { id: "law", index: "03", label: "学习中心" },
+      { id: "packages", index: "04", label: t("nav.packages") },
+      { id: "process", index: "05", label: t("process.eyebrow") },
+      { id: "book", index: "06", label: t("nav.booking") },
     ],
     [t],
   );
@@ -106,6 +108,9 @@ export function HomePage() {
               {t("hero.ctaView")}
               <ArrowRight size={17} aria-hidden="true" />
             </PrefetchLink>
+            <PrefetchLink to="/law" className="home-booking-law-cta">
+              🎓 法硕考研学习中心
+            </PrefetchLink>
           </div>
         </div>
 
@@ -144,6 +149,20 @@ export function HomePage() {
             </div>
           </div>
         ) : null}
+      </section>
+
+      <section className="home-law-banner" id="law" aria-labelledby="home-law-title" data-motion-group>
+        <div className="home-law-banner__mascot" data-motion-item>
+          <LawMascot mood="cheer" size={78} />
+        </div>
+        <div className="home-law-banner__copy" data-motion-item>
+          <p>法硕考研 · 学习中心</p>
+          <h2 id="home-law-title">五本书，全部讲给你听</h2>
+          <span>法理学 · 宪法学 · 法制史 · 民法 · 刑法 ｜ 交互式动画把 931 页知识点一步步讲透，看完还能自己动手练</span>
+        </div>
+        <PrefetchLink to="/law" className="home-law-banner__cta" data-motion-item>
+          开始学习 →
+        </PrefetchLink>
       </section>
 
       <HomeChapterIndex ariaLabel={t("sectionNav.ariaLabel")} chapters={homeChapters} />

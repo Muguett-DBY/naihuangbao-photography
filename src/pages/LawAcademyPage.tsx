@@ -1,0 +1,119 @@
+import { useMemo, type CSSProperties } from "react";
+import { Link } from "react-router";
+import { motion } from "framer-motion";
+import { LAW_SUBJECTS } from "../data/law/meta";
+import lawStats from "../data/law/stats.json";
+import { subjectStats } from "../lib/law-progress";
+import { LawMascot } from "../components/law/LawMascot";
+import { PrefetchLink } from "../components/shared/PrefetchLink";
+import "../styles/law-academy.css";
+
+interface LawStats {
+  [key: string]: { lessonCount: number; chapterTitles: string[] };
+}
+
+const stats = lawStats as LawStats;
+
+export function LawAcademyPage() {
+  const progress = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const subject of LAW_SUBJECTS) {
+      counts[subject.id] = stats[subject.id]?.lessonCount ?? 0;
+    }
+    return subjectStats(counts);
+  }, []);
+
+  return (
+    <div className="law-academy">
+      <header className="law-academy__hero">
+        <div className="law-academy__mascot" aria-hidden="true">
+          <LawMascot mood="cheer" size={96} />
+        </div>
+        <p className="law-academy__kicker">法硕考研 · 学习中心</p>
+        <h1>把五本书，一页一页讲给你听</h1>
+        <p className="law-academy__lead">
+          这里的每一个知识点都拆成了小小的动画：先看，再点，再背。
+          不赶时间，不跳内容——五本书 931 页，全部都在。
+        </p>
+        <div className="law-academy__stats">
+          <span>📚 5 门学科</span>
+          <span>🧩 全部知识点</span>
+          <span>🎮 边玩边学</span>
+        </div>
+      </header>
+
+      <section className="law-academy__subjects" aria-label="选择学科">
+        {LAW_SUBJECTS.map((subject, index) => {
+          const stat = stats[subject.id] ?? { lessonCount: 0, chapterTitles: [] };
+          const prog = progress[subject.id];
+          const percent =
+            prog && prog.total > 0 ? Math.round((prog.done / prog.total) * 100) : 0;
+          return (
+            <motion.div
+              key={subject.id}
+              initial={{ opacity: 0, y: 22 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ delay: index * 0.08 }}
+            >
+              <PrefetchLink
+                to={`/law/${subject.id}`}
+                className="law-subject-card"
+                style={{
+                  "--law-accent": subject.accent,
+                  "--law-accent-soft": subject.accentSoft,
+                } as CSSProperties}
+              >
+                <span className="law-subject-card__emoji">{subject.emoji}</span>
+                <span className="law-subject-card__body">
+                  <strong>{subject.name}</strong>
+                  <small>{subject.short}</small>
+                  <span className="law-subject-card__meta">
+                    {stat.lessonCount} 个知识点 · {stat.chapterTitles.length} 个章节
+                  </span>
+                  {prog && prog.total > 0 ? (
+                    <span className="law-subject-card__progress">
+                      <span className="law-subject-card__progress-bar">
+                        <span style={{ width: `${percent}%` }} />
+                      </span>
+                      <em>{percent}%</em>
+                    </span>
+                  ) : null}
+                </span>
+                <span className="law-subject-card__go">开始学习 →</span>
+              </PrefetchLink>
+            </motion.div>
+          );
+        })}
+      </section>
+
+      <section className="law-academy__how">
+        <h2>三步学习法：看懂 → 点透 → 记牢</h2>
+        <ol>
+          <li>
+            <span className="law-how__step">①</span>
+            <strong>看动画</strong>
+            <p>每个知识点自动拆成小动画：定义、列举、对比、时间线、口诀……一条条来。</p>
+          </li>
+          <li>
+            <span className="law-how__step">②</span>
+            <strong>动动手</strong>
+            <p>解锁关键词、逐条勾选、翻开对比、排列顺序——不点几下不算学会。</p>
+          </li>
+          <li>
+            <span className="law-how__step">③</span>
+            <strong>过自测</strong>
+            <p>每课学完有 4 道自测题，答对一半以上就算"已掌握"，进度会记住。</p>
+          </li>
+        </ol>
+      </section>
+
+      <footer className="law-academy__foot">
+        <Link to="/" className="law-academy__home">
+          ← 回主页
+        </Link>
+        <span>内容源自《27 法硕背诵一本通》五册 · 针对 2027 法硕考研 · 共 931 页</span>
+      </footer>
+    </div>
+  );
+}
