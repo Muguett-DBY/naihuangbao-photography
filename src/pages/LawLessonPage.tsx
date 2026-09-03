@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import type { LawBook, LawSubjectId } from "../types/law";
-import { loadLawBook } from "../data/law/loader";
+import { collectSiblingTerms, loadLawBook } from "../data/law/loader";
 import { LessonPlayer } from "../components/law/player/LessonPlayer";
 import { LawMascot } from "../components/law/LawMascot";
 import "../styles/law-academy.css";
@@ -51,6 +51,11 @@ export function LawLessonPage() {
     return null;
   }, [book, lessonId]);
 
+  const siblingTerms = useMemo(
+    () => (book && lessonId ? collectSiblingTerms(book, lessonId) : []),
+    [book, lessonId],
+  );
+
   if (error || !subjectId) {
     return (
       <div className="law-academy">
@@ -82,6 +87,7 @@ export function LawLessonPage() {
       <LessonPlayer
         key={lessonId}
         lesson={lessonRef.lesson}
+        siblingTerms={siblingTerms}
         onExit={() => {
           navigate(`/law/${subjectId}`);
         }}

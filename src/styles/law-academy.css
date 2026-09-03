@@ -739,7 +739,17 @@
   gap: 12px;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   margin-top: 6px;
+}
+
+.law-player__summary-tip {
+  width: 100%;
+  max-width: 480px;
+  margin: 6px auto 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
 }
 
 .law-player__cta {
@@ -821,7 +831,7 @@
   border: 1.5px dashed color-mix(in srgb, var(--law-accent) 34%, var(--hairline));
   border-radius: 14px;
   padding: 10px 16px;
-  animation: lawHintPulse 1.6s ease-in-out infinite;
+  animation: lawHintPulse 2.6s ease-in-out infinite;
 }
 
 .law-step__hint.is-done {
@@ -833,8 +843,8 @@
 }
 
 @keyframes lawHintPulse {
-  0%, 100% { opacity: 0.9; }
-  50% { opacity: 0.55; }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.82; }
 }
 
 .law-step__body {
@@ -911,7 +921,7 @@
   font-size: 16px;
   font-weight: 900;
   cursor: pointer;
-  animation: lawHintPulse 1.6s ease-in-out infinite;
+  animation: lawHintPulse 2.6s ease-in-out infinite;
 }
 
 .law-definition__affix {
@@ -951,7 +961,7 @@
 
 .law-list__item.is-next {
   border-color: color-mix(in srgb, var(--law-accent) 46%, var(--hairline));
-  animation: lawHintPulse 1.8s ease-in-out infinite;
+  animation: lawHintPulse 2.6s ease-in-out infinite;
 }
 
 .law-list__item.is-checked {

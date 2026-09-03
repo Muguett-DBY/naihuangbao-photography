@@ -14,10 +14,13 @@ export function LessonPlayer({
   lesson,
   onExit,
   onNextLesson,
+  siblingTerms,
 }: {
   lesson: LawLesson;
   onExit: () => void;
   onNextLesson?: (() => void) | null;
+  /** 同章其他课的概念，仅用于选择题干扰项（答案永远出自本课） */
+  siblingTerms?: string[];
 }) {
   const subject = LAW_SUBJECT_MAP[lesson.subject];
   const [phase, setPhase] = useState<Phase>("steps");
@@ -36,7 +39,7 @@ export function LessonPlayer({
   const totalSteps = steps.length;
   const doneSteps = Object.keys(stepDone).length;
 
-  const quiz = useMemo(() => (phase === "quiz" ? buildQuiz(lesson) : []), [phase, lesson]);
+  const quiz = useMemo(() => (phase === "quiz" ? buildQuiz(lesson, siblingTerms) : []), [phase, lesson, siblingTerms]);
 
   function handleStepDone() {
     if (!currentStep) return;
@@ -128,10 +131,10 @@ export function LessonPlayer({
           <motion.div
             className="law-player__stage"
             key={`${stepIndex}-${replayKey}`}
-            initial={{ opacity: 0, x: 26 }}
+            initial={{ opacity: 0, x: 12 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -26 }}
-            transition={{ duration: 0.28 }}
+            exit={{ opacity: 0, x: -12 }}
+            transition={{ duration: 0.22 }}
           >
             {currentStep ? (
               <StepStage
@@ -192,9 +195,29 @@ export function LessonPlayer({
             {lesson.mnemonic ? <span>🧠 口诀：{lesson.mnemonic}</span> : null}
           </div>
           <div className="law-player__summary-actions">
-            <button type="button" className="law-player__cta" onClick={startQuiz}>
-              🎯 来自测一下
-            </button>
+            {quiz.length > 0 ? (
+              <button type="button" className="law-player__cta" onClick={startQuiz}>
+                🎯 来自测一下
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="law-player__cta"
+                onClick={() => {
+                  recordQuiz(lesson.id, 1, 1, totalSteps);
+                  setQuizScore({ correct: 1, total: 1 });
+                  setMood("cheer");
+                  setPhase("result");
+                }}
+              >
+                🎓 学完了，标记掌握
+              </button>
+            )}
+            {quiz.length === 0 ? (
+              <p className="law-player__summary-tip">
+                本课是长文讲述型，没有可自动出题的关键词句；直接标记掌握即可。
+              </p>
+            ) : null}
           </div>
         </motion.div>
       ) : null}

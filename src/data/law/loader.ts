@@ -1,4 +1,5 @@
 import type { LawBook, LawLesson, LawSubjectId } from "../../types/law";
+import { isCleanTerm } from "../../types/law";
 
 /** 每科内容为独立 JSON 构建产物（由 node scripts/build-law-content.mjs 生成），按需加载。 */
 const LOADERS: Record<LawSubjectId, () => Promise<{ book: LawBook }>> = {
@@ -51,4 +52,28 @@ export function findLesson(
     }
   }
   return null;
+}
+
+/** 收集同章其它课的概念词，供选择题干扰项使用（答案永远出自本课） */
+export function collectSiblingTerms(book: LawBook, lessonId: string): string[] {
+  const terms: string[] = [];
+  for (const chapter of book.chapters) {
+    const current = chapter.lessons.find((lesson) => lesson.id === lessonId);
+    if (!current) continue;
+    for (const lesson of chapter.lessons) {
+      if (lesson.id === lessonId) continue;
+      for (const step of lesson.steps) {
+        for (const term of step.terms ?? []) {
+          const cleaned = term.term?.trim().replace(/^[（(【[]|[）)】\]]$/g, "").trim();
+          if (cleaned && isCleanTerm(cleaned) && !terms.includes(cleaned)) {
+            terms.push(cleaned);
+          }
+        }
+        if (terms.length >= 40) break;
+      }
+      if (terms.length >= 40) break;
+    }
+    break;
+  }
+  return terms.slice(0, 40);
 }

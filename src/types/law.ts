@@ -101,3 +101,19 @@ export interface LawBook {
   /** 顶部未能归入章节的散页文字（保底保留） */
   leftover: string[];
 }
+
+/**
+ * 术语/概念候选校验（数据与出题共用）：
+ * 只接受"像概念名"的词：3-12 个汉字，无标点/数字残渣，不含题目型动词。
+ */
+export function isCleanTerm(term: string | null | undefined): boolean {
+  if (!term) return false;
+  const text = term.trim().replace(/^[（(【[]|[）)】\]]$/g, "").trim();
+  if (text.length < 3 || text.length > 12) return false;
+  if (!/^[\u4e00-\u9fa5]+$/.test(text)) return false;
+  if (/[（(【[]\d|[0-9]{2,}/.test(text)) return false;
+  if (/[。，；：、！？]/.test(text)) return false;
+  if (/[简述论述简答分析评述试述说明讨论如何什么为什么哪些怎么谈谈]/.test(text)) return false;
+  if (/^(的|了|是|在|与|和|或|对|从|把|被|并|而)/.test(text)) return false;
+  return true;
+}

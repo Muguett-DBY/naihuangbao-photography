@@ -151,16 +151,16 @@ export function HomePage() {
         ) : null}
       </section>
 
-      <section className="home-law-banner" id="law" aria-labelledby="home-law-title" data-motion-group>
-        <div className="home-law-banner__mascot" data-motion-item>
+      <section className="home-law-banner" id="law" aria-labelledby="home-law-title">
+        <div className="home-law-banner__mascot">
           <LawMascot mood="cheer" size={78} />
         </div>
-        <div className="home-law-banner__copy" data-motion-item>
+        <div className="home-law-banner__copy">
           <p>法硕考研 · 学习中心</p>
           <h2 id="home-law-title">五本书，全部讲给你听</h2>
           <span>法理学 · 宪法学 · 法制史 · 民法 · 刑法 ｜ 交互式动画把 931 页知识点一步步讲透，看完还能自己动手练</span>
         </div>
-        <PrefetchLink to="/law" className="home-law-banner__cta" data-motion-item>
+        <PrefetchLink to="/law" className="home-law-banner__cta">
           开始学习 →
         </PrefetchLink>
       </section>
