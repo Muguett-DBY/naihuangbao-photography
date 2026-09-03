@@ -13,6 +13,7 @@
     "law:ocr": "python .tmp/ocr/ocr_law_pdfs.py",
     "law:shot": "node scripts/shot-law.mjs",
     "law:flow": "node scripts/flow-law.mjs",
+    "law:live": "node scripts/live-check.mjs",
     "avif": "node scripts/convert-to-avif.mjs",
     "archive:build": "node scripts/build-archive-manifest.mjs",
     "stories:build": "node scripts/build-story-manifest.mjs",
