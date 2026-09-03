@@ -1,6 +1,6 @@
 // E2E 顺序执行：
-// 工作室/画布类测试（WebGL + IndexedDB）在跨项目并行时会被 CPU 竞争拖垮超时，
-// 因此先跑常规套件（2 workers），再独占 1 个 worker 串行跑 V7 工作区测试。
+// 环境敏感测试（WebGL 工作区/沉浸画廊）独占 worker 串行，其余常规套件并行，
+// 避免 GPU 相关初始化在 CI 容器里被并行竞争拖垮。
 import { spawnSync } from "node:child_process";
 
 function run(label, args) {
@@ -15,5 +15,5 @@ function run(label, args) {
 
 let status = 0;
 status = Math.max(status, run("常规套件（2 workers）", ["--project", "default", ...process.argv.slice(2)]));
-status = Math.max(status, run("V7 工作区（独占 1 worker）", ["--project", "webgl-studio", ...process.argv.slice(2)]));
+status = Math.max(status, run("环境敏感套件（独占 1 worker）", ["--project", "env-sensitive", ...process.argv.slice(2)]));
 process.exit(status);
