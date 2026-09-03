@@ -44,6 +44,7 @@ export const routeContract = [
   { path: "/law", scope: "primary" },
   { path: "/law/:subjectId", scope: "primary", dynamic: true },
   { path: "/law/learn/:lessonId", scope: "primary", dynamic: true },
+  { path: "/law/graphic/:lessonId", scope: "primary", dynamic: true },
   { path: "/admin", scope: "admin" },
 ] as const satisfies readonly RouteContractEntry[];
 

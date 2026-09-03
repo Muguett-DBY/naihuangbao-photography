@@ -46,6 +46,7 @@ export const routeLoaders = {
   "/law": () => import("../pages/LawAcademyPage").then((module) => asDefault(module.LawAcademyPage)),
   "/law/:subjectId": () => import("../pages/LawSubjectPage").then((module) => asDefault(module.LawSubjectPage)),
   "/law/learn/:lessonId": () => import("../pages/LawLessonPage").then((module) => asDefault(module.LawLessonPage)),
+  "/law/graphic/:lessonId": () => import("../pages/LawGraphicPage").then((module) => asDefault(module.LawGraphicPage)),
   "/admin": async () => {
     await import("../styles/admin.css");
     return import("../components/AdminDashboard");

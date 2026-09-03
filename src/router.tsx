@@ -39,6 +39,7 @@ const MapPage = lazy(routeLoaders["/map"]);
 const LawAcademyPage = lazy(routeLoaders["/law"]);
 const LawSubjectPage = lazy(routeLoaders["/law/:subjectId"]);
 const LawLessonPage = lazy(routeLoaders["/law/learn/:lessonId"]);
+const LawGraphicPage = lazy(routeLoaders["/law/graphic/:lessonId"]);
 const LoginPage = lazy(routeLoaders["/login"]);
 const DashboardPage = lazy(routeLoaders["/dashboard"]);
 const PhotoDetailPage = lazy(routeLoaders["/gallery/:id"]);
@@ -131,6 +132,7 @@ export const router = createBrowserRouter([
           { path: "law", element: <PageSuspense><LawAcademyPage /></PageSuspense> },
           { path: "law/:subjectId", element: <PageSuspense><LawSubjectPage /></PageSuspense> },
           { path: "law/learn/:lessonId", element: <PageSuspense><LawLessonPage /></PageSuspense> },
+          { path: "law/graphic/:lessonId", element: <PageSuspense><LawGraphicPage /></PageSuspense> },
           {
             element: <PageSuspense><PracticeLayout /></PageSuspense>,
             children: [

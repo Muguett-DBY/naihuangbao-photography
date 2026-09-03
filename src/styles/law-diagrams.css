@@ -1,0 +1,829 @@
+/* ── 知识图解（真动画）舞台样式 ── */
+
+/* ── 图解入口卡片 ── */
+.law-graphics-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.law-graphics-head h2,
+.law-academy__graphics-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.8vw, 26px);
+}
+
+.law-graphics-head span,
+.law-academy__graphics-head span {
+  color: var(--text-muted);
+  font-size: 13.5px;
+}
+
+.law-subject__graphics {
+  max-width: 1040px;
+  margin: 0 auto clamp(20px, 3vw, 32px);
+  padding: 20px;
+  border-radius: 20px;
+  background: linear-gradient(140deg, color-mix(in srgb, var(--law-accent) 7%, var(--paper)), var(--paper));
+  border: 1.5px solid color-mix(in srgb, var(--law-accent) 26%, var(--hairline));
+}
+
+.law-graphics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.law-graphic-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--paper);
+  border: 1.5px solid var(--hairline);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow-core);
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s, border-color 0.2s;
+}
+
+.law-graphic-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--warm-shadow-strong);
+  border-color: color-mix(in srgb, var(--law-accent) 46%, var(--hairline));
+}
+
+.law-graphic-card__kind {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  font-size: 24px;
+  background: var(--law-accent-soft);
+}
+
+.law-graphic-card__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.law-graphic-card__body strong {
+  font-size: 15px;
+  color: var(--law-accent);
+  line-height: 1.45;
+}
+
+.law-graphic-card__body small {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.law-graphic-card__go {
+  flex: none;
+  font-size: 12.5px;
+  font-weight: 900;
+  color: var(--law-accent);
+  white-space: nowrap;
+}
+
+.law-graphic-card--featured .law-graphic-card__body small {
+  color: var(--text-muted);
+  order: 1;
+}
+
+.law-graphic-card--featured .law-graphic-card__body strong {
+  order: 0;
+}
+
+.law-academy__graphics {
+  max-width: 1040px;
+  margin: clamp(28px, 5vw, 46px) auto 0;
+}
+
+.law-academy__graphics-head {
+  text-align: center;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.law-academy__graphics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+/* 课时页图解入口 */
+.law-lesson-graphic-entry {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--law-accent) 12%, var(--paper)), var(--paper));
+  border: 2px dashed color-mix(in srgb, var(--law-accent) 40%, var(--hairline));
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 0.2s var(--ease-spring), border-color 0.2s;
+}
+
+.law-lesson-graphic-entry:hover {
+  transform: translateY(-2px) scale(1.01);
+  border-color: var(--law-accent);
+}
+
+.law-lesson-graphic-entry__icon {
+  flex: none;
+  font-size: 30px;
+}
+
+.law-lesson-graphic-entry > span:nth-child(2) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.law-lesson-graphic-entry b {
+  color: var(--law-accent);
+  font-size: 15px;
+}
+
+.law-lesson-graphic-entry small {
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.law-lesson-graphic-entry__go {
+  flex: none;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--law-accent);
+  white-space: nowrap;
+}
+
+.law-graphic {
+  --law-accent: #b1544e;
+  --law-accent-soft: #f6e5e2;
+  max-width: 900px;
+  margin: 0 auto;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.law-graphic__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 4px;
+}
+
+.law-graphic__title {
+  flex: 1;
+  font-family: var(--font-display);
+  font-size: clamp(17px, 2.4vw, 22px);
+  font-weight: 800;
+  color: var(--law-accent);
+}
+
+.law-graphic__kind {
+  font-size: 12.5px;
+  font-weight: 900;
+  border-radius: 999px;
+  padding: 5px 12px;
+  background: var(--law-accent-soft);
+  color: var(--law-accent);
+}
+
+.law-graphic__intro {
+  text-align: center;
+}
+
+.law-graphic__intro p:first-child {
+  margin: 0 0 4px;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.law-graphic__hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.law-graphic__stage {
+  flex: 1;
+  border-radius: 22px;
+  background: var(--paper);
+  border: 1.5px solid var(--hairline);
+  box-shadow: var(--warm-shadow);
+  min-height: 420px;
+  padding: clamp(14px, 2.6vw, 26px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.law-graphic__caption {
+  min-height: 60px;
+  text-align: center;
+  padding: 12px 18px;
+  border-radius: 16px;
+  background: var(--law-accent-soft);
+  border: 1.5px solid color-mix(in srgb, var(--law-accent) 26%, var(--hairline));
+}
+
+.law-graphic__caption p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink);
+}
+
+.law-graphic__caption b {
+  color: var(--law-accent);
+  margin-right: 10px;
+}
+
+.law-graphic__controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.law-graphic__nav {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font: inherit;
+  font-weight: 800;
+  font-size: 14px;
+  background: var(--paper);
+  border: 1.5px solid var(--hairline);
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.16s var(--ease-spring);
+}
+
+.law-graphic__nav:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.law-graphic__nav:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.law-graphic__nav.is-primary {
+  margin-left: auto;
+  background: var(--law-accent);
+  color: #fff;
+  border-color: var(--law-accent);
+  box-shadow: var(--button-shadow);
+}
+
+.law-graphic__dots {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.law-graphic__dots button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 0;
+  background: color-mix(in srgb, var(--law-accent) 20%, var(--paper));
+  cursor: pointer;
+  transition: transform 0.18s, background 0.18s;
+}
+
+.law-graphic__dots button.is-current {
+  transform: scale(1.35);
+  background: var(--law-accent);
+}
+
+.law-graphic__dots button.is-done {
+  background: color-mix(in srgb, var(--law-accent) 65%, var(--paper));
+}
+
+.law-graphic__finish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px;
+  border-radius: 16px;
+  background: var(--law-accent-soft);
+  font-size: 14.5px;
+  color: var(--ink);
+}
+
+.law-graphic__cta {
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 22px;
+  font: inherit;
+  font-weight: 900;
+  font-size: 14px;
+  background: var(--law-accent);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: var(--button-shadow);
+  transition: transform 0.18s var(--ease-spring);
+}
+
+.law-graphic__cta:hover {
+  transform: scale(1.04);
+}
+
+/* ── 装配 ── */
+.dia-assemble__canvas {
+  position: relative;
+  height: 400px;
+}
+
+.dia-assemble__slot {
+  position: absolute;
+  width: 40%;
+  max-width: 280px;
+}
+
+.dia-assemble__part {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--paper);
+  border: 2px solid color-mix(in srgb, var(--law-accent) 40%, var(--hairline));
+  box-shadow: var(--shadow-mid);
+}
+
+.dia-assemble__part b {
+  display: block;
+  font-size: 16px;
+  color: var(--law-accent);
+}
+
+.dia-assemble__part small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.dia-assemble__center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 3;
+}
+
+.dia-assemble__core {
+  padding: 20px 30px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--law-accent), color-mix(in srgb, var(--law-accent) 70%, #f7c96b));
+  color: #fff;
+  font-size: 20px;
+  font-weight: 900;
+  text-align: center;
+  box-shadow: 0 16px 36px rgba(122, 84, 92, 0.3);
+}
+
+.dia-assemble__core small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.92;
+  max-width: 260px;
+}
+
+.dia-assemble__wires {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--law-accent);
+  pointer-events: none;
+}
+
+/* ── 流程 ── */
+.dia-flow__svg {
+  width: 100%;
+  height: min(300px, 46vh);
+  color: var(--law-accent);
+}
+
+.dia-flow__detail {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  margin-top: 6px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--law-accent-soft);
+}
+
+.dia-flow__detail b {
+  color: var(--law-accent);
+  font-size: 15px;
+}
+
+.dia-flow__detail span {
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+
+/* ── 树 ── */
+.dia-tree {
+  position: relative;
+  min-height: 460px;
+  padding-top: 96px;
+}
+
+.dia-tree__root-slot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+}
+
+.dia-tree__root {
+  padding: 16px 30px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--law-accent), color-mix(in srgb, var(--law-accent) 72%, #f7c96b));
+  color: #fff;
+  text-align: center;
+  font-size: 19px;
+  font-weight: 900;
+  box-shadow: 0 12px 28px rgba(122, 84, 92, 0.28);
+}
+
+.dia-tree__root small {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.9;
+  margin-top: 3px;
+}
+
+.dia-tree__trunk {
+  position: absolute;
+  top: 74px;
+  left: 50%;
+  width: 2px;
+  height: 24px;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--law-accent) 40%, transparent);
+}
+
+.dia-tree__branches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  position: relative;
+}
+
+.dia-tree__branches::before {
+  content: "";
+  position: absolute;
+  top: -26px;
+  left: 6%;
+  right: 6%;
+  height: 26px;
+  border-top: 2px solid color-mix(in srgb, var(--law-accent) 28%, transparent);
+  pointer-events: none;
+}
+
+.dia-tree__branch-head {
+  border-radius: 14px;
+  background: var(--law-accent-soft);
+  border: 1.5px solid color-mix(in srgb, var(--law-accent) 32%, var(--hairline));
+  padding: 12px 12px;
+  min-height: 86px;
+}
+
+.dia-tree__branch-head b {
+  color: var(--law-accent);
+  font-size: 15px;
+}
+
+.dia-tree__branch-head small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.dia-tree__leaves {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.dia-tree__leaf {
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background: var(--paper);
+  border: 1.5px solid color-mix(in srgb, var(--law-accent) 34%, var(--hairline));
+  color: var(--ink);
+  cursor: help;
+}
+
+.dia-tree__footer {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+/* ── 时间轴 ── */
+.dia-timeline__track-wrap {
+  overflow-x: auto;
+  padding: 10px 4px 0;
+  scrollbar-width: none;
+}
+
+.dia-timeline__track-wrap::-webkit-scrollbar {
+  display: none;
+}
+
+.dia-timeline__track {
+  position: relative;
+  height: 128px;
+  min-width: 640px;
+}
+
+.dia-timeline__base {
+  position: absolute;
+  top: 96px;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--law-accent) 16%, var(--paper));
+}
+
+.dia-timeline__progress {
+  position: absolute;
+  top: 96px;
+  left: 0;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--law-accent), #f7c96b);
+}
+
+.dia-timeline__node {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 120px;
+}
+
+.dia-timeline__flag {
+  text-align: center;
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: var(--paper);
+  border: 2px solid var(--era, var(--law-accent));
+  box-shadow: var(--shadow-core);
+}
+
+.dia-timeline__flag b {
+  display: block;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.dia-timeline__flag small {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--era, var(--law-accent));
+}
+
+.dia-timeline__dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--law-accent);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 900;
+  box-shadow: 0 0 0 5px var(--law-accent-soft);
+}
+
+.dia-timeline__eras {
+  display: flex;
+  gap: 8px;
+  margin: 8px 4px 0;
+  flex-wrap: wrap;
+}
+
+.dia-timeline__eras span {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #fff;
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+
+.dia-timeline__detail {
+  margin-top: 10px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--law-accent-soft);
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.dia-timeline__detail b {
+  color: var(--law-accent);
+  font-size: 15px;
+}
+
+.dia-timeline__detail span {
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.7;
+}
+
+/* ── 天平 ── */
+.dia-balance__scales {
+  display: flex;
+  justify-content: center;
+}
+
+.dia-balance__svg {
+  width: min(420px, 92%);
+  color: var(--law-accent);
+}
+
+.dia-balance__beam {
+  transform-origin: 170px 44px;
+  transition: transform 0.8s ease-in-out;
+}
+
+.dia-balance__beam.is-tilt-left {
+  transform: rotate(-4.5deg);
+}
+
+.dia-balance__beam.is-tilt-right {
+  transform: rotate(4.5deg);
+}
+
+.dia-balance__beam.is-level {
+  transform: rotate(0deg);
+}
+
+.dia-balance__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.dia-balance__row {
+  display: grid;
+  grid-template-columns: 84px 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+  border-radius: 12px;
+  border: 1.5px solid var(--hairline);
+  padding: 8px 12px;
+  background: var(--paper);
+}
+
+.dia-balance__dim {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--text-muted);
+}
+
+.dia-balance__side {
+  font-size: 13px;
+  line-height: 1.6;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.dia-balance__side.is-a {
+  background: var(--law-accent-soft);
+  color: var(--law-accent);
+  font-weight: 700;
+}
+
+.dia-balance__side.is-b {
+  background: color-mix(in srgb, var(--moss) 12%, var(--paper));
+  color: var(--moss-dark);
+  font-weight: 700;
+}
+
+/* ── 阶梯 ── */
+.dia-stairs__canvas {
+  position: relative;
+  height: 430px;
+  margin-top: 4px;
+}
+
+.dia-stairs__tier {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 2px solid var(--hairline);
+  background: var(--paper);
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.dia-stairs__tier.is-active {
+  border-color: var(--law-accent);
+  background: var(--law-accent-soft);
+  box-shadow: 0 8px 20px rgba(122, 84, 92, 0.12);
+}
+
+.dia-stairs__age {
+  flex: none;
+  width: 66px;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--law-accent);
+}
+
+.dia-stairs__tier b {
+  flex: none;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.dia-stairs__tier small {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.dia-stairs__walker {
+  position: absolute;
+  left: 8px;
+  transform: translateY(-50%);
+  font-size: 30px;
+  z-index: 3;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+}
+
+@media (max-width: 720px) {
+  .law-graphic__controls {
+    flex-wrap: wrap;
+  }
+
+  .law-graphic__nav.is-primary {
+    flex: 1;
+    margin-left: 0;
+  }
+
+  .dia-stairs__tier small {
+    display: none;
+  }
+
+  .dia-balance__row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
