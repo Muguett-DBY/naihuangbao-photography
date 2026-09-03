@@ -3,10 +3,10 @@ import { useMemo, useState, useCallback, type CSSProperties, type ReactNode } fr
 
 const spring = { type: "spring", stiffness: 360, damping: 28 } as const;
 
-/** 逐块弹出揭示的文本（按 2 字一组上滑入场） */
+/** 逐块平稳揭示的文本（按 2 字一组轻柔上滑，无模糊无闪烁） */
 export function RiseText({
   text,
-  stagger = 0.028,
+  stagger = 0.02,
   delay = 0,
   className,
   highlight,
@@ -46,9 +46,9 @@ export function RiseText({
         <motion.span
           key={`${index}-${chunk}`}
           className={highlight?.(index, chunk) ? "is-highlight" : undefined}
-          initial={{ opacity: 0, y: 14, filter: "blur(4px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          transition={{ ...spring, delay: delay + index * stagger }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.32, ease: "easeOut", delay: delay + index * stagger }}
           onAnimationComplete={index === chunks.length - 1 ? onAnimationEnd : undefined}
         >
           {chunk}

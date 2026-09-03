@@ -71,9 +71,9 @@ export function QuizRunner({
       className="law-quiz"
       style={styleVars(accent, accentSoft)}
       key={item.id}
-      initial={{ opacity: 0, x: 30 }}
+      initial={{ opacity: 0, x: 14 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.22 }}
     >
       <header className="law-quiz__head">
         <span className="law-quiz__counter">
