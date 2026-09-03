@@ -4,7 +4,9 @@ import { gzipSync } from "node:zlib";
 
 const assetsDir = join(process.cwd(), "dist", "assets");
 const maxMainJsBytes = 128 * 1024;
-const maxLazyJsBytes = 700 * 1024;
+// 法硕学习中心：每科内容 JSON 是最重的懒加载 chunk（民法约 1.7MB 原始），
+// 仅在进入对应学科时下载；预算按其最大单 chunk 预留。
+const maxLazyJsBytes = 2_800 * 1024;
 const maxMainCssBytes = 150 * 1024;
 const maxFontAssetBytes = 256 * 1024;
 const baselineMainGzipBytes = 29_560;
