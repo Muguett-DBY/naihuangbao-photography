@@ -430,7 +430,9 @@ function parseBookPages(pages, bookMeta) {
     if (tocLike) return;
     const key = normalizeHeading(line);
     if (indexInPage <= 2 && pageNo > 1 && prevPageTopKeys.has(key)) {
-      // 上一页顶部出现过同一编号 → 运行页眉，跳过
+      // 上一页顶部出现过同一编号 → 运行页眉：不建组，但它的"真实名称"很有价值
+      const current = level === "part" ? partGroups.get(key) : chapterGroups.get(key);
+      current?.aliases.add(line);
       return;
     }
     if (level === "part") {
@@ -446,6 +448,7 @@ function parseBookPages(pages, bookMeta) {
           title: headingTitle(line, level, bookMeta),
           level,
           lessons: [],
+          aliases: new Set([line]),
         };
         chapters.push(group);
         partGroups.set(key, group);
@@ -453,6 +456,7 @@ function parseBookPages(pages, bookMeta) {
         // 同一编再次出现：选更完整的标题，面包屑更新，不建新组
         const title = headingTitle(line, level, bookMeta);
         const prior = partGroups.get(key);
+        prior.aliases.add(line);
         if (/^第[编部分]*$/.test(prior.title) && title && title.length >= 2) {
           prior.title = title;
         }
@@ -465,6 +469,7 @@ function parseBookPages(pages, bookMeta) {
     if (chapterGroups.has(key)) {
       const title = headingTitle(line, level, bookMeta);
       const prior = chapterGroups.get(key);
+      prior.aliases.add(line);
       if (/^第[编部分]*$/.test(prior.title) && title && title.length >= 2) {
         prior.title = title;
       }
@@ -482,6 +487,7 @@ function parseBookPages(pages, bookMeta) {
       title: headingTitle(line, level, bookMeta),
       level,
       lessons: [],
+      aliases: new Set([line]),
     };
     chapters.push(group);
     chapterGroups.set(key, group);
@@ -595,6 +601,46 @@ function levelRank(level) {
   return level === "part" ? 0 : level === "chapter" ? 1 : level === "section" ? 2 : 3;
 }
 
+/** OCR 固定变体 → 正确语义名 */
+const SEMANTIC_FIX = {
+  贪污络邹: "贪污贿赂罪",
+  "0坊言社会貨型约字信": "妨害社会管理秩序罪",
+  薯作权: "著作权",
+  继丞: "继承",
+  婿细家庭: "婚姻家庭",
+  公演得: "法律推理",
+  法律溪源: "法律渊源",
+  司法物度: "司法制度",
+  立法发: "立法概况",
+  一运行论: "宪法的运行",
+  "0合周务9州": "债权编",
+  白负與合回: "债权编",
+  权益王: "债权编",
+};
+
+/** 从别名集合挑选语义名称（如"第二部分○犯罪论" → "犯罪论"） */
+function pickSemanticTitle(aliases, fallbackTitle = "") {
+  let best = "";
+  for (const alias of aliases) {
+    const cleaned = alias
+      .replace(/[○◎●◆・•·✦☆（）()〇Q□OoOCc\s]/g, "")
+      .replace(/^\s*第[一二三四五六七八九十百零0-9]+(编|部分|章|篇|卷)\s*/, "")
+      .replace(/^\s*(上编|下编|附编)\s*/, "")
+      .trim();
+    if (!cleaned || cleaned === alias.replace(/[○◎●◆・•·✦☆（）()〇Q口O\s]/g, "").trim()) continue;
+    if (cleaned.length >= 2 && cleaned.length > best.length) best = cleaned;
+  }
+  // 常见 OCR 尾字修正
+  best = best.replace(/用$|显$|丽$|忌$|极$|均$|点$|与$/, "罪");
+  if (SEMANTIC_FIX[best]) best = SEMANTIC_FIX[best];
+  if (!best) {
+    const cleaned = fallbackTitle.replace(/^(简述|论述|简答|分析|评述|试述|说明|比较|谈谈|导览)[^一-龥]*/, "");
+    const match = cleaned.match(/([\u4e00-\u9fa5]{2,8}罪|[\u4e00-\u9fa5]{2,8}法|[\u4e00-\u9fa5]{2,6}编|[\u4e00-\u9fa5]{2,6}论)/);
+    if (match) best = match[1];
+  }
+  return best || undefined;
+}
+
 async function main() {
   await mkdir(OUT_DIR, { recursive: true });
   await mkdir(join(root, ".tmp", "law-build"), { recursive: true });
@@ -629,6 +675,16 @@ async function main() {
       leftoverText || "（无）",
       "utf8",
     );
+    const plainChapters = chapters.map((chapter) => ({
+      id: chapter.id,
+      title: chapter.title,
+      semanticTitle: pickSemanticTitle(
+        chapter.aliases ?? new Set(),
+        chapter.lessons.map((l) => l.title).join("；"),
+      ),
+      level: chapter.level,
+      lessons: chapter.lessons,
+    }));
     const book = {
       id: bookMeta.id,
       name: bookMeta.name,
@@ -636,7 +692,7 @@ async function main() {
       emoji: bookMeta.emoji,
       accent: bookMeta.accent,
       accentSoft: bookMeta.accentSoft,
-      chapters,
+      chapters: plainChapters,
       lessonCount: lessonsCount,
       leftover: leftovers.length > 0 ? [leftoverText] : [],
     };

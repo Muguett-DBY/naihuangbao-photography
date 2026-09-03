@@ -423,6 +423,7 @@
    {
     "id": "xingfa-c2",
     "title": "绪论",
+    "semanticTitle": "简述刑法",
     "level": "part",
     "lessons": [
      {
@@ -1486,6 +1487,7 @@
    {
     "id": "xingfa-c3",
     "title": "第二部分",
+    "semanticTitle": "犯罪论",
     "level": "part",
     "lessons": [
      {
@@ -6293,6 +6295,7 @@
    {
     "id": "xingfa-c4",
     "title": "第三部分",
+    "semanticTitle": "刑事责任",
     "level": "part",
     "lessons": [
      {
@@ -6722,6 +6725,7 @@
    {
     "id": "xingfa-c5",
     "title": "第四部分",
+    "semanticTitle": "刑罚论",
     "level": "part",
     "lessons": [
      {
@@ -11856,6 +11860,7 @@
    {
     "id": "xingfa-c6",
     "title": "第五部分",
+    "semanticTitle": "危害国家安全罪",
     "level": "part",
     "lessons": [
      {
@@ -12371,6 +12376,7 @@
    {
     "id": "xingfa-c7",
     "title": "第六部分",
+    "semanticTitle": "危害公共安全罪",
     "level": "part",
     "lessons": [
      {
@@ -13791,6 +13797,7 @@
    {
     "id": "xingfa-c8",
     "title": "第七部分",
+    "semanticTitle": "口破坏社会主义市场经济秩序罪",
     "level": "part",
     "lessons": [
      {
@@ -16337,6 +16344,7 @@
    {
     "id": "xingfa-c9",
     "title": "第八部分",
+    "semanticTitle": "口侵犯公民人身权利、民主权利罪",
     "level": "part",
     "lessons": [
      {
@@ -18036,6 +18044,7 @@
    {
     "id": "xingfa-c10",
     "title": "第九部分",
+    "semanticTitle": "侵犯财产罪",
     "level": "part",
     "lessons": [
      {
@@ -18906,6 +18915,7 @@
    {
     "id": "xingfa-c11",
     "title": "第十部分",
+    "semanticTitle": "妨害社会管理秩序罪",
     "level": "part",
     "lessons": [
      {
@@ -22176,6 +22186,7 @@
    {
     "id": "xingfa-c12",
     "title": "第十一部分",
+    "semanticTitle": "贪污贿赂罪",
     "level": "part",
     "lessons": [
      {
@@ -22948,6 +22959,7 @@
    {
     "id": "xingfa-c13",
     "title": "第十二部分",
+    "semanticTitle": "简述渎职罪",
     "level": "part",
     "lessons": [
      {

@@ -10,6 +10,7 @@
    {
     "id": "minfa-c0",
     "title": "作者的话",
+    "semanticTitle": "法背诵中的重要方法",
     "level": "chapter",
     "lessons": [
      {
@@ -750,6 +751,7 @@
    {
     "id": "minfa-c1",
     "title": "第一编",
+    "semanticTitle": "第一编",
     "level": "part",
     "lessons": [
      {
@@ -783,6 +785,7 @@
    {
     "id": "minfa-c2",
     "title": "绪论",
+    "semanticTitle": "简述民法",
     "level": "part",
     "lessons": [
      {
@@ -1102,6 +1105,7 @@
    {
     "id": "minfa-c3",
     "title": "○绪论",
+    "semanticTitle": "绪论",
     "level": "chapter",
     "lessons": [
      {
@@ -2201,6 +2205,7 @@
    {
     "id": "minfa-c4",
     "title": "第二章",
+    "semanticTitle": "民事法律关系",
     "level": "chapter",
     "lessons": [
      {
@@ -3765,6 +3770,7 @@
    {
     "id": "minfa-c5",
     "title": "第三章",
+    "semanticTitle": "民事主体",
     "level": "chapter",
     "lessons": [
      {
@@ -6516,6 +6522,7 @@
    {
     "id": "minfa-c6",
     "title": "第四章",
+    "semanticTitle": "民事法律事实",
     "level": "chapter",
     "lessons": [
      {
@@ -9248,6 +9255,7 @@
    {
     "id": "minfa-c7",
     "title": "第二编",
+    "semanticTitle": "第二编",
     "level": "part",
     "lessons": [
      {
@@ -10120,6 +10128,7 @@
    {
     "id": "minfa-c8",
     "title": "第二章",
+    "semanticTitle": "性骚扰的法",
     "level": "chapter",
     "lessons": [
      {
@@ -11588,6 +11597,7 @@
    {
     "id": "minfa-c9",
     "title": "第三编",
+    "semanticTitle": "第三编",
     "level": "part",
     "lessons": [
      {
@@ -11655,6 +11665,7 @@
    {
     "id": "minfa-c10",
     "title": "第一章",
+    "semanticTitle": "简述物权法",
     "level": "chapter",
     "lessons": [
      {
@@ -12946,6 +12957,7 @@
    {
     "id": "minfa-c11",
     "title": "第二章",
+    "semanticTitle": "拾得适失物的法",
     "level": "chapter",
     "lessons": [
      {
@@ -14600,6 +14612,7 @@
    {
     "id": "minfa-c12",
     "title": "第三章",
+    "semanticTitle": "简述依法",
     "level": "chapter",
     "lessons": [
      {
@@ -17709,6 +17722,7 @@
    {
     "id": "minfa-c14",
     "title": "第四编",
+    "semanticTitle": "第四编",
     "level": "part",
     "lessons": [
      {
@@ -17761,6 +17775,7 @@
    {
     "id": "minfa-c15",
     "title": "第一章",
+    "semanticTitle": "简述知识产权的法",
     "level": "chapter",
     "lessons": [
      {
@@ -18222,6 +18237,7 @@
    {
     "id": "minfa-c16",
     "title": "薯作权",
+    "semanticTitle": "著作权",
     "level": "chapter",
     "lessons": [
      {
@@ -19310,6 +19326,7 @@
    {
     "id": "minfa-c19",
     "title": "第五编",
+    "semanticTitle": "第五编",
     "level": "part",
     "lessons": [
      {
@@ -19363,6 +19380,7 @@
    {
     "id": "minfa-c20",
     "title": "第一章",
+    "semanticTitle": "债权编",
     "level": "chapter",
     "lessons": [
      {
@@ -24395,6 +24413,7 @@
    {
     "id": "minfa-c21",
     "title": "第二章",
+    "semanticTitle": "债权编",
     "level": "chapter",
     "lessons": [
      {
@@ -28065,6 +28084,7 @@
    {
     "id": "minfa-c23",
     "title": "第六编",
+    "semanticTitle": "第六编",
     "level": "part",
     "lessons": [
      {
@@ -28109,6 +28129,7 @@
    {
     "id": "minfa-c24",
     "title": "第一章",
+    "semanticTitle": "婚姻家庭",
     "level": "chapter",
     "lessons": [
      {
@@ -30268,6 +30289,7 @@
    {
     "id": "minfa-c25",
     "title": "第二章",
+    "semanticTitle": "继承",
     "level": "chapter",
     "lessons": [
      {
@@ -32070,6 +32092,7 @@
    {
     "id": "minfa-c26",
     "title": "第七编",
+    "semanticTitle": "第七编",
     "level": "part",
     "lessons": [
      {
@@ -32134,6 +32157,7 @@
    {
     "id": "minfa-c27",
     "title": "第一章",
+    "semanticTitle": "一般规定",
     "level": "chapter",
     "lessons": [
      {
@@ -33641,6 +33665,7 @@
    {
     "id": "minfa-c28",
     "title": "第二章",
+    "semanticTitle": "特殊侵权行为",
     "level": "chapter",
     "lessons": [
      {
