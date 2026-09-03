@@ -43,10 +43,9 @@ export function HomePage() {
     () => [
       { id: "premiere", index: "01", label: t("nav.home") },
       { id: "featured", index: "02", label: t("nav.gallery") },
-      { id: "law", index: "03", label: "学习中心" },
-      { id: "packages", index: "04", label: t("nav.packages") },
-      { id: "process", index: "05", label: t("process.eyebrow") },
-      { id: "book", index: "06", label: t("nav.booking") },
+      { id: "packages", index: "03", label: t("nav.packages") },
+      { id: "process", index: "04", label: t("process.eyebrow") },
+      { id: "book", index: "05", label: t("nav.booking") },
     ],
     [t],
   );
@@ -108,9 +107,6 @@ export function HomePage() {
               {t("hero.ctaView")}
               <ArrowRight size={17} aria-hidden="true" />
             </PrefetchLink>
-            <PrefetchLink to="/law" className="home-booking-law-cta">
-              🎓 法硕考研学习中心
-            </PrefetchLink>
           </div>
         </div>
 
@@ -151,6 +147,8 @@ export function HomePage() {
         ) : null}
       </section>
 
+      <HomeChapterIndex ariaLabel={t("sectionNav.ariaLabel")} chapters={homeChapters} />
+
       <section className="home-law-banner" id="law" aria-labelledby="home-law-title">
         <div className="home-law-banner__mascot">
           <LawMascot mood="cheer" size={78} />
@@ -164,8 +162,6 @@ export function HomePage() {
           开始学习 →
         </PrefetchLink>
       </section>
-
-      <HomeChapterIndex ariaLabel={t("sectionNav.ariaLabel")} chapters={homeChapters} />
 
       <section className="home-booking-featured" id="featured" aria-labelledby="home-featured-title" data-motion-group>
         <header className="home-booking-heading" data-motion-item>
