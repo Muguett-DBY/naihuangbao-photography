@@ -56,3 +56,4 @@
 /law/ / 200
 /law/:subjectId / 200
 /law/learn/:lessonId / 200
+/law/graphic/:lessonId / 200
