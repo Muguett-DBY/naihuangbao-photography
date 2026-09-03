@@ -6,7 +6,8 @@ import { LAW_GRAPHICS } from "../data/law/graphics";
 import lawStats from "../data/law/stats.json";
 import { getTodayGoal, subjectStats } from "../lib/law-progress";
 import { LawMascot } from "../components/law/LawMascot";
-import { LawEggListener, LawEggSymbol } from "../components/law/EasterEgg";
+import { LawEggListener, LawEggSymbol, useLawImmersive } from "../components/law/EasterEgg";
+import { LawPlanCard } from "../components/law/LawPlanCard";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
@@ -18,6 +19,7 @@ interface LawStats {
 const stats = lawStats as LawStats;
 
 export function LawAcademyPage() {
+  useLawImmersive();
   const progress = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const subject of LAW_SUBJECTS) {
@@ -55,6 +57,8 @@ export function LawAcademyPage() {
           </span>
         </div>
       </header>
+
+      <LawPlanCard />
 
       <section className="law-academy__subjects" aria-label="选择学科">
         {LAW_SUBJECTS.map((subject, index) => {

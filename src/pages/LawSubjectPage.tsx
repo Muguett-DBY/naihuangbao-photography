@@ -13,7 +13,8 @@ import {
 } from "../lib/law-progress";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import { LawMascot } from "../components/law/LawMascot";
-import { LawEggListener } from "../components/law/EasterEgg";
+import { LawEggListener, useLawImmersive } from "../components/law/EasterEgg";
+import { subjectSteps } from "../lib/law-plan";
 import { LawSearch } from "../components/law/subject/LawSearch";
 import { ChapterTree } from "../components/law/subject/ChapterTree";
 import {
@@ -30,6 +31,7 @@ function isLawSubjectId(value: string | undefined): value is keyof typeof LAW_SU
 }
 
 export function LawSubjectPage() {
+  useLawImmersive();
   const { subjectId } = useParams();
   const [book, setBook] = useState<LawBook | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -123,6 +125,9 @@ export function LawSubjectPage() {
           <div className="law-subject__goal-bar">
             <span style={{ width: `${Math.min(100, (today.done / today.target) * 100)}%` }} />
           </div>
+          <span className="law-subject__goal-steps">
+            📖 本册共 {subjectSteps(subject.id)} 步
+          </span>
         </div>
       </header>
 
