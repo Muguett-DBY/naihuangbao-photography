@@ -14,10 +14,11 @@ export function QuizRunner({
   items: LawQuizItem[];
   accent: string;
   accentSoft: string;
-  onDone: (correct: number, total: number) => void;
+  onDone: (correct: number, total: number, wrong: number) => void;
 }) {
   const [index, setIndex] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
   const [state, setState] = useState<AnswerState>("idle");
   const [picked, setPicked] = useState<string | null>(null);
   const [orderTry, setOrderTry] = useState<string[]>([]);
@@ -31,13 +32,14 @@ export function QuizRunner({
     (isGood: boolean) => {
       setState(isGood ? "correct" : "wrong");
       if (isGood) setCorrectCount((value) => value + 1);
+      else setWrongCount((value) => value + 1);
     },
     [],
   );
 
   function next() {
     if (index + 1 >= items.length) {
-      onDone(correctCount, items.length);
+      onDone(correctCount, items.length, wrongCount);
       return;
     }
     setIndex((value) => value + 1);
@@ -52,6 +54,7 @@ export function QuizRunner({
     setPicked(option);
     setState(isCorrect ? "correct" : "wrong");
     if (isCorrect) setCorrectCount((value) => value + 1);
+    else setWrongCount((value) => value + 1);
   }
 
   if (finished || !item) {
@@ -59,7 +62,7 @@ export function QuizRunner({
       <div className="law-quiz__done" style={styleVars(accent, accentSoft)}>
         <LawMascot mood="cheer" size={72} />
         <p>自测结束，成绩已记录！</p>
-        <button type="button" className="law-player__cta" onClick={() => onDone(correctCount, items.length)}>
+        <button type="button" className="law-player__cta" onClick={() => onDone(correctCount, items.length, wrongCount)}>
           查看结果 →
         </button>
       </div>

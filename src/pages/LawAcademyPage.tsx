@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import { LAW_SUBJECTS } from "../data/law/meta";
 import { LAW_GRAPHICS } from "../data/law/graphics";
 import lawStats from "../data/law/stats.json";
-import { subjectStats } from "../lib/law-progress";
+import { getTodayGoal, subjectStats } from "../lib/law-progress";
 import { LawMascot } from "../components/law/LawMascot";
+import { LawEggListener, LawEggSymbol } from "../components/law/EasterEgg";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
@@ -25,6 +26,9 @@ export function LawAcademyPage() {
     return subjectStats(counts);
   }, []);
 
+  const today = useMemo(() => getTodayGoal(), []);
+  const doneTotal = Object.values(progress).reduce((sum, p) => sum + p.done, 0);
+
   return (
     <div className="law-academy">
       <header className="law-academy__hero">
@@ -41,6 +45,14 @@ export function LawAcademyPage() {
           <span>📚 5 门学科</span>
           <span>🧩 全部知识点</span>
           <span>🎮 边玩边学</span>
+        </div>
+        <div className="law-academy__tody" aria-label="我的学习进度">
+          <span>
+            🎯 今日 <b>{today.done}/{today.target}</b> 课
+          </span>
+          <span>
+            ⭐ 已掌握 <b>{doneTotal}</b> 个知识点
+          </span>
         </div>
       </header>
 
@@ -150,8 +162,11 @@ export function LawAcademyPage() {
         <Link to="/" className="law-academy__home">
           ← 回主页
         </Link>
+        <LawEggSymbol />
         <span>内容源自《27 法硕背诵一本通》五册 · 针对 2027 法硕考研 · 共 931 页</span>
       </footer>
+
+      <LawEggListener doneCount={doneTotal} />
     </div>
   );
 }

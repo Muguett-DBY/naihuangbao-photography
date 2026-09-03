@@ -18,6 +18,8 @@ export type LawChapterLevel = "part" | "chapter" | "section" | "group";
 export interface LawChapter {
   id: string;
   title: string;
+  /** 语义化标题（如"犯罪论"），由构建管线从全书页眉汇总 */
+  semanticTitle?: string;
   level: LawChapterLevel;
   lessons: LawLesson[];
 }

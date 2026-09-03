@@ -10,6 +10,7 @@
    {
     "id": "zhishixiang-c0",
     "title": "作者的话",
+    "semanticTitle": "中国法",
     "level": "chapter",
     "lessons": [
      {
@@ -1672,6 +1673,7 @@
    {
     "id": "zhishixiang-c2",
     "title": "第一章",
+    "semanticTitle": "立法制度",
     "level": "chapter",
     "lessons": [
      {
@@ -5736,6 +5738,7 @@
    {
     "id": "zhishixiang-c3",
     "title": "继承",
+    "semanticTitle": "继承",
     "level": "part",
     "lessons": [
      {
@@ -5834,6 +5837,7 @@
    {
     "id": "zhishixiang-c4",
     "title": "强制措施",
+    "semanticTitle": "强制措施",
     "level": "chapter",
     "lessons": [
      {
@@ -5870,6 +5874,7 @@
    {
     "id": "zhishixiang-c5",
     "title": "执行",
+    "semanticTitle": "执行",
     "level": "part",
     "lessons": [
      {
@@ -5939,6 +5944,7 @@
    {
     "id": "zhishixiang-c6",
     "title": "○立法制度",
+    "semanticTitle": "立法制度",
     "level": "chapter",
     "lessons": [
      {
@@ -6929,6 +6935,7 @@
    {
     "id": "zhishixiang-c7",
     "title": "第二章",
+    "semanticTitle": "口刑事法律制度",
     "level": "chapter",
     "lessons": [
      {
@@ -14790,6 +14797,7 @@
    {
     "id": "zhishixiang-c8",
     "title": "第三章",
+    "semanticTitle": "口行政法律制度",
     "level": "chapter",
     "lessons": [
      {
@@ -16977,6 +16985,7 @@
    {
     "id": "zhishixiang-c9",
     "title": "第四章",
+    "semanticTitle": "民事法律制度",
     "level": "chapter",
     "lessons": [
      {
@@ -19925,6 +19934,7 @@
    {
     "id": "zhishixiang-c10",
     "title": "第五章",
+    "semanticTitle": "经济法律制度",
     "level": "chapter",
     "lessons": [
      {
@@ -20535,6 +20545,7 @@
    {
     "id": "zhishixiang-c11",
     "title": "第六章",
+    "semanticTitle": "司法制度",
     "level": "chapter",
     "lessons": [
      {
@@ -23954,6 +23965,7 @@
    {
     "id": "zhishixiang-c13",
     "title": "第一章",
+    "semanticTitle": "立法概况",
     "level": "chapter",
     "lessons": [
      {
@@ -24976,6 +24988,7 @@
    {
     "id": "zhishixiang-c14",
     "title": "第二章",
+    "semanticTitle": "宪法制度",
     "level": "chapter",
     "lessons": [
      {
@@ -26687,6 +26700,7 @@
    {
     "id": "zhishixiang-c15",
     "title": "第三章",
+    "semanticTitle": "刑事法律制度",
     "level": "chapter",
     "lessons": [
      {
@@ -27397,6 +27411,7 @@
    {
     "id": "zhishixiang-c16",
     "title": "第四章",
+    "semanticTitle": "民商事法律制度",
     "level": "chapter",
     "lessons": [
      {
@@ -27909,6 +27924,7 @@
    {
     "id": "zhishixiang-c17",
     "title": "“债权\"",
+    "semanticTitle": "“债权\"",
     "level": "part",
     "lessons": [
      {
@@ -27945,6 +27961,7 @@
    {
     "id": "zhishixiang-c18",
     "title": "○民商事法律制度",
+    "semanticTitle": "民商事法律制度",
     "level": "chapter",
     "lessons": [
      {
@@ -28746,6 +28763,7 @@
    {
     "id": "zhishixiang-c19",
     "title": "第五章",
+    "semanticTitle": "司法制度",
     "level": "chapter",
     "lessons": [
      {
@@ -30383,6 +30401,7 @@
    {
     "id": "zhishixiang-c20",
     "title": "绪论",
+    "semanticTitle": "中国法",
     "level": "part",
     "lessons": [
      {

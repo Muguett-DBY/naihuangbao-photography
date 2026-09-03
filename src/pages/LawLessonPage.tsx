@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import type { LawBook, LawSubjectId } from "../types/law";
-import { LAW_SUBJECT_MAP } from "../data/law/meta";
 import { collectSiblingTerms, loadLawBook } from "../data/law/loader";
-import { LAW_GRAPHIC_MAP } from "../data/law/graphics";
 import { LessonPlayer } from "../components/law/player/LessonPlayer";
 import { LawMascot } from "../components/law/LawMascot";
+import { LawEggListener } from "../components/law/EasterEgg";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
 
@@ -16,6 +15,12 @@ export function LawLessonPage() {
   const navigate = useNavigate();
   const [book, setBook] = useState<LawBook | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // 沉浸专注模式：隐藏摄影站导航，全屏学习
+  useEffect(() => {
+    document.body.classList.add("law-immersive");
+    return () => document.body.classList.remove("law-immersive");
+  }, []);
 
   const subjectId = useMemo<LawSubjectId | null>(() => {
     const match = SUBJECT_PATTERN.exec(lessonId ?? "");
@@ -87,20 +92,6 @@ export function LawLessonPage() {
 
   return (
     <div className="law-academy law-lesson-page">
-      {lessonId && LAW_GRAPHIC_MAP[lessonId] ? (
-        <Link
-          to={`/law/graphic/${lessonId}`}
-          className="law-lesson-graphic-entry"
-          style={{ "--law-accent": LAW_SUBJECT_MAP[subjectId].accent } as CSSProperties}
-        >
-          <span className="law-lesson-graphic-entry__icon">📐</span>
-          <span>
-            <b>{LAW_GRAPHIC_MAP[lessonId].title}</b>
-            <small>这节课有图解动画——先看知识点怎么"动"起来，再进入逐句讲解</small>
-          </span>
-          <span className="law-lesson-graphic-entry__go">打开图解 →</span>
-        </Link>
-      ) : null}
       <LessonPlayer
         key={lessonId}
         lesson={lessonRef.lesson}
@@ -116,6 +107,7 @@ export function LawLessonPage() {
             : null
         }
       />
+      <LawEggListener />
     </div>
   );
 }

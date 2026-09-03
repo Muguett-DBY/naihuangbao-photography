@@ -1,9 +1,11 @@
-import { useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router";
 import type { LawLesson } from "../../../types/law";
 import { buildQuiz } from "../../../lib/law-quiz";
 import { markStepDone, recordQuiz, touchLesson } from "../../../lib/law-progress";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
+import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
 import { StepStage } from "./StepStage";
 import { QuizRunner } from "./QuizRunner";
 import { LawMascot, type LawMood } from "../LawMascot";
@@ -30,6 +32,8 @@ export function LessonPlayer({
   const [quizScore, setQuizScore] = useState<{ correct: number; total: number }>({ correct: 0, total: 0 });
   const [replayKey, setReplayKey] = useState(0);
   const [showRaw, setShowRaw] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   const steps = lesson.steps;
@@ -38,8 +42,28 @@ export function LessonPlayer({
   const isCurrentDone = currentStep ? !!stepDone[currentStep.id] : false;
   const totalSteps = steps.length;
   const doneSteps = Object.keys(stepDone).length;
+  const graphic = LAW_GRAPHIC_MAP[lesson.id];
 
   const quiz = useMemo(() => (phase === "quiz" ? buildQuiz(lesson, siblingTerms) : []), [phase, lesson, siblingTerms]);
+
+  // 自动串联模式：当前步完成后，1.4s 自动进入下一步
+  useEffect(() => {
+    if (!autoPlay || phase !== "steps" || !isCurrentDone) return;
+    const timer = window.setTimeout(() => goNextRef.current(), 1400);
+    return () => window.clearTimeout(timer);
+  }, [autoPlay, phase, isCurrentDone, stepIndex]);
+
+  const goNextRef = useRef<() => void>(() => {});
+  goNextRef.current = () => {
+    if (stepIndex < totalSteps - 1) {
+      setStepIndex((index) => index + 1);
+      setMood("idle");
+      setReplayKey((key) => key + 1);
+    } else {
+      touchLesson(lesson.id);
+      setPhase("summary");
+    }
+  };
 
   function handleStepDone() {
     if (!currentStep) return;
@@ -52,14 +76,7 @@ export function LessonPlayer({
   }
 
   function goNext() {
-    if (stepIndex < totalSteps - 1) {
-      setStepIndex((index) => index + 1);
-      setMood("idle");
-      setReplayKey((key) => key + 1);
-      return;
-    }
-    touchLesson(lesson.id);
-    setPhase("summary");
+    goNextRef.current();
   }
 
   function goPrev() {
@@ -74,8 +91,8 @@ export function LessonPlayer({
     setMood("idle");
   }
 
-  function handleQuizDone(correct: number, total: number) {
-    recordQuiz(lesson.id, correct, total, totalSteps);
+  function handleQuizDone(correct: number, total: number, wrong: number) {
+    recordQuiz(lesson.id, correct, total, totalSteps, wrong > 0);
     setQuizScore({ correct, total });
     setMood("cheer");
     setPhase("result");
@@ -92,7 +109,43 @@ export function LessonPlayer({
         <button type="button" className="law-player__back" onClick={onExit}>
           ← {subject.name}
         </button>
-        <div className="law-player__crumb">{lesson.breadcrumb.join(" / ")}</div>
+        <div className="law-player__crumb">{cleanBreadcrumb(lesson.breadcrumb).join(" / ")}</div>
+        {graphic ? (
+          <Link className="law-player__graphic" to={`/law/graphic/${lesson.id}`}>
+            📐 图解
+          </Link>
+        ) : null}
+        {totalSteps > 8 ? (
+          <div className="law-player__navpop">
+            <button
+              type="button"
+              className={`law-player__navpop-btn ${navOpen ? "is-open" : ""}`}
+              onClick={() => setNavOpen((value) => !value)}
+              aria-expanded={navOpen}
+            >
+              🧭 段落导航
+            </button>
+            {navOpen ? (
+              <div className="law-player__navpop-menu">
+                {steps.map((step, index) => (
+                  <button
+                    key={step.id}
+                    type="button"
+                    className={index === stepIndex ? "is-current" : ""}
+                    onClick={() => {
+                      setStepIndex(index);
+                      setNavOpen(false);
+                      setMood("idle");
+                      setReplayKey((key) => key + 1);
+                    }}
+                  >
+                    {String(index + 1).padStart(2, "0")} · {kindLabel(step.kind)} · {step.text.slice(0, 18)}…
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
         <button
           type="button"
           className={`law-player__raw ${showRaw ? "is-open" : ""}`}
@@ -174,7 +227,16 @@ export function LessonPlayer({
                 ? stepIndex === totalSteps - 1
                   ? "完成本课 →"
                   : "下一步 →"
-                : "先完成上面的小互动"}
+                : "完成上面的小任务就继续啦"}
+            </button>
+            <button
+              type="button"
+              className={`law-player__auto ${autoPlay ? "is-on" : ""}`}
+              onClick={() => setAutoPlay((value) => !value)}
+              aria-pressed={autoPlay}
+              title="自动串联模式：每一步完成约 1 秒后自动进入下一步"
+            >
+              🔁 自动
             </button>
           </div>
         </>
@@ -196,9 +258,23 @@ export function LessonPlayer({
           </div>
           <div className="law-player__summary-actions">
             {quiz.length > 0 ? (
-              <button type="button" className="law-player__cta" onClick={startQuiz}>
-                🎯 来自测一下
-              </button>
+              <>
+                <button type="button" className="law-player__cta" onClick={startQuiz}>
+                  🎯 来自测一下
+                </button>
+                <button
+                  type="button"
+                  className="law-player__skip"
+                  onClick={() => {
+                    recordQuiz(lesson.id, 1, 1, totalSteps);
+                    setQuizScore({ correct: 1, total: 1 });
+                    setMood("cheer");
+                    setPhase("result");
+                  }}
+                >
+                  跳过自测，直接标记掌握 →
+                </button>
+              </>
             ) : (
               <button
                 type="button"
@@ -299,6 +375,16 @@ function kindLabel(kind: string): string {
     default:
       return "📝 细读";
   }
+}
+
+/** 清除运行页眉残留符号，让面包屑可读 */
+function cleanBreadcrumb(crumbs: string[]): string[] {
+  return crumbs.map((text) =>
+    text
+      .replace(/[○◎●◆・•·✦☆]/g, "")
+      .replace(/^\s*(第[一二三四五六七八九十百零0-9]+[编部分章篇卷]?)+[·、]?\s*/, "")
+      .trim(),
+  );
 }
 
 /** 供外部读取步骤列表（下一课按钮定位） */

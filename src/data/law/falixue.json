@@ -787,6 +787,7 @@
    {
     "id": "falixue-c3",
     "title": "第二章",
+    "semanticTitle": "的特征及其与部门法",
     "level": "chapter",
     "lessons": [
      {
@@ -931,6 +932,7 @@
    {
     "id": "falixue-c5",
     "title": "第三章",
+    "semanticTitle": "分析论述自然法",
     "level": "chapter",
     "lessons": [
      {
@@ -1426,6 +1428,7 @@
    {
     "id": "falixue-c6",
     "title": "第四章",
+    "semanticTitle": "简答法",
     "level": "chapter",
     "lessons": [
      {
@@ -1777,6 +1780,7 @@
    {
     "id": "falixue-c7",
     "title": "第五章",
+    "semanticTitle": "简答分析法",
     "level": "chapter",
     "lessons": [
      {
@@ -2193,6 +2197,7 @@
    {
     "id": "falixue-c8",
     "title": "第六章",
+    "semanticTitle": "法的价值",
     "level": "chapter",
     "lessons": [
      {
@@ -3088,6 +3093,7 @@
    {
     "id": "falixue-c9",
     "title": "第七章",
+    "semanticTitle": "简答法",
     "level": "chapter",
     "lessons": [
      {
@@ -3696,6 +3702,7 @@
    {
     "id": "falixue-c10",
     "title": "第八章",
+    "semanticTitle": "法律渊源",
     "level": "chapter",
     "lessons": [
      {
@@ -4937,6 +4944,7 @@
    {
     "id": "falixue-c11",
     "title": "第九章",
+    "semanticTitle": "简答分析法",
     "level": "chapter",
     "lessons": [
      {
@@ -5273,6 +5281,7 @@
    {
     "id": "falixue-c12",
     "title": "第十章",
+    "semanticTitle": "简答法",
     "level": "chapter",
     "lessons": [
      {
@@ -5961,6 +5970,7 @@
    {
     "id": "falixue-c14",
     "title": "第十一章",
+    "semanticTitle": "简述法",
     "level": "chapter",
     "lessons": [
      {
@@ -6681,6 +6691,7 @@
    {
     "id": "falixue-c15",
     "title": "第十二章",
+    "semanticTitle": "论述法",
     "level": "chapter",
     "lessons": [
      {
@@ -6947,6 +6958,7 @@
    {
     "id": "falixue-c16",
     "title": "第十三章",
+    "semanticTitle": "简答执法",
     "level": "chapter",
     "lessons": [
      {
@@ -7512,6 +7524,7 @@
    {
     "id": "falixue-c17",
     "title": "第十四章",
+    "semanticTitle": "简述司法",
     "level": "chapter",
     "lessons": [
      {
@@ -8193,6 +8206,7 @@
    {
     "id": "falixue-c18",
     "title": "第十五章",
+    "semanticTitle": "简答守法",
     "level": "chapter",
     "lessons": [
      {
@@ -8398,6 +8412,7 @@
    {
     "id": "falixue-c19",
     "title": "第十六章",
+    "semanticTitle": "论述法",
     "level": "chapter",
     "lessons": [
      {
@@ -8689,6 +8704,7 @@
    {
     "id": "falixue-c20",
     "title": "第十七章",
+    "semanticTitle": "简答法",
     "level": "chapter",
     "lessons": [
      {
@@ -9053,6 +9069,7 @@
    {
     "id": "falixue-c21",
     "title": "第十八章",
+    "semanticTitle": "法律推理",
     "level": "chapter",
     "lessons": [
      {
@@ -9853,6 +9870,7 @@
    {
     "id": "falixue-c22",
     "title": "第十九章",
+    "semanticTitle": "简答法",
     "level": "chapter",
     "lessons": [
      {
@@ -10125,6 +10143,7 @@
    {
     "id": "falixue-c23",
     "title": "第二十章",
+    "semanticTitle": "简答法",
     "level": "chapter",
     "lessons": [
      {
@@ -10278,6 +10297,7 @@
    {
     "id": "falixue-c24",
     "title": "第二十一章",
+    "semanticTitle": "法律关系",
     "level": "chapter",
     "lessons": [
      {
@@ -11199,6 +11219,7 @@
    {
     "id": "falixue-c25",
     "title": "第二十二章",
+    "semanticTitle": "法律责任与法律制裁",
     "level": "chapter",
     "lessons": [
      {
@@ -11951,6 +11972,7 @@
    {
     "id": "falixue-c27",
     "title": "第二十三章",
+    "semanticTitle": "简答法",
     "level": "chapter",
     "lessons": [
      {
@@ -12092,6 +12114,7 @@
    {
     "id": "falixue-c28",
     "title": "第二十四章",
+    "semanticTitle": "法的发展",
     "level": "chapter",
     "lessons": [
      {
@@ -12724,6 +12747,7 @@
    {
     "id": "falixue-c31",
     "title": "第二十六章",
+    "semanticTitle": "法与社会治理",
     "level": "chapter",
     "lessons": [
      {
@@ -12996,6 +13020,7 @@
    {
     "id": "falixue-c32",
     "title": "第二十七章",
+    "semanticTitle": "口法与经济",
     "level": "chapter",
     "lessons": [
      {
@@ -13232,6 +13257,7 @@
    {
     "id": "falixue-c33",
     "title": "第二十八章",
+    "semanticTitle": "法与政治",
     "level": "chapter",
     "lessons": [
      {
@@ -13491,6 +13517,7 @@
    {
     "id": "falixue-c34",
     "title": "第二十九章",
+    "semanticTitle": "法与文化",
     "level": "chapter",
     "lessons": [
      {
@@ -13993,6 +14020,7 @@
    {
     "id": "falixue-c36",
     "title": "第三十章",
+    "semanticTitle": "法治一般原理",
     "level": "chapter",
     "lessons": [
      {
@@ -14555,6 +14583,7 @@
    {
     "id": "falixue-c37",
     "title": "第三十一章",
+    "semanticTitle": "全面依法治国的一般原理",
     "level": "chapter",
     "lessons": [
      {
@@ -15428,6 +15457,7 @@
    {
     "id": "falixue-c38",
     "title": "第三十二章",
+    "semanticTitle": "简述习近平法",
     "level": "chapter",
     "lessons": [
      {
