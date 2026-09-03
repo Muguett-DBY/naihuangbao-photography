@@ -87,6 +87,7 @@ Pages 构建设置：
 - Build command: `npm run build`
 - Build output: `dist`
 - Production domain: `shoot.custard.top`
+- Node.js：仓库根目录 `.node-version`（26）覆盖构建镜像默认 Node 22.16 —— `npm@12.0.2` 要求 Node `^22.22.2 || ^24.15.0 || >=26.0.0`，Pages 默认环境会 EBADENGINE 报错，切勿删除该文件。项目环境变量中也已配置 `NODE_VERSION=26` 双保险。
 
 主要绑定：
 
