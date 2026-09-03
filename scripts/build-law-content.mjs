@@ -124,6 +124,36 @@ function stripHeading(code, titleLine) {
   return title;
 }
 
+/** 文本规整：全角标点统一 + 连续标点压缩 + 高置信 OCR 残词修正 */
+function polishText(text) {
+  let t = text
+    .replace(/[\u200b\u200e\u200f\u00a0]/g, "")
+    .replace(/[ ]{2,}/g, " ")
+    .replace(/，,/g, "，")
+    .replace(new RegExp(",", "g"), "，")
+    .replace(/;{1,}/g, "；")
+    .replace(/：{1,}/g, "：")
+    .replace(/。{2,}/g, "。")
+    .replace(/！{2,}/g, "！")
+    .replace(new RegExp("？{2,}", "g"), "？")
+    .replace(/(，)+/g, "，")
+    .replace(/(；)+/g, "；")
+    .replace(/(：)+/g, "：")
+    .replace(/[ \t]+/g, "");
+  const OCR_FIX = [
+    ["香义", "主要"],
+    ["主香义", "主要"],
+    ["权成", "权威"],
+    ["尊严和权威", "尊严和权威"],
+    ["背楠", "背诵"],
+    ["学研", "学习"],
+  ];
+  for (const [from, to] of OCR_FIX) {
+    t = t.split(from).join(to);
+  }
+  return t;
+}
+
 function joinParagraph(lines) {
   // 把断行拼成句：无终止标点的行合并到下一行；
   // 但遇到新条目开头（①/1./(一)）必须断段，避免把多条内容焊成一坨
@@ -135,12 +165,12 @@ function joinParagraph(lines) {
       RE_LIST_ITEM.test(line) || RE_NUM_ITEM.test(line) || RE_SUB.test(line);
     const prev = out[out.length - 1];
     if (prev && !startsNewItem && !/[。！？；：”’』」]/.test(prev.trimEnd().slice(-1))) {
-      out[out.length - 1] = prev + line;
+      out[out.length - 1] = polishText(prev + line);
     } else {
-      out.push(line);
+      out.push(polishText(line));
     }
   }
-  return out;
+  return out.map((line) => polishText(line));
 }
 
 function splitSentences(paragraph) {

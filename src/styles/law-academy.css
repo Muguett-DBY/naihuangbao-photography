@@ -1618,6 +1618,26 @@
   max-width: 100%;
 }
 
+/* 短句分行排版 */
+.law-sentences {
+  display: block;
+}
+
+.law-sentences__line {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.law-sentences__line:last-child {
+  margin-bottom: 0;
+}
+
+.law-sentences__term {
+  color: var(--law-accent);
+  font-weight: 900;
+  border-bottom: 2px dashed color-mix(in srgb, var(--law-accent) 50%, transparent);
+}
+
 .law-step__hint {
   margin: auto auto 0;
   text-align: center;

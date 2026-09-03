@@ -58,6 +58,63 @@ export function RiseText({
   );
 }
 
+/** 短句分行排版：把长文本按句切成可读行，保留逐行揭示动画与关键词高亮 */
+export function SentenceLines({
+  text,
+  terms = [],
+  maxLine = 32,
+}: {
+  text: string;
+  terms?: string[];
+  maxLine?: number;
+}) {
+  const lines = useMemo(() => {
+    const sentences = text.split(/(?<=[。；！？])/).map((line) => line.trim()).filter(Boolean);
+    const out: string[] = [];
+    let buffer = "";
+    for (const sentence of sentences) {
+      if (buffer && buffer.length + sentence.length > maxLine) {
+        out.push(buffer);
+        buffer = sentence;
+      } else {
+        buffer += sentence;
+      }
+    }
+    if (buffer) out.push(buffer);
+    return out.length > 0 ? out : [text];
+  }, [text, maxLine]);
+
+  function highlight(line: string): ReactNode {
+    let content: ReactNode = line;
+    for (const term of terms) {
+      if (!term || term.length < 2 || !line.includes(term)) continue;
+      const parts = line.split(term);
+      content = (
+        <>
+          {parts.map((part, index) => (
+            <span key={index}>
+              {part}
+              {index < parts.length - 1 ? <b className="law-sentences__term">{term}</b> : null}
+            </span>
+          ))}
+        </>
+      );
+      break;
+    }
+    return content;
+  }
+
+  return (
+    <span className="law-sentences">
+      {lines.map((line, index) => (
+        <span key={`${index}-${line.slice(0, 6)}`} className="law-sentences__line">
+          {highlight(line)}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /** 弹出卡片（列表项等） */
 export function PopCard({
   children,

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { RiseText, StepShell } from "../Animated";
+import { RiseText, StepShell, SentenceLines } from "../Animated";
 import { tellTerm } from "../../../../lib/law-quiz";
 import type { StepProps } from "./types";
 
@@ -44,7 +44,13 @@ export function PlainStep({ step, accent, accentSoft, onDone }: StepProps) {
   return (
     <StepShell
       eyebrow="📝 细读型 · 慢慢来"
-      title={<RiseText text={step.text} onAnimationEnd={() => setRevealed(true)} />}
+      title={
+        step.text.length > 60 ? (
+          <SentenceLines text={step.text} terms={(step.terms ?? []).map((t) => t.term)} />
+        ) : (
+          <RiseText text={step.text} onAnimationEnd={() => setRevealed(true)} />
+        )
+      }
       hint={
         revealed && targets.length > 0 && !done
           ? `👆 点一下浮现的关键词（${found.filter(Boolean).length}/${targets.length}）确认理解`

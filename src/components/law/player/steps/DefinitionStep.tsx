@@ -1,6 +1,6 @@
 import { useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
-import { RiseText, TermChip, StepShell } from "../Animated";
+import { RiseText, TermChip, StepShell, SentenceLines } from "../Animated";
 import { LawMascot } from "../../LawMascot";
 import { tellTerm } from "../../../../lib/law-quiz";
 import type { StepProps } from "./types";
@@ -23,7 +23,13 @@ export function DefinitionStep({ step, accent, accentSoft, onDone }: StepProps) 
   return (
     <StepShell
       eyebrow="📖 定义型 · 先理解"
-      title={<RiseText text={step.text} onAnimationEnd={() => setRevealedText(true)} />}
+      title={
+        step.text.length > 60 ? (
+          <SentenceLines text={step.text} terms={(step.terms ?? []).map((t) => t.term)} />
+        ) : (
+          <RiseText text={step.text} onAnimationEnd={() => setRevealedText(true)} />
+        )
+      }
       hint={
         revealedText && !locked
           ? "👆 关键词被遮住了——点一下上面那个「❓」把它解锁"
