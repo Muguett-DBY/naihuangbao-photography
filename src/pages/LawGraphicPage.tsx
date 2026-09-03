@@ -5,12 +5,14 @@ import { LAW_GRAPHIC_MAP } from "../data/law/graphics";
 import { loadLawBook } from "../data/law/loader";
 import { GraphicStage } from "../components/law/diagrams/GraphicStage";
 import { LawMascot } from "../components/law/LawMascot";
+import { useLawImmersive } from "../components/law/EasterEgg";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
 
 const SUBJECT_PATTERN = /^([a-z]+)-q/;
 
 export function LawGraphicPage() {
+  useLawImmersive();
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [book, setBook] = useState<LawBook | null>(null);
