@@ -1434,6 +1434,8 @@
   line-height: 1.85;
   font-weight: 600;
   color: var(--ink);
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 
 .law-step__hint {
