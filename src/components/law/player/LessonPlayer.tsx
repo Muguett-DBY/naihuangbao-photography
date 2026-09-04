@@ -244,7 +244,9 @@ export function LessonPlayer({
                 ? stepIndex === totalSteps - 1
                   ? "完成本课 →"
                   : "下一步 →"
-                : "先完成上面的小任务哦"}
+                : currentStep
+                  ? KIND_PENDING_HINT[currentStep.kind] ?? "先完成上面的小任务哦"
+                  : "先完成上面的小任务哦"}
             </button>
             <button
               type="button"
@@ -376,6 +378,18 @@ export function LessonPlayer({
     </div>
   );
 }
+
+/** 各步骤类型的待完成指引：禁用态按钮告诉用户"具体还要做什么"而不是含糊的"小任务" */
+const KIND_PENDING_HINT: Record<string, string> = {
+  definition: "先解锁上面的关键词哦",
+  list: "把上面的条目都点一遍",
+  compare: "把每行对比都翻开看看",
+  condition: "把成立要件都点亮",
+  timeline: "把时间线的节点都走到",
+  exception: "去抓住那个「但是」",
+  flow: "点「下一步」把流程走完",
+  mnemonic: "把口诀的字都翻出来",
+};
 
 function kindLabel(kind: string): string {
   switch (kind) {
