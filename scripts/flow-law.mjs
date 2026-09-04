@@ -33,6 +33,14 @@ const click = async (selector, label) => {
   return true;
 };
 
+// 时段彩蛋信（清晨/深夜等）可能弹窗挡住学习流，先收好
+const eggOverlay = page.locator(".law-egg-overlay");
+if (await eggOverlay.isVisible().catch(() => false)) {
+  await page.locator(".law-egg-card__close").click({ force: true });
+  await page.waitForTimeout(400);
+  console.log("DISMISSED egg letter");
+}
+
 await shot("01-definition");
 await click(".law-definition__lock", "解锁关键词");
 await shot("02-unlocked");

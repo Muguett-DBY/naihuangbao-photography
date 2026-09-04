@@ -14,7 +14,12 @@ export interface LawLessonProgress {
   /** 最近一次进入学习的时间 */
   lastVisitedAt: number;
   completedAt?: number;
-  visitedAt: number;
+  /** 最近一次答错的时间（间隔复习起点） */
+  wrongAt?: number;
+  /** 复习阶段：连续通过次数（0=刚答错待首次复习，毕业=REVIEW_INTERVALS.length） */
+  reviewStage?: number;
+  /** 下次应复习的时间戳（毕业或从未答错则为空） */
+  reviewDueAt?: number;
 }
 
 export type LawProgressMap = Record<string, LawLessonProgress>;
@@ -60,7 +65,9 @@ export function touchLesson(lessonId: string): void {
     wrongCount: existing?.wrongCount ?? 0,
     lastVisitedAt: Date.now(),
     completedAt: existing?.completedAt,
-    visitedAt: Date.now(),
+    wrongAt: existing?.wrongAt,
+    reviewStage: existing?.reviewStage,
+    reviewDueAt: existing?.reviewDueAt,
   };
   store.lastLessonId = lessonId;
   writeStore(store);
@@ -68,36 +75,55 @@ export function touchLesson(lessonId: string): void {
 
 export function markStepDone(lessonId: string, stepId: string): number {
   const store = readStore();
-  const entry = store.lessons[lessonId] ?? {
-    stepsDone: {},
-    quizBest: 0,
-    quizTotal: 0,
-    wrongCount: 0,
-    visitedAt: Date.now(),
-  };
+  const entry = store.lessons[lessonId] ?? newEntry(lessonId);
   entry.stepsDone[stepId] = true;
-  if (!entry.visitedAt) entry.visitedAt = Date.now();
   entry.lastVisitedAt = Date.now();
   store.lessons[lessonId] = entry;
   writeStore(store);
   return Object.keys(entry.stepsDone).length;
 }
 
-export function recordQuiz(lessonId: string, correct: number, total: number, stepCount: number, wrong?: boolean): void {
-  const store = readStore();
-  const entry = store.lessons[lessonId] ?? {
+function newEntry(lessonId: string): LawLessonProgress {
+  return {
     stepsDone: {},
     quizBest: 0,
     quizTotal: 0,
     wrongCount: 0,
-    visitedAt: Date.now(),
+    lastVisitedAt: Date.now(),
   };
+}
+
+/** 复习间隔（天）：答错后第 1/2/4/7/15 天复习，五次全对即毕业移出错题本 */
+export const REVIEW_INTERVALS = [1, 2, 4, 7, 15];
+
+const DAY_MS = 86_400_000;
+
+export function recordQuiz(lessonId: string, correct: number, total: number, stepCount: number, wrong?: boolean): void {
+  const store = readStore();
+  const entry = store.lessons[lessonId] ?? newEntry(lessonId);
   entry.quizBest = Math.max(entry.quizBest, correct);
   entry.quizTotal = total;
-  if (wrong) entry.wrongCount += 1;
+  const now = Date.now();
+  const passed = correct >= Math.ceil(total / 2);
+  if (wrong) {
+    // 答错：错题本建档/重置复习进度，明天安排第一次复习
+    entry.wrongCount += 1;
+    entry.wrongAt = now;
+    entry.reviewStage = 0;
+    entry.reviewDueAt = now + REVIEW_INTERVALS[0] * DAY_MS;
+  } else if ((entry.wrongCount ?? 0) > 0 && (entry.reviewDueAt ?? 0) > 0) {
+    // 错题复习通过：间隔翻倍式后延，五连过即毕业
+    const stage = (entry.reviewStage ?? 0) + 1;
+    entry.reviewStage = stage;
+    if (stage >= REVIEW_INTERVALS.length) {
+      entry.reviewDueAt = undefined;
+    } else {
+      entry.reviewDueAt = now + REVIEW_INTERVALS[stage] * DAY_MS;
+    }
+  }
   const allStepsDone = stepCount > 0 && Object.keys(entry.stepsDone).length >= stepCount;
-  if (correct >= Math.ceil(total / 2) && allStepsDone && !entry.completedAt) {
-    entry.completedAt = Date.now();
+  if (passed && allStepsDone && !entry.completedAt) {
+    entry.completedAt = now;
     bumpTodayGoal();
   }
   store.lessons[lessonId] = entry;
@@ -155,13 +181,29 @@ export function getTodayGoal(): { done: number; target: number } {
   return { done: goal.done, target: 3 };
 }
 
-/** 错题本 */
+/** 错题本：答错过但尚未毕业的课（最近答错的排前面） */
 export function getWrongLessons(): string[] {
   const lessons = getLawProgress();
   return Object.entries(lessons)
-    .filter(([, progress]) => (progress.wrongCount ?? 0) > 0)
-    .sort((a, b) => (b[1].lastVisitedAt ?? 0) - (a[1].lastVisitedAt ?? 0))
+    .filter(([, progress]) => (progress.wrongCount ?? 0) > 0 && progress.reviewDueAt !== undefined)
+    .sort((a, b) => (b[1].wrongAt ?? 0) - (a[1].wrongAt ?? 0))
     .map(([id]) => id);
+}
+
+/** 今日到期的复习课（答错后到了该再测的时间），最早到期的排前面 */
+export function getDueReviewLessons(now: number = Date.now()): string[] {
+  const lessons = getLawProgress();
+  return Object.entries(lessons)
+    .filter(([, progress]) => (progress.reviewDueAt ?? Number.POSITIVE_INFINITY) <= now)
+    .sort((a, b) => (a[1].reviewDueAt ?? 0) - (b[1].reviewDueAt ?? 0))
+    .map(([id]) => id);
+}
+
+/** 错题复习信息（供展示：阶段/到期时间），非错题返回 null */
+export function getReviewInfo(lessonId: string): { stage: number; dueAt: number } | null {
+  const progress = getLessonProgress(lessonId);
+  if (!progress || (progress.wrongCount ?? 0) === 0 || progress.reviewDueAt === undefined) return null;
+  return { stage: progress.reviewStage ?? 0, dueAt: progress.reviewDueAt };
 }
 
 /** ── 彩蛋状态 ── */

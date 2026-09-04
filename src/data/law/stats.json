@@ -57,7 +57,7 @@
     "steps": 675
   },
   "zhishixiang": {
-    "lessonCount": 295,
+    "lessonCount": 288,
     "chapterTitles": [
       "作者的话",
       "上编",
@@ -81,10 +81,10 @@
       "第五章",
       "绪论"
     ],
-    "steps": 1181
+    "steps": 1175
   },
   "minfa": {
-    "lessonCount": 610,
+    "lessonCount": 545,
     "chapterTitles": [
       "作者的话",
       "第一编",
@@ -116,7 +116,7 @@
       "第一章",
       "第二章"
     ],
-    "steps": 1403
+    "steps": 1338
   },
   "xingfa": {
     "lessonCount": 387,

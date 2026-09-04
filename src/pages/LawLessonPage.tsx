@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import type { LawBook, LawSubjectId } from "../types/law";
 import { collectSiblingTerms, loadLawBook } from "../data/law/loader";
 import { LessonPlayer } from "../components/law/player/LessonPlayer";
@@ -12,6 +12,7 @@ const SUBJECT_PATTERN = /^([a-z]+)-q/;
 
 export function LawLessonPage() {
   const { lessonId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [book, setBook] = useState<LawBook | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -67,7 +68,7 @@ export function LawLessonPage() {
         <div className="law-notfound">
           <LawMascot mood="oops" size={80} />
           <h1>找不到这节课（{error ?? "链接有误"}）</h1>
-          <a href="/law" className="law-player__cta">← 回学习中心</a>
+          <Link to="/law" className="law-player__cta">← 回学习中心</Link>
         </div>
       </div>
     );
@@ -86,6 +87,8 @@ export function LawLessonPage() {
 
   const next = lessonRef.order < lessonRef.total ? nextLessonOf(book, lessonId as string) : null;
   const nextId = next?.id ?? null;
+  // 错题本"复习测试"入口：直达自测（无题时播放器会自动退回讲解流程）
+  const reviewMode = searchParams.get("review") === "1";
 
   return (
     <div className="law-academy law-lesson-page">
@@ -93,6 +96,7 @@ export function LawLessonPage() {
         key={lessonId}
         lesson={lessonRef.lesson}
         siblingTerms={siblingTerms}
+        initialPhase={reviewMode ? "quiz" : "steps"}
         onExit={() => {
           navigate(`/law/${subjectId}`);
         }}

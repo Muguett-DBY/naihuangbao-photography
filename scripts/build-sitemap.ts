@@ -28,6 +28,16 @@ const STATIC_PAGES = [
   { path: "/practice", priority: 0.5, changefreq: "monthly" },
 ];
 
+/** 法硕学习中心：纯中文学习区，不参与多语言 hreflang */
+const LAW_PAGES = [
+  { path: "/law", priority: 0.6, changefreq: "weekly" },
+  { path: "/law/falixue", priority: 0.5, changefreq: "monthly" },
+  { path: "/law/xianfa", priority: 0.5, changefreq: "monthly" },
+  { path: "/law/zhishixiang", priority: 0.5, changefreq: "monthly" },
+  { path: "/law/minfa", priority: 0.5, changefreq: "monthly" },
+  { path: "/law/xingfa", priority: 0.5, changefreq: "monthly" },
+];
+
 const today = new Date().toISOString().slice(0, 10);
 
 function escapeXml(value: string) {
@@ -84,6 +94,10 @@ function buildSitemap() {
     }
     extra.push(...hreflangLinks(page.path));
     entries.push(urlEntry(url, page.priority, page.changefreq, extra));
+  }
+
+  for (const page of LAW_PAGES) {
+    entries.push(urlEntry(`${SITE_ORIGIN}${page.path}`, page.priority, page.changefreq));
   }
 
   for (const project of archiveProjects) {

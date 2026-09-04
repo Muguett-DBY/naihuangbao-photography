@@ -453,7 +453,7 @@
 }
 
 /* ── 今日目标 ── */
-.law-academy__tody {
+.law-academy__today {
   display: flex;
   justify-content: center;
   gap: 12px;
@@ -461,7 +461,7 @@
   margin-top: 14px;
 }
 
-.law-academy__tody span {
+.law-academy__today span {
   padding: 8px 16px;
   border-radius: 999px;
   background: var(--paper);
@@ -470,8 +470,25 @@
   box-shadow: var(--shadow-core);
 }
 
-.law-academy__tody b {
+.law-academy__today b {
   color: var(--law-accent, #b1544e);
+}
+
+/* 错题待复习入口（学习中心首屏） */
+.law-academy__review-chip {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #fff4e8;
+  border: 1.5px solid #e8b98a;
+  color: #a4611e;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--shadow-core);
+}
+
+.law-academy__review-chip:hover {
+  background: #ffedd8;
 }
 
 .law-subject__goal {
@@ -753,6 +770,17 @@
 .law-subject__wrong-item span {
   font-size: 11.5px;
   color: var(--text-muted);
+}
+
+/* 到期待复习的错题卡：暖色高亮引导点击 */
+.law-subject__wrong-item.is-due {
+  background: #fff4e8;
+  border-color: #e8b98a;
+}
+
+.law-subject__wrong-item.is-due span {
+  color: #a4611e;
+  font-weight: 600;
 }
 
 /* ── 课时行元信息 ── */
@@ -1329,6 +1357,37 @@
   flex: 1;
   font-size: 13px;
   color: var(--text-muted);
+}
+
+/* 手机端课时页：顶栏拥挤，隐藏面包屑（学科名已在返回键），按钮禁止折行 */
+@media (max-width: 760px) {
+  .law-player__bar {
+    gap: 8px;
+  }
+  .law-player__back,
+  .law-player__raw,
+  .law-player__graphic,
+  .law-player__navpop-btn {
+    white-space: nowrap;
+    flex: none;
+    padding: 8px 12px;
+  }
+  .law-player__crumb {
+    display: none;
+  }
+  /* 底部操作区：主按钮独占一行，避免长文案挤成竖条 */
+  .law-player__controls {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+  .law-player__nav.is-primary {
+    flex: 1 1 100%;
+    order: 4;
+    white-space: nowrap;
+  }
+  .law-player__nav:not(.is-primary) {
+    white-space: nowrap;
+  }
 }
 
 .law-player__raw {

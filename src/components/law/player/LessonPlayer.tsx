@@ -17,15 +17,18 @@ export function LessonPlayer({
   onExit,
   onNextLesson,
   siblingTerms,
+  initialPhase = "steps",
 }: {
   lesson: LawLesson;
   onExit: () => void;
   onNextLesson?: (() => void) | null;
   /** 同章其他课的概念，仅用于选择题干扰项（答案永远出自本课） */
   siblingTerms?: string[];
+  /** 复习模式：跳过讲解步骤，直接进入自测（?review=1） */
+  initialPhase?: Phase;
 }) {
   const subject = LAW_SUBJECT_MAP[lesson.subject];
-  const [phase, setPhase] = useState<Phase>("steps");
+  const [phase, setPhase] = useState<Phase>(initialPhase);
   const [stepIndex, setStepIndex] = useState(0);
   const [stepDone, setStepDone] = useState<Record<string, boolean>>({});
   const [mood, setMood] = useState<LawMood>("idle");
@@ -34,6 +37,7 @@ export function LessonPlayer({
   const [showRaw, setShowRaw] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+  const [quizAttempt, setQuizAttempt] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
 
   const steps = lesson.steps;
@@ -44,7 +48,14 @@ export function LessonPlayer({
   const doneSteps = Object.keys(stepDone).length;
   const graphic = LAW_GRAPHIC_MAP[lesson.id];
 
-  const quiz = useMemo(() => (phase === "quiz" ? buildQuiz(lesson, siblingTerms) : []), [phase, lesson, siblingTerms]);
+  // 自测题确定性生成；总结页依据它决定展示"来自测"还是"标记掌握"
+  // （注意不能依赖 phase 计算——总结页时 phase 是 summary，否则自测按钮永远不出现）
+  const quiz = useMemo(() => buildQuiz(lesson, siblingTerms), [lesson, siblingTerms]);
+
+  // 复习模式但本课无题可出 → 退回正常学习流程
+  useEffect(() => {
+    if (phase === "quiz" && quiz.length === 0) setPhase("steps");
+  }, [phase, quiz.length]);
 
   // 自动串联模式：当前步完成后，1.4s 自动进入下一步
   useEffect(() => {
@@ -91,10 +102,16 @@ export function LessonPlayer({
     setMood("idle");
   }
 
+  function retryQuiz() {
+    setQuizAttempt((attempt) => attempt + 1);
+    setPhase("quiz");
+    setMood("idle");
+  }
+
   function handleQuizDone(correct: number, total: number, wrong: number) {
     recordQuiz(lesson.id, correct, total, totalSteps, wrong > 0);
     setQuizScore({ correct, total });
-    setMood("cheer");
+    setMood(correct >= Math.ceil(total / 2) ? "cheer" : "idle");
     setPhase("result");
   }
 
@@ -227,7 +244,7 @@ export function LessonPlayer({
                 ? stepIndex === totalSteps - 1
                   ? "完成本课 →"
                   : "下一步 →"
-                : "完成上面的小任务就继续啦"}
+                : "先完成上面的小任务哦"}
             </button>
             <button
               type="button"
@@ -300,6 +317,7 @@ export function LessonPlayer({
 
       {phase === "quiz" ? (
         <QuizRunner
+          key={quizAttempt}
           items={quiz.slice(0, 4)}
           accent={subject.accent}
           accentSoft={subject.accentSoft}
@@ -323,7 +341,7 @@ export function LessonPlayer({
           <p className="law-player__result-tip">
             {quizScore.correct >= Math.ceil(quizScore.total / 2)
               ? "明天再看一眼关键词，就会变成长期记忆！"
-              : "别着急——回去把没点透的步骤再走一遍，越慢越牢。"}
+              : "答错的题已进错题本，明天会提醒你复习——回去把没点透的步骤再走一遍，越慢越牢。"}
           </p>
           <div className="law-player__result-actions">
             <button
@@ -338,6 +356,11 @@ export function LessonPlayer({
             >
               🔄 再学一遍
             </button>
+            {quizScore.correct < Math.ceil(quizScore.total / 2) ? (
+              <button type="button" className="law-player__cta is-alternate" onClick={retryQuiz}>
+                🔁 再测一次
+              </button>
+            ) : null}
             {onNextLesson ? (
               <button type="button" className="law-player__cta is-alternate" onClick={onNextLesson}>
                 下一课 →
@@ -385,9 +408,4 @@ function cleanBreadcrumb(crumbs: string[]): string[] {
       .replace(/^\s*(第[一二三四五六七八九十百零0-9]+[编部分章篇卷]?)+[·、]?\s*/, "")
       .trim(),
   );
-}
-
-/** 供外部读取步骤列表（下一课按钮定位） */
-export function lessonStepCount(lesson: LawLesson): number {
-  return lesson.steps.length;
 }

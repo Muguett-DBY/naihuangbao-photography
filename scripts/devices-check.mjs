@@ -15,6 +15,7 @@ const PAGES = [
 ];
 
 mkdirSync(".tmp/shots/devices", { recursive: true });
+const BASE = process.argv[2] ?? "http://localhost:5173";
 const browser = await chromium.launch();
 
 for (const vp of VIEWPORTS) {
@@ -25,7 +26,15 @@ for (const vp of VIEWPORTS) {
     hasTouch: vp.name === "phone",
   });
   for (const pg of PAGES) {
-    await page.goto(`http://localhost:5173${pg.url}`, { waitUntil: "networkidle", timeout: 45000 });
+    await page.addInitScript(() => {
+      // 预解锁时段型彩蛋，避免清晨/深夜弹窗挡住走查
+      const triggers = ["midnight","morning","firstLesson","hundred","streak3","wrongbook3","graphicFirst","exam30","christmas","symbol"];
+      localStorage.setItem("nhb-law-egg-v1", JSON.stringify({
+        unlocked: Object.fromEntries(triggers.map((t) => [t, true])),
+        seenAt: { morning: 1 },
+      }));
+    });
+    await page.goto(`${BASE}${pg.url}`, { waitUntil: "networkidle", timeout: 45000 });
     await page.waitForTimeout(2600);
     const overflow = await page.evaluate(() => {
       const doc = document.documentElement;

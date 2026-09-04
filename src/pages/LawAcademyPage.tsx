@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { LAW_SUBJECTS } from "../data/law/meta";
 import { LAW_GRAPHICS } from "../data/law/graphics";
 import lawStats from "../data/law/stats.json";
-import { getTodayGoal, subjectStats } from "../lib/law-progress";
+import { getDueReviewLessons, getTodayGoal, subjectStats } from "../lib/law-progress";
 import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, LawEggSymbol, useLawImmersive } from "../components/law/EasterEgg";
 import { LawPlanCard } from "../components/law/LawPlanCard";
@@ -30,6 +30,9 @@ export function LawAcademyPage() {
 
   const today = useMemo(() => getTodayGoal(), []);
   const doneTotal = Object.values(progress).reduce((sum, p) => sum + p.done, 0);
+  const totalLessons = LAW_SUBJECTS.reduce((sum, s) => sum + (stats[s.id]?.lessonCount ?? 0), 0);
+  const dueIds = useMemo(() => getDueReviewLessons(), []);
+  const dueSubjectId = dueIds[0]?.replace(/-q.*/, "");
 
   return (
     <div className="law-academy">
@@ -45,16 +48,24 @@ export function LawAcademyPage() {
         </p>
         <div className="law-academy__stats">
           <span>📚 5 门学科</span>
-          <span>🧩 全部知识点</span>
+          <span>🧩 {totalLessons} 个知识点</span>
           <span>🎮 边玩边学</span>
         </div>
-        <div className="law-academy__tody" aria-label="我的学习进度">
+        <div className="law-academy__today" aria-label="我的学习进度">
           <span>
             🎯 今日 <b>{today.done}/{today.target}</b> 课
           </span>
           <span>
             ⭐ 已掌握 <b>{doneTotal}</b> 个知识点
           </span>
+          {dueIds.length > 0 && LAW_SUBJECTS.some((s) => s.id === dueSubjectId) ? (
+            <Link
+              to={`/law/${dueSubjectId}`}
+              className="law-academy__review-chip"
+            >
+              🔁 {dueIds.length} 课错题待复习 →
+            </Link>
+          ) : null}
         </div>
       </header>
 
@@ -157,7 +168,7 @@ export function LawAcademyPage() {
           <li>
             <span className="law-how__step">③</span>
             <strong>过自测</strong>
-            <p>每课学完有 4 道自测题，答对一半以上就算"已掌握"，进度会记住。</p>
+            <p>每课学完有几道自测题，答对一半以上算"已掌握"；答错的题进错题本，按记忆曲线提醒你复习。</p>
           </li>
         </ol>
       </section>

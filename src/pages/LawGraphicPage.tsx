@@ -16,6 +16,7 @@ export function LawGraphicPage() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const [book, setBook] = useState<LawBook | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const graphic = useMemo(
     () => (lessonId ? (LAW_GRAPHIC_MAP[lessonId] ?? null) : null),
@@ -37,11 +38,27 @@ export function LawGraphicPage() {
       .then((loaded) => {
         if (!cancelled) setBook(loaded);
       })
-      .catch(() => {});
+      .catch((cause: unknown) => {
+        if (!cancelled) setError(cause instanceof Error ? cause.message : String(cause));
+      });
     return () => {
       cancelled = true;
     };
   }, [subjectId]);
+
+  if (error) {
+    return (
+      <div className="law-academy">
+        <div className="law-notfound">
+          <LawMascot mood="oops" size={80} />
+          <h1>课件加载失败：{error}</h1>
+          <button type="button" className="law-player__cta" onClick={() => navigate("/law")}>
+            ← 回学习中心
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!graphic || !subjectId) {
     return (

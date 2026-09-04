@@ -154,6 +154,42 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://shoot.custard.top/practice" />
   </url>
   <url>
+    <loc>https://shoot.custard.top/law</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/law/falixue</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/law/xianfa</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/law/zhishixiang</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/law/minfa</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://shoot.custard.top/law/xingfa</loc>
+    <lastmod>2026-09-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://shoot.custard.top/archive/botanical-cabinet-v8</loc>
     <lastmod>2026-09-04</lastmod>
     <changefreq>monthly</changefreq>

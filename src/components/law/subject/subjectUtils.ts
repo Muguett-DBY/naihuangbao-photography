@@ -1,4 +1,5 @@
 import type { LawBook, LawChapter, LawLesson } from "../../../types/law";
+import { isShellLesson } from "../../../types/law";
 import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
 import type { LawProgressMap } from "../../../lib/law-progress";
 
@@ -34,11 +35,12 @@ export function semanticChapterTitle(chapter: LawChapter): string {
   return cleanHeading(chapter.title) || chapter.title;
 }
 
-/** 快速浏览包：同一章内连续的 1 步课聚合为一个"速览包" */
+/** 快速浏览包：同一章内连续的 1 步课聚合为一个"速览包"（索引空壳课不进包） */
 export function buildQuickPacks(chapter: LawChapter): LawLesson[][] {
   const packs: LawLesson[][] = [];
   let current: LawLesson[] = [];
   for (const lesson of chapter.lessons) {
+    if (isShellLesson(lesson)) continue;
     if (lesson.steps.length <= 1) {
       current.push(lesson);
     } else {

@@ -10,6 +10,7 @@
    {
     "id": "falixue-c0",
     "title": "作者的话",
+    "semanticTitle": "使用说明",
     "level": "chapter",
     "lessons": [
      {
@@ -497,8 +498,7 @@
        "要符合当地的善良风俗",
        "最后，需要说明的是，有些原理的背诵不仅仅局限于一种方法，需要综合使用上述背",
        "诵方法。"
-      ],
-      "mnemonic": "法［示例］简述行政合理原则：等着照顾善良公公执法主体要平等地"
+      ]
      }
     ]
    },
@@ -537,6 +537,7 @@
    {
     "id": "falixue-c2",
     "title": "第一章",
+    "semanticTitle": "法学",
     "level": "chapter",
     "lessons": [
      {
@@ -784,7 +785,7 @@
    {
     "id": "falixue-c3",
     "title": "第二章",
-    "semanticTitle": "的特征及其与部门法",
+    "semanticTitle": "法理学",
     "level": "chapter",
     "lessons": [
      {
@@ -928,7 +929,7 @@
    {
     "id": "falixue-c5",
     "title": "第三章",
-    "semanticTitle": "分析论述自然法",
+    "semanticTitle": "论述自然法学派",
     "level": "chapter",
     "lessons": [
      {
@@ -1423,7 +1424,7 @@
    {
     "id": "falixue-c6",
     "title": "第四章",
-    "semanticTitle": "简答法",
+    "semanticTitle": "论述法",
     "level": "chapter",
     "lessons": [
      {
@@ -1774,7 +1775,7 @@
    {
     "id": "falixue-c7",
     "title": "第五章",
-    "semanticTitle": "简答分析法",
+    "semanticTitle": "分析法",
     "level": "chapter",
     "lessons": [
      {
@@ -2815,8 +2816,7 @@
        "是“检验和方向”，是“批判和完善”",
        "内容角度",
        "人是目的（而不是工具）"
-      ],
-      "mnemonic": "记忆背诵内容遍"
+      ]
      },
      {
       "id": "falixue-q033",
@@ -3089,7 +3089,7 @@
    {
     "id": "falixue-c9",
     "title": "第七章",
-    "semanticTitle": "简答法",
+    "semanticTitle": "法律规则",
     "level": "chapter",
     "lessons": [
      {
@@ -3618,8 +3618,7 @@
        "司法裁判环节，要重视法律规则与法律原则的协调，这有利于实现可预测性与可接受性",
        "备注",
        "的融合，实现合法与合理的融合，最终实现形式法治与实质法治的融合"
-      ],
-      "mnemonic": "背诵背诵内容"
+      ]
      },
      {
       "id": "falixue-q039",
@@ -4939,7 +4938,7 @@
    {
     "id": "falixue-c11",
     "title": "第九章",
-    "semanticTitle": "简答分析法",
+    "semanticTitle": "分析法",
     "level": "chapter",
     "lessons": [
      {
@@ -5274,7 +5273,7 @@
    {
     "id": "falixue-c12",
     "title": "第十章",
-    "semanticTitle": "简答法",
+    "semanticTitle": "法律部门",
     "level": "chapter",
     "lessons": [
      {
@@ -5358,8 +5357,7 @@
        "3.各个法律部门的结构和内容基本上是确定的，但又是相对的和变动的",
        "联",
        "4.各个法律部门既相互联系又相对独立，它们之间的内容是有区别的"
-      ],
-      "mnemonic": "记忆背诵内容"
+      ]
      },
      {
       "id": "falixue-q053",
@@ -5962,7 +5960,7 @@
    {
     "id": "falixue-c14",
     "title": "第十一章",
-    "semanticTitle": "简述法",
+    "semanticTitle": "法律制定",
     "level": "chapter",
     "lessons": [
      {
@@ -6683,7 +6681,7 @@
    {
     "id": "falixue-c15",
     "title": "第十二章",
-    "semanticTitle": "论述法",
+    "semanticTitle": "法律实施",
     "level": "chapter",
     "lessons": [
      {
@@ -6949,7 +6947,7 @@
    {
     "id": "falixue-c16",
     "title": "第十三章",
-    "semanticTitle": "简答执法",
+    "semanticTitle": "执法",
     "level": "chapter",
     "lessons": [
      {
@@ -7514,7 +7512,7 @@
    {
     "id": "falixue-c17",
     "title": "第十四章",
-    "semanticTitle": "简述司法",
+    "semanticTitle": "司法",
     "level": "chapter",
     "lessons": [
      {
@@ -8194,7 +8192,7 @@
    {
     "id": "falixue-c18",
     "title": "第十五章",
-    "semanticTitle": "简答守法",
+    "semanticTitle": "守法",
     "level": "chapter",
     "lessons": [
      {
@@ -8399,7 +8397,7 @@
    {
     "id": "falixue-c19",
     "title": "第十六章",
-    "semanticTitle": "论述法",
+    "semanticTitle": "法律监督",
     "level": "chapter",
     "lessons": [
      {
@@ -8690,7 +8688,7 @@
    {
     "id": "falixue-c20",
     "title": "第十七章",
-    "semanticTitle": "简答法",
+    "semanticTitle": "法律职业",
     "level": "chapter",
     "lessons": [
      {
@@ -9204,11 +9202,11 @@
        {
         "id": "falixue-q106-s0",
         "kind": "list",
-        "text": "1.人们在认识能力、认识水平上以及利益动机上有差别，需要权威性的法律解释来统一[主体]理解；2.通过法律解释普及法律知识，开展法治教育第十八意○带续夷；3.由于法律具有概括性、抽象性的特点，因此需要法律解释化象为具体，变措为特定[客休]；4、对于立法缺憾，例如矛盾和漏润，需要通过法律解释改正、弥补法律规定的不完得[外在条件]；5.通过法律解释来解决法律的稳定性与社会发展之间的矛盾",
+        "text": "1.人们在认识能力、认识水平上以及利益动机上有差别，需要权威性的法律解释来统一[主体]理解；2.通过法律解释普及法律知识，开展法治教育第十八意○带续夷；3.由于法律具有概括性、抽象性的特点，因此需要法律解释化象为具体，变措为特定[客体]；4、对于立法缺憾，例如矛盾和漏润，需要通过法律解释改正、弥补法律规定的不完得[外在条件]；5.通过法律解释来解决法律的稳定性与社会发展之间的矛盾",
         "parts": [
          "1.人们在认识能力、认识水平上以及利益动机上有差别，需要权威性的法律解释来统一[主体]理解",
          "2.通过法律解释普及法律知识，开展法治教育第十八意○带续夷",
-         "3.由于法律具有概括性、抽象性的特点，因此需要法律解释化象为具体，变措为特定[客休]",
+         "3.由于法律具有概括性、抽象性的特点，因此需要法律解释化象为具体，变措为特定[客体]",
          "4、对于立法缺憾，例如矛盾和漏润，需要通过法律解释改正、弥补法律规定的不完得[外在条件]",
          "5.通过法律解释来解决法律的稳定性与社会发展之间的矛盾"
         ],
@@ -9854,7 +9852,7 @@
    {
     "id": "falixue-c22",
     "title": "第十九章",
-    "semanticTitle": "简答法",
+    "semanticTitle": "法律推理",
     "level": "chapter",
     "lessons": [
      {
@@ -10126,7 +10124,7 @@
    {
     "id": "falixue-c23",
     "title": "第二十章",
-    "semanticTitle": "简答法",
+    "semanticTitle": "法律论证",
     "level": "chapter",
     "lessons": [
      {
@@ -11952,7 +11950,7 @@
    {
     "id": "falixue-c27",
     "title": "第二十三章",
-    "semanticTitle": "简答法",
+    "semanticTitle": "法起源",
     "level": "chapter",
     "lessons": [
      {
@@ -15422,7 +15420,7 @@
    {
     "id": "falixue-c38",
     "title": "第三十二章",
-    "semanticTitle": "简述习近平法",
+    "semanticTitle": "习近平法治思想",
     "level": "chapter",
     "lessons": [
      {
