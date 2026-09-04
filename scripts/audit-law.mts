@@ -13,12 +13,15 @@ const all = Object.values(books).flatMap((b) => b.chapters.flatMap((c) => c.less
 
 const issues: { level: "high" | "mid" | "low"; type: string; lessonId: string; note: string }[] = [];
 const push = (level, type, lessonId, note) => issues.push({ level, type, lessonId, note });
+let shells = 0;
 
-/** 可疑 OCR 残渣字符 */
-const SUSPICIOUS = /[〇○Q□口OoCc][一-龥]/;
+/** 可疑 OCR 残渣字符（口/字母OoCc 是真实汉字/字母的一部分，如"牲口/China"，不算残渣） */
+const SUSPICIOUS = /[〇○□Q][一-龥]/;
 const LATIN_RUN = /[A-Za-z]{4,}/;
-const LATIN_WORDS_OK = /^(Whig|Tory|Whigs|Tories|Feel|True|False|Note|What|five|one|two|three|CHAPTER|Chapter|Sino|China|Law)$/;
+const LATIN_WORDS_OK = /^(Whig|Tory|Whigs|Tories|Feel|True|False|Note|What|five|one|two|three|CHAPTER|Chapter|Sino|China|Law|when|what|where|how)$/;
 const BAD_SYMBOL = /[　]{2,}|[\uFFFD]/;
+/** 纯序号占位章节标题（无语义名不算问题） */
+const ORDINAL_TITLE = /^(第[一二三四五六七八九十百零0-9]+(编|部分|章|篇|卷)?|上编|下编|附编|作者的话|使用说明)$/;
 
 for (const lesson of all) {
   const text = lesson.steps.map((s) => s.text).join("");
@@ -31,8 +34,14 @@ for (const lesson of all) {
   }
   if (BAD_SYMBOL.test(text)) push("mid", "bad-symbol", lesson.id, "含异常字符");
   if (/^\s*$/.test(title)) push("high", "empty-title", lesson.id, "标题为空");
-  // 2) 内容过短/缺原文
-  if (lesson.raw.length === 0) push("mid", "no-raw", lesson.id, "无原文行");
+  // 2) 内容过短/缺原文：索引空壳课（shell 标记）是已知形态；未标记却缺原文 = 真丢内容，HIGH
+  if (lesson.raw.length === 0) {
+    if (lesson.shell) {
+      shells += 1;
+    } else {
+      push("high", "no-raw", lesson.id, "无原文行且未标记 shell");
+    }
+  }
   // 3) 步骤类型与文本不匹配（宽松）
   for (const step of lesson.steps) {
     const t = step.text;
@@ -68,10 +77,16 @@ for (const lesson of all) {
       }
     }
     if (item.kind === "judge") {
-      // 是非题：换成另一个词后，若替换词在原句已存在 → 可能有歧义
+      // 判断题两种合法形态：改年份错句（解释含"书上说的是："）或原句重现（答案"是"）
       const tokens = item.explain;
       const promptText = item.prompt;
-      if (!tokens.includes("书上说的是")) {
+      if (item.answer === "是") {
+        // 原句判断：题面引号内必须是本课原文
+        const quoted = promptText.match(/「(.+)」/s)?.[1];
+        if (!quoted || (!lessonText.includes(quoted) && !lesson.raw.join("").includes(quoted))) {
+          push("high", "quiz-judge-verbatim-not-in-lesson", lesson.id, "原句判断题的句子不在课文中");
+        }
+      } else if (!tokens.includes("书上说的是")) {
         push("mid", "quiz-judge-explain", lesson.id, "解释不含原句标记");
       }
       if (promptText === tokens) {
@@ -92,10 +107,10 @@ for (const lesson of all) {
   }
 }
 
-// 5) 功能逻辑：章节语义名缺失
+// 5) 功能逻辑：章节语义名缺失（纯序号标题与元信息章节除外）
 const missingSemantic = Object.values(books).flatMap((book) =>
   book.chapters
-    .filter((c) => !c.semanticTitle && c.lessons.length > 1)
+    .filter((c) => !c.semanticTitle && c.lessons.length > 1 && !ORDINAL_TITLE.test(c.title.trim()))
     .map((c) => ({ id: `${book.id}/${c.id}`, note: `章节「${c.title}」无语义名(章节含${c.lessons.length}课)` })),
 );
 
@@ -123,7 +138,7 @@ const report = {
 mkdirSync(resolve(root, ".tmp/law-build"), { recursive: true });
 writeFileSync(resolve(root, ".tmp/law-build/audit.json"), JSON.stringify(report, null, 1), "utf8");
 
-console.log(`总课: ${all.length} | 总题: ${quizCount}`);
+console.log(`总课: ${all.length} | 总题: ${quizCount} | 索引空壳: ${shells}`);
 console.log("问题统计:", JSON.stringify(report.counts));
 console.log("步骤类型:", JSON.stringify(kindCount));
 console.log("缺语义名章节:", missingSemantic.length);

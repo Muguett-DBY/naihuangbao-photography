@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { getPlan, setPlanTier, type LawPlan, type PlanTier } from "../../lib/law-plan";
+import { examDateISO, getPlan, setPlanTier, type LawPlan, type PlanTier } from "../../lib/law-plan";
 
 const TIERS: { id: PlanTier; label: string; desc: string }[] = [
   { id: "relaxed", label: "🛋️ 轻松", desc: "每天少学点，也能在考前稳稳过完" },
@@ -18,6 +18,7 @@ export function LawPlanCard() {
   const [tier, setTier] = useState<PlanTier>(getPlan().tier);
   const plan: LawPlan = useMemo(() => getPlan(), [tier]);
   const finished = plan.remainingSteps <= 0;
+  const examIso = examDateISO();
 
   function choose(next: PlanTier) {
     setTier(next);
@@ -42,7 +43,7 @@ export function LawPlanCard() {
         ) : (
           <strong>就是今天！</strong>
         )}
-        <span className="law-plan-card__date">{formatDate("2026-12-26")} · 就这几天，稳住</span>
+        <span className="law-plan-card__date">{formatDate(examIso)} · 就这几天，稳住</span>
       </div>
 
       <div className="law-plan-card__body">
@@ -60,7 +61,7 @@ export function LawPlanCard() {
           {plan.finishEstimate && !finished ? (
             <p className="law-plan-card__estimate">
               ✍️ 按现在的节奏，预计 <b>{formatDate(plan.finishEstimate)}</b> 学完全部
-              {plan.finishEstimate <= "2026-12-26" ? "，赶在考试前！" : "，可以切「冲刺」档提前收尾"}
+              {plan.finishEstimate <= examIso ? "，赶在考试前！" : "，可以切「冲刺」档提前收尾"}
             </p>
           ) : null}
         </div>

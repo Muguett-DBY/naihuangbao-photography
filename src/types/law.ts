@@ -87,6 +87,8 @@ export interface LawLesson {
   pageRange: number[];
   /** 原始 OCR 行（保底，绝不丢内容） */
   raw: string[];
+  /** 目录/考点索引页产生的纯标题课：保留 id 与标题，但不计入知识点总数，不进目录/搜索/出题 */
+  shell?: boolean;
   /** 自测题：运行时由 buildQuiz 生成，数据文件里不存储 */
   quiz?: LawQuizItem[];
 }
@@ -121,6 +123,12 @@ export function isCleanTerm(term: string | null | undefined): boolean {
 }
 
 /** ── 知识图解（真动画） ── */
+
+/** 判断一课是否为索引空壳课（目录/考点索引页产生的纯标题课） */
+export function isShellLesson(lesson: Pick<LawLesson, "shell" | "raw" | "steps" | "title">): boolean {
+  if (lesson.shell) return true;
+  return lesson.raw.length === 0 && lesson.steps.length <= 1 && lesson.steps[0]?.text === lesson.title;
+}
 
 /** 图解类型：装配 / 流程 / 树 / 时间轴 / 天平 / 阶梯 */
 export type GraphicKind = "assemble" | "flow" | "tree" | "timeline" | "balance" | "stairs";

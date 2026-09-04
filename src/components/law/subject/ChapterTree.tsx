@@ -1,6 +1,7 @@
 import { useMemo, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import type { LawChapter } from "../../../types/law";
+import { isShellLesson } from "../../../types/law";
 import type { LawProgressMap } from "../../../lib/law-progress";
 import { PrefetchLink } from "../../shared/PrefetchLink";
 import {
@@ -43,6 +44,11 @@ export function ChapterTree({
 }) {
   const doneCount = chapter.lessons.filter((lesson) => progress[lesson.id]?.completedAt).length;
   const packs = useMemo(() => buildQuickPacks(chapter), [chapter]);
+  // 被速览包收编的课不再单独展示；未收编的真实课时（含散落单步课）必须可见
+  const packedIds = useMemo(
+    () => new Set(packs.flat().map((lesson) => lesson.id)),
+    [packs],
+  );
   const realTitle = semanticChapterTitle(chapter);
 
   return (
@@ -59,7 +65,9 @@ export function ChapterTree({
         <span className="law-chapter__badge">{levelBadge(chapter.level)}</span>
         <strong>{realTitle}</strong>
         <span className="law-chapter__meta">
-          {doneCount > 0 ? `✓ ${doneCount}/${chapter.lessons.length} 已掌握` : `${chapter.lessons.length} 课`}
+          {doneCount > 0
+            ? `✓ ${doneCount}/${chapter.lessons.filter((lesson) => !isShellLesson(lesson)).length} 已掌握`
+            : `${chapter.lessons.filter((lesson) => !isShellLesson(lesson)).length} 课`}
         </span>
         <span className="law-chapter__arrow" aria-hidden="true">{open ? "▾" : "▸"}</span>
       </button>
@@ -95,9 +103,10 @@ export function ChapterTree({
           {chapter.lessons.map((lesson, index) => {
             const meta = lessonMeta(lesson);
             const prog = progress[lesson.id];
-            // 附录索引页产生的空壳课（无正文原文）不展示——知识正文都在对应正文章节
-            if (lesson.raw.length === 0) return null;
-            if (lesson.steps.length <= 1) return null;
+            // 索引空壳课（纯标题、无正文）不展示——知识正文都在对应正文章节
+            if (isShellLesson(lesson)) return null;
+            // 单步课：进了速览包的不重复展示；散落的必须可见（知识不遗漏）
+            if (lesson.steps.length <= 1 && packedIds.has(lesson.id)) return null;
             return (
               <li key={lesson.id}>
                 <PrefetchLink

@@ -40,3 +40,17 @@ describe("sitemap generator", () => {
     expect(source).toContain("archive-projects.generated.json");
   });
 });
+
+describe("law academy sitemap coverage", () => {
+  it("lists the law academy and all five subject pages without hreflang (zh-only)", () => {
+    const source = read("scripts/build-sitemap.ts");
+    expect(source).toContain("LAW_PAGES");
+    expect(source).toContain('{ path: "/law"');
+    for (const subject of ["falixue", "xianfa", "zhishixiang", "minfa", "xingfa"]) {
+      expect(source).toContain(`/law/${subject}`);
+    }
+    const generated = read("public/sitemap.xml");
+    expect(generated).toContain("<loc>https://shoot.custard.top/law</loc>");
+    expect(generated).toContain("<loc>https://shoot.custard.top/law/minfa</loc>");
+  });
+});

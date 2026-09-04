@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { LawBook, LawLesson } from "../../../types/law";
+import { isShellLesson } from "../../../types/law";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 
 export interface SearchHit {
@@ -8,6 +9,15 @@ export interface SearchHit {
   source: "title" | "content";
   snippet: string;
 }
+
+/** 各学科的搜索示例词（与本册内容强相关） */
+const SEARCH_EXAMPLES: Record<string, string> = {
+  falixue: "法律规则",
+  xianfa: "根本制度",
+  zhishixiang: "铸刑鼎",
+  minfa: "物权",
+  xingfa: "正当防卫",
+};
 
 /** 学科内全文搜索：标题 + 步骤正文，防抖 + 高亮片段 */
 export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: string) => void }) {
@@ -20,8 +30,10 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
     const result: SearchHit[] = [];
     for (const chapter of book.chapters) {
       for (const lesson of chapter.lessons) {
-        // 导览/占位课不进搜索结果（它们的内容已并入真实课时）
+        // 导览/占位课不进搜索结果（它们的内容已并入真实课时）；
+        // 索引空壳课（纯标题、无正文）同样排除
         if (lesson.id.endsWith("-tour") || lesson.title.includes("导览")) continue;
+        if (isShellLesson(lesson)) continue;
         if (lesson.title.includes(keyword)) {
           result.push({
             lesson,
@@ -57,7 +69,7 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder={`在《${subject.name}》里搜索，比如"正当防卫"…`}
+          placeholder={`在《${subject.name}》里搜索，比如"${SEARCH_EXAMPLES[book.id] ?? "法律"}"…`}
           aria-label={`在${subject.name}中搜索知识点`}
           autoComplete="off"
         />

@@ -4,6 +4,14 @@ import { safeLocalStorage } from "./browser-storage";
 /** 2027 法硕考研初试（12 月下旬最后一个周末，可调） */
 export const EXAM_DATE = new Date("2026-12-26T00:00:00");
 
+/** 考试日期的本地 ISO 形式（"2026-12-26"），供展示与比较；改动日期只改 EXAM_DATE 一处 */
+export function examDateISO(): string {
+  const y = EXAM_DATE.getFullYear();
+  const m = String(EXAM_DATE.getMonth() + 1).padStart(2, "0");
+  const d = String(EXAM_DATE.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 export type PlanTier = "relaxed" | "standard" | "intense";
 
 interface PlanStats {
@@ -79,7 +87,6 @@ export interface LawPlan {
   /** 按当前节奏的预计学完日（ISO 字符串，null=已学完） */
   finishEstimate: string | null;
   tier: PlanTier;
-  perSubject: { id: string; steps: number; done: number }[];
 }
 
 export function getPlan(): LawPlan {
@@ -115,9 +122,6 @@ export function getPlan(): LawPlan {
     return date.toISOString().slice(0, 10);
   })();
 
-  const ids = Object.keys(stats) as string[];
-  const perSubject = ids.map((id) => ({ id, steps: stats[id].steps ?? 0, done: 0 }));
-
   return {
     daysLeft: daysLeft(),
     totalSteps: total,
@@ -128,6 +132,5 @@ export function getPlan(): LawPlan {
     todayPercent: Math.min(100, Math.round((todayDone / dailyTarget) * 100)),
     finishEstimate,
     tier,
-    perSubject,
   };
 }

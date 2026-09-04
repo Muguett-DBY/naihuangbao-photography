@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import { motion } from "framer-motion";
-import type { LawBook, LawChapter, LawLesson } from "../types/law";
+import type { LawBook } from "../types/law";
+import { isShellLesson } from "../types/law";
 import { LAW_SUBJECT_MAP } from "../data/law/meta";
 import { graphicsOfSubject } from "../data/law/graphics";
 import { loadLawBook } from "../data/law/loader";
 import {
+  getDueReviewLessons,
   getLastLessonId,
   getLawProgress,
   getTodayGoal,
@@ -17,12 +19,7 @@ import { LawEggListener, useLawImmersive } from "../components/law/EasterEgg";
 import { subjectSteps } from "../lib/law-plan";
 import { LawSearch } from "../components/law/subject/LawSearch";
 import { ChapterTree } from "../components/law/subject/ChapterTree";
-import {
-  buildQuickPacks,
-  findLessonInBook,
-  lessonMeta,
-  semanticChapterTitle,
-} from "../components/law/subject/subjectUtils";
+import { findLessonInBook, semanticChapterTitle } from "../components/law/subject/subjectUtils";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
 
@@ -33,6 +30,7 @@ function isLawSubjectId(value: string | undefined): value is keyof typeof LAW_SU
 export function LawSubjectPage() {
   useLawImmersive();
   const { subjectId } = useParams();
+  const navigate = useNavigate();
   const [book, setBook] = useState<LawBook | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [openChapter, setOpenChapter] = useState<string | null>(null);
@@ -62,6 +60,7 @@ export function LawSubjectPage() {
   const progress = useMemo(() => getLawProgress(), []);
   const today = useMemo(() => getTodayGoal(), []);
   const wrongIds = useMemo(() => new Set(getWrongLessons()), []);
+  const dueIds = useMemo(() => new Set(getDueReviewLessons()), []);
 
   if (!valid || !subject) {
     return (
@@ -107,6 +106,7 @@ export function LawSubjectPage() {
   // 继续学习
   const lastLessonId = getLastLessonId();
   const lastRef = lastLessonId ? findLessonInBook(book, lastLessonId) : null;
+  const dueCount = [...dueIds].filter((id) => findLessonInBook(book, id)).length;
 
   return (
     <div className="law-academy law-subject" style={style}>
@@ -126,12 +126,15 @@ export function LawSubjectPage() {
             <span style={{ width: `${Math.min(100, (today.done / today.target) * 100)}%` }} />
           </div>
           <span className="law-subject__goal-steps">
-            📖 本册共 {subjectSteps(subject.id)} 步
+            {dueCount > 0 ? `🔁 今日待复习 ${dueCount} 课` : `📖 本册共 ${subjectSteps(subject.id)} 步`}
           </span>
         </div>
       </header>
 
-      <LawSearch book={book} onPick={(lessonId) => { window.location.href = `/law/learn/${lessonId}`; }} />
+      <LawSearch
+        book={book}
+        onPick={(lessonId) => navigate(`/law/learn/${lessonId}`)}
+      />
 
       {lastRef ? (
         <section className="law-subject__resume">
@@ -150,16 +153,24 @@ export function LawSubjectPage() {
         <section className="law-subject__wrong">
           <header>
             <h2>📕 我的错题本（{wrongIds.size}）</h2>
-            <span>自测答错的课都在这里，重练一次就记牢</span>
+            <span>按 1/2/4/7/15 天的节奏复习，连续 5 次通过就毕业出本</span>
           </header>
           <div className="law-subject__wrong-list">
-            {[...wrongIds].slice(0, 6).map((id) => {
+            {[...wrongIds].slice(0, 8).map((id) => {
               const ref = findLessonInBook(book, id);
               if (!ref) return null;
+              const due = dueIds.has(id);
               return (
-                <PrefetchLink key={id} to={`/law/learn/${id}`} className="law-subject__wrong-item">
+                <PrefetchLink
+                  key={id}
+                  to={due ? `/law/learn/${id}?review=1` : `/law/learn/${id}`}
+                  className={`law-subject__wrong-item ${due ? "is-due" : ""}`}
+                >
                   <b>{ref.lesson.title}</b>
-                  <span>{ref.chapter.title ? semanticChapterTitle(ref.chapter) : ""} · 🔁 重练</span>
+                  <span>
+                    {due ? "🔁 到期了，复习测试" : "🗓️ 还没到期"} ·{" "}
+                    {ref.chapter.title ? semanticChapterTitle(ref.chapter) : ""}
+                  </span>
                 </PrefetchLink>
               );
             })}
@@ -250,10 +261,3 @@ function graphicKindEmoji(kind: string): string {
       return "📊";
   }
 }
-
-export function lawLessonType(lesson: LawLesson) {
-  return lesson.steps[0]?.kind ?? "plain";
-}
-
-export { buildQuickPacks, lessonMeta, semanticChapterTitle };
-export type { LawChapter, LawLesson };

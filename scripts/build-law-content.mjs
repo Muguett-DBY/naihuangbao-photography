@@ -123,7 +123,7 @@ function stripHeading(code, titleLine) {
     .replace(/^\d{1,2}[.、．]/, "")
     .replace(/^\d{1,2}-\d{1,2}[.、．]/, "")
     .trim();
-  return title;
+  return polishTitle(title);
 }
 
 /** 文本规整：全角标点统一 + 连续标点压缩 + 高置信 OCR 残词修正 */
@@ -145,7 +145,9 @@ function polishText(text) {
   // 英文页眉残渣（高置信；Whig/Tory 等真实知识词不可删）
   t = t
     .replace(/[Cc]hapter[A-Za-z]*/g, "")
-    .replace(/\b(What|True|Fals|Note|five|one|two|three)\b/g, "");
+    .replace(/\b(What|True|Fals|Note|five|one|two|three)\b/g, "")
+    // OCR 双栏合并时混入的孤立英文疑问词，如"只(when)束力"
+    .replace(/\((?:when|what|where|how|which)\)/gi, "");
   const OCR_FIX = [
     ["香义", "主要"],
     ["主香义", "主要"],
@@ -153,8 +155,27 @@ function polishText(text) {
     ["尊严和权威", "尊严和权威"],
     ["背楠", "背诵"],
     ["学研", "学习"],
+    ["筒述", "简述"],
+    ["客休", "客体"],
+    // 页面换行把"…为主"与"主要内容…"焊接产生的叠字（高置信）
+    ["主主要要内容", "主要内容"],
+    ["主主要内容", "主要内容"],
   ];
   for (const [from, to] of OCR_FIX) {
+    t = t.split(from).join(to);
+  }
+  return t;
+}
+
+/** 标题级 OCR 修正（正文走 polishText，标题单独过一遍同源修正表） */
+function polishTitle(text) {
+  let t = text;
+  const TITLE_FIX = [
+    ["筒述", "简述"],
+    ["客休", "客体"],
+    ["自已", "自己"],
+  ];
+  for (const [from, to] of TITLE_FIX) {
     t = t.split(from).join(to);
   }
   return t;
@@ -207,22 +228,44 @@ function extractTerms(text) {
   return terms.slice(0, 6);
 }
 
+/**
+ * 从正文行里提取本课口诀。
+ * 必须是显式 "口诀：/巧记：/速记：/记：" 形式，且口诀体本身要像口诀
+ * （短、无括号示例、无题型动词、无第二个冒号）——防止把 OCR 拼接句当口诀展示。
+ * 注意 "记：" 必须是独立的记号（句首或标点后），否则 "登记：/登记载：" 会被误匹配。
+ */
+function validMnemonicText(raw) {
+  if (!raw) return null;
+  let text = raw
+    .trim()
+    .replace(/^[①②③④⑤⑥⑦⑧⑨⑩］[（(）)\s]+/, "")
+    .replace(/[）)」』””，。；、\s]+$/, "")
+    .trim();
+  if (text.length < 2 || text.length > 24) return null;
+  if (/^[0-9０-９]/.test(text)) return null;
+  if (/[：:［\[\]］（）()]/.test(text)) return null;
+  if (/示例|简述|论述|简答|分析|评述|试述|说明|背诵|记忆|考点|内容|如何|什么/.test(text)) return null;
+  return text;
+}
+
 function gatherMnemonic(lines) {
   for (const line of lines) {
-    const match = line.match(/口诀[：:]?([^。；\n]{3,30})/);
+    const match = line.match(/(?:口诀|巧记|速记)[：:]\s*([^。；\n]{2,30})/);
     if (match) {
-      const text = match[1].trim().replace(/^[①②③④⑤⑥⑦⑧⑨⑩]/g, "").trim();
-      if (text.length >= 3) return text.slice(0, 30);
+      const valid = validMnemonicText(match[1]);
+      if (valid) return valid;
     }
-    const match2 = line.match(/巧记|速记|记忆关键词|考记[：:]([^。；\n]{3,30})/);
-    if (match2) return match2[1]?.trim().slice(0, 30);
+    const match2 = line.match(/(?:^|[。；，：：”’」』])\s*记[：:]\s*([^。；\n]{2,30})/);
+    if (match2) {
+      const valid = validMnemonicText(match2[1]);
+      if (valid) return valid;
+    }
   }
   return null;
 }
 
-function classifyStep(blockTexts, mnemonic) {
+function classifyStep(blockTexts) {
   const joined = blockTexts.join("；");
-  if (mnemonic) return "mnemonic";
   // 至少有两条编号条目 → 列举型（可逐条点按）
   const numberedCount = blockTexts.filter(
     (part) => RE_LIST_ITEM.test(part.trim()) || RE_NUM_ITEM.test(part.trim()),
@@ -238,11 +281,11 @@ function classifyStep(blockTexts, mnemonic) {
   return "plain";
 }
 
-function buildSteps(blocks, mnemonic) {
+function buildSteps(blocks) {
   const steps = [];
   for (const block of blocks) {
     const texts = block.items.length > 0 ? block.items : block.texts;
-    const kind = classifyStep(texts, block.mnemonic ?? null);
+    const kind = classifyStep(texts);
     const step = {
       id: "",
       kind,
@@ -332,7 +375,7 @@ function parseBookPages(pages, bookMeta) {
       }
     }
     const mnemonic = gatherMnemonic(paragraphs);
-    const rawSteps = buildSteps(blocks, mnemonic)
+    const rawSteps = buildSteps(blocks)
       .filter((s) => s.text && s.text.trim().length >= 2);
     // 超长步骤按句切分，保证一屏能读完（"傻子也能看懂"）
     const splitSteps = [];
@@ -374,17 +417,31 @@ function parseBookPages(pages, bookMeta) {
     const steps = splitSteps.map((s, index) => ({ ...s, id: `${lesson.id}-s${index}` }));
     if (steps.length === 0) {
       // 本课没有可成步骤的行 → 保留原文，防止丢内容
-      lesson.steps = [
-        {
-          id: `${lesson.id}-s0`,
-          kind: "plain",
-          text: lessonBody.join("；") || lesson.title,
-          terms: [],
-        },
-      ];
-    } else {
-      lesson.steps = steps;
+      steps.push({
+        id: `${lesson.id}-s0`,
+        kind: "plain",
+        text: lessonBody.join("；") || lesson.title,
+        terms: [],
+      });
     }
+    // 有效口诀 → 追加一张"口诀记忆卡"步骤（翻字背诵），组件与数据在此打通
+    if (mnemonic) {
+      steps.push({
+        id: `${lesson.id}-sm`,
+        kind: "mnemonic",
+        text: "本课口诀",
+        mnemonic,
+        terms: [],
+      });
+    }
+    lesson.steps = steps;
+    // 目录/考点索引页产生的"纯标题课"（无任何正文原文）→ 打上 shell 标记：
+    // 保留 id 稳定性与原文保底承诺，但不计入知识点总数、不进目录/搜索/出题
+    lesson.shell = lesson.raw.length === 0
+      && lesson.steps.length === 1
+      && lesson.steps[0].text === lesson.title
+      ? true
+      : undefined;
     lesson.intro = lessonBody[0] ?? lesson.steps[0]?.text ?? "";
     lesson.mnemonic = mnemonic ?? undefined;
     lesson.pageRange = [lessonStartPage, lessonEndPage || lessonStartPage];
@@ -654,8 +711,13 @@ const SEMANTIC_FIX = {
   权益王: "债权编",
 };
 
+/** 纯序号/结构占位标题（"第一章""专题二"）：不是语义名 */
+function isOrdinalPlaceholder(text) {
+  return /^(第[一二三四五六七八九十百零0-9]+(编|部分|章|篇|卷)?|上编|下编|附编|总论|分论|导论|绪论|专题[一二三四五六七八九十]+)$/.test(text);
+}
+
 /** 从别名集合挑选语义名称（如"第二部分○犯罪论" → "犯罪论"） */
-function pickSemanticTitle(aliases, fallbackTitle = "") {
+function pickSemanticTitle(aliases, lessonTitles = []) {
   let best = "";
   for (const alias of aliases) {
     const cleaned = alias
@@ -664,15 +726,24 @@ function pickSemanticTitle(aliases, fallbackTitle = "") {
       .replace(/^\s*(上编|下编|附编)\s*/, "")
       .trim();
     if (!cleaned || cleaned === alias.replace(/[○◎●◆・•·✦☆（）()〇Q口O\s]/g, "").trim()) continue;
+    if (isOrdinalPlaceholder(cleaned)) continue;
     if (cleaned.length >= 2 && cleaned.length > best.length) best = cleaned;
   }
   // 常见 OCR 尾字修正
   best = best.replace(/用$|显$|丽$|忌$|极$|均$|点$|与$/, "罪");
   if (SEMANTIC_FIX[best]) best = SEMANTIC_FIX[best];
   if (!best) {
-    const cleaned = fallbackTitle.replace(/^(简述|论述|简答|分析|评述|试述|说明|比较|谈谈|导览)[^一-龥]*/, "");
-    const match = cleaned.match(/([\u4e00-\u9fa5]{2,8}罪|[\u4e00-\u9fa5]{2,8}法|[\u4e00-\u9fa5]{2,6}编|[\u4e00-\u9fa5]{2,6}论)/);
-    if (match) best = match[1];
+    for (const rawTitle of lessonTitles) {
+      const cleaned = polishTitle(rawTitle)
+        .replace(/^导览[：:]/, "")
+        .replace(/^(简述|论述|简答|分析|评述|试述|说明|比较|谈谈|导览)[^一-龥]*/, "")
+        .split(/[、，。；：（(的：:]/)[0]
+        .trim();
+      if (cleaned.length < 2 || cleaned.length > 10) continue;
+      if (isOrdinalPlaceholder(cleaned)) continue;
+      best = cleaned;
+      break;
+    }
   }
   return best || undefined;
 }
@@ -716,7 +787,7 @@ async function main() {
       title: chapter.title,
       semanticTitle: pickSemanticTitle(
         chapter.aliases ?? new Set(),
-        chapter.lessons.map((l) => l.title).join("；"),
+        chapter.lessons.filter((l) => !l.shell).map((l) => l.title),
       ),
       level: chapter.level,
       lessons: chapter.lessons,
@@ -729,7 +800,10 @@ async function main() {
       accent: bookMeta.accent,
       accentSoft: bookMeta.accentSoft,
       chapters: plainChapters,
-      lessonCount: lessonsCount,
+      lessonCount: plainChapters.reduce(
+        (sum, c) => sum + c.lessons.filter((l) => !l.shell).length,
+        0,
+      ),
       leftover: leftovers.length > 0 ? [leftoverText] : [],
     };
 
@@ -739,12 +813,16 @@ async function main() {
       "utf8",
     );
     stats[bookMeta.id] = {
-      lessonCount: lessonsCount,
+      lessonCount: book.lessonCount,
       chapterTitles: chapters.map((c) => c.title),
-      steps: stepsCount,
+      steps: plainChapters.reduce(
+        (sum, c) => sum + c.lessons.filter((l) => !l.shell).reduce((s, l) => s + l.steps.length, 0),
+        0,
+      ),
     };
+    const shellCount = chapters.reduce((sum, c) => sum + c.lessons.filter((l) => l.shell).length, 0);
     summary.push(
-      `${bookMeta.name}: ${lessonsCount}课 / ${stepsCount}步 / leftover ${leftoverLines}行`,
+      `${bookMeta.name}: ${book.lessonCount}课(+${shellCount}索引壳) / ${stats[bookMeta.id].steps}步 / leftover ${leftoverLines}行`,
     );
   }
 
