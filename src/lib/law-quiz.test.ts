@@ -39,7 +39,8 @@ describe("law quiz generation", () => {
       const context = collectSiblingTerms(book, lesson.id);
       if (buildQuiz(lesson, context).length > 0) covered += 1;
     }
-    expect(covered / realLessons.length).toBeGreaterThan(0.85);
+    // 0.80：质量优先——被截断的 OCR 残句不再出判断题，无合格题面的课走"标记掌握"兜底
+    expect(covered / realLessons.length).toBeGreaterThan(0.8);
   });
 
   it("still quizzes ~half of real lessons even without sibling context", () => {

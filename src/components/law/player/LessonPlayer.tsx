@@ -400,12 +400,15 @@ function kindLabel(kind: string): string {
   }
 }
 
-/** 清除运行页眉残留符号，让面包屑可读 */
+/** 清除运行页眉残留符号，让面包屑可读（空段与相邻重复段剔除，避免"专题二 /"悬空） */
 function cleanBreadcrumb(crumbs: string[]): string[] {
-  return crumbs.map((text) =>
-    text
-      .replace(/[○◎●◆・•·✦☆]/g, "")
-      .replace(/^\s*(第[一二三四五六七八九十百零0-9]+[编部分章篇卷]?)+[·、]?\s*/, "")
-      .trim(),
-  );
+  const cleaned = crumbs
+    .map((text) =>
+      text
+        .replace(/[○◎●◆・•·✦☆]/g, "")
+        .replace(/^\s*(第[一二三四五六七八九十百零0-9]+[编部分章篇卷]?)+[·、]?\s*/, "")
+        .trim(),
+    )
+    .filter((text) => text.length > 0);
+  return cleaned.filter((text, index) => index === 0 || text !== cleaned[index - 1]);
 }

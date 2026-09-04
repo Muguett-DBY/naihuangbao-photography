@@ -223,7 +223,7 @@ const TRIGGERS: Record<EggTrigger, { emoji: string; title: string }> = {
   symbol: { emoji: "🐱", title: "奶黄包的留言" },
 };
 
-/** 学习中心页脚的小小奶黄包：点 3 下解锁隐藏留言 */
+/** 学习中心页脚的小小奶黄包：点 3 下解锁/重看隐藏留言 */
 export function LawEggSymbol() {
   const [taps, setTaps] = useState(0);
   const [unlocked, setUnlocked] = useState(false);
@@ -232,12 +232,14 @@ export function LawEggSymbol() {
     const next = taps + 1;
     setTaps(next);
     if (next >= 3) {
-      setUnlocked(unlockEgg("symbol"));
+      // 已解锁过也要弹（页脚提示"想再看一遍？点那只小猫 3 下"）
+      unlockEgg("symbol");
+      setUnlocked(true);
       setTaps(0);
     }
   }
 
-  if (unlocked) return <EggModal trigger="symbol" />;
+  if (unlocked) return <EggModal trigger="symbol" onClose={() => setUnlocked(false)} />;
   return (
     <button
       type="button"
@@ -345,23 +347,36 @@ export function EggModal({ trigger, onClose }: { trigger: EggTrigger; onClose?: 
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ type: "spring", stiffness: 150, damping: 18 }}
       >
+        <button
+          type="button"
+          className="law-egg-card__x"
+          aria-label="关闭"
+          onClick={() => {
+            markEggSeen(trigger);
+            onClose?.();
+          }}
+        >
+          ✕
+        </button>
         <div className="law-egg-card__emoji" aria-hidden="true">
           {meta.emoji}
           <span className="law-egg-card__heart">💛</span>
         </div>
         <h3>{meta.title}</h3>
         <div className="law-egg-card__letter">{LETTERS[trigger] ?? LETTER_MAIN}</div>
-        <button
-          type="button"
-          className="law-egg-card__close"
-          onClick={() => {
-            markEggSeen(trigger);
-            onClose?.();
-          }}
-        >
-          收好这封信 💌
-        </button>
-        <p className="law-egg-card__hint">（想再看一遍？去学习中心页脚点那只小猫 3 下）</p>
+        <div className="law-egg-card__footer">
+          <button
+            type="button"
+            className="law-egg-card__close"
+            onClick={() => {
+              markEggSeen(trigger);
+              onClose?.();
+            }}
+          >
+            收好这封信 💌
+          </button>
+          <p className="law-egg-card__hint">（想再看一遍？去学习中心页脚点那只小猫 3 下）</p>
+        </div>
       </motion.div>
     </div>
   );

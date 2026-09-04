@@ -157,6 +157,7 @@ function polishText(text) {
     ["学研", "学习"],
     ["筒述", "简述"],
     ["客休", "客体"],
+    ["买奖合同", "买卖合同"],
     // 页面换行把"…为主"与"主要内容…"焊接产生的叠字（高置信）
     ["主主要要内容", "主要内容"],
     ["主主要内容", "主要内容"],
@@ -164,6 +165,17 @@ function polishText(text) {
   for (const [from, to] of OCR_FIX) {
     t = t.split(from).join(to);
   }
+  // 句号后紧跟分号/句号（跨栏拼接残迹）
+  t = t.replace(/。；/g, "。").replace(/；。/g, "。");
+  // OCR 双栏表格合并产生的"术语回声"（如"累犯累犯应当从重处罚"）：
+  // 紧邻的完全相同汉字串几乎都是合并残迹，折叠为一次。
+  // 白名单排除汉语正常叠词（大大/渐渐/往往等）。
+  t = t.replace(new RegExp("([\\u4e00-\\u9fa5]{2,10})\\1", "g"), (match, echo) => {
+    if (/^(大大|小小|高高|低低|久久|渐渐|往往|常常|刚刚|明明|时时|层层|一一|人人|种种|点点|个个|步步|处处|代代|日日夜夜|口口声声|形形色色|世世代代)/.test(echo)) {
+      return match;
+    }
+    return echo;
+  });
   return t;
 }
 
@@ -174,11 +186,21 @@ function polishTitle(text) {
     ["筒述", "简述"],
     ["客休", "客体"],
     ["自已", "自己"],
+    ["买奖合同", "买卖合同"],
   ];
   for (const [from, to] of TITLE_FIX) {
     t = t.split(from).join(to);
   }
   return t;
+}
+
+/** 去掉编号前缀（用于连续重复条目的判等） */
+function itemKey(part) {
+  return part
+    .replace(/^[①②③④⑤⑥⑦⑧⑨⑩]/, "")
+    .replace(/^\d{1,2}[.、．]/, "")
+    .replace(/^[（(][一二三四五六七八九十]{1,4}[)）]/, "")
+    .trim();
 }
 
 function joinParagraph(lines) {
@@ -284,7 +306,17 @@ function classifyStep(blockTexts) {
 function buildSteps(blocks) {
   const steps = [];
   for (const block of blocks) {
-    const texts = block.items.length > 0 ? block.items : block.texts;
+    let texts = block.items.length > 0 ? block.items : block.texts;
+    // 对照表两栏产生同编号同内容条目（"1.先交付；1.先交付；"）→ 相邻去重
+    if (block.items.length > 1) {
+      const deduped = [];
+      for (const item of block.items) {
+        const prev = deduped[deduped.length - 1];
+        if (prev !== undefined && itemKey(item) === itemKey(prev) && itemKey(item).length >= 2) continue;
+        deduped.push(item);
+      }
+      texts = deduped;
+    }
     const kind = classifyStep(texts);
     const step = {
       id: "",
