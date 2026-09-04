@@ -1,11 +1,14 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
+  getWrongLessons,
   markEggSeen,
   unlockEgg,
   wasEggSeen,
   type EggTrigger,
 } from "../../lib/law-progress";
+import { getStreakDays } from "../../lib/law-progress";
+import { getPlan } from "../../lib/law-plan";
 
 /** 学习区一律沉浸：隐藏摄影站导航，专注学习（各学习页面挂载时调用） */
 export function useLawImmersive() {
@@ -15,7 +18,8 @@ export function useLawImmersive() {
   }, []);
 }
 
-const LETTER: ReactNode = (
+/** 完整大信：给那个一直努力的女孩子 */
+const LETTER_MAIN: ReactNode = (
   <>
     <p className="law-egg__greet">给一直很努力的那个女孩子：</p>
     <p className="law-egg__line">
@@ -51,18 +55,172 @@ const LETTER: ReactNode = (
       <br />
       我都会陪着你。
     </p>
-    <p className="law-egg__sign">
-      —— 永远站在你这边的奶黄包 🐱
-    </p>
+    <p className="law-egg__sign">—— 永远站在你这边的奶黄包 🐱</p>
     <p className="law-egg__love">💛 奶黄包非常非常非常爱你 💛</p>
   </>
 );
 
-const TRIGGERS: Record<EggTrigger, { emoji: string; title: string; desc: string }> = {
-  midnight: { emoji: "🌙", title: "深夜的悄悄话", desc: "这么晚还在学呀……有一封信想给你" },
-  firstLesson: { emoji: "🎀", title: "第一份小礼物", desc: "你完成了第一课！有个小东西想给你" },
-  hundred: { emoji: "💌", title: "第 100 个知识点", desc: "你已经掌握了 100 个知识点，打开它" },
-  symbol: { emoji: "🐱", title: "奶黄包的留言", desc: "小彩蛋已解锁" },
+/** 深夜信 */
+const LETTER_MIDNIGHT: ReactNode = (
+  <>
+    <p className="law-egg__greet">这么晚还没睡呀：</p>
+    <p className="law-egg__line">
+      月亮都困了，你怎么还在学？
+      <br />
+      不是催你，是想告诉你——
+      <br />
+      <b>你努力的样子，比月光还亮。</b>
+    </p>
+    <p className="law-egg__line">
+      如果今天背不下去了，就去睡吧。
+      <br />
+      书明天还在，我会一直陪你。
+    </p>
+    <p className="law-egg__sign">—— 奶黄包 🐱（熬夜也要记得喝水）</p>
+    <p className="law-egg__love">💛 晚安，好梦 💛</p>
+  </>
+);
+
+/** 清晨信 */
+const LETTER_MORNING: ReactNode = (
+  <>
+    <p className="law-egg__greet">早呀，小姑娘：</p>
+    <p className="law-egg__line">
+      六点的风、七点的光，
+      <br />
+      都看到了你比闹钟更早的坚持。
+      <br />
+      今天也要元气满满哦！
+    </p>
+    <p className="law-egg__line">昨晚背的内容，今天会变成你的底气。</p>
+    <p className="law-egg__sign">—— 奶黄包 🐱（早餐要吃饱！）</p>
+    <p className="law-egg__love">☀️ 新的一天，也在一起努力 💛</p>
+  </>
+);
+
+/** 连续三天 */
+const LETTER_STREAK: ReactNode = (
+  <>
+    <p className="law-egg__greet">连续三天啦！</p>
+    <p className="law-egg__line">
+      有一个小秘密：
+      <br />
+      人类最了不起的能力不是聪明，
+      <br />
+      而是<b>坚持了三天还不肯停下</b>。
+    </p>
+    <p className="law-egg__line">
+      三天前的你，给今天的你铺好了路。
+      <br />
+      三天后的你，正在等你。
+    </p>
+    <p className="law-egg__sign">—— 奶黄包 🐱（继续！）</p>
+    <p className="law-egg__love">🔥 连续学习 · 第 3 天 💛</p>
+  </>
+);
+
+/** 错题本 3 道 */
+const LETTER_WRONG: ReactNode = (
+  <>
+    <p className="law-egg__greet">看到你的错题本啦：</p>
+    <p className="law-egg__line">
+      错题不是耻辱，
+      <br />
+      是地图上被标出来的坑——
+      <br />
+      <b>标记过的坑，考试时你就绕得开。</b>
+    </p>
+    <p className="law-egg__line">错的这三道，将来都是你得分的地方。</p>
+    <p className="law-egg__sign">—— 奶黄包 🐱</p>
+    <p className="law-egg__love">🩹 跟错误做朋友，它也会回报你 💛</p>
+  </>
+);
+
+/** 第一次看图解 */
+const LETTER_GRAPHIC: ReactNode = (
+  <>
+    <p className="law-egg__greet">你打开了第一张图解！</p>
+    <p className="law-egg__line">
+      先看懂再背，事半功倍——<br />
+      你这么学，就是在给自己造"画面记忆"。
+    </p>
+    <p className="law-egg__line">记住这张图，以后闭上眼睛都能回忆起来。</p>
+    <p className="law-egg__sign">—— 奶黄包 🐱（画图的人很用心哦）</p>
+    <p className="law-egg__love">📐 视觉记忆 · 百倍效率 💛</p>
+  </>
+);
+
+/** 考前 30 天 */
+const LETTER_EXAM30: ReactNode = (
+  <>
+    <p className="law-egg__greet">冲刺 30 天：</p>
+    <p className="law-egg__line">
+      最后一个月，你不需要更多知识，
+      <br />
+      只需要<b>照顾好自己</b>，
+      <br />
+      和每天一点点稳稳地往前走。
+    </p>
+    <p className="law-egg__line">
+      三十天前的你开始准备了，
+      <br />
+      三十天后的你，一定感谢现在的自己。
+    </p>
+    <p className="law-egg__sign">—— 奶黄包 🐱（稳住，我们能赢）</p>
+    <p className="law-egg__love">⏳ 最后 30 天 · 一起走完 💛</p>
+  </>
+);
+
+/** 平安夜信（考前夜） */
+const LETTER_CHRISTMAS: ReactNode = (
+  <>
+    <p className="law-egg__greet">平安夜快乐：</p>
+    <p className="law-egg__line">
+      明天就要上考场了。
+      <br />
+      别怕——<b>你比想象中的自己，准备得更充分。</b>
+    </p>
+    <p className="law-egg__line">
+      就算明天有不会的题，
+      <br />
+      也只是人生试卷上的一小格，
+      <br />
+      不是你的全部。
+    </p>
+    <p className="law-egg__line">
+      深呼吸，睡个好觉，
+      <br />
+      我会在心里陪着你。
+    </p>
+    <p className="law-egg__sign">—— 平安夜的奶黄包 🎄</p>
+    <p className="law-egg__love">💛 你值得被温柔以待 💛</p>
+  </>
+);
+
+const LETTERS: Record<EggTrigger, ReactNode> = {
+  midnight: LETTER_MIDNIGHT,
+  morning: LETTER_MORNING,
+  firstLesson: LETTER_MAIN,
+  hundred: LETTER_MAIN,
+  streak3: LETTER_STREAK,
+  wrongbook3: LETTER_WRONG,
+  graphicFirst: LETTER_GRAPHIC,
+  exam30: LETTER_EXAM30,
+  christmas: LETTER_CHRISTMAS,
+  symbol: LETTER_MAIN,
+};
+
+const TRIGGERS: Record<EggTrigger, { emoji: string; title: string }> = {
+  firstLesson: { emoji: "🎀", title: "第一份小礼物" },
+  hundred: { emoji: "💌", title: "第 100 个知识点" },
+  midnight: { emoji: "🌙", title: "深夜的悄悄话" },
+  morning: { emoji: "🌅", title: "早起的奖励" },
+  streak3: { emoji: "🔥", title: "三天之约" },
+  wrongbook3: { emoji: "🩹", title: "跟错误做朋友" },
+  graphicFirst: { emoji: "📐", title: "第一张图解" },
+  exam30: { emoji: "⏳", title: "最后的 30 天" },
+  christmas: { emoji: "🎄", title: "平安夜的信" },
+  symbol: { emoji: "🐱", title: "奶黄包的留言" },
 };
 
 /** 学习中心页脚的小小奶黄包：点 3 下解锁隐藏留言 */
@@ -93,27 +251,47 @@ export function LawEggSymbol() {
   );
 }
 
-/** 彩蛋触发逻辑：深夜 / 首次掌握 / 100 课（挂在学习相关页面即可） */
+/** 时间/里程碑型彩蛋判定（一次性） */
+function checkEasterEgg(doneCount: number): EggTrigger | null {
+  const now = new Date();
+  const hour = now.getHours();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+
+  // 日期型（按优先级）
+  if (month === 12 && day === 25 && unlockEgg("christmas")) return "christmas";
+  if ((hour >= 23 || hour < 5) && unlockEgg("midnight")) return "midnight";
+  if (hour >= 5 && hour < 9 && unlockEgg("morning")) return "morning";
+  if (getPlan().daysLeft <= 30 && unlockEgg("exam30")) return "exam30";
+  // 里程碑型
+  if (doneCount === 1 && unlockEgg("firstLesson")) return "firstLesson";
+  if (doneCount >= 100 && unlockEgg("hundred")) return "hundred";
+  if (getStreakDays() >= 3 && unlockEgg("streak3")) return "streak3";
+  if (getWrongLessons().length >= 3 && unlockEgg("wrongbook3")) return "wrongbook3";
+  return null;
+}
+
+/** 由图解首次看完触发的事件途径 */
+export const EGG_EVENT = "nhb-law-egg";
+
+/** 彩蛋触发逻辑（挂在学习相关页面即可） */
 export function useEggListener(doneCount: number): EggTrigger | null {
   const [trigger, setTrigger] = useState<EggTrigger | null>(null);
 
   useEffect(() => {
     if (trigger) return;
-    const hour = new Date().getHours();
-    const isNight = hour >= 23 || hour < 5;
-    if (isNight) {
-      if (unlockEgg("midnight")) setTrigger("midnight");
-      return;
-    }
-    if (doneCount === 1 && unlockEgg("firstLesson")) {
-      setTrigger("firstLesson");
-      return;
-    }
-    if (doneCount >= 100 && unlockEgg("hundred")) {
-      setTrigger("hundred");
-      return;
-    }
+    const found = checkEasterEgg(doneCount);
+    if (found) setTrigger(found);
   }, [trigger, doneCount]);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<string>).detail;
+      if (detail && unlockEgg("graphicFirst")) setTrigger("graphicFirst");
+    };
+    document.addEventListener(EGG_EVENT, handler);
+    return () => document.removeEventListener(EGG_EVENT, handler);
+  }, []);
 
   return trigger;
 }
@@ -124,12 +302,10 @@ export function LawEggListener({ doneCount }: { doneCount?: number }) {
   const [total, setTotal] = useState(doneCount ?? 0);
 
   useEffect(() => {
-    // 无传入时自行统计掌握数
     if (doneCount !== undefined) {
       setTotal(doneCount);
       return;
     }
-    // 从 localStorage 汇总
     try {
       const raw = localStorage.getItem("nhb-law-academy-v1");
       if (raw) {
@@ -174,7 +350,7 @@ export function EggModal({ trigger, onClose }: { trigger: EggTrigger; onClose?: 
           <span className="law-egg-card__heart">💛</span>
         </div>
         <h3>{meta.title}</h3>
-        <div className="law-egg-card__letter">{LETTER}</div>
+        <div className="law-egg-card__letter">{LETTERS[trigger] ?? LETTER_MAIN}</div>
         <button
           type="button"
           className="law-egg-card__close"
@@ -188,13 +364,5 @@ export function EggModal({ trigger, onClose }: { trigger: EggTrigger; onClose?: 
         <p className="law-egg-card__hint">（想再看一遍？去学习中心页脚点那只小猫 3 下）</p>
       </motion.div>
     </div>
-  );
-}
-
-export function EggDock() {
-  return (
-    <AnimatePresence>
-      <div className="law-egg-dock" aria-hidden="true" />
-    </AnimatePresence>
   );
 }

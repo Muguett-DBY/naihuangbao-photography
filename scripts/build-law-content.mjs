@@ -53,6 +53,8 @@ function cleanLine(line) {
   for (const [from, to] of FIXES) text = text.split(from).join(to);
   if (HEADER_FOOTER.some((re) => re.test(text))) return "";
   if (RE_PAGE_NO.test(text)) return "";
+  // 英文页眉/无关拉丁行（"CHAPTERONE"、"What" 这类 OCR 页眉残渣）
+  if (/^[A-Za-z][A-Za-z\s.'-]{3,40}$/.test(text) && !/[。，：；]/.test(text)) return "";
   return text;
 }
 
@@ -140,6 +142,10 @@ function polishText(text) {
     .replace(/(；)+/g, "；")
     .replace(/(：)+/g, "：")
     .replace(/[ \t]+/g, "");
+  // 英文页眉残渣（高置信；Whig/Tory 等真实知识词不可删）
+  t = t
+    .replace(/[Cc]hapter[A-Za-z]*/g, "")
+    .replace(/\b(What|True|Fals|Note|five|one|two|three)\b/g, "");
   const OCR_FIX = [
     ["香义", "主要"],
     ["主香义", "主要"],
@@ -255,7 +261,7 @@ function makeLesson(bookMeta, seq, line, stack) {
     line.match(/^([一二三四五六七八九十百零]{1,6})[、.]/)?.[1] ??
     line.match(/^(\d{1,2}-\d{1,2})/)?.[1] ??
     String(seq);
-  const title = stripHeading(code, line) || line;
+  const title = stripHeading(code, line).replace(/[○◎●◆・•·✦☆]/g, "") || line.replace(/[○◎●◆・•·✦☆]/g, "");
   return {
     id: `${bookMeta.id}-q${String(seq).padStart(3, "0")}`,
     subject: bookMeta.id,
@@ -410,9 +416,9 @@ function parseBookPages(pages, bookMeta) {
     seq += 1;
     const trailLesson = makeLesson(bookMeta, seq, "导览", stack);
     trailLesson.id = `${bookMeta.id}-q${String(seq).padStart(3, "0")}-tour`;
-    const topTitle = stack.length > 0
+    const topTitle = (stack.length > 0
       ? headingTitle(stack[stack.length - 1].title, stack[stack.length - 1].level, bookMeta)
-      : "本章";
+      : "本章").replace(/[○◎●◆・•·✦☆]/g, "");
     trailLesson.title = `导览：${topTitle}`;
     const chunked = [];
     let buffer = "";

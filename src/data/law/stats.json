@@ -42,7 +42,7 @@
       "第三十一章",
       "第三十二章"
     ],
-    "steps": 602
+    "steps": 601
   },
   "xianfa": {
     "lessonCount": 103,
@@ -54,7 +54,7 @@
       "第五章",
       "第六章"
     ],
-    "steps": 676
+    "steps": 675
   },
   "zhishixiang": {
     "lessonCount": 295,
@@ -84,7 +84,7 @@
     "steps": 1181
   },
   "minfa": {
-    "lessonCount": 611,
+    "lessonCount": 610,
     "chapterTitles": [
       "作者的话",
       "第一编",
@@ -116,7 +116,7 @@
       "第一章",
       "第二章"
     ],
-    "steps": 1406
+    "steps": 1403
   },
   "xingfa": {
     "lessonCount": 387,
@@ -135,6 +135,6 @@
       "第十一部分",
       "第十二部分"
     ],
-    "steps": 1153
+    "steps": 1152
   }
 }

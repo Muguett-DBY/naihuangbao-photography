@@ -95,6 +95,8 @@ export function ChapterTree({
           {chapter.lessons.map((lesson, index) => {
             const meta = lessonMeta(lesson);
             const prog = progress[lesson.id];
+            // 附录索引页产生的空壳课（无正文原文）不展示——知识正文都在对应正文章节
+            if (lesson.raw.length === 0) return null;
             if (lesson.steps.length <= 1) return null;
             return (
               <li key={lesson.id}>

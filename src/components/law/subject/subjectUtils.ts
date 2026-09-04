@@ -11,8 +11,9 @@ export function cleanHeading(text: string): string {
     .trim();
 }
 
-/** 章节语义名：构建管线提供的 semanticTitle > breadcrumb 反推 > 清洗后标题 */
+/** 章节语义名：构建管线提供的 semanticTitle > breadcrumb 反推 > 课时标题提炼 > 清洗后标题 */
 export function semanticChapterTitle(chapter: LawChapter): string {
+  if (/^(作者的话|使用说明)$/.test(chapter.title)) return chapter.title;
   if (chapter.semanticTitle && chapter.semanticTitle.length >= 2) return chapter.semanticTitle;
   const crumbs = chapter.lessons[0]?.breadcrumb ?? [];
   const candidates = crumbs.map(cleanHeading).filter((text) => {
@@ -22,6 +23,14 @@ export function semanticChapterTitle(chapter: LawChapter): string {
     return true;
   });
   if (candidates.length > 0) return candidates[candidates.length - 1];
+  // 数据未提供语义名时，从首个课时标题提炼（如"法学的概念、层次…"→"法学"）
+  const lessonTitle = chapter.lessons[0]?.title ?? "";
+  const head = lessonTitle
+    .replace(/^(简述|简答|论述|分析|评述|试述|说明|比较|谈谈|导览)/, "")
+    .split(/[（(]/)[0]
+    .split(/[、，。；：]/)[0]
+    .slice(0, 10);
+  if (head && head.length >= 2) return head;
   return cleanHeading(chapter.title) || chapter.title;
 }
 
