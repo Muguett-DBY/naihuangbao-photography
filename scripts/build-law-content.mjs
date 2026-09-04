@@ -52,6 +52,9 @@ function cleanLine(line) {
   let text = line.trim();
   for (const [from, to] of FIXES) text = text.split(from).join(to);
   if (HEADER_FOOTER.some((re) => re.test(text))) return "";
+  // 页脚日期行（"2026年6月"及与后续小节标题的焊接行）——纯噪音
+  if (/^\d{4}年\d{1,2}月$/.test(text)) return "";
+  if (/^\d{4}年\d{1,2}月(?=[一二三四五六七八九十]{1,3}[、.])/.test(text)) return "";
   if (RE_PAGE_NO.test(text)) return "";
   // 英文页眉/无关拉丁行（"CHAPTERONE"、"What" 这类 OCR 页眉残渣）
   if (/^[A-Za-z][A-Za-z\s.'-]{3,40}$/.test(text) && !/[。，：；]/.test(text)) return "";
@@ -143,11 +146,20 @@ function polishText(text) {
     .replace(/(：)+/g, "：")
     .replace(/[ \t]+/g, "");
   // 英文页眉残渣（高置信；Whig/Tory 等真实知识词不可删）
+  // 注意：要在括号宽度统一之前做——否则 "(when)" 变全角后匹配不到
   t = t
     .replace(/[Cc]hapter[A-Za-z]*/g, "")
     .replace(/\b(What|True|Fals|Note|five|one|two|three)\b/g, "")
-    // OCR 双栏合并时混入的孤立英文疑问词，如"只(when)束力"
     .replace(/\((?:when|what|where|how|which)\)/gi, "");
+  // 括号宽度统一：OCR 把全角注记括号写成半角/异体（"[示例2］""【表达逻辑）"），
+  // 统一为全角一族，消除大量视觉失衡（语义上这些括号只有注记一种用途）
+  t = t
+    .replace(/\(/g, "（")
+    .replace(/\)/g, "）")
+    .replace(/[\[〔]/g, "［")
+    .replace(/[\]〕]/g, "］")
+    .replace(/【/g, "［")
+    .replace(/】/g, "］");
   const OCR_FIX = [
     ["香义", "主要"],
     ["主香义", "主要"],
@@ -158,6 +170,9 @@ function polishText(text) {
     ["筒述", "简述"],
     ["客休", "客体"],
     ["买奖合同", "买卖合同"],
+    ["（-）", "（一）"],
+    // 双栏焊接把"概念"插进"制定"中间（"制概念定颁布的规范性法律文件"）
+    ["制概念定", "制定"],
     // 页面换行把"…为主"与"主要内容…"焊接产生的叠字（高置信）
     ["主主要要内容", "主要内容"],
     ["主主要内容", "主要内容"],
@@ -321,7 +336,8 @@ function buildSteps(blocks) {
     const step = {
       id: "",
       kind,
-      text: texts.join("；"),
+      // 拼接分隔符"；"与前段句号会形成"。；"，最终拼装再过一遍规整
+      text: polishText(texts.join("；")),
       parts: texts.length >= 2 ? texts.slice(0, 8) : undefined,
       terms: extractTerms(texts.join("")),
     };
@@ -452,7 +468,7 @@ function parseBookPages(pages, bookMeta) {
       steps.push({
         id: `${lesson.id}-s0`,
         kind: "plain",
-        text: lessonBody.join("；") || lesson.title,
+        text: polishText(lessonBody.join("；")) || lesson.title,
         terms: [],
       });
     }
@@ -474,7 +490,7 @@ function parseBookPages(pages, bookMeta) {
       && lesson.steps[0].text === lesson.title
       ? true
       : undefined;
-    lesson.intro = lessonBody[0] ?? lesson.steps[0]?.text ?? "";
+    lesson.intro = polishText(lessonBody[0] ?? "") || (lesson.steps[0]?.text ?? "");
     lesson.mnemonic = mnemonic ?? undefined;
     lesson.pageRange = [lessonStartPage, lessonEndPage || lessonStartPage];
     lesson.raw = [...lessonBody];
@@ -523,10 +539,10 @@ function parseBookPages(pages, bookMeta) {
     trailLesson.steps = chunked.map((text, index) => ({
       id: `${trailLesson.id}-s${index}`,
       kind: "plain",
-      text,
+      text: polishText(text),
       terms: [],
     }));
-    trailLesson.intro = rawTrail[0] ?? "";
+    trailLesson.intro = polishText(rawTrail[0] ?? "");
     trailLesson.raw = [...rawTrail];
     trailLesson.pageRange = [trailStartPage, trailEndPage || trailStartPage];
     currentGroup().lessons.push(trailLesson);
