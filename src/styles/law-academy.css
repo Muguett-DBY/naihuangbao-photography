@@ -870,7 +870,7 @@
   top: calc(100% + 6px);
   right: 0;
   z-index: 50;
-  width: min(340px, 76vw);
+  width: min(340px, calc(100vw - 24px));
   max-height: 400px;
   overflow: auto;
   display: flex;
@@ -890,9 +890,15 @@
   background: transparent;
   font: inherit;
   font-size: 12.5px;
+  line-height: 1.5;
   color: var(--ink);
   text-align: left;
   cursor: pointer;
+  /* flex 容器会压缩子项导致文字被垂直裁切，必须禁止收缩（容器自身滚动） */
+  flex: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .law-player__navpop-menu button:hover {
@@ -989,6 +995,8 @@
 
 .law-egg-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: min(560px, 94vw);
   max-height: 88vh;
   overflow: auto;
@@ -1028,7 +1036,33 @@
   color: var(--coral-dark, #a95f57);
 }
 
+.law-egg-card__x {
+  position: sticky;
+  top: 0;
+  align-self: flex-end;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 999px;
+}
+
+.law-egg-card__x:hover {
+  background: var(--hairline);
+}
+
+.law-egg-card__footer {
+  position: sticky;
+  bottom: 0;
+  padding-top: 14px;
+  background: linear-gradient(to top, var(--paper) 82%, transparent);
+}
+
 .law-egg-card__letter {
+  margin-bottom: 16px;
   font-family: var(--font-note);
   font-size: 15.5px;
   line-height: 2.05;
@@ -1357,6 +1391,24 @@
   flex: 1;
   font-size: 13px;
   color: var(--text-muted);
+}
+
+/* 移动端步进圆点隐藏（长课圆点成堆，"第 x / y 步"计数已足够） */
+@media (max-width: 760px) {
+  .law-academy .law-player__dots {
+    display: none !important;
+  }
+  /* 段落导航：小屏改为页头下方固定面板（右对齐锚点在窄屏会把菜单推出屏幕外） */
+  .law-player__navpop-menu {
+    position: fixed;
+    top: 68px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+  .law-player__navpop-menu button {
+    font-size: 13px;
+  }
 }
 
 /* 手机端课时页：顶栏拥挤，隐藏面包屑（学科名已在返回键），按钮禁止折行 */

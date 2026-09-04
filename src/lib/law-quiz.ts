@@ -108,6 +108,29 @@ function lessonSentences(lesson: LawLesson): string[] {
   return out;
 }
 
+/** 判断题"原句重现"取材：必须是完整独立句，不带 OCR 残渣 */
+function isCleanVerbatimSentence(sentence: string): boolean {
+  // 必须以句末标点收尾（截断残句如"…社会规范，具"不可用作判断题）
+  if (!/[。！？]$/.test(sentence)) return false;
+  // 不含嵌套引号/书名号/OCR 方括号（包进「」后显示混乱）
+  if (/["“”「」『』《》［\[\]］]/.test(sentence)) return false;
+  // 不以编号/条目符开头（那是列表残段，不是一句完整的话）
+  if (/^[①-⑨（(\d]/.test(sentence)) return false;
+  return true;
+}
+
+/** 选项组里不允许互为子串（如"国家监督"与"国家监督是"同场出现，无法作答） */
+function optionsAreDistinct(options: string[]): boolean {
+  for (let i = 0; i < options.length; i += 1) {
+    for (let j = 0; j < options.length; j += 1) {
+      if (i === j) continue;
+      const [a, b] = [options[i], options[j]];
+      if (a.length >= 2 && b.includes(a)) return false;
+    }
+  }
+  return true;
+}
+
 const NUMBER_PATTERN = /\d{3,4}年|\d{2,4}年/;
 
 /** 把句中年份改成一个确定不同的值（构造可判定的"错"句） */
@@ -155,6 +178,8 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     return shuffle(
       pool.filter((t) => {
         if (t === target || t.length < 2) return false;
+        // 干扰项与答案互为子串（"国家监督" vs "国家监督是"）→ 无法作答，剔除
+        if (target.includes(t) || t.includes(target)) return false;
         // 干扰项出现在题面 → 歧义（可能两个"正确"选项），必须剔除
         if (excludeInPrompt && excludeInPrompt.includes(t)) return false;
         return true;
@@ -175,12 +200,14 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     if (prompt.includes(target)) continue;
     const distractors = distractorsFrom(target, rand, 3, prompt);
     if (distractors.length < 1) continue;
+    const options = shuffle([target, ...distractors], rand).slice(0, 4);
+    if (!optionsAreDistinct(options)) continue;
     usedPrompts.add(prompt);
     items.push({
       id: `${lesson.id}-q1-${items.length}`,
       kind: "mcq",
       prompt,
-      options: shuffle([target, ...distractors], rand).slice(0, 4),
+      options,
       answer: target,
       explain: step.text,
     });
@@ -195,7 +222,9 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
           (/^[①②③④⑤⑥⑦⑧⑨⑩]|^\d{1,2}[.、．]|^[（(][一二三四五六七八九十]{1,4}[)）]/.test(part)),
       )
       .map(stripItemPrefix)
-      .filter((part) => part.length >= 5 && part.length <= 40 && !/[①-⑨]/.test(part));
+      .filter((part) => part.length >= 5 && part.length <= 40 && !/[①-⑨]/.test(part))
+      // 截断残条过滤：以连接词/助词收尾的多为表格断行（"…变动的联""…的"）
+      .filter((part) => !/[联的与和或及在是对为把被从而并按据向于变受]/.test(part.slice(-1)));
     if (parts.length < 3) continue;
     const correct = parts.slice(0, 4);
     if (new Set(correct).size !== correct.length) continue;
@@ -207,7 +236,8 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
       prompt: "点按下方卡片，按书中顺序排列：",
       order: correct,
       answer: correct.join("→"),
-      explain: step.text,
+      // 解析用干净的正确顺序展示，避免整段 OCR 拼接文的杂讯
+      explain: `书中顺序：${correct.join(" → ")}`,
     });
     break;
   }
@@ -231,10 +261,11 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     });
   }
   if (!judgeDone) {
-    // 原句判断（答"是"）：优先带引号术语/数字的句子（更有判断价值），退而取任意合格短句
-    const rich = sentences.filter((s) => /["“「《]/.test(s) || /\d/.test(s));
-    const general = rich.length > 0 ? rich : sentences;
-    for (const sentence of shuffle(general, rand).slice(0, 4)) {
+    // 原句判断（答"是"）：只取完整干净的句子，优先带引号术语/数字的
+    const complete = sentences.filter(isCleanVerbatimSentence);
+    const rich = complete.filter((s) => /\d/.test(s));
+    const general = rich.length > 0 ? rich : complete;
+    for (const sentence of shuffle(general, rand).slice(0, 6)) {
       if (usedPrompts.has(sentence)) continue;
       usedPrompts.add(sentence);
       judgeDone = true;
@@ -266,12 +297,14 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     if (prompt.includes(target)) continue;
     const distractors = distractorsFrom(target, rand, 3, prompt);
     if (distractors.length < 1) continue;
+    const options = shuffle([target, ...distractors], rand).slice(0, 4);
+    if (!optionsAreDistinct(options)) continue;
     usedPrompts.add(prompt);
     items.push({
       id: `${lesson.id}-q4-${items.length}`,
       kind: "mcq",
       prompt,
-      options: shuffle([target, ...distractors], rand).slice(0, 4),
+      options,
       answer: target,
       explain: sentence,
     });
@@ -285,20 +318,32 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
   const usedAnswers = new Set(items.map((item) => item.answer));
   const concept = concepts.find((c) => !usedAnswers.has(c));
   if (concept && siblingPool.length >= 2 && items.length < 3) {
-    const distractors = [...siblingPool]
-      .sort((a, b) => Math.abs(a.length - concept.length) - Math.abs(b.length - concept.length))
-      .slice(0, 3);
+    // 干扰项排除与答案互为子串的候选，再按长度相近排序取前几个
+    const candidates = [...new Set(siblingPool)]
+      .filter((t) => !t.includes(concept) && !concept.includes(t))
+      .sort((a, b) => Math.abs(a.length - concept.length) - Math.abs(b.length - concept.length));
     const contextLine = lesson.steps
       .map((step) => step.text)
       .find((text) => text.includes(concept));
-    items.push({
-      id: `${lesson.id}-q5`,
-      kind: "mcq",
-      prompt: "这节课讲的是哪个概念？（选项都来自本课/同章）",
-      options: shuffle([concept, ...distractors], rand).slice(0, 4),
-      answer: concept,
-      explain: contextLine ? `${concept} —— ${contextLine.slice(0, 80)}` : `${concept} —— 本课核心概念`,
-    });
+    // 组出一组互斥的选项（冲突则逐个换候补）
+    let distractors = candidates.slice(0, 3);
+    for (let i = 3; i <= candidates.length; i += 1) {
+      const options = shuffle([concept, ...distractors], rand).slice(0, 4);
+      if (optionsAreDistinct(options)) {
+        items.push({
+          id: `${lesson.id}-q5`,
+          kind: "mcq",
+          prompt: "这节课讲的是哪个概念？（选项都来自本课/同章）",
+          options,
+          answer: concept,
+          explain: contextLine ? `${concept} —— ${contextLine.slice(0, 80)}` : `${concept} —— 本课核心概念`,
+        });
+        break;
+      }
+      if (i < candidates.length) {
+        distractors = [...distractors.slice(1), candidates[i]];
+      }
+    }
   }
 
   return items.slice(0, 4);

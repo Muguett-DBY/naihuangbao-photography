@@ -82,7 +82,7 @@ export function LawAcademyPage() {
               key={subject.id}
               initial={{ opacity: 0, y: 22 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
+              viewport={{ once: true, amount: 0.1, margin: "0px 0px 160px 0px" }}
               transition={{ delay: index * 0.08 }}
             >
               <PrefetchLink
@@ -131,7 +131,7 @@ export function LawAcademyPage() {
                 key={graphic.lessonId}
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
+                viewport={{ once: true, amount: 0.1, margin: "0px 0px 160px 0px" }}
                 transition={{ delay: index * 0.06 }}
               >
                 <PrefetchLink
