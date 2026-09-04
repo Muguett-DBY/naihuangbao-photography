@@ -113,10 +113,15 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
   const items: LawQuizItem[] = [];
   const usedPrompts = new Set<string>();
   const terms = lessonTerms(lesson);
-  const distractorsFrom = (target: string, randFn: () => number, need: number): string[] => {
+  const distractorsFrom = (target: string, randFn: () => number, need: number, excludeInPrompt?: string): string[] => {
     const pool = [...terms, ...contextTerms];
     return shuffle(
-      pool.filter((t) => t !== target && t !== target && t.length >= 2),
+      pool.filter((t) => {
+        if (t === target || t.length < 2) return false;
+        // 干扰项出现在题面 → 歧义（可能两个"正确"选项），必须剔除
+        if (excludeInPrompt && excludeInPrompt.includes(t)) return false;
+        return true;
+      }),
       randFn,
     ).slice(0, need);
   };
@@ -129,7 +134,7 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     if (!target || !step.text.includes(target)) continue;
     const prompt = step.text.replace(target, "＿＿＿");
     if (usedPrompts.has(prompt) || prompt.length > 90) continue;
-    const distractors = distractorsFrom(target, rand, 3);
+    const distractors = distractorsFrom(target, rand, 3, prompt);
     if (distractors.length < 1) continue;
     usedPrompts.add(prompt);
     items.push({
@@ -197,7 +202,7 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     if (!target) continue;
     const prompt = step.text.replace(target, "＿＿＿");
     if (!prompt || usedPrompts.has(prompt) || prompt.length > 90) continue;
-    const distractors = distractorsFrom(target, rand, 3);
+    const distractors = distractorsFrom(target, rand, 3, prompt);
     if (distractors.length < 1) continue;
     usedPrompts.add(prompt);
     items.push({

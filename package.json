@@ -15,6 +15,7 @@
     "law:flow": "node scripts/flow-law.mjs",
     "law:live": "node scripts/live-check.mjs",
     "law:devices": "node scripts/devices-check.mjs",
+    "law:audit": "node --import tsx scripts/audit-law.mts",
     "avif": "node scripts/convert-to-avif.mjs",
     "archive:build": "node scripts/build-archive-manifest.mjs",
     "stories:build": "node scripts/build-story-manifest.mjs",

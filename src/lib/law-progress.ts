@@ -166,7 +166,40 @@ export function getWrongLessons(): string[] {
 
 /** ── 彩蛋状态 ── */
 
-export type EggTrigger = "midnight" | "firstLesson" | "hundred" | "symbol";
+export type EggTrigger =
+  | "midnight"
+  | "morning"
+  | "firstLesson"
+  | "hundred"
+  | "streak3"
+  | "wrongbook3"
+  | "graphicFirst"
+  | "exam30"
+  | "christmas"
+  | "symbol";
+
+/** 连续学习天数：按"完成课时"的日期从今天/昨天向前连续计数 */
+export function getStreakDays(): number {
+  const lessons = readStore().lessons;
+  const days = new Set<string>();
+  for (const lesson of Object.values(lessons)) {
+    if (!lesson.completedAt) continue;
+    const d = new Date(lesson.completedAt);
+    days.add(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`);
+  }
+  const cursor = new Date();
+  const keyOf = (date: Date) => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+  if (!days.has(keyOf(cursor))) {
+    // 今天还没完成也允许（延续到昨天）
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  let streak = 0;
+  while (days.has(keyOf(cursor))) {
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
+}
 
 interface EggState {
   unlocked: Record<string, boolean>;
