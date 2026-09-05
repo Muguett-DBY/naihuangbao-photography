@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { RiseText, TermChip, StepShell, SentenceLines } from "../Animated";
 import { LawMascot } from "../../LawMascot";
@@ -20,6 +20,18 @@ export function DefinitionStep({ step, accent, accentSoft, onDone }: StepProps) 
     onDone();
   }
 
+  // 长文本走 SentenceLines 渲染，没有逐句动画回调——定时解锁，
+  // 否则解锁按钮一直保持 opacity:0 不可点，步骤永远无法完成
+  useEffect(() => {
+    const timer = window.setTimeout(() => setRevealedText(true), 1100);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  // 提取不出关键词的定义步骤：没有任何交互可做，挂载即完成（否则死锁）
+  useEffect(() => {
+    if (!target) complete();
+  }, [target]);
+
   return (
     <StepShell
       eyebrow="📖 定义型 · 先理解"
@@ -31,11 +43,12 @@ export function DefinitionStep({ step, accent, accentSoft, onDone }: StepProps) 
         )
       }
       hint={
-        revealedText && !locked
+        revealedText && !locked && target
           ? "👆 关键词被遮住了——点一下上面那个「❓」把它解锁"
           : undefined
       }
-      done={locked}
+      done={locked || !target}
+      doneLabel={target ? "关键词已解锁 ✓" : "已读完，这句话记牢了 ✓"}
     >
       <div className="law-definition">
         <motion.div
