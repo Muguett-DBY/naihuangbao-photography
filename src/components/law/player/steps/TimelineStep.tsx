@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { StepShell } from "../Animated";
 import type { StepProps } from "./types";
@@ -43,6 +43,11 @@ export function TimelineStep({ step, accent, accentSoft, onDone }: StepProps) {
       return next;
     });
   }
+
+  // 拆不出时间线（<2 节点）：无交互可做，挂载即自动完成（否则下一步永久禁用）
+  useEffect(() => {
+    if (events.length < 2) onDone();
+  }, [events.length, onDone]);
 
   if (events.length < 2) {
     return (
