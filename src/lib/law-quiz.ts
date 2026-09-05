@@ -164,9 +164,15 @@ function stripItemPrefix(part: string): string {
  * - 判断题混合"改年份（答否）"与"原句重现（答是）"，防止无脑答"否"的套路；
  * - 题面无法一眼看懂就跳过（宁缺毋滥）。
  */
+/** 元信息课（作者的话/使用说明/序言）：是书前言而非考点，不出题 */
+function isMetaLesson(lesson: LawLesson): boolean {
+  if (/^(作者的话|使用说明|序言|前言|后记)$/.test(lesson.title.trim())) return true;
+  return lesson.breadcrumb.some((crumb) => /^(作者的话|使用说明|序言|前言|后记)$/.test(crumb.trim()));
+}
+
 export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQuizItem[] {
   // 索引空壳课（纯标题、无正文）不出题：无知识可考，题面也只是标题复读
-  if (isShellLesson(lesson)) return [];
+  if (isShellLesson(lesson) || isMetaLesson(lesson)) return [];
   const rand = mulberry32(hashSeed(lesson.id));
   const items: LawQuizItem[] = [];
   const usedPrompts = new Set<string>();
@@ -243,9 +249,10 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
   }
 
   // 3) 判断题（最多一题）：优先"改年份"的错句（答否），否则取本课原句（答是）
-  //    混合两种判定制，防"见到判断题就答否"的套路
+  //    混合两种判定制，防"见到判断题就答否"的套路；两种取材都要求干净完整句
+  const cleanSentences = sentences.filter(isCleanVerbatimSentence);
   let judgeDone = false;
-  for (const sentence of shuffle(sentences, rand).slice(0, 6)) {
+  for (const sentence of shuffle(cleanSentences, rand).slice(0, 6)) {
     if (judgeDone) break;
     const mutated = mutateNumber(sentence, rand);
     if (!mutated || mutated === sentence || usedPrompts.has(mutated)) continue;

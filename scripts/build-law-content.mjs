@@ -848,6 +848,21 @@ async function main() {
       level: chapter.level,
       lessons: chapter.lessons,
     }));
+    // 语义名书内去重：重名章节追加各自标题限定（"民法·第二编"/"立法制度·上编"），列表里才分得清
+    {
+      const used = new Map();
+      for (const ch of plainChapters) {
+        const st = ch.semanticTitle;
+        if (!st) continue;
+        const n = used.get(st) ?? 0;
+        used.set(st, n + 1);
+        if (n > 0) {
+          const cleaned = (ch.title ?? "").replace(/[○◎●◆・•·✦☆]/g, "").trim();
+          const qualifier = cleaned && cleaned !== st ? cleaned : "续";
+          ch.semanticTitle = `${st}·${qualifier}`;
+        }
+      }
+    }
     const book = {
       id: bookMeta.id,
       name: bookMeta.name,
