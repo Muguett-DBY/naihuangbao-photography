@@ -180,6 +180,7 @@ function polishText(text) {
     ["待殊", "特殊"],
     ["新瓶念法的影响", "新法的影响"],
     ["偏祖", "偏袒"],
+    ["作为特殊的特殊裁判依据", "作为裁判依据"],
     // 页面换行把"…为主"与"主要内容…"焊接产生的叠字（高置信）
     ["主主要要内容", "主要内容"],
     ["主主要内容", "主要内容"],
@@ -209,6 +210,19 @@ function polishText(text) {
   // 页眉糊版行焊进句中（"法律础士考试背偏一木通、法扭学。"）——页 furniture，剥离
   t = t.replace(/法律[础士硕]{0,2}考试?背[偏诵]{0,2}[一壹][本木][通迹]?[、.。]?法?[扭理]?学?[。.]?/g, "");
   return t;
+}
+
+/** 句末标点恢复：完整句在扫描边界丢句号 → 补"。"（连接词悬停的真截断不补） */
+function restoreTerminal(text) {
+  if (
+    text.length >= 8 &&
+    /[一-龥]$/.test(text) &&
+    // 仅拒绝"真正的悬停虚词"——据/受/变/于/由/从/到/联/向 等是合法名词收尾（依据/自由/改变/属于）
+    !/[的与或及是对为把被从而并按向但其至了着跟从]$/.test(text)
+  ) {
+    return `${text}。`;
+  }
+  return text;
 }
 
 /** 标题级 OCR 修正（正文走 polishText，标题单独过一遍同源修正表） */
@@ -351,14 +365,7 @@ function buildSteps(blocks) {
     }
     const kind = classifyStep(texts);
     let joined = polishText(texts.join("；"));
-    // 句末标点恢复：以汉字收尾且非连接词悬停的完整句，扫描边界常丢句号 → 补齐
-    if (
-      joined.length >= 8 &&
-      /[一-龥]$/.test(joined) &&
-      !/[联的与和或及在是对为把被从而并按据向于变受跟至到由从但其]$/.test(joined)
-    ) {
-      joined += "。";
-    }
+    joined = restoreTerminal(joined);
     const step = {
       id: "",
       kind,
@@ -465,7 +472,7 @@ function parseBookPages(pages, bookMeta) {
           splitSteps.push({
             ...step,
             kind: "plain",
-            text: buffer,
+            text: restoreTerminal(buffer),
             parts: undefined,
             timeline: undefined,
             compare: undefined,
@@ -480,7 +487,7 @@ function parseBookPages(pages, bookMeta) {
         splitSteps.push({
           ...step,
           kind: "plain",
-          text: buffer,
+          text: restoreTerminal(buffer),
           parts: undefined,
           timeline: undefined,
           compare: undefined,
