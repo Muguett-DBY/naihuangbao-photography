@@ -282,6 +282,11 @@ export function wasEggSeen(trigger: EggTrigger): boolean {
   return readEggs().seenAt[trigger] !== undefined;
 }
 
+/** 已解锁彩蛋集合（供彩蛋判定的纯函数读取） */
+export function getUnlockedEggs(): Partial<Record<EggTrigger, boolean>> {
+  return readEggs().unlocked;
+}
+
 export function isLateNight(): boolean {
   const hour = new Date().getHours();
   return hour >= 23 || hour < 5;

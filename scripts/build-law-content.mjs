@@ -31,6 +31,8 @@ const RE_PAGE_NO = /^\d{1,3}$/;
 
 const HEADER_FOOTER = [
   /^法律.{1,4}考试.{1,4}一本通[·.。]/,
+  // OCR 糊版页眉（"法律士考试背偏一木·法理学""法律硕士考试背一本迹·民法学"）
+  /^法律[^。]{0,12}考试[^。]{0,12}·(法理学|宪法学|法制史|民法学|刑法学)$/,
   /^连续$/,
   /^续表$/,
 ];
@@ -173,6 +175,11 @@ function polishText(text) {
     ["（-）", "（一）"],
     // 双栏焊接把"概念"插进"制定"中间（"制概念定颁布的规范性法律文件"）
     ["制概念定", "制定"],
+    ["称植", "移植"],
+    ["发累", "发展"],
+    ["待殊", "特殊"],
+    ["新瓶念法的影响", "新法的影响"],
+    ["偏祖", "偏袒"],
     // 页面换行把"…为主"与"主要内容…"焊接产生的叠字（高置信）
     ["主主要要内容", "主要内容"],
     ["主主要内容", "主要内容"],
@@ -199,6 +206,8 @@ function polishText(text) {
   t = t
     .replace(/[一-龥]{0,4}拆解背诵内容/g, "")
     .replace(/(标准填充法|生活常识法|文意拆解法|要素拆解法|动作拆解法|环节拆解法|正反结合法)背诵内容/g, "");
+  // 页眉糊版行焊进句中（"法律础士考试背偏一木通、法扭学。"）——页 furniture，剥离
+  t = t.replace(/法律[础士硕]{0,2}考试?背[偏诵]{0,2}[一壹][本木][通迹]?[、.。]?法?[扭理]?学?[。.]?/g, "");
   return t;
 }
 
@@ -341,11 +350,20 @@ function buildSteps(blocks) {
       texts = deduped;
     }
     const kind = classifyStep(texts);
+    let joined = polishText(texts.join("；"));
+    // 句末标点恢复：以汉字收尾且非连接词悬停的完整句，扫描边界常丢句号 → 补齐
+    if (
+      joined.length >= 8 &&
+      /[一-龥]$/.test(joined) &&
+      !/[联的与和或及在是对为把被从而并按据向于变受跟至到由从但其]$/.test(joined)
+    ) {
+      joined += "。";
+    }
     const step = {
       id: "",
       kind,
       // 拼接分隔符"；"与前段句号会形成"。；"，最终拼装再过一遍规整
-      text: polishText(texts.join("；")),
+      text: joined,
       parts: texts.length >= 2 ? texts.slice(0, 8) : undefined,
       terms: extractTerms(texts.join("")),
     };
@@ -544,12 +562,23 @@ function parseBookPages(pages, bookMeta) {
       }
     }
     if (buffer) chunked.push(buffer);
-    trailLesson.steps = chunked.map((text, index) => ({
-      id: `${trailLesson.id}-s${index}`,
-      kind: "plain",
-      text: polishText(text),
-      terms: [],
-    }));
+    trailLesson.steps = chunked.map((text, index) => {
+      let t = polishText(text);
+      // 与正文步骤同规则的句末标点恢复
+      if (
+        t.length >= 8 &&
+        /[一-龥]$/.test(t) &&
+        !/[联的与和或及在是对为把被从而并按据向于变受跟至到由从但其]$/.test(t)
+      ) {
+        t += "。";
+      }
+      return {
+        id: `${trailLesson.id}-s${index}`,
+        kind: "plain",
+        text: t,
+        terms: [],
+      };
+    });
     trailLesson.intro = polishText(rawTrail[0] ?? "");
     trailLesson.raw = [...rawTrail];
     trailLesson.pageRange = [trailStartPage, trailEndPage || trailStartPage];

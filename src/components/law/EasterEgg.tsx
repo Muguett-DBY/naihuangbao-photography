@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import {
+  getUnlockedEggs,
   getWrongLessons,
   markEggSeen,
   unlockEgg,
@@ -9,6 +10,9 @@ import {
 } from "../../lib/law-progress";
 import { getStreakDays } from "../../lib/law-progress";
 import { getPlan } from "../../lib/law-plan";
+import { checkEasterEggPure } from "../../lib/law-egg";
+
+/** 彩蛋信内容（完整大信 + 各触发信） */
 
 /** 学习区一律沉浸：隐藏摄影站导航，专注学习（各学习页面挂载时调用） */
 export function useLawImmersive() {
@@ -253,24 +257,16 @@ export function LawEggSymbol() {
   );
 }
 
-/** 时间/里程碑型彩蛋判定（一次性） */
+/** 时间/里程碑型彩蛋判定（一次性）；判定逻辑在 lib/law-egg（纯函数，可测） */
 function checkEasterEgg(doneCount: number): EggTrigger | null {
-  const now = new Date();
-  const hour = now.getHours();
-  const month = now.getMonth() + 1;
-  const day = now.getDate();
-
-  // 日期型（按优先级）
-  if (month === 12 && day === 25 && unlockEgg("christmas")) return "christmas";
-  if ((hour >= 23 || hour < 5) && unlockEgg("midnight")) return "midnight";
-  if (hour >= 5 && hour < 9 && unlockEgg("morning")) return "morning";
-  if (getPlan().daysLeft <= 30 && unlockEgg("exam30")) return "exam30";
-  // 里程碑型
-  if (doneCount === 1 && unlockEgg("firstLesson")) return "firstLesson";
-  if (doneCount >= 100 && unlockEgg("hundred")) return "hundred";
-  if (getStreakDays() >= 3 && unlockEgg("streak3")) return "streak3";
-  if (getWrongLessons().length >= 3 && unlockEgg("wrongbook3")) return "wrongbook3";
-  return null;
+  return checkEasterEggPure({
+    now: new Date(),
+    doneCount,
+    streakDays: getStreakDays(),
+    wrongLessons: getWrongLessons().length,
+    daysLeft: getPlan().daysLeft,
+    unlocked: getUnlockedEggs(),
+  });
 }
 
 /** 由图解首次看完触发的事件途径 */
