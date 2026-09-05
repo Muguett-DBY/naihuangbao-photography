@@ -20,3 +20,8 @@ opencode.json
 bun.lock
 .tmp/
 .worktrees/
+
+# 本地工具产物（不入库）
+debug.log
+.agent/
+/release-*.png
