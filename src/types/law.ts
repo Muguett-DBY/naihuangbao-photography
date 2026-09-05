@@ -119,6 +119,9 @@ export function isCleanTerm(term: string | null | undefined): boolean {
   if (/[。，；：、！？]/.test(text)) return false;
   if (/[简述论述简答分析评述试述说明讨论如何什么为什么哪些怎么谈谈]/.test(text)) return false;
   if (/^(的|了|是|在|与|和|或|对|从|把|被|并|而)/.test(text)) return false;
+  // OCR 双栏焊接常见残词：以虚词/系词收尾（"含义买卖合同是"）或内嵌"含义"的都不是概念
+  if (/[是了着们]$/.test(text)) return false;
+  if (/含义|内容/.test(text)) return false;
   return true;
 }
 
