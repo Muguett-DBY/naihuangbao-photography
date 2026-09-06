@@ -92,6 +92,7 @@ export function QuizRunner({
           onComplete={handleOrderComplete}
           onMove={(value) => setOrderTry(value)}
           tryList={orderTry}
+          locked={state !== "idle"}
         />
       ) : (
         <div className="law-quiz__options">
@@ -130,11 +131,14 @@ function OrderChoice({
   onComplete,
   onMove,
   tryList,
+  locked = false,
 }: {
   order: string[];
   onComplete: (correct: boolean) => void;
   onMove: (value: string[]) => void;
   tryList: string[];
+  /** 判定完成后锁定：撤销只在你作答过程中可用，防止判分后改答案重复计分 */
+  locked?: boolean;
 }) {
   const available = useMemo(
     () => order.filter((part) => !tryList.includes(part)),
@@ -151,17 +155,21 @@ function OrderChoice({
     <div className="law-quiz__order">
       <div className="law-quiz__order-result" aria-live="polite">
         {tryList.length === 0 ? (
-          <span className="law-quiz__order-hint">👆 按你记忆的顺序，从下往上依次点选</span>
+          <span className="law-quiz__order-hint">👆 按书中的顺序，依次点选下面的卡片（点错了可再点一下撤回）</span>
         ) : (
           tryList.map((part, index) => (
-            <motion.span
+            <motion.button
               key={`${part}-${index}`}
+              type="button"
               className="law-quiz__order-placed"
+              title={locked ? undefined : "点一下撤回这张"}
+              disabled={locked}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
+              onClick={() => onMove(tryList.filter((_, placed) => placed !== index))}
             >
               <b>{index + 1}</b> {part}
-            </motion.span>
+            </motion.button>
           ))
         )}
       </div>
@@ -171,6 +179,7 @@ function OrderChoice({
             key={part}
             type="button"
             className="law-quiz__order-chip"
+            disabled={locked}
             onClick={() => onMove([...tryList, part])}
           >
             {part}

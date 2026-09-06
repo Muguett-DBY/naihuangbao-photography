@@ -98,20 +98,29 @@ export const REVIEW_INTERVALS = [1, 2, 4, 7, 15];
 
 const DAY_MS = 86_400_000;
 
-export function recordQuiz(lessonId: string, correct: number, total: number, stepCount: number, wrong?: boolean): void {
+export function recordQuiz(
+  lessonId: string,
+  correct: number,
+  total: number,
+  stepCount: number,
+  opts: { skipped?: boolean } = {},
+): void {
   const store = readStore();
   const entry = store.lessons[lessonId] ?? newEntry(lessonId);
-  entry.quizBest = Math.max(entry.quizBest, correct);
-  entry.quizTotal = total;
   const now = Date.now();
-  const passed = correct >= Math.ceil(total / 2);
-  if (wrong) {
-    // 答错：错题本建档/重置复习进度，明天安排第一次复习
+  // 及格线 = 答对一半；跳过自测视为直接掌握（但不动错题本）
+  const passed = opts.skipped || correct >= Math.ceil(total / 2);
+  if (!opts.skipped) {
+    entry.quizBest = Math.max(entry.quizBest ?? 0, correct);
+    entry.quizTotal = total;
+  }
+  if (!opts.skipped && !passed) {
+    // 不及格：错题本建档/重置复习进度，明天安排第一次复习
     entry.wrongCount += 1;
     entry.wrongAt = now;
     entry.reviewStage = 0;
     entry.reviewDueAt = now + REVIEW_INTERVALS[0] * DAY_MS;
-  } else if ((entry.wrongCount ?? 0) > 0 && (entry.reviewDueAt ?? 0) > 0) {
+  } else if (!opts.skipped && (entry.wrongCount ?? 0) > 0 && (entry.reviewDueAt ?? 0) > 0) {
     // 错题复习通过：间隔翻倍式后延，五连过即毕业
     const stage = (entry.reviewStage ?? 0) + 1;
     entry.reviewStage = stage;

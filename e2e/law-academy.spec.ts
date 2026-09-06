@@ -12,6 +12,8 @@ test.describe("law academy", () => {
       ];
       const unlocked = Object.fromEntries(triggers.map((t) => [t, true]));
       localStorage.setItem("nhb-law-egg-v1", JSON.stringify({ unlocked, seenAt: { morning: 1 } }));
+      // 本章节省默认目录视图；关卡地图视图由专门的用例覆盖
+      localStorage.setItem("nhb-law-subject-view", "tree");
     });
   });
 
@@ -97,5 +99,68 @@ test.describe("law academy", () => {
     await expect(page.locator(".law-graphic__bar")).toBeVisible();
     await expect(page.locator(".law-graphic__stage")).toBeVisible();
     await expect(page.locator(".law-graphic__caption")).toBeVisible();
+  });
+
+  test("「下一课」跳过索引空壳课（回归：曾直接落进无正文的死页）", async ({ page }) => {
+    await page.goto("/law/learn/minfa-q031");
+    await expect(page.locator(".law-player")).toBeVisible();
+    // 推进到总结页：plain 步自动完成，list 步逐条点，nav 可点就点
+    const summary = page.locator(".law-player__summary");
+    for (let round = 0; round < 24 && !(await summary.isVisible().catch(() => false)); round += 1) {
+      const item = page.locator(".law-list__item:not([disabled])").first();
+      if (await item.isVisible().catch(() => false)) {
+        await item.click({ force: true });
+        continue;
+      }
+      const nav = page.locator(".law-player__nav.is-primary");
+      if (await nav.isEnabled().catch(() => false)) {
+        await nav.click({ force: true });
+        await page.waitForTimeout(250);
+      } else {
+        await page.waitForTimeout(300);
+      }
+    }
+    await expect(summary).toBeVisible({ timeout: 10_000 });
+    const skip = summary.getByText("跳过自测，直接标记掌握");
+    const master = summary.getByText("学完了，标记掌握");
+    if (await skip.isVisible().catch(() => false)) await skip.click();
+    else await master.click();
+    const nextBtn = page.locator(".law-player__result-actions").getByText("下一课");
+    // minfa-q032 是空壳索引课，必须被跳过直达 minfa-q033
+    await expect(nextBtn).toBeVisible();
+    await nextBtn.click();
+    await expect(page).toHaveURL(/\/law\/learn\/minfa-q033$/);
+  });
+
+  test("附录章不进章节目录（回归：98 个索引课时曾混进学习目录）", async ({ page }) => {
+    await page.goto("/law/zhishixiang");
+    await expect(page.locator(".law-subject__hero h1")).toContainText("法制史");
+    // 附录章不出现在章节列表里
+    await expect(page.locator(".law-chapter__head", { hasText: "附录" })).toHaveCount(0);
+    // 附录内容折叠保留可查阅
+    await expect(
+      page.locator(".law-subject__leftover h2", { hasText: "考点速查索引" }),
+    ).toBeVisible();
+  });
+
+  test("关卡地图：默认路径视图 + 当前节点 + 双视图切换", async ({ page }) => {
+    // 不预设视图偏好 → 默认落在路径视图
+    await page.addInitScript(() => localStorage.removeItem("nhb-law-subject-view"));
+    await page.goto("/law/xianfa");
+    await expect(page.locator(".law-path")).toBeVisible();
+    // 恰好一个"当前位置"节点，且带开始旗
+    await expect(page.locator(".law-path__node.is-current")).toHaveCount(1);
+    await expect(page.locator(".law-path__start")).toBeVisible();
+    // 全部节点中不含索引空壳课链接
+    const nodeCount = await page.locator(".law-path__node").count();
+    expect(nodeCount).toBeGreaterThan(50);
+    // 切到章节目录，再切回来
+    await page.locator(".law-subject__viewtoggle button", { hasText: "章节目录" }).click();
+    await expect(page.locator(".law-chapter__head").first()).toBeVisible();
+    await page.locator(".law-subject__viewtoggle button", { hasText: "学习路径" }).click();
+    await expect(page.locator(".law-path")).toBeVisible();
+    // 偏好已持久化：刷新后仍在路径视图
+    await page.reload();
+    await expect(page.locator(".law-path")).toBeVisible();
   });
 });

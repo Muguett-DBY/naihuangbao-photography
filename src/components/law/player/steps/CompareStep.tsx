@@ -40,19 +40,17 @@ export function CompareStep({ step, accent, accentSoft, onDone }: StepProps) {
   const done = thinFallback || (rows.length > 0 && revealed.filter(Boolean).length >= rows.length);
 
   function revealRow(index: number) {
+    // 完成判定必须在 setState updater 内做：闭包里的 revealed 是本次渲染的旧值，
+    // 两次点击落在同一渲染帧（双指点按）时会漏判"全部翻开"，步骤永久卡住
     setRevealed((prev) => {
       const next = [...prev];
       next[index] = true;
-      return next;
-    });
-    if (!doneRef.current) {
-      const all = rows.length;
-      const count = revealed.filter(Boolean).length + 1;
-      if (count >= all) {
+      if (next.filter(Boolean).length >= rows.length && !doneRef.current) {
         doneRef.current = true;
         onDone();
       }
-    }
+      return next;
+    });
   }
 
   return (

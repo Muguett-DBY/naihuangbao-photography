@@ -3,12 +3,13 @@ import { motion } from "framer-motion";
 import { Link } from "react-router";
 import type { LawLesson } from "../../../types/law";
 import { buildQuiz } from "../../../lib/law-quiz";
-import { markStepDone, recordQuiz, touchLesson } from "../../../lib/law-progress";
+import { getLessonProgress, markStepDone, recordQuiz, touchLesson } from "../../../lib/law-progress";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
 import { StepStage } from "./StepStage";
 import { QuizRunner } from "./QuizRunner";
 import { LawMascot, type LawMood } from "../LawMascot";
+import { CelebrateBurst, KIND_PENDING_HINT, cleanBreadcrumb, kindLabel } from "./lessonHelpers";
 
 type Phase = "steps" | "summary" | "quiz" | "result";
 
@@ -29,8 +30,21 @@ export function LessonPlayer({
 }) {
   const subject = LAW_SUBJECT_MAP[lesson.subject];
   const [phase, setPhase] = useState<Phase>(initialPhase);
-  const [stepIndex, setStepIndex] = useState(0);
-  const [stepDone, setStepDone] = useState<Record<string, boolean>>({});
+  // 断点续学：已点过的互动直接恢复，并跳到第一个没完成的步骤（中途退出不再等于白学）
+  const [stepIndex, setStepIndex] = useState<number>(() => {
+    const saved = getLessonProgress(lesson.id);
+    if (!saved) return 0;
+    const firstUndone = lesson.steps.findIndex((step) => !saved.stepsDone[step.id]);
+    return firstUndone === -1 ? 0 : firstUndone;
+  });
+  const [stepDone, setStepDone] = useState<Record<string, boolean>>(() => {
+    const saved = getLessonProgress(lesson.id);
+    const restored: Record<string, boolean> = {};
+    for (const step of lesson.steps) {
+      if (saved?.stepsDone[step.id]) restored[step.id] = true;
+    }
+    return restored;
+  });
   const [mood, setMood] = useState<LawMood>("idle");
   const [quizScore, setQuizScore] = useState<{ correct: number; total: number }>({ correct: 0, total: 0 });
   const [replayKey, setReplayKey] = useState(0);
@@ -39,6 +53,7 @@ export function LessonPlayer({
   const [navOpen, setNavOpen] = useState(false);
   const [quizAttempt, setQuizAttempt] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
 
   const steps = lesson.steps;
   const current = steps[stepIndex];
@@ -108,12 +123,42 @@ export function LessonPlayer({
     setMood("idle");
   }
 
-  function handleQuizDone(correct: number, total: number, wrong: number) {
-    recordQuiz(lesson.id, correct, total, totalSteps, wrong > 0);
+  function handleQuizDone(correct: number, total: number, _wrong: number) {
+    // 及格线语义在 recordQuiz 内统一：不及格才进错题本，及格推进复习阶梯——
+    // 结果页的"通过/错题本"文案从此和实际状态一致
+    recordQuiz(lesson.id, correct, total, totalSteps);
     setQuizScore({ correct, total });
     setMood(correct >= Math.ceil(total / 2) ? "cheer" : "idle");
     setPhase("result");
   }
+
+  // 换步滚动管理：长文步骤点"下一步"后，新内容从视口上方开始，把画面带回课件顶部。
+  // 首次挂载不滚——否则会把顶栏（返回按钮）滚出视口，移动端像"被困在课时里"
+  const mountedRef = useRef(false);
+  useEffect(() => {
+    if (phase !== "steps") return;
+    if (!mountedRef.current) {
+      mountedRef.current = true;
+      return;
+    }
+    stageRef.current?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+  }, [stepIndex, phase]);
+
+  // 键盘导航：← 上一步，→ 下一步（仅在可用时生效），复习老课不用来回挪鼠标
+  useEffect(() => {
+    if (phase !== "steps") return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+      if (event.key === "ArrowLeft") {
+        goPrev();
+      } else if (event.key === "ArrowRight" && isCurrentDone) {
+        goNext();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  });
 
   const style = {
     "--law-accent": subject.accent,
@@ -199,6 +244,7 @@ export function LessonPlayer({
           </div>
 
           <motion.div
+            ref={stageRef}
             className="law-player__stage"
             key={`${stepIndex}-${replayKey}`}
             initial={{ opacity: 0, x: 12 }}
@@ -225,11 +271,18 @@ export function LessonPlayer({
             >
               ← 上一步
             </button>
-            <div className="law-player__dots" aria-hidden="true">
+            <div className="law-player__dots">
               {steps.map((step, index) => (
-                <span
+                <button
                   key={step.id}
-                  className={`${index === stepIndex ? "is-current" : ""} ${doneSteps > index ? "is-done" : ""}`}
+                  type="button"
+                  aria-label={`跳到第 ${index + 1} 步`}
+                  className={`law-player__dot ${index === stepIndex ? "is-current" : ""} ${doneSteps > index ? "is-done" : ""}`}
+                  onClick={() => {
+                    setStepIndex(index);
+                    setMood("idle");
+                    setReplayKey((key) => key + 1);
+                  }}
                 />
               ))}
             </div>
@@ -285,7 +338,8 @@ export function LessonPlayer({
                   type="button"
                   className="law-player__skip"
                   onClick={() => {
-                    recordQuiz(lesson.id, 1, 1, totalSteps);
+                    // 跳过自测 ≠ 复习通过：不动错题本的复习阶梯（曾把跳过记成"复习通过"）
+                    recordQuiz(lesson.id, 1, 1, totalSteps, { skipped: true });
                     setQuizScore({ correct: 1, total: 1 });
                     setMood("cheer");
                     setPhase("result");
@@ -299,7 +353,7 @@ export function LessonPlayer({
                 type="button"
                 className="law-player__cta"
                 onClick={() => {
-                  recordQuiz(lesson.id, 1, 1, totalSteps);
+                  recordQuiz(lesson.id, 1, 1, totalSteps, { skipped: true });
                   setQuizScore({ correct: 1, total: 1 });
                   setMood("cheer");
                   setPhase("result");
@@ -333,6 +387,7 @@ export function LessonPlayer({
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
         >
+          {quizScore.correct >= Math.ceil(quizScore.total / 2) ? <CelebrateBurst /> : null}
           <LawMascot mood={quizScore.correct >= Math.ceil(quizScore.total / 2) ? "cheer" : "oops"} size={84} />
           <h2>
             {quizScore.correct >= Math.ceil(quizScore.total / 2) ? "通过！掌握啦 🎉" : "还差一点，再练一次 💪"}
@@ -350,10 +405,12 @@ export function LessonPlayer({
               type="button"
               className="law-player__cta"
               onClick={() => {
+                // 再学一遍 = 从头快走一遍：保留已完成步骤的勾（可重做但不必重做），
+                // 曾在这里清空全部进度，答错一题就要把整课互动重新点一遍
                 setStepIndex(0);
-                setStepDone({});
                 setPhase("steps");
                 setMood("idle");
+                setReplayKey((key) => key + 1);
               }}
             >
               🔄 再学一遍
@@ -379,50 +436,3 @@ export function LessonPlayer({
   );
 }
 
-/** 各步骤类型的待完成指引：禁用态按钮告诉用户"具体还要做什么"而不是含糊的"小任务" */
-const KIND_PENDING_HINT: Record<string, string> = {
-  definition: "先解锁上面的关键词哦",
-  list: "把上面的条目都点一遍",
-  compare: "把每行对比都翻开看看",
-  condition: "把成立要件都点亮",
-  timeline: "把时间线的节点都走到",
-  exception: "去抓住那个「但是」",
-  flow: "点「下一步」把流程走完",
-  mnemonic: "把口诀的字都翻出来",
-};
-
-function kindLabel(kind: string): string {
-  switch (kind) {
-    case "definition":
-      return "📖 定义";
-    case "list":
-      return "🗂️ 列举";
-    case "compare":
-      return "⚖️ 对比";
-    case "mnemonic":
-      return "🧠 口诀";
-    case "timeline":
-      return "🕰️ 时间线";
-    case "condition":
-      return "🔑 要件";
-    case "exception":
-      return "⚠️ 例外";
-    case "flow":
-      return "🔗 流程";
-    default:
-      return "📝 细读";
-  }
-}
-
-/** 清除运行页眉残留符号，让面包屑可读（空段与相邻重复段剔除，避免"专题二 /"悬空） */
-function cleanBreadcrumb(crumbs: string[]): string[] {
-  const cleaned = crumbs
-    .map((text) =>
-      text
-        .replace(/[○◎●◆・•·✦☆]/g, "")
-        .replace(/^\s*(第[一二三四五六七八九十百零0-9]+[编部分章篇卷]?)+[·、]?\s*/, "")
-        .trim(),
-    )
-    .filter((text) => text.length > 0);
-  return cleaned.filter((text, index) => index === 0 || text !== cleaned[index - 1]);
-}

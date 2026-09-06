@@ -22,6 +22,10 @@ const allLessons: LawLesson[] = Object.values(books).flatMap((book) =>
 
 const realLessons = allLessons.filter((lesson) => !isShellLesson(lesson));
 
+function isMetaTitle(title: string): boolean {
+  return /^(作者的话|使用说明|序言|前言|后记)$/.test(title.trim());
+}
+
 describe("law quiz generation", () => {
   it("is deterministic for the same lesson and context", () => {
     for (const lesson of realLessons.slice(0, 200)) {
@@ -32,15 +36,19 @@ describe("law quiz generation", () => {
     expect(hashSeed("abc")).toBe(hashSeed("abc"));
   });
 
-  it("covers the vast majority of real lessons in production (with sibling context)", () => {
+  it("covers the vast majority of teaching lessons in production (with sibling context)", () => {
     let covered = 0;
+    let teaching = 0;
     for (const lesson of realLessons) {
+      // 覆盖率只对"教学课"负责：导览课（章节前导碎片）与元信息课走"标记掌握"路径，不出题
+      if (lesson.id.endsWith("-tour") || isMetaTitle(lesson.title)) continue;
+      teaching += 1;
       const book = books[lesson.subject];
       const context = collectSiblingTerms(book, lesson.id);
       if (buildQuiz(lesson, context).length > 0) covered += 1;
     }
-    // 0.80：质量优先——被截断的 OCR 残句不再出判断题，无合格题面的课走"标记掌握"兜底
-    expect(covered / realLessons.length).toBeGreaterThan(0.8);
+    // 0.80：质量优先——读不通的 OCR 残句不再硬出题，无合格题面的课走"标记掌握"兜底
+    expect(covered / teaching).toBeGreaterThan(0.8);
   });
 
   it("still quizzes ~half of real lessons even without sibling context", () => {
@@ -109,6 +117,64 @@ describe("law quiz generation", () => {
     for (const shell of shells) {
       // 空壳课没有正文，唯一可出的题只有概念识别（也要求正文概念），必须为 0
       expect(buildQuiz(shell).length).toBe(0);
+    }
+  });
+
+  it("rejects OCR-garbled sentences as verbatim judge questions", () => {
+    // 回归：minfa-q482 曾把"……强制缔约目的义务算二〇典合国。"这种糊句
+    // 当"书上是这样说的吗？（是）"出题——〇 后接普通汉字是扫描残渣，无法作答；
+    // 而"二〇二五"这类年份里的〇是合法写法，不得误伤
+    const garbled = {
+      id: "fixture-garbled",
+      subject: "minfa",
+      code: "一",
+      breadcrumb: [],
+      title: "供用电合同",
+      intro: "",
+      steps: [
+        {
+          id: "fixture-garbled-s0",
+          kind: "plain",
+          text: "合同目的是为了满足社会公众的生活需要，故供应人有强制缔约目的义务算二〇典合国。",
+          terms: [],
+        },
+        {
+          id: "fixture-garbled-s1",
+          kind: "plain",
+          text: "电、水、气、热力的供应人通常是专营的，具有特定性。",
+          terms: [],
+        },
+      ],
+      pageRange: [1, 1],
+      raw: [],
+    } as LawLesson;
+    const items = buildQuiz(garbled);
+    for (const item of items) {
+      if (item.kind !== "judge") continue;
+      expect(
+        item.prompt.includes("算二〇典合国"),
+        "糊句不得作为判断题题面",
+      ).toBe(false);
+    }
+
+    const yearLesson = {
+      ...garbled,
+      id: "fixture-year",
+      steps: [
+        {
+          id: "fixture-year-s0",
+          kind: "plain",
+          text: "该法于二〇二五年正式施行，标志着制度进一步完善。",
+          terms: [],
+        },
+      ],
+    } as LawLesson;
+    const yearItems = buildQuiz(yearLesson);
+    const judge = yearItems.find((item) => item.kind === "judge");
+    // 年份句可以出题；若出了"改年份"判断题，题面必须仍是可读的合法句子
+    if (judge) {
+      expect(judge.prompt).toContain("二");
+      expect(judge.prompt).not.toMatch(/[○□◊]/);
     }
   });
 });

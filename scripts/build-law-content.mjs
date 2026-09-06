@@ -14,7 +14,15 @@ const OUT_DIR = join(root, "src", "data", "law");
 const BOOKS = [
   { id: "falixue", name: "法理学", fullName: "法理学背诵一本通", emoji: "⚖️", accent: "#6f9277", accentSoft: "#e7efe7" },
   { id: "xianfa", name: "宪法学", fullName: "宪法学背诵一本通", emoji: "🏛️", accent: "#b1544e", accentSoft: "#f6e5e2" },
-  { id: "zhishixiang", name: "法制史", fullName: "法制史背诵一本通", emoji: "📜", accent: "#a9853f", accentSoft: "#f3ecd9" },
+  {
+    id: "zhishixiang", name: "法制史", fullName: "法制史背诵一本通", emoji: "📜", accent: "#a9853f", accentSoft: "#f3ecd9",
+    // 上编章末"思维导图总结表"的行标签（继承/强制措施/执行/债权）被误判为编章级标题，
+    // 产生只含 1 个导览课的垃圾组，把真章拦腰切断——按名合并回前一章
+    mergeTourGroups: ["继承", "强制措施", "执行", "债权"],
+    // 附录四《考试大纲》断代考点索引（约 90 条"朝代→题号"索引行）：保留为附录，
+    // 但不进学习流/目录/搜索/出题/课时计数
+    appendixChapter: { titleIs: "绪论", minLessons: 50, rename: "附录·断代考点速查" },
+  },
   { id: "minfa", name: "民法", fullName: "民法背诵一本通", emoji: "🏠", accent: "#5f7fae", accentSoft: "#e6ecf6" },
   { id: "xingfa", name: "刑法", fullName: "刑法背诵一本通", emoji: "🛡️", accent: "#96608f", accentSoft: "#efe6ee" },
 ];
@@ -23,7 +31,8 @@ const BOOKS = [
 const RE_PART = /^(第[一二三四五六七八九十百零0-9]+(编|部分|篇|卷)|(上|下|总|附)编|导\s*论(背诵误区与背诵方法)?|绪\s*论|总\s*论|分\s*论|附\s*论|专题[一二三四五六七八九十]+)/;
 const RE_CHAPTER = /^第[一二三四五六七八九十百零0-9]+章/;
 const RE_SECTION = /^第[一二三四五六七八九十百零0-9]+节/;
-const RE_QUESTION = /^(?:第?[一二三四五六七八九十百零]{1,6}[、.]|\d{1,2}-\d{1,2}[.．、])/;
+// 真题号兼容 1-3 位（民法编-题号式"5-161"，三位数此前被漏切进导览）
+const RE_QUESTION = /^(?:第?[一二三四五六七八九十百零]{1,6}[、.]|\d{1,3}-\d{1,3}[.．、])/;
 const RE_SUB = /^[（(][一二三四五六七八九十]{1,4}[)）]/;
 const RE_LIST_ITEM = /^[①②③④⑤⑥⑦⑧⑨⑩]/;
 const RE_NUM_ITEM = /^\d{1,2}[.、．]/;
@@ -54,6 +63,8 @@ function cleanLine(line) {
   let text = line.trim();
   for (const [from, to] of FIXES) text = text.split(from).join(to);
   if (HEADER_FOOTER.some((re) => re.test(text))) return "";
+  // 页边方法标注的独立行（"背诵内容""正反结合背诵内容"）——纯标签
+  if (/^[一-龥]{0,8}背诵内容[：:]?$/.test(text)) return "";
   // 页脚日期行（"2026年6月"及与后续小节标题的焊接行）——纯噪音
   if (/^\d{4}年\d{1,2}月$/.test(text)) return "";
   if (/^\d{4}年\d{1,2}月(?=[一二三四五六七八九十]{1,3}[、.])/.test(text)) return "";
@@ -184,6 +195,15 @@ function polishText(text) {
     // 页面换行把"…为主"与"主要内容…"焊接产生的叠字（高置信）
     ["主主要要内容", "主要内容"],
     ["主主要内容", "主要内容"],
+    // ── 高置信 OCR 错字（对照《背诵一本通》原书核实）──
+    ["恶意申通", "恶意串通"],
+    ["具休", "具体"],
+    ["借务的合义", "债务的含义"],
+    ["公厅良俗", "公序良俗"],
+    ["简过式事", "简述民事"],
+    ["魏明帝曹《曹魏律》", "魏明帝曹叡《曹魏律》"],
+    ["《北齐体》", "《北齐律》"],
+    ["恪守职业道宿", "恪守职业道德"],
   ];
   for (const [from, to] of OCR_FIX) {
     t = t.split(from).join(to);
@@ -209,20 +229,101 @@ function polishText(text) {
     .replace(/(标准填充法|生活常识法|文意拆解法|要素拆解法|动作拆解法|环节拆解法|正反结合法)背诵内容/g, "");
   // 页眉糊版行焊进句中（"法律础士考试背偏一木通、法扭学。"）——页 furniture，剥离
   t = t.replace(/法律[础士硕]{0,2}考试?背[偏诵]{0,2}[一壹][本木][通迹]?[、.。]?法?[扭理]?学?[。.]?/g, "");
+  // 页眉糊版变体（"法建猫士考试背楠一本通""律铺土弯试昔楠一木庙·法街阜"）：
+  // 必须命中"法/律+考/弯+试/请+背/昔+一本+通/迹/植/庙"完整链条才剥离，防误伤合法正文
+  t = t.replace(
+    /法?律?[硕础建猫韧铺士土]{0,4}[考弯][试请]{0,2}[背昔][诵楠痛请偏]{0,2}[一壹][本木][通迹植庙][·、.。]{0,2}[法街完]{0,2}[理宪刑民扭]{0,4}学?[。.]?/g,
+    "",
+  );
+  // 页眉兜底：糊到亲妈不认的变体（"律桃土患风背橘一木通·法理学""法土非试費一本·刑法学"）
+  // 用稳定签名锚定——"一本/一木(+通/遍/迪/迹/植/庙)"后跟"·学科名"只会出现在页眉，
+  // 正文书名引用带《》且无 ·学科名 尾巴，不受影响
+  t = t.replace(
+    /[一-龥]{0,8}[一壹][本木][通遍迪迹植庙]?(?:[·、.。]{1,2}[法完]{0,2}[理宪史民侧]{0,3}学?[。.]?)?/g,
+    (match, offset, str) => {
+      const before = str.slice(Math.max(0, offset - 1), offset);
+      if (before === "《" || before === "［") return match; // 书名引用不剥
+      return /一本通|一木通/.test(match) && !/[·、.。][法完]/.test(match) && match.length <= 4
+        ? match
+        : "";
+    },
+  );
+  // 糊版章名（"第十八意○带续夷""第大童○机构论"——页眉"第X章○章名"的 OCR 残迹）
+  t = t.replace(/[第][大小宽二王三四五六七八九十]{1,3}[童意亿审][〇○0][一-龥]{0,10}/g, "");
+  // 页边"平替"记忆标注（"使用“严格执法原则”平替即可""用“法治国家”平替法治建设"）——纯标签，剥离
+  t = t
+    .replace(/使用[““][^””]{2,24}[””]平替即可/g, "")
+    .replace(/用[““][^””]{2,24}[””]平替[一-龥]{2,10}/g, "");
+  // 糊到失去一切结构的页眉残迹（OCR 逐条核实，精确串剥离零误伤）
+  for (const junk of [
+    "注德糖士害试背痛一朱·法理学",
+    "法相士考衍背一朱遒、宪法单",
+    "法钟橘土专世背一未·代法学",
+  ]) {
+    t = t.split(junk).join("");
+  }
+  // OCR 括号错配（"［表达逻辑）""（表达逻辑］"）：括号语义只有注记一种，按开括号补齐宽度
+  t = t
+    .replace(/［([^［］（）()]{1,24})）/g, "［$1］")
+    .replace(/（([^（）（]{1,24})］/g, "（$1）")
+    .replace(/「([^「」（）()]{1,24})）/g, "「$1」");
   return t;
 }
 
 /** 句末标点恢复：完整句在扫描边界丢句号 → 补"。"（连接词悬停的真截断不补） */
 function restoreTerminal(text) {
+  // 列表拼接遗留的句末"；"悬停（全书 21% 步骤的观感损伤）→ 收束为句号
+  let t = text.replace(/[；]+$/, "");
   if (
-    text.length >= 8 &&
-    /[一-龥]$/.test(text) &&
+    t.length >= 8 &&
+    (t !== text || /[一-龥]$/.test(t)) &&
     // 仅拒绝"真正的悬停虚词"——据/受/变/于/由/从/到/联/向 等是合法名词收尾（依据/自由/改变/属于）
-    !/[的与或及是对为把被从而并按向但其至了着跟从]$/.test(text)
+    !/[的与或及是对为把被从而并按向但其至了着跟从]$/.test(t)
   ) {
-    return `${text}。`;
+    return `${t}。`;
   }
-  return text;
+  return t;
+}
+
+// ── 人工修表（按课时 id 锚定）────────────────────────────────────────
+// 90 处"连接词悬停"是扫描件 OCR 丢失/表格标签焊接，程序无法凭空恢复；
+// 唯一可靠来源是渲染原页读图核实。修表条目 = 人工誊录的完整替换文本。
+// 构建时强制校验：条目必须命中课时与步骤；替换后文本必须句读完整（终止标点收尾）。
+const MANUAL_FIXES_PATH = join(root, "scripts", "law-manual-fixes.json");
+
+async function loadManualFixes() {
+  try {
+    return JSON.parse(await readFile(MANUAL_FIXES_PATH, "utf8"));
+  } catch {
+    return { fixes: {} };
+  }
+}
+
+function applyManualFixes(chapters, fixes, bookId, consumed) {
+  let applied = 0;
+  for (const [lessonId, entry] of Object.entries(fixes)) {
+    if (!lessonId.startsWith(`${bookId}-`)) continue;
+    const lesson = chapters.flatMap((c) => c.lessons).find((l) => l.id === lessonId);
+    if (!lesson) throw new Error(`修表条目课时不存在: ${lessonId}`);
+    for (const [stepId, patch] of Object.entries(entry.steps ?? {})) {
+      const step = lesson.steps.find((s) => s.id === stepId);
+      if (!step) throw new Error(`修表条目步骤不存在: ${lessonId}/${stepId}`);
+      const p = typeof patch === "string" ? { text: patch } : patch;
+      if (p.text !== undefined) {
+        const text = p.text.trim();
+        if (!/[。！？…”」》）]$/.test(text)) {
+          throw new Error(`修表文本必须以终止标点收尾: ${lessonId}/${stepId} → …${text.slice(-20)}`);
+        }
+        step.text = text;
+        if (p.parts === undefined) delete step.parts; // text 已是权威，旧 parts 一并作废
+      }
+      if (p.parts !== undefined) step.parts = p.parts;
+      if (p.kind !== undefined) step.kind = p.kind;
+      consumed[`${lessonId}/${stepId}`] = entry.note ?? "";
+      applied += 1;
+    }
+  }
+  return applied;
 }
 
 /** 标题级 OCR 修正（正文走 polishText，标题单独过一遍同源修正表） */
@@ -233,11 +334,64 @@ function polishTitle(text) {
     ["客休", "客体"],
     ["自已", "自己"],
     ["买奖合同", "买卖合同"],
+    ["借务的合义", "债务的含义"],
+    ["具休", "具体"],
+    ["公厅良俗", "公序良俗"],
+    ["简过式事", "简述民事"],
   ];
   for (const [from, to] of TITLE_FIX) {
     t = t.split(from).join(to);
   }
   return t;
+}
+
+/**
+ * 章节结构后处理：
+ * 1) 按名合并"章末表格行误判成编章"的单导览垃圾组（法制史上编四组）；
+ * 2) 相邻同语义名组合并（"○立法制度"并回"第一章"，消除被垃圾组拦腰切断的真章）。
+ * 全部只搬 lessons，不丢任何内容。
+ */
+function postProcessChapters(chapters, bookMeta) {
+  // 1) 垃圾单导览组 → 并入前一章
+  if (bookMeta.mergeTourGroups?.length) {
+    for (let i = chapters.length - 1; i >= 1; i -= 1) {
+      const group = chapters[i];
+      const cleaned = (group.title ?? "").replace(/[○◎●◆・•·✦☆〇“”"「」\s]/g, "");
+      const isTarget = bookMeta.mergeTourGroups.some((name) => cleaned === name || cleaned.includes(name));
+      const singleTour = group.lessons.length >= 1 && group.lessons.every((l) => l.id.endsWith("-tour"));
+      const prev = chapters[i - 1];
+      if (isTarget && singleTour && prev && prev.title !== "作者的话") {
+        prev.lessons.push(...group.lessons);
+        chapters.splice(i, 1);
+      }
+    }
+  }
+  // 2) 相邻同语义组 → 并回前一章（重名后缀"·续"由后续去重逻辑再生）
+  const semanticBase = (chapter) =>
+    (chapter.semanticTitle || chapter.title || "")
+      .replace(/[○◎●◆・•·✦☆口〇]/g, "")
+      .replace(/·.+$/, "")
+      .trim();
+  for (let i = chapters.length - 1; i >= 1; i -= 1) {
+    const group = chapters[i];
+    const prev = chapters[i - 1];
+    if (!group.semanticTitle || !prev?.semanticTitle) continue;
+    if (semanticBase(group) && semanticBase(group) === semanticBase(prev) && prev.title !== "作者的话") {
+      prev.lessons.push(...group.lessons);
+      chapters.splice(i, 1);
+    }
+  }
+  // 3) 附录组标记（保留内容与课时，但不进学习流/计数/搜索/出题）
+  if (bookMeta.appendixChapter) {
+    const { titleIs, minLessons, rename } = bookMeta.appendixChapter;
+    const target = chapters.find((c) => c.title === titleIs && c.lessons.length >= minLessons);
+    if (target) {
+      target.appendix = true;
+      target.title = rename;
+      target.semanticTitle = rename;
+    }
+  }
+  return chapters;
 }
 
 /** 去掉编号前缀（用于连续重复条目的判等） */
@@ -495,6 +649,20 @@ function parseBookPages(pages, bookMeta) {
         });
       }
     }
+    // 悬停短步合并：以"的/与/了"收尾的超短步骤多为节内小标题被截断
+    // （"（二）简述法律对平等价值的"），其正文就在下一步——合并成一步，消灭悬空残标题
+    for (let i = splitSteps.length - 2; i >= 0; i -= 1) {
+      const step = splitSteps[i];
+      const nextStep = splitSteps[i + 1];
+      if (!nextStep) continue;
+      if (step.kind === "mnemonic" || nextStep.kind === "mnemonic") continue;
+      if (step.text.length > 40) continue;
+      if (!/[的与和或及了着]$/.test(step.text)) continue;
+      step.text = restoreTerminal(`${step.text}：${nextStep.text}`);
+      step.parts = nextStep.parts ?? step.parts;
+      step.terms = [...(step.terms ?? []), ...(nextStep.terms ?? [])].slice(0, 6);
+      splitSteps.splice(i + 1, 1);
+    }
     const steps = splitSteps.map((s, index) => ({ ...s, id: `${lesson.id}-s${index}` }));
     if (steps.length === 0) {
       // 本课没有可成步骤的行 → 保留原文，防止丢内容
@@ -558,31 +726,41 @@ function parseBookPages(pages, bookMeta) {
       ? headingTitle(stack[stack.length - 1].title, stack[stack.length - 1].level, bookMeta)
       : "本章").replace(/[○◎●◆・•·✦☆]/g, "");
     trailLesson.title = `导览：${topTitle}`;
+    // 导览分块：直接拼接（不插分隔符——书页断行处插"；"会把词切开，如"中；国人民"），
+    // 再按句号边界打包，保证任何一块都不在句子中间被切断
+    const joinedTrail = rawTrail.join("");
+    const sentences = joinedTrail
+      .split(/(?<=[。！？])/)
+      .map((s) => s.trim())
+      .filter((s) => s.length >= 2);
     const chunked = [];
     let buffer = "";
-    for (const line of rawTrail) {
-      if (buffer.length + line.length > 160 && buffer.length > 0) {
+    for (const sentence of sentences) {
+      if (sentence.length > 160) {
+        // 超长无标点句（思维导图碎片串）：按 160 硬切
+        if (buffer) {
+          chunked.push(buffer);
+          buffer = "";
+        }
+        for (let i = 0; i < sentence.length; i += 160) {
+          chunked.push(sentence.slice(i, i + 160));
+        }
+        continue;
+      }
+      if (buffer.length + sentence.length > 160 && buffer.length > 0) {
         chunked.push(buffer);
-        buffer = line;
+        buffer = sentence;
       } else {
-        buffer = buffer ? `${buffer}；${line}` : line;
+        buffer += sentence;
       }
     }
     if (buffer) chunked.push(buffer);
     trailLesson.steps = chunked.map((text, index) => {
-      let t = polishText(text);
-      // 与正文步骤同规则的句末标点恢复
-      if (
-        t.length >= 8 &&
-        /[一-龥]$/.test(t) &&
-        !/[联的与和或及在是对为把被从而并按据向于变受跟至到由从但其]$/.test(t)
-      ) {
-        t += "。";
-      }
+      // 与正文步骤同规则的句末标点恢复（统一走 restoreTerminal）
       return {
         id: `${trailLesson.id}-s${index}`,
         kind: "plain",
-        text: t,
+        text: restoreTerminal(polishText(text)),
         terms: [],
       };
     });
@@ -591,6 +769,9 @@ function parseBookPages(pages, bookMeta) {
     trailLesson.pageRange = [trailStartPage, trailEndPage || trailStartPage];
     currentGroup().lessons.push(trailLesson);
     rawTrail.length = 0;
+    // 重置导览页码游标：否则全书后续所有 -tour 课都带着第一次导览的起点页（系统性 pageRange 错位）
+    trailStartPage = 0;
+    trailEndPage = 0;
   };
 
   /** 去除页眉装饰符号并压缩为"N 级编号"，用于识别"同一标题" */
@@ -813,7 +994,7 @@ function pickSemanticTitle(aliases, lessonTitles = []) {
   let best = "";
   for (const alias of aliases) {
     const cleaned = alias
-      .replace(/[○◎●◆・•·✦☆（）()〇Q□OoOCc\s]/g, "")
+      .replace(/[○◎●◆・•·✦☆（）()〇Q口□OoOCc\s]/g, "")
       .replace(/^\s*第[一二三四五六七八九十百零0-9]+(编|部分|章|篇|卷)\s*/, "")
       .replace(/^\s*(上编|下编|附编)\s*/, "")
       .trim();
@@ -825,17 +1006,26 @@ function pickSemanticTitle(aliases, lessonTitles = []) {
   best = best.replace(/用$|显$|丽$|忌$|极$|均$|点$|与$/, "罪");
   if (SEMANTIC_FIX[best]) best = SEMANTIC_FIX[best];
   if (!best) {
+    // 回退：从本课标题里挑语义名——剥掉题号/题型动词后取最长的候选（剥后不足 4 字的候选不要，
+    // 防"分析法学派"被剥成"法学派"）
+    let fallback = "";
     for (const rawTitle of lessonTitles) {
-      const cleaned = polishTitle(rawTitle)
+      const base = polishTitle(rawTitle)
         .replace(/^导览[：:]/, "")
-        .replace(/^(简述|论述|简答|分析|评述|试述|说明|比较|谈谈|导览)[^一-龥]*/, "")
+        .replace(/^\d{1,3}-\d{1,3}[.．、]/, "")
+        .replace(/^[①②③④⑤⑥⑦⑧⑨⑩]\s*/, "")
         .split(/[、，。；：（(的：:]/)[0]
+        .replace(/[○◎●◆・•·✦☆口〇]/g, "")
         .trim();
-      if (cleaned.length < 2 || cleaned.length > 10) continue;
-      if (isOrdinalPlaceholder(cleaned)) continue;
-      best = cleaned;
-      break;
+      if (base.length < 2 || base.length > 10) continue;
+      if (isOrdinalPlaceholder(base)) continue;
+      const stripped = base.replace(/^(简述|论述|简答|分析|评述|试述|说明|比较|谈谈)/, "").trim();
+      const candidate = stripped.length >= 4 ? stripped : base;
+      // 句 fragment 不配当章名（"中国法制历史中"是被"的"切断的半句）
+      if (/[中上下的与和及在是为得了着]$/.test(candidate)) continue;
+      if (candidate.length > fallback.length) fallback = candidate;
     }
+    best = fallback;
   }
   return best || undefined;
 }
@@ -845,6 +1035,9 @@ async function main() {
   await mkdir(join(root, ".tmp", "law-build"), { recursive: true });
   const stats = {};
   const summary = [];
+  const manualFixes = await loadManualFixes();
+  const consumed = {};
+  let totalApplied = 0;
 
   for (const bookMeta of BOOKS) {
     const pages = await readPages(bookMeta.id);
@@ -874,14 +1067,20 @@ async function main() {
       leftoverText || "（无）",
       "utf8",
     );
+    // 先算语义名（结构合并要用它做相邻判等），再做章节结构后处理（垃圾组合并/附录标记）
+    for (const chapter of chapters) {
+      chapter.semanticTitle = pickSemanticTitle(
+        chapter.aliases ?? new Set(),
+        chapter.lessons.filter((l) => !l.shell).map((l) => l.title),
+      );
+    }
+    postProcessChapters(chapters, bookMeta);
     const plainChapters = chapters.map((chapter) => ({
       id: chapter.id,
       title: chapter.title,
-      semanticTitle: pickSemanticTitle(
-        chapter.aliases ?? new Set(),
-        chapter.lessons.filter((l) => !l.shell).map((l) => l.title),
-      ),
+      semanticTitle: chapter.semanticTitle,
       level: chapter.level,
+      appendix: chapter.appendix === true || undefined,
       lessons: chapter.lessons,
     }));
     // 语义名书内去重：重名章节追加各自标题限定（"民法·第二编"/"立法制度·上编"），列表里才分得清
@@ -894,11 +1093,14 @@ async function main() {
         used.set(st, n + 1);
         if (n > 0) {
           const cleaned = (ch.title ?? "").replace(/[○◎●◆・•·✦☆]/g, "").trim();
-          const qualifier = cleaned && cleaned !== st ? cleaned : "续";
+          // 纯序号（"第五章"）不能当限定词，否则出现"司法制度·第五章"这种脏名
+          const qualifier = cleaned && cleaned !== st && !isOrdinalPlaceholder(cleaned) ? cleaned : "续";
           ch.semanticTitle = `${st}·${qualifier}`;
         }
       }
     }
+    totalApplied += applyManualFixes(plainChapters, manualFixes.fixes ?? {}, bookMeta.id, consumed);
+    const flowLessons = (chapter) => (chapter.appendix ? [] : chapter.lessons.filter((l) => !l.shell));
     const book = {
       id: bookMeta.id,
       name: bookMeta.name,
@@ -907,10 +1109,7 @@ async function main() {
       accent: bookMeta.accent,
       accentSoft: bookMeta.accentSoft,
       chapters: plainChapters,
-      lessonCount: plainChapters.reduce(
-        (sum, c) => sum + c.lessons.filter((l) => !l.shell).length,
-        0,
-      ),
+      lessonCount: plainChapters.reduce((sum, c) => sum + flowLessons(c).length, 0),
       leftover: leftovers.length > 0 ? [leftoverText] : [],
     };
 
@@ -922,10 +1121,7 @@ async function main() {
     stats[bookMeta.id] = {
       lessonCount: book.lessonCount,
       chapterTitles: chapters.map((c) => c.title),
-      steps: plainChapters.reduce(
-        (sum, c) => sum + c.lessons.filter((l) => !l.shell).reduce((s, l) => s + l.steps.length, 0),
-        0,
-      ),
+      steps: plainChapters.reduce((sum, c) => sum + flowLessons(c).reduce((s, l) => s + l.steps.length, 0), 0),
     };
     const shellCount = chapters.reduce((sum, c) => sum + c.lessons.filter((l) => l.shell).length, 0);
     summary.push(
@@ -933,6 +1129,17 @@ async function main() {
     );
   }
 
+  // 修表完整性：每一条都必须被应用，未命中的条目说明数据结构变了，直接构建失败
+  const stale = Object.keys(manualFixes.fixes ?? {}).flatMap((lessonId) =>
+    Object.keys(manualFixes.fixes[lessonId].steps ?? {})
+      .filter((stepId) => !consumed[`${lessonId}/${stepId}`])
+      .map((stepId) => `${lessonId}/${stepId}`),
+  );
+  if (stale.length > 0) {
+    console.error(`修表存在未命中条目（数据结构已变化，请核对）: ${stale.join(", ")}`);
+    process.exit(1);
+  }
+  if (totalApplied > 0) console.log(`人工修表: 应用 ${totalApplied} 条`);
   await writeFile(join(OUT_DIR, "stats.json"), `${JSON.stringify(stats, null, 2)}\n`, "utf8");
   await writeFile(
     join(root, ".tmp", "law-build", "summary.txt"),

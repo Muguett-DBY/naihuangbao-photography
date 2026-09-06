@@ -32,7 +32,6 @@ export function ChapterTree({
   open,
   onToggle,
   progress,
-  defaultOpen,
 }: {
   chapter: LawChapter;
   graphicIds: Set<string>;
@@ -40,9 +39,11 @@ export function ChapterTree({
   open: boolean;
   onToggle: () => void;
   progress: LawProgressMap;
-  defaultOpen?: boolean;
 }) {
-  const doneCount = chapter.lessons.filter((lesson) => progress[lesson.id]?.completedAt).length;
+  // 目录里只出现"学习流"课（跳过索引空壳课）——编号与统计都必须用同一口径，
+  // 否则会出现"03 → 07"的跳号，让人以为缺了课
+  const flowLessons = chapter.lessons.filter((lesson) => !isShellLesson(lesson));
+  const doneCount = flowLessons.filter((lesson) => progress[lesson.id]?.completedAt).length;
   const packs = useMemo(() => buildQuickPacks(chapter), [chapter]);
   // 被速览包收编的课不再单独展示；未收编的真实课时（含散落单步课）必须可见
   const packedIds = useMemo(
@@ -66,8 +67,8 @@ export function ChapterTree({
         <strong>{realTitle}</strong>
         <span className="law-chapter__meta">
           {doneCount > 0
-            ? `✓ ${doneCount}/${chapter.lessons.filter((lesson) => !isShellLesson(lesson)).length} 已掌握`
-            : `${chapter.lessons.filter((lesson) => !isShellLesson(lesson)).length} 课`}
+            ? `✓ ${doneCount}/${flowLessons.length} 已掌握`
+            : `${flowLessons.length} 课`}
         </span>
         <span className="law-chapter__arrow" aria-hidden="true">{open ? "▾" : "▸"}</span>
       </button>
@@ -100,34 +101,38 @@ export function ChapterTree({
               </div>
             </li>
           ))}
-          {chapter.lessons.map((lesson, index) => {
-            const meta = lessonMeta(lesson);
-            const prog = progress[lesson.id];
-            // 索引空壳课（纯标题、无正文）不展示——知识正文都在对应正文章节
-            if (isShellLesson(lesson)) return null;
-            // 单步课：进了速览包的不重复展示；散落的必须可见（知识不遗漏）
-            if (lesson.steps.length <= 1 && packedIds.has(lesson.id)) return null;
-            return (
-              <li key={lesson.id}>
-                <PrefetchLink
-                  to={`/law/learn/${lesson.id}`}
-                  className={`law-lesson-link ${prog?.completedAt ? "is-done" : ""} ${graphicIds.has(lesson.id) ? "is-featured" : ""}`}
-                >
-                  <span className="law-lesson-link__no">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="law-lesson-link__title">
-                    {graphicIds.has(lesson.id) ? "📐 " : ""}
-                    {lesson.title}
-                  </span>
-                  <span className="law-lesson-link__meta">
-                    {lessonKindEmoji(lesson)} {lessonKindLabel(lesson)} · ⏱ {meta.steps}步≈{meta.minutes}分
-                  </span>
-                  <span className="law-lesson-link__state">
-                    {prog?.completedAt ? "⭐ 已掌握" : prog ? "👀 看过" : "开始"}
-                  </span>
-                </PrefetchLink>
-              </li>
-            );
-          })}
+          {(() => {
+            let visibleNo = 0;
+            return chapter.lessons.map((lesson) => {
+              const meta = lessonMeta(lesson);
+              const prog = progress[lesson.id];
+              // 索引空壳课（纯标题、无正文）不展示——知识正文都在对应正文章节
+              if (isShellLesson(lesson)) return null;
+              // 单步课：进了速览包的不重复展示；散落的必须可见（知识不遗漏）
+              if (lesson.steps.length <= 1 && packedIds.has(lesson.id)) return null;
+              visibleNo += 1;
+              return (
+                <li key={lesson.id}>
+                  <PrefetchLink
+                    to={`/law/learn/${lesson.id}`}
+                    className={`law-lesson-link ${prog?.completedAt ? "is-done" : ""} ${graphicIds.has(lesson.id) ? "is-featured" : ""}`}
+                  >
+                    <span className="law-lesson-link__no">{String(visibleNo).padStart(2, "0")}</span>
+                    <span className="law-lesson-link__title">
+                      {graphicIds.has(lesson.id) ? "📐 " : ""}
+                      {lesson.title}
+                    </span>
+                    <span className="law-lesson-link__meta">
+                      {lessonKindEmoji(lesson)} {lessonKindLabel(lesson)} · ⏱ {meta.steps}步≈{meta.minutes}分
+                    </span>
+                    <span className="law-lesson-link__state">
+                      {prog?.completedAt ? "⭐ 已掌握" : prog ? "👀 看过" : "开始"}
+                    </span>
+                  </PrefetchLink>
+                </li>
+              );
+            });
+          })()}
         </motion.ul>
       ) : null}
     </section>

@@ -55,6 +55,12 @@ export function GraphicStage({
     setPlaying(true);
   }, []);
 
+  // 手动跳帧 = 用户接管播放：停在当前帧不再自动推进（曾被 3.2s 定时器抢走导航权）
+  const jumpTo = useCallback((index: number) => {
+    setPlaying(false);
+    setActive(index);
+  }, []);
+
   useEffect(() => {
     if (!playing) return;
     if (active >= total - 1) {
@@ -84,7 +90,9 @@ export function GraphicStage({
 
       <div className="law-graphic__intro">
         <p>{graphic.intro}</p>
-        <p className="law-graphic__hint">🖱️ 点点画面没反应？手动点下面的"下一步"也行～</p>
+        <p className="law-graphic__hint">
+          {playing ? "▶ 正在自动播放，可随时暂停或手动跳帧" : "⏸ 已暂停：点「播放」继续，或直接跳到想看的帧"}
+        </p>
       </div>
 
       <div className="law-graphic__stage">
@@ -109,26 +117,36 @@ export function GraphicStage({
         <button
           type="button"
           className="law-graphic__nav"
-          onClick={() => setActive((current) => Math.max(0, current - 1))}
+          onClick={() => jumpTo(Math.max(0, active - 1))}
           disabled={active === 0}
         >
           ← 上一步
         </button>
-        <div className="law-graphic__dots" aria-hidden="true">
+        <div className="law-graphic__dots">
           {graphic.captions.map((_, index) => (
             <button
               key={index}
               type="button"
               className={`${index === active ? "is-current" : ""} ${index < active ? "is-done" : ""}`}
-              onClick={() => setActive(index)}
+              onClick={() => jumpTo(index)}
               aria-label={`第 ${index + 1} 步`}
             />
           ))}
         </div>
+        {active < total - 1 ? (
+          <button
+            type="button"
+            className="law-graphic__nav is-play"
+            onClick={() => setPlaying((value) => !value)}
+            aria-pressed={playing}
+          >
+            {playing ? "⏸ 暂停" : "▶ 播放"}
+          </button>
+        ) : null}
         <button
           type="button"
           className="law-graphic__nav is-primary"
-          onClick={active >= total - 1 ? replay : advance}
+          onClick={active >= total - 1 ? replay : () => jumpTo(active + 1)}
         >
           {active >= total - 1 ? "🔁 从头再看" : "下一步 →"}
         </button>

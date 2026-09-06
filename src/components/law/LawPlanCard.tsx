@@ -79,13 +79,27 @@ export function LawPlanCard() {
         </div>
       </div>
 
-      <div className="law-plan-card__tiers" role="radiogroup" aria-label="学习节奏">
+      <div
+        className="law-plan-card__tiers"
+        role="radiogroup"
+        aria-label="学习节奏"
+        onKeyDown={(event) => {
+          // 方向键在档位间循环切换（radiogroup 的键盘约定），Tab 只停在当前选中的档位
+          if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+          event.preventDefault();
+          const index = TIERS.findIndex((item) => item.id === tier);
+          const delta = event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1;
+          const next = TIERS[(index + delta + TIERS.length) % TIERS.length];
+          choose(next.id);
+        }}
+      >
         {TIERS.map((item) => (
           <button
             key={item.id}
             type="button"
             role="radio"
             aria-checked={tier === item.id}
+            tabIndex={tier === item.id ? 0 : -1}
             className={`law-plan-card__tier ${tier === item.id ? "is-active" : ""}`}
             onClick={() => choose(item.id)}
           >

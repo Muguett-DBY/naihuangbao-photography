@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { LAW_SUBJECTS } from "../data/law/meta";
 import { LAW_GRAPHICS } from "../data/law/graphics";
 import lawStats from "../data/law/stats.json";
-import { getDueReviewLessons, getTodayGoal, subjectStats } from "../lib/law-progress";
+import { getPlan } from "../lib/law-plan";
+import { getDueReviewLessons, getLastLessonId, getTodayGoal, subjectStats } from "../lib/law-progress";
 import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, LawEggSymbol, useLawImmersive } from "../components/law/EasterEgg";
 import { LawPlanCard } from "../components/law/LawPlanCard";
@@ -29,10 +30,16 @@ export function LawAcademyPage() {
   }, []);
 
   const today = useMemo(() => getTodayGoal(), []);
+  const plan = useMemo(() => getPlan(), []);
   const doneTotal = Object.values(progress).reduce((sum, p) => sum + p.done, 0);
   const totalLessons = LAW_SUBJECTS.reduce((sum, s) => sum + (stats[s.id]?.lessonCount ?? 0), 0);
   const dueIds = useMemo(() => getDueReviewLessons(), []);
   const dueSubjectId = dueIds[0]?.replace(/-q.*/, "");
+  // 今日学习卡的唯一主行动：接着上次学的来，没学过就从推荐路线第一本（民法）开始
+  const lastLessonId = getLastLessonId();
+  const resumeHref = lastLessonId ?? "/law/minfa";
+  const resumeLabel = lastLessonId ? "继续学习" : "开始第一课";
+  const todayPercent = Math.min(100, Math.round((today.done / today.target) * 100));
 
   return (
     <div className="law-academy">
@@ -51,25 +58,64 @@ export function LawAcademyPage() {
           <span>🧩 {totalLessons} 个知识点</span>
           <span>🎮 边玩边学</span>
         </div>
-        <div className="law-academy__today" aria-label="我的学习进度">
-          <span>
-            🎯 今日 <b>{today.done}/{today.target}</b> 课
-          </span>
-          <span>
-            ⭐ 已掌握 <b>{doneTotal}</b> 个知识点
-          </span>
-          {dueIds.length > 0 && LAW_SUBJECTS.some((s) => s.id === dueSubjectId) ? (
-            <Link
-              to={`/law/${dueSubjectId}`}
-              className="law-academy__review-chip"
-            >
-              🔁 {dueIds.length} 课错题待复习 →
-            </Link>
-          ) : null}
-        </div>
       </header>
 
+      {dueIds.length > 0 && LAW_SUBJECTS.some((s) => s.id === dueSubjectId) ? (
+        // 直达第一节到期课的复习测试，不再绕道学科页多跳一次
+        <Link
+          to={`/law/learn/${dueIds[0]}?review=1`}
+          className="law-academy__review-chip"
+        >
+          🔁 {dueIds.length} 课错题待复习，先测最早到期的 →
+        </Link>
+      ) : null}
+
+      <section className="law-today-card" aria-label="今日学习">
+        <div className="law-today-card__ring" role="img" aria-label={`今日目标完成 ${todayPercent}%`}>
+          <svg viewBox="0 0 72 72" width="72" height="72" aria-hidden="true">
+            <circle cx="36" cy="36" r="30" fill="none" strokeWidth="8" style={{ stroke: "var(--law-accent)", opacity: 0.25 }} />
+            <circle
+              cx="36"
+              cy="36"
+              r="30"
+              fill="none"
+              strokeWidth="8"
+              strokeLinecap="round"
+              style={{ stroke: "var(--law-accent)", transition: "stroke-dasharray 0.6s var(--ease-out)" }}
+              strokeDasharray={`${(todayPercent / 100) * 188.5} 188.5`}
+              transform="rotate(-90 36 36)"
+            />
+          </svg>
+          <b>{today.done}/{today.target}</b>
+        </div>
+        <div className="law-today-card__body">
+          <b>{today.done >= today.target ? "今日目标达成！⭐" : "今日目标：再学 1 课"}</b>
+          <span>
+            距 2027 考研 {plan.daysLeft} 天 · 已掌握 {doneTotal} 个知识点
+            {today.done < today.target ? " · 一课大约 5 分钟" : ""}
+          </span>
+        </div>
+        <Link to={resumeHref} className="law-today-card__cta">
+          {resumeLabel} →
+        </Link>
+      </section>
+
       <LawPlanCard />
+
+      <section className="law-academy__route" aria-label="推荐学习路线">
+        <h2>🧭 推荐学习路线</h2>
+        <p className="law-academy__route-lead">
+          法硕的主流打法是"理解先行、背诵后置"：先啃需要长期理解的刑法与民法，再集中背诵理论法。
+          按下面的顺序走，每本书都为下一本打底。
+        </p>
+        <ol className="law-academy__route-steps">
+          <li><b>① 民法</b><span>离生活最近，先建立请求权基础思维</span></li>
+          <li><b>② 刑法</b><span>总则理论深，早开始反复消化</span></li>
+          <li><b>③ 法理学</b><span>学完部门法再学原理，处处能对上号</span></li>
+          <li><b>④ 宪法学</b><span>与法理学的规则理论互相衔接</span></li>
+          <li><b>⑤ 法制史</b><span>纯记忆型，放到考前集中背诵效率最高</span></li>
+        </ol>
+      </section>
 
       <section className="law-academy__subjects" aria-label="选择学科">
         {LAW_SUBJECTS.map((subject, index) => {

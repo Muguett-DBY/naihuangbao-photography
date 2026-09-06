@@ -279,7 +279,12 @@ export function useEggListener(doneCount: number): EggTrigger | null {
   useEffect(() => {
     if (trigger) return;
     const found = checkEasterEgg(doneCount);
-    if (found) setTrigger(found);
+    if (found) {
+      // 触发即解锁：不锁的话时间型彩蛋（早安/深夜）在每次页面导航都会重新弹出，
+      // 反复打断学习流。想重看可以在学习中心页脚点小猫。
+      unlockEgg(found);
+      setTrigger(found);
+    }
   }, [trigger, doneCount]);
 
   useEffect(() => {
@@ -335,8 +340,31 @@ export function EggModal({ trigger, onClose }: { trigger: EggTrigger; onClose?: 
     }
   }, [seen, trigger]);
 
+  // Esc 关闭 + 点遮罩关闭：弹窗不能只能用鼠标关（可达性）
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        markEggSeen(trigger);
+        onClose?.();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [trigger, onClose]);
+
   return (
-    <div className="law-egg-overlay" role="dialog" aria-modal="true" aria-label={meta.title}>
+    <div
+      className="law-egg-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label={meta.title}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) {
+          markEggSeen(trigger);
+          onClose?.();
+        }
+      }}
+    >
       <motion.div
         className="law-egg-card"
         initial={{ opacity: 0, y: 46, scale: 0.94 }}

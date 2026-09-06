@@ -42,9 +42,13 @@ describe("law content data quality", () => {
       // 未标记 shell 的课必须有原文（保底承诺）
       const missing = lessons.filter((l) => !isShellLesson(l) && l.raw.length === 0);
       expect(missing, `${id}: lessons without raw`).toHaveLength(0);
-      expect(book.lessonCount).toBe(lessons.length - shellCount);
+      // 课时总数 = 学习流课时（非附录章的非空壳课）；附录章（考点索引）不进计数
+      const flowCount = book.chapters
+        .filter((c) => !c.appendix)
+        .reduce((sum, c) => sum + c.lessons.filter((l) => !isShellLesson(l)).length, 0);
+      expect(book.lessonCount).toBe(flowCount);
     }
-    expect(shells).toBe(72);
+    expect(shells).toBe(83);
   });
 
   it("matches stats.json lesson counts (shells excluded)", () => {
@@ -52,6 +56,15 @@ describe("law content data quality", () => {
     for (const id of SUBJECTS) {
       expect(stats[id].lessonCount).toBe(books[id].lessonCount);
     }
+  });
+
+  it("marks the zhishixiang dynasty index as an appendix chapter (kept but not counted)", () => {
+    const appendixChapters = books.zhishixiang.chapters.filter((c) => c.appendix);
+    expect(appendixChapters).toHaveLength(1);
+    expect(appendixChapters[0].semanticTitle ?? "").toMatch(/^附录/);
+    // 附录课时内容完整保留（可查阅），但绝不进学习流计数
+    const real = appendixChapters[0].lessons.filter((l) => !isShellLesson(l));
+    expect(real.length).toBeGreaterThan(50);
   });
 
   it("gives every multi-lesson chapter a semantic, non-ordinal title", () => {

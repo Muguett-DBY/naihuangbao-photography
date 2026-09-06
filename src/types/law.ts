@@ -22,6 +22,8 @@ export interface LawChapter {
   semanticTitle?: string;
   level: LawChapterLevel;
   lessons: LawLesson[];
+  /** 附录章（考点索引等）：内容保留但不进学习流/目录/搜索/出题/课时计数 */
+  appendix?: boolean;
 }
 
 export type LawStepKind =

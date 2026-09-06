@@ -13,18 +13,35 @@ import {
   getTodayGoal,
   getWrongLessons,
 } from "../lib/law-progress";
+import { safeLocalStorage } from "../lib/browser-storage";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, useLawImmersive } from "../components/law/EasterEgg";
 import { subjectSteps } from "../lib/law-plan";
 import { LawSearch } from "../components/law/subject/LawSearch";
 import { ChapterTree } from "../components/law/subject/ChapterTree";
+import { LessonPathMap } from "../components/law/subject/LessonPathMap";
 import { findLessonInBook, semanticChapterTitle } from "../components/law/subject/subjectUtils";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
 
+type SubjectView = "path" | "tree";
+
+const VIEW_KEY = "nhb-law-subject-view";
+
+function readViewPref(): SubjectView {
+  return safeLocalStorage.getItem(VIEW_KEY) === "tree" ? "tree" : "path";
+}
+
 function isLawSubjectId(value: string | undefined): value is keyof typeof LAW_SUBJECT_MAP {
   return !!value && value in LAW_SUBJECT_MAP;
+}
+
+/** 书前说明章节（序言/使用说明/方法论）——不是考点，目录里后置 */
+function isMetaChapter(chapter: { title: string; semanticTitle?: string }): boolean {
+  return [chapter.title, chapter.semanticTitle ?? ""].some((name) =>
+    /^(作者的话|使用说明|序言|前言|后记)$/.test(name.trim()),
+  );
 }
 
 export function LawSubjectPage() {
@@ -34,6 +51,15 @@ export function LawSubjectPage() {
   const [book, setBook] = useState<LawBook | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [openChapter, setOpenChapter] = useState<string | null>(null);
+  // 错题本默认只展示 8 条，其余折叠进"查看全部"
+  const [showAllWrong, setShowAllWrong] = useState(false);
+  // 路径（关卡地图）/ 目录（章节树）双视图，记住用户的选择
+  const [view, setView] = useState<SubjectView>(readViewPref);
+
+  function switchView(next: SubjectView) {
+    setView(next);
+    safeLocalStorage.setItem(VIEW_KEY, next);
+  }
 
   const valid = isLawSubjectId(subjectId);
   const subject = valid ? LAW_SUBJECT_MAP[subjectId] : null;
@@ -108,6 +134,15 @@ export function LawSubjectPage() {
   const lastRef = lastLessonId ? findLessonInBook(book, lastLessonId) : null;
   const dueCount = [...dueIds].filter((id) => findLessonInBook(book, id)).length;
 
+  // 附录章（考点索引）不进章节目录，内容折叠保留
+  const appendixLines = book.chapters
+    .filter((chapter) => chapter.appendix)
+    .flatMap((chapter) =>
+      chapter.lessons
+        .filter((lesson) => !isShellLesson(lesson))
+        .map((lesson) => `${chapter.semanticTitle ?? chapter.title}｜${lesson.title}`),
+    );
+
   return (
     <div className="law-academy law-subject" style={style}>
       <header className="law-subject__hero">
@@ -156,7 +191,7 @@ export function LawSubjectPage() {
             <span>按 1/2/4/7/15 天的节奏复习，连续 5 次通过就毕业出本</span>
           </header>
           <div className="law-subject__wrong-list">
-            {[...wrongIds].slice(0, 8).map((id) => {
+            {[...wrongIds].slice(0, showAllWrong ? wrongIds.size : 8).map((id) => {
               const ref = findLessonInBook(book, id);
               if (!ref) return null;
               const due = dueIds.has(id);
@@ -175,6 +210,15 @@ export function LawSubjectPage() {
               );
             })}
           </div>
+          {wrongIds.size > 8 ? (
+            <button
+              type="button"
+              className="law-subject__wrong-more"
+              onClick={() => setShowAllWrong((value) => !value)}
+            >
+              {showAllWrong ? "收起 ↑" : `查看全部 ${wrongIds.size} 课 ↓`}
+            </button>
+          ) : null}
         </section>
       ) : null}
 
@@ -194,16 +238,16 @@ export function LawSubjectPage() {
                 transition={{ delay: index * 0.05 }}
               >
                 <PrefetchLink
-                  to={`/law/learn/${graphic.lessonId}`}
+                  to={`/law/graphic/${graphic.lessonId}`}
                   className="law-graphic-card"
                   style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
                 >
                   <span className="law-graphic-card__kind">{graphicKindEmoji(graphic.kind)}</span>
                   <span className="law-graphic-card__body">
                     <strong>{graphic.title}</strong>
-                    <small>进入课程后，可在课时顶部打开图解动画</small>
+                    <small>{graphic.intro}</small>
                   </span>
-                  <span className="law-graphic-card__go">去上课 →</span>
+                  <span className="law-graphic-card__go">看动画 →</span>
                 </PrefetchLink>
               </motion.div>
             ))}
@@ -211,22 +255,62 @@ export function LawSubjectPage() {
         </section>
       ) : null}
 
-      <div className="law-subject__chapters">
-        {book.chapters.map((chapter) => (
-          <ChapterTree
-            key={chapter.id}
-            chapter={chapter}
-            graphicIds={graphicIds}
-            accent={subject.accent}
-            open={openChapter === chapter.id}
-            onToggle={() =>
-              setOpenChapter((current) => (current === chapter.id ? null : chapter.id))
-            }
-            progress={progress}
-            defaultOpen={chapter.id === book.chapters[0]?.id}
-          />
-        ))}
+      <div className="law-subject__viewbar" role="tablist" aria-label="视图切换">
+        <div className="law-subject__viewtoggle">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === "path"}
+            className={view === "path" ? "is-active" : ""}
+            onClick={() => switchView("path")}
+          >
+            🗺️ 学习路径
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={view === "tree"}
+            className={view === "tree" ? "is-active" : ""}
+            onClick={() => switchView("tree")}
+          >
+            📋 章节目录
+          </button>
+        </div>
       </div>
+
+      {view === "path" && book ? (
+        <LessonPathMap book={book} progress={progress} graphicIds={graphicIds} />
+      ) : (
+        <div className="law-subject__chapters">
+          {[...book.chapters]
+            .filter((chapter) => !chapter.appendix)
+            // 元章节（作者的话/使用说明）是书前说明，不是考点——排到目录最后，别挡着正课
+            .sort((a, b) => Number(isMetaChapter(a)) - Number(isMetaChapter(b)))
+            .map((chapter) => (
+              <ChapterTree
+                key={chapter.id}
+                chapter={chapter}
+                graphicIds={graphicIds}
+                accent={subject.accent}
+                open={openChapter === chapter.id}
+                onToggle={() =>
+                  setOpenChapter((current) => (current === chapter.id ? null : chapter.id))
+                }
+                progress={progress}
+              />
+            ))}
+        </div>
+      )}
+
+      {appendixLines.length > 0 ? (
+        <section className="law-subject__leftover">
+          <h2>📎 附录 · 考点速查索引（不进学习流）</h2>
+          <details>
+            <summary>点击展开查看（索引内容完整保留）</summary>
+            <pre>{appendixLines.join("\n")}</pre>
+          </details>
+        </section>
+      ) : null}
 
       {book.leftover.length > 0 ? (
         <section className="law-subject__leftover">
