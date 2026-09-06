@@ -1,5 +1,5 @@
 import type { LawBook, LawLesson, LawSubjectId } from "../../types/law";
-import { isCleanTerm } from "../../types/law";
+import { isCleanTerm, isShellLesson } from "../../types/law";
 
 /** 每科内容为独立 JSON 构建产物（由 node scripts/build-law-content.mjs 生成），按需加载。 */
 const LOADERS: Record<LawSubjectId, () => Promise<{ book: LawBook }>> = {
@@ -50,6 +50,29 @@ export function findLesson(
         return { lesson, order, total: book.lessonCount };
       }
     }
+  }
+  return null;
+}
+
+/** 学习流课时：索引空壳课与附录章（考点索引）不进学习流 */
+export function isFlowLesson(chapter: { appendix?: boolean }, lesson: LawLesson): boolean {
+  return !chapter.appendix && !isShellLesson(lesson);
+}
+
+/**
+ * 学习流的下一课：跳过索引空壳课与附录章课时。
+ * 直接取"下一个存在的学习流课时"判定有没有下一课——
+ * 绝不能用"全书序号 < lessonCount"判断：序号含空壳/附录课，lessonCount 不含，
+ * 两边口径不一致会把书尾几十课的「下一课」错误吞掉。
+ */
+export function nextFlowLesson(book: LawBook, lessonId: string): LawLesson | null {
+  const flat = book.chapters.flatMap((chapter) =>
+    chapter.lessons.map((lesson) => ({ chapter, lesson })),
+  );
+  const index = flat.findIndex((entry) => entry.lesson.id === lessonId);
+  if (index < 0) return null;
+  for (let i = index + 1; i < flat.length; i += 1) {
+    if (isFlowLesson(flat[i].chapter, flat[i].lesson)) return flat[i].lesson;
   }
   return null;
 }

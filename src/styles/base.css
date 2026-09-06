@@ -118,8 +118,8 @@
   --sun-note: #eed98f;
   --text-muted: #766a65;
   --hairline: rgba(91, 68, 61, 0.17);
-  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Songti SC", "STSong", serif;
-  --font-body: "PingFang SC", "Microsoft YaHei UI", system-ui, sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
+  --font-body: "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", "Source Han Sans SC", system-ui, sans-serif;
   --font-note: "Naihuangbao WenKai", "Kaiti SC", "KaiTi", serif;
   --radius-card: 8px;
   --radius-control: 8px;

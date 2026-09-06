@@ -11,8 +11,11 @@ export function DefinitionStep({ step, accent, accentSoft, onDone }: StepProps) 
   const [locked, setLocked] = useState(false);
   const doneRef = useRef(false);
 
-  const target = step.terms?.[0]?.term ?? tellTerm(step.text) ?? "";
-  const targetNote = step.terms?.[0]?.note;
+  // 关键词必须真的出现在本句里：terms 是按"整块文本"提取的，
+  // 长步骤按句切分后术语可能不在当前句——展示一个句子里没有的词只会误导
+  const termEntry = step.terms?.find((t) => t.term && step.text.includes(t.term));
+  const target = termEntry?.term ?? tellTerm(step.text) ?? "";
+  const targetNote = termEntry?.note;
 
   function complete() {
     if (doneRef.current) return;

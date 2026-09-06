@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { LawBook, LawLesson } from "../../../types/law";
 import { isShellLesson } from "../../../types/law";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
@@ -19,16 +19,25 @@ const SEARCH_EXAMPLES: Record<string, string> = {
   xingfa: "正当防卫",
 };
 
-/** 学科内全文搜索：标题 + 步骤正文，防抖 + 高亮片段 */
+/** 学科内全文搜索：标题 + 原文正文；输入防抖 160ms，结果片段高亮关键词 */
 export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: string) => void }) {
   const [query, setQuery] = useState("");
+  // 防抖：全书 500+ 课的 raw 逐字扫描不该跟手逐键触发
+  const [debounced, setDebounced] = useState("");
   const subject = LAW_SUBJECT_MAP[book.id];
 
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebounced(query), 160);
+    return () => window.clearTimeout(timer);
+  }, [query]);
+
   const hits = useMemo<SearchHit[]>(() => {
-    const keyword = query.trim();
+    const keyword = debounced.trim();
     if (keyword.length < 2) return [];
     const result: SearchHit[] = [];
     for (const chapter of book.chapters) {
+      // 附录章（考点索引）不进搜索——那是索引页不是知识点
+      if (chapter.appendix) continue;
       for (const lesson of chapter.lessons) {
         // 导览/占位课不进搜索结果（它们的内容已并入真实课时）；
         // 索引空壳课（纯标题、无正文）同样排除
@@ -43,9 +52,9 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
           });
           continue;
         }
-        const index = lesson.raw.join("；").indexOf(keyword);
+        const raw = lesson.raw.join("；");
+        const index = raw.indexOf(keyword);
         if (index >= 0) {
-          const raw = lesson.raw.join("；");
           const start = Math.max(0, index - 18);
           result.push({
             lesson,
@@ -57,9 +66,12 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
       }
     }
     return result.slice(0, 24);
-  }, [book, query]);
+    // 依赖 debounced（防抖后的关键词）而不是 query——否则防抖更新时结果不重算，
+    // 搜索会永远停在"没有找到"（e2e 回归：根本制度用例抓到）
+  }, [book, debounced]);
 
-  const active = query.trim().length >= 2;
+  const active = debounced.trim().length >= 2;
+  const keyword = debounced.trim();
 
   return (
     <div className="law-search" role="search">
@@ -83,7 +95,7 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
       {active ? (
         <div className="law-search__results" aria-live="polite">
           {hits.length === 0 ? (
-            <p className="law-search__empty">没有找到" {query} "，换个关键词试试（或用"原文对照"浏览全书）</p>
+            <p className="law-search__empty">没有找到" {keyword} "，换个关键词试试（或用"原文对照"浏览全书）</p>
           ) : (
             <ul>
               {hits.map((hit) => (
@@ -91,10 +103,10 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
                   <button type="button" onClick={() => onPick(hit.lesson.id)}>
                     <span className="law-search__tag">{hit.source === "title" ? "📌 标题" : "📄 正文"}</span>
                     <span className="law-search__hit-title">
-                      <b>{hit.lesson.title}</b>
+                      <b>{highlight(hit.lesson.title, keyword)}</b>
                       <small>{hit.chapter}</small>
                     </span>
-                    <span className="law-search__snippet">{hit.snippet}</span>
+                    <span className="law-search__snippet">{highlight(hit.snippet, keyword)}</span>
                   </button>
                 </li>
               ))}
@@ -103,5 +115,15 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
         </div>
       ) : null}
     </div>
+  );
+}
+
+/** 关键词高亮：命中片段包 <mark>，找不到就不加样式（正则转义防注入） */
+function highlight(text: string, keyword: string) {
+  if (!keyword) return text;
+  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = text.split(new RegExp(`(${escaped})`, "g"));
+  return parts.map((part, index) =>
+    part === keyword ? <mark key={index}>{part}</mark> : <span key={index}>{part}</span>,
   );
 }

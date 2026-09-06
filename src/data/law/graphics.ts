@@ -123,7 +123,7 @@ export const LAW_GRAPHICS: LawGraphic[] = [
     ],
   },
   {
-    lessonId: "minfa-q186",
+    lessonId: "minfa-q230",
     subject: "minfa",
     title: "物权体系树",
     kind: "tree",

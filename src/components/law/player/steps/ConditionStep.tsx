@@ -28,9 +28,9 @@ export function ConditionStep({ step, accent, accentSoft, onDone }: StepProps) {
   return (
     <StepShell
       eyebrow="🔑 要件型 · 缺一不可"
-      title={`成立条件 · ${items.length} 项全部满足`}
+      title={items.length === 1 ? "成立要件 · 一条都不能少" : `成立要件 · ${items.length} 项，缺一不可`}
       hint={
-        allDone ? undefined : `👆 逐项点选打勾：你确认理解后勾一个（${doneCount}/${items.length}）`
+        allDone ? undefined : `👆 点一下卡片，确认你理解了这条要件（${doneCount}/${items.length}）`
       }
       done={allDone}
       doneLabel="要件齐备，判定成立 ✓"

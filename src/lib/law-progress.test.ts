@@ -88,7 +88,7 @@ describe("law spaced-repetition review book", () => {
   });
 
   it("schedules the first review the day after a wrong answer", () => {
-    recordQuiz("xianfa-q001", 0, 4, 3, true);
+    recordQuiz("xianfa-q001", 0, 4, 3);
     const entry = getLessonProgress("xianfa-q001");
     expect(entry?.wrongCount).toBe(1);
     expect(entry?.reviewStage).toBe(0);
@@ -106,7 +106,7 @@ describe("law spaced-repetition review book", () => {
   });
 
   it("widens the interval after each passing review and graduates after five passes", () => {
-    recordQuiz("zhishixiang-q001", 0, 4, 2, true);
+    recordQuiz("zhishixiang-q001", 0, 4, 2);
     let due = getLessonProgress("zhishixiang-q001")!.reviewDueAt!;
 
     for (let stage = 1; stage <= REVIEW_INTERVALS.length; stage += 1) {
@@ -127,20 +127,20 @@ describe("law spaced-repetition review book", () => {
   });
 
   it("resets the review ladder when the lesson is answered wrong again", () => {
-    recordQuiz("falixue-q001", 0, 2, 1, true);
+    recordQuiz("falixue-q001", 0, 2, 1);
     vi.setSystemTime(new Date(Date.now() + DAY));
     recordQuiz("falixue-q001", 2, 2, 1);
     expect(getLessonProgress("falixue-q001")?.reviewStage).toBe(1);
 
-    recordQuiz("falixue-q001", 0, 2, 1, true);
+    recordQuiz("falixue-q001", 0, 2, 1);
     const entry = getLessonProgress("falixue-q001")!;
     expect(entry.reviewStage).toBe(0);
     expect(entry.reviewDueAt).toBe(Date.now() + REVIEW_INTERVALS[0] * DAY);
   });
 
   it("only lists lessons that are actually due in getDueReviewLessons", () => {
-    recordQuiz("falixue-q002", 0, 2, 1, true); // due tomorrow
-    recordQuiz("falixue-q003", 0, 2, 1, true); // due tomorrow
+    recordQuiz("falixue-q002", 0, 2, 1); // due tomorrow
+    recordQuiz("falixue-q003", 0, 2, 1); // due tomorrow
     expect(getDueReviewLessons(Date.now())).toHaveLength(0);
     expect(getDueReviewLessons(Date.now() + 2 * DAY)).toHaveLength(2);
   });
