@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  LAW_PROGRESS_EVENT,
   REVIEW_INTERVALS,
   getDueReviewLessons,
+  getEggState,
+  getGraduatedWrongCount,
   getLessonProgress,
   getReviewInfo,
   getStreakDays,
@@ -10,6 +13,7 @@ import {
   markStepDone,
   recordQuiz,
   touchLesson,
+  unlockEgg,
 } from "./law-progress";
 
 /** 极简 localStorage 桩（law-progress 通过 safeLocalStorage 访问 window.localStorage） */
@@ -164,5 +168,71 @@ describe("law spaced-repetition review book", () => {
       }),
     );
     expect(getStreakDays()).toBe(2);
+  });
+
+  it("graduated wrong lessons are counted only after the full ladder", () => {
+    recordQuiz("falixue-q010", 0, 2, 1);
+    expect(getGraduatedWrongCount()).toBe(0);
+    let due = getLessonProgress("falixue-q010")!.reviewDueAt!;
+    for (let stage = 1; stage <= REVIEW_INTERVALS.length; stage += 1) {
+      vi.setSystemTime(new Date(due));
+      recordQuiz("falixue-q010", 2, 2, 1);
+      if (stage < REVIEW_INTERVALS.length) {
+        expect(getGraduatedWrongCount()).toBe(0);
+        due = getLessonProgress("falixue-q010")!.reviewDueAt!;
+      }
+    }
+    // 第五次通过 → 毕业计数
+    expect(getGraduatedWrongCount()).toBe(1);
+  });
+});
+
+describe("law egg state and progress events", () => {
+  beforeEach(() => {
+    store = stubStorage();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-05T10:00:00"));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it("unlockEgg is one-shot and records the unlock timestamp", () => {
+    expect(unlockEgg("pathHalf")).toBe(true);
+    expect(unlockEgg("pathHalf")).toBe(false);
+    const state = getEggState();
+    expect(state.unlocked.pathHalf).toBe(true);
+    expect(state.unlockedAt.pathHalf).toBe(Date.now());
+    // 旧数据缺 unlockedAt 时图鉴回退到 seenAt，这里保证空值不炸
+    expect(state.unlockedAt.bookDone).toBeUndefined();
+  });
+
+  it("egg-relevant quiz outcomes dispatch the progress event", () => {
+    const events: string[] = [];
+    vi.stubGlobal("document", {
+      dispatchEvent: (event: { type: string }) => {
+        events.push(event.type);
+        return true;
+      },
+    });
+    vi.stubGlobal("CustomEvent", class CustomEventStub {
+      type: string;
+      constructor(type: string) {
+        this.type = type;
+      }
+    });
+    // 首次掌握 → 派发
+    markStepDone("minfa-q001", "minfa-q001-s0");
+    recordQuiz("minfa-q001", 3, 4, 1);
+    expect(events).toContain(LAW_PROGRESS_EVENT);
+    // 无关变化（重复通过已掌握课）不再派发
+    events.length = 0;
+    recordQuiz("minfa-q001", 4, 4, 1);
+    expect(events).toHaveLength(0);
+    // 答错进错题本 → 派发
+    recordQuiz("minfa-q002", 0, 4, 1);
+    expect(events).toContain(LAW_PROGRESS_EVENT);
   });
 });

@@ -54,6 +54,40 @@ describe("law egg triggers", () => {
     expect(checkEasterEggPure({ ...base, wrongLessons: 2 })).toBeNull();
   });
 
+  it("streak7 fires at seven days, after streak3 is taken", () => {
+    expect(checkEasterEggPure({ ...base, streakDays: 7 })).toBe("streak3"); // 3 天先到先得
+    expect(checkEasterEggPure({ ...base, streakDays: 7, unlocked: { streak3: true } })).toBe("streak7");
+    expect(checkEasterEggPure({ ...base, streakDays: 6, unlocked: { streak3: true } })).toBeNull();
+    expect(
+      checkEasterEggPure({ ...base, streakDays: 7, unlocked: { streak3: true, streak7: true } }),
+    ).toBeNull();
+  });
+
+  it("wrongGraduate fires once any wrong lesson has graduated", () => {
+    expect(checkEasterEggPure({ ...base, graduatedWrongCount: 1 })).toBe("wrongGraduate");
+    expect(checkEasterEggPure({ ...base, graduatedWrongCount: 0 })).toBeNull();
+    expect(
+      checkEasterEggPure({ ...base, graduatedWrongCount: 2, unlocked: { wrongGraduate: true } }),
+    ).toBeNull();
+  });
+
+  it("pathHalf requires crossing half of a book's learning flow", () => {
+    expect(checkEasterEggPure({ ...base, pathHalfDone: true })).toBe("pathHalf");
+    expect(checkEasterEggPure({ ...base })).toBeNull();
+    expect(checkEasterEggPure({ ...base, pathHalfDone: true, unlocked: { pathHalf: true } })).toBeNull();
+  });
+
+  it("bookDone fires for a fully completed book and outranks pathHalf", () => {
+    expect(checkEasterEggPure({ ...base, bookAllDone: true })).toBe("bookDone");
+    // 全书通 + 过半同时达成：先庆大的
+    expect(
+      checkEasterEggPure({ ...base, bookAllDone: true, pathHalfDone: true }),
+    ).toBe("bookDone");
+    expect(
+      checkEasterEggPure({ ...base, bookAllDone: true, pathHalfDone: true, unlocked: { bookDone: true } }),
+    ).toBe("pathHalf");
+  });
+
   it("date letters take priority over milestones", () => {
     // 平安夜当天深夜 + 首课同触 → 取圣诞
     const ctx: EggCheckContext = { ...at(12, 25, 23), doneCount: 1 };
