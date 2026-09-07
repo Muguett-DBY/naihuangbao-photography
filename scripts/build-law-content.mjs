@@ -313,6 +313,13 @@ function polishText(text) {
     .replace(/（([^（）（「」［］]{1,24})」/g, "（$1）")
     .replace(/「([^「」（）()［］]{1,24})）/g, "「$1」")
     .replace(/「([^「」（）()［］]{1,24})］/g, "「$1」");
+  // 书名号×圆括号错配（"《立法法）""（曹魏律》"）：内容含律/法/典/统类词 → 书名号；
+  // 否则按注记语义归圆括号（"（第三等级制宪主体是什么？）》"）
+  t = t
+    .replace(/《([^《》（）()]{1,20})[）)]/g, "《$1》")
+    .replace(/([（(])([^《》（）()]{1,20})》/g, (m, open, inner) =>
+      /[律法典]$|刑统|统类/.test(inner) ? `《${inner}》` : `（${inner}）`,
+    );
   return t;
 }
 
@@ -579,6 +586,16 @@ function relocateCompareLabels(text) {
       if (before === after) continue;
       // 词中焊接：删除标签复原句子
       out += text.slice(last, match.index);
+      // 删除接缝若形成叠串（"减刑与改判｜性质不同｜改判属于…"→"改判改判"），
+      // 插入分号分隔两个表格行——零内容损失且消除口吃
+      const tail = out.slice(-6);
+      const nextHead = text.slice(afterIdx, afterIdx + 6);
+      for (let n = 6; n >= 2; n -= 1) {
+        if (tail.length >= n && nextHead.length >= n && tail.slice(-n) === nextHead.slice(0, n)) {
+          out += "；";
+          break;
+        }
+      }
       last = afterIdx;
       if (!found.includes(match[0])) found.push(match[0]);
       changed = true;
