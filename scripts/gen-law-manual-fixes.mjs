@@ -33,6 +33,9 @@ const RULES = [
   // （q166 的定义步已与特征步合并，连接符"："由悬停合并逻辑插入）
   ["falixue-q166", ["知识、心理等的：1．概念总称。", "知识、心理等的总称。1．概念总称。"]],
   ["xianfa-q014", ["1679年的《人身保护法》；1689年的", "1679年的《人身保护法》；1689年的《权利法案》。"]],
+  // 《明大诰》名句 OCR 错字（标准知识：五刑为笞杖徒流死；两处分别误读 管/答）
+  ["zhishixiang-q033", ["若犯管、杖、徒、流罪名", "若犯笞、杖、徒、流罪名"]],
+  ["zhishixiang-q198-tour", ["若犯答、杖、徒、流罪名", "若犯笞、杖、徒、流罪名"]],
 ];
 
 const fixes = {};
@@ -44,11 +47,18 @@ for (const subject of ["falixue", "xianfa", "zhishixiang", "minfa", "xingfa"]) {
   for (const chapter of book.chapters) {
     for (const lesson of chapter.lessons) {
       for (const step of lesson.steps) {
-        // 同一步骤可命中多条规则：在同一份副本上链式累积替换
+        // 同一步骤可命中多条规则：在同一份副本上链式累积替换。
+        // 幂等守卫：数据已含修复结果（fixgen 通常在带修表构建后的 JSON 上运行）→
+        // 保留现状并仍然落表（全文本替换具有粘性，跨重建保持修复不回退）；
+        // 同时避免"from 是 to 前缀"式的规则（q014 截断补全）在已修文本上二次追加。
         const patched = { text: step.text };
         let hit = false;
         for (const [lessonPrefix, [from, to]] of RULES) {
           if (!lesson.id.startsWith(lessonPrefix)) continue;
+          if (patched.text.includes(to)) {
+            hit = true;
+            continue;
+          }
           if (!patched.text.includes(from)) continue;
           patched.text = patched.text.split(from).join(to);
           hit = true;
