@@ -48,7 +48,8 @@ describe("law content data quality", () => {
         .reduce((sum, c) => sum + c.lessons.filter((l) => !isShellLesson(l)).length, 0);
       expect(book.lessonCount).toBe(flowCount);
     }
-    expect(shells).toBe(83);
+    // 84：附录头页 zhishixiang-q216 在页眉剥离后正确回归纯标题形态（2026-09-08 C 会话）
+    expect(shells).toBe(84);
   });
 
   it("matches stats.json lesson counts (shells excluded)", () => {

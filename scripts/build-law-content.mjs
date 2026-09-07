@@ -57,15 +57,15 @@ const FIXES = [
 // 只有带不上 RE_PART/RE_CHAPTER 前缀的糊字形态才会漏进正文，这里整行剥离（零误伤：
 // 全部含 ○/〇 的 OCR 行已逐一枚举核实，正文含 ○ 仅"一八四○年"引文一种，被 1840 守卫放行）。
 function isRunningHeaderLine(text) {
-  if (!/[○〇]/.test(text)) return false;
-  if (/一八四[○〇]年/.test(text)) return false;
+  if (!/[〇○O0０]/.test(text)) return false;
+  if (/一八四[〇○]年/.test(text)) return false;
   if (RE_PART.test(text) || RE_CHAPTER.test(text)) return false;
   if (text.length > 26) return false;
   if (/[。！？，；：]/.test(text)) return false;
   return (
-    /^[策繁算]?第?[一二三四五六七八九十百0-9大小寮窜亿崇分王郁]{1,6}[课章編编意童崇郁分]?[○〇][一-龥（）"“”]{0,20}$/.test(
+    /^[策繁算]?第?[一二三四五六七八九十百0-9大小寮窜亿崇分王郁]{1,6}[课章編编意童崇郁分]?[〇○O0][一-龥（）"“”]{0,20}$/.test(
       text,
-    ) || /^附[录件][一二三四五六0-9]{1,3}[○〇][^，。；]{0,22}$/.test(text)
+    ) || /^附[录件][一二三四五六0-9]{1,3}[〇○O0０][^，。；]{0,22}$/.test(text)
   );
 }
 
@@ -231,6 +231,8 @@ function polishText(text) {
     ["恪守职业道宿", "恪守职业道德"],
     // 背诵口诀前焊进的英文页眉残渣（"Feel非偶（非终是偶犯）"）
     ["Feel非偶", "非偶"],
+    // 附件页眉"续"记号糊字残尾（"必须是不同的罪名续麦吸收犯"）——独立成词只可能是残渣
+    ["续麦", ""],
   ];
   for (const [from, to] of OCR_FIX) {
     t = t.split(from).join(to);
@@ -284,6 +286,12 @@ function polishText(text) {
   );
   // 糊版章名（"第十八意○带续夷""第大童○机构论"——页眉"第X章○章名"的 OCR 残迹）
   t = t.replace(/[第][大小宽二王三四五六七八九十]{1,3}[童意亿审][〇○0][一-龥]{0,10}/g, "");
+  // 附录/附件运行头焊进句中（"附件二O对比类考点归纳续麦前罪是…"——页眉在步骤拼接处残留；
+  // 标题尾部锚定到 清单/索引/归纳/规定，防止懒匹配吞掉后续正文）
+  t = t.replace(
+    /附[录件][一二三四五六][〇○O0０][^。；，]{0,18}?(?:清单|索引|归纳|规定|归幼|归(?=[的。；，]))(?:续麦)?/g,
+    "",
+  );
   // 页边"平替"记忆标注（"使用“严格执法原则”平替即可""用“法治国家”平替法治建设"）——纯标签，剥离
   t = t
     .replace(/使用[““][^””]{2,24}[””]平替即可/g, "")
@@ -541,6 +549,51 @@ function classifyStep(blockTexts) {
   return "plain";
 }
 
+/**
+ * 对比表标签重定位：OCR 把表格"维度标签"（犯罪客体不同/主观方面不同/适用对象不同…）
+ * 焊进句中甚至词中（"国家司法机[犯罪客体不同]关的正常活动""以非法占[主观方面不同]有为目的"）。
+ * 处理：词中标签整段删除（句子随即复原），并汇集为步骤前缀注记——维度知识不丢；
+ * 步骤末尾的标签只剥"不同"残尾（词干"犯罪主体/对象"是句子成分）。
+ * 全部词干来自数据实测的封闭词表；后随"的"的合法行文（"两罪客体不同的情况"）不动。
+ */
+const COMPARE_LABEL =
+  /(?:是否判处刑罚|有无考验期限|法律后果|严厉程度|获利方式|取财方式|影响力来源|挪用用途|考验期限|执行方法|犯罪客体|犯罪主体|客观方面|主观方面|客观行为|犯罪对象|适用对象|直接客体|犯罪性质|犯罪目的|犯罪行为|行为方式|行为内容|情节要求|发生时间|主观目的|广泛性|多样性|区域性|人罪条件|强制性|罪名|性质|内容|后果|前提|关系|罪过|期限|领域|方法|种类|范围|程序|机关|次数|方式|时间|场合|对象|主体|客体|目的|结果|条件|处罚|行为|程度|主观)不同/g;
+function relocateCompareLabels(text) {
+  let changed = false;
+  const found = [];
+  let out = "";
+  let last = 0;
+  for (const match of text.matchAll(COMPARE_LABEL)) {
+    const before = match.index > 0 ? text[match.index - 1] : "";
+    const afterIdx = match.index + match[0].length;
+    const after = afterIdx < text.length ? text[afterIdx] : "";
+    // "X不同于Y"是合法动词短语（"程序不同于一般法律"），绝不是标签
+    if (after === "于") continue;
+    // 编号列表头（"4.实现方式不同"）是条目标题不是表格标签——
+    // 回看 8 字内是否有"N./①/（一）"条目符 + ≤6 字引导词
+    const head = text.slice(Math.max(0, match.index - 8), match.index);
+    if (/(?:^|[。；：])[①-⑨\d]{1,3}[.、．][一-龥]{0,6}$/.test(head) || /^[①-⑨][一-龥]{0,6}$/.test(head)) continue;
+    if (/[一-龥]/.test(before) && /[一-龥]/.test(after) && after !== "的" && before !== "的") {
+      // 同字接头（"权利｜义务范围不同｜利"→"权利利"）说明标签两侧字符本是一词，
+      // 删除会产生叠字残迹——这种交错形态留给人工修表
+      if (before === after) continue;
+      // 词中焊接：删除标签复原句子
+      out += text.slice(last, match.index);
+      last = afterIdx;
+      if (!found.includes(match[0])) found.push(match[0]);
+      changed = true;
+    } else if (afterIdx >= text.length && /[一-龥]/.test(before)) {
+      // 步骤末尾残尾：只剥"不同"，词干留给句子
+      out += text.slice(last, afterIdx - 2);
+      last = afterIdx;
+      changed = true;
+    }
+  }
+  if (!changed) return text;
+  out += text.slice(last);
+  return found.length > 0 ? `［${found.join("／")}］${out}` : out;
+}
+
 function buildSteps(blocks) {
   const steps = [];
   for (const block of blocks) {
@@ -556,7 +609,7 @@ function buildSteps(blocks) {
       texts = deduped;
     }
     const kind = classifyStep(texts);
-    let joined = polishText(texts.join("；"));
+    let joined = relocateCompareLabels(polishText(texts.join("；")));
     joined = restoreTerminal(joined);
     const step = {
       id: "",
