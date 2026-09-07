@@ -23,15 +23,16 @@ async function waitForServiceWorker(page: import("@playwright/test").Page) {
     .toBe(true);
 }
 
-async function goOffline(context: import("@playwright/test").BrowserContext) {
+async function goOffline(context: import("@playwright/test").BrowserContext, baseURL: string) {
   await context.setOffline(true);
   // setOffline 的页面级模拟历史上覆盖不到 SW 发起的请求；
   // 路由中止作用于网络层，SW 缓存命中根本不出网 → 不受影响，未命中则被掐断
-  await context.route(/^https?:\/\/127\.0\.0\.1:4174\//, (route) => route.abort());
+  const origin = new URL(baseURL).origin.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  await context.route(new RegExp(`^${origin}/`), (route) => route.abort());
 }
 
 test.describe("law offline learning", () => {
-  test("学习中心 + 学科目录 + 已学过的课离线完整可用", async ({ page, context }) => {
+  test("学习中心 + 学科目录 + 已学过的课离线完整可用", async ({ page, context, baseURL }) => {
     test.setTimeout(120_000);
 
     await waitForServiceWorker(page);
@@ -44,7 +45,7 @@ test.describe("law offline learning", () => {
     await page.goto(CACHED_LESSON);
     await expect(page.locator(".law-player")).toBeVisible();
 
-    await goOffline(context);
+    await goOffline(context, baseURL!);
 
     // ① 学习中心
     await page.goto("/law");

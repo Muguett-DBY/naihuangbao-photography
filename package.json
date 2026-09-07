@@ -18,6 +18,7 @@
     "law:live": "node scripts/live-check.mjs",
     "law:offline": "playwright test -c e2e/playwright.config.ts e2e/law-offline.spec.ts",
     "law:perf": "node scripts/law-perf-check.mjs",
+    "law:runtime": "node scripts/law-runtime-check.mjs",
     "law:devices": "node scripts/devices-check.mjs",
     "law:audit": "node --import tsx scripts/audit-law.mts",
     "avif": "node scripts/convert-to-avif.mjs",
