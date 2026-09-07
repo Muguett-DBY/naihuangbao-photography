@@ -124,6 +124,23 @@ export default defineConfig({
         ],
         runtimeCaching: [
           {
+            // law 数据分块（loader 按需 fetch 的哈希 JSON 资源）：
+            // Vite 产物均带内容哈希、内容不可变 → CacheFirst；
+            // 进过课即离线可复学（law:offline 实测覆盖）
+            urlPattern: ({ url }) => url.pathname.startsWith("/assets/") && url.pathname.endsWith(".json"),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "law-data-chunks-v1",
+              expiration: {
+                maxEntries: 120,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
             urlPattern: ({ request, url }) => {
               const assetRequest = request as unknown as { destination?: string };
               return assetRequest.destination === "script" && url.pathname.startsWith("/assets/");

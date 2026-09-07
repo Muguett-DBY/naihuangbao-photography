@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router";
-import type { LawBook, LawSubjectId } from "../types/law";
-import { collectSiblingTerms, loadLawBook, nextFlowLesson } from "../data/law/loader";
+import type { LawSubjectId } from "../types/law";
+import { loadLawLessonView, type LawLessonView } from "../data/law/loader";
 import { LessonPlayer } from "../components/law/player/LessonPlayer";
+import { LawLoadingSkeleton } from "../components/law/LawLoadingSkeleton";
 import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, useLawImmersive } from "../components/law/EasterEgg";
 import "../styles/law-academy.css";
@@ -14,7 +15,8 @@ export function LawLessonPage() {
   const { lessonId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [book, setBook] = useState<LawBook | null>(null);
+  // view === "missing" 表示书加载成功但课时 id 不存在（旧链接/手误），与加载失败区分
+  const [view, setView] = useState<LawLessonView | "missing" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // 沉浸专注模式：隐藏摄影站导航，全屏学习
@@ -29,11 +31,13 @@ export function LawLessonPage() {
   }, [lessonId]);
 
   useEffect(() => {
-    if (!subjectId) return;
+    if (!subjectId || !lessonId) return;
     let cancelled = false;
-    loadLawBook(subjectId)
+    setView(null);
+    setError(null);
+    loadLawLessonView(subjectId, lessonId)
       .then((loaded) => {
-        if (!cancelled) setBook(loaded);
+        if (!cancelled) setView(loaded ?? "missing");
       })
       .catch((cause: unknown) => {
         if (!cancelled) setError(cause instanceof Error ? cause.message : String(cause));
@@ -41,21 +45,10 @@ export function LawLessonPage() {
     return () => {
       cancelled = true;
     };
-  }, [subjectId]);
+  }, [subjectId, lessonId]);
 
-  const lessonRef = useMemo(() => {
-    if (!book || !lessonId) return null;
-    for (const chapter of book.chapters) {
-      const lesson = chapter.lessons.find((item) => item.id === lessonId);
-      if (lesson) return { lesson };
-    }
-    return null;
-  }, [book, lessonId]);
-
-  const siblingTerms = useMemo(
-    () => (book && lessonId ? collectSiblingTerms(book, lessonId) : []),
-    [book, lessonId],
-  );
+  const siblingTerms = view && view !== "missing" ? view.siblingTerms : [];
+  const nextId = view && view !== "missing" ? view.nextFlowId : null;
 
   if (error || !subjectId) {
     return (
@@ -70,15 +63,15 @@ export function LawLessonPage() {
   }
 
   // 书加载完但课时 id 查不到（改版后旧链接/手误）→ 明确的"未找到"态，
-  // 不能和"还在加载"混在一个分支里让用户永远看着"正在打开课件……"
-  const notFound = book !== null && lessonRef === null;
+  // 不能和"还在加载"混在一个分支里让用户永远看着加载动画
+  const notFound = view === "missing";
 
-  if (error || !subjectId || notFound) {
+  if (notFound) {
     return (
       <div className="law-academy">
         <div className="law-notfound">
           <LawMascot mood="oops" size={80} />
-          <h1>找不到这节课（{error ?? (notFound ? lessonId : "链接有误")}）</h1>
+          <h1>找不到这节课（{lessonId}）</h1>
           <p>可能这节课换了个编号，回目录找找看。</p>
           <Link to="/law" className="law-player__cta">← 回学习中心</Link>
         </div>
@@ -86,30 +79,23 @@ export function LawLessonPage() {
     );
   }
 
-  if (!book || !lessonRef) {
+  if (!view) {
     return (
       <div className="law-academy">
-        <div className="law-loading" aria-live="polite">
-          <LawMascot mood="think" size={64} />
-          <p>正在打开课件……</p>
-        </div>
+        <LawLoadingSkeleton label="正在打开课件" variant="lesson" />
       </div>
     );
   }
 
-  // 下一课只认"学习流课时"（跳过索引空壳课与附录章）。
-  // 不用"全书序号 < lessonCount"判断：序号含空壳/附录课而 lessonCount 不含，
-  // 口径不一致会吞掉书尾几十课的「下一课」按钮。
-  const next = nextFlowLesson(book, lessonId as string);
-  const nextId = next?.id ?? null;
-  // 错题本"复习测试"入口：直达自测（无题时播放器会自动退回讲解流程）
+  // 下一课只认"学习流课时"（跳过索引空壳课与附录章），语义与整本版 nextFlowLesson 等价
+  // （loader-chunks.test.ts 逐课锁定）；错题本"复习测试"入口：?review=1 直达自测
   const reviewMode = searchParams.get("review") === "1";
 
   return (
     <div className="law-academy law-lesson-page">
       <LessonPlayer
         key={lessonId}
-        lesson={lessonRef.lesson}
+        lesson={view.lesson}
         siblingTerms={siblingTerms}
         initialPhase={reviewMode ? "quiz" : "steps"}
         onExit={() => {
