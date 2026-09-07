@@ -255,10 +255,17 @@ export type EggTrigger =
 /** 进度事件（document CustomEvent）：错题建档/毕业/课时完成时派发，彩蛋监听即时重查 */
 export const LAW_PROGRESS_EVENT = "nhb-law-progress";
 
-function emitProgressEvent(): void {
+/** 彩蛋解锁事件：图鉴入口计数等 UI 即时刷新用 */
+export const LAW_EGG_UNLOCKED_EVENT = "nhb-law-egg-unlocked";
+
+function emitDomEvent(name: string): void {
   if (typeof document === "undefined" || typeof document.dispatchEvent !== "function") return;
   if (typeof CustomEvent !== "function") return;
-  document.dispatchEvent(new CustomEvent(LAW_PROGRESS_EVENT));
+  document.dispatchEvent(new CustomEvent(name));
+}
+
+function emitProgressEvent(): void {
+  emitDomEvent(LAW_PROGRESS_EVENT);
 }
 
 /** 连续学习天数：按"完成课时"的日期从今天/昨天向前连续计数 */
@@ -313,6 +320,7 @@ export function unlockEgg(trigger: EggTrigger): boolean {
   state.unlocked[trigger] = true;
   state.unlockedAt[trigger] = Date.now();
   writeEggs(state);
+  emitDomEvent(LAW_EGG_UNLOCKED_EVENT);
   return true;
 }
 
