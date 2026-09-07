@@ -34,11 +34,11 @@ async function freePort(start) {
 }
 
 async function startPreview(port) {
-  const child = spawn("npx", ["vite", "preview", "--host", "127.0.0.1", "--port", String(port), "--strictPort"], {
-    cwd: root,
-    stdio: "ignore",
-    shell: true,
-  });
+  // 不经 shell 直接 node 调 vite bin：Windows 上 child.kill() 才能真正杀掉服务进程
+  const child = spawn(process.execPath, [
+    join(root, "node_modules", "vite", "bin", "vite.js"),
+    "preview", "--host", "127.0.0.1", "--port", String(port), "--strictPort",
+  ], { cwd: root, stdio: "ignore" });
   const base = `http://127.0.0.1:${port}`;
   for (let i = 0; i < 120; i += 1) {
     await new Promise((wait) => setTimeout(wait, 500));

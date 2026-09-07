@@ -122,12 +122,25 @@ function assembleBook(meta: LawMeta, parts: LawPart[]): LawBook {
 
 const bookPromises = new Map<LawSubjectId, Promise<LawBook>>();
 
+/** 让出主线程一帧：整本装配的 JSON.parse 分片执行，避免单个数百 ms 长任务卡输入 */
+function yieldToMain(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 export async function loadLawBook(subject: LawSubjectId): Promise<LawBook> {
   let promise = bookPromises.get(subject);
   if (!promise) {
     promise = (async () => {
       const meta = await loadMeta(subject);
-      const parts = await Promise.all(meta.parts.map((file) => fetchJson<LawPart>(chunkUrl(subject, file))));
+      const responses = await Promise.all(meta.parts.map((file) => fetch(chunkUrl(subject, file), { cache: "default" })));
+      for (const response of responses) {
+        if (!response.ok) throw new Error(`law data ${response.url} → HTTP ${response.status}`);
+      }
+      const parts: LawPart[] = [];
+      for (const response of responses) {
+        parts.push((await response.json()) as LawPart);
+        await yieldToMain();
+      }
       return assembleBook(meta, parts);
     })();
     bookPromises.set(subject, promise);
