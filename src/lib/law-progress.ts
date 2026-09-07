@@ -110,6 +110,8 @@ export function recordQuiz(
   const now = Date.now();
   // 及格线 = 答对一半；跳过自测视为直接掌握（但不动错题本）
   const passed = opts.skipped || correct >= Math.ceil(total / 2);
+  let wrongBookChanged = false;
+  let graduated = false;
   if (!opts.skipped) {
     entry.quizBest = Math.max(entry.quizBest ?? 0, correct);
     entry.quizTotal = total;
@@ -120,23 +122,29 @@ export function recordQuiz(
     entry.wrongAt = now;
     entry.reviewStage = 0;
     entry.reviewDueAt = now + REVIEW_INTERVALS[0] * DAY_MS;
+    wrongBookChanged = true;
   } else if (!opts.skipped && (entry.wrongCount ?? 0) > 0 && (entry.reviewDueAt ?? 0) > 0) {
     // 错题复习通过：间隔翻倍式后延，五连过即毕业
     const stage = (entry.reviewStage ?? 0) + 1;
     entry.reviewStage = stage;
     if (stage >= REVIEW_INTERVALS.length) {
       entry.reviewDueAt = undefined;
+      graduated = true;
     } else {
       entry.reviewDueAt = now + REVIEW_INTERVALS[stage] * DAY_MS;
     }
   }
   const allStepsDone = stepCount > 0 && Object.keys(entry.stepsDone).length >= stepCount;
+  let completed = false;
   if (passed && allStepsDone && !entry.completedAt) {
     entry.completedAt = now;
     bumpTodayGoal();
+    completed = true;
   }
   store.lessons[lessonId] = entry;
   writeStore(store);
+  // 彩蛋相关的进度变化即时广播：挂载中的 LawEggListener 立刻重查（而不是等下次进页面）
+  if (wrongBookChanged || graduated || completed) emitProgressEvent();
 }
 
 export function releaseLesson(lessonId: string): void {
@@ -199,6 +207,17 @@ export function getWrongLessons(): string[] {
     .map(([id]) => id);
 }
 
+/** 已从错题本毕业的课时数（五次复习全部通过），错题毕业彩蛋的判定输入 */
+export function getGraduatedWrongCount(): number {
+  const lessons = getLawProgress();
+  return Object.values(lessons).filter(
+    (progress) =>
+      (progress.wrongCount ?? 0) > 0 &&
+      progress.reviewDueAt === undefined &&
+      (progress.reviewStage ?? 0) >= REVIEW_INTERVALS.length,
+  ).length;
+}
+
 /** 今日到期的复习课（答错后到了该再测的时间），最早到期的排前面 */
 export function getDueReviewLessons(now: number = Date.now()): string[] {
   const lessons = getLawProgress();
@@ -223,11 +242,24 @@ export type EggTrigger =
   | "firstLesson"
   | "hundred"
   | "streak3"
+  | "streak7"
   | "wrongbook3"
+  | "wrongGraduate"
+  | "pathHalf"
+  | "bookDone"
   | "graphicFirst"
   | "exam30"
   | "christmas"
   | "symbol";
+
+/** 进度事件（document CustomEvent）：错题建档/毕业/课时完成时派发，彩蛋监听即时重查 */
+export const LAW_PROGRESS_EVENT = "nhb-law-progress";
+
+function emitProgressEvent(): void {
+  if (typeof document === "undefined" || typeof document.dispatchEvent !== "function") return;
+  if (typeof CustomEvent !== "function") return;
+  document.dispatchEvent(new CustomEvent(LAW_PROGRESS_EVENT));
+}
 
 /** 连续学习天数：按"完成课时"的日期从今天/昨天向前连续计数 */
 export function getStreakDays(): number {
@@ -256,20 +288,22 @@ interface EggState {
   unlocked: Record<string, boolean>;
   /** 首次彩蛋展示时间戳 */
   seenAt: Record<string, number>;
+  /** 首次解锁时间戳（图鉴展示用；旧数据可能缺失） */
+  unlockedAt: Record<string, number>;
 }
 
 function readEggs(): EggState {
   const raw = safeLocalStorage.getItem(EGG_KEY);
-  if (!raw) return { unlocked: {}, seenAt: {} };
+  if (!raw) return { unlocked: {}, seenAt: {}, unlockedAt: {} };
   try {
     const parsed = JSON.parse(raw) as EggState;
-    return { unlocked: parsed.unlocked ?? {}, seenAt: parsed.seenAt ?? {} };
+    return { unlocked: parsed.unlocked ?? {}, seenAt: parsed.seenAt ?? {}, unlockedAt: parsed.unlockedAt ?? {} };
   } catch {
-    return { unlocked: {}, seenAt: {} };
+    return { unlocked: {}, seenAt: {}, unlockedAt: {} };
   }
 }
 
-function writeEggs(state: EggState) {
+function writeEggs(state: EggState): void {
   safeLocalStorage.setItem(EGG_KEY, JSON.stringify(state));
 }
 
@@ -277,6 +311,7 @@ export function unlockEgg(trigger: EggTrigger): boolean {
   const state = readEggs();
   if (state.unlocked[trigger]) return false;
   state.unlocked[trigger] = true;
+  state.unlockedAt[trigger] = Date.now();
   writeEggs(state);
   return true;
 }
@@ -289,6 +324,16 @@ export function markEggSeen(trigger: EggTrigger): void {
 
 export function wasEggSeen(trigger: EggTrigger): boolean {
   return readEggs().seenAt[trigger] !== undefined;
+}
+
+/** 彩蛋全量状态（图鉴用）：解锁集合 + 解锁/查看时间 */
+export function getEggState(): {
+  unlocked: Partial<Record<EggTrigger, boolean>>;
+  unlockedAt: Partial<Record<EggTrigger, number>>;
+  seenAt: Partial<Record<EggTrigger, number>>;
+} {
+  const state = readEggs();
+  return { unlocked: state.unlocked, unlockedAt: state.unlockedAt, seenAt: state.seenAt };
 }
 
 /** 已解锁彩蛋集合（供彩蛋判定的纯函数读取） */

@@ -8,10 +8,13 @@ import { getPlan } from "../lib/law-plan";
 import { getDueReviewLessons, getLastLessonId, getTodayGoal, subjectStats } from "../lib/law-progress";
 import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, LawEggSymbol, useLawImmersive } from "../components/law/EasterEgg";
+import { LawEggGalleryButton, LawSoundToggle } from "../components/law/EggGallery";
+import { LawFinishBanner } from "../components/law/LawFinishBanner";
 import { LawPlanCard } from "../components/law/LawPlanCard";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
+import "../styles/law-easter.css";
 
 interface LawStats {
   [key: string]: { lessonCount: number; chapterTitles: string[] };
@@ -40,6 +43,18 @@ export function LawAcademyPage() {
   const resumeHref = lastLessonId ?? "/law/minfa";
   const resumeLabel = lastLessonId ? "继续学习" : "开始第一课";
   const todayPercent = Math.min(100, Math.round((today.done / today.target) * 100));
+  // 通关横幅候选（stats 口径），组件内部会用 meta 级精确口径复核后展示
+  const finishSubjects = useMemo(
+    () =>
+      LAW_SUBJECTS.map((subject) => ({
+        id: subject.id,
+        name: subject.name,
+        emoji: subject.emoji,
+        done: progress[subject.id]?.done ?? 0,
+        total: stats[subject.id]?.lessonCount ?? 0,
+      })),
+    [progress],
+  );
 
   return (
     <div className="law-academy">
@@ -219,11 +234,17 @@ export function LawAcademyPage() {
         </ol>
       </section>
 
+      <LawFinishBanner subjects={finishSubjects} />
+
       <footer className="law-academy__foot">
         <Link to="/" className="law-academy__home">
           ← 回主页
         </Link>
-        <LawEggSymbol />
+        <span className="law-academy__foot-tools">
+          <LawEggSymbol />
+          <LawEggGalleryButton />
+          <LawSoundToggle />
+        </span>
         <span>内容源自《27 法硕背诵一本通》五册 · 针对 2027 法硕考研 · 共 931 页</span>
       </footer>
 

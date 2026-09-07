@@ -7,8 +7,9 @@ test.describe("law academy", () => {
       localStorage.clear();
       // 预解锁全部彩蛋，避免时段型彩蛋信（清晨/深夜/考前30天）弹窗挡住交互
       const triggers = [
-        "midnight", "morning", "firstLesson", "hundred", "streak3",
-        "wrongbook3", "graphicFirst", "exam30", "christmas", "symbol",
+        "midnight", "morning", "firstLesson", "hundred", "streak3", "streak7",
+        "wrongbook3", "wrongGraduate", "pathHalf", "bookDone",
+        "graphicFirst", "exam30", "christmas", "symbol",
       ];
       const unlocked = Object.fromEntries(triggers.map((t) => [t, true]));
       localStorage.setItem("nhb-law-egg-v1", JSON.stringify({ unlocked, seenAt: { morning: 1 } }));
@@ -162,5 +163,92 @@ test.describe("law academy", () => {
     // 偏好已持久化：刷新后仍在路径视图
     await page.reload();
     await expect(page.locator(".law-path")).toBeVisible();
+  });
+
+  test("彩蛋图鉴：入口可达，解锁态与剪影态同屏", async ({ page }) => {
+    // 只解锁一部分彩蛋 → 图鉴里既有彩色卡也有剪影卡。
+    // 时段型（清晨/深夜/考前/圣诞）必须保持已解锁，否则真实时间的彩蛋信会弹窗挡住交互
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "nhb-law-egg-v1",
+        JSON.stringify({
+          unlocked: {
+            firstLesson: true,
+            symbol: true,
+            morning: true,
+            midnight: true,
+            christmas: true,
+            exam30: true,
+          },
+          unlockedAt: { firstLesson: 1756000000000, symbol: 1756000000000 },
+          seenAt: {},
+        }),
+      );
+    });
+    await page.goto("/law");
+    const entry = page.locator(".law-gallery-entry");
+    await expect(entry).toBeVisible();
+    await expect(entry).toContainText("6/14");
+    await entry.click();
+    const gallery = page.locator(".law-gallery");
+    await expect(gallery).toBeVisible();
+    await expect(gallery.locator(".law-gallery__head")).toContainText("已收集 6 / 14");
+    // 解锁卡：显示标题与预览；剪影卡：显示 ？？？ 与待解锁
+    await expect(gallery.locator(".law-gallery__egg.is-unlocked")).toHaveCount(6);
+    await expect(gallery.locator(".law-gallery__egg.is-locked").first()).toBeVisible();
+    expect(await gallery.locator(".law-gallery__egg.is-locked").count()).toBe(8);
+    await expect(gallery.locator(".law-gallery__egg.is-unlocked").first()).toContainText("解锁");
+    await expect(gallery.locator(".law-gallery__egg.is-locked b").first()).toHaveText("？？？");
+    // 点开已解锁卡 → 重读信件弹窗
+    await gallery.locator(".law-gallery__egg.is-unlocked").first().click();
+    await expect(page.locator(".law-egg-card")).toBeVisible();
+    await page.locator(".law-egg-card__close").click();
+    await expect(page.locator(".law-egg-card")).toHaveCount(0);
+    // 关闭图鉴
+    await page.locator(".law-gallery__x").click();
+    await expect(page.locator(".law-gallery")).toHaveCount(0);
+  });
+
+  test("通关横幅：一本书全部掌握时在学习中心庆祝", async ({ page }) => {
+    // 宪法书全课完成（stats 口径 done>=total 给横幅候选，横幅内部再用 meta 精确口径复核）。
+    // 课时 id 有 q001 与 q001-tour 两种形态，两种都注入多余的 key 无害（精确口径只认 meta 里的）
+    await page.addInitScript(() => {
+      const lessons: Record<string, unknown> = {};
+      const pad = (n: number) => String(n).padStart(3, "0");
+      for (let i = 1; i <= 120; i += 1) {
+        for (const id of [`xianfa-q${pad(i)}`, `xianfa-q${pad(i)}-tour`]) {
+          lessons[id] = {
+            stepsDone: {},
+            quizBest: 1,
+            quizTotal: 1,
+            wrongCount: 0,
+            lastVisitedAt: 1,
+            completedAt: 1757000000000,
+          };
+        }
+      }
+      localStorage.setItem(
+        "nhb-law-academy-v1",
+        JSON.stringify({ version: 1, lastLessonId: "xianfa-q001", lessons }),
+      );
+    });
+    await page.goto("/law");
+    const banner = page.locator(".law-finish-banner__card");
+    await expect(banner).toBeVisible({ timeout: 15_000 });
+    await expect(banner).toContainText("宪法");
+    await expect(banner).toContainText("已通");
+  });
+
+  test("音效开关：默认开，可切换并持久化", async ({ page }) => {
+    await page.goto("/law");
+    const toggle = page.locator(".law-sound-toggle");
+    await expect(toggle).toBeVisible();
+    // 默认未写入偏好（无 reduce-motion 的测试环境）→ 开
+    await expect(toggle).toHaveText(/🔊/);
+    await toggle.click();
+    await expect(toggle).toHaveText(/🔇/);
+    // 偏好已落盘（不能断言 reload 后状态：beforeEach 的 initScript 每次导航都会清空 localStorage）
+    const saved = await page.evaluate(() => localStorage.getItem("nhb-law-sound"));
+    expect(saved).toBe("off");
   });
 });

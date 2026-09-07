@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import type { LawQuizItem } from "../../../types/law";
+import { playLawSound } from "../../../lib/law-sound";
 import { LawMascot } from "../LawMascot";
 
 type AnswerState = "idle" | "correct" | "wrong";
@@ -31,6 +32,7 @@ export function QuizRunner({
   const handleOrderComplete = useCallback(
     (isGood: boolean) => {
       setState(isGood ? "correct" : "wrong");
+      playLawSound(isGood ? "correct" : "wrong");
       if (isGood) setCorrectCount((value) => value + 1);
       else setWrongCount((value) => value + 1);
     },
@@ -53,6 +55,7 @@ export function QuizRunner({
     const isCorrect = option === item.answer;
     setPicked(option);
     setState(isCorrect ? "correct" : "wrong");
+    playLawSound(isCorrect ? "correct" : "wrong");
     if (isCorrect) setCorrectCount((value) => value + 1);
     else setWrongCount((value) => value + 1);
   }
