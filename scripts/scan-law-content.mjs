@@ -60,10 +60,12 @@ function scanWelded(subject, lesson, step) {
  *  单字为/于/向/据/由/变/受/联 等可结尾于合法名词（行为/自由/依据/改变），
  *  只收"绝不可能作名词尾字"的纯功能词 + 常见功能词双字尾 */
 const HANG_BAD_SINGLE = /[的与或及是对把被从而且但其至了着跟]$/;
+const HANG_NOUN_OK = /(目的|标的|别的|有的|显得|懂得|记得|觉得|贵的)$/;
 const HANG_BAD_DOUBLE = /(以及|从而|进而|因而|鉴于|基于|使得|对于|属于|成为|作为|所谓|如果|虽然|但是|因为|所以|为了|不是|需要|应当|必须|可以|能够|可能|已经|正在|开始|继续|进行|产生|形成|具有|包括|意味)$/;
 function scanHanging(subject, lesson, step) {
   const t = step.text.replace(/[；;，,]$/, "");
   if (t.length < 6 || /[。！？…”」》）]$/.test(step.text)) return;
+  if (HANG_NOUN_OK.test(t)) return;
   if (HANG_BAD_SINGLE.test(t)) push("hanging-truncation", subject, lesson.id, step.id, step.text, "连接词悬停收尾");
   else if (HANG_BAD_DOUBLE.test(t)) push("hanging-truncation", subject, lesson.id, step.id, step.text, "功能词悬停收尾");
 }
