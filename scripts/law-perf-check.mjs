@@ -125,12 +125,24 @@ async function main() {
   }
 
   // 每科取第一节"学习流课时"（跳过导览/索引壳课，与 app 口径一致）
+  // 另取"最坏课时"：所在分块文件最大的那课（单课巨型课如 xingfa 第十二部分 185KB）
   const firstFlowLesson = new Map();
+  const worstLesson = new Map();
   for (const subject of SUBJECTS) {
-    const meta = JSON.parse(await readFile(join(CHUNKS_DIR, subject, `${subject}-meta.json`), "utf8"));
+    const dir = join(CHUNKS_DIR, subject);
+    const meta = JSON.parse(await readFile(join(dir, `${subject}-meta.json`), "utf8"));
     const hit = meta.chapters.flatMap((chapter) => chapter.ls).find((lesson) => lesson.f === 1);
     if (!hit) throw new Error(`${subject} 没有学习流课时？`);
     firstFlowLesson.set(subject, hit.i);
+
+    let biggest = { file: "", bytes: -1 };
+    for (const file of await readdir(dir)) {
+      if (!file.endsWith(".json") || file.includes("-meta")) continue;
+      const bytes = (await stat(join(dir, file))).size;
+      if (bytes > biggest.bytes) biggest = { file, bytes };
+    }
+    const worstPart = JSON.parse(await readFile(join(dir, biggest.file), "utf8"));
+    worstLesson.set(subject, worstPart.segments[0]?.lessons[0]?.id ?? hit.i);
   }
 
   const sizes = await chunkSizesOnDisk();
@@ -144,12 +156,16 @@ async function main() {
       const lessonId = firstFlowLesson.get(subject);
       const subjectPage = await measurePage(base, `/law/${subject}`, ".law-subject__hero h1", sizes);
       const lessonPage = await measurePage(base, `/law/learn/${lessonId}`, ".law-player", sizes);
-      const ok = lessonPage.dataRaw <= DATA_RAW_BUDGET && lessonPage.dataGz <= DATA_GZ_BUDGET;
+      const worstId = worstLesson.get(subject);
+      const worstPage = worstId === lessonId ? null : await measurePage(base, `/law/learn/${worstId}`, ".law-player", sizes);
+      const check = worstPage ?? lessonPage;
+      const ok = check.dataRaw <= DATA_RAW_BUDGET && check.dataGz <= DATA_GZ_BUDGET;
       if (!ok) violations += 1;
+      const worstCell = worstPage ? `${KB(worstPage.dataRaw)}/${KB(worstPage.dataGz)}gz` : "同首课";
       rows.push(
-        `| ${subject} | ${subjectPage.interactiveMs}ms | ${lessonPage.interactiveMs}ms | ${KB(lessonPage.dataRaw)} | ${KB(lessonPage.dataGz)} | ${lessonPage.heapMb?.toFixed(1) ?? "n/a"}MB | ${subjectPage.heapMb?.toFixed(1) ?? "n/a"}MB | ${ok ? "✅" : "❌ 超预算"} |`,
+        `| ${subject} | ${subjectPage.interactiveMs}ms | ${lessonPage.interactiveMs}ms | ${KB(lessonPage.dataRaw)} | ${KB(lessonPage.dataGz)} | ${worstCell} | ${lessonPage.heapMb?.toFixed(1) ?? "n/a"}MB | ${subjectPage.heapMb?.toFixed(1) ?? "n/a"}MB | ${ok ? "✅" : "❌ 超预算"} |`,
       );
-      console.log(`${subject}: hero ${subjectPage.interactiveMs}ms | lesson ${lessonPage.interactiveMs}ms | data ${KB(lessonPage.dataRaw)}/${KB(lessonPage.dataGz)}gz | heap ${lessonPage.heapMb?.toFixed(1)}MB`);
+      console.log(`${subject}: hero ${subjectPage.interactiveMs}ms | lesson ${lessonPage.interactiveMs}ms | data ${KB(lessonPage.dataRaw)}/${KB(lessonPage.dataGz)}gz | worst ${worstCell} | heap ${lessonPage.heapMb?.toFixed(1)}MB`);
     }
   } finally {
     child.kill();
@@ -162,8 +178,8 @@ async function main() {
     `- 实例：vite preview :${port}（独立端口，不占共享 4174）`,
     `- 预算：进一节课 law 数据 ≤ ${KB(DATA_RAW_BUDGET)} raw / ≤ ${KB(DATA_GZ_BUDGET)} gzip`,
     "",
-    "| 科目 | 学科页首屏 | 直开一课 | 课时数据 raw | 课时数据 gzip | 课时 heap | 整本 heap | 预算 |",
-    "|---|---|---|---|---|---|---|---|",
+    "| 科目 | 学科页首屏 | 直开一课 | 课时数据 raw | 课时数据 gzip | 最坏课时 raw/gz | 课时 heap | 整本 heap | 预算 |",
+    "|---|---|---|---|---|---|---|---|---|",
     ...rows,
     "",
   ].join("\n");
