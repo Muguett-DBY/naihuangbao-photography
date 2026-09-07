@@ -1129,6 +1129,47 @@ function isOrdinalPlaceholder(text) {
   return /^(第[一二三四五六七八九十百零0-9]+(编|部分|章|篇|卷)?|上编|下编|附编|总论|分论|导论|绪论|专题[一二三四五六七八九十]+)$/.test(text);
 }
 
+/** 章节语义名人工覆盖（按书目录页逐条核对，TOC 从 leftover 提取）：
+ *  OCR 页眉别名缺失/损坏时回退到课标题抽取，会产生题型动词残名（"简答分析法"）
+ *  或单课名（"设立监察委"）——此表以章 id 锚定直接给目录页的正式章名 */
+const CHAPTER_NAME_OVERRIDE = {
+  // 法理学（目录：专题一法学与法理学…）
+  "falixue-c5": "法的本质",
+  "falixue-c6": "法的基本特征",
+  "falixue-c7": "法的作用",
+  "falixue-c9": "法律要素",
+  "falixue-c11": "法的效力",
+  "falixue-c12": "法律部门和法律体系",
+  "falixue-c14": "法律制定",
+  "falixue-c16": "执法",
+  "falixue-c18": "守法",
+  "falixue-c19": "法律监督",
+  "falixue-c21": "法律解释",
+  "falixue-c22": "法律推理",
+  "falixue-c23": "法律论证",
+  "falixue-c27": "法的起源",
+  // 宪法学（目录：原理论/立法法/运行论/权义论/制度论/机构论）
+  "xianfa-c1": "立法法",
+  "xianfa-c3": "权义论",
+  // 民法（目录：总则/人格权/物权/知识产权/合同/婚姻家庭/侵权责任）
+  "minfa-c2": "民法绪论",
+  "minfa-c7": "人格权",
+  "minfa-c8": "人格权的效力与保护",
+  "minfa-c10": "物权通则",
+  "minfa-c11": "所有权",
+  "minfa-c12": "用益物权与担保物权",
+  "minfa-c13": "占有",
+  "minfa-c15": "知识产权概述",
+  "minfa-c17": "专利权",
+  "minfa-c18": "商标权",
+  "minfa-c20": "合同通则",
+  "minfa-c21": "典型合同",
+  "minfa-c22": "准合同",
+  // 刑法（目录：绪论/犯罪论/刑事责任/刑罚论/分则各罪）
+  "xingfa-c2": "刑法概述",
+  "xingfa-c13": "渎职罪",
+};
+
 /** 从别名集合挑选语义名称（如"第二部分○犯罪论" → "犯罪论"） */
 function pickSemanticTitle(aliases, lessonTitles = []) {
   let best = "";
@@ -1213,6 +1254,7 @@ async function main() {
         chapter.aliases ?? new Set(),
         chapter.lessons.filter((l) => !l.shell).map((l) => l.title),
       );
+      if (CHAPTER_NAME_OVERRIDE[chapter.id]) chapter.semanticTitle = CHAPTER_NAME_OVERRIDE[chapter.id];
     }
     postProcessChapters(chapters, bookMeta);
     const plainChapters = chapters.map((chapter) => ({
