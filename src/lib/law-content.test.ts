@@ -96,7 +96,7 @@ describe("law content data quality", () => {
     const byId = new Map(
       Object.values(books).flatMap((b) => b.chapters.flatMap((c) => c.lessons)).map((l) => [l.id, l]),
     );
-    expect(LAW_GRAPHICS.length).toBeGreaterThanOrEqual(19);
+    expect(LAW_GRAPHICS.length).toBeGreaterThanOrEqual(25);
     for (const graphic of LAW_GRAPHICS) {
       const lesson = byId.get(graphic.lessonId);
       expect(lesson, `graphic ${graphic.lessonId} dangling`).toBeTruthy();
@@ -108,8 +108,12 @@ describe("law content data quality", () => {
     for (const subject of subjects) {
       expect(LAW_GRAPHICS.filter((g) => g.subject === subject).length).toBeGreaterThanOrEqual(3);
     }
-    // 新一批图解（E 扩展）每个 6-8 步解说
-    const expanded = ["xingfa-q053", "xingfa-q032", "minfa-q627", "minfa-q081", "xianfa-q098-tour", "zhishixiang-q114-tour", "falixue-q108"];
+    // E 扩展图解每个 6-8 步解说
+    const expanded = [
+      "xingfa-q053", "xingfa-q032", "minfa-q627", "minfa-q081", "xianfa-q098-tour",
+      "zhishixiang-q114-tour", "falixue-q108", "zhishixiang-q124",
+      "xingfa-q052", "minfa-q417", "falixue-q114", "xianfa-q061",
+    ];
     for (const id of expanded) {
       const graphic = LAW_GRAPHICS.find((g) => g.lessonId === id);
       expect(graphic, `expanded graphic ${id} missing`).toBeTruthy();
