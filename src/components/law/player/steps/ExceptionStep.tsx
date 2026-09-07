@@ -26,9 +26,11 @@ export function ExceptionStep({ step, accent, accentSoft, onDone }: StepProps) {
       eyebrow={'⚠️ 例外型 · 小心"但书"'}
       title="规则之外，必有例外"
       hint={
-        swiped && !caught
-          ? "👆 抓住滑进来的红色「但书」——点它就抓住了"
-          : undefined
+        caught
+          ? undefined
+          : swiped
+            ? "👆 点红色「但书」，把它抓住"
+            : "⏳ 一条红色「但书」马上滑进来——准备好抓住它"
       }
       done={caught}
       doneLabel="但书抓住，例外记牢 ✓"

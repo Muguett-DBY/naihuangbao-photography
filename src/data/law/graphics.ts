@@ -1,10 +1,12 @@
 import type { LawGraphic, LawGraphicRef, LawSubjectId } from "../../types/law";
+import { LAW_GRAPHICS_EXTENDED } from "./graphicsExtended";
 
 /**
  * 知识图解（真动画）—— 全部锚定课本真实内容：
  * 文案提炼自对应课时的原文要点，动画按知识结构分型呈现。
+ * （E 扩展的第二批 8 张在 graphicsExtended.ts，此处合并暴露）
  */
-export const LAW_GRAPHICS: LawGraphic[] = [
+const LAW_GRAPHICS_CORE: LawGraphic[] = [
   {
     lessonId: "xingfa-q014",
     subject: "xingfa",
@@ -310,6 +312,8 @@ export const LAW_GRAPHICS: LawGraphic[] = [
     },
   },
 ];
+
+export const LAW_GRAPHICS: LawGraphic[] = [...LAW_GRAPHICS_CORE, ...LAW_GRAPHICS_EXTENDED];
 
 export const LAW_GRAPHIC_MAP: Record<string, LawGraphic> = Object.fromEntries(
   LAW_GRAPHICS.map((g) => [g.lessonId, g]),

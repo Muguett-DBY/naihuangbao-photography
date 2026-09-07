@@ -28,9 +28,12 @@ export function TimelineStep({ step, accent, accentSoft, onDone }: StepProps) {
   const [visited, setVisited] = useState<boolean[]>(() => events.map(() => false));
   const [active, setActive] = useState(0);
   const doneRef = useRef(false);
+  const innerRef = useRef<HTMLDivElement>(null);
 
   const visitedCount = visited.filter(Boolean).length;
   const done = events.length > 0 && visitedCount >= events.length;
+  // 节点 >6 个：轨道横向滚动（密度自适应），点选时把当前节点滚进视口
+  const dense = events.length > 6;
 
   function markVisited(index: number) {
     setActive(index);
@@ -48,6 +51,13 @@ export function TimelineStep({ step, accent, accentSoft, onDone }: StepProps) {
   useEffect(() => {
     if (events.length < 2) onDone();
   }, [events.length, onDone]);
+
+  // 密度自适应：激活节点始终滚进视口（横向轨道在窄屏/多节点时看不全）
+  useEffect(() => {
+    if (!dense) return;
+    const dot = innerRef.current?.querySelector<HTMLElement>(`[data-index="${active}"]`);
+    dot?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [active, dense]);
 
   if (events.length < 2) {
     return (
@@ -73,32 +83,46 @@ export function TimelineStep({ step, accent, accentSoft, onDone }: StepProps) {
         className="law-timeline"
         style={{ "--law-accent": accent, "--law-accent-soft": accentSoft } as CSSProperties}
       >
-        <div className="law-timeline__track">
-          <div className="law-timeline__line" />
-          <motion.div
-            className="law-timeline__progress"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: done ? 1 : (active + 1) / events.length }}
-            style={{ transformOrigin: "left" }}
-          />
-          {events.map((event, index) => (
-            <button
-              key={`${index}-${event.when}`}
-              type="button"
-              className={`law-timeline__dot ${visited[index] ? "is-visited" : ""} ${active === index ? "is-active" : ""}`}
-              onClick={() => markVisited(index)}
-              aria-label={`${event.when}：${event.what}`}
-            >
-              <span>{index + 1}</span>
-            </button>
-          ))}
-        </div>
-        <div className="law-timeline__labels">
-          {events.map((event, index) => (
-            <span key={index} className="law-timeline__when">
-              {event.when}
-            </span>
-          ))}
+        <div className={`law-timeline__scroller ${dense ? "is-dense" : ""}`}>
+          <div
+            className="law-timeline__inner"
+            ref={innerRef}
+            style={dense ? ({ minWidth: `${events.length * 72}px` } as CSSProperties) : undefined}
+          >
+            <div className="law-timeline__track">
+              <div className="law-timeline__line" />
+              <motion.div
+                className="law-timeline__progress"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: done ? 1 : (active + 1) / events.length }}
+                style={{ transformOrigin: "left" }}
+              />
+              {events.map((event, index) => (
+                <button
+                  key={`${index}-${event.when}`}
+                  type="button"
+                  data-index={index}
+                  className={`law-timeline__dot ${visited[index] ? "is-visited" : ""} ${active === index ? "is-active" : ""}`}
+                  style={{ left: `${((index + 0.5) / events.length) * 100}%` }}
+                  onClick={() => markVisited(index)}
+                  aria-label={`${event.when}：${event.what}`}
+                >
+                  <span>{index + 1}</span>
+                </button>
+              ))}
+            </div>
+            <div className="law-timeline__labels">
+              {events.map((event, index) => (
+                <span
+                  key={index}
+                  className="law-timeline__when"
+                  style={{ left: `${((index + 0.5) / events.length) * 100}%` }}
+                >
+                  {event.when}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
         <motion.div
           key={active}

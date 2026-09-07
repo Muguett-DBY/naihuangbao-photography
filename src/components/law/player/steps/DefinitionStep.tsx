@@ -47,7 +47,7 @@ export function DefinitionStep({ step, accent, accentSoft, onDone }: StepProps) 
       }
       hint={
         revealedText && !locked && target
-          ? "👆 关键词被遮住了——点一下上面那个「❓」把它解锁"
+          ? "👆 这句话里藏着一个核心词——点「解锁关键词」看看是什么"
           : undefined
       }
       done={locked || !target}

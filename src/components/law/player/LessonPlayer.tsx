@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router";
 import type { LawLesson } from "../../../types/law";
 import { buildQuiz } from "../../../lib/law-quiz";
@@ -9,9 +9,29 @@ import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
 import { StepStage } from "./StepStage";
 import { QuizRunner } from "./QuizRunner";
 import { LawMascot, type LawMood } from "../LawMascot";
-import { CelebrateBurst, KIND_PENDING_HINT, cleanBreadcrumb, kindLabel } from "./lessonHelpers";
+import { KIND_PENDING_HINT, cleanBreadcrumb, kindLabel } from "./lessonHelpers";
+import { ResultPhase, SummaryPhase } from "./LessonPhases";
+import "../../../styles/law-visual.css";
 
 type Phase = "steps" | "summary" | "quiz" | "result";
+
+/** 自动串联速度三档（持久化）：每步完成后停留多久进下一步 */
+const AUTO_SPEEDS = [
+  { id: "slow", label: "🐢 慢", delay: 2600 },
+  { id: "mid", label: "▶ 中", delay: 1400 },
+  { id: "fast", label: "🐇 快", delay: 800 },
+] as const;
+type AutoSpeedId = (typeof AUTO_SPEEDS)[number]["id"];
+const AUTO_SPEED_KEY = "nhb-law-autoplay-speed";
+
+function readAutoSpeed(): AutoSpeedId {
+  try {
+    const saved = localStorage.getItem(AUTO_SPEED_KEY);
+    return AUTO_SPEEDS.some((s) => s.id === saved) ? (saved as AutoSpeedId) : "mid";
+  } catch {
+    return "mid";
+  }
+}
 
 export function LessonPlayer({
   lesson,
@@ -50,8 +70,15 @@ export function LessonPlayer({
   const [replayKey, setReplayKey] = useState(0);
   const [showRaw, setShowRaw] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
+  const [autoSpeed, setAutoSpeed] = useState<AutoSpeedId>(readAutoSpeed);
   const [navOpen, setNavOpen] = useState(false);
+  // 段落导航浮层的键盘游标（>20 步长课：上下键选择，回车跳转）
+  const [navHighlight, setNavHighlight] = useState(0);
+  // 步骤前进/后退的方向感：新内容沿行进方向滑入
+  const [direction, setDirection] = useState(1);
+  const navMenuRef = useRef<HTMLDivElement>(null);
   const [quizAttempt, setQuizAttempt] = useState(0);
+  const reducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
 
@@ -72,16 +99,38 @@ export function LessonPlayer({
     if (phase === "quiz" && quiz.length === 0) setPhase("steps");
   }, [phase, quiz.length]);
 
-  // 自动串联模式：当前步完成后，1.4s 自动进入下一步
+  // 自动串联模式：当前步完成后按所选档位的间隔自动进入下一步（速度持久化）
+  const autoDelay = AUTO_SPEEDS.find((s) => s.id === autoSpeed)?.delay ?? 1400;
   useEffect(() => {
     if (!autoPlay || phase !== "steps" || !isCurrentDone) return;
-    const timer = window.setTimeout(() => goNextRef.current(), 1400);
+    const timer = window.setTimeout(() => goNextRef.current(), autoDelay);
     return () => window.clearTimeout(timer);
-  }, [autoPlay, phase, isCurrentDone, stepIndex]);
+  }, [autoPlay, phase, isCurrentDone, stepIndex, autoDelay]);
+
+  // 速度档位落盘
+  useEffect(() => {
+    try {
+      localStorage.setItem(AUTO_SPEED_KEY, autoSpeed);
+    } catch {
+      // localStorage 不可用：档位仅本次会话生效
+    }
+  }, [autoSpeed]);
+
+  // 打开段落导航时键盘游标落在当前步；浮层滚动跟随游标
+  useEffect(() => {
+    if (navOpen) setNavHighlight(stepIndex);
+  }, [navOpen, stepIndex]);
+
+  useEffect(() => {
+    if (!navOpen) return;
+    const item = navMenuRef.current?.querySelector<HTMLElement>('[data-highlight="true"]');
+    item?.scrollIntoView({ block: "nearest" });
+  }, [navOpen, navHighlight]);
 
   const goNextRef = useRef<() => void>(() => {});
   goNextRef.current = () => {
     if (stepIndex < totalSteps - 1) {
+      setDirection(1);
       setStepIndex((index) => index + 1);
       setMood("idle");
       setReplayKey((key) => key + 1);
@@ -101,12 +150,20 @@ export function LessonPlayer({
     setMood("happy");
   }
 
+  function jumpToStep(index: number) {
+    setDirection(index > stepIndex ? 1 : -1);
+    setStepIndex(index);
+    setMood("idle");
+    setReplayKey((key) => key + 1);
+  }
+
   function goNext() {
     goNextRef.current();
   }
 
   function goPrev() {
     if (stepIndex <= 0) return;
+    setDirection(-1);
     setStepIndex((index) => index - 1);
     setMood("idle");
     setReplayKey((key) => key + 1);
@@ -188,17 +245,45 @@ export function LessonPlayer({
               🧭 段落导航
             </button>
             {navOpen ? (
-              <div className="law-player__navpop-menu">
+              <div
+                className="law-player__navpop-menu"
+                ref={navMenuRef}
+                role="listbox"
+                aria-label="段落导航"
+                tabIndex={-1}
+                onKeyDown={(event) => {
+                  // 长课键盘导航：上下选择、回车跳转、Esc 关闭
+                  if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+                    event.preventDefault();
+                    setNavHighlight((h) => {
+                      const next = event.key === "ArrowDown" ? Math.min(h + 1, totalSteps - 1) : Math.max(h - 1, 0);
+                      return next;
+                    });
+                  } else if (event.key === "Enter") {
+                    event.preventDefault();
+                    jumpToStep(navHighlight);
+                    setNavOpen(false);
+                  } else if (event.key === "Escape") {
+                    setNavOpen(false);
+                  }
+                }}
+              >
                 {steps.map((step, index) => (
                   <button
                     key={step.id}
                     type="button"
-                    className={index === stepIndex ? "is-current" : ""}
+                    role="option"
+                    aria-selected={index === stepIndex}
+                    data-highlight={index === navHighlight || undefined}
+                    className={
+                      (index === stepIndex ? "is-current " : "") +
+                      (index === navHighlight ? "is-highlight" : "")
+                    }
+                    onMouseEnter={() => setNavHighlight(index)}
+                    onFocus={() => setNavHighlight(index)}
                     onClick={() => {
-                      setStepIndex(index);
+                      jumpToStep(index);
                       setNavOpen(false);
-                      setMood("idle");
-                      setReplayKey((key) => key + 1);
                     }}
                   >
                     {String(index + 1).padStart(2, "0")} · {kindLabel(step.kind)} · {step.text.slice(0, 18)}…
@@ -247,7 +332,7 @@ export function LessonPlayer({
             ref={stageRef}
             className="law-player__stage"
             key={`${stepIndex}-${replayKey}`}
-            initial={{ opacity: 0, x: 12 }}
+            initial={reducedMotion ? false : { opacity: 0, x: 20 * direction }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -12 }}
             transition={{ duration: 0.22 }}
@@ -278,11 +363,7 @@ export function LessonPlayer({
                   type="button"
                   aria-label={`跳到第 ${index + 1} 步`}
                   className={`law-player__dot ${index === stepIndex ? "is-current" : ""} ${doneSteps > index ? "is-done" : ""}`}
-                  onClick={() => {
-                    setStepIndex(index);
-                    setMood("idle");
-                    setReplayKey((key) => key + 1);
-                  }}
+                  onClick={() => jumpToStep(index)}
                 />
               ))}
             </div>
@@ -306,69 +387,45 @@ export function LessonPlayer({
               className={`law-player__auto ${autoPlay ? "is-on" : ""}`}
               onClick={() => setAutoPlay((value) => !value)}
               aria-pressed={autoPlay}
-              title="自动串联模式：每一步完成约 1 秒后自动进入下一步"
+              title="自动串联模式：每一步完成后按所选速度自动进入下一步"
             >
               🔁 自动
             </button>
+            {autoPlay ? (
+              <div className="law-player__autospeed" role="group" aria-label="自动串联速度">
+                {AUTO_SPEEDS.map((speed) => (
+                  <button
+                    key={speed.id}
+                    type="button"
+                    className={autoSpeed === speed.id ? "is-active" : ""}
+                    aria-pressed={autoSpeed === speed.id}
+                    onClick={() => setAutoSpeed(speed.id)}
+                    title={`自动串联：${speed.label}（${speed.delay / 1000} 秒后进入下一步）`}
+                  >
+                    {speed.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
         </>
       ) : null}
 
       {phase === "summary" ? (
-        <motion.div
-          className="law-player__summary"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <LawMascot mood="happy" size={72} />
-          <h2>本课学完啦！</h2>
-          <p>{lesson.title}</p>
-          <div className="law-player__summary-info">
-            <span>📖 {totalSteps} 个知识点</span>
-            <span>✅ {doneSteps} 步已确认掌握</span>
-            {lesson.mnemonic ? <span>🧠 口诀：{lesson.mnemonic}</span> : null}
-          </div>
-          <div className="law-player__summary-actions">
-            {quiz.length > 0 ? (
-              <>
-                <button type="button" className="law-player__cta" onClick={startQuiz}>
-                  🎯 来自测一下
-                </button>
-                <button
-                  type="button"
-                  className="law-player__skip"
-                  onClick={() => {
-                    // 跳过自测 ≠ 复习通过：不动错题本的复习阶梯（曾把跳过记成"复习通过"）
-                    recordQuiz(lesson.id, 1, 1, totalSteps, { skipped: true });
-                    setQuizScore({ correct: 1, total: 1 });
-                    setMood("cheer");
-                    setPhase("result");
-                  }}
-                >
-                  跳过自测，直接标记掌握 →
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                className="law-player__cta"
-                onClick={() => {
-                  recordQuiz(lesson.id, 1, 1, totalSteps, { skipped: true });
-                  setQuizScore({ correct: 1, total: 1 });
-                  setMood("cheer");
-                  setPhase("result");
-                }}
-              >
-                🎓 学完了，标记掌握
-              </button>
-            )}
-            {quiz.length === 0 ? (
-              <p className="law-player__summary-tip">
-                本课是长文讲述型，没有可自动出题的关键词句；直接标记掌握即可。
-              </p>
-            ) : null}
-          </div>
-        </motion.div>
+        <SummaryPhase
+          lesson={lesson}
+          totalSteps={totalSteps}
+          doneSteps={doneSteps}
+          quizCount={quiz.length}
+          onStartQuiz={startQuiz}
+          onSkipQuiz={() => {
+            // 跳过自测 ≠ 复习通过：不动错题本的复习阶梯（曾把跳过记成"复习通过"）
+            recordQuiz(lesson.id, 1, 1, totalSteps, { skipped: true });
+            setQuizScore({ correct: 1, total: 1 });
+            setMood("cheer");
+            setPhase("result");
+          }}
+        />
       ) : null}
 
       {phase === "quiz" ? (
@@ -382,55 +439,20 @@ export function LessonPlayer({
       ) : null}
 
       {phase === "result" ? (
-        <motion.div
-          className="law-player__result"
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          {quizScore.correct >= Math.ceil(quizScore.total / 2) ? <CelebrateBurst /> : null}
-          <LawMascot mood={quizScore.correct >= Math.ceil(quizScore.total / 2) ? "cheer" : "oops"} size={84} />
-          <h2>
-            {quizScore.correct >= Math.ceil(quizScore.total / 2) ? "通过！掌握啦 🎉" : "还差一点，再练一次 💪"}
-          </h2>
-          <p className="law-player__result-score">
-            自测 {quizScore.correct} / {quizScore.total} 题正确
-          </p>
-          <p className="law-player__result-tip">
-            {quizScore.correct >= Math.ceil(quizScore.total / 2)
-              ? "明天再看一眼关键词，就会变成长期记忆！"
-              : "答错的题已进错题本，明天会提醒你复习——回去把没点透的步骤再走一遍，越慢越牢。"}
-          </p>
-          <div className="law-player__result-actions">
-            <button
-              type="button"
-              className="law-player__cta"
-              onClick={() => {
-                // 再学一遍 = 从头快走一遍：保留已完成步骤的勾（可重做但不必重做），
-                // 曾在这里清空全部进度，答错一题就要把整课互动重新点一遍
-                setStepIndex(0);
-                setPhase("steps");
-                setMood("idle");
-                setReplayKey((key) => key + 1);
-              }}
-            >
-              🔄 再学一遍
-            </button>
-            {quizScore.correct < Math.ceil(quizScore.total / 2) ? (
-              <button type="button" className="law-player__cta is-alternate" onClick={retryQuiz}>
-                🔁 再测一次
-              </button>
-            ) : null}
-            {onNextLesson ? (
-              <button type="button" className="law-player__cta is-alternate" onClick={onNextLesson}>
-                下一课 →
-              </button>
-            ) : (
-              <button type="button" className="law-player__cta is-alternate" onClick={onExit}>
-                全部学完了！返回目录
-              </button>
-            )}
-          </div>
-        </motion.div>
+        <ResultPhase
+          quizScore={quizScore}
+          onRestart={() => {
+            // 再学一遍 = 从头快走一遍：保留已完成步骤的勾（可重做但不必重做），
+            // 曾在这里清空全部进度，答错一题就要把整课互动重新点一遍
+            setStepIndex(0);
+            setPhase("steps");
+            setMood("idle");
+            setReplayKey((key) => key + 1);
+          }}
+          onRetryQuiz={retryQuiz}
+          onNextLesson={onNextLesson}
+          onExit={onExit}
+        />
       ) : null}
     </div>
   );

@@ -1,15 +1,22 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 export type LawMood = "idle" | "think" | "happy" | "cheer" | "oops";
 
-/** 学习小助手吉祥物：奶黄包脸（纯 SVG，随心情变换表情） */
+/** 学习小助手吉祥物：奶黄包脸（纯 SVG，随心情变换表情）；
+ *  prefers-reduced-motion 下静止展示表情，不做循环动效 */
 export function LawMascot({ mood = "idle", size = 64 }: { mood?: LawMood; size?: number }) {
+  const reducedMotion = useReducedMotion();
+  const idleMotion = reducedMotion ? undefined : { y: [0, -3, 0] };
+  const idleTransition = reducedMotion
+    ? undefined
+    : { repeat: Infinity, duration: 2.6, ease: "easeInOut" as const };
+
   return (
     <motion.div
       className={`law-mascot is-${mood}`}
       style={{ width: size, height: size }}
-      animate={{ y: [0, -3, 0] }}
-      transition={{ repeat: Infinity, duration: 2.6, ease: "easeInOut" }}
+      animate={idleMotion}
+      transition={idleTransition}
       aria-hidden="true"
     >
       <svg viewBox="0 0 100 100" width={size} height={size}>
@@ -21,8 +28,9 @@ export function LawMascot({ mood = "idle", size = 64 }: { mood?: LawMood; size?:
         <ellipse cx="50" cy="70" rx="20" ry="12" fill="#ffe9cb" />
         {mood === "happy" || mood === "cheer" ? (
           <motion.g
-            animate={{ rotate: [0, 6, -6, 0] }}
-            transition={{ repeat: Infinity, duration: 1.4 }}
+            animate={reducedMotion ? undefined : { rotate: [0, 6, -6, 0] }}
+            transition={reducedMotion ? undefined : { repeat: Infinity, duration: 1.4 }}
+            style={{ transformOrigin: "50px 22px" }}
           >
             <ellipse cx="50" cy="17.5" rx="3.6" ry="4.5" fill="#ffb85c" />
           </motion.g>
@@ -38,8 +46,8 @@ export function LawMascot({ mood = "idle", size = 64 }: { mood?: LawMood; size?:
         {/* 眼睛 */}
         {mood === "cheer" || mood === "happy" ? (
           <motion.g
-            animate={{ scaleY: [1, 0.35, 1] }}
-            transition={{ repeat: Infinity, duration: 1.6, times: [0, 0.5, 1] }}
+            animate={reducedMotion ? undefined : { scaleY: [1, 0.35, 1] }}
+            transition={reducedMotion ? undefined : { repeat: Infinity, duration: 1.6, times: [0, 0.5, 1] }}
             style={{ transformOrigin: "50px 50px" }}
           >
             <path d="M30 46 q6 -8 12 0" stroke="#7a4b32" strokeWidth="4" fill="none" strokeLinecap="round" />
