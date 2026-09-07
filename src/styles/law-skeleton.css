@@ -1,0 +1,120 @@
+/* law 模块加载骨架 —— 结构化占位 + 节制呼吸动画（reduced-motion 下完全静态） */
+
+.law-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.law-skeleton {
+  width: min(860px, 100%);
+  margin: 0 auto;
+  padding: 8px 4px 40px;
+  display: grid;
+  gap: 14px;
+}
+
+.law-skeleton__shine {
+  background: color-mix(in srgb, currentColor 9%, transparent);
+  border-radius: 14px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .law-skeleton__shine {
+    animation: law-skeleton-breathe 1.6s ease-in-out infinite;
+  }
+  .law-skeleton__cards .law-skeleton__card:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .law-skeleton__cards .law-skeleton__card:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+}
+
+@keyframes law-skeleton-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ── 学科页/目录变体 ── */
+.law-skeleton__page {
+  display: grid;
+  gap: 14px;
+}
+
+.law-skeleton__hero {
+  height: 96px;
+  border-radius: 18px;
+}
+
+.law-skeleton__search {
+  height: 52px;
+  border-radius: 999px;
+}
+
+.law-skeleton__cards {
+  display: grid;
+  gap: 10px;
+}
+
+.law-skeleton__card {
+  height: 64px;
+}
+
+/* ── 课时播放器变体 ── */
+.law-skeleton__player {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  padding: 18px 6px;
+}
+
+.law-skeleton__chip {
+  width: 132px;
+  height: 26px;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 9%, transparent);
+}
+
+.law-skeleton__stage {
+  width: 100%;
+  height: 220px;
+  border-radius: 22px;
+}
+
+.law-skeleton__line {
+  width: 86%;
+  height: 18px;
+}
+
+.law-skeleton__line--short {
+  width: 62%;
+}
+
+.law-skeleton__row {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.law-skeleton__btn {
+  width: 96px;
+  height: 44px;
+  border-radius: 999px;
+}
+
+.law-skeleton__btn--primary {
+  width: 132px;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
