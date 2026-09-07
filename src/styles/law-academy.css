@@ -232,7 +232,8 @@
   align-self: flex-start;
   padding: 8px 16px;
   border-radius: 999px;
-  background: var(--law-accent);
+  /* 对比度终审：纯 accent 上白字 3.4-4.1:1，72% 混深墨后五科 ≥4.61:1 */
+  background: color-mix(in srgb, var(--law-accent) 72%, #2a2118);
   color: #fff;
   font-size: 14px;
   font-weight: 800;
@@ -356,7 +357,7 @@
   font-family: var(--font-display);
   font-size: clamp(38px, 6vw, 54px);
   line-height: 1.1;
-  color: var(--law-accent, #b1544e);
+  color: var(--law-accent-ink, var(--law-accent, #b1544e));
 }
 
 .law-plan-card__unit {
@@ -384,7 +385,7 @@
 }
 
 .law-plan-card__progress-head b {
-  color: var(--law-accent, #b1544e);
+  color: var(--law-accent-ink, var(--law-accent, #b1544e));
 }
 
 .law-plan-card__bar,
@@ -412,7 +413,7 @@
 }
 
 .law-plan-card__estimate b {
-  color: var(--law-accent, #b1544e);
+  color: var(--law-accent-ink, var(--law-accent, #b1544e));
 }
 
 .law-plan-card__today {
@@ -435,7 +436,7 @@
 
 .law-plan-card__today em {
   font-weight: 800;
-  color: var(--law-accent, #b1544e);
+  color: var(--law-accent-ink, var(--law-accent, #b1544e));
 }
 
 .law-plan-card__tiers {
@@ -466,13 +467,13 @@
 }
 
 .law-plan-card__tier.is-active {
-  border-color: var(--law-accent, #b1544e);
+  border-color: var(--law-accent-ink, var(--law-accent, #b1544e));
   background: color-mix(in srgb, var(--law-accent, #b1544e) 9%, var(--paper));
 }
 
 .law-plan-card__tier b {
   font-size: 14.5px;
-  color: var(--law-accent, #b1544e);
+  color: var(--law-accent-ink, var(--law-accent, #b1544e));
 }
 
 .law-plan-card__tier small {
@@ -522,7 +523,7 @@
 }
 
 .law-academy__today b {
-  color: var(--law-accent, #b1544e);
+  color: var(--law-accent-ink, var(--law-accent, #b1544e));
 }
 
 /* 错题待复习入口（学习中心首屏） */
@@ -689,7 +690,7 @@
   align-self: center;
   font-size: 11.5px;
   font-weight: 900;
-  color: var(--law-accent, #b1544e);
+  color: var(--law-accent-ink, var(--law-accent, #b1544e));
   background: color-mix(in srgb, var(--law-accent, #b1544e) 10%, var(--paper));
   border-radius: 8px;
   padding: 4px 8px;
@@ -1630,7 +1631,8 @@
 
 .law-player__nav.is-primary {
   margin-left: auto;
-  background: var(--law-accent);
+  /* 对比度终审：72% accent 混深墨，白字五科 ≥4.61:1 */
+  background: color-mix(in srgb, var(--law-accent) 72%, #2a2118);
   border: 0;
   color: #fff;
   font-weight: 900;
@@ -1653,7 +1655,8 @@
 .law-player__nav.is-primary:disabled {
   /* 禁用态保持可读：告诉用户"还差什么"的文字必须看得清 */
   background: color-mix(in srgb, var(--law-accent) 16%, var(--paper));
-  color: color-mix(in srgb, var(--law-accent) 55%, var(--text-muted));
+  /* 对比度终审：55%混 muted 仅 4.0-4.2:1，改 42% 混 ink 提到 ≥4.5 */
+  color: color-mix(in srgb, var(--law-accent) 42%, var(--ink));
   box-shadow: 0 3px 0 color-mix(in srgb, var(--law-accent) 10%, var(--paper));
   opacity: 1;
 }
@@ -1785,6 +1788,7 @@
   flex-direction: column;
   gap: 16px;
   width: 100%;
+  line-height: 1.65;
 }
 
 .law-step__head {

@@ -479,7 +479,7 @@
 .dia-tree__root {
   padding: 16px 30px;
   border-radius: 18px;
-  background: linear-gradient(135deg, var(--law-accent), color-mix(in srgb, var(--law-accent) 72%, #f7c96b));
+  background: linear-gradient(135deg, var(--law-accent), color-mix(in srgb, var(--law-accent) 72%, #2a2118));
   color: #fff;
   text-align: center;
   font-size: 19px;

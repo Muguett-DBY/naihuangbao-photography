@@ -742,7 +742,9 @@ a {
   z-index: 10000;
   transform: translateX(-50%);
   padding: 8px 20px;
-  background: var(--peach-accent);
+  /* 对比度终审：原 peach-accent(#d8897f/#e5a198) 上白字仅 2.1-2.7:1，
+     固定用 #a95f57（白字 4.71:1，双主题通用——跳转链是覆盖层不随主题变底） */
+  background: #a95f57;
   color: #fff;
   font-size: 14px;
   border-radius: 0 0 8px 8px;
@@ -759,7 +761,7 @@ a {
   outline-offset: 2px;
 }
 .skip-link:hover {
-  background: var(--caramel-deep);
+  background: #8f4c45;
 }
 .skip-link--secondary:focus,
 .skip-link--secondary:focus-visible {
