@@ -246,8 +246,11 @@ function polishText(text) {
     .replace(/；：/g, "：")
     .replace(/[，、：]；/g, "；")
     .replace(/[：:][，、]/g, "：")
-    // 表格行标签尾读焊上直角引号残迹（"查阅、复制、、「1．…"）
-    .replace(/、「/g, "，");
+    // 表格行标签尾读焊上直角引号残迹（"查阅、复制、，「1．…"）
+    .replace(/、「/g, "，")
+    // 箭头符号 OCR 成"一"（"蒙古汗国的制度一《大札撒》"→"制度→《大札撒》"）；
+    // "之一《法经》"是合法行文，前字为"之"时不动
+    .replace(/(?<!之)一《/g, "→《");
   // OCR 双栏表格合并产生的"术语回声"（如"累犯累犯应当从重处罚"）：
   // 紧邻的完全相同汉字串几乎都是合并残迹，折叠为一次。
   // 白名单排除汉语正常叠词（大大/渐渐/往往等）。
@@ -301,9 +304,18 @@ function polishText(text) {
     "注德糖士害试背痛一朱·法理学",
     "法相士考衍背一朱遒、宪法单",
     "法钟橘土专世背一未·代法学",
+    // "一朱"家族（一本的糊形）+ 法神制史（学科页眉糊形）——C2 巡逻核实
+    "试曹偏一朱遍·民法学",
+    "法神土考位臂楠一朱·民头学",
+    "郁士投誉-艮身毕",
+    "设营铺一朱·庆法旱",
+    "钟生梭一朱擅·甚主享",
+    "法神制史",
   ]) {
     t = t.split(junk).join("");
   }
+  // 法神=法律的 OCR 错字（仅存 2 处，均已核实；需在"法神制史"剥离之后）
+  t = t.split("法神").join("法律");
   // OCR 括号错配（"［表达逻辑）""（表达逻辑］""［表达逻辑」""「表达逻辑］""（表达逻辑」"）：
   // 括号语义只有注记一种，按开括号补齐宽度（覆盖全部开×闭跨类组合）
   t = t
@@ -611,6 +623,26 @@ function relocateCompareLabels(text) {
   return found.length > 0 ? `［${found.join("／")}］${out}` : out;
 }
 
+/**
+ * 步骤级"粗糙"标记：括号失衡 / 悬停截尾的步骤是 OCR 表格交错残迹，
+ * 其 parts 不配当排序卡（出题闸门据此跳过）。内容照常展示，仅影响出题取材。
+ */
+function markRoughSteps(steps) {
+  const HANG_BAD = /[的与或及是对把被从而且但其至了着跟]$/;
+  for (const step of steps) {
+    const text = step.text.replace(/[；;，,]$/, "");
+    let rough = false;
+    for (const [open, close] of [["（", "）"], ["［", "］"], ["《", "》"], ["「", "」"]]) {
+      const o = [...text].filter((ch) => ch === open).length;
+      const c = [...text].filter((ch) => ch === close).length;
+      if (o !== c) rough = true;
+    }
+    if (text.length >= 6 && HANG_BAD.test(text) && !/[。！？…”」》）]$/.test(step.text)) rough = true;
+    if (rough && step.parts) step.rough = true;
+  }
+  return steps;
+}
+
 function buildSteps(blocks) {
   const steps = [];
   for (const block of blocks) {
@@ -771,7 +803,7 @@ function parseBookPages(pages, bookMeta) {
       step.terms = [...(step.terms ?? []), ...(nextStep.terms ?? [])].slice(0, 6);
       splitSteps.splice(i + 1, 1);
     }
-    const steps = splitSteps.map((s, index) => ({ ...s, id: `${lesson.id}-s${index}` }));
+    const steps = markRoughSteps(splitSteps.map((s, index) => ({ ...s, id: `${lesson.id}-s${index}` })));
     if (steps.length === 0) {
       // 本课没有可成步骤的行 → 保留原文，防止丢内容
       steps.push({

@@ -56,6 +56,8 @@ export interface LawStep {
   timeline?: { when: string; what: string }[];
   /** 对比（compare 步骤：同点 / 异点行） */
   compare?: { same: string[]; diff: { label: string; a: string; b: string }[] };
+  /** 构建期标记：OCR 表格交错残迹（括号失衡/悬停截尾），出题不取其 parts */
+  rough?: boolean;
   /** 转折（exception 步骤） */
   pivot?: { rule: string; except: string };
 }
