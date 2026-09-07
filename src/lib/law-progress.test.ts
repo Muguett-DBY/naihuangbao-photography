@@ -209,6 +209,25 @@ describe("law egg state and progress events", () => {
     expect(state.unlockedAt.bookDone).toBeUndefined();
   });
 
+  it("unlockEgg broadcasts an unlock event exactly once per egg", () => {
+    const events: string[] = [];
+    vi.stubGlobal("document", {
+      dispatchEvent: (event: { type: string }) => {
+        events.push(event.type);
+        return true;
+      },
+    });
+    vi.stubGlobal("CustomEvent", class CustomEventStub {
+      type: string;
+      constructor(type: string) {
+        this.type = type;
+      }
+    });
+    expect(unlockEgg("bookDone")).toBe(true);
+    expect(unlockEgg("bookDone")).toBe(false);
+    expect(events).toEqual(["nhb-law-egg-unlocked"]);
+  });
+
   it("egg-relevant quiz outcomes dispatch the progress event", () => {
     const events: string[] = [];
     vi.stubGlobal("document", {

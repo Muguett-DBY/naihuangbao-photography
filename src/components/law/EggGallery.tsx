@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { getEggState, type EggTrigger } from "../../lib/law-progress";
+import { LAW_EGG_UNLOCKED_EVENT, getEggState, type EggTrigger } from "../../lib/law-progress";
 import { isLawSoundEnabled, setLawSoundEnabled } from "../../lib/law-sound";
 import { EggModal } from "./EasterEgg";
 import { EGG_META, EGG_ORDER } from "./eggContent";
@@ -100,11 +100,14 @@ export function LawEggGalleryButton() {
   const [unlockedCount, setUnlockedCount] = useState<number | null>(null);
 
   useEffect(() => {
-    // 弹层关闭后再刷新一次计数（图鉴里重读信不影响解锁数，但保险起见同步）
-    if (!open) {
+    const refresh = () => {
       const state = getEggState();
       setUnlockedCount(EGG_ORDER.filter((trigger) => state.unlocked[trigger]).length);
-    }
+    };
+    // 弹层关闭后同步一次；页面停留期间有新彩蛋解锁（如时段信当场弹出）也要即时更新计数
+    if (!open) refresh();
+    document.addEventListener(LAW_EGG_UNLOCKED_EVENT, refresh);
+    return () => document.removeEventListener(LAW_EGG_UNLOCKED_EVENT, refresh);
   }, [open]);
 
   return (
