@@ -1,6 +1,6 @@
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties, ReactNode, TouchEvent as ReactTouchEvent } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { CSSProperties, TouchEvent as ReactTouchEvent } from "react";
 import type { LawGraphic, LawSubjectId } from "../../../types/law";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { LawMascot } from "../LawMascot";
@@ -327,13 +327,4 @@ function kindLabel(kind: string): string {
     default:
       return "📊 图解";
   }
-}
-
-export function GraphicSkeleton({ children }: { children: ReactNode }) {
-  return <div className="law-graphic__stage">{children}</div>;
-}
-
-export function useGraphicTour(graphic: LawGraphic) {
-  const total = useMemo(() => graphic.captions.length, [graphic]);
-  return { total };
 }
