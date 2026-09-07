@@ -1,5 +1,6 @@
 import type { LawBook, LawChapter, LawLesson, LawSubjectId, LawStepKind } from "../../types/law";
 import { isCleanTerm, isShellLesson } from "../../types/law";
+import type { LawProgressMap } from "../../lib/law-progress";
 
 /**
  * 法学数据加载器（分块架构）：
@@ -122,6 +123,33 @@ function assembleBook(meta: LawMeta, parts: LawPart[]): LawBook {
 
 const bookPromises = new Map<LawSubjectId, Promise<LawBook>>();
 
+export interface LawLessonDirectoryEntry {
+  subject: LawSubjectId;
+  title: string;
+  chapterTitle: string;
+}
+
+/**
+ * 五科课时目录：lesson id → 课名/章节（错题本等汇总页用）。
+ * 只 fetch meta 文件（每科几十 KB），不拉正文分块——课名在 meta 的 ls[].t 里就有。
+ */
+export async function loadLawDirectory(
+  subjects: readonly LawSubjectId[],
+): Promise<Record<string, LawLessonDirectoryEntry>> {
+  const metas = await Promise.all(subjects.map((subject) => loadMeta(subject)));
+  const directory: Record<string, LawLessonDirectoryEntry> = {};
+  metas.forEach((meta, index) => {
+    const subject = subjects[index];
+    for (const chapter of meta.chapters) {
+      const chapterTitle = chapter.st && chapter.st.length >= 2 ? chapter.st : chapter.t;
+      for (const lesson of chapter.ls) {
+        directory[lesson.i] = { subject, title: lesson.t, chapterTitle };
+      }
+    }
+  });
+  return directory;
+}
+
 /** 让出主线程一帧：整本装配的 JSON.parse 分片执行，避免单个数百 ms 长任务卡输入 */
 function yieldToMain(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
@@ -209,6 +237,29 @@ export function nextFlowLesson(book: LawBook, lessonId: string): LawLesson | nul
     if (isFlowLesson(flat[i].chapter, flat[i].lesson)) return flat[i].lesson;
   }
   return null;
+}
+
+/**
+ * 学习流口径的轻量进度统计（彩蛋「路径半程/全书通」与通关庆祝用）：
+ * 只读 meta（KB 级，页面本来就会取），不下载正文分块。
+ * 口径与 buildLessonPath 一致——非附录章（ax≠1）+ 学习流课时（f=1，即非空壳课）。
+ */
+export async function loadLawFlowStats(
+  subject: LawSubjectId,
+  progress: LawProgressMap,
+): Promise<{ total: number; done: number }> {
+  const meta = await loadMeta(subject);
+  let total = 0;
+  let done = 0;
+  for (const chapter of meta.chapters) {
+    if (chapter.ax === 1) continue;
+    for (const lesson of chapter.ls) {
+      if (lesson.f !== 1) continue;
+      total += 1;
+      if (progress[lesson.i]?.completedAt) done += 1;
+    }
+  }
+  return { total, done };
 }
 
 /** 收集同章其它课的概念词，供选择题干扰项使用（答案永远出自本课） */
