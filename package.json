@@ -57,7 +57,8 @@
     "assets:crop": "node scripts/crop-gallery-assets.mjs",
     "assets:concept": "node scripts/process-concept-assets.mjs",
     "deps:audit": "npm audit --audit-level=moderate && npm install-scripts ls",
-    "law:scan": "node scripts/scan-law-content.mjs"
+    "law:scan": "node scripts/scan-law-content.mjs",
+    "law:contrast": "node scripts/law-contrast-check.mjs"
   },
   "dependencies": {
     "@fontsource/nunito": "^5.3.0",
