@@ -17,8 +17,16 @@ export function TreeDiagram({ graphic, active }: { graphic: LawGraphic; active: 
     return { root, branches, leaves };
   }, [graphic]);
 
-  const shownBranches = Math.min(Math.max(active, 0), branches.length);
-  const shownLeaves = Math.max(0, active - branches.length);
+  // 揭示进度按比例映射：解说步数经常少于"分支+叶子"总数（如 5 步解说对 11 个节点），
+  // 若按"每帧亮一个节点"算，最后一帧永远点不亮全部叶子（q083 曾整体缺失 9 片叶子）。
+  // 这里把 [0, 帧数-1] 线性映射到 [0, 分支数+叶子数]，保证最后一帧整棵树完整。
+  const totalFrames = Math.max(graphic.captions.length, 1);
+  const totalUnits = branches.length + leaves.length;
+  const unitsRevealed =
+    totalUnits === 0 ? 0 : (Math.min(Math.max(active, 0), totalFrames - 1) / Math.max(totalFrames - 1, 1)) * totalUnits;
+
+  const shownBranches = Math.min(branches.length, Math.floor(unitsRevealed));
+  const revealedLeaves = Math.max(0, Math.floor(unitsRevealed) - branches.length);
 
   return (
     <div className="dia-tree" aria-live="polite">
@@ -43,8 +51,9 @@ export function TreeDiagram({ graphic, active }: { graphic: LawGraphic; active: 
           const childLeaves = leaves
             .filter((leaf) => leaf.branchIndex === index)
             .map((leaf) => leaf.node);
+          const leavesBefore = leaves.filter((leaf) => leaf.branchIndex < index).length;
           const leafVisible = shown
-            ? Math.max(0, shownLeaves - leaves.filter((leaf) => leaf.branchIndex < index).length)
+            ? Math.max(0, Math.min(revealedLeaves - leavesBefore, childLeaves.length))
             : 0;
           return (
             <div className="dia-tree__branch" key={branch.label}>

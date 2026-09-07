@@ -8,6 +8,7 @@ import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, useLawImmersive } from "../components/law/EasterEgg";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
+import "../styles/law-visual.css";
 
 const SUBJECT_PATTERN = /^([a-z]+)-q/;
 
@@ -85,6 +86,7 @@ export function LawGraphicPage() {
             ? () => navigate(`/law/learn/${lessonId}`)
             : null
         }
+        lessonLoading={!book}
       />
       <LawEggListener />
     </div>
