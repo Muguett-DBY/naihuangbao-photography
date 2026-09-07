@@ -2,6 +2,14 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { buildQuiz, hashSeed } from "./law-quiz";
+import {
+  cleanTerm,
+  isCleanVerbatimSentence,
+  isMutableSentence,
+  isGarbledOrderPart,
+  cleanOrderPart,
+  hasFragmentCard,
+} from "./law-quiz-gates";
 import { isShellLesson, type LawBook, type LawLesson } from "../types/law";
 import { collectSiblingTerms } from "../data/law/loader";
 
@@ -176,5 +184,148 @@ describe("law quiz generation", () => {
       expect(judge.prompt).toContain("二");
       expect(judge.prompt).not.toMatch(/[○□◊]/);
     }
+  });
+});
+
+describe("law quiz robustness（病态输入不抛错，产出必为合法题或空数组）", () => {
+  const baseLesson = {
+    subject: "minfa",
+    code: "一",
+    breadcrumb: [] as string[],
+    title: "边界测试",
+    intro: "",
+    pageRange: [1, 1] as [number, number],
+    raw: [] as string[],
+  };
+
+  it("returns [] for lessons with no steps at all", () => {
+    const items = buildQuiz({ ...baseLesson, id: "edge-empty", steps: [] } as LawLesson);
+    expect(Array.isArray(items)).toBe(true);
+    expect(items).toHaveLength(0);
+  });
+
+  it("returns [] when every step text is empty or whitespace", () => {
+    const lesson = {
+      ...baseLesson,
+      id: "edge-blank",
+      steps: [
+        { id: "s0", kind: "plain", text: "", terms: [] },
+        { id: "s1", kind: "plain", text: "   ", terms: [] },
+      ],
+    } as unknown as LawLesson;
+    expect(buildQuiz(lesson)).toHaveLength(0);
+  });
+
+  it("handles a single gigantic step without throwing and caps prompt length", () => {
+    const lesson = {
+      ...baseLesson,
+      id: "edge-huge",
+      steps: [
+        {
+          id: "s0",
+          kind: "plain",
+          text: "正当防卫制度是指为了使国家、公共利益、本人或者他人的人身、财产等权利免受正在进行的不法侵害而采取的制止行为。".repeat(80),
+          terms: [],
+        },
+      ],
+    } as unknown as LawLesson;
+    const items = buildQuiz(lesson);
+    for (const item of items) {
+      expect(item.prompt.length).toBeLessThan(120);
+      expect(item.prompt.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("handles a lesson made entirely of quoted-term sentences", () => {
+    const lesson = {
+      ...baseLesson,
+      id: "edge-quotes",
+      steps: [
+        { id: "s0", kind: "plain", text: "“诚实信用原则”是民事活动的基本原则。", terms: [{ term: "诚实信用原则" }] },
+        { id: "s1", kind: "plain", text: "“公序良俗原则”也贯穿始终。", terms: [{ term: "公序良俗原则" }] },
+      ],
+    } as unknown as LawLesson;
+    const items = buildQuiz(lesson);
+    for (const item of items) {
+      if (item.kind === "mcq") {
+        expect(item.options).toContain(item.answer);
+      }
+    }
+  });
+
+  it("returns [] (not an error) for a lesson with no years, no quotes, no definitions", () => {
+    const lesson = {
+      ...baseLesson,
+      id: "edge-plain",
+      steps: [{ id: "s0", kind: "plain", text: "本章内容较为简略。", terms: [] }],
+    } as unknown as LawLesson;
+    const items = buildQuiz(lesson);
+    expect(Array.isArray(items)).toBe(true);
+    expect(items.length).toBeLessThanOrEqual(4);
+  });
+
+  it("defends against step/parts/term null-ish fields from damaged data", () => {
+    const lesson = {
+      ...baseLesson,
+      id: "edge-nullish",
+      steps: [
+        { id: "s0", kind: "plain", text: "侵权责任是指行为人因侵害他人民事权益而依法承担的法律责任。", terms: null },
+        { id: "s1", kind: "list", text: "①停止侵害；②排除妨碍；③消除危险。", parts: ["①停止侵害", "②排除妨碍"], rough: true },
+      ],
+    } as unknown as LawLesson;
+    const items = buildQuiz(lesson);
+    expect(items.length).toBeLessThanOrEqual(4);
+  });
+
+  it("skips rough-marked steps for order questions but still uses their sentences", () => {
+    const lesson = {
+      ...baseLesson,
+      id: "edge-rough",
+      steps: [
+        { id: "s0", kind: "list", text: "①甲内容；②乙内容；③丙内容。", parts: ["①甲内容", "②乙内容", "③丙内容"], rough: true },
+      ],
+    } as unknown as LawLesson;
+    const items = buildQuiz(lesson);
+    expect(items.some((item) => item.kind === "order")).toBe(false);
+  });
+});
+
+describe("law quiz gates（取材闸门纯函数）", () => {
+  it("cleanTerm rejects mnemonic strings and function-word-tailed fragments", () => {
+    expect(cleanTerm("40、20、永、无、中")).toBeNull();
+    expect(cleanTerm("主体一般立功的主体只能")).toBeNull();
+    expect(cleanTerm("正当防卫")).toBe("正当防卫");
+    expect(cleanTerm(null)).toBeNull();
+  });
+
+  it("isCleanVerbatimSentence rejects inline numbered fragments and label-led rows", () => {
+    expect(isCleanVerbatimSentence("法人名义（1）超越法定权限。")).toBe(false);
+    expect(isCleanVerbatimSentence("含义拾得迪失物、指发现他人进失之物。")).toBe(false);
+    expect(isCleanVerbatimSentence("有期徒刑是剥夺犯罪分子一定期限的人身自由的刑罚方法。")).toBe(true);
+  });
+
+  it("isMutableSentence rejects orphan quotes, unbalanced titles, welded years and meta sentences", () => {
+    expect(isMutableSentence("”1789年的法国《人权宣言》进一步丰富了理论。")).toBe(false);
+    expect(isMutableSentence("代表法典有《汉谟拉比法典》《十二。")).toBe(false);
+    expect(isMutableSentence("任何组织不得有超越法律的特权1954年《宪法》规定了监督权。")).toBe(false);
+    expect(isMutableSentence("其特征包括：文意拆解法→法定。")).toBe(false);
+    expect(isMutableSentence("“人权”观念起源于天赋人权学说。")).toBe(true);
+  });
+
+  it("isGarbledOrderPart allows complete sentences and years, rejects half-sentences", () => {
+    expect(isGarbledOrderPart("对象是不特定的大多数人。")).toBe(false);
+    expect(isGarbledOrderPart("1787年《美国宪法》是世界上第一部成文宪法。")).toBe(false);
+    expect(isGarbledOrderPart("监诉的强制措施，")).toBe(true);
+    expect(isGarbledOrderPart("西夏、金、南宋）来背诵。")).toBe(true);
+    expect(isGarbledOrderPart("Who管控")).toBe(true);
+  });
+
+  it("cleanOrderPart strips margin notes", () => {
+    expect(cleanOrderPart("接受法律监督和人民群众监督［保民］")).toBe("接受法律监督和人民群众监督");
+  });
+
+  it("hasFragmentCard detects fragment duplicates ignoring trailing punctuation", () => {
+    expect(hasFragmentCard(["督宪法的实。", "解释宪法。", "修改宪法。", "监督宪法的实施。"])).toBe(true);
+    expect(hasFragmentCard(["解释宪法。", "修改宪法。", "监督宪法的实施。"])).toBe(false);
   });
 });
