@@ -146,6 +146,14 @@
       "scope": "primary"
     },
     {
+      "path": "/law/wrongbook",
+      "scope": "primary"
+    },
+    {
+      "path": "/law/stats",
+      "scope": "primary"
+    },
+    {
       "path": "/law/:subjectId",
       "scope": "primary",
       "dynamic": true

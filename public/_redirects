@@ -54,6 +54,10 @@
 /compare/ / 200
 /law / 200
 /law/ / 200
+/law/wrongbook / 200
+/law/wrongbook/ / 200
+/law/stats / 200
+/law/stats/ / 200
 /law/:subjectId / 200
 /law/learn/:lessonId / 200
 /law/graphic/:lessonId / 200

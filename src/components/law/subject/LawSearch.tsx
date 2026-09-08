@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import type { LawBook, LawLesson } from "../../../types/law";
 import { isShellLesson } from "../../../types/law";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
@@ -73,6 +73,36 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
   const active = debounced.trim().length >= 2;
   const keyword = debounced.trim();
 
+  // 键盘导航的选中态：关键词（防抖值）变化时重置
+  const [activeIndex, setActiveIndex] = useState(-1);
+  useEffect(() => {
+    setActiveIndex(-1);
+  }, [debounced]);
+
+  // 键盘导航：↑↓ 在结果间移动、Enter 跳转选中项（无选中则第一条）、Esc 清空关键词
+  // （搜索框为空时按 Esc 不拦截，让外层弹窗的 Esc 关闭逻辑照常工作）
+  function onInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Escape") {
+      if (query && !event.nativeEvent.isComposing) {
+        event.stopPropagation();
+        setQuery("");
+      }
+      return;
+    }
+    if (!active || hits.length === 0) return;
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveIndex((current) => {
+        const delta = event.key === "ArrowDown" ? 1 : -1;
+        return (current + delta + hits.length) % hits.length;
+      });
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      const hit = hits[activeIndex] ?? hits[0];
+      if (hit) onPick(hit.lesson.id);
+    }
+  }
+
   return (
     <div className="law-search" role="search">
       <div className="law-search__box">
@@ -81,9 +111,14 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={onInputKeyDown}
           placeholder={`在《${subject.name}》里搜索，比如"${SEARCH_EXAMPLES[book.id] ?? "法律"}"…`}
           aria-label={`在${subject.name}中搜索知识点`}
           autoComplete="off"
+          role="combobox"
+          aria-expanded={active && hits.length > 0}
+          aria-controls="law-search__listbox"
+          aria-activedescendant={activeIndex >= 0 ? `law-search__opt-${activeIndex}` : undefined}
         />
         {query ? (
           <button type="button" className="law-search__clear" onClick={() => setQuery("")} aria-label="清空搜索">
@@ -97,9 +132,16 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
           {hits.length === 0 ? (
             <p className="law-search__empty">没有找到" {keyword} "，换个关键词试试（或用"原文对照"浏览全书）</p>
           ) : (
-            <ul>
-              {hits.map((hit) => (
-                <li key={hit.lesson.id}>
+            <ul id="law-search__listbox" role="listbox" aria-label="搜索结果">
+              {hits.map((hit, index) => (
+                <li
+                  key={hit.lesson.id}
+                  id={`law-search__opt-${index}`}
+                  role="option"
+                  aria-selected={index === activeIndex}
+                  className={index === activeIndex ? "is-active" : ""}
+                  onMouseEnter={() => setActiveIndex(index)}
+                >
                   <button type="button" onClick={() => onPick(hit.lesson.id)}>
                     <span className="law-search__tag">{hit.source === "title" ? "📌 标题" : "📄 正文"}</span>
                     <span className="law-search__hit-title">

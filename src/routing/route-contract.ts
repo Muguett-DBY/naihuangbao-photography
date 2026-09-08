@@ -42,6 +42,8 @@ export const routeContract = [
   { path: "/dashboard", scope: "primary" },
   { path: "/compare", scope: "practice" },
   { path: "/law", scope: "primary" },
+  { path: "/law/wrongbook", scope: "primary" },
+  { path: "/law/stats", scope: "primary" },
   { path: "/law/:subjectId", scope: "primary", dynamic: true },
   { path: "/law/learn/:lessonId", scope: "primary", dynamic: true },
   { path: "/law/graphic/:lessonId", scope: "primary", dynamic: true },

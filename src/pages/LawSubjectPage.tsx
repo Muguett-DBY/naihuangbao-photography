@@ -10,6 +10,7 @@ import {
   getDueReviewLessons,
   getLastLessonId,
   getLawProgress,
+  getRecentUnfinishedLesson,
   getTodayGoal,
   getWrongLessons,
 } from "../lib/law-progress";
@@ -24,6 +25,7 @@ import { LessonPathMap } from "../components/law/subject/LessonPathMap";
 import { findLessonInBook, semanticChapterTitle } from "../components/law/subject/subjectUtils";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
+import "../styles/law-flow.css";
 
 type SubjectView = "path" | "tree";
 
@@ -129,9 +131,13 @@ export function LawSubjectPage() {
   const graphics = graphicsOfSubject(subject.id);
   const graphicIds = new Set(graphics.map((g) => g.lessonId));
 
-  // 继续学习
-  const lastLessonId = getLastLessonId();
-  const lastRef = lastLessonId ? findLessonInBook(book, lastLessonId) : null;
+  // 继续学习：优先"最近到访且未完成"（学到一半退出的那节），其次最近走完的课，都限定在本书
+  const resumeCandidates = [getRecentUnfinishedLesson(), getLastLessonId()].filter(
+    (id): id is string => !!id,
+  );
+  const lastRef = resumeCandidates
+    .map((id) => findLessonInBook(book, id))
+    .find((ref) => ref !== null) ?? null;
   const dueCount = [...dueIds].filter((id) => findLessonInBook(book, id)).length;
 
   // 附录章（考点索引）不进章节目录，内容折叠保留
@@ -189,6 +195,7 @@ export function LawSubjectPage() {
           <header>
             <h2>📕 我的错题本（{wrongIds.size}）</h2>
             <span>按 1/2/4/7/15 天的节奏复习，连续 5 次通过就毕业出本</span>
+            <Link to="/law/wrongbook" className="law-subject__wrong-open">五科错题本 →</Link>
           </header>
           <div className="law-subject__wrong-list">
             {[...wrongIds].slice(0, showAllWrong ? wrongIds.size : 8).map((id) => {

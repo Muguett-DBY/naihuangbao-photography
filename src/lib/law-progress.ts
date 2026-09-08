@@ -159,6 +159,17 @@ export function getLastLessonId(): string | null {
   return readStore().lastLessonId;
 }
 
+/** 最近到访且未完成的课（断点续学的首选目标）：lastVisitedAt 最新且尚未标记掌握；无则 null */
+export function getRecentUnfinishedLesson(): string | null {
+  let best: { id: string; at: number } | null = null;
+  for (const [id, progress] of Object.entries(readStore().lessons)) {
+    if (progress.completedAt) continue;
+    if (!progress.lastVisitedAt) continue;
+    if (!best || progress.lastVisitedAt > best.at) best = { id, at: progress.lastVisitedAt };
+  }
+  return best?.id ?? null;
+}
+
 /** 今日目标：完成 3 课 */
 interface GoalState {
   date: string;
