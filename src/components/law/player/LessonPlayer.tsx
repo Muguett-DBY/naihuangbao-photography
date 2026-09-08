@@ -8,6 +8,7 @@ import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
 import { StepStage } from "./StepStage";
 import { QuizRunner } from "./QuizRunner";
+import { useLessonHydration } from "./useLessonHydration";
 import { LawMascot, type LawMood } from "../LawMascot";
 import { KIND_PENDING_HINT, cleanBreadcrumb, kindLabel } from "./lessonHelpers";
 import { ResultPhase, SummaryPhase } from "./LessonPhases";
@@ -39,6 +40,8 @@ export function LessonPlayer({
   onNextLesson,
   siblingTerms,
   initialPhase = "steps",
+  restLoader,
+  lightBoundary = 0,
 }: {
   lesson: LawLesson;
   onExit: () => void;
@@ -47,6 +50,10 @@ export function LessonPlayer({
   siblingTerms?: string[];
   /** 复习模式：跳过讲解步骤，直接进入自测（?review=1） */
   initialPhase?: Phase;
+  /** 课内分层（巨型课治理）：拉取余下步骤全文，resolve 拼合后的完整课；未分层课为空 */
+  restLoader?: () => Promise<LawLesson>;
+  /** 课内分层：lesson.steps 前 lightBoundary 步为全文，其后是占位元数据 */
+  lightBoundary?: number;
 }) {
   const subject = LAW_SUBJECT_MAP[lesson.subject];
   const [phase, setPhase] = useState<Phase>(initialPhase);
@@ -82,9 +89,14 @@ export function LessonPlayer({
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
 
-  const steps = lesson.steps;
-  const current = steps[stepIndex];
-  const currentStep = current;
+  // 课内分层：全文水合态。水合前 steps 尾部是占位元数据（推进到边界才拉全文）
+  const { hydrated, ensureRest } = useLessonHydration(restLoader, lightBoundary, stepIndex, phase);
+  const activeLesson = hydrated ?? lesson;
+
+  const steps = activeLesson.steps;
+  // 占位步骤（全文未到）：不可判定完成、不可推进、不渲染步面
+  const currentIsPlaceholder = restLoader !== undefined && !hydrated && stepIndex >= lightBoundary;
+  const currentStep = currentIsPlaceholder ? undefined : steps[stepIndex];
   const isCurrentDone = currentStep ? !!stepDone[currentStep.id] : false;
   const totalSteps = steps.length;
   const doneSteps = Object.keys(stepDone).length;
@@ -92,12 +104,15 @@ export function LessonPlayer({
 
   // 自测题确定性生成；总结页依据它决定展示"来自测"还是"标记掌握"
   // （注意不能依赖 phase 计算——总结页时 phase 是 summary，否则自测按钮永远不出现）
-  const quiz = useMemo(() => buildQuiz(lesson, siblingTerms), [lesson, siblingTerms]);
+  const quiz = useMemo(() => buildQuiz(activeLesson, siblingTerms), [activeLesson, siblingTerms]);
 
   // 复习模式但本课无题可出 → 退回正常学习流程
+  // （分层课全文未到时先等水合——占位步骤不产题，不能据此误判"无题"）
   useEffect(() => {
-    if (phase === "quiz" && quiz.length === 0) setPhase("steps");
-  }, [phase, quiz.length]);
+    if (phase !== "quiz" || quiz.length > 0) return;
+    if (restLoader && !hydrated) return;
+    setPhase("steps");
+  }, [phase, quiz.length, restLoader, hydrated]);
 
   // 自动串联模式：当前步完成后按所选档位的间隔自动进入下一步（速度持久化）
   const autoDelay = AUTO_SPEEDS.find((s) => s.id === autoSpeed)?.delay ?? 1400;
@@ -296,7 +311,11 @@ export function LessonPlayer({
         <button
           type="button"
           className={`law-player__raw ${showRaw ? "is-open" : ""}`}
-          onClick={() => setShowRaw((value) => !value)}
+          onClick={() => {
+            setShowRaw((value) => !value);
+            // 原文对照需要完整原文：分层课在此拉尾部全文
+            ensureRest();
+          }}
           aria-expanded={showRaw}
         >
           📄 原文对照
@@ -307,7 +326,7 @@ export function LessonPlayer({
       {showRaw ? (
         <details className="law-player__rawpanel" open>
           <summary>书中原文（逐页 OCR，与知识点一一对应）</summary>
-          <pre>{lesson.raw.join("\n")}</pre>
+          <pre>{activeLesson.raw.join("\n")}</pre>
         </details>
       ) : null}
 
@@ -344,6 +363,10 @@ export function LessonPlayer({
                 accentSoft={subject.accentSoft}
                 onDone={handleStepDone}
               />
+            ) : currentIsPlaceholder ? (
+              <p className="law-player__restloading" role="status">
+                正在加载本课剩余全文……
+              </p>
             ) : null}
           </motion.div>
 
@@ -371,16 +394,18 @@ export function LessonPlayer({
               type="button"
               className="law-player__nav is-primary"
               onClick={goNext}
-              disabled={!isCurrentDone}
-              aria-disabled={!isCurrentDone}
+              disabled={!isCurrentDone || currentIsPlaceholder}
+              aria-disabled={!isCurrentDone || currentIsPlaceholder}
             >
-              {isCurrentDone
-                ? stepIndex === totalSteps - 1
-                  ? "完成本课 →"
-                  : "下一步 →"
-                : currentStep
-                  ? KIND_PENDING_HINT[currentStep.kind] ?? "先完成上面的小任务哦"
-                  : "先完成上面的小任务哦"}
+              {currentIsPlaceholder
+                ? "全文加载中…"
+                : isCurrentDone
+                  ? stepIndex === totalSteps - 1
+                    ? "完成本课 →"
+                    : "下一步 →"
+                  : currentStep
+                    ? KIND_PENDING_HINT[currentStep.kind] ?? "先完成上面的小任务哦"
+                    : "先完成上面的小任务哦"}
             </button>
             <button
               type="button"
@@ -413,7 +438,7 @@ export function LessonPlayer({
 
       {phase === "summary" ? (
         <SummaryPhase
-          lesson={lesson}
+          lesson={activeLesson}
           totalSteps={totalSteps}
           doneSteps={doneSteps}
           quizCount={quiz.length}
@@ -429,13 +454,18 @@ export function LessonPlayer({
       ) : null}
 
       {phase === "quiz" ? (
-        <QuizRunner
-          key={quizAttempt}
-          items={quiz.slice(0, 4)}
-          accent={subject.accent}
-          accentSoft={subject.accentSoft}
-          onDone={handleQuizDone}
-        />
+        // 分层课全文未到不出卷（占位步骤产不出题，等水合完成再渲染 QuizRunner）
+        restLoader && !hydrated ? (
+          <p className="law-player__restloading" role="status">正在装订全文，马上可以开测……</p>
+        ) : (
+          <QuizRunner
+            key={quizAttempt}
+            items={quiz.slice(0, 4)}
+            accent={subject.accent}
+            accentSoft={subject.accentSoft}
+            onDone={handleQuizDone}
+          />
+        )
       ) : null}
 
       {phase === "result" ? (

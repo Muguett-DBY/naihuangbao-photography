@@ -128,6 +128,7 @@ async function main() {
   // 另取"最坏课时"：所在分块文件最大的那课（单课巨型课如 xingfa 第十二部分 185KB）
   const firstFlowLesson = new Map();
   const worstLesson = new Map();
+  const worstLayered = new Map();
   for (const subject of SUBJECTS) {
     const dir = join(CHUNKS_DIR, subject);
     const meta = JSON.parse(await readFile(join(dir, `${subject}-meta.json`), "utf8"));
@@ -137,12 +138,17 @@ async function main() {
 
     let biggest = { file: "", bytes: -1 };
     for (const file of await readdir(dir)) {
-      if (!file.endsWith(".json") || file.includes("-meta")) continue;
+      // light/tail 是课内分层伴生文件（S6·T1），不是正文 part，不参与"最坏分块"评选
+      if (!file.endsWith(".json") || file.includes("-meta") || file.includes("-light") || file.includes("-tail")) continue;
       const bytes = (await stat(join(dir, file))).size;
       if (bytes > biggest.bytes) biggest = { file, bytes };
     }
     const worstPart = JSON.parse(await readFile(join(dir, biggest.file), "utf8"));
-    worstLesson.set(subject, worstPart.segments[0]?.lessons[0]?.id ?? hit.i);
+    const worstId = worstPart.segments[0]?.lessons[0]?.id ?? hit.i;
+    worstLesson.set(subject, worstId);
+    // 分层课：首屏只拉轻视图（meta.lt 标记），尾部全文懒加载 —— 报告里注明口径
+    const worstMeta = meta.chapters.flatMap((chapter) => chapter.ls).find((lesson) => lesson.i === worstId);
+    worstLayered.set(subject, Boolean(worstMeta?.lt));
   }
 
   const sizes = await chunkSizesOnDisk();
@@ -161,7 +167,10 @@ async function main() {
       const check = worstPage ?? lessonPage;
       const ok = check.dataRaw <= DATA_RAW_BUDGET && check.dataGz <= DATA_GZ_BUDGET;
       if (!ok) violations += 1;
-      const worstCell = worstPage ? `${KB(worstPage.dataRaw)}/${KB(worstPage.dataGz)}gz` : "同首课";
+      const layeredNote = worstLayered.get(subject) ? "·分层轻视图" : "";
+      const worstCell = worstPage
+        ? `${KB(worstPage.dataRaw)}/${KB(worstPage.dataGz)}gz${layeredNote}`
+        : "同首课";
       rows.push(
         `| ${subject} | ${subjectPage.interactiveMs}ms | ${lessonPage.interactiveMs}ms | ${KB(lessonPage.dataRaw)} | ${KB(lessonPage.dataGz)} | ${worstCell} | ${lessonPage.heapMb?.toFixed(1) ?? "n/a"}MB | ${subjectPage.heapMb?.toFixed(1) ?? "n/a"}MB | ${ok ? "✅" : "❌ 超预算"} |`,
       );

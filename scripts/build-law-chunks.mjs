@@ -24,6 +24,15 @@ const SUBJECTS = ["falixue", "xianfa", "zhishixiang", "minfa", "xingfa"];
 /** 单个分块文件的原始字节上限（正文 lesson 数组部分） */
 const PART_MAX_BYTES = 95 * 1024;
 
+// ── 课内分层（S6·T1）：单课正文超过阈值的拆出两个伴生文件 ──
+//   {lessonId}-light.json 轻视图：前 LIGHT_STEPS_BYTES 的步骤全文 + 余下步骤占位元数据
+//                         （{id,kind,text:""}）+ 前段原文行；loadLawLessonView 首屏只拉它
+//   {lessonId}-tail.json  尾部全文：余下步骤 + 余下原文行；交互推进到占位步骤时才拉
+// part 文件始终保留完整课——loadLawBook 的无损装配与等价性测试完全不受影响。
+const LESSON_LAYER_BYTES = 48 * 1024;
+const LIGHT_STEPS_BYTES = 32 * 1024;
+const LIGHT_RAW_BYTES = 8 * 1024;
+
 // ── 与 src/types/law.ts 的 isCleanTerm 完全一致的实现（等价性测试锁定）──
 function isCleanTerm(term) {
   if (!term) return false;
@@ -164,6 +173,54 @@ async function main() {
     const dir = join(OUT_DIR, id);
     await rm(dir, { recursive: true, force: true });
     await mkdir(dir, { recursive: true });
+
+    // ── 课内分层产物：单课超限拆 light/tail 伴生文件，meta.ls[].lt 记前缀步数 ──
+    let layeredCount = 0;
+    for (const chapter of book.chapters) {
+      const mc = meta.chapters.find((entry) => entry.id === chapter.id);
+      for (let lessonIndex = 0; lessonIndex < chapter.lessons.length; lessonIndex += 1) {
+        const lesson = chapter.lessons[lessonIndex];
+        if (Buffer.byteLength(JSON.stringify(lesson)) <= LESSON_LAYER_BYTES) continue;
+        const sizes = lesson.steps.map((step) => Buffer.byteLength(JSON.stringify(step)));
+        // 步骤前缀：至少 8 步（避免超短前缀），目标 ≤32KB
+        let acc = 0;
+        let k = 0;
+        while (k < lesson.steps.length && (k < 8 || acc + sizes[k] <= LIGHT_STEPS_BYTES)) {
+          acc += sizes[k];
+          k += 1;
+        }
+        // 原文行前缀：目标 ≤8KB（原文对照面板先见首段，其余随尾部懒加载）
+        let rawAcc = 0;
+        let rawCount = 0;
+        for (const line of lesson.raw) {
+          const lineBytes = Buffer.byteLength(line) + 1;
+          if (rawAcc + lineBytes > LIGHT_RAW_BYTES) break;
+          rawAcc += lineBytes;
+          rawCount += 1;
+        }
+        const light = {
+          ...lesson,
+          steps: lesson.steps
+            .slice(0, k)
+            .concat(lesson.steps.slice(k).map((step) => ({ id: step.id, kind: step.kind, text: "" }))),
+          raw: lesson.raw.slice(0, rawCount),
+        };
+        const tail = {
+          f: lesson.id,
+          from: k,
+          steps: lesson.steps.slice(k),
+          raw: lesson.raw.slice(rawCount),
+        };
+        mc.ls[lessonIndex].lt = k;
+        layeredCount += 1;
+        console.log(
+          `  分层课 ${lesson.id}：${lesson.steps.length} 步 ${(Buffer.byteLength(JSON.stringify(lesson)) / 1024).toFixed(0)}KB → light 前 ${k} 步 + tail 后 ${lesson.steps.length - k} 步`,
+        );
+        await writeFile(join(dir, `${lesson.id}-light.json`), JSON.stringify(light));
+        await writeFile(join(dir, `${lesson.id}-tail.json`), JSON.stringify(tail));
+      }
+    }
+    if (layeredCount > 0) console.log(`  ${id}: ${layeredCount} 课做了课内分层`);
 
     const metaBytes = Buffer.byteLength(JSON.stringify(meta));
     await writeFile(join(dir, `${id}-meta.json`), JSON.stringify(meta));
