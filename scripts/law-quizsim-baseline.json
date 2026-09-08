@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-08T19:06:02.178Z",
+  "generatedAt": "2026-09-08T19:08:31.592Z",
   "teachingLessons": 1431,
-  "coverage": 0.8162,
+  "coverage": 0.8155,
   "kindCount": {
     "mcq": 539,
-    "order": 197,
+    "order": 201,
     "judge": 954,
     "fill": 88,
     "multi": 112
@@ -23,8 +23,8 @@
     "8": 41
   },
   "orderCardDist": {
-    "3": 92,
-    "4": 105
+    "3": 90,
+    "4": 111
   },
   "multiCorrectDist": {
     "4": 65,
@@ -49,7 +49,7 @@
     "maxPrompt": 102
   },
   "intercepted": {
-    "orderIntercepted": 339,
+    "orderIntercepted": 335,
     "defIntercepted": 763,
     "judgeMutIntercepted": 410
   }
