@@ -136,13 +136,16 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
               {hits.map((hit, index) => (
                 <li
                   key={hit.lesson.id}
-                  id={`law-search__opt-${index}`}
-                  role="option"
-                  aria-selected={index === activeIndex}
                   className={index === activeIndex ? "is-active" : ""}
                   onMouseEnter={() => setActiveIndex(index)}
                 >
-                  <button type="button" onClick={() => onPick(hit.lesson.id)}>
+                  <button
+                    type="button"
+                    id={`law-search__opt-${index}`}
+                    role="option"
+                    aria-selected={index === activeIndex}
+                    onClick={() => onPick(hit.lesson.id)}
+                  >
                     <span className="law-search__tag">{hit.source === "title" ? "📌 标题" : "📄 正文"}</span>
                     <span className="law-search__hit-title">
                       <b>{highlight(hit.lesson.title, keyword)}</b>

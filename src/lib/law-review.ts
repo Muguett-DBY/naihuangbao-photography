@@ -14,6 +14,9 @@ const DAY_MS = 86_400_000;
 export interface ReviewFactors {
   quizBest?: number;
   quizTotal?: number;
+  /** 最近一次成绩（比历史最好更能反映近期状态） */
+  quizLast?: number;
+  quizLastTotal?: number;
   wrongCount?: number;
 }
 
@@ -22,7 +25,13 @@ export function reviewDifficulty(factors: ReviewFactors): number {
   let coeff = 1.0;
   const total = factors.quizTotal ?? 0;
   if (total > 0) {
-    const accuracy = (factors.quizBest ?? 0) / total;
+    // 正确率 = 历史最好与最近一次的均值：只有"曾满分一次"而近期连错时不再被旧光环拉高
+    const bestAcc = (factors.quizBest ?? 0) / total;
+    const lastAcc =
+      factors.quizLast !== undefined && (factors.quizLastTotal ?? total) > 0
+        ? factors.quizLast / (factors.quizLastTotal ?? total)
+        : bestAcc;
+    const accuracy = (bestAcc + lastAcc) / 2;
     if (accuracy >= 0.9) coeff += 0.5;
     else if (accuracy >= 0.75) coeff += 0.3;
     else if (accuracy >= 0.5) coeff += 0.1;

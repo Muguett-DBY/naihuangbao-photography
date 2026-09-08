@@ -817,6 +817,17 @@
 @media (max-width: 760px) {
   .law-graphic__controls {
     flex-wrap: wrap;
+    row-gap: 8px;
+  }
+  .law-graphic__nav {
+    padding: 9px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .law-graphic__dots {
+    max-width: 120px;
+    flex-wrap: wrap;
+    row-gap: 6px;
   }
 
   .law-graphic__nav.is-primary {

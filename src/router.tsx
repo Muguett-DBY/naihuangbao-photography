@@ -6,6 +6,7 @@ import { NotFound } from "./components/NotFound";
 import { createRoutePreloader } from "./lib/route-preload";
 import { routeLoaders } from "./routing/route-loaders";
 import { RouteLoadingState } from "./components/shared/RouteLoadingState";
+import { MotionConfig } from "framer-motion";
 
 export const preloadRoute = createRoutePreloader(routeLoaders);
 
@@ -131,12 +132,12 @@ export const router = createBrowserRouter([
           { path: "gallery/:id", element: <PageSuspense><PhotoDetailPage /></PageSuspense> },
           { path: "booking", element: <PageSuspense><BookingPage /></PageSuspense> },
           { path: "map", element: <PageSuspense><MapPage /></PageSuspense> },
-          { path: "law", element: <PageSuspense><LawAcademyPage /></PageSuspense> },
+          { path: "law", element: <PageSuspense><MotionConfig reducedMotion="user"><LawAcademyPage /></MotionConfig></PageSuspense> },
           { path: "law/wrongbook", element: <PageSuspense><LawWrongbookPage /></PageSuspense> },
           { path: "law/stats", element: <PageSuspense><LawStatsPage /></PageSuspense> },
-          { path: "law/:subjectId", element: <PageSuspense><LawSubjectPage /></PageSuspense> },
-          { path: "law/learn/:lessonId", element: <PageSuspense><LawLessonPage /></PageSuspense> },
-          { path: "law/graphic/:lessonId", element: <PageSuspense><LawGraphicPage /></PageSuspense> },
+          { path: "law/:subjectId", element: <PageSuspense><MotionConfig reducedMotion="user"><LawSubjectPage /></MotionConfig></PageSuspense> },
+          { path: "law/learn/:lessonId", element: <PageSuspense><MotionConfig reducedMotion="user"><LawLessonPage /></MotionConfig></PageSuspense> },
+          { path: "law/graphic/:lessonId", element: <PageSuspense><MotionConfig reducedMotion="user"><LawGraphicPage /></MotionConfig></PageSuspense> },
           {
             element: <PageSuspense><PracticeLayout /></PageSuspense>,
             children: [
