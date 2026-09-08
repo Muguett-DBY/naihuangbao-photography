@@ -172,17 +172,20 @@ export function LawEggSymbol() {
     }
   }
 
-  if (unlocked) return <EggModal trigger="symbol" onClose={() => setUnlocked(false)} />;
+  // 小猫按钮保持挂载（不能被弹窗条件替换掉，否则信纸关闭时焦点找不到归还目标）
   return (
-    <button
-      type="button"
-      className="law-egg-symbol"
-      onClick={tap}
-      aria-label="奶黄包（听说点三下会有惊喜）"
-      data-taps={taps}
-    >
-      🐱
-    </button>
+    <>
+      <button
+        type="button"
+        className="law-egg-symbol"
+        onClick={tap}
+        aria-label="奶黄包（听说点三下会有惊喜）"
+        data-taps={taps}
+      >
+        🐱
+      </button>
+      {unlocked ? <EggModal trigger="symbol" onClose={() => setUnlocked(false)} /> : null}
+    </>
   );
 }
 

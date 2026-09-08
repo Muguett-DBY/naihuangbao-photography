@@ -323,9 +323,9 @@ function kindLabel(kind: string): string {
     case "tree":
       return "🌳 体系树";
     case "timeline":
-      return "🕰️ 时间轴";
+      return "🕰️ 时间线";
     case "balance":
-      return "⚖️ 天平";
+      return "⚖️ 对比";
     case "stairs":
       return "🪜 阶梯";
     case "matrix":
