@@ -25,6 +25,7 @@
     "law:audit": "node --import tsx scripts/audit-law.mts",
     "law:a11y": "node scripts/law-a11y-check.mjs",
   "law:quizsim": "node --import tsx scripts/law-quiz-sim.mts",
+    "law:distractors": "node scripts/build-law-distractors.mjs",
     "avif": "node scripts/convert-to-avif.mjs",
     "archive:build": "node scripts/build-archive-manifest.mjs",
     "stories:build": "node scripts/build-story-manifest.mjs",
@@ -62,8 +63,9 @@
     "assets:concept": "node scripts/process-concept-assets.mjs",
     "deps:audit": "npm audit --audit-level=moderate && npm install-scripts ls",
     "law:scan": "node scripts/scan-law-content.mjs",
- "law:debtlint": "node scripts/law-debt-lint.mjs",
-    "law:contrast": "node scripts/law-contrast-check.mjs"
+    "law:debtlint": "node scripts/law-debt-lint.mjs",
+    "law:contrast": "node scripts/law-contrast-check.mjs",
+    "law:release-report": "node scripts/law-release-report.mjs"
   },
   "dependencies": {
     "@fontsource/nunito": "^5.3.0",

@@ -514,6 +514,17 @@ describe("audit regression coverage", () => {
     expect(cspFinalizerSource).toContain("https://static.cloudflareinsights.com");
     expect(cspFinalizerSource).toContain("https://cloudflareinsights.com");
     expect(cspFinalizerSource).toContain("inlineScriptHashes");
+    // ── immutable 缓存头裁决书（S3·T4，2026-09-09）─────────────────────────
+    // 提案历史：D 会话曾想给 /assets/* 加 `Cache-Control: public, max-age=31536000, immutable`
+    // 被本守卫弹回。S3 复审维持现状，依据（线上实测 https://shoot.custard.top）：
+    // 1. Cloudflare Pages 已为 /assets/* 默认下发 max-age=14400 + ETag，
+    //    过期后的重复请求走 304 协商（实测 If-None-Match → 304 size=0），只传头部不传体；
+    // 2. SPA 会话内为客户端路由，资产只在整页冷加载时请求；受益场景仅"隔 4h+ 的硬刷新
+    //    省 1 个 304 RTT"，收益微小（D 回滚时亦结论"非问题"）；
+    // 3. immutable 一旦下发无法对已命中用户撤销（一年期），收益/风险比不划算；
+    // 4. 本守卫的语义边界 = "_headers 不自行覆盖平台缓存策略"（sw.js/registerSW.js 的
+    //    no-store 属功能性例外，已单独断言）。
+    // 若未来要推翻此裁决：先删本注释并给出新的线上实测依据，再改 _headers 与本断言。
     expect(headersSource).not.toContain("/assets/*");
     expect(headersSource).not.toContain("Cache-Control: public, max-age=31536000");
     expect(headersSource).toContain("/sw.js\n  Cache-Control: no-cache, no-store, must-revalidate");

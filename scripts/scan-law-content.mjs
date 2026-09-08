@@ -1,13 +1,20 @@
 // 法学内容残留问题全量扫描：五科 JSON 的步骤/标题按六类分类报告。
-// 运行：node scripts/scan-law-content.mjs [--verbose]
+// 运行：node scripts/scan-law-content.mjs [--verbose] [--update-baseline]
 // 输出：控制台分类统计 + .tmp/law-scan-report.json（逐条定位，供修复追踪）
 // 定位：只报告"管线已放行"的残留（管线内已有的清洗规则视为已生效基线）。
+// CI 门禁（S3·T4）：总量超过 scripts/law-scan-baseline.json 即 exit 1（防内容回潮）；
+// 存量 159 条是历史欠账（S2 分批清理中），只允许降不允许升。
+//   --update-baseline  内容清理后把新总量写进基线（只降不升，棘轮下行）
+//   LAW_SCAN_STRICT=1  本地严格模式：任何残留都 exit 1
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { resolve, join } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const BOOK_IDS = ["falixue", "xianfa", "zhishixiang", "minfa", "xingfa"];
 const verbose = process.argv.includes("--verbose");
+const updateBaseline = process.argv.includes("--update-baseline");
+const strict = process.env.LAW_SCAN_STRICT === "1";
+const BASELINE_FILE = join(root, "scripts", "law-scan-baseline.json");
 
 const issues = [];
 const push = (category, subject, lessonId, stepId, evidence, note = "") =>
@@ -147,3 +154,43 @@ if (verbose) {
     console.log(`[${it.category}] ${it.lessonId}/${it.stepId} ${it.note}\n    ${it.evidence}`);
   }
 }
+
+// ── CI 门禁：基线棘轮（S3·T4 裁决落地）─────────────────────────────────
+// 现状是 159 条历史欠账，"任何残留即红"会立刻堵死全部并行流水线；
+// 采用棘轮：超基线 = 内容回潮 = 红；降基线需显式 --update-baseline 落盘。
+let baselineTotal = null;
+try {
+  baselineTotal = JSON.parse(await readFile(BASELINE_FILE, "utf8")).total ?? null;
+} catch {
+  baselineTotal = null; // 无基线文件：视为无欠账上限（首跑会红，跑 --update-baseline 建基线）
+}
+
+if (updateBaseline) {
+  if (baselineTotal !== null && issues.length > baselineTotal) {
+    console.error(`\n✗ 拒绝上调基线（${baselineTotal} → ${issues.length}）：先清理新增残留再更新`);
+    process.exit(1);
+  }
+  await writeFile(BASELINE_FILE, `${JSON.stringify({ total: issues.length, updatedAt: new Date().toISOString() }, null, 2)}\n`, "utf8");
+  console.log(`\n✓ 基线已更新：${baselineTotal ?? "—"} → ${issues.length}`);
+  process.exit(0);
+}
+
+if (strict && issues.length > 0) {
+  console.error(`\n✗ LAW_SCAN_STRICT：仍有 ${issues.length} 条残留`);
+  process.exit(1);
+}
+
+if (baselineTotal === null) {
+  console.error("\n✗ 缺少 scripts/law-scan-baseline.json：先运行 npm run law:scan -- --update-baseline 建立基线");
+  process.exit(1);
+}
+if (issues.length > baselineTotal) {
+  console.error(`\n✗ 内容回潮：${issues.length} 条 > 基线 ${baselineTotal} 条（明细见 .tmp/law-scan-report.json）`);
+  console.error("  修复新增残留，或（若为误报收窄）显式重定基线：npm run law:scan -- --update-baseline");
+  process.exit(1);
+}
+if (issues.length < baselineTotal) {
+  console.log(`\n✓ 残留下降：${issues.length} < 基线 ${baselineTotal}。清理完成后请落盘新基线：`);
+  console.log("  npm run law:scan -- --update-baseline");
+}
+process.exit(0);

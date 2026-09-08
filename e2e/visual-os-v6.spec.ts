@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { expectRouteContractInSync } from "./fixtures/route-contract-assert";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -99,8 +100,7 @@ test("@critical V6 路由契约、内容清单与静态详情页可直接访问"
   const routesResponse = await request.get("/route-contract.json");
   expect(routesResponse.ok()).toBe(true);
   const routes = await routesResponse.json();
-  expect(routes.schemaVersion).toBe(1);
-  expect(routes.routes).toHaveLength(39); // +2 law 错题本/统计页
+  expectRouteContractInSync(routes);
 
   const assetsResponse = await request.get("/visual-asset-manifest.json");
   expect(assetsResponse.ok()).toBe(true);
