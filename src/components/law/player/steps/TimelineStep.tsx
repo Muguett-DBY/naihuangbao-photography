@@ -70,7 +70,7 @@ export function TimelineStep({ step, accent, accentSoft, onDone }: StepProps) {
   return (
     <StepShell
       eyebrow="🕰️ 时间线型 · 顺着时间走"
-      title={`时间轴 · ${events.length} 个节点`}
+      title={`时间线 · ${events.length} 个节点`}
       hint={
         done
           ? undefined
