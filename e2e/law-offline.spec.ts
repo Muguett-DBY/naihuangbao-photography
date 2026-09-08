@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { walkLessonToSummary } from "./fixtures/law-walk";
 
 /**
  * 法学模块 PWA 离线学习实测：
@@ -203,6 +204,43 @@ test.describe("law offline coverage（S6·T3 扩展）", () => {
 
     const bodyText = await page.evaluate(() => document.body.innerText.trim().length);
     expect(bodyText).toBeGreaterThan(20);
+
+    await cleanup(page, context, baseURL!);
+  });
+
+  test("断网下完整学完一节课：步骤交互 + 标记掌握 + 进度落盘", async ({ page, context, baseURL }) => {
+    test.setTimeout(180_000);
+
+    await waitForServiceWorker(page);
+    // 在线预热本课分块（课程内容进运行时缓存）
+    await page.goto(CACHED_LESSON);
+    await expect(page.locator(".law-player")).toBeVisible();
+    await page.waitForTimeout(1_000);
+
+    await goOffline(context, baseURL!);
+
+    // 断网重进本课：步骤全部可交互，走到总结页
+    await page.goto(CACHED_LESSON);
+    await expect(page.locator(".law-player")).toBeVisible();
+    await walkLessonToSummary(page);
+    const summary = page.locator(".law-player__summary");
+    await expect(summary).toBeVisible({ timeout: 10_000 });
+
+    // 标记掌握（跳过自测或直接标记，视课时是否出题）
+    const skip = summary.getByText("跳过自测，直接标记掌握");
+    const master = summary.getByText("学完了，标记掌握");
+    if (await skip.isVisible().catch(() => false)) await skip.click();
+    else await master.click();
+    await expect(page.locator(".law-player__result-actions")).toBeVisible();
+
+    // 进度已写入 localStorage（断网不丢学习记录）
+    const recorded = await page.evaluate(() => {
+      const raw = localStorage.getItem("nhb-law-academy-v1");
+      if (!raw) return null;
+      const entry = JSON.parse(raw).lessons?.["minfa-q031"];
+      return entry ? { completedAt: entry.completedAt ?? null } : null;
+    });
+    expect(recorded?.completedAt, "断网完成的课时应记录 completedAt").not.toBeNull();
 
     await cleanup(page, context, baseURL!);
   });

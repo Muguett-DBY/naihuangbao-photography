@@ -252,64 +252,339 @@ test.describe("law academy", () => {
     expect(saved).toBe("off");
   });
   test("新题型：填空题与多选题出现并可作答（S1）", async ({ page }) => {
-    // fill：falixue-q044 确定性生成填空题。逐题作答直到遇到填空题，输入错误词验证
-    // 答错路径与答案揭示；数据重建导致题目变化时本测试仍按题型特征定位
-    await page.goto("/law/learn/falixue-q044?review=1");
-    await expect(page.locator(".law-quiz")).toBeVisible();
-    for (let round = 0; round < 5; round += 1) {
+    // 按题型特征定位：引擎是确定性的，但题量分配会随数据/引擎版本漂移，
+    // 所以用候选课列表 + 逐题作答直到遇到目标题型（不硬绑定某一课的题目形态）
+    const fillCandidates = ["falixue-q053", "falixue-q073", "falixue-q083"];
+    const multiCandidates = ["falixue-q034", "falixue-q103", "falixue-q106"];
+
+    const answerGeneric = async () => {
+      const mcqOption = page.locator(".law-quiz__options .law-quiz__option:not(.law-quiz__option--multi)");
+      const chip = page.locator(".law-quiz__order-chip");
+      const multiOption = page.locator(".law-quiz__option--multi");
       const fillInput = page.locator(".law-quiz__fill-input");
       if (await fillInput.isVisible().catch(() => false)) {
         await fillInput.fill("测试错误输入");
         await page.locator(".law-quiz__fill-submit").click();
-        const feedback = page.locator(".law-quiz__feedback");
-        await expect(feedback).toBeVisible();
-        await expect(feedback).toContainText("正确答案：");
-        break;
-      }
-      const mcqOption = page.locator(".law-quiz__options .law-quiz__option:not(.law-quiz__option--multi)");
-      const chip = page.locator(".law-quiz__order-chip");
-      const multiOption = page.locator(".law-quiz__option--multi");
-      if (await mcqOption.first().isVisible().catch(() => false)) {
-        await mcqOption.first().click();
-      } else if (await multiOption.first().isVisible().catch(() => false)) {
-        await multiOption.first().click();
-        await page.locator(".law-quiz__multi-confirm").click();
-      } else {
-        for (let i = 0; i < 5 && (await chip.count()) > 0; i += 1) await chip.first().click();
-      }
-      await expect(page.locator(".law-quiz__feedback")).toBeVisible();
-      await page.locator(".law-quiz__next").click();
-    }
-
-    // multi：falixue-q034 确定性生成多选题。勾两项确认（部分选=错，全对才对），
-    // 验证反馈与正确项高亮
-    await page.goto("/law/learn/falixue-q034?review=1");
-    await expect(page.locator(".law-quiz")).toBeVisible();
-    for (let round = 0; round < 5; round += 1) {
-      const multiOption = page.locator(".law-quiz__option--multi");
-      if (await multiOption.first().isVisible().catch(() => false)) {
-        await multiOption.nth(0).click();
-        await multiOption.nth(1).click();
-        await page.locator(".law-quiz__multi-confirm").click();
-        const feedback = page.locator(".law-quiz__feedback");
-        await expect(feedback).toBeVisible();
-        await expect(page.locator(".law-quiz__option--multi.is-correct").first()).toBeVisible();
-        break;
-      }
-      const mcqOption = page.locator(".law-quiz__options .law-quiz__option:not(.law-quiz__option--multi)");
-      const chip = page.locator(".law-quiz__order-chip");
-      const fillInput = page.locator(".law-quiz__fill-input");
-      if (await fillInput.isVisible().catch(() => false)) {
-        await fillInput.fill("测试");
-        await page.locator(".law-quiz__fill-submit").click();
       } else if (await mcqOption.first().isVisible().catch(() => false)) {
         await mcqOption.first().click();
+      } else if (await multiOption.first().isVisible().catch(() => false)) {
+        await multiOption.nth(0).click();
+        await page.locator(".law-quiz__multi-confirm").click();
       } else {
-        for (let i = 0; i < 5 && (await chip.count()) > 0; i += 1) await chip.first().click();
+        for (let i = 0; i < 6 && (await chip.count()) > 0; i += 1) await chip.first().click();
       }
       await expect(page.locator(".law-quiz__feedback")).toBeVisible();
       await page.locator(".law-quiz__next").click();
+    };
+
+    // fill：逐题作答直到遇到填空题，输入错误词验证答错路径与答案揭示
+    let fillDone = false;
+    for (const lessonId of fillCandidates) {
+      await page.goto(`/law/learn/${lessonId}?review=1`);
+      // 课时正文是异步分块加载的，必须等 quiz 挂载（isVisible 立即返回会误判未加载）
+      const mounted = await page.locator(".law-quiz").waitFor({ timeout: 10_000 }).then(() => true).catch(() => false);
+      if (!mounted) continue;
+      for (let round = 0; round < 5 && !fillDone; round += 1) {
+        const fillInput = page.locator(".law-quiz__fill-input");
+        if (await fillInput.isVisible().catch(() => false)) {
+          await fillInput.fill("测试错误输入");
+          await page.locator(".law-quiz__fill-submit").click();
+          const feedback = page.locator(".law-quiz__feedback");
+          await expect(feedback).toBeVisible();
+          await expect(feedback).toContainText("正确答案：");
+          fillDone = true;
+          break;
+        }
+        await answerGeneric();
+      }
+      if (fillDone) break;
     }
+    expect(fillDone, "候选课中必须出现至少一道填空题").toBe(true);
+
+    // multi：勾两项确认（部分选=错，全对才对），验证反馈与正确项高亮
+    let multiDone = false;
+    for (const lessonId of multiCandidates) {
+      await page.goto(`/law/learn/${lessonId}?review=1`);
+      const multiMounted = await page.locator(".law-quiz").waitFor({ timeout: 10_000 }).then(() => true).catch(() => false);
+      if (!multiMounted) continue;
+      for (let round = 0; round < 5 && !multiDone; round += 1) {
+        const multiOption = page.locator(".law-quiz__option--multi");
+        if (await multiOption.first().isVisible().catch(() => false)) {
+          await multiOption.nth(0).click();
+          await multiOption.nth(1).click();
+          await page.locator(".law-quiz__multi-confirm").click();
+          const feedback = page.locator(".law-quiz__feedback");
+          await expect(feedback).toBeVisible();
+          await expect(page.locator(".law-quiz__option--multi.is-correct").first()).toBeVisible();
+          multiDone = true;
+          break;
+        }
+        await answerGeneric();
+      }
+      if (multiDone) break;
+    }
+    expect(multiDone, "候选课中必须出现至少一道多选题").toBe(true);
   });
 
+});
+
+test.describe("错题本页（三分组 / 复习跳转 / 空态）", () => {
+  const NOW = Date.now();
+  const DAY = 86_400_000;
+
+  /** 三种错题状态各一课：到期（falixue-q052 有自测题，?review=1 可直达）/ 未到期 / 毕业 */
+  async function seedWrongbook(page: import("@playwright/test").Page) {
+    await page.addInitScript(
+      (payload) => {
+        localStorage.clear();
+        const triggers = [
+          "midnight", "morning", "firstLesson", "hundred", "streak3", "streak7",
+          "wrongbook3", "wrongGraduate", "pathHalf", "bookDone",
+          "graphicFirst", "exam30", "christmas", "symbol",
+        ];
+        const unlocked = Object.fromEntries(triggers.map((t) => [t, true]));
+        localStorage.setItem("nhb-law-egg-v1", JSON.stringify({ unlocked, seenAt: { morning: 1 } }));
+        localStorage.setItem(
+          "nhb-law-academy-v1",
+          JSON.stringify({ version: 1, lastLessonId: "falixue-q052", lessons: payload }),
+        );
+      },
+      {
+        "falixue-q052": {
+          stepsDone: { s0: true }, quizBest: 0, quizTotal: 4, wrongCount: 2,
+          lastVisitedAt: NOW, wrongAt: NOW, reviewStage: 0, reviewDueAt: NOW - 3_600_000,
+        },
+        "minfa-q033": {
+          stepsDone: { s0: true }, quizBest: 1, quizTotal: 4, wrongCount: 1,
+          lastVisitedAt: NOW, wrongAt: NOW, reviewStage: 1, reviewDueAt: NOW + 3 * DAY,
+        },
+        "minfa-q031": {
+          stepsDone: { s0: true }, quizBest: 4, quizTotal: 4, wrongCount: 1,
+          lastVisitedAt: NOW, wrongAt: NOW - 10 * DAY, reviewStage: 5,
+        },
+      } as Record<string, Record<string, unknown>>,
+    );
+  }
+
+  test.beforeEach(async ({ page }) => {
+    await seedWrongbook(page);
+  });
+
+  test("三分组各归其位，摘要计数与分组一致", async ({ page }) => {
+    await page.goto("/law/wrongbook");
+    await expect(page.locator(".law-wrongbook__head h1")).toContainText("错题本");
+    // 摘要三枚 chip 的计数
+    await expect(page.locator(".law-wrongbook__chip", { hasText: "今天到期 1" })).toBeVisible();
+    await expect(page.locator(".law-wrongbook__chip", { hasText: "未来到期 1" })).toBeVisible();
+    await expect(page.locator(".law-wrongbook__chip", { hasText: "已毕业 1" })).toBeVisible();
+    // 三个分组各含一条目标课，到期状态文案口径正确
+    const dueGroup = page.locator(".law-wrongbook__group", { hasText: "今天到期" });
+    await expect(dueGroup.locator(".law-wrongbook__item")).toHaveCount(1);
+    await expect(dueGroup.locator(".law-wrongbook__item").first()).toContainText("今天到期");
+    const upcomingGroup = page.locator(".law-wrongbook__group", { hasText: "未来到期" });
+    await expect(upcomingGroup.locator(".law-wrongbook__item").first()).toContainText("3 天后到期");
+    const graduatedGroup = page.locator(".law-wrongbook__group", { hasText: "已毕业" });
+    await expect(graduatedGroup.locator(".law-wrongbook__item").first()).toContainText("已毕业");
+  });
+
+  test("到期条目直达复习模式，未到期只进课时页", async ({ page }) => {
+    await page.goto("/law/wrongbook");
+    // 到期 → ?review=1 直达自测
+    const due = page.locator(".law-wrongbook__group", { hasText: "今天到期" }).locator(".law-wrongbook__item").first();
+    await expect(due).toHaveAttribute("href", /\/law\/learn\/falixue-q052\?review=1$/);
+    await due.click();
+    await expect(page).toHaveURL(/\/law\/learn\/falixue-q052\?review=1$/);
+    await expect(page.locator(".law-quiz")).toBeVisible();
+
+    // 未到期 → 不带 review 参数（提前翻看可以，但别急着测）
+    await page.goto("/law/wrongbook");
+    const upcoming = page.locator(".law-wrongbook__group", { hasText: "未来到期" }).locator(".law-wrongbook__item").first();
+    await expect(upcoming).toHaveAttribute("href", /\/law\/learn\/minfa-q033$/);
+    await upcoming.click();
+    await expect(page).toHaveURL(/\/law\/learn\/minfa-q033$/);
+    await expect(page.locator(".law-player")).toBeVisible();
+    await expect(page.locator(".law-quiz")).toHaveCount(0);
+  });
+
+  test("空错题本显示空态引导而非空页面", async ({ page }) => {
+    // 后注册的 initScript 后执行：用空进度覆盖 beforeEach 的种子
+    await page.addInitScript(() => {
+      localStorage.setItem("nhb-law-academy-v1", JSON.stringify({ version: 1, lessons: {} }));
+    });
+    await page.goto("/law/wrongbook");
+    await expect(page.locator(".law-wrongbook__empty")).toBeVisible();
+    await expect(page.locator(".law-wrongbook__empty")).toContainText("还是空白的");
+    await expect(page.locator(".law-wrongbook__group")).toHaveCount(0);
+    await expect(page.locator(".law-wrongbook__empty-cta")).toHaveAttribute("href", "/law");
+  });
+});
+
+test.describe("统计页（图表渲染 / 数据联动）", () => {
+  test("KPI、柱状图与错题健康度随进度数据联动", async ({ page }) => {
+    const now = Date.now();
+    await page.addInitScript((ts) => {
+      localStorage.clear();
+      const triggers = [
+        "midnight", "morning", "firstLesson", "hundred", "streak3", "streak7",
+        "wrongbook3", "wrongGraduate", "pathHalf", "bookDone",
+        "graphicFirst", "exam30", "christmas", "symbol",
+      ];
+      const unlocked = Object.fromEntries(triggers.map((t) => [t, true]));
+      localStorage.setItem("nhb-law-egg-v1", JSON.stringify({ unlocked, seenAt: { morning: 1 } }));
+      // 今日完成 2 课 + 1 课答错待复习：KPI/柱状图/健康度三处都要反映
+      localStorage.setItem(
+        "nhb-law-academy-v1",
+        JSON.stringify({
+          version: 1,
+          lastLessonId: "minfa-q031",
+          lessons: {
+            "minfa-q031": {
+              stepsDone: { s0: true, s1: true }, quizBest: 4, quizTotal: 4, wrongCount: 0,
+              lastVisitedAt: ts, completedAt: ts,
+            },
+            "minfa-q033": {
+              stepsDone: { s0: true }, quizBest: 4, quizTotal: 4, wrongCount: 0,
+              lastVisitedAt: ts, completedAt: ts,
+            },
+            "falixue-q052": {
+              stepsDone: { s0: true }, quizBest: 0, quizTotal: 4, wrongCount: 1,
+              lastVisitedAt: ts, wrongAt: ts, reviewStage: 0, reviewDueAt: ts - 3_600_000,
+            },
+          },
+        }),
+      );
+    }, now);
+
+    await page.goto("/law/stats");
+    await expect(page.locator(".law-stats__head h1")).toContainText("学习统计");
+    // KPI：已掌握课时 = 2（completedAt 口径，错题课不算掌握）
+    const kpis = page.locator(".law-stats__kpi");
+    await expect(kpis.filter({ hasText: "已掌握课时" }).locator("b")).toHaveText("2");
+    // 柱状图：30 根柱渲染，今日柱非零，摘要与注入数据一致（2 课时）
+    await expect(page.locator(".law-stats__chart svg rect")).toHaveCount(30);
+    await expect(page.locator(".law-stats__chart rect.is-today")).not.toHaveClass(/is-zero/);
+    await expect(page.locator(".law-stats__chart-summary")).toContainText("近 30 天完成 2 课时");
+    // 错题健康度：今日到期 1 / 未毕业 1 → 1/1（is-warn 态）
+    await expect(kpis.filter({ hasText: "错题健康度" })).toContainText("1/1");
+    // 数据联动：错题区给出复习入口
+    await expect(page.locator(".law-stats__wrong")).toContainText("1 课今天到期");
+  });
+
+  test("无学习记录时显示空态引导", async ({ page }) => {
+    await page.addInitScript(() => localStorage.clear());
+    await page.goto("/law/stats");
+    await expect(page.locator(".law-stats__empty")).toBeVisible();
+    await expect(page.locator(".law-stats__cards")).toHaveCount(0);
+    await expect(page.locator(".law-stats__empty")).toContainText("还没有可统计的学习记录");
+  });
+});
+
+test.describe("关卡地图扩展（浮层 / 自测入口 / 蜿蜒结构）", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.clear();
+      // 预解锁全部彩蛋：深夜/清晨等时段信弹窗会挡住视图切换交互
+      const triggers = [
+        "midnight", "morning", "firstLesson", "hundred", "streak3", "streak7",
+        "wrongbook3", "wrongGraduate", "pathHalf", "bookDone",
+        "graphicFirst", "exam30", "christmas", "symbol",
+      ];
+      const unlocked = Object.fromEntries(triggers.map((t) => [t, true]));
+      localStorage.setItem("nhb-law-egg-v1", JSON.stringify({ unlocked, seenAt: { morning: 1 } }));
+      localStorage.setItem("nhb-law-subject-view", "tree");
+    });
+  });
+
+  test("节点浮层：聚焦显示课名与时长，失焦消失", async ({ page }) => {
+    await page.goto("/law/xianfa");
+    // 切到学习路径视图（蜿蜒关卡地图）
+    await page.locator(".law-subject__viewtoggle button", { hasText: "学习路径" }).click();
+    const node = page.locator(".law-path__node:not(.is-current)").first();
+    await node.focus();
+    // 浮层显示课名与"步 ≈ 分钟"时长说明（focus 与 hover 共用同一状态通道）
+    const tip = page.locator(".law-path__tip").first();
+    await expect(tip).toBeVisible();
+    await expect(tip.locator("b")).not.toBeEmpty();
+    await expect(tip.locator("small")).toContainText(/步 ≈ \d+ 分钟/);
+    await node.blur();
+    await expect(page.locator(".law-path__tip")).toHaveCount(0);
+  });
+
+  test("当前节点「直接自测」直达复习模式", async ({ page }) => {
+    // q001-tour 导览课不出题：标记完成后当前节点变为有自测题的 q002
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        "nhb-law-academy-v1",
+        JSON.stringify({
+          version: 1,
+          lessons: {
+            "xianfa-q001-tour": {
+              stepsDone: { s0: true }, quizBest: 1, quizTotal: 1, wrongCount: 0,
+              lastVisitedAt: Date.now(), completedAt: Date.now(),
+            },
+          },
+        }),
+      );
+    });
+    await page.goto("/law/xianfa");
+    await page.locator(".law-subject__viewtoggle button", { hasText: "学习路径" }).click();
+    const current = page.locator(".law-path__node.is-current");
+    await expect(current).toHaveCount(1);
+    // 当前节点带开始旗与自测入口
+    await expect(page.locator(".law-path__start")).toBeVisible();
+    const quizEntry = page.locator(".law-path__quiz");
+    await expect(quizEntry).toBeVisible();
+    await expect(quizEntry).toContainText("直接自测");
+    await quizEntry.click();
+    await expect(page).toHaveURL(/\/law\/learn\/.+\?review=1$/);
+    await expect(page.locator(".law-quiz")).toBeVisible();
+  });
+
+  test("蜿蜒结构：跨章分区且节点横向偏移交替", async ({ page }) => {
+    await page.goto("/law/xianfa");
+    await page.locator(".law-subject__viewtoggle button", { hasText: "学习路径" }).click();
+    // 分区：每章一个 section（宪法书正文 > 5 章）
+    const sections = page.locator(".law-path__section");
+    expect(await sections.count()).toBeGreaterThan(5);
+    // 蜿蜒：相邻节点 --dx 偏移交替（非全部同一值）
+    const dxValues = await page.locator(".law-path__slot").evaluateAll((slots) => {
+      const first = (slots[0] as HTMLElement).style.getPropertyValue("--dx");
+      const second = (slots[1] as HTMLElement).style.getPropertyValue("--dx");
+      return [first, second];
+    });
+    expect(dxValues[0]).not.toBe(dxValues[1]);
+    // 分区标题带 done/total 计数
+    await expect(page.locator(".law-path__divider").first()).toContainText(/\d+\/\d+/);
+  });
+});
+
+test.describe("音效偏好（reduce-motion 用户）", () => {
+  // 方法学备忘（A 会话 + 本会话探针复核）：test.use({ reducedMotion }) 与启动参数都不生效，
+  // 必须 browser.newContext({ reducedMotion: "reduce" }) 手动建上下文
+  test("reduce-motion 用户音效默认静音，仍可手动开启", async ({ browser }) => {
+    const context = await browser.newContext({ reducedMotion: "reduce" });
+    const page = await context.newPage();
+    try {
+      await page.addInitScript(() => {
+        localStorage.clear();
+        const triggers = [
+          "midnight", "morning", "firstLesson", "hundred", "streak3", "streak7",
+          "wrongbook3", "wrongGraduate", "pathHalf", "bookDone",
+          "graphicFirst", "exam30", "christmas", "symbol",
+        ];
+        const unlocked = Object.fromEntries(triggers.map((t) => [t, true]));
+        localStorage.setItem("nhb-law-egg-v1", JSON.stringify({ unlocked, seenAt: { morning: 1 } }));
+      });
+      await page.goto("/law");
+      const toggle = page.locator(".law-sound-toggle");
+      await expect(toggle).toBeVisible();
+      await expect(toggle).toHaveText(/🔇/);
+      await toggle.click();
+      await expect(toggle).toHaveText(/🔊/);
+      const saved = await page.evaluate(() => localStorage.getItem("nhb-law-sound"));
+      expect(saved).toBe("on");
+    } finally {
+      await context.close();
+    }
+  });
 });

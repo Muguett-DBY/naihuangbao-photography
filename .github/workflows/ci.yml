@@ -22,6 +22,8 @@ jobs:
       - run: npm run cf:types:check
       - run: npm run lint
       - run: npm test
+      # S3·T4：法学内容残留扫描（基线棘轮，防内容回潮；超 scripts/law-scan-baseline.json 即红）
+      - run: npm run law:scan
       - run: npm run build:full
       - run: npm run deps:audit
       - run: npx playwright install --with-deps chromium
