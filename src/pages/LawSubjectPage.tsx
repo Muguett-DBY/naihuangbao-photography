@@ -194,7 +194,7 @@ export function LawSubjectPage() {
         <section className="law-subject__wrong">
           <header>
             <h2>📕 我的错题本（{wrongIds.size}）</h2>
-            <span>按 1/2/4/7/15 天的节奏复习，连续 5 次通过就毕业出本</span>
+            <span>按 1/2/4/7/15 天的节奏复习，连续 5 次通过就能从错题本毕业</span>
             <Link to="/law/wrongbook" className="law-subject__wrong-open">五科错题本 →</Link>
           </header>
           <div className="law-subject__wrong-list">
