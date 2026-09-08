@@ -12,6 +12,7 @@ import {
   getWrongLessons,
   markStepDone,
   recordQuiz,
+  getRecentUnfinishedLesson,
   touchLesson,
   unlockEgg,
 } from "./law-progress";
@@ -253,5 +254,45 @@ describe("law egg state and progress events", () => {
     // 答错进错题本 → 派发
     recordQuiz("minfa-q002", 0, 4, 1);
     expect(events).toContain(LAW_PROGRESS_EVENT);
+  });
+});
+
+describe("getRecentUnfinishedLesson", () => {
+  beforeEach(() => {
+    store = stubStorage();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-05T10:00:00"));
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
+  it("returns the most recently visited unfinished lesson", () => {
+    const now = Date.now();
+    markStepDone("xingfa-q001", "s0"); // 走了一半（未完成），最近到访
+    recordQuiz("xingfa-q002", 4, 4, 1); // 已完成，到访更晚
+    // q002 已完成必须被跳过；q001 未完成但比 q002 早——仍然唯一候选
+    expect(getRecentUnfinishedLesson()).toBe("xingfa-q001");
+  });
+
+  it("prefers the later of two unfinished lessons", () => {
+    const now = Date.now();
+    markStepDone("falixue-q001", "s0");
+    vi.setSystemTime(new Date(Date.now() + 60_000));
+    markStepDone("falixue-q002", "s0");
+    expect(getRecentUnfinishedLesson()).toBe("falixue-q002");
+  });
+
+  it("returns null when every visited lesson is completed", () => {
+    // 完成 = 步骤全点 + 自测通过（recordQuiz 单独不会标记 completedAt）
+    markStepDone("xingfa-q010", "s0");
+    recordQuiz("xingfa-q010", 2, 2, 1);
+    expect(getRecentUnfinishedLesson()).toBeNull();
+  });
+
+  it("returns null when nothing was visited", () => {
+    expect(getRecentUnfinishedLesson()).toBeNull();
   });
 });

@@ -5,7 +5,7 @@ import { LAW_SUBJECTS } from "../data/law/meta";
 import { LAW_GRAPHICS } from "../data/law/graphics";
 import lawStats from "../data/law/stats.json";
 import { getPlan } from "../lib/law-plan";
-import { getDueReviewLessons, getLastLessonId, getTodayGoal, subjectStats } from "../lib/law-progress";
+import { getDueReviewLessons, getLastLessonId, getRecentUnfinishedLesson, getTodayGoal, subjectStats } from "../lib/law-progress";
 import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, LawEggSymbol, useLawImmersive } from "../components/law/EasterEgg";
 import { LawEggGalleryButton, LawSoundToggle } from "../components/law/EggGallery";
@@ -14,6 +14,7 @@ import { LawPlanCard } from "../components/law/LawPlanCard";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
+import "../styles/law-flow.css";
 import "../styles/law-easter.css";
 
 interface LawStats {
@@ -38,10 +39,12 @@ export function LawAcademyPage() {
   const totalLessons = LAW_SUBJECTS.reduce((sum, s) => sum + (stats[s.id]?.lessonCount ?? 0), 0);
   const dueIds = useMemo(() => getDueReviewLessons(), []);
   const dueSubjectId = dueIds[0]?.replace(/-q.*/, "");
-  // 今日学习卡的唯一主行动：接着上次学的来，没学过就从推荐路线第一本（民法）开始
-  const lastLessonId = getLastLessonId();
-  const resumeHref = lastLessonId ?? "/law/minfa";
-  const resumeLabel = lastLessonId ? "继续学习" : "开始第一课";
+  // 今日学习卡的唯一主行动：优先"最近到访且未完成"的课（学到一半退出的那节），
+  // 其次 lastLessonId（最近走完的课），没学过就从推荐路线第一本（民法）开始
+  const resumeTarget = getRecentUnfinishedLesson() ?? getLastLessonId();
+  // 注意 resumeTarget 是裸课时 id，必须拼 /law/learn/ 前缀（曾直接拼成 /law/<id> 形成坏链）
+  const resumeHref = resumeTarget ? `/law/learn/${resumeTarget}` : "/law/minfa";
+  const resumeLabel = resumeTarget ? "继续学习" : "开始第一课";
   const todayPercent = Math.min(100, Math.round((today.done / today.target) * 100));
   // 通关横幅候选（stats 口径），组件内部会用 meta 级精确口径复核后展示
   const finishSubjects = useMemo(
@@ -73,16 +76,25 @@ export function LawAcademyPage() {
           <span>🧩 {totalLessons} 个知识点</span>
           <span>🎮 边玩边学</span>
         </div>
+        <div className="law-academy__quick">
+          <Link to="/law/wrongbook" className="law-academy__quick-link">📕 错题本</Link>
+          <Link to="/law/stats" className="law-academy__quick-link">📊 学习统计</Link>
+        </div>
       </header>
 
       {dueIds.length > 0 && LAW_SUBJECTS.some((s) => s.id === dueSubjectId) ? (
         // 直达第一节到期课的复习测试，不再绕道学科页多跳一次
-        <Link
-          to={`/law/learn/${dueIds[0]}?review=1`}
-          className="law-academy__review-chip"
-        >
-          🔁 {dueIds.length} 课错题待复习，先测最早到期的 →
-        </Link>
+        <div className="law-academy__review-banner" role="status">
+          <span className="law-academy__review-banner-text">
+            🔁 {dueIds.length} 课错题已到复习期，最早一节现在就测：
+          </span>
+          <Link to={`/law/learn/${dueIds[0]}?review=1`} className="law-academy__review-banner-go">
+            开始复习 →
+          </Link>
+          <Link to="/law/wrongbook" className="law-academy__review-banner-all">
+            错题本全部
+          </Link>
+        </div>
       ) : null}
 
       <section className="law-today-card" aria-label="今日学习">

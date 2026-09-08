@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import type { LawBook } from "../../../types/law";
 import type { LawProgressMap } from "../../../lib/law-progress";
 import { buildLessonPath, type PathNode } from "../../../lib/law-path";
@@ -68,6 +68,8 @@ function PathSlot({ node, isGraphic }: { node: PathNode; isGraphic: boolean }) {
   const isCurrent = state === "current";
   const isDone = state === "done";
   const stateLabel = isDone ? "已完成" : isCurrent ? "当前位置，从这里继续" : "待学习";
+  // 可见浮层（hover/focus 时显示课名与时长）：每槽独立开关，单实例渲染无性能压力
+  const [showTip, setShowTip] = useState(false);
 
   return (
     <div
@@ -80,14 +82,35 @@ function PathSlot({ node, isGraphic }: { node: PathNode; isGraphic: boolean }) {
         to={`/law/learn/${lesson.id}`}
         className={`law-path__node is-${state}`}
         aria-label={`第 ${order} 站 ${lesson.title}（${stateLabel}，${meta.steps}步约${meta.minutes}分钟）`}
-        title={`${lesson.title} · ${meta.steps}步 ≈ ${meta.minutes}分`}
+        aria-describedby={showTip ? `law-path__tip-${order}` : undefined}
+        onMouseEnter={() => setShowTip(true)}
+        onMouseLeave={() => setShowTip(false)}
+        onFocus={() => setShowTip(true)}
+        onBlur={() => setShowTip(false)}
       >
         <b>{isDone ? "✓" : order}</b>
         {node.reviewDue ? <span className="law-path__flag" aria-hidden="true">🔁</span> : null}
         {!node.reviewDue && node.inWrongBook ? <span className="law-path__dot" aria-hidden="true" /> : null}
         {isGraphic ? <span className="law-path__gicon" aria-hidden="true">📐</span> : null}
       </PrefetchLink>
-      {isCurrent ? <span className="law-path__here-title">{lesson.title}</span> : null}
+      {showTip ? (
+        <span id={`law-path__tip-${order}`} className="law-path__tip" role="tooltip">
+          <b>{lesson.title}</b>
+          <small>{meta.steps} 步 ≈ {meta.minutes} 分钟 · {stateLabel}</small>
+        </span>
+      ) : null}
+      {isCurrent ? (
+        <>
+          <span className="law-path__here-title">{lesson.title}</span>
+          <PrefetchLink
+            to={`/law/learn/${lesson.id}?review=1`}
+            className="law-path__quiz"
+            aria-label={`不看重讲解，直接自测「${lesson.title}」`}
+          >
+            🎯 直接自测
+          </PrefetchLink>
+        </>
+      ) : null}
     </div>
   );
 }
