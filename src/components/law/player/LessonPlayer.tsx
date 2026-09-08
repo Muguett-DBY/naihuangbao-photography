@@ -104,11 +104,10 @@ export function LessonPlayer({
   const graphic = LAW_GRAPHIC_MAP[lesson.id];
 
   // 自测题确定性生成；总结页依据它决定展示"来自测"还是"标记掌握"
-  // （注意不能依赖 phase 计算——总结页时 phase 是 summary，否则自测按钮永远不出现）
+  // （不能依赖 phase 计算——总结页时 phase 是 summary，否则自测按钮永不出现）
   const quiz = useMemo(() => buildQuiz(activeLesson, siblingTerms), [activeLesson, siblingTerms]);
 
-  // 复习模式但本课无题可出 → 退回正常学习流程
-  // （分层课全文未到时先等水合——占位步骤不产题，不能据此误判"无题"）
+  // 复习模式但本课无题可出 → 退回正常流程（分层课全文未到时先等水合——占位步骤不产题，不能据此误判"无题"）
   useEffect(() => {
     if (phase !== "quiz" || quiz.length > 0) return;
     if (restLoader && !hydrated) return;
@@ -483,8 +482,7 @@ export function LessonPlayer({
         <ResultPhase
           quizScore={quizScore}
           onRestart={() => {
-            // 再学一遍 = 从头快走一遍：保留已完成步骤的勾（可重做但不必重做），
-            // 曾在这里清空全部进度，答错一题就要把整课互动重新点一遍
+            // 再学一遍 = 从头快走一遍：保留已完成的勾（曾在此清空全部进度，答错一题就要重点整课互动）
             setStepIndex(0);
             setPhase("steps");
             setMood("idle");
