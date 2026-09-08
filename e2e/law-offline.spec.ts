@@ -67,3 +67,143 @@ test.describe("law offline learning", () => {
     await expect(page.locator(".law-notfound")).toBeVisible();
   });
 });
+
+test.describe("law offline coverage（S6·T3 扩展）", () => {
+  const EGG_TRIGGERS = [
+    "midnight", "morning", "firstLesson", "hundred", "streak3", "streak7",
+    "wrongbook3", "wrongGraduate", "pathHalf", "bookDone",
+    "graphicFirst", "exam30", "christmas", "symbol",
+  ];
+
+  /** 预解锁彩蛋（挡住时段型弹窗）+ 注入一道错题（错题本离线场景的数据前提） */
+  async function seedProgress(page: import("@playwright/test").Page) {
+    await page.addInitScript((triggers) => {
+      const unlocked = Object.fromEntries(triggers.map((t) => [t, true]));
+      localStorage.setItem("nhb-law-egg-v1", JSON.stringify({ unlocked, seenAt: { morning: 1 } }));
+      const now = Date.now();
+      // 民法一课答错（错题本建档：明天到期）；另一课已掌握（统计页有内容可渲染）
+      localStorage.setItem(
+        "nhb-law-academy-v1",
+        JSON.stringify({
+          version: 1,
+          lastLessonId: "minfa-q031",
+          lessons: {
+            "minfa-q031": {
+              stepsDone: { s0: true, s1: true },
+              quizBest: 0,
+              quizTotal: 4,
+              wrongCount: 1,
+              lastVisitedAt: now,
+              wrongAt: now,
+              reviewStage: 0,
+              reviewDueAt: now + 86_400_000,
+            },
+            "minfa-q032": {
+              stepsDone: { s0: true, s1: true, s2: true },
+              quizBest: 4,
+              quizTotal: 4,
+              wrongCount: 0,
+              lastVisitedAt: now,
+              completedAt: now,
+            },
+          },
+        }),
+      );
+    }, EGG_TRIGGERS);
+  }
+
+  async function cleanup(page: import("@playwright/test").Page, context: import("@playwright/test").BrowserContext, baseURL: string) {
+    await context.setOffline(false).catch(() => undefined);
+    await context.unrouteAll({ behavior: "ignoreErrors" }).catch(() => undefined);
+    await page.evaluate(() => localStorage.clear()).catch(() => undefined);
+    void baseURL;
+  }
+
+  test("错题本离线可用（loadLawDirectory 的学科 meta 走运行时缓存）", async ({ page, context, baseURL }) => {
+    test.setTimeout(120_000);
+
+    await waitForServiceWorker(page);
+    await seedProgress(page);
+
+    // 在线：错题本加载 5 科 meta → 进运行时缓存
+    await page.goto("/law/wrongbook");
+    await expect(page.locator(".law-wrongbook__head h1")).toContainText("错题本");
+    await expect(page.locator(".law-wrongbook__item").first()).toBeVisible();
+    // 目录已加载：条目显示课名（directory 命中）而非课时 id 兜底
+    await expect(page.locator(".law-wrongbook__item b").first()).not.toContainText("minfa-q");
+
+    await goOffline(context, baseURL!);
+
+    // 离线重进：页头/摘要/错题条目完整
+    await page.goto("/law/wrongbook");
+    await expect(page.locator(".law-wrongbook__head h1")).toContainText("错题本");
+    await expect(page.locator(".law-wrongbook__summary")).toBeVisible();
+    await expect(page.locator(".law-wrongbook__item").first()).toBeVisible();
+
+    await cleanup(page, context, baseURL!);
+  });
+
+  test("统计页离线可用（本地数据 + 应用壳，无网络依赖）", async ({ page, context, baseURL }) => {
+    test.setTimeout(120_000);
+
+    await waitForServiceWorker(page);
+    await seedProgress(page);
+
+    // 在线：统计页随应用壳进缓存
+    await page.goto("/law/stats");
+    await expect(page.locator(".law-stats__head h1")).toContainText("学习统计");
+    await expect(page.locator(".law-stats__cards")).toBeVisible();
+
+    await goOffline(context, baseURL!);
+
+    // 离线重进：KPI 与柱状图完整渲染（数据在 localStorage，逐日历史/旧口径都在本地）
+    await page.goto("/law/stats");
+    await expect(page.locator(".law-stats__head h1")).toContainText("学习统计");
+    await expect(page.locator(".law-stats__cards")).toBeVisible();
+    await expect(page.locator(".law-stats__chart svg")).toBeVisible();
+
+    await cleanup(page, context, baseURL!);
+  });
+
+  test("断网下跨页导航不白屏（SPA 内切换已缓存页面）", async ({ page, context, baseURL }) => {
+    test.setTimeout(120_000);
+
+    await waitForServiceWorker(page);
+    await seedProgress(page);
+
+    // 在线预热：学科 meta + 课程分块 + 错题本/统计页应用壳
+    await page.goto(CACHED_SUBJECT);
+    await expect(page.locator(".law-subject__hero h1")).toContainText("民法");
+    await page.goto(CACHED_LESSON);
+    await expect(page.locator(".law-player")).toBeVisible();
+    await page.goto("/law/wrongbook");
+    await expect(page.locator(".law-wrongbook__head h1")).toBeVisible();
+    await page.goto("/law/stats");
+    await expect(page.locator(".law-stats__head h1")).toBeVisible();
+
+    await goOffline(context, baseURL!);
+
+    // 断网跨页导航：课程 → 学科目录 → 学习中心 → 错题本 → 统计页，逐站断言非白屏
+    await page.goto(CACHED_LESSON);
+    await expect(page.locator(".law-player")).toBeVisible();
+
+    await page.locator(".law-player__back").click(); // SPA 返回学科目录
+    await expect(page.locator(".law-subject__hero h1")).toContainText("民法");
+
+    // 返回链接被粘性页头视觉遮挡时，事件派发仍走 react-router 的 SPA 导航
+    await page.locator(".law-subject__back").dispatchEvent("click"); // 返回学习中心
+    await expect(page.locator(".law-academy__hero h1")).toBeVisible();
+
+    await page.locator(".law-academy__quick-link", { hasText: "错题本" }).first().click();
+    await expect(page.locator(".law-wrongbook__head h1")).toContainText("错题本");
+
+    // 整页冷导航到统计页（断网 + SW 接管）也不白屏
+    await page.goto("/law/stats");
+    await expect(page.locator(".law-stats__cards")).toBeVisible();
+
+    const bodyText = await page.evaluate(() => document.body.innerText.trim().length);
+    expect(bodyText).toBeGreaterThan(20);
+
+    await cleanup(page, context, baseURL!);
+  });
+});
