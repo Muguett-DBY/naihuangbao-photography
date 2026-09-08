@@ -1,6 +1,16 @@
 import type { LawLesson, LawQuizItem, LawStep } from "../types/law";
 import { isShellLesson } from "../types/law";
-import { cleanTerm, isCleanVerbatimSentence, isMutableSentence, isGarbledOrderPart, cleanOrderPart, hasFragmentCard } from "./law-quiz-gates";
+import {
+  cleanTerm,
+  isCleanVerbatimSentence,
+  isMutableSentence,
+  isGarbledOrderPart,
+  cleanOrderPart,
+  hasFragmentCard,
+  optionsAreDistinct,
+} from "./law-quiz-gates";
+import { buildMultiItem } from "./law-quiz-multi";
+import { mutateNumber, mutateCnNumber, mutateQuotedTerm } from "./law-quiz-mutate";
 
 /** 确定性伪随机（同一课时每次生成相同自测题） */
 function hashSeed(input: string): number {
@@ -30,79 +40,6 @@ function shuffle<T>(list: T[], rand: () => number): T[] {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
-}
-
-/** 选项组里不允许互为子串（如"国家监督"与"国家监督是"同场出现，无法作答） */
-function optionsAreDistinct(options: string[]): boolean {
-  for (let i = 0; i < options.length; i += 1) {
-    for (let j = 0; j < options.length; j += 1) {
-      if (i === j) continue;
-      const [a, b] = [options[i], options[j]];
-      if (a.length >= 2 && b.includes(a)) return false;
-    }
-  }
-  return true;
-}
-
-const NUMBER_PATTERN = /\d{3,4}年|\d{2,4}年/;
-
-/** 把句中年份改成一个确定不同的值（构造可判定的"错"句） */
-function mutateNumber(text: string, rand: () => number): string | null {
-  const match = NUMBER_PATTERN.exec(text);
-  if (!match) return null;
-  const token = match[0];
-  const digits = token.match(/\d+/);
-  if (!digits) return null;
-  const value = Number(digits[0]);
-  if (!Number.isFinite(value) || value < 2) return null;
-  let mutated = value + Math.floor(rand() * 12) - 6;
-  if (mutated === value) mutated += 1;
-  if (mutated < 1) mutated = value + 5;
-  const next = token.replace(digits[0], String(mutated));
-  return `${text.slice(0, match.index)}${next}${text.slice(match.index + token.length)}`;
-}
-
-const CN_NUMERALS = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
-
-/** 中文数字变异（"文帝十三年"→"文帝七年""三十卷"→"八卷"）——法制史的数字多是汉字 */
-function mutateCnNumber(text: string, rand: () => number): string | null {
-  // 只变单数字与"十"：复合数字（"十二"）硬变易生成病句，跳过
-  const match = /(?<![一二三四五六七八九十百千万])[一二三四五六七八九十](?=(?:年|卷|条|篇|种|人|日|品|等))/.exec(text);
-  if (!match) return null;
-  const token = match[0];
-  const candidates = CN_NUMERALS.filter((n) => n !== token);
-  const next = candidates[Math.floor(rand() * candidates.length)];
-  return `${text.slice(0, match.index)}${next}${text.slice(match.index + token.length)}`;
-}
-
-/**
- * 引号术语替换变异（把句中的《人身保护法》换成《权利法案》之类）：
- * 判断题问的是"书上是这样说的吗"——只要换了词，书上就没这么说（答"否"），
- * 解析里给出书上原句，作答与讲解都闭环。
- * 约束：不换进"本书/这部分内容"式的书自我引用句（那不是考点）；换词不以虚词/否定词开头
- * （防《非国家》这类病句）；长度相近，保证题面读起来像一句正常的话。
- */
-function mutateQuotedTerm(text: string, pool: string[], rand: () => number): string | null {
-  if (/本书|本册|这部分内容|一本通|精讲|背诵方法|方法论|主观题|客观题|真题|命题/.test(text)) return null;
-  const quoted = text.match(/["“「《]([^"”」》]{2,12})[”」》]/);
-  if (!quoted) return null;
-  const target = quoted[1];
-  if (!cleanTerm(target)) return null;
-  const candidates = pool.filter(
-    (t) =>
-      t.length >= 2 &&
-      t !== target &&
-      !t.includes(target) &&
-      !target.includes(t) &&
-      // 换词不能是书名/元词条（"写作一本通"混进术语池会造出荒谬题面）
-      !/一本通|精讲|背诵|真题|方法论|写作|教材/.test(t) &&
-      !/^[不无非没被把的]|^[一二三四五六七八九十]年?$/.test(t) &&
-      Math.abs(t.length - target.length) <= 3,
-  );
-  if (candidates.length === 0) return null;
-  const swap = candidates[Math.floor(rand() * candidates.length)];
-  const mutated = text.replace(target, swap);
-  return mutated === text ? null : mutated;
 }
 
 /** 本课关键词池：只从本课内容提取，绝不用其他课/其他书的词凑数 */
@@ -238,8 +175,11 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
   };
   const definitions = lesson.steps.filter((step) => isShortDefinition(step.text));
 
-  // 1) 定义挖空：＿＿＿，是指…（最多两条）。题面必须以句读收尾——截断残句不配上题
+  // 1) 定义挖空：＿＿＿，是指…（最多两条）。题面必须以句读收尾——截断残句不配上题。
+  //    双形态：约半数课走 fill（无选项、纯回忆作答），其余保留 mcq；每课至多一道 fill
   const endsClean = (text: string) => /[。！？；…”」》）]$/.test(text);
+  const wantFill = rand() < 0.5;
+  let madeFill = false;
   for (const step of shuffle(definitions, rand).slice(0, 3)) {
     if (items.length >= 2) break;
     const target = headTermOf(step.text);
@@ -249,6 +189,18 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     if (!endsClean(prompt)) continue;
     // 答案概念还在题面里出现 → 答案直接可见，跳过
     if (prompt.includes(target)) continue;
+    if (wantFill && !madeFill && target.length >= 3 && target.length <= 8) {
+      usedPrompts.add(prompt);
+      madeFill = true;
+      items.push({
+        id: `${lesson.id}-q1f-${items.length}`,
+        kind: "fill",
+        prompt,
+        answer: target,
+        explain: step.text,
+      });
+      continue;
+    }
     const distractors = distractorsFrom(target, rand, 3, prompt);
     if (distractors.length < 1) continue;
     const options = shuffle([target, ...distractors], rand).slice(0, 4);
@@ -301,25 +253,26 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
 
   // 3) 判断题（最多一题）：优先三种"变错"手段（答否）——改阿拉伯年份、改中文数字年份、
   //    换引号/书名术语；全部失败才取原句（答是）。曾因变异命中率过低导致 98% 判断题答"是"，
-  //    混合多种变异防"无脑答是/否"的套路
+  //    混合多种变异防"无脑答是/否"的套路。trap 记录用了哪种陷阱（错因标签推导输入）
   const cleanSentences = sentences.filter(isCleanVerbatimSentence);
   const mutableSentences = sentences.filter(isMutableSentence);
   let judgeDone = false;
   for (const sentence of shuffle(mutableSentences, rand).slice(0, 10)) {
     if (judgeDone) break;
-    const mutated =
-      mutateNumber(sentence, rand) ??
-      mutateCnNumber(sentence, rand) ??
-      mutateQuotedTerm(sentence, [...terms, ...contextTerms], rand);
-    if (!mutated || mutated === sentence || usedPrompts.has(mutated)) continue;
-    usedPrompts.add(mutated);
+    const byNumber = mutateNumber(sentence, rand);
+    const byCn = byNumber ? null : mutateCnNumber(sentence, rand);
+    const byTerm = byNumber || byCn ? null : mutateQuotedTerm(sentence, [...terms, ...contextTerms], rand);
+    const mutation = byNumber ?? byCn ?? byTerm;
+    if (!mutation || mutation.text === sentence || usedPrompts.has(mutation.text)) continue;
+    usedPrompts.add(mutation.text);
     judgeDone = true;
     items.push({
       id: `${lesson.id}-q3`,
       kind: "judge",
-      prompt: `书上是这样说的吗？\n「${mutated}」`,
+      prompt: `书上是这样说的吗？\n「${mutation.text}」`,
       answer: "否",
       options: ["是", "否"],
+      trap: mutation.trap,
       explain: `书上说的是：${sentence}`,
     });
   }
@@ -338,13 +291,26 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
         prompt: `书上是这样说的吗？\n「${sentence}」`,
         answer: "是",
         options: ["是", "否"],
+        trap: "verbatim",
         explain: "是的，这正是书上的原句，再读一遍加深印象！",
       });
       break;
     }
   }
 
-  // 4) 关键词填空：短句 + 引号术语（只挖引号内容，选项全来自本课/同章）
+  // 3.5) 多选题：列举步 ≥4 条干净条目（正确项=条目，干扰项出自同章且不在本课正文）。
+  //      放判断题之后：判断题存量基线（否占比 ≥15%）优先保住，多选吃剩余名额
+  const lessonText = lesson.steps.map((step) => step.text).join("") + lesson.raw.join("");
+  if (items.length < 4) {
+    const multiItem = buildMultiItem(lesson, contextTerms, lessonText, rand);
+    if (multiItem && !usedPrompts.has(multiItem.prompt)) {
+      usedPrompts.add(multiItem.prompt);
+      items.push(multiItem);
+    }
+  }
+
+  // 4) 关键词填空：短句 + 引号术语（只挖引号内容，选项全来自本课/同章）；
+  //    本课还没出过 fill 时约半数走填空形态（输入作答），其余保持选择
   const pool = shuffle(
     sentences,
     rand,
@@ -359,6 +325,18 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     if (!prompt || usedPrompts.has(prompt) || prompt.length > 90) continue;
     if (!endsClean(prompt)) continue;
     if (prompt.includes(target)) continue;
+    if (!madeFill && target.length >= 3 && target.length <= 8 && rand() < 0.5) {
+      usedPrompts.add(prompt);
+      madeFill = true;
+      items.push({
+        id: `${lesson.id}-q4f`,
+        kind: "fill",
+        prompt,
+        answer: target,
+        explain: sentence,
+      });
+      break;
+    }
     const distractors = distractorsFrom(target, rand, 3, prompt);
     if (distractors.length < 1) continue;
     const options = shuffle([target, ...distractors], rand).slice(0, 4);
@@ -379,7 +357,6 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
   //    与前面的挖空题不重复，干扰项优先长度相近。
   //    干扰项不得在本课正文中出现——否则"这节课讲的是哪个概念"有两个可选项（曾出 40 例歧义）
   const concepts = lessonConcepts(lesson);
-  const lessonText = lesson.steps.map((step) => step.text).join("") + lesson.raw.join("");
   const siblingPool = contextTerms.filter(
     (t) => t.length >= 3 && !concepts.includes(t) && !lessonText.includes(t),
   );

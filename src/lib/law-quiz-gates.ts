@@ -1,6 +1,18 @@
 /** 出题取材闸门：词项/判断句/排序卡的干净度判定（从 law-quiz.ts 抽出，纯函数无状态） */
 import { isCleanTerm } from "../types/law";
 
+/** 选项组里不允许互为子串（如"国家监督"与"国家监督是"同场出现，无法作答） */
+export function optionsAreDistinct(options: string[]): boolean {
+  for (let i = 0; i < options.length; i += 1) {
+    for (let j = 0; j < options.length; j += 1) {
+      if (i === j) continue;
+      const [a, b] = [options[i], options[j]];
+      if (a.length >= 2 && b.includes(a)) return false;
+    }
+  }
+  return true;
+}
+
 /** 清洗后的候选术语：太短/含 OCR 残渣/纯数字/口诀速记串的都不要 */
 export function cleanTerm(term: string | null | undefined): string | null {
   if (!term) return null;
