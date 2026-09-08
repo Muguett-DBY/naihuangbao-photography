@@ -117,7 +117,8 @@ export function QuizRunner({
       )}
 
       {state !== "idle" ? (
-        <div className={`law-quiz__feedback is-${state}`}>
+        <div className={`law-quiz__feedback is-${state}`} role="status">
+          {/* role=status：答题结果（对错+解释）出现时读屏即时播报，与排序题结果区一致 */}
           {state === "correct" ? "✅ 答对啦！" : "❌ 不对哦，看看解释："}
           <span>{item.explain}</span>
           <button type="button" className="law-quiz__next" onClick={next}>

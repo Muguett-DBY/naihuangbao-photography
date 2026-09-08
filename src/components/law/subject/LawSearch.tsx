@@ -112,12 +112,12 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={onInputKeyDown}
-          placeholder={`在《${subject.name}》里搜索，比如"${SEARCH_EXAMPLES[book.id] ?? "法律"}"…`}
+          placeholder={`在《${subject.name}》里搜索，比如「${SEARCH_EXAMPLES[book.id] ?? "法律"}」……`}
           aria-label={`在${subject.name}中搜索知识点`}
           autoComplete="off"
           role="combobox"
           aria-expanded={active && hits.length > 0}
-          aria-controls="law-search__listbox"
+          aria-controls={active && hits.length > 0 ? "law-search__listbox" : undefined}
           aria-activedescendant={activeIndex >= 0 ? `law-search__opt-${activeIndex}` : undefined}
         />
         {query ? (
@@ -130,7 +130,7 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
       {active ? (
         <div className="law-search__results" aria-live="polite">
           {hits.length === 0 ? (
-            <p className="law-search__empty">没有找到" {keyword} "，换个关键词试试（或用"原文对照"浏览全书）</p>
+            <p className="law-search__empty">没有找到「{keyword}」，换个关键词试试（或用「原文对照」浏览全书）</p>
           ) : (
             <ul id="law-search__listbox" role="listbox" aria-label="搜索结果">
               {hits.map((hit, index) => (

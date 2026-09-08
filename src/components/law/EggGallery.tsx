@@ -71,6 +71,7 @@ export function EggGallery({ onClose }: { onClose: () => void }) {
             const meta = EGG_META[trigger];
             const unlocked = state.unlocked[trigger] === true;
             const date = unlocked ? formatUnlockDate(trigger) : null;
+            // 锁定卡不可交互：裸 div 上的 aria-label 会被读屏忽略，role=group 使标注生效
             return unlocked ? (
               <button
                 key={trigger}
@@ -87,7 +88,7 @@ export function EggGallery({ onClose }: { onClose: () => void }) {
                 <small>{date ? `${date} 解锁` : "已解锁"}</small>
               </button>
             ) : (
-              <div key={trigger} className="law-gallery__egg is-locked" aria-label={`未解锁：${meta.title}`}>
+              <div key={trigger} role="group" className="law-gallery__egg is-locked" aria-label={`未解锁：${meta.title}`}>
                 <span className="law-gallery__egg-emoji" aria-hidden="true">
                   {meta.emoji}
                 </span>
@@ -129,6 +130,7 @@ export function LawEggGalleryButton() {
         className="law-gallery-entry"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
+        aria-expanded={open}
       >
         🥚 彩蛋图鉴{unlockedCount !== null ? ` ${unlockedCount}/${EGG_ORDER.length}` : ""}
       </button>
