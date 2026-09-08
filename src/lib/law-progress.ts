@@ -1,6 +1,7 @@
 import type { LawSubjectId } from "../types/law";
 import { safeLocalStorage } from "./browser-storage";
 import { recordLawLessonDone, recordLawStepDone } from "./law-history";
+import { tallyWrongTags, type LawWrongTag, type QuizWrongDetail } from "./law-wrong-tags";
 
 const KEY = "nhb-law-academy-v1";
 const EGG_KEY = "nhb-law-egg-v1";
@@ -21,6 +22,8 @@ export interface LawLessonProgress {
   reviewStage?: number;
   /** 下次应复习的时间戳（毕业或从未答错则为空） */
   reviewDueAt?: number;
+  /** 错因标签计数（T3：按题型+错误模式推导，向后兼容的可选字段） */
+  wrongTags?: Partial<Record<LawWrongTag, number>>;
 }
 
 export type LawProgressMap = Record<string, LawLessonProgress>;
@@ -69,6 +72,7 @@ export function touchLesson(lessonId: string): void {
     wrongAt: existing?.wrongAt,
     reviewStage: existing?.reviewStage,
     reviewDueAt: existing?.reviewDueAt,
+    wrongTags: existing?.wrongTags,
   };
   store.lastLessonId = lessonId;
   writeStore(store);
@@ -96,17 +100,24 @@ function newEntry(lessonId: string): LawLessonProgress {
   };
 }
 
-/** 复习间隔（天）：答错后第 1/2/4/7/15 天复习，五次全对即毕业移出错题本 */
-export const REVIEW_INTERVALS = [1, 2, 4, 7, 15];
+/** 复习间隔基础值（天）：实际间隔 = 基础 × 难度系数（law-review 自适应算法，T4）。
+ *  保留本导出：错题本"第 N/5 轮"等既有口径消费它，阶段/毕业语义不变。 */
+export { BASE_REVIEW_INTERVALS as REVIEW_INTERVALS } from "./law-review";
 
-const DAY_MS = 86_400_000;
+import { BASE_REVIEW_INTERVALS, nextReviewDueAt } from "./law-review";
+
+/** recordQuiz 的可选参数（导出供调用方标注错题明细类型） */
+export interface RecordQuizOpts {
+  skipped?: boolean;
+  wrongDetails?: QuizWrongDetail[];
+}
 
 export function recordQuiz(
   lessonId: string,
   correct: number,
   total: number,
   stepCount: number,
-  opts: { skipped?: boolean } = {},
+  opts: RecordQuizOpts = {},
 ): void {
   const store = readStore();
   const entry = store.lessons[lessonId] ?? newEntry(lessonId);
@@ -119,22 +130,31 @@ export function recordQuiz(
     entry.quizBest = Math.max(entry.quizBest ?? 0, correct);
     entry.quizTotal = total;
   }
+  // 错因标签：每次作答的错题明细按题型/陷阱聚合计数（及格与否都记——"错在哪"是复习输入）
+  if (!opts.skipped && opts.wrongDetails && opts.wrongDetails.length > 0) {
+    const tags = { ...(entry.wrongTags ?? {}) };
+    for (const [tag, count] of Object.entries(tallyWrongTags(opts.wrongDetails))) {
+      const key = tag as LawWrongTag;
+      tags[key] = (tags[key] ?? 0) + count;
+    }
+    entry.wrongTags = tags;
+  }
   if (!opts.skipped && !passed) {
-    // 不及格：错题本建档/重置复习进度，明天安排第一次复习
+    // 不及格：错题本建档/重置复习进度，第一次复习按难度系数自适应安排（T4）
     entry.wrongCount += 1;
     entry.wrongAt = now;
     entry.reviewStage = 0;
-    entry.reviewDueAt = now + REVIEW_INTERVALS[0] * DAY_MS;
+    entry.reviewDueAt = nextReviewDueAt(0, entry, now);
     wrongBookChanged = true;
   } else if (!opts.skipped && (entry.wrongCount ?? 0) > 0 && (entry.reviewDueAt ?? 0) > 0) {
-    // 错题复习通过：间隔翻倍式后延，五连过即毕业
+    // 错题复习通过：间隔 = 基础 × 难度系数，五连过即毕业
     const stage = (entry.reviewStage ?? 0) + 1;
     entry.reviewStage = stage;
-    if (stage >= REVIEW_INTERVALS.length) {
+    if (stage >= BASE_REVIEW_INTERVALS.length) {
       entry.reviewDueAt = undefined;
       graduated = true;
     } else {
-      entry.reviewDueAt = now + REVIEW_INTERVALS[stage] * DAY_MS;
+      entry.reviewDueAt = nextReviewDueAt(stage, entry, now);
     }
   }
   const allStepsDone = stepCount > 0 && Object.keys(entry.stepsDone).length >= stepCount;
@@ -229,7 +249,7 @@ export function getGraduatedWrongCount(): number {
     (progress) =>
       (progress.wrongCount ?? 0) > 0 &&
       progress.reviewDueAt === undefined &&
-      (progress.reviewStage ?? 0) >= REVIEW_INTERVALS.length,
+      (progress.reviewStage ?? 0) >= BASE_REVIEW_INTERVALS.length,
   ).length;
 }
 

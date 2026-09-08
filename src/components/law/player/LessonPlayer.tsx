@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router";
 import type { LawLesson } from "../../../types/law";
 import { buildQuiz } from "../../../lib/law-quiz";
-import { getLessonProgress, markStepDone, recordQuiz, touchLesson } from "../../../lib/law-progress";
+import { getLessonProgress, markStepDone, recordQuiz, touchLesson, type RecordQuizOpts } from "../../../lib/law-progress";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
 import { StepStage } from "./StepStage";
@@ -202,10 +202,10 @@ export function LessonPlayer({
     setMood("idle");
   }
 
-  function handleQuizDone(correct: number, total: number, _wrong: number) {
+  function handleQuizDone(correct: number, total: number, _wrong: number, wrongDetails?: RecordQuizOpts["wrongDetails"]) {
     // 及格线语义在 recordQuiz 内统一：不及格才进错题本，及格推进复习阶梯——
     // 结果页的"通过/错题本"文案从此和实际状态一致
-    recordQuiz(lesson.id, correct, total, totalSteps);
+    recordQuiz(lesson.id, correct, total, totalSteps, { wrongDetails });
     setQuizScore({ correct, total });
     setMood(correct >= Math.ceil(total / 2) ? "cheer" : "idle");
     setPhase("result");

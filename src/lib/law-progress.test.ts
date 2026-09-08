@@ -97,7 +97,8 @@ describe("law spaced-repetition review book", () => {
     const entry = getLessonProgress("xianfa-q001");
     expect(entry?.wrongCount).toBe(1);
     expect(entry?.reviewStage).toBe(0);
-    expect(entry?.reviewDueAt).toBe(Date.now() + REVIEW_INTERVALS[0] * DAY);
+    // T4 自适应：0/4 全错 → 系数 0.7 → round(1 × 0.7) = 1 天
+    expect(entry?.reviewDueAt).toBe(Date.now() + 1 * DAY);
     expect(getWrongLessons()).toContain("xianfa-q001");
     // 答错当天未到期，明天到期
     expect(getDueReviewLessons()).not.toContain("xianfa-q001");
@@ -120,7 +121,8 @@ describe("law spaced-repetition review book", () => {
       const entry = getLessonProgress("zhishixiang-q001")!;
       expect(entry.reviewStage).toBe(stage);
       if (stage < REVIEW_INTERVALS.length) {
-        expect(entry.reviewDueAt).toBe(Date.now() + REVIEW_INTERVALS[stage] * DAY);
+        // T4 自适应：正确率 4/4 → 系数 1.5 → round(基础 × 1.5) 天
+        expect(entry.reviewDueAt).toBe(Date.now() + Math.round(REVIEW_INTERVALS[stage] * 1.5) * DAY);
         due = entry.reviewDueAt!;
       } else {
         // 第 5 次通过 → 毕业移出错题本
