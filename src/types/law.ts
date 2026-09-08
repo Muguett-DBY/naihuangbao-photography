@@ -62,17 +62,24 @@ export interface LawStep {
   pivot?: { rule: string; except: string };
 }
 
-export type LawQuizKind = "fill" | "mcq" | "order" | "judge";
+export type LawQuizKind = "fill" | "mcq" | "order" | "judge" | "multi";
+
+/** 判断题的"陷阱"手段（错因标签推导用：答错时按陷阱归类错在哪） */
+export type LawQuizTrap = "number" | "cn-number" | "term" | "person" | "book" | "verbatim";
 
 export interface LawQuizItem {
   id: string;
   kind: LawQuizKind;
   prompt: string;
-  /** fill/mcq 选项 */
+  /** mcq/multi 选项（fill 为空：纯回忆作答） */
   options?: string[];
   answer: string;
   /** order 排序正确答案 */
   order?: string[];
+  /** multi 全部正确项（answer 为其顿号连接，便于序列化展示） */
+  multi?: string[];
+  /** judge 变异手段（错因标签：数字记错/人物错配/概念混淆的判定输入） */
+  trap?: LawQuizTrap;
   explain: string;
 }
 

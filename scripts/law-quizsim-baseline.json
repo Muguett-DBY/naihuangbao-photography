@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-09-08T18:04:50.590Z",
+  "teachingLessons": 1431,
+  "coverage": 0.8232,
+  "kindCount": {
+    "mcq": 689,
+    "order": 195,
+    "judge": 988,
+    "fill": 0,
+    "multi": 0
+  },
+  "judge": {
+    "total": 988,
+    "yes": 789,
+    "no": 199,
+    "noRatio": 0.2014
+  },
+  "optionDist": {
+    "2": 9,
+    "3": 4,
+    "4": 676
+  },
+  "orderCardDist": {
+    "3": 91,
+    "4": 104
+  },
+  "multiCorrectDist": {},
+  "quality": {
+    "ambiguousDistractors": 0,
+    "answerVisible": 0,
+    "answerNotFromLesson": 0,
+    "garbledOrderCards": 0,
+    "truncatedPrompts": 0,
+    "dupPrompt": 0,
+    "missingAnswerOption": 0,
+    "multiCorrectBelow3": 0,
+    "multiDistractorInLesson": 0,
+    "maxPrompt": 102
+  },
+  "intercepted": {
+    "orderIntercepted": 341,
+    "defIntercepted": 711,
+    "judgeMutIntercepted": 404
+  }
+}
