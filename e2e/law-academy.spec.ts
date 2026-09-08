@@ -251,4 +251,65 @@ test.describe("law academy", () => {
     const saved = await page.evaluate(() => localStorage.getItem("nhb-law-sound"));
     expect(saved).toBe("off");
   });
+  test("新题型：填空题与多选题出现并可作答（S1）", async ({ page }) => {
+    // fill：falixue-q044 确定性生成填空题。逐题作答直到遇到填空题，输入错误词验证
+    // 答错路径与答案揭示；数据重建导致题目变化时本测试仍按题型特征定位
+    await page.goto("/law/learn/falixue-q044?review=1");
+    await expect(page.locator(".law-quiz")).toBeVisible();
+    for (let round = 0; round < 5; round += 1) {
+      const fillInput = page.locator(".law-quiz__fill-input");
+      if (await fillInput.isVisible().catch(() => false)) {
+        await fillInput.fill("测试错误输入");
+        await page.locator(".law-quiz__fill-submit").click();
+        const feedback = page.locator(".law-quiz__feedback");
+        await expect(feedback).toBeVisible();
+        await expect(feedback).toContainText("正确答案：");
+        break;
+      }
+      const mcqOption = page.locator(".law-quiz__options .law-quiz__option:not(.law-quiz__option--multi)");
+      const chip = page.locator(".law-quiz__order-chip");
+      const multiOption = page.locator(".law-quiz__option--multi");
+      if (await mcqOption.first().isVisible().catch(() => false)) {
+        await mcqOption.first().click();
+      } else if (await multiOption.first().isVisible().catch(() => false)) {
+        await multiOption.first().click();
+        await page.locator(".law-quiz__multi-confirm").click();
+      } else {
+        for (let i = 0; i < 5 && (await chip.count()) > 0; i += 1) await chip.first().click();
+      }
+      await expect(page.locator(".law-quiz__feedback")).toBeVisible();
+      await page.locator(".law-quiz__next").click();
+    }
+
+    // multi：falixue-q034 确定性生成多选题。勾两项确认（部分选=错，全对才对），
+    // 验证反馈与正确项高亮
+    await page.goto("/law/learn/falixue-q034?review=1");
+    await expect(page.locator(".law-quiz")).toBeVisible();
+    for (let round = 0; round < 5; round += 1) {
+      const multiOption = page.locator(".law-quiz__option--multi");
+      if (await multiOption.first().isVisible().catch(() => false)) {
+        await multiOption.nth(0).click();
+        await multiOption.nth(1).click();
+        await page.locator(".law-quiz__multi-confirm").click();
+        const feedback = page.locator(".law-quiz__feedback");
+        await expect(feedback).toBeVisible();
+        await expect(page.locator(".law-quiz__option--multi.is-correct").first()).toBeVisible();
+        break;
+      }
+      const mcqOption = page.locator(".law-quiz__options .law-quiz__option:not(.law-quiz__option--multi)");
+      const chip = page.locator(".law-quiz__order-chip");
+      const fillInput = page.locator(".law-quiz__fill-input");
+      if (await fillInput.isVisible().catch(() => false)) {
+        await fillInput.fill("测试");
+        await page.locator(".law-quiz__fill-submit").click();
+      } else if (await mcqOption.first().isVisible().catch(() => false)) {
+        await mcqOption.first().click();
+      } else {
+        for (let i = 0; i < 5 && (await chip.count()) > 0; i += 1) await chip.first().click();
+      }
+      await expect(page.locator(".law-quiz__feedback")).toBeVisible();
+      await page.locator(".law-quiz__next").click();
+    }
+  });
+
 });

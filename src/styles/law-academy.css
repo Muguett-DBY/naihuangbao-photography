@@ -2738,6 +2738,102 @@
   border-color: var(--law-accent-ink, var(--law-accent));
 }
 
+/* 填空题 */
+.law-quiz__fill {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.law-quiz__fill-input {
+  flex: 1;
+  min-width: 0;
+  border: 1.5px solid var(--hairline);
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 13px 16px;
+  font: inherit;
+  font-size: 15.5px;
+}
+
+.law-quiz__fill-input:focus-visible {
+  outline: 2px solid var(--law-accent);
+  outline-offset: 2px;
+  border-color: var(--law-accent);
+}
+
+.law-quiz__fill-input:disabled {
+  opacity: 0.72;
+}
+
+.law-quiz__fill-submit {
+  border: 0;
+  border-radius: 14px;
+  padding: 13px 26px;
+  font: inherit;
+  font-weight: 900;
+  font-size: 14.5px;
+  background: var(--law-accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.law-quiz__fill-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* 多选题：勾选态在选项样式上叠加 */
+.law-quiz__option--multi {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.law-quiz__option--multi i {
+  font-style: normal;
+  font-size: 16px;
+  color: var(--law-accent-ink, var(--law-accent));
+  flex: none;
+}
+
+.law-quiz__option--multi.is-selected {
+  border-color: var(--law-accent);
+  background: var(--law-accent-soft);
+}
+
+.law-quiz__multi-confirm {
+  align-self: flex-start;
+  border: 2px solid color-mix(in srgb, var(--law-accent) 55%, var(--hairline));
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 11px 22px;
+  font: inherit;
+  font-weight: 900;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.16s, border-color 0.16s;
+}
+
+.law-quiz__multi-confirm:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--law-accent-ink, var(--law-accent));
+}
+
+.law-quiz__multi-confirm:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* 答错时的答案揭示行（填空/多选没有选项高亮可对照） */
+.law-quiz__reveal {
+  color: var(--ink);
+  font-size: 14.5px;
+}
+
 .law-quiz__done {
   flex: 1;
   display: flex;
