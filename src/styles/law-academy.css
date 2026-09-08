@@ -3,6 +3,24 @@
    暖奶油风 + 每科专属强调色
    ──────────────────────────────────────────────────────────── */
 
+/* 暖阳水洗（装饰性径向渐变）的统一色标：暗色主题下 α 0.35 会与深纸混出
+   rgb(122,102,68) 泥浊中间调，压掉 muted/accent 文字对比（最低 2.49:1），暗色大幅减弱。
+   信纸强调字同理：#a95f57 在暖黄信纸上 4.32:1 不达 AA，亮色压深一档，暗色走翻转变量 */
+:root {
+  --law-sun-wash: rgba(255, 214, 130, 0.35);
+  --law-letter-accent: #96504a;
+}
+:root[data-theme="dark"] {
+  --law-sun-wash: rgba(255, 214, 130, 0.08);
+  --law-letter-accent: var(--coral-dark, #f1b6ad);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --law-sun-wash: rgba(255, 214, 130, 0.08);
+    --law-letter-accent: var(--coral-dark, #f1b6ad);
+  }
+}
+
 .law-academy {
   --law-accent: #b1544e;
   --law-accent-soft: #f6e5e2;
@@ -325,7 +343,7 @@
   border-radius: 22px;
   padding: clamp(16px, 3vw, 26px);
   background:
-    radial-gradient(500px 200px at 92% 0%, rgba(255, 214, 130, 0.4), transparent 70%),
+    radial-gradient(500px 200px at 92% 0%, var(--law-sun-wash), transparent 70%),
     linear-gradient(130deg, color-mix(in srgb, var(--law-accent, #b1544e) 10%, var(--paper)), var(--paper));
   border: 1.5px solid color-mix(in srgb, var(--law-accent, #b1544e) 30%, var(--hairline));
   box-shadow: var(--warm-shadow);
@@ -1059,7 +1077,7 @@
   overflow: auto;
   border-radius: 26px;
   background:
-    radial-gradient(420px 220px at 12% 0%, rgba(255, 214, 130, 0.35), transparent),
+    radial-gradient(420px 220px at 12% 0%, var(--law-sun-wash), transparent),
     var(--paper);
   border: 2px solid color-mix(in srgb, var(--coral, #d8897f) 36%, var(--hairline));
   box-shadow: 0 30px 80px rgba(75, 59, 55, 0.35);
@@ -1136,7 +1154,7 @@
 }
 
 .law-egg-card__letter b {
-  color: var(--coral-dark, #a95f57);
+  color: var(--law-letter-accent, #96504a);
 }
 
 .law-egg-card__greet {
@@ -1165,7 +1183,9 @@
   font: inherit;
   font-size: 15px;
   font-weight: 900;
-  background: linear-gradient(120deg, var(--coral-dark, #a95f57), var(--coral, #d8897f));
+  /* 白字对比度：暗端 #96504a 5.93:1 / 亮端 #a95f57 4.71:1，双端过 AA 小字 4.5:1
+     （勿换回 var(--coral, #d8897f)：亮端白字只有 2.69:1，且渐变量随主题翻转会顾此失彼） */
+  background: linear-gradient(120deg, #96504a, #a95f57);
   color: #fff;
   cursor: pointer;
   box-shadow: var(--button-shadow);

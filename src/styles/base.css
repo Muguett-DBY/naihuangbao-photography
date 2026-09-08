@@ -116,7 +116,9 @@
   --coral-dark: #a95f57;
   --sky-note: #b8d5d0;
   --sun-note: #eed98f;
-  --text-muted: #766a65;
+  /* WCAG AA:亮色主题的次级文字要压住暖色水洗背景（原 #766a65 在 hero/计划卡的
+     装饰渐变上只有 4.33~4.47:1），全站加深一步后最差候选 ≥5.1:1 */
+  --text-muted: #6b5f5a;
   --hairline: rgba(91, 68, 61, 0.17);
   --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC", serif;
   --font-body: "PingFang SC", "Microsoft YaHei UI", "Noto Sans SC", "Source Han Sans SC", system-ui, sans-serif;

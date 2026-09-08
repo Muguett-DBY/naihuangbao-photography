@@ -54,7 +54,7 @@
   overflow: auto;
   border-radius: 24px;
   background:
-    radial-gradient(420px 200px at 90% 0%, rgba(255, 214, 130, 0.3), transparent 70%),
+    radial-gradient(420px 200px at 90% 0%, var(--law-sun-wash), transparent 70%),
     var(--paper);
   border: 2px solid color-mix(in srgb, var(--coral, #d8897f) 36%, var(--hairline));
   box-shadow: 0 30px 80px rgba(75, 59, 55, 0.35);
@@ -180,7 +180,7 @@ button.law-gallery__egg:hover {
   border-radius: 20px;
   border: 1.5px solid color-mix(in srgb, var(--coral, #d8897f) 40%, var(--hairline));
   background:
-    radial-gradient(360px 160px at 8% 0%, rgba(255, 214, 130, 0.38), transparent 70%),
+    radial-gradient(360px 160px at 8% 0%, var(--law-sun-wash), transparent 70%),
     color-mix(in srgb, var(--coral, #d8897f) 7%, var(--paper));
   box-shadow: var(--warm-shadow, 0 18px 44px rgba(75, 59, 55, 0.16));
   padding: 18px 20px 16px;
