@@ -3,16 +3,30 @@
 //   ② 搜索快速连击：连续输入清空多组关键词
 //   ③ 步骤快速切换：连续"下一步"直到自测
 // 观测口径：PerformanceObserver longtask（buffered），>100ms 记录归属脚本与时长
-// 运行：npm run law:runtime（独立 preview 实例）
+// 分布报告（S6·T4）：100-200/200-400/400-800/800+ms 四档计数，并入基线对照
+// 运行：npm run law:runtime（独立 preview 实例；基线 scripts/law-perf-baseline.json，
+//       超基线×容差非零退出；npm run law:runtime -- --update-baseline 重录）
 import { spawn } from "node:child_process";
 import { createServer } from "node:net";
-import { stat, writeFile } from "node:fs/promises";
+import { readFile, stat, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { chromium } from "@playwright/test";
 
 const root = resolve(import.meta.dirname, "..");
 const THROTTLE = 4;
 const LONGTASK_MS = 100;
+const BASELINE_FILE = join(root, "scripts", "law-perf-baseline.json");
+/** 长任务计数噪声大：总量超基线 1.5 倍才算回归；最差单任务超基线 1.25 倍算回归 */
+const COUNT_TOLERANCE = 1.5;
+const WORST_TOLERANCE = 1.25;
+const UPDATE_BASELINE = process.argv.includes("--update-baseline");
+/** longtask 分布档位（ms）：[100,200) [200,400) [400,800) [800,∞) */
+const BUCKETS = [
+  { label: "100-200ms", min: 100, max: 200 },
+  { label: "200-400ms", min: 200, max: 400 },
+  { label: "400-800ms", min: 400, max: 800 },
+  { label: "800ms+", min: 800, max: Number.POSITIVE_INFINITY },
+];
 
 async function freePort(start) {
   for (let port = start; port < start + 10; port += 1) {
@@ -161,19 +175,63 @@ async function main() {
 
   const lines = [`# law 运行时抽查（CPU ${THROTTLE}x，阈值 ${LONGTASK_MS}ms）`, ""];
   let worst = 0;
+  let totalTasks = 0;
   for (const finding of findings) {
     const worstTask = finding.tasks.reduce((max, task) => Math.max(max, task.duration), 0);
     worst = Math.max(worst, worstTask);
-    lines.push(`## ${finding.scene} — >100ms 长任务 ${finding.tasks.length} 个，最差 ${worstTask}ms`);
+    totalTasks += finding.tasks.length;
+    const dist = BUCKETS.map(
+      (bucket) => `${bucket.label}:${finding.tasks.filter((task) => task.duration >= bucket.min && task.duration < bucket.max).length}`,
+    ).join(" ");
+    lines.push(`## ${finding.scene} — >100ms 长任务 ${finding.tasks.length} 个，最差 ${worstTask}ms（${dist}）`);
     for (const task of finding.tasks.slice(0, 8)) {
       lines.push(`- ${task.duration}ms @${task.start}ms [${task.attribution || "unknown"}]`);
     }
     lines.push("");
   }
+
+  // ── S6·T4：全场景 longtask 分布报告 + 基线对照 ──
+  const distribution = BUCKETS.map(
+    (bucket) => `${bucket.label}:${findings.flatMap((f) => f.tasks).filter((task) => task.duration >= bucket.min && task.duration < bucket.max).length}`,
+  ).join(" / ");
+  lines.push(
+    "## longtask 分布（S6·T4，全场景合计）",
+    "",
+    `- 总数 ${totalTasks} 个，最差 ${worst}ms；${distribution}`,
+    "",
+  );
   const report = lines.join("\n");
   console.log(report);
   await writeFile(join(root, ".tmp", "law-runtime-report.md"), report, "utf8");
-  console.log(worst > LONGTASK_MS ? `⚠️ 存在 ${worst}ms 长任务` : "✅ 无 >100ms 长任务");
+
+  // 基线：缺失则落盘建立；--update-baseline 重录；超容差非零退出
+  let baseline = null;
+  try {
+    baseline = JSON.parse(await readFile(BASELINE_FILE, "utf8"));
+  } catch {
+    baseline = null;
+  }
+  if (!baseline?.runtime || UPDATE_BASELINE) {
+    const next = {
+      ...(baseline ?? {}),
+      runtime: { updatedAt: new Date().toISOString(), worstTaskMs: worst, totalLongtasks: totalTasks, throttle: THROTTLE },
+    };
+    await writeFile(BASELINE_FILE, `${JSON.stringify(next, null, 2)}\n`, "utf8");
+    console.log(`📎 基线已${baseline?.runtime ? "更新" : "建立"}：最差 ${worst}ms / 长任务 ${totalTasks} 个 → scripts/law-perf-baseline.json`);
+    return;
+  }
+  const limits = {
+    worst: Math.ceil(baseline.runtime.worstTaskMs * WORST_TOLERANCE),
+    count: Math.ceil(baseline.runtime.totalLongtasks * COUNT_TOLERANCE),
+  };
+  const overWorst = worst > limits.worst;
+  const overCount = totalTasks > limits.count;
+  console.log(`基线对照：最差 ${worst}ms / 基线 ${baseline.runtime.worstTaskMs}ms（上限 ${limits.worst}）${overWorst ? " ❌" : " ✅"}；总数 ${totalTasks} / 基线 ${baseline.runtime.totalLongtasks}（上限 ${limits.count}）${overCount ? " ❌" : " ✅"}`);
+  if (overWorst || overCount) {
+    console.error("❌ 运行时长任务超基线，详见 .tmp/law-runtime-report.md");
+    process.exit(1);
+  }
+  console.log(`⚠️ 存在 ${worst}ms 长任务（基线内）——全站级引导任务见 D 会话归因，非 law 特有`);
 }
 
 await main();

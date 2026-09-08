@@ -3,8 +3,10 @@
 //   ② 直开一节课的可交互时间（.law-player 可见）
 //   ③ 进一节课的数据传输量（/assets/*.json：raw + gzip；预算 ≤300KB / ≤80KB）
 //   ④ 整本装配的 JSON 解析内存增量（subject 页 heap delta）
+//   ⑤ 课时打开耗时 P50/P95（五科各 5 课，S6·T4 入基线，超基线×容差非零退出）
 // 输出 .tmp/law-perf-report.md，预算超限退出码非零 —— 任何回归一键复测：
-//   npm run law:perf
+//   npm run law:perf          （对照 scripts/law-perf-baseline.json 检查）
+//   npm run law:perf -- --update-baseline（重录基线，本机口径）
 import { spawn } from "node:child_process";
 import { createServer } from "node:net";
 import { gzipSync } from "node:zlib";
@@ -14,9 +16,13 @@ import { chromium } from "@playwright/test";
 
 const root = resolve(import.meta.dirname, "..");
 const CHUNKS_DIR = join(root, "src", "data", "law", "chunks");
+const BASELINE_FILE = join(root, "scripts", "law-perf-baseline.json");
 const SUBJECTS = ["falixue", "xianfa", "zhishixiang", "minfa", "xingfa"];
 const DATA_RAW_BUDGET = 300 * 1024;
 const DATA_GZ_BUDGET = 80 * 1024;
+/** 基线容差：本机计时噪声大，超基线 25% 才算回归 */
+const BASELINE_TOLERANCE = 1.25;
+const UPDATE_BASELINE = process.argv.includes("--update-baseline");
 
 const KB = (bytes) => `${(bytes / 1024).toFixed(0)}KB`;
 
@@ -129,12 +135,18 @@ async function main() {
   const firstFlowLesson = new Map();
   const worstLesson = new Map();
   const worstLayered = new Map();
+  const sampleLessons = new Map(); // S6·T4：每科 5 门采样课（P50/P95 用）
   for (const subject of SUBJECTS) {
     const dir = join(CHUNKS_DIR, subject);
     const meta = JSON.parse(await readFile(join(dir, `${subject}-meta.json`), "utf8"));
-    const hit = meta.chapters.flatMap((chapter) => chapter.ls).find((lesson) => lesson.f === 1);
-    if (!hit) throw new Error(`${subject} 没有学习流课时？`);
-    firstFlowLesson.set(subject, hit.i);
+    const flowLessons = meta.chapters.flatMap((chapter) => chapter.ls).filter((lesson) => lesson.f === 1);
+    if (flowLessons.length === 0) throw new Error(`${subject} 没有学习流课时？`);
+    firstFlowLesson.set(subject, flowLessons[0].i);
+    // 五科各 5 门采样课：均匀铺满全书（首/25%/50%/75%/尾），覆盖长短课分布
+    const picks = [0, 0.25, 0.5, 0.75, 1].map((ratio) =>
+      flowLessons[Math.min(flowLessons.length - 1, Math.round(ratio * (flowLessons.length - 1)))].i,
+    );
+    sampleLessons.set(subject, [...new Set(picks)]);
 
     let biggest = { file: "", bytes: -1 };
     for (const file of await readdir(dir)) {
@@ -156,6 +168,7 @@ async function main() {
   const { child, base } = await startPreview(port);
   const rows = [];
   let violations = 0;
+  const openSamples = []; // S6·T4：课时打开耗时采样
 
   try {
     for (const subject of SUBJECTS) {
@@ -176,10 +189,45 @@ async function main() {
       );
       console.log(`${subject}: hero ${subjectPage.interactiveMs}ms | lesson ${lessonPage.interactiveMs}ms | data ${KB(lessonPage.dataRaw)}/${KB(lessonPage.dataGz)}gz | worst ${worstCell} | heap ${lessonPage.heapMb?.toFixed(1)}MB`);
     }
+
+    // ── S6·T4：课时打开耗时 P50/P95（五科各 5 门采样课，独立页面逐测）──
+    for (const subject of SUBJECTS) {
+      for (const lessonId of sampleLessons.get(subject)) {
+        const page = await measurePage(base, `/law/learn/${lessonId}`, ".law-player", sizes);
+        openSamples.push({ subject, lessonId, ms: page.interactiveMs });
+      }
+      console.log(`${subject}: 采样 ${sampleLessons.get(subject).length} 课计时完成`);
+    }
   } finally {
     child.kill();
   }
 
+  const times = openSamples.map((sample) => sample.ms).sort((a, b) => a - b);
+  const p50 = percentile(times, 0.5);
+  const p95 = percentile(times, 0.95);
+
+  // ── 基线对照（scripts/law-perf-baseline.json；缺失则落盘建立，--update-baseline 重录）──
+  let baselineRegression = false;
+  let baseline = null;
+  try {
+    baseline = JSON.parse(await readFile(BASELINE_FILE, "utf8"));
+  } catch {
+    baseline = null;
+  }
+  if (!baseline?.perf || UPDATE_BASELINE) {
+    const next = { ...(baseline ?? {}), perf: { updatedAt: new Date().toISOString(), p50Ms: p50, p95Ms: p95, samples: times.length } };
+    await writeFile(BASELINE_FILE, `${JSON.stringify(next, null, 2)}\n`, "utf8");
+    console.log(`📎 基线已${baseline?.perf ? "更新" : "建立"}：课时打开 P50 ${p50}ms / P95 ${p95}ms → scripts/law-perf-baseline.json`);
+  } else {
+    const limit50 = Math.ceil(baseline.perf.p50Ms * BASELINE_TOLERANCE);
+    const limit95 = Math.ceil(baseline.perf.p95Ms * BASELINE_TOLERANCE);
+    const over50 = p50 > limit50;
+    const over95 = p95 > limit95;
+    baselineRegression = over50 || over95;
+    console.log(`基线对照：P50 ${p50}ms / 基线 ${baseline.perf.p50Ms}ms（上限 ${limit50}）${over50 ? " ❌" : " ✅"}；P95 ${p95}ms / 基线 ${baseline.perf.p95Ms}ms（上限 ${limit95}）${over95 ? " ❌" : " ✅"}`);
+  }
+
+  const slowest = [...openSamples].sort((a, b) => b.ms - a.ms).slice(0, 5);
   const report = [
     "# law 性能巡逻报告",
     "",
@@ -191,6 +239,11 @@ async function main() {
     "|---|---|---|---|---|---|---|---|---|",
     ...rows,
     "",
+    "## 课时打开耗时（S6·T4，五科各 5 课采样）",
+    "",
+    `- P50 **${p50}ms** / P95 **${p95}ms**（n=${times.length}，容差 ×${BASELINE_TOLERANCE} 对照 scripts/law-perf-baseline.json）`,
+    `- 最慢 5 课：${slowest.map((sample) => `${sample.lessonId} ${sample.ms}ms`).join("、")}`,
+    "",
   ].join("\n");
   await writeFile(join(root, ".tmp", "law-perf-report.md"), report, "utf8");
   console.log(report);
@@ -198,7 +251,18 @@ async function main() {
     console.error(`❌ ${violations} 科超预算，详见 .tmp/law-perf-report.md`);
     process.exit(1);
   }
-  console.log("✅ 全部科目在预算内");
+  if (baselineRegression) {
+    console.error("❌ 课时打开耗时超基线（容差内视为正常），详见 .tmp/law-perf-report.md");
+    process.exit(1);
+  }
+  console.log("✅ 全部科目在预算内，计时在基线内");
+}
+
+/** 最近邻位百分位（升序数组） */
+function percentile(sorted, p) {
+  if (sorted.length === 0) return 0;
+  const index = Math.min(sorted.length - 1, Math.max(0, Math.ceil(p * sorted.length) - 1));
+  return sorted[index];
 }
 
 await main();

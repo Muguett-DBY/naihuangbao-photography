@@ -1,0 +1,14 @@
+{
+  "perf": {
+    "updatedAt": "2026-09-08T16:35:11.579Z",
+    "p50Ms": 567,
+    "p95Ms": 622,
+    "samples": 25
+  },
+  "runtime": {
+    "updatedAt": "2026-09-08T16:36:01.467Z",
+    "worstTaskMs": 1002,
+    "totalLongtasks": 15,
+    "throttle": 4
+  }
+}
