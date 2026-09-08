@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { MutableRefObject } from "react";
+import { pickTabTarget } from "../lib/focus-cycle";
 
 const FOCUSABLE_SELECTOR = [
   "a[href]",
@@ -76,22 +77,15 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Tab") return;
       const focusables = getFocusable(container);
-      if (focusables.length === 0) {
+      const hit = pickTabTarget({
+        focusables,
+        activeElement: document.activeElement,
+        shiftKey: event.shiftKey,
+        container,
+      });
+      if (hit) {
         event.preventDefault();
-        container.focus();
-        return;
-      }
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const activeEl = document.activeElement;
-      if (event.shiftKey) {
-        if (activeEl === first || !container.contains(activeEl)) {
-          event.preventDefault();
-          last.focus();
-        }
-      } else if (activeEl === last) {
-        event.preventDefault();
-        first.focus();
+        hit.next.focus();
       }
     };
 

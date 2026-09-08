@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { LAW_EGG_UNLOCKED_EVENT, getEggState, type EggTrigger } from "../../lib/law-progress";
 import { isLawSoundEnabled, setLawSoundEnabled } from "../../lib/law-sound";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { EggModal } from "./EasterEgg";
 import { EGG_META, EGG_ORDER } from "./eggContent";
 
@@ -19,8 +20,18 @@ function formatUnlockDate(trigger: EggTrigger): string | null {
  */
 export function EggGallery({ onClose }: { onClose: () => void }) {
   const [replay, setReplay] = useState<EggTrigger | null>(null);
-  const state = useMemo(() => getEggState(), []);
+  // 图鉴打开期间新解锁的彩蛋也要实时出现在网格（订阅解锁事件重读状态）
+  const [state, setState] = useState(() => getEggState());
   const unlockedCount = EGG_ORDER.filter((trigger) => state.unlocked[trigger]).length;
+  // 焦点圈禁：Tab 循环在图鉴内、打开时焦点入图鉴、关闭时归还页脚入口按钮。
+  // 重读信时图鉴 DOM 暂时让位给信纸弹层，trap 随之停用，信关回来时重新吸入焦点
+  const overlayRef = useFocusTrap<HTMLDivElement>({ active: !replay });
+
+  useEffect(() => {
+    const refresh = () => setState(getEggState());
+    document.addEventListener(LAW_EGG_UNLOCKED_EVENT, refresh);
+    return () => document.removeEventListener(LAW_EGG_UNLOCKED_EVENT, refresh);
+  }, []);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -36,6 +47,7 @@ export function EggGallery({ onClose }: { onClose: () => void }) {
 
   return (
     <div
+      ref={overlayRef}
       className="law-gallery-overlay"
       role="dialog"
       aria-modal="true"
