@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-09-08T18:15:07.998Z",
+  "generatedAt": "2026-09-08T18:46:33.976Z",
   "teachingLessons": 1431,
   "coverage": 0.8309,
   "kindCount": {
-    "mcq": 576,
+    "mcq": 563,
     "order": 198,
     "judge": 988,
-    "fill": 106,
+    "fill": 103,
     "multi": 117
   },
   "judge": {
@@ -16,9 +16,9 @@
     "noRatio": 0.2004
   },
   "optionDist": {
-    "2": 8,
-    "3": 3,
-    "4": 565,
+    "2": 6,
+    "3": 1,
+    "4": 556,
     "6": 6,
     "7": 69,
     "8": 42
@@ -30,6 +30,12 @@
   "multiCorrectDist": {
     "4": 69,
     "5": 48
+  },
+  "distractor": {
+    "mcqTotal": 1676,
+    "confusionHits": 137,
+    "confusionHitRate": 0.0817,
+    "avgDice": 0.0385
   },
   "quality": {
     "ambiguousDistractors": 0,
@@ -45,7 +51,7 @@
   },
   "intercepted": {
     "orderIntercepted": 338,
-    "defIntercepted": 711,
+    "defIntercepted": 727,
     "judgeMutIntercepted": 405
   }
 }

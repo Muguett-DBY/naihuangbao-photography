@@ -4,6 +4,7 @@
  */
 import type { LawQuizTrap } from "../types/law";
 import { cleanTerm } from "./law-quiz-gates";
+import { preferConfusables } from "./law-confusion";
 
 export interface Mutation {
   text: string;
@@ -80,7 +81,9 @@ export function mutateQuotedTerm(text: string, pool: string[], rand: () => numbe
       Math.abs(t.length - target.length) <= 3,
   );
   if (candidates.length === 0) return null;
-  const swap = candidates[Math.floor(rand() * candidates.length)];
+  // T5：换入词优先取"高频混淆对"（换《临时约法》进来比换无关词更能考查辨析），其余随机
+  const preferred = preferConfusables(candidates, target);
+  const swap = Math.floor(rand() * 10) < 6 && preferred[0] ? preferred[0] : candidates[Math.floor(rand() * candidates.length)];
   const mutated = text.replace(target, swap);
   if (mutated === text) return null;
   const trap: LawQuizTrap = looksLikePerson(target) || looksLikePerson(swap) ? "person" : isBook ? "book" : "term";
