@@ -1,5 +1,6 @@
 import type { LawSubjectId } from "../types/law";
 import { safeLocalStorage } from "./browser-storage";
+import { recordLawLessonDone, recordLawStepDone } from "./law-history";
 
 const KEY = "nhb-law-academy-v1";
 const EGG_KEY = "nhb-law-egg-v1";
@@ -76,10 +77,12 @@ export function touchLesson(lessonId: string): void {
 export function markStepDone(lessonId: string, stepId: string): number {
   const store = readStore();
   const entry = store.lessons[lessonId] ?? newEntry(lessonId);
+  const isNewStep = !entry.stepsDone[stepId]; // S6·T2：重复勾选不重复计步
   entry.stepsDone[stepId] = true;
   entry.lastVisitedAt = Date.now();
   store.lessons[lessonId] = entry;
   writeStore(store);
+  if (isNewStep) recordLawStepDone(); // S6·T2 逐日活动埋点（单行 diff，见 worklog-S6）
   return Object.keys(entry.stepsDone).length;
 }
 
@@ -139,6 +142,7 @@ export function recordQuiz(
   if (passed && allStepsDone && !entry.completedAt) {
     entry.completedAt = now;
     bumpTodayGoal();
+    recordLawLessonDone(now); // S6·T2 逐日活动埋点（完成时机，与 completedAt 同一事务）
     completed = true;
   }
   store.lessons[lessonId] = entry;

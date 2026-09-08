@@ -3,9 +3,10 @@ import { Link } from "react-router";
 import { LAW_SUBJECTS } from "../data/law/meta";
 import lawStats from "../data/law/stats.json";
 import { getLawProgress, getStreakDays, subjectStats } from "../lib/law-progress";
+import { getLawHistory } from "../lib/law-history";
 import {
   countStudyDays,
-  dailyActivity,
+  dailyActivityWithHistory,
   formatDayLabel,
 } from "../components/law/stats/dailyActivity";
 import { wrongTotalOf, groupWrongLessons } from "../components/law/wrongbook/wrongbookGroups";
@@ -20,11 +21,15 @@ interface LawStatsShape {
 
 const stats = lawStats as LawStatsShape;
 
-/** 近 30 天柱状图（纯 SVG，无图表库） */
-function ActivityChart({ series }: { series: ReturnType<typeof dailyActivity> }) {
-  const max = Math.max(1, ...series.map((day) => day.lessons));
+/** 近 30 天柱状图（纯 SVG，无图表库）。
+ *  柱高口径（S6·T2）：有逐日历史的日子 = 真实步数；历史之前的老数据日子 = 课时数
+ *  （stepsDone 无逐日时间戳，存量数据只能按 completedAt 归集——首日为基线，不算丢失）。 */
+function ActivityChart({ series }: { series: ReturnType<typeof dailyActivityWithHistory> }) {
+  const barValue = (day: (typeof series)[number]) => (day.fromHistory ? day.steps : day.lessons);
+  const max = Math.max(1, ...series.map(barValue));
   const totalLessons = series.reduce((sum, day) => sum + day.lessons, 0);
   const totalSteps = series.reduce((sum, day) => sum + day.steps, 0);
+  const historyDays = series.filter((day) => day.fromHistory).length;
   const barWidth = 8;
   const gap = 2.4;
   const chartHeight = 88;
@@ -35,11 +40,12 @@ function ActivityChart({ series }: { series: ReturnType<typeof dailyActivity> })
       <svg
         viewBox={`0 0 ${width} ${chartHeight + 4}`}
         role="img"
-        aria-label={`近 30 天学习柱状图：共完成 ${totalLessons} 课时、约 ${totalSteps} 步，单日最多 ${max} 课时`}
+        aria-label={`近 30 天学习柱状图：共完成 ${totalLessons} 课时、${totalSteps} 步，单日峰值 ${max} ${historyDays > 0 ? "步" : "课时"}`}
         preserveAspectRatio="none"
       >
         {series.map((day, index) => {
-          const barHeight = day.lessons === 0 ? 1.5 : Math.max(4, (day.lessons / max) * chartHeight);
+          const value = barValue(day);
+          const barHeight = value === 0 ? 1.5 : Math.max(4, (value / max) * chartHeight);
           const isToday = index === series.length - 1;
           return (
             <rect
@@ -49,9 +55,13 @@ function ActivityChart({ series }: { series: ReturnType<typeof dailyActivity> })
               width={barWidth}
               height={barHeight}
               rx={2}
-              className={`law-stats__bar ${isToday ? "is-today" : ""} ${day.lessons === 0 ? "is-zero" : ""}`}
+              className={`law-stats__bar ${isToday ? "is-today" : ""} ${value === 0 ? "is-zero" : ""}`}
             >
-              <title>{`${formatDayLabel(day.dayStart)}：完成 ${day.lessons} 课时 · ${day.steps} 步`}</title>
+              <title>
+                {day.fromHistory
+                  ? `${formatDayLabel(day.dayStart)}：完成 ${day.lessons} 课时 · ${day.steps} 步`
+                  : `${formatDayLabel(day.dayStart)}：完成 ${day.lessons} 课时（口径升级前，按完成当日课时计）`}
+              </title>
             </rect>
           );
         })}
@@ -65,7 +75,11 @@ function ActivityChart({ series }: { series: ReturnType<typeof dailyActivity> })
         <p className="law-stats__chart-empty">最近 30 天还没有完成过课时——今天的柱子等你来点亮。</p>
       ) : (
         <p className="law-stats__chart-summary">
-          近 30 天完成 <b>{totalLessons}</b> 课时 · 约 <b>{totalSteps}</b> 步 · 单日最多 <b>{max}</b> 课时
+          近 30 天完成 <b>{totalLessons}</b> 课时 · <b>{totalSteps}</b> 步
+          {historyDays > 0 && historyDays < series.length ? "（升级前的日子按课时计步）" : ""}
+          {" · 单日峰值 "}
+          <b>{max}</b>
+          {historyDays > 0 ? " 步" : " 课时"}
         </p>
       )}
     </div>
@@ -76,7 +90,11 @@ export function LawStatsPage() {
   useLawImmersive();
   const now = useMemo(() => Date.now(), []);
   const progress = useMemo(() => getLawProgress(), []);
-  const activity = useMemo(() => dailyActivity(progress, 30, now), [progress, now]);
+  const history = useMemo(() => getLawHistory(), [now]);
+  const activity = useMemo(
+    () => dailyActivityWithHistory(progress, history, 30, now),
+    [progress, history, now],
+  );
   const studyDays = useMemo(() => countStudyDays(progress), [progress]);
   const streak = useMemo(() => getStreakDays(), []);
   const wrongGroups = useMemo(() => groupWrongLessons(progress, now), [progress, now]);
