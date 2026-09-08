@@ -1,41 +1,40 @@
 {
-  "generatedAt": "2026-09-08T18:46:33.976Z",
+  "generatedAt": "2026-09-08T19:06:02.178Z",
   "teachingLessons": 1431,
-  "coverage": 0.8309,
+  "coverage": 0.8162,
   "kindCount": {
-    "mcq": 563,
-    "order": 198,
-    "judge": 988,
-    "fill": 103,
-    "multi": 117
+    "mcq": 539,
+    "order": 197,
+    "judge": 954,
+    "fill": 88,
+    "multi": 112
   },
   "judge": {
-    "total": 988,
-    "yes": 790,
-    "no": 198,
-    "noRatio": 0.2004
+    "total": 954,
+    "yes": 768,
+    "no": 186,
+    "noRatio": 0.195
   },
   "optionDist": {
-    "2": 6,
-    "3": 1,
-    "4": 556,
+    "2": 4,
+    "4": 535,
     "6": 6,
-    "7": 69,
-    "8": 42
+    "7": 65,
+    "8": 41
   },
   "orderCardDist": {
-    "3": 93,
+    "3": 92,
     "4": 105
   },
   "multiCorrectDist": {
-    "4": 69,
-    "5": 48
+    "4": 65,
+    "5": 47
   },
   "distractor": {
-    "mcqTotal": 1676,
-    "confusionHits": 137,
-    "confusionHitRate": 0.0817,
-    "avgDice": 0.0385
+    "mcqTotal": 1609,
+    "confusionHits": 128,
+    "confusionHitRate": 0.0796,
+    "avgDice": 0.0379
   },
   "quality": {
     "ambiguousDistractors": 0,
@@ -50,8 +49,8 @@
     "maxPrompt": 102
   },
   "intercepted": {
-    "orderIntercepted": 338,
-    "defIntercepted": 727,
-    "judgeMutIntercepted": 405
+    "orderIntercepted": 339,
+    "defIntercepted": 763,
+    "judgeMutIntercepted": 410
   }
 }

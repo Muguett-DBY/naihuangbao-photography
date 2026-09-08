@@ -79,9 +79,24 @@ function lessonConcepts(lesson: LawLesson): string[] {
 }
 
 /** 短定义句："X，是指/指/是…""所谓X，是指…""X：指…"，便于整句展示与挖空 */
+/** "含义"词中焊接探测：双栏表格把标签"含义"焊进正文词里（"不可分含义离"="不可分离"被插字）。
+ *  合法用法至少一侧是结构字（"的/是"等），两侧都是实义字 = OCR 插焊，题面读不通 */
+function hasSplicedMeaning(text: string): boolean {
+  for (const match of text.matchAll(/([一-龥])含义([一-龥])/g)) {
+    const leftOk = "的谓本其这中等".includes(match[1]);
+    const rightOk = "是和与及等的之".includes(match[2]);
+    if (!leftOk && !rightOk) return true;
+  }
+  return false;
+}
+
 function isShortDefinition(text: string): boolean {
   if (text.length > 90) return false;
   if (/[①-⑨]|；|^[（(]/.test(text)) return false;
+  // 与 isUsableSentence 同款：表格标签开头与 ≤2 字截断尾巴（"，具。"）不入题
+  if (/^(含义|概述)/.test(text)) return false;
+  if (hasSplicedMeaning(text)) return false;
+  if ((text.split(/[，,]/).pop() ?? "").replace(/[。！？；]\s*$/, "").length <= 2) return false;
   if (/^[\u4e00-\u9fa5]{2,14}[，、]?(是指|指|是)["“「《（]?/.test(text)) return true;
   if (/^所谓[\u4e00-\u9fa5]{2,12}[，、]?(是指|指|是)/.test(text)) return true;
   if (/^[\u4e00-\u9fa5]{2,12}[：:](是指|指)/.test(text)) return true;
@@ -116,7 +131,12 @@ function isUsableSentence(text: string): boolean {
     !/；/.test(text) &&
     !/^[（(]/.test(text) &&
     // ［注记］是页边速记标记，挖进题面读不通（与判断题闸门同口径）
-    !/[\[［\]］]/.test(text)
+    !/[\[［\]］]/.test(text) &&
+    // "含义/概述"开头的表格行标签焊接（与判断题闸门同口径）与"含义"词中插焊
+    !/^(含义|概述)/.test(text) &&
+    !hasSplicedMeaning(text) &&
+    // 最后一个逗号段 ≤2 字 = 数据侧截断尾巴（"…社会规范，具。"）
+    (text.split(/[，,]/).pop() ?? "").replace(/[。！？；]\s*$/, "").length > 2
   );
 }
 
@@ -166,6 +186,8 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     const pool = [...new Set([...terms, ...contextTerms])];
     const eligible = pool.filter((t) => {
       if (t === target || t.length < 2) return false;
+      // 否定词收尾 = 断词残串（"投保义务责任人不"），不是概念
+      if (/[不没]$/.test(t)) return false;
       // 干扰项与答案互为子串（"国家监督" vs "国家监督是"）→ 无法作答，剔除
       if (target.includes(t) || t.includes(target)) return false;
       // 干扰项出现在题面 → 歧义（可能两个"正确"选项），必须剔除

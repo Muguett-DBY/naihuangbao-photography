@@ -92,8 +92,10 @@ export function buildMultiItem(
       .map((part) => part.replace(/[。；;]\s*$/, ""))
       .map((part) => stripWeldedLabel(part, labels))
       .map(cleanOrderPart)
-      .filter((part) => part.length >= 4 && part.length <= 40 && !/[①-⑨]/.test(part))
+      .filter((part) => part.length >= 5 && part.length <= 40 && !/[①-⑨]/.test(part))
       .filter((part) => !/[联的与和或及在是对为把被从而并按据向于变受：:]$/.test(part))
+      // 悬垂动词收尾 = 断头碎片（"不履行"缺宾语），不是完整列举项
+      .filter((part) => !DANGLING_VERB.test(part))
       .filter((part) => !isGarbledOrderPart(part));
     if (parts.length < 4) continue;
     const correct = [...new Set(parts)].slice(0, 5);
@@ -103,7 +105,9 @@ export function buildMultiItem(
     const pool = [...new Set(contextTerms)].filter(
       (t) =>
         t.length >= 4 &&
-        t.length <= 16 &&
+        t.length <= 14 &&
+        // "岁以上/以下/不满N"= 词条焊接残串（"完全民事岁以上的未成年人"），不做干扰项
+        !/岁以上|岁以下|不满[一二三四五六七八九十0-9]/.test(t) &&
         !correctSet.has(t) &&
         !lessonText.includes(t) &&
         // 干扰项是主题（课时标题）的子串 → 题面里可见，歧义，剔除
