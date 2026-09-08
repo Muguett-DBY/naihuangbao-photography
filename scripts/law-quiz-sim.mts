@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { buildQuiz } from "../src/lib/law-quiz";
 import { isGarbledOrderPart } from "../src/lib/law-quiz-gates";
+import { confusablesOf } from "../src/lib/law-confusion";
 import { isCleanTerm, isShellLesson, type LawBook, type LawLesson, type LawQuizItem } from "../src/types/law";
 
 const root = resolve(import.meta.dirname, "..");
@@ -69,6 +70,25 @@ let garbledOrderCards = 0;
 let truncatedPrompts = 0; // 题面以连接词/助词截断
 let multiCorrectBelow3 = 0;
 let multiDistractorInLesson = 0; // 多选干扰项出现在本课正文（歧义：本课也讲过）
+// T5 干扰项质量：混淆对命中率与字符相似度（迷惑性代理）
+let mcqDistractorTotal = 0;
+let mcqConfusionHits = 0;
+let diceSum = 0;
+let diceCount = 0;
+
+function bigramsOf(term: string): Set<string> {
+  const set = new Set<string>();
+  for (let i = 0; i < term.length - 1; i += 1) set.add(term.slice(i, i + 2));
+  return set;
+}
+
+function dice(a: string, b: string): number {
+  const ga = bigramsOf(a);
+  const gb = bigramsOf(b);
+  let common = 0;
+  for (const g of ga) if (gb.has(g)) common += 1;
+  return common === 0 ? 0 : (2 * common) / (ga.size + gb.size);
+}
 // 闸门拦截数（推导口径：有原料却未产出 = 被闸门拦下；跨次对比稳定即可）
 let orderIntercepted = 0; // 有 ≥3 条编号条目的非粗糙步，但本课无排序题
 let judgeMutIntercepted = 0; // 有可变异原料（年份/引号术语句），但未产出"变错"判断题
@@ -96,6 +116,16 @@ for (const lesson of teaching) {
       if (item.kind === "mcq" && !(item.options ?? []).includes(item.answer)) missingAnswerOption += 1;
       for (const option of item.options ?? []) {
         if (option !== item.answer && item.prompt.includes(option)) ambiguousDistractors += 1;
+      }
+      if (item.kind === "mcq") {
+        const hits = confusablesOf(item.answer);
+        for (const option of item.options ?? []) {
+          if (option === item.answer) continue;
+          mcqDistractorTotal += 1;
+          if (hits.includes(option)) mcqConfusionHits += 1;
+          diceSum += dice(item.answer, option);
+          diceCount += 1;
+        }
       }
     }
     if (item.kind === "mcq" || item.kind === "fill") {
@@ -142,6 +172,12 @@ const metrics = {
   optionDist,
   orderCardDist,
   multiCorrectDist,
+  distractor: {
+    mcqTotal: mcqDistractorTotal,
+    confusionHits: mcqConfusionHits,
+    confusionHitRate: +(mcqConfusionHits / Math.max(mcqDistractorTotal, 1)).toFixed(4),
+    avgDice: +(diceSum / Math.max(diceCount, 1)).toFixed(4),
+  },
   quality: {
     ambiguousDistractors,
     answerVisible,
@@ -214,6 +250,8 @@ if (UPDATE || !baseline) {
     failures.push(`判断"否"占比倒退：${baseline.judge.noRatio} → ${metrics.judge.noRatio}`);
   if (metrics.coverage < baseline.coverage - 0.005)
     failures.push(`覆盖率倒退：${baseline.coverage} → ${metrics.coverage}`);
+  if (baseline.distractor && metrics.distractor.avgDice < baseline.distractor.avgDice - 0.02)
+    failures.push(`干扰项迷惑性（avgDice）倒退：${baseline.distractor.avgDice} → ${metrics.distractor.avgDice}`);
 }
 
 if (failures.length > 0) {
