@@ -1,5 +1,7 @@
 import type { LawProgressMap } from "../../../lib/law-progress";
 import { REVIEW_INTERVALS } from "../../../lib/law-progress";
+import { memoryStrength } from "../../../lib/law-review";
+import type { LawWrongTag } from "../../../lib/law-wrong-tags";
 
 /** 错题本条目：进度数据 + 展示口径，课名由页面层从目录补齐 */
 export interface WrongItem {
@@ -9,6 +11,10 @@ export interface WrongItem {
   reviewDueAt?: number;
   reviewStage: number;
   completedAt?: number;
+  /** 错因标签计数（T3：按题型+错误模式推导） */
+  wrongTags?: Partial<Record<LawWrongTag, number>>;
+  /** 记忆强度 1-3 星（T4：正确率+毕业口径） */
+  strength: 1 | 2 | 3;
 }
 
 export interface WrongbookGroups {
@@ -41,6 +47,8 @@ export function groupWrongLessons(progress: LawProgressMap, now: number = Date.n
       reviewDueAt: p.reviewDueAt,
       reviewStage: p.reviewStage ?? 0,
       completedAt: p.completedAt,
+      wrongTags: p.wrongTags,
+      strength: memoryStrength(p),
     };
     if (p.reviewDueAt === undefined) {
       graduated.push(item);

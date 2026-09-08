@@ -12,6 +12,8 @@ import {
   type WrongItem,
 } from "../components/law/wrongbook/wrongbookGroups";
 import { LawMascot } from "../components/law/LawMascot";
+import { topWrongTags } from "../lib/law-wrong-tags";
+import { strengthLabel } from "../lib/law-review";
 import { LawEggListener, useLawImmersive } from "../components/law/EasterEgg";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
 import "../styles/law-academy.css";
@@ -67,7 +69,7 @@ export function LawWrongbookPage() {
           <LawMascot mood="cheer" size={88} />
           <h2>还是空白的，继续保持！</h2>
           <p>
-            自测答错的课会自动收进这里，按 1/2/4/7/15 天的节奏提醒你复习，
+            自测答错的课会自动收进这里，按记忆曲线（1~15 天，按你的掌握度自适应伸缩）提醒你复习，
             连续 5 次通过就"毕业"移出。现在去学新课吧。
           </p>
           <Link to="/law" className="law-wrongbook__empty-cta">去学习 →</Link>
@@ -163,6 +165,7 @@ function WrongRow({ item, entry, now }: { item: WrongItem; entry?: LawLessonDire
   const due = item.reviewDueAt !== undefined && item.reviewDueAt <= now;
   const href = due ? `/law/learn/${item.lessonId}?review=1` : `/law/learn/${item.lessonId}`;
   const stage = describeStage(item);
+  const tags = topWrongTags(item.wrongTags);
 
   return (
     <li>
@@ -180,7 +183,23 @@ function WrongRow({ item, entry, now }: { item: WrongItem; entry?: LawLessonDire
           <small>
             {entry?.chapterTitle ? `${entry.chapterTitle} · ` : ""}错 {item.wrongCount} 次
             {stage ? ` · ${stage}` : ""}
+            <span
+              className="law-wrongbook__strength"
+              title={`记忆强度：${strengthLabel(item.strength)}（正确率越高星越多，毕业满分）`}
+              aria-label={`记忆强度${item.strength}星`}
+            >
+              {strengthLabel(item.strength)}
+            </span>
           </small>
+          {tags.length > 0 ? (
+            <small className="law-wrongbook__tags">
+              {tags.map((tag) => (
+                <span key={tag} className="law-wrongbook__tag">
+                  🏷️ {tag} ×{item.wrongTags?.[tag]}
+                </span>
+              ))}
+            </small>
+          ) : null}
         </span>
         <span className={`law-wrongbook__due ${due ? "is-due" : ""}`}>
           {describeDue(item, now)}
