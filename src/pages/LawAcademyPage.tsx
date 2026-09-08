@@ -191,7 +191,7 @@ export function LawAcademyPage() {
 
       <section className="law-academy__graphics" aria-label="图解精选">
         <header className="law-academy__graphics-head">
-          <h2>📐 图解课堂 —— 把概念"画"出来</h2>
+          <h2>📐 图解课堂 —— 把概念「画」出来</h2>
           <span>
             犯罪构成为什么缺一不可？行为能力分几级？千年法制思想怎么变？——先看动画建立画面，再逐句背诵。
           </span>
@@ -241,7 +241,7 @@ export function LawAcademyPage() {
           <li>
             <span className="law-how__step">③</span>
             <strong>过自测</strong>
-            <p>每课学完有几道自测题，答对一半以上算"已掌握"；答错的题进错题本，按记忆曲线提醒你复习。</p>
+            <p>每课学完有几道自测题，答对一半以上算「已掌握」；答错的题进错题本，按记忆曲线提醒你复习。</p>
           </li>
         </ol>
       </section>

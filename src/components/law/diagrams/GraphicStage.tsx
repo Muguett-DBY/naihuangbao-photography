@@ -10,6 +10,7 @@ import { TreeDiagram } from "./TreeDiagram";
 import { TimelineDiagram } from "./TimelineDiagram";
 import { BalanceDiagram } from "./BalanceDiagram";
 import { StairsDiagram } from "./StairsDiagram";
+import { MatrixDiagram } from "./MatrixDiagram";
 
 /** 图解观看进度（本地记忆）：重进显示"上次看到第 N 帧" */
 const FRAME_STORE_KEY = "nhb-law-graphic-frame";
@@ -51,6 +52,8 @@ function DiagramBody({ graphic, active }: { graphic: LawGraphic; active: number 
       return <BalanceDiagram graphic={graphic} active={active} />;
     case "stairs":
       return <StairsDiagram graphic={graphic} active={active} />;
+    case "matrix":
+      return <MatrixDiagram graphic={graphic} active={active} />;
     default:
       return null;
   }
@@ -239,6 +242,7 @@ export function GraphicStage({
               className={`${index === active ? "is-current" : ""} ${index < active ? "is-done" : ""}`}
               onClick={() => jumpTo(index)}
               aria-label={`第 ${index + 1} 步`}
+              aria-current={index === active ? "step" : undefined}
             />
           ))}
         </div>
@@ -324,6 +328,8 @@ function kindLabel(kind: string): string {
       return "⚖️ 天平";
     case "stairs":
       return "🪜 阶梯";
+    case "matrix":
+      return "🧮 对照矩阵";
     default:
       return "📊 图解";
   }

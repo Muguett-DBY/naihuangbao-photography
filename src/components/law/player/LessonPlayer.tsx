@@ -84,6 +84,7 @@ export function LessonPlayer({
   // 步骤前进/后退的方向感：新内容沿行进方向滑入
   const [direction, setDirection] = useState(1);
   const navMenuRef = useRef<HTMLDivElement>(null);
+  const navBtnRef = useRef<HTMLButtonElement>(null);
   const [quizAttempt, setQuizAttempt] = useState(0);
   const reducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -131,9 +132,12 @@ export function LessonPlayer({
     }
   }, [autoSpeed]);
 
-  // 打开段落导航时键盘游标落在当前步；浮层滚动跟随游标
+  // 打开段落导航时键盘游标落在当前步，焦点同步进浮层（方向键立即可用，不必先 Tab 一次）；
+  // 关闭时焦点归还触发按钮（选项按钮随浮层卸载，焦点不能掉空）
   useEffect(() => {
-    if (navOpen) setNavHighlight(stepIndex);
+    if (!navOpen) return;
+    setNavHighlight(stepIndex);
+    navMenuRef.current?.querySelector<HTMLElement>('[data-highlight="true"]')?.focus();
   }, [navOpen, stepIndex]);
 
   useEffect(() => {
@@ -141,6 +145,10 @@ export function LessonPlayer({
     const item = navMenuRef.current?.querySelector<HTMLElement>('[data-highlight="true"]');
     item?.scrollIntoView({ block: "nearest" });
   }, [navOpen, navHighlight]);
+
+  useEffect(() => {
+    if (!navOpen) navBtnRef.current?.focus();
+  }, [navOpen]);
 
   const goNextRef = useRef<() => void>(() => {});
   goNextRef.current = () => {
@@ -253,9 +261,11 @@ export function LessonPlayer({
           <div className="law-player__navpop">
             <button
               type="button"
+              ref={navBtnRef}
               className={`law-player__navpop-btn ${navOpen ? "is-open" : ""}`}
               onClick={() => setNavOpen((value) => !value)}
               aria-expanded={navOpen}
+              aria-haspopup="listbox"
             >
               🧭 段落导航
             </button>
@@ -385,6 +395,7 @@ export function LessonPlayer({
                   key={step.id}
                   type="button"
                   aria-label={`跳到第 ${index + 1} 步`}
+                  aria-current={index === stepIndex ? "step" : undefined}
                   className={`law-player__dot ${index === stepIndex ? "is-current" : ""} ${doneSteps > index ? "is-done" : ""}`}
                   onClick={() => jumpToStep(index)}
                 />
@@ -398,7 +409,7 @@ export function LessonPlayer({
               aria-disabled={!isCurrentDone || currentIsPlaceholder}
             >
               {currentIsPlaceholder
-                ? "全文加载中…"
+                ? "全文加载中……"
                 : isCurrentDone
                   ? stepIndex === totalSteps - 1
                     ? "完成本课 →"
