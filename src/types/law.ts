@@ -137,8 +137,8 @@ export function isShellLesson(lesson: Pick<LawLesson, "shell" | "raw" | "steps" 
   return lesson.raw.length === 0 && lesson.steps.length <= 1 && lesson.steps[0]?.text === lesson.title;
 }
 
-/** 图解类型：装配 / 流程 / 树 / 时间轴 / 天平 / 阶梯 */
-export type GraphicKind = "assemble" | "flow" | "tree" | "timeline" | "balance" | "stairs";
+/** 图解类型：装配 / 流程 / 树 / 时间轴 / 天平 / 阶梯 / 对照矩阵 */
+export type GraphicKind = "assemble" | "flow" | "tree" | "timeline" | "balance" | "stairs" | "matrix";
 
 export interface GraphicNode {
   /** 节点名（如"犯罪客体"） */
@@ -166,6 +166,8 @@ export interface LawGraphic {
   balance?: { left: string; right: string; diffs: [string, string, string][] };
   /** timeline 特别参数：色带 */
   eras?: { label: string; color: string }[];
+  /** matrix 特别参数：对照列（2-4 个概念）与逐行对比（行首为维度名） */
+  matrix?: { columns: string[]; rows: [string, ...string[]][] };
 }
 
 export interface LawGraphicRef {

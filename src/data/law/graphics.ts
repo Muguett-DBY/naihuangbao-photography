@@ -1,10 +1,12 @@
 import type { LawGraphic, LawGraphicRef, LawSubjectId } from "../../types/law";
 import { LAW_GRAPHICS_EXTENDED } from "./graphicsExtended";
+import { LAW_GRAPHICS_S5 } from "./graphicsS5";
+import { LAW_GRAPHICS_S5_B } from "./graphicsS5B";
 
 /**
  * 知识图解（真动画）—— 全部锚定课本真实内容：
  * 文案提炼自对应课时的原文要点，动画按知识结构分型呈现。
- * （E 扩展的第二批 8 张在 graphicsExtended.ts，此处合并暴露）
+ * （E 扩展 12 张在 graphicsExtended.ts，S5 图解工厂两批 20 张在 graphicsS5(B).ts，此处合并暴露）
  */
 const LAW_GRAPHICS_CORE: LawGraphic[] = [
   {
@@ -160,7 +162,7 @@ const LAW_GRAPHICS_CORE: LawGraphic[] = [
     ],
     nodes: [
       { label: "不满8周岁", step: "0-7岁", detail: "无民事行为能力，一切由法定代理人代理" },
-      { label: "8周岁以上", step: "8-15岁", detail: "限制民事行为能力：小额/与其年龄智力相适应的有效，其余代理" },
+      { label: "8周岁以上", step: "8-15岁", detail: "限制民事行为能力：纯获利益或与其年龄智力相适应的有效，其余代理" },
       { label: "16周岁以上+劳动收入", step: "16-17岁", detail: "以自己的劳动收入为主要生活来源→视为完全民事行为能力" },
       { label: "18周岁以上", step: "18+", detail: "完全民事行为能力，独立实施民事法律行为" },
     ],
@@ -178,7 +180,7 @@ const LAW_GRAPHICS_CORE: LawGraphic[] = [
       "监察机关：国家监察委员会——行使监察权",
       "审判机关：最高人民法院——行使审判权；法律监督机关：最高人民检察院",
       "军事机关：中央军事委员会——领导全国武装力量",
-      "特点：阶级性、历史性、强制性、组织性、协调性",
+      "特点：阶级性、历史性、特殊的强制性、组织性、协调性",
     ],
     nodes: [
       { label: "国家机构", detail: "国家机关的总和", parent: -1 },
@@ -313,7 +315,12 @@ const LAW_GRAPHICS_CORE: LawGraphic[] = [
   },
 ];
 
-export const LAW_GRAPHICS: LawGraphic[] = [...LAW_GRAPHICS_CORE, ...LAW_GRAPHICS_EXTENDED];
+export const LAW_GRAPHICS: LawGraphic[] = [
+  ...LAW_GRAPHICS_CORE,
+  ...LAW_GRAPHICS_EXTENDED,
+  ...LAW_GRAPHICS_S5,
+  ...LAW_GRAPHICS_S5_B,
+];
 
 export const LAW_GRAPHIC_MAP: Record<string, LawGraphic> = Object.fromEntries(
   LAW_GRAPHICS.map((g) => [g.lessonId, g]),

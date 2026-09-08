@@ -361,3 +361,168 @@
     opacity: 0.5;
   }
 }
+
+/* ── S5/T4: 对照矩阵（matrix）── */
+/* 3+ 概念对照考点（抵押/质押/留置、缓刑/减刑/假释）；
+   不用 subgrid（兼容性）：表头行与数据行各自同构 grid，列宽天然对齐；
+   390px 下允许横向滚动不挤压文字 */
+.dia-matrix {
+  width: 100%;
+}
+
+.dia-matrix__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: min(100%, 340px);
+}
+
+.dia-matrix__row {
+  display: grid;
+  grid-template-columns: minmax(58px, 0.72fr) repeat(calc(var(--dia-matrix-cols, 3) - 1), 1fr);
+  gap: 6px;
+  transition: opacity 0.32s;
+}
+
+.dia-matrix__corner,
+.dia-matrix__col-head,
+.dia-matrix__dim,
+.dia-matrix__cell {
+  border-radius: 10px;
+  padding: 7px 8px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+.dia-matrix__corner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--text-muted);
+  border: 1.5px dashed var(--hairline);
+}
+
+.dia-matrix__col-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-weight: 900;
+  color: #fff;
+  background: var(--law-accent);
+}
+
+.dia-matrix__col-head:nth-child(odd) {
+  background: color-mix(in srgb, var(--law-accent) 82%, var(--moss));
+}
+
+.dia-matrix__dim {
+  display: flex;
+  align-items: center;
+  font-weight: 900;
+  color: var(--law-accent-ink, var(--law-accent));
+  background: var(--law-accent-soft);
+}
+
+.dia-matrix__cell {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--hairline);
+  background: var(--paper);
+}
+
+@media (max-width: 480px) {
+  .dia-matrix__grid {
+    overflow-x: auto;
+    min-width: 352px;
+  }
+}
+
+/* ── S5/T5: 学习中心"全部图解"按科浏览（组件级，不改路由）── */
+.law-graphics-browse {
+  margin-top: 18px;
+}
+
+.law-graphics-browse__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.law-graphics-browse__chip {
+  border: 1.5px solid var(--hairline);
+  border-radius: 999px;
+  padding: 7px 15px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-muted);
+  background: var(--paper);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.law-graphics-browse__chip.is-current {
+  border-color: var(--law-accent, var(--ink));
+  background: var(--law-accent-soft, var(--paper));
+  color: var(--law-accent-ink, var(--ink));
+}
+
+.law-graphics-browse__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+.law-graphic-card--browse {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--hairline);
+  background: var(--paper);
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.law-graphic-card--browse:hover {
+  border-color: var(--law-accent);
+  transform: translateY(-1px);
+}
+
+.law-graphic-card--browse .law-graphic-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.law-graphic-card--browse .law-graphic-card__body small {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.law-graphic-card--browse .law-graphic-card__body strong {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.law-graphics-browse__more {
+  display: block;
+  margin: 16px auto 0;
+  border: 1.5px dashed color-mix(in srgb, var(--law-accent, var(--ink)) 45%, var(--hairline));
+  border-radius: 999px;
+  padding: 9px 22px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 900;
+  color: var(--law-accent-ink, var(--ink));
+  background: var(--paper);
+  cursor: pointer;
+}
