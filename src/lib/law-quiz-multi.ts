@@ -6,6 +6,7 @@
  */
 import type { LawLesson, LawQuizItem } from "../types/law";
 import { cleanOrderPart, isGarbledOrderPart, optionsAreDistinct } from "./law-quiz-gates";
+import { preferConfusables } from "./law-confusion";
 
 const ITEM_PREFIX = /^[①②③④⑤⑥⑦⑧⑨⑩]|^\d{1,2}[.、．]|^[（(][一二三四五六七八九十]{1,4}[)）]/;
 
@@ -109,7 +110,8 @@ export function buildMultiItem(
         !topic.includes(t) &&
         !correct.some((c) => c.includes(t) || t.includes(c)),
     );
-    const shuffled = shuffle(pool, rand);
+    // T5：主题命中高频混淆对的干扰项优先（topic 与术语同名时才命中，如"法律规则"）
+    const shuffled = preferConfusables(shuffle(pool, rand), topic);
     const distractors: string[] = [];
     for (const candidate of shuffled) {
       const options = [...correct, ...distractors, candidate];

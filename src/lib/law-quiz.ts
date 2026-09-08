@@ -10,6 +10,7 @@ import {
   optionsAreDistinct,
 } from "./law-quiz-gates";
 import { buildMultiItem } from "./law-quiz-multi";
+import { confusablesOf, preferConfusables } from "./law-confusion";
 import { mutateNumber, mutateCnNumber, mutateQuotedTerm } from "./law-quiz-mutate";
 
 /** 确定性伪随机（同一课时每次生成相同自测题） */
@@ -106,14 +107,16 @@ function sentencesOf(text: string): string[] {
     .filter(Boolean);
 }
 
-/** 短句（适合当判断题/填空题）：独立成句、无列表符、无分号 */
+/** 短句（适合当判断题/填空题）：独立成句、无列表符、无分号、无页边注记 */
 function isUsableSentence(text: string): boolean {
   return (
     text.length >= 10 &&
     text.length <= 90 &&
     !/[①-⑨]/.test(text) &&
     !/；/.test(text) &&
-    !/^[（(]/.test(text)
+    !/^[（(]/.test(text) &&
+    // ［注记］是页边速记标记，挖进题面读不通（与判断题闸门同口径）
+    !/[\[［\]］]/.test(text)
   );
 }
 
@@ -161,17 +164,18 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
   const distractorsFrom = (target: string, randFn: () => number, need: number, excludeInPrompt?: string): string[] => {
     // 本课词与同章词可能重叠，必须去重，否则选项会出现两个相同的干扰项
     const pool = [...new Set([...terms, ...contextTerms])];
-    return shuffle(
-      pool.filter((t) => {
-        if (t === target || t.length < 2) return false;
-        // 干扰项与答案互为子串（"国家监督" vs "国家监督是"）→ 无法作答，剔除
-        if (target.includes(t) || t.includes(target)) return false;
-        // 干扰项出现在题面 → 歧义（可能两个"正确"选项），必须剔除
-        if (excludeInPrompt && excludeInPrompt.includes(t)) return false;
-        return true;
-      }),
-      randFn,
-    ).slice(0, need);
+    const eligible = pool.filter((t) => {
+      if (t === target || t.length < 2) return false;
+      // 干扰项与答案互为子串（"国家监督" vs "国家监督是"）→ 无法作答，剔除
+      if (target.includes(t) || t.includes(target)) return false;
+      // 干扰项出现在题面 → 歧义（可能两个"正确"选项），必须剔除
+      if (excludeInPrompt && excludeInPrompt.includes(t)) return false;
+      return true;
+    });
+    // T5：同章高频混淆对优先（更具迷惑性），其余随机补位
+    const preferred = preferConfusables(eligible, target).slice(0, need);
+    if (preferred.length >= need) return preferred;
+    return [...new Set([...preferred, ...shuffle(eligible, randFn)])].slice(0, need);
   };
   const definitions = lesson.steps.filter((step) => isShortDefinition(step.text));
 
@@ -364,9 +368,18 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
   const concept = concepts.find((c) => !usedAnswers.has(c));
   if (concept && siblingPool.length >= 2 && items.length < 3) {
     // 干扰项排除与答案互为子串的候选，再按长度相近排序取前几个
+    const confusionRank = confusablesOf(concept);
     const candidates = [...new Set(siblingPool)]
       .filter((t) => !t.includes(concept) && !concept.includes(t))
-      .sort((a, b) => Math.abs(a.length - concept.length) - Math.abs(b.length - concept.length));
+      // T5：命中混淆对的候选优先（稳定排序保持对内顺序），未命中的再按长度相近排
+      .sort((a, b) => {
+        const ra = confusionRank.indexOf(a);
+        const rb = confusionRank.indexOf(b);
+        const aHit = ra !== -1;
+        const bHit = rb !== -1;
+        if (aHit !== bHit) return aHit ? -1 : 1;
+        return aHit ? ra - rb : Math.abs(a.length - concept.length) - Math.abs(b.length - concept.length);
+      });
     const contextLine = lesson.steps
       .map((step) => step.text)
       .find((text) => text.includes(concept));
