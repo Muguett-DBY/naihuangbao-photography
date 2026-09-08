@@ -1598,6 +1598,13 @@
   min-height: 380px;
 }
 
+/* 课内分层：巨型课尾部全文懒加载期间的占位提示（S6·T1） */
+.law-player__restloading {
+  margin: auto;
+  font-size: 14.5px;
+  color: var(--text-muted);
+}
+
 .law-player__controls {
   display: flex;
   align-items: center;

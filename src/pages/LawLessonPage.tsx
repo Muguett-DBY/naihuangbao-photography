@@ -98,6 +98,8 @@ export function LawLessonPage() {
         lesson={view.lesson}
         siblingTerms={siblingTerms}
         initialPhase={reviewMode ? "quiz" : "steps"}
+        restLoader={view.restLoader}
+        lightBoundary={view.lightSteps ?? 0}
         onExit={() => {
           navigate(`/law/${subjectId}`);
         }}

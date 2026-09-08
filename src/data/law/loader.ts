@@ -1,4 +1,4 @@
-import type { LawBook, LawChapter, LawLesson, LawSubjectId, LawStepKind } from "../../types/law";
+import type { LawBook, LawChapter, LawLesson, LawStep, LawSubjectId, LawStepKind } from "../../types/law";
 import { isCleanTerm, isShellLesson } from "../../types/law";
 import type { LawProgressMap } from "../../lib/law-progress";
 
@@ -18,6 +18,8 @@ interface LawMetaLesson {
   k: LawStepKind;
   /** 1 = 学习流课时（与 isFlowLesson 等价） */
   f: 0 | 1;
+  /** 课内分层（S6·T1）：前 lt 步全文在 {id}-light.json，余下步骤在 {id}-tail.json；未分层课无此字段 */
+  lt?: number;
 }
 
 interface LawMetaChapter {
@@ -52,6 +54,14 @@ interface LawMeta {
 interface LawPart {
   f: string;
   segments: { c: string; from: number; lessons: LawLesson[] }[];
+}
+
+/** 课内分层的尾部文件：余下步骤全文 + 余下原文行（loadLawBook 不读它，part 里始终是完整课） */
+interface LawLessonTail {
+  f: string;
+  from: number;
+  steps: LawStep[];
+  raw: string[];
 }
 
 const CHUNK_URLS: Record<LawSubjectId, Record<string, string>> = {
@@ -301,6 +311,11 @@ export interface LawLessonView {
   nextFlowId: string | null;
   /** 同章其它课概念词（词条 digest 推导，与 collectSiblingTerms 全量等价） */
   siblingTerms: string[];
+  /** 课内分层：lesson.steps 前 lightSteps 步是全文，其后是占位元数据（text 为空串） */
+  lightSteps?: number;
+  /** 课内分层：拉取余下步骤与原文，resolve 拼合全文后的完整课（与整本数据 toEqual 级等价）；
+   *  并发调用共享同一请求（fetchJson 去重）；未分层课时无此字段 */
+  restLoader?: () => Promise<LawLesson>;
 }
 
 function nextFlowIdFromMeta(meta: LawMeta, fromChapter: number, fromLesson: number): string | null {
@@ -349,30 +364,9 @@ export async function loadLawLessonView(
   if (!hit) return null;
 
   const mc = meta.chapters[hit.chapterIndex];
-  // 用 spans 把"章内第几课"折算到具体 part 文件；段内偏移仍用章内全局下标对 from
-  let remaining = hit.lessonIndex;
-  let partFile = mc.parts[mc.parts.length - 1];
-  for (let p = 0; p < mc.parts.length; p += 1) {
-    if (remaining < mc.spans[p]) {
-      partFile = mc.parts[p];
-      break;
-    }
-    remaining -= mc.spans[p];
-  }
-
-  const part = await fetchJson<LawPart>(chunkUrl(subject, partFile));
-  const segment = part.segments.find(
-    (entry) =>
-      entry.c === mc.id &&
-      hit.lessonIndex >= entry.from &&
-      hit.lessonIndex < entry.from + entry.lessons.length,
-  );
-  if (!segment) throw new Error(`law chunk ${subject}/${partFile} 缺少 ${lessonId}（重跑 npm run law:chunks）`);
-  const lesson = segment.lessons[hit.lessonIndex - segment.from];
-
   const view: LawLessonView = {
     subject,
-    lesson,
+    lesson: null as unknown as LawLesson,
     chapterId: mc.id,
     chapterTitle: mc.t,
     chapterSemanticTitle: mc.st,
@@ -382,6 +376,44 @@ export async function loadLawLessonView(
     siblingTerms: siblingTermsFromDigest(meta.digests[mc.id] ?? [], hit.lessonIndex),
   };
   if (view.chapterSemanticTitle === undefined) delete view.chapterSemanticTitle;
+
+  if (hit.meta.lt) {
+    // 课内分层：首屏只拉轻视图（前 lt 步全文 + 占位元数据），尾部全文由 restLoader 懒加载
+    const light = await fetchJson<LawLesson>(chunkUrl(subject, `${lessonId}-light.json`));
+    view.lesson = light;
+    view.lightSteps = hit.meta.lt;
+    view.restLoader = async () => {
+      const tail = await fetchJson<LawLessonTail>(chunkUrl(subject, `${lessonId}-tail.json`));
+      // 按 tail.from 无损拼装：步骤取轻视图前缀 + 尾部余量；原文两段相接
+      // （步骤全在前缀/原文全在前缀的课也成立——tail 侧为空数组）
+      return {
+        ...light,
+        steps: light.steps.slice(0, tail.from).concat(tail.steps),
+        raw: light.raw.concat(tail.raw),
+      };
+    };
+  } else {
+    // 用 spans 把"章内第几课"折算到具体 part 文件；段内偏移仍用章内全局下标对 from
+    let remaining = hit.lessonIndex;
+    let partFile = mc.parts[mc.parts.length - 1];
+    for (let p = 0; p < mc.parts.length; p += 1) {
+      if (remaining < mc.spans[p]) {
+        partFile = mc.parts[p];
+        break;
+      }
+      remaining -= mc.spans[p];
+    }
+
+    const part = await fetchJson<LawPart>(chunkUrl(subject, partFile));
+    const segment = part.segments.find(
+      (entry) =>
+        entry.c === mc.id &&
+        hit.lessonIndex >= entry.from &&
+        hit.lessonIndex < entry.from + entry.lessons.length,
+    );
+    if (!segment) throw new Error(`law chunk ${subject}/${partFile} 缺少 ${lessonId}（重跑 npm run law:chunks）`);
+    view.lesson = segment.lessons[hit.lessonIndex - segment.from];
+  }
   return view;
 }
 
@@ -393,6 +425,11 @@ export function prefetchLawLesson(subject: LawSubjectId, lessonId: string): void
       const lessonIndex = meta.chapters[c].ls.findIndex((lesson) => lesson.i === lessonId);
       if (lessonIndex < 0) continue;
       const mc = meta.chapters[c];
+      // 分层课只预取轻视图（尾部全文由 restLoader 在交互推进时再拉）
+      if (mc.ls[lessonIndex].lt) {
+        await fetchJson<LawLesson>(chunkUrl(subject, `${lessonId}-light.json`));
+        return;
+      }
       let inChapterIndex = lessonIndex;
       let partFile = mc.parts[mc.parts.length - 1];
       for (let p = 0; p < mc.parts.length; p += 1) {

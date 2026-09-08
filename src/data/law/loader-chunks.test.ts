@@ -78,9 +78,20 @@ describe("law chunked loader equivalence", () => {
       )) {
         const view = await loadLawLessonView(id, expected.lesson.id);
         expect(view, `${id}:${expected.lesson.id}`).not.toBeNull();
-        expect(view!.lesson).toEqual(expected.lesson);
-        expect(view!.order).toBe(expected.order);
-        expect(view!.total).toBe(expected.total);
+        if (view!.lightSteps === undefined) {
+          // 未分层课：轻视图不存在，逐课全文等价
+          expect(view!.lesson).toEqual(expected.lesson);
+        } else {
+          // 分层课：order/total 等元数据全等；steps/raw 走轻视图契约
+          // （全文等价由 restLoader 测试逐课锁定）
+          const original = expected.lesson;
+          expect(view!.order).toBe(expected.order);
+          expect(view!.total).toBe(expected.total);
+          expect(view!.lesson.id).toBe(original.id);
+          expect(view!.lesson.title).toBe(original.title);
+          expect(view!.lesson.breadcrumb).toEqual(original.breadcrumb);
+          expect(view!.lesson.intro).toBe(original.intro);
+        }
       }
     }
   }, 60_000);
@@ -115,6 +126,42 @@ describe("law chunked loader equivalence", () => {
     expect(await loadLawLessonView("minfa", "minfa-q99999")).toBeNull();
     expect(await loadLawLessonView("minfa", "totally-bogus-id")).toBeNull();
   });
+
+  it("layered lessons: light view + restLoader reassemble the exact full lesson", async () => {
+    let layeredSeen = 0;
+    for (const id of SUBJECTS) {
+      const meta = JSON.parse(
+        readFileSync(resolve(__dirname, "chunks", id, `${id}-meta.json`), "utf8"),
+      ) as { chapters: { ls: { i: string; lt?: number }[] }[] };
+      for (const entry of meta.chapters.flatMap((chapter) => chapter.ls)) {
+        const view = await loadLawLessonView(id, entry.i);
+        expect(view, `${id}:${entry.i}`).not.toBeNull();
+        const original = findLesson(booksOnDisk[id], entry.i)!.lesson;
+        if (!entry.lt) {
+          expect(view!.lightSteps).toBeUndefined();
+          expect(view!.restLoader).toBeUndefined();
+          continue;
+        }
+        layeredSeen += 1;
+        expect(view!.lightSteps).toBe(entry.lt);
+        expect(typeof view!.restLoader).toBe("function");
+        // 轻视图：前 lt 步全文一致，其后是占位元数据（id/kind 保留、text 置空），总步数不变
+        expect(view!.lesson.steps).toHaveLength(original.steps.length);
+        expect(view!.lesson.steps.slice(0, entry.lt)).toEqual(original.steps.slice(0, entry.lt));
+        view!.lesson.steps.slice(entry.lt).forEach((placeholder, offset) => {
+          const fullStep = original.steps[entry.lt! + offset];
+          expect(placeholder.id).toBe(fullStep.id);
+          expect(placeholder.kind).toBe(fullStep.kind);
+          expect(placeholder.text).toBe("");
+        });
+        // restLoader 拼合出的完整课与整本数据 toEqual 级等价（并发调用共享同一请求）
+        const [first, second] = await Promise.all([view!.restLoader!(), view!.restLoader!()]);
+        expect(first).toEqual(original);
+        expect(second).toEqual(original);
+      }
+    }
+    expect(layeredSeen).toBeGreaterThan(0); // 仓库里确实存在分层课，测试没有空转
+  }, 60_000);
 
   it("isFlowLesson agrees with the flow flag stored in meta (via next chain spot checks)", async () => {
     // meta.f 的等价性已由 nextFlowId 测试间接锁定；这里再直接抽查附录章/空壳课
