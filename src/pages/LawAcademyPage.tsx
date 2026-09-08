@@ -1,8 +1,9 @@
-import { useMemo, type CSSProperties } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { LAW_SUBJECTS } from "../data/law/meta";
 import { LAW_GRAPHICS } from "../data/law/graphics";
+import type { LawSubjectId } from "../types/law";
 import lawStats from "../data/law/stats.json";
 import { getPlan } from "../lib/law-plan";
 import { getDueReviewLessons, getLastLessonId, getRecentUnfinishedLesson, getTodayGoal, subjectStats } from "../lib/law-progress";
@@ -16,6 +17,7 @@ import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
 import "../styles/law-flow.css";
 import "../styles/law-easter.css";
+import "../styles/law-visual.css";
 
 interface LawStats {
   [key: string]: { lessonCount: number; chapterTitles: string[] };
@@ -23,8 +25,14 @@ interface LawStats {
 
 const stats = lawStats as LawStats;
 
+/** 图解按科浏览的分页步长：收起时每科先亮 8 张 */
+const GRAPHIC_BROWSE_PAGE = 8;
+
 export function LawAcademyPage() {
   useLawImmersive();
+  // 全部图解按科浏览：组件级筛选，不改路由（S5/T5）
+  const [graphicFilter, setGraphicFilter] = useState<LawSubjectId | "all">("all");
+  const [showAllGraphics, setShowAllGraphics] = useState(false);
   const progress = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const subject of LAW_SUBJECTS) {
@@ -58,6 +66,16 @@ export function LawAcademyPage() {
       })),
     [progress],
   );
+  const filteredGraphics = useMemo(
+    () =>
+      graphicFilter === "all"
+        ? LAW_GRAPHICS
+        : LAW_GRAPHICS.filter((graphic) => graphic.subject === graphicFilter),
+    [graphicFilter],
+  );
+  const browseGraphics = showAllGraphics
+    ? filteredGraphics
+    : filteredGraphics.slice(0, GRAPHIC_BROWSE_PAGE);
 
   return (
     <div className="law-academy">
@@ -191,7 +209,7 @@ export function LawAcademyPage() {
 
       <section className="law-academy__graphics" aria-label="图解精选">
         <header className="law-academy__graphics-head">
-          <h2>📐 图解课堂 —— 把概念「画」出来</h2>
+          <h2>📐 图解课堂 —— 把概念"画"出来</h2>
           <span>
             犯罪构成为什么缺一不可？行为能力分几级？千年法制思想怎么变？——先看动画建立画面，再逐句背诵。
           </span>
@@ -223,6 +241,69 @@ export function LawAcademyPage() {
             );
           })}
         </div>
+
+        <div className="law-graphics-browse" aria-label="全部图解">
+          <div className="law-graphics-browse__chips" role="tablist" aria-label="按学科筛选图解">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={graphicFilter === "all"}
+              className={`law-graphics-browse__chip ${graphicFilter === "all" ? "is-current" : ""}`}
+              onClick={() => {
+                setGraphicFilter("all");
+                setShowAllGraphics(false);
+              }}
+            >
+              全部 {LAW_GRAPHICS.length}
+            </button>
+            {LAW_SUBJECTS.map((subject) => (
+              <button
+                key={subject.id}
+                type="button"
+                role="tab"
+                aria-selected={graphicFilter === subject.id}
+                className={`law-graphics-browse__chip ${graphicFilter === subject.id ? "is-current" : ""}`}
+                style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
+                onClick={() => {
+                  setGraphicFilter(subject.id);
+                  setShowAllGraphics(false);
+                }}
+              >
+                {subject.name} {LAW_GRAPHICS.filter((g) => g.subject === subject.id).length}
+              </button>
+            ))}
+          </div>
+          <div className="law-graphics-browse__grid">
+            {browseGraphics.map((graphic) => {
+              const subject = LAW_SUBJECTS.find((item) => item.id === graphic.subject)!;
+              return (
+                <PrefetchLink
+                  key={graphic.lessonId}
+                  to={`/law/graphic/${graphic.lessonId}`}
+                  className="law-graphic-card law-graphic-card--browse"
+                  style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
+                >
+                  <span className="law-graphic-card__kind">{graphicEmoji(graphic.kind)}</span>
+                  <span className="law-graphic-card__body">
+                    <small>{subject.name}</small>
+                    <strong>{graphic.title}</strong>
+                  </span>
+                </PrefetchLink>
+              );
+            })}
+          </div>
+          {filteredGraphics.length > GRAPHIC_BROWSE_PAGE ? (
+            <button
+              type="button"
+              className="law-graphics-browse__more"
+              onClick={() => setShowAllGraphics((value) => !value)}
+            >
+              {showAllGraphics
+                ? "收起"
+                : `展开全部 ${filteredGraphics.length} 张图解 ↓`}
+            </button>
+          ) : null}
+        </div>
       </section>
 
       <section className="law-academy__how">
@@ -241,7 +322,7 @@ export function LawAcademyPage() {
           <li>
             <span className="law-how__step">③</span>
             <strong>过自测</strong>
-            <p>每课学完有几道自测题，答对一半以上算「已掌握」；答错的题进错题本，按记忆曲线提醒你复习。</p>
+            <p>每课学完有几道自测题，答对一半以上算"已掌握"；答错的题进错题本，按记忆曲线提醒你复习。</p>
           </li>
         </ol>
       </section>
@@ -279,6 +360,8 @@ function graphicEmoji(kind: string): string {
       return "⚖️";
     case "stairs":
       return "🪜";
+    case "matrix":
+      return "🧮";
     default:
       return "📊";
   }

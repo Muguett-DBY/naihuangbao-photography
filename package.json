@@ -16,6 +16,8 @@
     "law:shot": "node scripts/shot-law.mjs",
     "law:flow": "node scripts/flow-law.mjs",
     "law:live": "node scripts/live-check.mjs",
+    "law:graphic": "node scripts/law-graphic-scaffold.mjs",
+    "law:capacity": "node scripts/law-capacity-report.mjs",
     "law:offline": "playwright test -c e2e/playwright.config.ts e2e/law-offline.spec.ts",
     "law:perf": "node scripts/law-perf-check.mjs",
     "law:runtime": "node scripts/law-runtime-check.mjs",

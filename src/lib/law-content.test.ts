@@ -104,6 +104,15 @@ describe("law content data quality", () => {
       expect(isShellLesson(lesson!)).toBe(false);
       expect(graphic.captions.length).toBeGreaterThan(0);
     }
+    // S5 配额均衡：五科下限（图解不再向刑法倾斜，法史/法理有足量图）
+    const quota: Record<string, number> = { minfa: 9, xianfa: 9, zhishixiang: 8, falixue: 8, xingfa: 10 };
+    for (const [subject, min] of Object.entries(quota)) {
+      expect(
+        LAW_GRAPHICS.filter((g) => g.subject === subject).length,
+        `${subject} 图解少于配额下限`,
+      ).toBeGreaterThanOrEqual(min);
+    }
+    expect(LAW_GRAPHICS.length).toBeGreaterThanOrEqual(40);
     // 五科全覆盖：每个学科至少 3 个图解
     const subjects = new Set(LAW_GRAPHICS.map((g) => g.subject));
     for (const subject of subjects) {
@@ -120,6 +129,12 @@ describe("law content data quality", () => {
       expect(graphic, `expanded graphic ${id} missing`).toBeTruthy();
       expect(graphic!.captions.length).toBeGreaterThanOrEqual(6);
       expect(graphic!.captions.length).toBeLessThanOrEqual(8);
+    }
+    // S5 脚手架骨架带 S5-DRAFT/TODO 标记——精炼完成后才允许上线（扫全部图解数据文件）
+    for (const file of ["graphics.ts", "graphicsExtended.ts", "graphicsS5.ts"]) {
+      const source = readFileSync(resolve(__dirname, "../data/law", file), "utf8");
+      expect(source, `${file} 有未精炼的 S5-DRAFT 骨架`).not.toContain("S5-DRAFT");
+      expect(source, `${file} 有未填的 TODO 槽位`).not.toContain("TODO-");
     }
   });
 });
