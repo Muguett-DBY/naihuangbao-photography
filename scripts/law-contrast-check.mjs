@@ -235,3 +235,5 @@ for (const v of report) {
 console.log("=== 违规分布（页/主题/视口/来源 → 数量）===");
 for (const [k, n] of Object.entries(byKey).sort()) console.log(` ${k}: ${n}`);
 console.log("总计:", report.length, "→ .tmp/contrast/violations.json");
+// 回归工具约定：有违规退出码非零（law:a11y 与 CI 依赖）
+process.exitCode = report.length > 0 ? 1 : 0;

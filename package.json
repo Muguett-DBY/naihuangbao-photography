@@ -21,6 +21,7 @@
     "law:runtime": "node scripts/law-runtime-check.mjs",
     "law:devices": "node scripts/devices-check.mjs",
     "law:audit": "node --import tsx scripts/audit-law.mts",
+    "law:a11y": "node scripts/law-a11y-check.mjs",
     "avif": "node scripts/convert-to-avif.mjs",
     "archive:build": "node scripts/build-archive-manifest.mjs",
     "stories:build": "node scripts/build-story-manifest.mjs",
