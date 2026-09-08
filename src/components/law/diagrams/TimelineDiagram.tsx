@@ -8,7 +8,7 @@ export function TimelineDiagram({ graphic, active }: { graphic: LawGraphic; acti
   const progress = (visible / Math.max(nodes.length, 1)) * 100;
 
   return (
-    <div className="dia-timeline" aria-live="polite">
+    <div className="dia-timeline">
       <div className="dia-timeline__track-wrap">
         <div className="dia-timeline__track">
           <div className="dia-timeline__base" />

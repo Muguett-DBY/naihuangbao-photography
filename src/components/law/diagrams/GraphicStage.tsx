@@ -10,6 +10,7 @@ import { TreeDiagram } from "./TreeDiagram";
 import { TimelineDiagram } from "./TimelineDiagram";
 import { BalanceDiagram } from "./BalanceDiagram";
 import { StairsDiagram } from "./StairsDiagram";
+import { EGG_EVENT } from "../EasterEgg";
 import { MatrixDiagram } from "./MatrixDiagram";
 
 /** 图解观看进度（本地记忆）：重进显示"上次看到第 N 帧" */
@@ -120,7 +121,7 @@ export function GraphicStage({
     if (active >= total - 1) {
       setPlaying(false);
       // 第一次完整看完图解 → 派发彩蛋事件（"第一次看图解"）
-      document.dispatchEvent(new CustomEvent("nhb-law-egg", { detail: "graphicFirst" }));
+      document.dispatchEvent(new CustomEvent(EGG_EVENT, { detail: "graphicFirst" }));
       return;
     }
     const timer = window.setTimeout(advance, 3200);
@@ -211,7 +212,7 @@ export function GraphicStage({
         <DiagramBody graphic={graphic} active={active} />
       </div>
 
-      <div className="law-graphic__caption">
+      <div className="law-graphic__caption" aria-live="polite">
         <AnimatePresence mode="wait">
           <motion.p
             key={active}

@@ -13,7 +13,7 @@ export function BalanceDiagram({ graphic, active }: { graphic: LawGraphic; activ
   })();
 
   return (
-    <div className="dia-balance" aria-live="polite">
+    <div className="dia-balance">
       <div className="dia-balance__scales">
         <svg viewBox="0 0 340 200" className="dia-balance__svg">
           {/* 支架 */}

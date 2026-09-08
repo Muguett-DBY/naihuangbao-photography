@@ -77,3 +77,21 @@ export function CelebrateBurst() {
     </div>
   );
 }
+
+// ── 自动串联速度配置（从 LessonPlayer 抽出，纯数据 + 纯函数）──
+export const AUTO_SPEEDS = [
+  { id: "slow", label: "🐢 慢", delay: 2600 },
+  { id: "mid", label: "▶ 中", delay: 1400 },
+  { id: "fast", label: "🐇 快", delay: 800 },
+] as const;
+export type AutoSpeedId = (typeof AUTO_SPEEDS)[number]["id"];
+export const AUTO_SPEED_KEY = "nhb-law-autoplay-speed";
+
+export function readAutoSpeed(): AutoSpeedId {
+  try {
+    const saved = localStorage.getItem(AUTO_SPEED_KEY);
+    return AUTO_SPEEDS.some((s) => s.id === saved) ? (saved as AutoSpeedId) : "mid";
+  } catch {
+    return "mid";
+  }
+}
