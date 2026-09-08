@@ -26,6 +26,7 @@ const GRAPHIC_SOURCES = [
   resolve(LAW_DATA_DIR, "graphicsExtended.ts"),
   resolve(LAW_DATA_DIR, "graphicsS5.ts"),
   resolve(LAW_DATA_DIR, "graphicsS5B.ts"),
+  resolve(LAW_DATA_DIR, "graphicsS5C.ts"),
 ];
 /** 新骨架的插入目标：第一个行数有余量（<460）的 S5 批次文件 */
 function pickTargetFile() {

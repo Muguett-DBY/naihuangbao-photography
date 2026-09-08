@@ -2,6 +2,7 @@ import type { LawGraphic, LawGraphicRef, LawSubjectId } from "../../types/law";
 import { LAW_GRAPHICS_EXTENDED } from "./graphicsExtended";
 import { LAW_GRAPHICS_S5 } from "./graphicsS5";
 import { LAW_GRAPHICS_S5_B } from "./graphicsS5B";
+import { LAW_GRAPHICS_S5_C } from "./graphicsS5C";
 
 /**
  * 知识图解（真动画）—— 全部锚定课本真实内容：
@@ -320,6 +321,7 @@ export const LAW_GRAPHICS: LawGraphic[] = [
   ...LAW_GRAPHICS_EXTENDED,
   ...LAW_GRAPHICS_S5,
   ...LAW_GRAPHICS_S5_B,
+  ...LAW_GRAPHICS_S5_C,
 ];
 
 export const LAW_GRAPHIC_MAP: Record<string, LawGraphic> = Object.fromEntries(
