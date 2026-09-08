@@ -9,7 +9,7 @@ import {
   hasFragmentCard,
   optionsAreDistinct,
 } from "./law-quiz-gates";
-import { buildMultiItem } from "./law-quiz-multi";
+import { buildMultiItem, standaloneLabelsOf, stripWeldedLabel } from "./law-quiz-multi";
 import { confusablesOf, preferConfusables } from "./law-confusion";
 import { mutateNumber, mutateCnNumber, mutateQuotedTerm } from "./law-quiz-mutate";
 
@@ -200,6 +200,8 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     return [...new Set([...preferred, ...shuffle(eligible, randFn)])].slice(0, need);
   };
   const definitions = lesson.steps.filter((step) => isShortDefinition(step.text));
+  // 课时 raw 的独立标签行（排序卡/多选干扰项共用的焊接剥离依据）
+  const labels = standaloneLabelsOf(lesson);
 
   // 1) 定义挖空：＿＿＿，是指…（最多两条）。题面必须以句读收尾——截断残句不配上题。
   //    双形态：约半数课走 fill（无选项、纯回忆作答），其余保留 mcq；每课至多一道 fill
@@ -255,6 +257,8 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
       )
       .map(stripItemPrefix)
       .map(cleanOrderPart)
+      // 与 multi 同款：条目尾部的表标签焊接词按 raw 独立行剥离（"…建议内容"→"…建议"）
+      .map((part) => stripWeldedLabel(part, labels))
       .filter((part) => part.length >= 5 && part.length <= 40 && !/[①-⑨]/.test(part))
       // 截断残条过滤：以连接词/助词收尾的多为表格断行（"…变动的联""…的"）
       .filter((part) => !/[联的与和或及在是对为把被从而并按据向于变受]/.test(part.slice(-1)))
@@ -328,7 +332,7 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
   //      放判断题之后：判断题存量基线（否占比 ≥15%）优先保住，多选吃剩余名额
   const lessonText = lesson.steps.map((step) => step.text).join("") + lesson.raw.join("");
   if (items.length < 4) {
-    const multiItem = buildMultiItem(lesson, contextTerms, lessonText, rand);
+    const multiItem = buildMultiItem(lesson, contextTerms, lessonText, rand, labels);
     if (multiItem && !usedPrompts.has(multiItem.prompt)) {
       usedPrompts.add(multiItem.prompt);
       items.push(multiItem);

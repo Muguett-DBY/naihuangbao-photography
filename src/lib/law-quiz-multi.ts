@@ -34,7 +34,7 @@ export function multiTopicOf(title: string): string | null {
  * 课时 raw 里的"独立标签"集合：整行就是一个 2-3 字词（表格行列标签，如"客体/权限/内容"），
  * 或行首"标签："式。列举条目尾部焊接了这些标签时剥离（双栏表格交错残迹）。
  */
-function standaloneLabelsOf(lesson: LawLesson): Set<string> {
+export function standaloneLabelsOf(lesson: LawLesson): Set<string> {
   const labels = new Set<string>();
   for (const line of lesson.raw ?? []) {
     const text = line.trim();
@@ -54,7 +54,7 @@ const DANGLING_VERB = /(予以|进行|属于|坚持|违反|构成|侵犯|实施|
 
 /** 条目尾部的焊接标签剥离："…个别性调整措施权限"→"…个别性调整措施"（权限是 raw 独立标签行）。
  *  剥完若以悬垂动词收尾（"予以/进行"等待宾语）说明那不是焊接而是正文，回退原样。 */
-function stripWeldedLabel(part: string, labels: Set<string>): string {
+export function stripWeldedLabel(part: string, labels: Set<string>): string {
   if (part.length < 10 || labels.size === 0) return part;
   for (const n of [4, 3, 2]) {
     if (part.length - n < 8) continue;
@@ -76,10 +76,11 @@ export function buildMultiItem(
   contextTerms: string[],
   lessonText: string,
   rand: () => number,
+  labels?: Set<string>,
 ): LawQuizItem | null {
   const topic = multiTopicOf(lesson.title);
   if (!topic) return null;
-  const labels = standaloneLabelsOf(lesson);
+  const labelSet = labels ?? standaloneLabelsOf(lesson);
   for (const step of shuffle(lesson.steps, rand)) {
     if (step.rough || step.kind === "mnemonic") continue;
     if (!ITEM_PREFIX.test(step.text)) continue;
@@ -90,7 +91,7 @@ export function buildMultiItem(
       .filter((part) => ITEM_PREFIX.test(part))
       .map(stripItemPrefix)
       .map((part) => part.replace(/[。；;]\s*$/, ""))
-      .map((part) => stripWeldedLabel(part, labels))
+      .map((part) => stripWeldedLabel(part, labelSet))
       .map(cleanOrderPart)
       .filter((part) => part.length >= 5 && part.length <= 40 && !/[①-⑨]/.test(part))
       .filter((part) => !/[联的与和或及在是对为把被从而并按据向于变受：:]$/.test(part))
