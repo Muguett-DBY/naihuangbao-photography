@@ -18,6 +18,7 @@ import { checkEasterEggPure } from "../../lib/law-egg";
 import { playLawSound } from "../../lib/law-sound";
 import { LAW_SUBJECT_MAP } from "../../data/law/meta";
 import { loadLawFlowStats } from "../../data/law/loader";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { EGG_META, LETTERS } from "./eggContent";
 import type { LawSubjectId } from "../../types/law";
 
@@ -188,6 +189,8 @@ export function LawEggSymbol() {
 export function EggModal({ trigger, onClose }: { trigger: EggTrigger; onClose?: () => void }) {
   const meta = EGG_META[trigger];
   const [seen, setSeen] = useState(() => wasEggSeen(trigger));
+  // 焦点圈禁：Tab 循环在弹窗内、打开时焦点入弹窗、关闭时归还触发元素
+  const overlayRef = useFocusTrap<HTMLDivElement>();
 
   useEffect(() => {
     if (!seen) {
@@ -210,6 +213,7 @@ export function EggModal({ trigger, onClose }: { trigger: EggTrigger; onClose?: 
 
   return (
     <div
+      ref={overlayRef}
       className="law-egg-overlay"
       role="dialog"
       aria-modal="true"
