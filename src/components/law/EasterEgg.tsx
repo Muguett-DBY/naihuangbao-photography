@@ -15,6 +15,7 @@ import {
 } from "../../lib/law-progress";
 import { getPlan } from "../../lib/law-plan";
 import { checkEasterEggPure } from "../../lib/law-egg";
+import { acquireEscapeLayer, isTopEscapeLayer, releaseEscapeLayer } from "../../lib/esc-stack";
 import { playLawSound } from "../../lib/law-sound";
 import { LAW_SUBJECT_MAP } from "../../data/law/meta";
 import { loadLawFlowStats } from "../../data/law/loader";
@@ -204,14 +205,19 @@ export function EggModal({ trigger, onClose }: { trigger: EggTrigger; onClose?: 
 
   // Esc 关闭 + 点遮罩关闭：弹窗不能只能用鼠标关（可达性）
   useEffect(() => {
+    const layer = acquireEscapeLayer();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      // 多浮层叠加时一次 Esc 只关最顶层（图鉴开着时时段信弹出）
+      if (event.key === "Escape" && isTopEscapeLayer(layer)) {
         markEggSeen(trigger);
         onClose?.();
       }
     };
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      releaseEscapeLayer(layer);
+    };
   }, [trigger, onClose]);
 
   return (

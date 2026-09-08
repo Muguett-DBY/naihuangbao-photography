@@ -4,6 +4,7 @@ import { isLawSoundEnabled, setLawSoundEnabled } from "../../lib/law-sound";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { EggModal } from "./EasterEgg";
 import { EGG_META, EGG_ORDER } from "./eggContent";
+import { acquireEscapeLayer, isTopEscapeLayer, releaseEscapeLayer } from "../../lib/esc-stack";
 
 /** 解锁时间展示（旧数据可能没有 unlockedAt，退回首次查看时间） */
 function formatUnlockDate(trigger: EggTrigger): string | null {
@@ -34,11 +35,15 @@ export function EggGallery({ onClose }: { onClose: () => void }) {
   }, []);
 
   useEffect(() => {
+    const layer = acquireEscapeLayer();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !replay) onClose();
+      if (event.key === "Escape" && !replay && isTopEscapeLayer(layer)) onClose();
     };
     window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      releaseEscapeLayer(layer);
+    };
   }, [onClose, replay]);
 
   if (replay) {

@@ -11,6 +11,9 @@ export interface LawLessonProgress {
   stepsDone: Record<string, boolean>;
   quizBest: number;
   quizTotal: number;
+  /** 最近一次自测成绩（自适应复习的"近期"信号） */
+  quizLast?: number;
+  quizLastTotal?: number;
   /** 错题（自测答错的次数） */
   wrongCount: number;
   /** 最近一次进入学习的时间 */
@@ -128,6 +131,8 @@ export function recordQuiz(
   let graduated = false;
   if (!opts.skipped) {
     entry.quizBest = Math.max(entry.quizBest ?? 0, correct);
+    entry.quizLast = correct;
+    entry.quizLastTotal = total;
     entry.quizTotal = total;
   }
   // 错因标签：每次作答的错题明细按题型/陷阱聚合计数（及格与否都记——"错在哪"是复习输入）

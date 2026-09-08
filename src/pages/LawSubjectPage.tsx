@@ -113,16 +113,6 @@ export function LawSubjectPage() {
     );
   }
 
-  if (!book) {
-    return (
-      <div className="law-academy">
-        <div className="law-loading" aria-live="polite">
-          <LawMascot mood="think" size={64} />
-          <p>正在把《{subject.fullName}》装进书包……</p>
-        </div>
-      </div>
-    );
-  }
 
   const style = {
     "--law-accent": subject.accent,
@@ -135,13 +125,13 @@ export function LawSubjectPage() {
   const resumeCandidates = [getRecentUnfinishedLesson(), getLastLessonId()].filter(
     (id): id is string => !!id,
   );
-  const lastRef = resumeCandidates
-    .map((id) => findLessonInBook(book, id))
-    .find((ref) => ref !== null) ?? null;
-  const dueCount = [...dueIds].filter((id) => findLessonInBook(book, id)).length;
+  const lastRef = book
+    ? resumeCandidates.map((id) => findLessonInBook(book, id)).find((ref) => ref !== null) ?? null
+    : null;
+  const dueCount = book ? [...dueIds].filter((id) => findLessonInBook(book, id)).length : 0;
 
   // 附录章（考点索引）不进章节目录，内容折叠保留
-  const appendixLines = book.chapters
+  const appendixLines = (book?.chapters ?? [])
     .filter((chapter) => chapter.appendix)
     .flatMap((chapter) =>
       chapter.lessons
@@ -157,7 +147,7 @@ export function LawSubjectPage() {
           <span className="law-subject__emoji">{subject.emoji}</span>
           <div>
             <h1>{subject.name}</h1>
-            <p>{subject.fullName} · {book.lessonCount} 个知识点</p>
+            <p>{subject.fullName} · {book ? book.lessonCount : '…'} 个知识点</p>
           </div>
         </div>
         <div className="law-subject__goal" aria-label="今日目标">
@@ -172,12 +162,21 @@ export function LawSubjectPage() {
         </div>
       </header>
 
-      <LawSearch
-        book={book}
-        onPick={(lessonId) => navigate(`/law/learn/${lessonId}`)}
-      />
+      {!book ? (
+        <div className="law-loading" aria-live="polite">
+          <LawMascot mood="think" size={56} />
+          <p>正在把《{subject.fullName}》装进书包……</p>
+        </div>
+      ) : null}
 
-      {lastRef ? (
+      {book ? (
+        <LawSearch
+          book={book}
+          onPick={(lessonId) => navigate(`/law/learn/${lessonId}`)}
+        />
+      ) : null}
+
+      {book && lastRef ? (
         <section className="law-subject__resume">
           <PrefetchLink to={`/law/learn/${lastRef.lesson.id}`} className="law-subject__resume-card">
             <span className="law-subject__resume-icon">⏱️</span>
@@ -190,7 +189,7 @@ export function LawSubjectPage() {
         </section>
       ) : null}
 
-      {wrongIds.size > 0 ? (
+      {book && wrongIds.size > 0 ? (
         <section className="law-subject__wrong">
           <header>
             <h2>📕 我的错题本（{wrongIds.size}）</h2>
@@ -229,7 +228,7 @@ export function LawSubjectPage() {
         </section>
       ) : null}
 
-      {graphics.length > 0 ? (
+      {book && graphics.length > 0 ? (
         <section className="law-subject__graphics" aria-label={`${subject.name}图解课堂`}>
           <header className="law-graphics-head">
             <h2>📐 图解课堂 · 先看动画懂概念</h2>
@@ -287,7 +286,7 @@ export function LawSubjectPage() {
 
       {view === "path" && book ? (
         <LessonPathMap book={book} progress={progress} graphicIds={graphicIds} />
-      ) : (
+      ) : book ? (
         <div className="law-subject__chapters">
           {[...book.chapters]
             .filter((chapter) => !chapter.appendix)
@@ -307,7 +306,7 @@ export function LawSubjectPage() {
               />
             ))}
         </div>
-      )}
+      ) : null}
 
       {appendixLines.length > 0 ? (
         <section className="law-subject__leftover">
@@ -319,7 +318,7 @@ export function LawSubjectPage() {
         </section>
       ) : null}
 
-      {book.leftover.length > 0 ? (
+      {book && book.leftover.length > 0 ? (
         <section className="law-subject__leftover">
           <h2>📎 附录 · 未归入章节的原文</h2>
           <details>

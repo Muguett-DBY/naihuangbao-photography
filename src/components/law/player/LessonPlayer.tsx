@@ -304,7 +304,7 @@ export function LessonPlayer({
                       setNavOpen(false);
                     }}
                   >
-                    {String(index + 1).padStart(2, "0")} · {kindLabel(step.kind)} · {step.text.slice(0, 18)}…
+                    {String(index + 1).padStart(2, "0")} · {kindLabel(step.kind)} · {step.text ? step.text.slice(0, 18) : "全文加载中…"}
                   </button>
                 ))}
               </div>

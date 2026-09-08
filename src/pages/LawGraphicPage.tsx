@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import type { LawBook, LawSubjectId } from "../types/law";
+import type { LawSubjectId } from "../types/law";
 import { LAW_GRAPHIC_MAP } from "../data/law/graphics";
-import { loadLawBook } from "../data/law/loader";
 import { GraphicStage } from "../components/law/diagrams/GraphicStage";
 import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, useLawImmersive } from "../components/law/EasterEgg";
@@ -16,7 +15,6 @@ export function LawGraphicPage() {
   useLawImmersive();
   const { lessonId } = useParams();
   const navigate = useNavigate();
-  const [book, setBook] = useState<LawBook | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const graphic = useMemo(
@@ -31,21 +29,6 @@ export function LawGraphicPage() {
       ? id
       : null;
   }, [lessonId]);
-
-  useEffect(() => {
-    if (!subjectId) return;
-    let cancelled = false;
-    loadLawBook(subjectId)
-      .then((loaded) => {
-        if (!cancelled) setBook(loaded);
-      })
-      .catch((cause: unknown) => {
-        if (!cancelled) setError(cause instanceof Error ? cause.message : String(cause));
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [subjectId]);
 
   if (error) {
     return (
@@ -81,12 +64,7 @@ export function LawGraphicPage() {
         graphic={graphic}
         subject={subjectId}
         onExit={() => navigate(`/law/${subjectId}`)}
-        onEnterLesson={
-          book
-            ? () => navigate(`/law/learn/${lessonId}`)
-            : null
-        }
-        lessonLoading={!book}
+        onEnterLesson={() => navigate(`/law/learn/${lessonId}`)}
       />
       <LawEggListener />
     </div>
