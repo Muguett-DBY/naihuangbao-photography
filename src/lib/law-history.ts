@@ -63,7 +63,8 @@ function bump(field: "s" | "l", now: number): void {
     day = { d: key, s: 0, l: 0, t: now };
     days.push(day);
   }
-  day[field] += 1;
+  // 存量条目若缺字段（历史脏数据），先归零再累加，防 undefined+1=NaN 写回
+  day[field] = (typeof day[field] === "number" && Number.isFinite(day[field]) ? day[field] : 0) + 1;
   day.t = now;
   writeAll(days);
 }

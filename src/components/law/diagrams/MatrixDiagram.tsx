@@ -15,7 +15,7 @@ export function MatrixDiagram({ graphic, active }: { graphic: LawGraphic; active
   const pop = reducedMotion ? { duration: 0 } : { duration: 0.32 };
 
   return (
-    <div className="dia-matrix" aria-live="polite">
+    <div className="dia-matrix">
       <div className="dia-matrix__grid">
         <div
           className="dia-matrix__row is-head"

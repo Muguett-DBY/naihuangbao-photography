@@ -9,7 +9,7 @@ export function StairsDiagram({ graphic, active }: { graphic: LawGraphic; active
   const activeStep = Math.min(active, steps.length - 1);
 
   return (
-    <div className="dia-stairs" aria-live="polite">
+    <div className="dia-stairs">
       <div className="dia-stairs__canvas">
         {steps.map((step, index) => {
           // 顶部留 4% 起步、每级均分 88% 高度：末级台阶连同两行 detail 不再越过舞台底边

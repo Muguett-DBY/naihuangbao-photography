@@ -1,5 +1,12 @@
 // T5 干扰项质量库构建：聚合五本教材"同章高频混淆对"。
 // 口径：章内术语集合（step.terms + 正文引号术语 + 定义句首概念）两两配对，
+// 混淆对黑名单：同物异名（换词后仍为真）与 OCR 变体 token（错字词进题面即病句）
+// 审查记录：worklog-S1 / 夜间复核（唐律疏议↔永徽律疏、上位溉念↔上位概念 等）
+const EXCLUDED_PAIRS = [
+  ["唐律疏议", "永徽律疏"],
+];
+const EXCLUDED_TOKENS = ["溉念", "软定", "事佳律", "相告盲", "相告言", "烧埋银钱主"];
+
 // 按字符二元组 Dice 相似度排序（"民事权利能力"vs"民事行为能力"共享"民事/能力"），
 // 每词保留 top-4（≥0.25），输出 src/lib/law-confusion-data.ts（运行时干扰项优选依据）。
 // 重新生成：npm run law:distractors（数据 JSON 变更后跑一次）。
@@ -82,6 +89,10 @@ for (const subject of SUBJECTS) {
         const [a, b] = list[i] < list[j] ? [list[i], list[j]] : [list[j], list[i]];
         // 伙伴必须是运行时池可达词（step.terms），否则对子再像也选不中
         if (!stepTermUniverse.has(a) && !stepTermUniverse.has(b)) continue;
+        // 黑名单：同一部法典/事物的两个名称（换词后陈述仍为真，判断题失去判别力）
+        // 与 OCR 变体对（错字词 vs 正词，选进题面即病句）——见 worklog-S1 审查记录
+        if (EXCLUDED_PAIRS.some(([x, y]) => (a.includes(x) || a.includes(y)) && (b.includes(x) || b.includes(y)))) continue;
+        if (EXCLUDED_TOKENS.some((t) => a.includes(t) || b.includes(t))) continue;
         const score = dice(a, b);
         if (score < 0.25) continue;
         const key = `${a}\u0000${b}`;

@@ -16,7 +16,7 @@ export function AssembleDiagram({ graphic, active }: { graphic: LawGraphic; acti
   const visibleCount = Math.min(active + 1, parts.length + 1);
 
   return (
-    <div className="dia-assemble" aria-live="polite">
+    <div className="dia-assemble">
       <div className="dia-assemble__canvas">
         {/* 四角零件：外层定位，内层动画 */}
         {parts.map((part, index) => {

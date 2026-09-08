@@ -10,30 +10,21 @@ import { StepStage } from "./StepStage";
 import { QuizRunner } from "./QuizRunner";
 import { useLessonHydration } from "./useLessonHydration";
 import { LawMascot, type LawMood } from "../LawMascot";
-import { KIND_PENDING_HINT, cleanBreadcrumb, kindLabel } from "./lessonHelpers";
+import {
+  AUTO_SPEEDS,
+  AUTO_SPEED_KEY,
+  KIND_PENDING_HINT,
+  cleanBreadcrumb,
+  kindLabel,
+  readAutoSpeed,
+  type AutoSpeedId,
+} from "./lessonHelpers";
 import { ResultPhase, SummaryPhase } from "./LessonPhases";
 import "../../../styles/law-visual.css";
 
 type Phase = "steps" | "summary" | "quiz" | "result";
 
 /** 自动串联速度三档（持久化）：每步完成后停留多久进下一步 */
-const AUTO_SPEEDS = [
-  { id: "slow", label: "🐢 慢", delay: 2600 },
-  { id: "mid", label: "▶ 中", delay: 1400 },
-  { id: "fast", label: "🐇 快", delay: 800 },
-] as const;
-type AutoSpeedId = (typeof AUTO_SPEEDS)[number]["id"];
-const AUTO_SPEED_KEY = "nhb-law-autoplay-speed";
-
-function readAutoSpeed(): AutoSpeedId {
-  try {
-    const saved = localStorage.getItem(AUTO_SPEED_KEY);
-    return AUTO_SPEEDS.some((s) => s.id === saved) ? (saved as AutoSpeedId) : "mid";
-  } catch {
-    return "mid";
-  }
-}
-
 export function LessonPlayer({
   lesson,
   onExit,
@@ -85,6 +76,7 @@ export function LessonPlayer({
   const [direction, setDirection] = useState(1);
   const navMenuRef = useRef<HTMLDivElement>(null);
   const navBtnRef = useRef<HTMLButtonElement>(null);
+  const navOpenedRef = useRef(false);
   const [quizAttempt, setQuizAttempt] = useState(0);
   const reducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -145,8 +137,10 @@ export function LessonPlayer({
     item?.scrollIntoView({ block: "nearest" });
   }, [navOpen, navHighlight]);
 
+  // 归还焦点仅在"浮层曾开→关闭"迁移时：挂载时也跑会把焦点从页首抢到段落导航按钮
   useEffect(() => {
-    if (!navOpen) navBtnRef.current?.focus();
+    if (!navOpen && navOpenedRef.current) navBtnRef.current?.focus();
+    navOpenedRef.current = navOpen;
   }, [navOpen]);
 
   const goNextRef = useRef<() => void>(() => {});

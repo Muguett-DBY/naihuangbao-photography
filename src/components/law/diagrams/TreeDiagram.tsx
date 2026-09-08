@@ -29,7 +29,7 @@ export function TreeDiagram({ graphic, active }: { graphic: LawGraphic; active: 
   const revealedLeaves = Math.max(0, Math.floor(unitsRevealed) - branches.length);
 
   return (
-    <div className="dia-tree" aria-live="polite">
+    <div className="dia-tree">
       {/* 根：外层定位（居中），内层动画 */}
       <div className="dia-tree__root-slot">
         <motion.div

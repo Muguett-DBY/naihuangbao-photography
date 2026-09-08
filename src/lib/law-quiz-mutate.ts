@@ -51,6 +51,8 @@ const ROYAL_TITLE = /(文帝|武帝|太宗|高宗|太祖|高祖|玄宗|明皇|�
 
 export function looksLikePerson(name: string): boolean {
   if (ROYAL_TITLE.test(name)) return true;
+  // 4 字以上几乎都是制度/文献名（宋刑统、管制刑、马工程），不做单字姓联想
+  if (name.length > 3) return false;
   return name.length >= 2 && name.length <= 3 && SURNAMES.includes(name[0]);
 }
 

@@ -19,7 +19,7 @@ export function FlowDiagram({ graphic, active }: { graphic: LawGraphic; active: 
   };
 
   return (
-    <div className="dia-flow" aria-live="polite">
+    <div className="dia-flow">
       <svg viewBox="0 0 300 260" className="dia-flow__svg">
         {nodes.map((node, index) => {
           const from = index === 0 ? pointAt(0) : pointAt(index - 1);

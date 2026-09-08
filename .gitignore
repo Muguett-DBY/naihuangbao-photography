@@ -25,3 +25,4 @@ bun.lock
 debug.log
 .agent/
 /release-*.png
+.zcode/

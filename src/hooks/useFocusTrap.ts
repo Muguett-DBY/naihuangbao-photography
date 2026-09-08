@@ -30,6 +30,9 @@ function getFocusable(container: HTMLElement): HTMLElement[] {
     if (node.getAttribute("aria-hidden") === "true") return false;
     const style = window.getComputedStyle(node);
     if (style.visibility === "hidden" || style.display === "none") return false;
+    // 祖先 display:none 时节点自身 computed display 仍可能是设定值——用 checkVisibility/offsetParent 兜底
+    if (typeof node.checkVisibility === "function" && !node.checkVisibility()) return false;
+    if (node.offsetParent === null && style.position !== "fixed") return false;
     return true;
   });
 }
