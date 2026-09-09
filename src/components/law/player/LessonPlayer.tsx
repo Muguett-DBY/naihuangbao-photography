@@ -20,6 +20,7 @@ import {
   type AutoSpeedId,
 } from "./lessonHelpers";
 import { ResultPhase, SummaryPhase } from "./LessonPhases";
+import { NotesPanel } from "../NotesPanel";
 import "../../../styles/law-visual.css";
 
 type Phase = "steps" | "summary" | "quiz" | "result";
@@ -441,20 +442,23 @@ export function LessonPlayer({
       ) : null}
 
       {phase === "summary" ? (
-        <SummaryPhase
-          lesson={activeLesson}
-          totalSteps={totalSteps}
-          doneSteps={doneSteps}
-          quizCount={quiz.length}
-          onStartQuiz={startQuiz}
-          onSkipQuiz={() => {
-            // 跳过自测 ≠ 复习通过：不动错题本的复习阶梯（曾把跳过记成"复习通过"）
-            recordQuiz(lesson.id, 1, 1, totalSteps, { skipped: true });
-            setQuizScore({ correct: 1, total: 1 });
-            setMood("cheer");
-            setPhase("result");
-          }}
-        />
+        <>
+          <SummaryPhase
+            lesson={activeLesson}
+            totalSteps={totalSteps}
+            doneSteps={doneSteps}
+            quizCount={quiz.length}
+            onStartQuiz={startQuiz}
+            onSkipQuiz={() => {
+              // 跳过自测 ≠ 复习通过：不动错题本的复习阶梯（曾把跳过记成"复习通过"）
+              recordQuiz(lesson.id, 1, 1, totalSteps, { skipped: true });
+              setQuizScore({ correct: 1, total: 1 });
+              setMood("cheer");
+              setPhase("result");
+            }}
+          />
+          <NotesPanel lessonId={lesson.id} stepId={steps[stepIndex]?.id} stepHint={`第 ${stepIndex + 1} 步`} />
+        </>
       ) : null}
 
       {phase === "quiz" ? (

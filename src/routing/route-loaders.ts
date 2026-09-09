@@ -45,6 +45,7 @@ export const routeLoaders = {
   "/compare": () => import("../pages/ComparePage").then((module) => asDefault(module.ComparePage)),
   "/law": () => import("../pages/LawAcademyPage").then((module) => asDefault(module.LawAcademyPage)),
   "/law/wrongbook": () => import("../pages/LawWrongbookPage").then((module) => asDefault(module.LawWrongbookPage)),
+  "/law/notes": () => import("../pages/LawNotesPage").then((module) => asDefault(module.LawNotesPage)),
   "/law/stats": () => import("../pages/LawStatsPage").then((module) => asDefault(module.LawStatsPage)),
   "/law/exam": () => import("../pages/LawExamPage").then((module) => asDefault(module.LawExamPage)),
   "/law/provisions": () => import("../pages/LawProvisionsPage").then((module) => asDefault(module.LawProvisionsPage)),
