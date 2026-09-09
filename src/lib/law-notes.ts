@@ -5,6 +5,9 @@ import { safeLocalStorage } from "./browser-storage";
 
 const KEY = "nhb-law-notes-v1";
 
+/** 存储键导出：跨标签页 storage 事件监听要按 key 过滤 */
+export const LAW_NOTES_STORAGE_KEY = KEY;
+
 export interface LawNote {
   id: string;
   /** 关联的课时步骤（可选：步骤完成区随手记的笔记自动带上） */
