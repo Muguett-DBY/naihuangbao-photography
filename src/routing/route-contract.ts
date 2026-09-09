@@ -43,6 +43,7 @@ export const routeContract = [
   { path: "/compare", scope: "practice" },
   { path: "/law", scope: "primary" },
   { path: "/law/wrongbook", scope: "primary" },
+  { path: "/law/notes", scope: "primary" },
   { path: "/law/stats", scope: "primary" },
   { path: "/law/exam", scope: "primary" },
   { path: "/law/provisions", scope: "primary" },

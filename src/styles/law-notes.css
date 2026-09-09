@@ -1,0 +1,505 @@
+/* ────────────────────────────────────────────────────────────
+   学习笔记与标注系统 · Law Notes (P3)
+   课时内面板 + 总览页共用。颜色全部走全局主题变量（base.css
+   在 data-theme="dark" / prefers-color-scheme 下整体翻转），
+   亮暗双主题无需在这里重复声明。
+   ──────────────────────────────────────────────────────────── */
+
+.law-notes {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  border-radius: 22px;
+  background: var(--paper);
+  border: 1.5px solid var(--hairline);
+  box-shadow: var(--warm-shadow);
+  padding: clamp(16px, 4vw, 28px);
+  font-family: var(--font-body);
+  text-align: left;
+}
+
+.law-notes__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.law-notes__head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+
+.law-notes__count {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.law-notes__saved {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--moss-dark);
+}
+
+.law-notes__empty {
+  margin: 8px 0 14px;
+  padding: 18px 14px;
+  border: 1.5px dashed var(--hairline);
+  border-radius: 14px;
+  color: var(--text-muted);
+  font-size: 14.5px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+/* ── 笔记列表 ── */
+.law-notes__list {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.law-notes__item {
+  border: 1.5px solid var(--hairline);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--newsprint) 60%, var(--paper));
+}
+
+.law-notes__item.is-editing {
+  border-color: color-mix(in srgb, var(--law-accent, var(--coral)) 45%, var(--hairline));
+}
+
+.law-notes__item-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.law-notes__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.law-notes__step-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--law-accent, var(--coral)) 14%, var(--paper));
+  color: var(--text-muted);
+}
+
+.law-notes__actions {
+  display: inline-flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.law-notes__confirm {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  color: var(--coral-dark);
+  font-weight: 700;
+}
+
+/* ── 按钮 ── */
+.law-notes__btn {
+  border: 1.5px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.15s;
+}
+
+.law-notes__btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.law-notes__btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.law-notes__btn.is-primary {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--law-accent, var(--coral)) 72%, #2a2118);
+  color: #fff;
+  padding: 6px 16px;
+}
+
+.law-notes__btn.is-danger {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--coral-dark) 82%, #2a2118);
+  color: #fff;
+}
+
+.law-notes__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.law-notes :focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--law-accent, var(--coral)) 55%, #2a2118);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ── 输入区 ── */
+.law-notes__composer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.law-notes__composer-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.law-notes__textarea {
+  width: 100%;
+  min-height: 84px;
+  resize: vertical;
+  border: 1.5px solid var(--hairline);
+  border-radius: 14px;
+  background: var(--newsprint);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14.5px;
+  line-height: 1.7;
+  padding: 10px 12px;
+  box-sizing: border-box;
+}
+
+.law-notes__textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+.law-notes__composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.law-notes__limit {
+  font-size: 12.5px;
+  color: var(--coral-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 移动端 390px：收紧内边距，操作按钮换行不挤压 ── */
+@media (max-width: 480px) {
+  .law-notes {
+    border-radius: 16px;
+  }
+
+  .law-notes__actions,
+  .law-notes__confirm {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .law-notes__meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════
+   笔记总览页（/law/notes）
+   ════════════════════════════════════════════════════════════ */
+
+.law-notes-page {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.law-notes-page__head {
+  margin-bottom: 18px;
+}
+
+.law-notes-page__back {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--law-accent-ink, var(--coral-dark));
+  text-decoration: none;
+}
+
+.law-notes-page__back:hover {
+  text-decoration: underline;
+}
+
+.law-notes-page__head h1 {
+  margin: 6px 0;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 34px);
+  color: var(--ink);
+}
+
+.law-notes-page__lead {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.law-notes-page__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.law-notes-page__search {
+  flex: 1 1 220px;
+  min-width: 0;
+  border: 1.5px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  padding: 9px 16px;
+}
+
+.law-notes-page__search::placeholder {
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+.law-notes-page__tool {
+  border: 1.5px solid color-mix(in srgb, var(--law-accent, var(--coral)) 30%, transparent);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--law-accent-ink, var(--coral-dark));
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.15s;
+}
+
+.law-notes-page__tool:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.law-notes-page__tool:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 视觉隐藏的原生文件输入（导入按钮代点，键盘可达：label/aria 关联） */
+.law-notes-page__file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.law-notes-page__feedback {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--moss-dark);
+}
+
+.law-notes-page__error {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--coral-dark);
+}
+
+.law-notes-page__loading {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.law-notes-page__result-info {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ── 学科/课时分组 ── */
+.law-notes-page__subject {
+  margin-bottom: 26px;
+}
+
+.law-notes-page__subject h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--ink);
+}
+
+.law-notes-page__subject h2 span {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.law-notes-page__lesson {
+  margin-bottom: 14px;
+  border: 1.5px solid var(--hairline);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: var(--warm-shadow);
+  padding: 14px 16px;
+}
+
+.law-notes-page__lesson-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.law-notes-page__lesson-head b {
+  font-size: 14.5px;
+  color: var(--ink);
+}
+
+.law-notes-page__lesson-head small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.law-notes-page__lesson ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.law-notes-page__note {
+  display: block;
+  border: 1.5px solid var(--hairline);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--newsprint) 60%, var(--paper));
+  padding: 10px 12px;
+  text-decoration: none;
+  transition: transform 0.15s, border-color 0.15s;
+}
+
+.law-notes-page__note:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--law-accent, var(--coral)) 40%, var(--hairline));
+}
+
+.law-notes-page__note p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.law-notes-page__note mark {
+  background: color-mix(in srgb, var(--sun-note) 65%, transparent);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+.law-notes-page__note footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.law-notes-page__go {
+  margin-left: auto;
+  font-weight: 800;
+  color: var(--law-accent-ink, var(--coral-dark));
+}
+
+/* ── 空态 / 无结果 ── */
+.law-notes-page__empty {
+  text-align: center;
+  border: 1.5px dashed var(--hairline);
+  border-radius: 22px;
+  background: var(--paper);
+  padding: clamp(24px, 5vw, 48px) 20px;
+}
+
+.law-notes-page__empty h2 {
+  margin: 10px 0 6px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--ink);
+}
+
+.law-notes-page__empty p {
+  max-width: 460px;
+  margin: 0 auto 16px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+
+.law-notes-page__empty-cta {
+  display: inline-block;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--law-accent, var(--coral)) 72%, #2a2118);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  padding: 12px 24px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .law-notes-page__toolbar .law-notes-page__tool {
+    flex: 1 1 auto;
+  }
+
+  .law-notes-page__go {
+    margin-left: 0;
+  }
+}
