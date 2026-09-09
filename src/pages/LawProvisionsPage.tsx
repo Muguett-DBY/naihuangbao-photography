@@ -81,14 +81,16 @@ export function LawProvisionsPage() {
   const lawParam = searchParams.get("law");
   const articleParam = searchParams.get("article");
 
-  // 深链定位（T3 的原文法条跳过来）：预填搜索词 + 展开目标条 + 滚动到位
+  // 深链定位（T3 的原文法条跳过来）：预填搜索词过滤到该法；
+  // 带条号时再展开目标条（含同条号各款）并滚动到位——仅法名深链只过滤不展开
   useEffect(() => {
     if (state.phase !== "ready" || !lawParam) return;
     setQuery(articleParam ? `${lawParam} ${articleParam}` : lawParam);
+    if (!articleParam) return;
     setExpanded((prev) => {
       const next = new Set(prev);
       for (const entry of state.index.provisions) {
-        if (entry.law === lawParam && (!articleParam || entry.article === articleParam)) next.add(rowKey(entry));
+        if (entry.law === lawParam && entry.article === articleParam) next.add(rowKey(entry));
       }
       return next;
     });
@@ -224,7 +226,7 @@ export function LawProvisionsPage() {
                     {group.provisions.map((entry) => {
                       const key = rowKey(entry);
                       const isTarget =
-                        lawParam === entry.law && (!articleParam || entry.article === articleParam);
+                        articleParam !== null && lawParam === entry.law && entry.article === articleParam;
                       const isOpen = expanded.has(key);
                       return (
                         <li
