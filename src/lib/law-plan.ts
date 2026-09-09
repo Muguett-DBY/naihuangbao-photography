@@ -35,7 +35,7 @@ function daysLeft(): number {
 }
 
 /** 已学步数（所有课已完成的步骤之和） */
-export function doneSteps(): number {
+function doneSteps(): number {
   const raw = safeLocalStorage.getItem("nhb-law-academy-v1");
   if (!raw) return 0;
   try {
@@ -54,7 +54,7 @@ export function doneSteps(): number {
 const TIER_KEY = "nhb-law-plan-tier";
 const SNAPSHOT_KEY = "nhb-law-plan-snapshot";
 
-export function getPlanTier(): PlanTier {
+function getPlanTier(): PlanTier {
   const tier = safeLocalStorage.getItem(TIER_KEY);
   return tier === "relaxed" || tier === "intense" ? tier : "standard";
 }

@@ -19,7 +19,7 @@ function formatUnlockDate(trigger: EggTrigger): string | null {
  * 彩蛋图鉴收集册：全部彩蛋的网格（已解锁=彩色+解锁时间+信件预览，可点开重读；
  * 未解锁=剪影+解锁暗示）。入口在学习中心页脚（LawEggGalleryButton）。
  */
-export function EggGallery({ onClose }: { onClose: () => void }) {
+function EggGallery({ onClose }: { onClose: () => void }) {
   const [replay, setReplay] = useState<EggTrigger | null>(null);
   // 图鉴打开期间新解锁的彩蛋也要实时出现在网格（订阅解锁事件重读状态）
   const [state, setState] = useState(() => getEggState());

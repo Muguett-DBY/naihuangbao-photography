@@ -334,5 +334,4 @@ export function graphicsOfSubject(subject: LawSubjectId): LawGraphic[] {
   return LAW_GRAPHICS.filter((g) => g.subject === subject);
 }
 
-export { LAW_GRAPHICS as lawGraphics };
 export type { LawGraphicRef };

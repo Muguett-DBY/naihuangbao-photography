@@ -1,55 +1,18 @@
-import type { LawBook, LawChapter, LawLesson, LawStep, LawSubjectId, LawStepKind } from "../../types/law";
+import type { LawBook, LawChapter, LawLesson, LawStep, LawSubjectId } from "../../types/law";
 import { isCleanTerm, isShellLesson } from "../../types/law";
 import type { LawProgressMap } from "../../lib/law-progress";
+import { decodeMeta, type LawMeta, type LawMetaChapter, type LawMetaLesson, type LawMetaWire } from "./metaWire";
 
 /**
  * 法学数据加载器（分块架构）：
  * - 内容由 npm run law:chunks 切成「轻元数据 meta + 正文分块 part」两层，
  *   Vite 用 ?url glob 把它们发成哈希静态资源，这里只持有文件名映射（KB 级）。
+ * - meta 是 v2 紧凑编码（P5）：课/章 id 去前缀、课表元组化、词条 digest 字典化，
+ *   loadMeta 解码回运行时结构——下游全部函数与解码前语义逐字节一致（等价性测试锁定）。
  * - 进一节课只拉 meta + 本课所在分块（此前是整本书 1.5MB+）。
  * - loadLawBook 仍返回完整 LawBook（目录/搜索/图解页依赖），内部由分块无损装配，
  *   装配等价性由 loader-chunks.test.ts 全量锁定。
  */
-
-interface LawMetaLesson {
-  i: string;
-  t: string;
-  s: number;
-  k: LawStepKind;
-  /** 1 = 学习流课时（与 isFlowLesson 等价） */
-  f: 0 | 1;
-  /** 课内分层（S6·T1）：前 lt 步全文在 {id}-light.json，余下步骤在 {id}-tail.json；未分层课无此字段 */
-  lt?: number;
-}
-
-interface LawMetaChapter {
-  id: string;
-  t: string;
-  st?: string;
-  lv: LawChapter["level"];
-  /** 1 = 附录章 */
-  ax?: 1;
-  ls: LawMetaLesson[];
-  /** 含本章内容的 part 文件（装配顺序） */
-  parts: string[];
-  /** 与 parts 对齐：每个 part 覆盖的章内课数 */
-  spans: number[];
-}
-
-interface LawMeta {
-  id: LawSubjectId;
-  name: string;
-  fullName: string;
-  emoji: string;
-  accent: string;
-  accentSoft: string;
-  lessonCount: number;
-  leftover: string[];
-  parts: string[];
-  chapters: LawMetaChapter[];
-  /** digests[chapterId] = 每课的清洗后词条（collectSiblingTerms 的构建期摘要） */
-  digests: Record<string, string[][]>;
-}
 
 interface LawPart {
   f: string;
@@ -95,7 +58,9 @@ function fetchJson<T>(url: string): Promise<T> {
 }
 
 function loadMeta(subject: LawSubjectId): Promise<LawMeta> {
-  return fetchJson<LawMeta>(chunkUrl(subject, `${subject}-meta.json`));
+  return fetchJson<LawMetaWire>(chunkUrl(subject, `${subject}-meta.json`)).then((wire) =>
+    decodeMeta(subject, wire),
+  );
 }
 
 /** 分块 → 完整书（保序装配；与原整本 JSON 结构级等价，测试锁定） */
@@ -417,7 +382,11 @@ export async function loadLawLessonView(
   return view;
 }
 
-/** 预取一节课的正文分块（hover/focus 时调用；静默失败，不打断浏览） */
+/**
+ * 预取一节课的正文分块（hover/focus 时调用；静默失败，不打断浏览）。
+ * 模块内由全局链接预取（installLawLinkPrefetch）消费；@public 保持对外签名稳定（P5 铁律）。
+ * @public
+ */
 export function prefetchLawLesson(subject: LawSubjectId, lessonId: string): void {
   void (async () => {
     const meta = await loadMeta(subject);

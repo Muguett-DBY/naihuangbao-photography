@@ -64,6 +64,8 @@
     "assets:concept": "node scripts/process-concept-assets.mjs",
     "deps:audit": "npm audit --audit-level=moderate && npm install-scripts ls",
     "law:scan": "node scripts/scan-law-content.mjs",
+    "law:bundle-trend": "node scripts/law-bundle-trend.mjs",
+    "law:nightly": "node scripts/law-nightly.mjs",
     "law:debtlint": "node scripts/law-debt-lint.mjs",
     "law:contrast": "node scripts/law-contrast-check.mjs",
     "law:release-report": "node scripts/law-release-report.mjs"

@@ -1,10 +1,8 @@
 import type { LawBook, LawChapter, LawLesson } from "../../../types/law";
 import { isShellLesson } from "../../../types/law";
-import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
-import type { LawProgressMap } from "../../../lib/law-progress";
 
 /** 清洗运行页眉残留符号与"第X部分/第X章"前缀，还原章节真实名称 */
-export function cleanHeading(text: string): string {
+function cleanHeading(text: string): string {
   return text
     .replace(/[○◎●◆・•·✦☆]/g, "")
     .replace(/^\s*第[一二三四五六七八九十百零0-9]+(编|部分|章|篇|卷)\s*/, "")
@@ -91,9 +89,6 @@ export function lessonKindLabel(lesson: LawLesson): string {
   return map[kind] ?? "细读";
 }
 
-export function isGraphicLesson(lesson: LawLesson): boolean {
-  return LAW_GRAPHIC_MAP[lesson.id] !== undefined;
-}
 
 /** 在书中查找课时 */
 export function findLessonInBook(book: LawBook, lessonId: string): { lesson: LawLesson; chapter: LawChapter } | null {
@@ -104,6 +99,3 @@ export function findLessonInBook(book: LawBook, lessonId: string): { lesson: Law
   return null;
 }
 
-export function progressOf(progress: LawProgressMap, lessonId: string) {
-  return progress[lessonId] ?? null;
-}

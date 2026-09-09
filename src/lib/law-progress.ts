@@ -176,14 +176,6 @@ export function recordQuiz(
   if (wrongBookChanged || graduated || completed) emitProgressEvent();
 }
 
-export function releaseLesson(lessonId: string): void {
-  const store = readStore();
-  const entry = store.lessons[lessonId];
-  if (!entry) return;
-  store.lastLessonId = lessonId;
-  writeStore(store);
-}
-
 export function getLastLessonId(): string | null {
   return readStore().lastLessonId;
 }
@@ -389,11 +381,6 @@ export function getUnlockedEggs(): Partial<Record<EggTrigger, boolean>> {
   return readEggs().unlocked;
 }
 
-export function isLateNight(): boolean {
-  const hour = new Date().getHours();
-  return hour >= 23 || hour < 5;
-}
-
 export function subjectStats(
   counts: Partial<Record<string, number>>,
 ): Record<LawSubjectId, { done: number; total: number; tried: number }> {
@@ -418,7 +405,3 @@ export function subjectStats(
   return stats;
 }
 
-export function isLessonCompleted(lessonId: string, stepCount: number): boolean {
-  const progress = getLessonProgress(lessonId);
-  return progress?.completedAt !== undefined;
-}

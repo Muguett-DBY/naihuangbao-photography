@@ -43,7 +43,7 @@ export interface LessonPath {
 
 const META_TITLE = /^(作者的话|使用说明|序言|前言|后记)$/;
 
-export function isMetaChapter(chapter: Pick<LawChapter, "title" | "semanticTitle">): boolean {
+function isMetaChapter(chapter: Pick<LawChapter, "title" | "semanticTitle">): boolean {
   return [chapter.title, chapter.semanticTitle ?? ""].some((name) => META_TITLE.test(name.trim()));
 }
 
