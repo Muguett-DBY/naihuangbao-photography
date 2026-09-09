@@ -1,0 +1,298 @@
+/* ────────────────────────────────────────────────────────────
+   P4 · 法条检索页（/law/provisions）+ 原文面板法条标引
+   基座令牌（--paper/--ink/--law-accent…）来自 law-academy.css
+   ──────────────────────────────────────────────────────────── */
+
+.law-provisions {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.law-provisions__head h1 {
+  margin: 6px 0 6px;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 34px);
+  color: var(--ink);
+}
+
+.law-provisions__lead {
+  margin: 0 0 20px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.law-provisions__back {
+  display: inline-block;
+  margin-bottom: 10px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--law-accent-ink);
+  text-decoration: none;
+}
+.law-provisions__back:hover {
+  text-decoration: underline;
+}
+
+/* 加载/统计播报 */
+.law-provisions__status {
+  margin: 0 0 16px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: var(--paper);
+  border: 1.5px dashed var(--hairline);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* 统计卡（与 law-stats__kpi 同构，但独立定义——本页不引 law-flow.css） */
+.law-provisions__cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.law-provisions__kpi {
+  padding: 14px 12px;
+  border-radius: 16px;
+  background: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+.law-provisions__kpi b {
+  font-size: 21px;
+  font-family: var(--font-display);
+  color: var(--law-accent-ink);
+}
+.law-provisions__kpi span {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+@media (max-width: 560px) {
+  .law-provisions__cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .law-provisions__kpi b {
+    font-size: 17px;
+  }
+  .law-provisions__kpi span {
+    font-size: 10.5px;
+  }
+}
+
+.law-provisions__search {
+  margin-bottom: 18px;
+}
+
+.law-provisions__count {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* ── 法律分组 ── */
+.law-provisions__group {
+  margin-bottom: 20px;
+  padding: 16px 16px 12px;
+  border-radius: 18px;
+  background: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.law-provisions__group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  color: var(--ink);
+}
+.law-provisions__group-head small {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.law-provisions__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── 条目行 ── */
+.law-provisions__row {
+  border: 1.5px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.18s var(--ease-out, ease-out);
+}
+.law-provisions__row.is-target {
+  border-color: var(--law-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--law-accent) 22%, transparent);
+}
+
+.law-provisions__row-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+}
+.law-provisions__row-btn:hover {
+  background: color-mix(in srgb, var(--law-accent) 7%, transparent);
+}
+
+.law-provisions__article {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--law-accent-ink);
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  white-space: nowrap;
+}
+.law-provisions__article small {
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--law-accent) 12%, var(--paper));
+  color: var(--law-accent-ink);
+}
+.law-provisions__article em {
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.law-provisions__meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.law-provisions__meta b {
+  color: var(--law-accent-ink);
+}
+.law-provisions__chevron {
+  margin-left: 6px;
+  font-size: 10px;
+}
+
+/* 展开的课时列表 */
+.law-provisions__lessons {
+  list-style: none;
+  margin: 0;
+  padding: 4px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed var(--hairline);
+}
+
+.law-provisions__lesson {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: var(--law-accent-soft);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.15s var(--ease-out, ease-out);
+}
+.law-provisions__lesson:hover {
+  transform: translateX(3px);
+  text-decoration: underline;
+}
+.law-provisions__lesson small {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* 空状态 / 失败态 */
+.law-provisions__empty {
+  padding: 40px 20px;
+  border-radius: 18px;
+  background: var(--paper);
+  border: 1.5px dashed var(--hairline);
+  text-align: center;
+}
+.law-provisions__empty h2 {
+  margin: 10px 0 6px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  color: var(--ink);
+}
+.law-provisions__empty p {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+.law-provisions__retry {
+  padding: 10px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--law-accent);
+  color: #fff5ec;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+@media (max-width: 560px) {
+  .law-provisions__row-btn {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .law-provisions__meta {
+    justify-content: flex-start;
+  }
+}
+
+/* ── T3 · 原文对照面板里的法条标引（可点跳法条检索） ── */
+.law-player__rawpanel pre .law-prov-ref {
+  color: var(--law-accent-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.law-player__rawpanel pre .law-prov-ref:hover,
+.law-player__rawpanel pre .law-prov-ref:focus-visible {
+  text-decoration-style: solid;
+  background: color-mix(in srgb, var(--law-accent) 14%, transparent);
+}
