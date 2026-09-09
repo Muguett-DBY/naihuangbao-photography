@@ -139,12 +139,14 @@ async function main() {
   for (const subject of SUBJECTS) {
     const dir = join(CHUNKS_DIR, subject);
     const meta = JSON.parse(await readFile(join(dir, `${subject}-meta.json`), "utf8"));
-    const flowLessons = meta.chapters.flatMap((chapter) => chapter.ls).filter((lesson) => lesson.f === 1);
-    if (flowLessons.length === 0) throw new Error(`${subject} 没有学习流课时？`);
-    firstFlowLesson.set(subject, flowLessons[0].i);
+    // v2 紧凑 meta：ls 为 [短课id, 标题, f, lt?] 元组，id 去 `subject-` 前缀
+    const flowTuples = meta.chapters.flatMap((chapter) => chapter.ls).filter((tuple) => tuple[2] === 1);
+    const flowIds = flowTuples.map((tuple) => `${subject}-${tuple[0]}`);
+    if (flowIds.length === 0) throw new Error(`${subject} 没有学习流课时？`);
+    firstFlowLesson.set(subject, flowIds[0]);
     // 五科各 5 门采样课：均匀铺满全书（首/25%/50%/75%/尾），覆盖长短课分布
     const picks = [0, 0.25, 0.5, 0.75, 1].map((ratio) =>
-      flowLessons[Math.min(flowLessons.length - 1, Math.round(ratio * (flowLessons.length - 1)))].i,
+      flowIds[Math.min(flowIds.length - 1, Math.round(ratio * (flowIds.length - 1)))],
     );
     sampleLessons.set(subject, [...new Set(picks)]);
 
@@ -156,11 +158,11 @@ async function main() {
       if (bytes > biggest.bytes) biggest = { file, bytes };
     }
     const worstPart = JSON.parse(await readFile(join(dir, biggest.file), "utf8"));
-    const worstId = worstPart.segments[0]?.lessons[0]?.id ?? hit.i;
+    const worstId = worstPart.segments[0]?.lessons[0]?.id ?? "";
     worstLesson.set(subject, worstId);
-    // 分层课：首屏只拉轻视图（meta.lt 标记），尾部全文懒加载 —— 报告里注明口径
-    const worstMeta = meta.chapters.flatMap((chapter) => chapter.ls).find((lesson) => lesson.i === worstId);
-    worstLayered.set(subject, Boolean(worstMeta?.lt));
+    // 分层课：首屏只拉轻视图（meta 元组第 4 位 lt 标记），尾部全文懒加载 —— 报告里注明口径
+    const worstTuple = flowTuples.find((tuple) => `${subject}-${tuple[0]}` === worstId);
+    worstLayered.set(subject, Boolean(worstTuple?.[3]));
   }
 
   const sizes = await chunkSizesOnDisk();

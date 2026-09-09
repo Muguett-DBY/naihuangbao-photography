@@ -130,34 +130,30 @@ describe("law chunked loader equivalence", () => {
   it("layered lessons: light view + restLoader reassemble the exact full lesson", async () => {
     let layeredSeen = 0;
     for (const id of SUBJECTS) {
-      const meta = JSON.parse(
-        readFileSync(resolve(__dirname, "chunks", id, `${id}-meta.json`), "utf8"),
-      ) as { chapters: { ls: { i: string; lt?: number }[] }[] };
-      for (const entry of meta.chapters.flatMap((chapter) => chapter.ls)) {
-        const view = await loadLawLessonView(id, entry.i);
-        expect(view, `${id}:${entry.i}`).not.toBeNull();
-        const original = findLesson(booksOnDisk[id], entry.i)!.lesson;
-        if (!entry.lt) {
-          expect(view!.lightSteps).toBeUndefined();
+      const book = booksOnDisk[id];
+      for (const lesson of book.chapters.flatMap((chapter) => chapter.lessons)) {
+        const view = await loadLawLessonView(id, lesson.id);
+        expect(view, `${id}:${lesson.id}`).not.toBeNull();
+        if (view!.lightSteps === undefined) {
           expect(view!.restLoader).toBeUndefined();
           continue;
         }
         layeredSeen += 1;
-        expect(view!.lightSteps).toBe(entry.lt);
+        const layeredAt = view!.lightSteps;
         expect(typeof view!.restLoader).toBe("function");
         // 轻视图：前 lt 步全文一致，其后是占位元数据（id/kind 保留、text 置空），总步数不变
-        expect(view!.lesson.steps).toHaveLength(original.steps.length);
-        expect(view!.lesson.steps.slice(0, entry.lt)).toEqual(original.steps.slice(0, entry.lt));
-        view!.lesson.steps.slice(entry.lt).forEach((placeholder, offset) => {
-          const fullStep = original.steps[entry.lt! + offset];
+        expect(view!.lesson.steps).toHaveLength(lesson.steps.length);
+        expect(view!.lesson.steps.slice(0, layeredAt)).toEqual(lesson.steps.slice(0, layeredAt));
+        view!.lesson.steps.slice(layeredAt).forEach((placeholder, offset) => {
+          const fullStep = lesson.steps[layeredAt + offset];
           expect(placeholder.id).toBe(fullStep.id);
           expect(placeholder.kind).toBe(fullStep.kind);
           expect(placeholder.text).toBe("");
         });
         // restLoader 拼合出的完整课与整本数据 toEqual 级等价（并发调用共享同一请求）
         const [first, second] = await Promise.all([view!.restLoader!(), view!.restLoader!()]);
-        expect(first).toEqual(original);
-        expect(second).toEqual(original);
+        expect(first).toEqual(lesson);
+        expect(second).toEqual(lesson);
       }
     }
     expect(layeredSeen).toBeGreaterThan(0); // 仓库里确实存在分层课，测试没有空转

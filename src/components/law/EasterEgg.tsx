@@ -61,7 +61,7 @@ function checkEasterEgg(
 export const EGG_EVENT = "nhb-law-egg";
 
 /** 彩蛋触发逻辑（挂在学习相关页面即可） */
-export function useEggListener(
+function useEggListener(
   doneCount: number,
   path?: { halfDone: boolean; allDone: boolean },
 ): EggTrigger | null {

@@ -30,11 +30,14 @@ const SEED = `(() => {
   } catch {}
 })();`;
 
-/** 静态 DOM 审计：可达名 / aria 引用有效性 / dialog 结构 */
+/** 静态 DOM 审计：可达名 / aria 引用有效性 / dialog 结构 / img alt / 按钮文本（P5·T2 扩展） */
 const STATIC_AUDIT = `(() => {
   const issues = [];
   const issue = (severity, check, detail) => issues.push({ severity, check, detail });
-  const interactive = 'a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])';
+  const interactive = 'a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"]), [role="button"], [role="link"], [role="tab"], [role="menuitem"], [role="option"], [role="checkbox"], [role="radio"], [role="switch"]';
+  /** aria-activedescendant 只允许落在这类容器角色上（WAI-ARIA 规范） */
+  const AD_ROLES = ["combobox", "listbox", "menu", "menubar", "radiogroup", "tree", "treegrid", "grid"];
+  const focusableIn = (root) => root.querySelector('a[href], button:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])');
   const all = [...document.querySelectorAll("body *")];
   const visible = (el) => {
     const cs = getComputedStyle(el);
@@ -88,12 +91,24 @@ const STATIC_AUDIT = `(() => {
     if (role === "dialog") {
       if (el.getAttribute("aria-modal") !== "true") issue("error", "dialog-structure", "role=dialog 缺 aria-modal=true");
       if (!accName(el)) issue("error", "dialog-structure", "role=dialog 缺可达名（aria-label/labelledby）");
+      // P5·T2：弹窗内必须至少有一个可聚焦元素，否则焦点无法进入、focus trap 无从谈起
+      if (!focusableIn(el)) issue("error", "dialog-structure", "role=dialog 内没有任何可聚焦元素");
+    }
+    // P5·T2：img 必有 alt 属性（装饰图 alt="" 也算有；缺属性即违规）
+    if (el.tagName === "IMG" && !el.hasAttribute("alt")) {
+      issue("error", "img-alt", "img 缺 alt 属性: " + (el.src || "").split("/").at(-1)?.slice(0, 40));
     }
     if (!el.matches(interactive)) continue;
     if (el.matches('input[type="hidden"], [disabled], [aria-disabled="true"]')) continue;
     if (!accName(el)) {
-      issue("error", "accessible-name",
-        el.tagName.toLowerCase() + "." + String(el.className).split(" ").slice(0, 2).join(".") + " 无可达名（文本/aria-label/label/title 均空）: " + (el.textContent ?? "").trim().slice(0, 20));
+      // P5·T2：按钮无文本单独成项（button 必有文本内容/可达名），便于报告直读
+      if (el.tagName === "BUTTON" && !(el.textContent ?? "").trim()) {
+        issue("error", "button-text",
+          "button 无文本内容且无可达名." + String(el.className).split(" ").slice(0, 2).join("."));
+      } else {
+        issue("error", "accessible-name",
+          el.tagName.toLowerCase() + "." + String(el.className).split(" ").slice(0, 2).join(".") + " 无可达名（文本/aria-label/label/title 均空）: " + (el.textContent ?? "").trim().slice(0, 20));
+      }
     }
     for (const attr of ["aria-expanded", "aria-pressed"]) {
       const v = el.getAttribute(attr);
@@ -106,6 +121,11 @@ const STATIC_AUDIT = `(() => {
       const target = document.getElementById(desc);
       if (!target) issue("error", "activedescendant", "aria-activedescendant 引用了不存在的 #" + desc);
       else if (target.getAttribute("role") !== "option") issue("error", "activedescendant", "#" + desc + " 不是 role=option");
+      // P5·T2：aria-activedescendant 的宿主角色必须支持该属性
+      const ownerRole = role ?? el.tagName.toLowerCase();
+      if (!AD_ROLES.includes(ownerRole)) {
+        issue("error", "activedescendant", "aria-activedescendant 宿主角色不合法: " + ownerRole + "（须为 " + AD_ROLES.join("/") + "）");
+      }
     }
     const controls = el.getAttribute("aria-controls");
     if (controls && !document.getElementById(controls)) {
@@ -114,6 +134,53 @@ const STATIC_AUDIT = `(() => {
   }
   return issues;
 })()`;
+
+/** P5·T2：对当前可见的 role=dialog 逐个做焦点圈禁探测——焦点进入后连按 Tab，
+ *  逃出弹窗即违规（新增弹窗无需登记本脚本，出现在页面即被覆盖） */
+async function probeVisibleDialogTraps(page) {
+  const visible = '[role="dialog"]';
+  const countDialogs = `(() => [...document.querySelectorAll('${visible}')].filter((el) => {
+    const cs = getComputedStyle(el);
+    if (cs.display === "none" || cs.visibility === "hidden" || +cs.opacity === 0) return false;
+    const r = el.getBoundingClientRect();
+    return r.width >= 2 && r.height >= 2;
+  }))()`;
+  const dialogs = await page.evaluate(countDialogs);
+  const issues = [];
+  for (let index = 0; index < dialogs.length; index += 1) {
+    const entered = await page.evaluate((i) => {
+      const dlg = [...document.querySelectorAll('[role="dialog"]')].filter((el) => {
+        const cs = getComputedStyle(el);
+        if (cs.display === "none" || cs.visibility === "hidden" || +cs.opacity === 0) return false;
+        const r = el.getBoundingClientRect();
+        return r.width >= 2 && r.height >= 2;
+      })[i];
+      if (!dlg) return false;
+      const first = dlg.querySelector('a[href], button:not([disabled]), input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+      const target = first ?? dlg;
+      if (!(target instanceof HTMLElement)) return false;
+      target.focus();
+      return dlg.contains(document.activeElement);
+    }, index);
+    if (!entered) continue; // 焦点进不去由静态检查 dialog-structure / focusables 负责
+    let escapeStep = -1;
+    for (let step = 0; step < 16; step += 1) {
+      await page.keyboard.press("Tab");
+      const inside = await page.evaluate(() => !!document.activeElement?.closest('[role="dialog"]'));
+      if (!inside) { escapeStep = step + 1; break; }
+    }
+    if (escapeStep > 0) {
+      issues.push({
+        severity: "error",
+        check: "dialog-trap",
+        detail: `可见 role=dialog（第 ${index + 1} 个）焦点圈禁失效：Tab 第 ${escapeStep} 步逃出弹窗`,
+      });
+    }
+    // 归位焦点，避免影响后续 Tab 走查
+    await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur()).catch(() => {});
+  }
+  return issues;
+}
 
 const browser = await chromium.launch();
 const report = { base: BASE, generatedAt: new Date().toISOString(), pages: [], dialogs: [], summary: { errors: 0, warnings: 0 } };
@@ -148,6 +215,11 @@ for (const theme of ["light", "dark"]) {
     const staticIssues = await page.evaluate(STATIC_AUDIT).catch((e) => [{ severity: "error", check: "script", detail: "静态审计执行失败: " + e.message }]);
     entry.issues.push(...staticIssues);
     count(staticIssues);
+
+    // P5·T2：扫描时可见的弹窗逐个做 focus trap 探测
+    const trapIssues = await probeVisibleDialogTraps(page).catch((e) => [{ severity: "error", check: "dialog-trap", detail: "trap 探测执行失败: " + e.message }]);
+    entry.issues.push(...trapIssues);
+    count(trapIssues);
 
     // 键盘走查：60 步 Tab，连续 ≥3 次落空（焦点掉 body 且再按仍在 body）才算真死端；
     // 走到页面末尾后焦点移出文档属浏览器正常行为，不算

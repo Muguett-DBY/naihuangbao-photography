@@ -11,7 +11,7 @@ export type LawSoundName = "correct" | "wrong" | "step" | "egg";
 
 const SOUND_KEY = "nhb-law-sound";
 
-export function prefersReducedMotion(): boolean {
+function prefersReducedMotion(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
   try {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -140,7 +140,7 @@ function defaultContext(): AudioContextLike | null {
 }
 
 /** 应用内统一入口（模块级单例：AudioContext 只建一次） */
-export function lawSounds(): ReturnType<typeof createLawSounds> {
+function lawSounds(): ReturnType<typeof createLawSounds> {
   if (!singleton) singleton = createLawSounds(defaultContext);
   return singleton;
 }
