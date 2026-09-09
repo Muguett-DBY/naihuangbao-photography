@@ -60,6 +60,12 @@
 /law/notes/ / 200
 /law/stats / 200
 /law/stats/ / 200
+/law/flashcards / 200
+/law/flashcards/ / 200
+/law/exam / 200
+/law/exam/ / 200
+/law/provisions / 200
+/law/provisions/ / 200
 /law/:subjectId / 200
 /law/learn/:lessonId / 200
 /law/graphic/:lessonId / 200

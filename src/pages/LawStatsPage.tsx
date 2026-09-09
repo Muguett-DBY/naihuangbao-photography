@@ -11,9 +11,11 @@ import {
 } from "../components/law/stats/dailyActivity";
 import { wrongTotalOf, groupWrongLessons } from "../components/law/wrongbook/wrongbookGroups";
 import { LawMascot } from "../components/law/LawMascot";
+import { StudyHeatmap } from "../components/law/StudyHeatmap";
 import { useLawImmersive } from "../components/law/EasterEgg";
 import "../styles/law-academy.css";
 import "../styles/law-flow.css";
+import "../styles/law-flash.css";
 
 interface LawStatsShape {
   [key: string]: { lessonCount: number };
@@ -144,6 +146,11 @@ export function LawStatsPage() {
               <b>{wrongActive === 0 ? "0" : `${wrongGroups.dueToday.length}/${wrongActive}`}</b>
               <span>错题健康度（今日到期/未毕业）</span>
             </div>
+          </section>
+
+          <section className="law-stats__section" aria-label="学习热力图">
+            <h2>学习热力图</h2>
+            <StudyHeatmap progress={progress} now={now} />
           </section>
 
           <section className="law-stats__section" aria-label="近 30 天学习节奏">
