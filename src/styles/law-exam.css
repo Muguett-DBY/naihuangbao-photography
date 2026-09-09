@@ -1,0 +1,653 @@
+/* ────────────────────────────────────────────────────────────
+   法硕考研 · 模拟考试（P1）
+   依赖 law-academy.css 的主题变量与 law-quiz__* 题卡样式；
+   本文件只负责考试流程自身的布局与状态样式。
+   ──────────────────────────────────────────────────────────── */
+
+.law-exam {
+  --law-accent: #b1544e;
+  --law-accent-soft: #f6e5e2;
+  --law-accent-ink: color-mix(in srgb, var(--law-accent) 62%, #2a2118);
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+:root[data-theme="dark"] .law-exam {
+  --law-accent-soft: color-mix(in srgb, var(--law-accent) 26%, #241f19);
+  --law-accent-ink: color-mix(in srgb, var(--law-accent) 72%, #f3ece2);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-exam {
+    --law-accent-soft: color-mix(in srgb, var(--law-accent) 26%, #241f19);
+    --law-accent-ink: color-mix(in srgb, var(--law-accent) 72%, #f3ece2);
+  }
+}
+
+/* ── 页头 ── */
+.law-exam__head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.law-exam__head h1 {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 32px);
+  color: var(--ink);
+}
+.law-exam__back {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.law-exam__back:hover {
+  color: var(--law-accent-ink);
+}
+
+/* ── 配置面板 ── */
+.law-exam__panel {
+  padding: 26px 24px;
+  border-radius: 20px;
+  background: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--law-accent) 18%, transparent);
+  box-shadow: 0 6px 24px rgba(42, 33, 24, 0.06);
+}
+.law-exam__panel h2 {
+  margin: 18px 0 10px;
+  font-size: 16px;
+  color: var(--ink);
+}
+.law-exam__panel h2:first-child {
+  margin-top: 0;
+}
+
+.law-exam__subjects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 10px;
+}
+.law-exam__subject {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1.5px solid color-mix(in srgb, var(--law-accent) 22%, transparent);
+  background: color-mix(in srgb, var(--law-accent-soft) 55%, var(--paper));
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.law-exam__subject.is-on {
+  border-color: var(--law-accent);
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--law-accent) 22%, transparent);
+}
+.law-exam__subject.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.law-exam__subject input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--law-accent);
+  flex: none;
+}
+.law-exam__subject:focus-within {
+  outline: 2px solid var(--law-accent);
+  outline-offset: 2px;
+}
+.law-exam__subject-emoji {
+  font-size: 20px;
+}
+.law-exam__subject-body {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+.law-exam__subject-body b {
+  font-size: 14px;
+  color: var(--ink);
+}
+.law-exam__subject-body small {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.law-exam__count {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.law-exam__count input[type="range"] {
+  flex: 1;
+  accent-color: var(--law-accent);
+}
+.law-exam__count b {
+  min-width: 52px;
+  text-align: right;
+  font-size: 15px;
+  color: var(--law-accent-ink);
+}
+
+.law-exam__hint {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.law-exam__error {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--law-accent) 12%, var(--paper));
+  font-size: 13px;
+  color: var(--law-accent-ink);
+}
+
+.law-exam__start {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 16px;
+  background: var(--law-accent);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--law-accent) 52%, #20100c);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.law-exam__start:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.law-exam__start:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── 空池引导态 ── */
+.law-exam__empty {
+  max-width: 520px;
+  margin: 40px auto;
+  padding: 34px 26px;
+  border-radius: 20px;
+  background: var(--paper);
+  border: 1px dashed color-mix(in srgb, var(--law-accent) 35%, transparent);
+  text-align: center;
+}
+.law-exam__empty h2 {
+  margin: 12px 0 8px;
+  font-size: 19px;
+  color: var(--ink);
+}
+.law-exam__empty p {
+  margin: 0 0 16px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+.law-exam__empty-cta {
+  display: inline-block;
+  padding: 11px 24px;
+  border-radius: 14px;
+  background: var(--law-accent);
+  color: #fff;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+/* ── 考试中：顶栏 / 进度 / 题卡 / 翻题 ── */
+.law-exam__running {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.law-exam__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.law-exam__quit {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.law-exam__quit:hover {
+  color: var(--law-accent-ink);
+}
+.law-exam__clock {
+  font-size: clamp(18px, 3vw, 22px);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.law-exam__clock.is-urgent {
+  color: #c0392b;
+  animation: law-exam-pulse 1s ease-in-out infinite;
+}
+@keyframes law-exam-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .law-exam__clock.is-urgent {
+    animation: none;
+  }
+}
+.law-exam__submit {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 12px;
+  background: var(--law-accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.law-exam__submit:hover {
+  filter: brightness(1.05);
+}
+
+.law-exam__progress {
+  height: 8px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--law-accent) 14%, var(--paper));
+  overflow: hidden;
+}
+.law-exam__progress span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--law-accent);
+  transition: width 0.25s ease;
+}
+
+.law-exam__palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.law-exam__dot {
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid color-mix(in srgb, var(--law-accent) 26%, transparent);
+  border-radius: 9px;
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.law-exam__dot.is-done {
+  background: color-mix(in srgb, var(--law-accent) 16%, var(--paper));
+  color: var(--law-accent-ink);
+  border-color: var(--law-accent);
+}
+.law-exam__dot.is-current {
+  background: var(--law-accent);
+  border-color: var(--law-accent);
+  color: #fff;
+}
+.law-exam__dot:focus-visible {
+  outline: 2px solid var(--law-accent);
+  outline-offset: 2px;
+}
+
+.law-exam__card {
+  padding: 22px 22px 26px;
+  border-radius: 20px;
+  background: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--law-accent) 16%, transparent);
+  box-shadow: 0 6px 24px rgba(42, 33, 24, 0.06);
+}
+
+.law-exam__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.law-exam__nav-btn {
+  padding: 11px 20px;
+  border: 1.5px solid color-mix(in srgb, var(--law-accent) 30%, transparent);
+  border-radius: 13px;
+  background: var(--paper);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--law-accent-ink);
+  cursor: pointer;
+}
+.law-exam__nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.law-exam__nav-btn.is-primary {
+  background: var(--law-accent);
+  border-color: var(--law-accent);
+  color: #fff;
+}
+.law-exam__nav-btn:focus-visible,
+.law-exam__submit:focus-visible,
+.law-exam__quit:focus-visible,
+.law-exam__start:focus-visible,
+.law-exam__again:focus-visible {
+  outline: 2px solid var(--law-accent);
+  outline-offset: 2px;
+}
+.law-exam__nav-state {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+/* 考试模式的选项：选中态（判分在交卷后才发生，用中性与选中两态） */
+.law-quiz .law-quiz__option.is-selected {
+  border-color: var(--law-accent);
+  background: color-mix(in srgb, var(--law-accent) 14%, var(--paper));
+  box-shadow: inset 0 0 0 1px var(--law-accent);
+}
+
+/* ── 结果页 ── */
+.law-exam__result {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.law-exam__score {
+  padding: 28px 24px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--law-accent) 16%, var(--paper)), var(--paper));
+  border: 1px solid color-mix(in srgb, var(--law-accent) 22%, transparent);
+  text-align: center;
+}
+.law-exam__score-kicker {
+  margin: 0 0 6px;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+.law-exam__score-num {
+  margin: 0;
+  font-size: 20px;
+  color: var(--ink);
+}
+.law-exam__score-num b {
+  font-size: 44px;
+  line-height: 1;
+  color: var(--law-accent-ink);
+}
+.law-exam__score-num span {
+  display: block;
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.law-exam__score-msg {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.law-exam__by-subject,
+.law-exam__wrongs,
+.law-exam__trend {
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--law-accent) 14%, transparent);
+}
+.law-exam__by-subject h2,
+.law-exam__wrongs h2,
+.law-exam__trend h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.law-exam__by-subject ul,
+.law-exam__trend ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.law-exam__by-subject li,
+.law-exam__trend li {
+  display: grid;
+  grid-template-columns: 88px 1fr 56px;
+  align-items: center;
+  gap: 10px;
+}
+.law-exam__by-subject li {
+  grid-template-columns: 96px 1fr 56px;
+}
+.law-exam__subject-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.law-exam__subject-bar,
+.law-exam__trend-bar {
+  height: 10px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--law-accent) 12%, var(--paper));
+  overflow: hidden;
+}
+.law-exam__subject-bar span,
+.law-exam__trend-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--law-accent);
+}
+.law-exam__subject-num,
+.law-exam__trend-num {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--ink);
+}
+
+.law-exam__wrongs ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.law-exam__wrong {
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--law-accent) 18%, transparent);
+  background: color-mix(in srgb, var(--law-accent-soft) 40%, var(--paper));
+}
+.law-exam__wrong header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.law-exam__wrong header b {
+  font-size: 13.5px;
+  color: var(--ink);
+}
+.law-exam__wrong-kind {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--law-accent) 14%, var(--paper));
+  font-size: 11px;
+  color: var(--law-accent-ink);
+}
+.law-exam__wrong-prompt {
+  margin: 8px 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: var(--ink);
+}
+.law-exam__wrong-answer {
+  margin: 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+}
+.law-exam__wrong-answer .is-user {
+  color: #c0392b;
+}
+.law-exam__wrong-answer .is-truth {
+  color: color-mix(in srgb, #1e7d43 82%, var(--ink));
+}
+.law-exam__wrong-explain {
+  margin: 6px 0;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+.law-exam__wrong-link {
+  font-size: 12.5px;
+  color: var(--law-accent-ink);
+  text-decoration: none;
+  font-weight: 700;
+}
+.law-exam__wrong-link:hover {
+  text-decoration: underline;
+}
+.law-exam__wrongs--allclear {
+  text-align: center;
+  font-size: 15px;
+  color: var(--ink);
+}
+.law-exam__wrongs--allclear p {
+  margin: 0;
+}
+
+.law-exam__trend li.is-current .law-exam__trend-date {
+  font-weight: 900;
+  color: var(--law-accent-ink);
+}
+.law-exam__trend-date {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.law-exam__trend em {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.law-exam__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding-bottom: 24px;
+}
+.law-exam__again {
+  padding: 13px 26px;
+  border: none;
+  border-radius: 15px;
+  background: var(--law-accent);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--law-accent) 52%, #20100c);
+}
+.law-exam__home {
+  padding: 13px 22px;
+  border-radius: 15px;
+  border: 1.5px solid color-mix(in srgb, var(--law-accent) 30%, transparent);
+  color: var(--law-accent-ink);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+/* ── 学习中心的「模拟考试」入口卡片（law-exam.css 一并供给） ── */
+.law-exam-entry {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 860px;
+  margin: 26px auto 0;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: linear-gradient(120deg, color-mix(in srgb, var(--law-accent-soft) 80%, var(--paper)), var(--paper));
+  border: 1.5px solid color-mix(in srgb, var(--law-accent) 24%, transparent);
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.law-exam-entry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--law-accent) 18%, transparent);
+}
+.law-exam-entry i {
+  font-style: normal;
+  font-size: 30px;
+}
+.law-exam-entry b {
+  display: block;
+  font-size: 16px;
+}
+.law-exam-entry small {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+.law-exam-entry em {
+  margin-left: auto;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 13.5px;
+  color: var(--law-accent-ink);
+  white-space: nowrap;
+}
+
+/* ── 移动端（390px 一档） ── */
+@media (max-width: 560px) {
+  .law-exam__panel {
+    padding: 20px 16px;
+  }
+  .law-exam__subjects {
+    grid-template-columns: 1fr 1fr;
+  }
+  .law-exam__card {
+    padding: 16px 14px 20px;
+  }
+  .law-exam__nav {
+    flex-wrap: wrap;
+  }
+  .law-exam__nav-state {
+    order: 3;
+    flex: 1 1 100%;
+    text-align: center;
+  }
+  .law-exam__by-subject li,
+  .law-exam__trend li {
+    grid-template-columns: 76px 1fr 48px;
+  }
+  .law-exam-entry {
+    margin: 20px 0 0;
+    padding: 14px 16px;
+  }
+  .law-exam-entry em {
+    display: none;
+  }
+}

@@ -18,6 +18,7 @@ import "../styles/law-diagrams.css";
 import "../styles/law-flow.css";
 import "../styles/law-easter.css";
 import "../styles/law-visual.css";
+import "../styles/law-exam.css";
 
 interface LawStats {
   [key: string]: { lessonCount: number; chapterTitles: string[] };
@@ -306,6 +307,15 @@ export function LawAcademyPage() {
           ) : null}
         </div>
       </section>
+
+      <Link to="/law/exam" className="law-exam-entry">
+        <i aria-hidden="true">🎓</i>
+        <span>
+          <b>模拟考试</b>
+          <small>把已掌握的课组成一张限时卷，看看能拿多少分</small>
+        </span>
+        <em>去考试 →</em>
+      </Link>
 
       <section className="law-academy__how">
         <h2>三步学习法：看懂 → 点透 → 记牢</h2>
