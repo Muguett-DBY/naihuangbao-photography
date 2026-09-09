@@ -8,6 +8,7 @@ import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
 import { StepStage } from "./StepStage";
 import { QuizRunner } from "./QuizRunner";
+import { RawProvisionPanel } from "./RawProvisionPanel";
 import { useLessonHydration } from "./useLessonHydration";
 import { LawMascot, type LawMood } from "../LawMascot";
 import {
@@ -327,12 +328,7 @@ export function LessonPlayer({
         <LawMascot mood={mood} size={40} />
       </header>
 
-      {showRaw ? (
-        <details className="law-player__rawpanel" open>
-          <summary>书中原文（逐页 OCR，与知识点一一对应）</summary>
-          <pre>{activeLesson.raw.join("\n")}</pre>
-        </details>
-      ) : null}
+      {showRaw ? <RawProvisionPanel raw={activeLesson.raw} /> : null}
 
       {phase === "steps" ? (
         <>
