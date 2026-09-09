@@ -13,6 +13,11 @@ const PAGES = [
   { name: "图解页", url: "/law/graphic/xingfa-q083" },
   { name: "错题本", url: "/law/wrongbook" },
   { name: "统计页", url: "/law/stats" },
+  // P5 巡逻轮：P1-P4 新页面上线即纳入扫描
+  { name: "模拟考试", url: "/law/exam" },
+  { name: "闪卡复习", url: "/law/flashcards" },
+  { name: "学习笔记", url: "/law/notes" },
+  { name: "法条检索", url: "/law/provisions" },
 ];
 
 // 预置进度/彩蛋（脚本结束清理）：不造 completedAt（避免里程碑彩蛋自动弹信打断走查），
