@@ -40,6 +40,7 @@ const MapPage = lazy(routeLoaders["/map"]);
 const LawAcademyPage = lazy(routeLoaders["/law"]);
 const LawWrongbookPage = lazy(routeLoaders["/law/wrongbook"]);
 const LawStatsPage = lazy(routeLoaders["/law/stats"]);
+const LawExamPage = lazy(routeLoaders["/law/exam"]);
 const LawProvisionsPage = lazy(routeLoaders["/law/provisions"]);
 const LawSubjectPage = lazy(routeLoaders["/law/:subjectId"]);
 const LawLessonPage = lazy(routeLoaders["/law/learn/:lessonId"]);
@@ -136,6 +137,7 @@ export const router = createBrowserRouter([
           { path: "law", element: <PageSuspense><MotionConfig reducedMotion="user"><LawAcademyPage /></MotionConfig></PageSuspense> },
           { path: "law/wrongbook", element: <PageSuspense><LawWrongbookPage /></PageSuspense> },
           { path: "law/stats", element: <PageSuspense><LawStatsPage /></PageSuspense> },
+          { path: "law/exam", element: <PageSuspense><MotionConfig reducedMotion="user"><LawExamPage /></MotionConfig></PageSuspense> },
           { path: "law/:subjectId", element: <PageSuspense><MotionConfig reducedMotion="user"><LawSubjectPage /></MotionConfig></PageSuspense> },
           { path: "law/provisions", element: <PageSuspense><LawProvisionsPage /></PageSuspense> },
           { path: "law/learn/:lessonId", element: <PageSuspense><MotionConfig reducedMotion="user"><LawLessonPage /></MotionConfig></PageSuspense> },
