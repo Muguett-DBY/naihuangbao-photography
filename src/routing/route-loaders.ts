@@ -47,6 +47,7 @@ export const routeLoaders = {
   "/law/wrongbook": () => import("../pages/LawWrongbookPage").then((module) => asDefault(module.LawWrongbookPage)),
   "/law/notes": () => import("../pages/LawNotesPage").then((module) => asDefault(module.LawNotesPage)),
   "/law/stats": () => import("../pages/LawStatsPage").then((module) => asDefault(module.LawStatsPage)),
+  "/law/flashcards": () => import("../pages/LawFlashcardPage").then((module) => asDefault(module.LawFlashcardPage)),
   "/law/exam": () => import("../pages/LawExamPage").then((module) => asDefault(module.LawExamPage)),
   "/law/provisions": () => import("../pages/LawProvisionsPage").then((module) => asDefault(module.LawProvisionsPage)),
   "/law/:subjectId": () => import("../pages/LawSubjectPage").then((module) => asDefault(module.LawSubjectPage)),

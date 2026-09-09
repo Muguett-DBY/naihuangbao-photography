@@ -99,6 +99,7 @@ export function LawAcademyPage() {
           <Link to="/law/wrongbook" className="law-academy__quick-link">📕 错题本</Link>
           <Link to="/law/notes" className="law-academy__quick-link">📝 我的笔记</Link>
           <Link to="/law/stats" className="law-academy__quick-link">📊 学习统计</Link>
+          <Link to="/law/flashcards" className="law-academy__quick-link">🃏 闪卡快刷</Link>
           <Link to="/law/provisions" className="law-academy__quick-link">📖 法条检索</Link>
         </div>
       </header>

@@ -1,0 +1,350 @@
+/* ────────────────────────────────────────────────────────────
+   P2 · 闪卡快刷 + 学习热力图（law-flash）
+   复用学习中心的暖奶油令牌（--newsprint/--ink/--law-accent），
+   暗色主题跟随 law-academy.css 的 data-theme / prefers-color-scheme 双轨。
+   ──────────────────────────────────────────────────────────── */
+
+.law-flash {
+  --law-flash-accent: #b1544e;
+  --law-flash-card-back: #fffdf8;
+  min-height: 100vh;
+  padding: clamp(16px, 4vw, 48px) clamp(16px, 4vw, 64px) 72px;
+  font-family: var(--font-body);
+}
+
+/* ── 页头 / 空态 / 加载 ── */
+.law-flash__head { max-width: 860px; margin: 0 auto 20px; }
+.law-flash__back {
+  display: inline-block;
+  color: var(--law-flash-accent);
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.law-flash__head h1 { margin: 0 0 8px; font-size: clamp(26px, 5vw, 36px); }
+.law-flash__lead { margin: 0; color: color-mix(in srgb, var(--ink) 72%, transparent); }
+
+.law-flash__empty {
+  max-width: 560px;
+  margin: 48px auto;
+  text-align: center;
+  padding: 36px 24px;
+  border: 1.5px dashed color-mix(in srgb, var(--ink) 24%, transparent);
+  border-radius: 18px;
+}
+.law-flash__empty h2 { margin: 12px 0 6px; }
+.law-flash__empty p { color: color-mix(in srgb, var(--ink) 70%, transparent); }
+.law-flash__empty-cta {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: var(--law-flash-accent);
+  color: #fff5ec;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.law-flash__loading, .law-flash__error {
+  max-width: 560px;
+  margin: 56px auto;
+  text-align: center;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+/* ── 选择面板 ── */
+.law-flash__setup { max-width: 860px; margin: 0 auto; display: grid; gap: 22px; }
+.law-flash__due-hint {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--law-flash-accent) 12%, transparent);
+}
+.law-flash__group {
+  border: 1.5px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  border-radius: 16px;
+  padding: 14px 16px 16px;
+  margin: 0;
+}
+.law-flash__group legend {
+  font-weight: 700;
+  padding: 0 8px;
+  /* 实底背景：避免 fieldset 边框线横穿 legend 文字 */
+  background: var(--newsprint, var(--law-flash-card-back));
+  border-radius: 6px;
+}
+.law-flash__subjects, .law-flash__scopes { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.law-flash__check, .law-flash__scope {
+  display: grid;
+  gap: 2px;
+  padding: 10px 14px;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  border-radius: 12px;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--law-flash-card-back) 70%, transparent);
+}
+.law-flash__check.is-on, .law-flash__scope.is-on {
+  border-color: var(--law-flash-accent);
+  background: color-mix(in srgb, var(--law-flash-accent) 10%, var(--law-flash-card-back));
+}
+.law-flash__check.is-empty { opacity: 0.55; cursor: not-allowed; }
+.law-flash__check span, .law-flash__scope-label { font-weight: 600; }
+.law-flash__check input, .law-flash__scope input { accent-color: var(--law-flash-accent); margin-right: 6px; }
+.law-flash__check small, .law-flash__scope small {
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  font-size: 12px;
+}
+.law-flash__scope { max-width: 220px; }
+
+.law-flash__start { display: grid; gap: 10px; justify-items: center; text-align: center; }
+.law-flash__start-hint { margin: 0; font-size: 13px; color: color-mix(in srgb, var(--ink) 62%, transparent); }
+
+/* ── 按钮 ── */
+.law-flash__btn {
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 22%, transparent);
+  background: var(--law-flash-card-back);
+  color: var(--ink);
+  font-weight: 600;
+  cursor: pointer;
+}
+.law-flash__btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.law-flash__btn--primary {
+  background: var(--law-flash-accent);
+  border-color: var(--law-flash-accent);
+  color: #fff5ec;
+}
+.law-flash__btn--big { padding: 13px 28px; font-size: 17px; }
+.law-flash__btn--small { padding: 5px 12px; font-size: 13px; }
+
+/* ── 复习中的牌堆 ── */
+.law-flash__deck {
+  max-width: 640px;
+  margin: 0 auto;
+  display: grid;
+  gap: 16px;
+}
+.law-flash__deck-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.law-flash__progress { margin: 0; font-size: 14px; color: color-mix(in srgb, var(--ink) 72%, transparent); }
+
+/* 3D 翻转卡：正面术语 / 背面原文 */
+.law-flash__card {
+  --card-h: min(58vh, 420px);
+  display: block;
+  width: 100%;
+  height: var(--card-h);
+  perspective: 1400px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+.law-flash__card.is-flipped .law-flash__card-inner { transform: rotateY(180deg); }
+.law-flash__card-inner {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s var(--ease-out, ease-out);
+}
+.law-flash__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 26px;
+  border-radius: 20px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  text-align: center;
+}
+.law-flash__face--front {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 14%, var(--law-flash-card-back)), var(--law-flash-card-back));
+  border: 2px solid color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 45%, transparent);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--ink) 14%, transparent);
+}
+.law-flash__face--back {
+  transform: rotateY(180deg);
+  background: var(--law-flash-card-back);
+  border: 2px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--ink) 14%, transparent);
+  overflow-y: auto;
+}
+.law-flash__face-kind {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  padding: 3px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 16%, transparent);
+  color: var(--law-accent-ink, var(--law-flash-accent));
+}
+.law-flash__face-text {
+  font-size: clamp(20px, 4.6vw, 30px);
+  font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.law-flash__face--back .law-flash__face-text { font-size: clamp(16px, 3.6vw, 21px); font-weight: 500; }
+.law-flash__face-hint { font-size: 12px; color: color-mix(in srgb, var(--ink) 55%, transparent); }
+.law-flash__face-source {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  padding-top: 10px;
+  width: 100%;
+}
+
+/* reduced-motion：直接切换，不播放翻转 */
+@media (prefers-reduced-motion: reduce) {
+  .law-flash__card-inner { transition: none; }
+}
+
+.law-flash__rate { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.law-flash__rate-btn {
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 20%, transparent);
+  background: var(--law-flash-card-back);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.law-flash__rate-btn.is-known { border-color: #5e8d6a; }
+.law-flash__rate-btn.is-fuzzy { border-color: #b98a3a; }
+.law-flash__rate-btn.is-unknown { border-color: #b1544e; }
+
+.law-flash__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.law-flash__remaining { font-size: 13px; color: color-mix(in srgb, var(--ink) 62%, transparent); }
+
+/* ── 总结页 ── */
+.law-flash__summary {
+  max-width: 480px;
+  margin: 40px auto;
+  text-align: center;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 32px 24px;
+  border-radius: 20px;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 16%, transparent);
+  background: color-mix(in srgb, var(--law-flash-card-back) 72%, transparent);
+}
+.law-flash__summary-emoji { margin: 0; font-size: 44px; }
+.law-flash__summary h2 { margin: 0; }
+.law-flash__summary-total { margin: 0; }
+.law-flash__summary-stats {
+  list-style: none;
+  display: flex;
+  gap: 18px;
+  padding: 0;
+  margin: 6px 0;
+}
+.law-flash__summary-stats b { display: block; font-size: 22px; }
+.law-flash__summary-hint { margin: 0; font-size: 13px; color: color-mix(in srgb, var(--ink) 64%, transparent); }
+.law-flash__summary-actions { display: flex; gap: 12px; margin-top: 8px; }
+
+/* ── 学习热力图（挂在学习统计页）── */
+.law-heat { display: grid; gap: 10px; }
+.law-heat__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.law-heat__summary { margin: 0; font-size: 14px; color: color-mix(in srgb, var(--ink) 74%, transparent); }
+.law-heat__ranges { display: flex; gap: 6px; }
+.law-heat__range {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  background: none;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--ink);
+}
+.law-heat__range.is-current {
+  border-color: var(--law-accent, var(--law-flash-accent));
+  background: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 14%, transparent);
+  font-weight: 700;
+}
+.law-heat__scroll { overflow-x: auto; padding-bottom: 4px; }
+.law-heat__svg { display: block; }
+.law-heat__month, .law-heat__weekday { font-size: 10px; fill: color-mix(in srgb, var(--ink) 55%, transparent); }
+.law-heat__cell {
+  /* 5 级色深：暖陶土系（与统计页主色一致），暗色主题反向提亮 */
+  --heat-0: color-mix(in srgb, var(--ink) 8%, transparent);
+  --heat-1: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 22%, var(--law-flash-card-back));
+  --heat-2: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 45%, var(--law-flash-card-back));
+  --heat-3: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 70%, var(--ink));
+  --heat-4: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 88%, #1f1512);
+}
+.law-heat__cell--l0 { fill: var(--heat-0); }
+.law-heat__cell--l1 { fill: var(--heat-1); }
+.law-heat__cell--l2 { fill: var(--heat-2); }
+.law-heat__cell--l3 { fill: var(--heat-3); }
+.law-heat__cell--l4 { fill: var(--heat-4); }
+.law-heat__cell.is-today { stroke: var(--ink); stroke-width: 1.2; }
+.law-heat__legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: color-mix(in srgb, var(--ink) 60%, transparent);
+}
+.law-heat__legend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+/* ── 暗色主题 ── */
+:root[data-theme="dark"] .law-flash { --law-flash-card-back: #2a2320; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-flash { --law-flash-card-back: #2a2320; }
+}
+:root[data-theme="dark"] .law-heat__cell {
+  --heat-0: color-mix(in srgb, var(--ink) 14%, transparent);
+  --heat-1: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 38%, #241d1a);
+  --heat-2: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 58%, #241d1a);
+  --heat-3: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 80%, #fff5ec);
+  --heat-4: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 55%, #ffd9cf);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-heat__cell {
+    --heat-0: color-mix(in srgb, var(--ink) 14%, transparent);
+    --heat-1: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 38%, #241d1a);
+    --heat-2: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 58%, #241d1a);
+    --heat-3: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 80%, #fff5ec);
+    --heat-4: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 55%, #ffd9cf);
+  }
+}
+
+/* ── 390px 移动端 ── */
+@media (max-width: 480px) {
+  .law-flash { padding-inline: 14px; }
+  .law-flash__face { padding: 18px; }
+  .law-flash__rate { gap: 8px; }
+  .law-flash__rate-btn { padding: 10px 14px; font-size: 15px; }
+  .law-flash__nav { flex-wrap: wrap; }
+  .law-flash__summary-stats { gap: 12px; }
+}

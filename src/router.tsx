@@ -41,6 +41,7 @@ const LawAcademyPage = lazy(routeLoaders["/law"]);
 const LawWrongbookPage = lazy(routeLoaders["/law/wrongbook"]);
 const LawNotesPage = lazy(routeLoaders["/law/notes"]);
 const LawStatsPage = lazy(routeLoaders["/law/stats"]);
+const LawFlashcardPage = lazy(routeLoaders["/law/flashcards"]);
 const LawExamPage = lazy(routeLoaders["/law/exam"]);
 const LawProvisionsPage = lazy(routeLoaders["/law/provisions"]);
 const LawSubjectPage = lazy(routeLoaders["/law/:subjectId"]);
@@ -139,6 +140,7 @@ export const router = createBrowserRouter([
           { path: "law/wrongbook", element: <PageSuspense><LawWrongbookPage /></PageSuspense> },
           { path: "law/notes", element: <PageSuspense><LawNotesPage /></PageSuspense> },
           { path: "law/stats", element: <PageSuspense><LawStatsPage /></PageSuspense> },
+          { path: "law/flashcards", element: <PageSuspense><MotionConfig reducedMotion="user"><LawFlashcardPage /></MotionConfig></PageSuspense> },
           { path: "law/exam", element: <PageSuspense><MotionConfig reducedMotion="user"><LawExamPage /></MotionConfig></PageSuspense> },
           { path: "law/:subjectId", element: <PageSuspense><MotionConfig reducedMotion="user"><LawSubjectPage /></MotionConfig></PageSuspense> },
           { path: "law/provisions", element: <PageSuspense><LawProvisionsPage /></PageSuspense> },
