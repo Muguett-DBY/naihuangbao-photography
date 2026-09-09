@@ -435,7 +435,9 @@
 
 .law-notes-page__note mark {
   background: color-mix(in srgb, var(--sun-note) 65%, transparent);
-  color: inherit;
+  /* 高亮底（sun-note）在暗色主题下仍是浅金色，文字必须固定深墨——
+     不能 inherit --ink（暗色下近白，实测 1.59:1 不达标） */
+  color: #2a2118;
   border-radius: 3px;
   padding: 0 2px;
 }
