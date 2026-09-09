@@ -90,6 +90,11 @@
   margin-bottom: 18px;
 }
 
+/* 原生 search 清除钮与本页清除按钮重复，收掉原生的 */
+.law-provisions__search .law-search__box input::-webkit-search-cancel-button {
+  display: none;
+}
+
 .law-provisions__count {
   margin: 0 0 14px;
   font-size: 12.5px;
