@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   LAW_NOTES_EVENT,
+  LAW_NOTES_STORAGE_KEY as NOTES_STORAGE_KEY,
   LAW_NOTE_MAX_LENGTH,
   addNote,
   deleteNote,
@@ -63,11 +64,19 @@ export function NotesPanel({
     setNotes(getLessonNotes(lessonId));
   }, [lessonId]);
 
-  // 任何来源的笔记变更（含本面板写入、导入）都即时重查
+  // 任何来源的笔记变更（含本面板写入、导入）都即时重查；其他标签页的写入走 storage 事件
   useEffect(() => {
     const handler = () => refresh();
     document.addEventListener(LAW_NOTES_EVENT, handler);
     return () => document.removeEventListener(LAW_NOTES_EVENT, handler);
+  }, [refresh]);
+
+  useEffect(() => {
+    const crossTab = (event: StorageEvent) => {
+      if (event.key === NOTES_STORAGE_KEY || event.key === null) refresh();
+    };
+    window.addEventListener("storage", crossTab);
+    return () => window.removeEventListener("storage", crossTab);
   }, [refresh]);
 
   const showSaved = useCallback(() => {

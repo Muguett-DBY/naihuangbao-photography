@@ -162,4 +162,79 @@ test.describe("law notes", () => {
     await page.goto("/law");
     await expect(page.getByRole("link", { name: "📝 我的笔记" })).toBeVisible();
   });
+
+  // ── 巡逻轮：渲染边界与多标签页 ──
+
+  test("XSS 转义：脚本/HTML 文本按纯文本渲染不执行", async ({ page }) => {
+    let dialogFired = false;
+    page.on("dialog", (dialog) => {
+      dialogFired = true;
+      void dialog.dismiss();
+    });
+    await walkToSummary(page);
+    const panel = page.locator(".law-notes");
+    const payload = `<script>window.__xss=1</script><img src=x onerror="window.__xss=2"><b>加粗假标签</b>`;
+    await page.locator("#law-notes-draft").fill(payload);
+    await panel.getByRole("button", { name: "保存笔记" }).click();
+    // 文本原样可见（React 转义），且没有任何脚本执行痕迹
+    await expect(panel.locator(".law-notes__list").getByText(payload)).toBeVisible();
+    await page.waitForTimeout(500);
+    expect(await page.evaluate(() => (window as { __xss?: number }).__xss ?? 0)).toBe(0);
+    expect(dialogFired, "不应弹出任何对话框").toBe(false);
+    // 总览页同样按文本渲染
+    await page.goto("/law/notes");
+    await expect(page.locator(".law-notes-page__note").first()).toContainText("<b>加粗假标签</b>");
+  });
+
+  test("超长文本：2000 字上限截断且渲染不破版", async ({ page }) => {
+    await walkToSummary(page);
+    const panel = page.locator(".law-notes");
+    await page.locator("#law-notes-draft").fill("长".repeat(5000));
+    await panel.getByRole("button", { name: "保存笔记" }).click();
+    // textarea maxLength 先行截断，落库 2000 字
+    const stored = await page.evaluate(() => localStorage.getItem("nhb-law-notes-v1") ?? "");
+    const parsed = JSON.parse(stored) as { "falixue-q052": { notes: { text: string }[] } };
+    expect(parsed["falixue-q052"].notes[0].text.length).toBe(2000);
+    await expect(panel.locator(".law-notes__list").getByText("长".repeat(2000))).toBeVisible();
+  });
+
+  test("总览搜索无结果态：提示 + 一键清空", async ({ page }) => {
+    await walkToSummary(page);
+    await page.locator("#law-notes-draft").fill("只写这一条笔记");
+    await page.locator(".law-notes").getByRole("button", { name: "保存笔记" }).click();
+    await page.locator(".law-notes__saved").waitFor();
+    await page.goto("/law/notes");
+    const search = page.locator(".law-notes-page__search");
+    await search.fill("绝不存在的关键词");
+    await expect(page.getByText("没找到相关笔记")).toBeVisible({ timeout: 5_000 });
+    await page.getByRole("button", { name: "清空搜索" }).click();
+    await expect(page.locator(".law-notes-page__note").first()).toBeVisible();
+    await expect(search).toHaveValue("");
+  });
+
+  test("跨标签页同步：总览页开着，另一 tab 写笔记即时出现", async ({ page, context }) => {
+    // tab A：总览页先打开
+    await page.goto("/law/notes");
+    await expect(page.getByText("还没有笔记")).toBeVisible();
+    // tab B：同 context（共享 localStorage）在课时里写笔记
+    const page2 = await context.newPage();
+    await page2.addInitScript(() => {
+      const triggers = [
+        "midnight", "morning", "firstLesson", "hundred", "streak3", "streak7",
+        "wrongbook3", "wrongGraduate", "pathHalf", "bookDone",
+        "graphicFirst", "exam30", "christmas", "symbol",
+      ];
+      const now = Date.now();
+      const unlocked = Object.fromEntries(triggers.map((t) => [t, true]));
+      const seenAt = Object.fromEntries(triggers.map((t) => [t, now]));
+      localStorage.setItem("nhb-law-egg-v1", JSON.stringify({ unlocked, seenAt, unlockedAt: seenAt }));
+    });
+    await walkToSummary(page2);
+    await page2.locator("#law-notes-draft").fill("隔壁标签页写的笔记");
+    await page2.locator(".law-notes").getByRole("button", { name: "保存笔记" }).click();
+    await expect(page2.locator(".law-notes__list").getByText("隔壁标签页写的笔记")).toBeVisible();
+    // tab A 不刷新即出现（storage 事件）
+    await expect(page.locator(".law-notes-page__note").first()).toContainText("隔壁标签页写的笔记", { timeout: 5_000 });
+    await page2.close();
+  });
 });

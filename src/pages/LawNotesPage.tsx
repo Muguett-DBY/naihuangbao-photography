@@ -8,6 +8,7 @@ import {
   getAllNotes,
   importNotes,
   LAW_NOTES_EVENT,
+  LAW_NOTES_STORAGE_KEY,
   searchNotes,
   type LawNote,
 } from "../lib/law-notes";
@@ -72,11 +73,19 @@ export function LawNotesPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const feedbackTimerRef = useRef<number | null>(null);
 
-  // 课时内写笔记/导入导致的数据变化即时反映（LAW_NOTES_EVENT 广播）
+  // 课时内写笔记/导入导致的数据变化即时反映（LAW_NOTES_EVENT 广播）；
+  // 其他标签页的写入走 storage 事件（开着总览页在另一 tab 学课的场景）
   useEffect(() => {
     const refresh = () => setNotes(getAllNotes());
     document.addEventListener(LAW_NOTES_EVENT, refresh);
-    return () => document.removeEventListener(LAW_NOTES_EVENT, refresh);
+    const crossTab = (event: StorageEvent) => {
+      if (event.key === LAW_NOTES_STORAGE_KEY || event.key === null) refresh();
+    };
+    window.addEventListener("storage", crossTab);
+    return () => {
+      document.removeEventListener(LAW_NOTES_EVENT, refresh);
+      window.removeEventListener("storage", crossTab);
+    };
   }, []);
 
   // 搜索防抖 300ms
