@@ -194,7 +194,7 @@ test.describe("law academy", () => {
     await cat.click();
     const gallery = page.locator(".law-gallery");
     await expect(gallery).toBeVisible();
-    await expect(gallery.locator(".law-gallery__head")).toContainText("已收集 6 / 17");
+    await expect(gallery.locator(".law-gallery__head")).toContainText("已收集 6 / 19");
     // 解锁卡：显示标题与预览；剪影卡：显示 ？？？ 与待解锁
     await expect(gallery.locator(".law-gallery__egg.is-unlocked")).toHaveCount(6);
     await expect(gallery.locator(".law-gallery__egg.is-locked").first()).toBeVisible();
