@@ -160,20 +160,21 @@ export function LawEggListener({ doneCount }: { doneCount?: number }) {
 /** 学习中心页脚的小小奶黄包：点 3 下解锁/重看隐藏留言 */
 export function LawEggSymbol() {
   const [taps, setTaps] = useState(0);
-  const [unlocked, setUnlocked] = useState(false);
 
   function tap() {
     const next = taps + 1;
     setTaps(next);
     if (next >= 3) {
-      // 已解锁过也要弹（隐藏留言随时可以重看）
-      if (unlockEgg("symbol")) playLawSound("egg");
-      setUnlocked(true);
+      // 三下打开彩蛋图鉴：已解锁的能看到全部信件，未解锁的看到剪影暗示
+      // （symbol 彩蛋也会在这里标记为已解锁，因为用户已经找到了隐藏入口）
+      unlockEgg("symbol");
+      playLawSound("egg");
+      document.dispatchEvent(new CustomEvent("law-open-egg-gallery"));
       setTaps(0);
     }
   }
 
-  // 小猫按钮保持挂载（不能被弹窗条件替换掉，否则信纸关闭时焦点找不到归还目标）
+  // 小猫按钮保持挂载（不能被弹窗条件替换掉，否则弹窗关闭时焦点找不到归还目标）
   return (
     <>
       <button
@@ -185,7 +186,7 @@ export function LawEggSymbol() {
       >
         🐱
       </button>
-      {unlocked ? <EggModal trigger="symbol" onClose={() => setUnlocked(false)} /> : null}
+      
     </>
   );
 }

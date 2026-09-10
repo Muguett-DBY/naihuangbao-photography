@@ -1,4 +1,4 @@
-import { useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { LAW_SUBJECTS } from "../data/law/meta";
@@ -9,7 +9,7 @@ import { getPlan } from "../lib/law-plan";
 import { getDueReviewLessons, getLastLessonId, getRecentUnfinishedLesson, getTodayGoal, subjectStats } from "../lib/law-progress";
 import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, LawEggSymbol, useLawImmersive } from "../components/law/EasterEgg";
-import { LawEggGalleryButton, LawSoundToggle } from "../components/law/EggGallery";
+import { EggGallery, LawSoundToggle } from "../components/law/EggGallery";
 import { LawFinishBanner } from "../components/law/LawFinishBanner";
 import { LawPlanCard } from "../components/law/LawPlanCard";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
@@ -54,6 +54,12 @@ export function LawAcademyPage() {
   // 注意 resumeTarget 是裸课时 id，必须拼 /law/learn/ 前缀（曾直接拼成 /law/<id> 形成坏链）
   const resumeHref = resumeTarget ? `/law/learn/${resumeTarget}` : "/law/minfa";
   const resumeLabel = resumeTarget ? "继续学习" : "开始第一课";
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  useEffect(() => {
+    const handler = () => setGalleryOpen(true);
+    document.addEventListener("law-open-egg-gallery", handler);
+    return () => document.removeEventListener("law-open-egg-gallery", handler);
+  }, []);
   const todayPercent = Math.min(100, Math.round((today.done / today.target) * 100));
   // 通关横幅候选（stats 口径），组件内部会用 meta 级精确口径复核后展示
   const finishSubjects = useMemo(
@@ -348,13 +354,13 @@ export function LawAcademyPage() {
         </Link>
         <span className="law-academy__foot-tools">
           <LawEggSymbol />
-          <LawEggGalleryButton />
           <LawSoundToggle />
         </span>
         <span>内容源自《27 法硕背诵一本通》五册 · 针对 2027 法硕考研 · 共 931 页</span>
       </footer>
 
       <LawEggListener doneCount={doneTotal} />
+      {galleryOpen ? <EggGallery onClose={() => setGalleryOpen(false)} /> : null}
     </div>
   );
 }

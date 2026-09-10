@@ -273,6 +273,69 @@ const LETTER_CHRISTMAS: ReactNode = (
   </>
 );
 
+const LETTER_FULL_SCORE: ReactNode = (
+  <>
+    <p className="law-egg__greet">给刚刚拿了满分的女孩子：</p>
+    <p className="law-egg__line">
+      四道题，全对。
+      <br />
+      不是运气，是你真的记住了。
+    </p>
+    <p className="law-egg__line">
+      你看，那些觉得"背不住"的条文，
+      <br />
+      在你脑子里已经开始生根发芽了。
+    </p>
+    <p className="law-egg__line">
+      保持这个节奏，
+      <br />
+      下一次满分会来得更快。
+    </p>
+    <p className="law-egg__sign">—— 为你骄傲的奶黄包 🐱</p>
+  </>
+);
+
+const LETTER_NOTES_FIRST: ReactNode = (
+  <>
+    <p className="law-egg__greet">给第一个动笔的女孩子：</p>
+    <p className="law-egg__line">
+      背十遍不如写一遍。
+      <br />
+      你刚刚写下的那几行字，
+      <br />
+      比任何厚厚的讲义都珍贵。
+    </p>
+    <p className="law-egg__line">
+      因为那是你自己消化之后的理解，
+      <br />
+      不是别人告诉你的答案。
+    </p>
+    <p className="law-egg__sign">—— 觉得你很棒的奶黄包 🐱</p>
+  </>
+);
+
+const LETTER_MOCK_EXAM: ReactNode = (
+  <>
+    <p className="law-egg__greet">给第一次走进模拟考场的女孩子：</p>
+    <p className="law-egg__line">
+      计时、压力、不确定的题目——
+      <br />
+      你刚刚经历的就是考场的缩影。
+    </p>
+    <p className="law-egg__line">
+      不管分数是多少，
+      <br />
+      敢开始模拟的人已经赢了一半。
+    </p>
+    <p className="law-egg__line">
+      因为考场上最可怕的从来不是不会，
+      <br />
+      而是没有提前习惯"会紧张"的自己。
+    </p>
+    <p className="law-egg__sign">—— 一直在陪你的奶黄包 🐱</p>
+  </>
+);
+
 export const LETTERS: Record<EggTrigger, ReactNode> = {
   midnight: LETTER_MIDNIGHT,
   morning: LETTER_MORNING,
@@ -288,6 +351,9 @@ export const LETTERS: Record<EggTrigger, ReactNode> = {
   exam30: LETTER_EXAM30,
   christmas: LETTER_CHRISTMAS,
   symbol: LETTER_MAIN,
+  fullScore: LETTER_FULL_SCORE,
+  notesFirst: LETTER_NOTES_FIRST,
+  mockExamFirst: LETTER_MOCK_EXAM,
 };
 
 export interface EggMeta {
@@ -314,6 +380,9 @@ export const EGG_META: Record<EggTrigger, EggMeta> = {
   morning: { emoji: "🌅", title: "早起的奖励", preview: "昨晚背的内容，今天会变成你的底气。", hint: "清晨 5 点到 9 点间来学习" },
   christmas: { emoji: "🎄", title: "平安夜的信", preview: "你比想象中的自己，准备得更充分。", hint: "12 月 25 日，来收一封信" },
   symbol: { emoji: "🐱", title: "奶黄包的留言", preview: "奶黄包非常非常非常爱你。", hint: "学习中心页脚，点那只小猫三下" },
+  fullScore: { emoji: "💯", title: "满分时刻", preview: "四道题全对的那一刻，你比想象中厉害。", hint: "首次自测全对" },
+  notesFirst: { emoji: "✏️", title: "第一条笔记", preview: "写下来的，比背过的更牢。", hint: "写下你的第一条学习笔记" },
+  mockExamFirst: { emoji: "📋", title: "模考初体验", preview: "模拟一万次，只为考场那一遍。", hint: "完成第一次模拟考试" },
 };
 
 /** 图鉴展示顺序：里程碑 → 时间型 → 隐藏款 */
