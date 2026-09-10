@@ -15,6 +15,7 @@ export interface EggCheckContext {
   unlocked: Partial<Record<EggTrigger, boolean>>;
   /** 已从错题本毕业的课时数（≥1 解锁「错题毕业礼」） */
   graduatedWrongCount?: number;
+  graduatedWrongCount3?: boolean;
   /** 当前这本书的学习流进度已过半（done×2 ≥ total） */
   pathHalfDone?: boolean;
   /** 当前这本书的学习流已全部完成 */
@@ -47,5 +48,6 @@ export function checkEasterEggPure(ctx: EggCheckContext): EggTrigger | null {
   // 全书通比过半更稀有：同页两枚都达成时先庆大的
   if (ctx.bookAllDone && !isUnlocked(ctx, "bookDone")) return "bookDone";
   if (ctx.pathHalfDone && !isUnlocked(ctx, "pathHalf")) return "pathHalf";
+  // P1/S5 新增里程碑
   return null;
 }
