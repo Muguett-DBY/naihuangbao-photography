@@ -15,6 +15,8 @@ export interface EggCheckContext {
   unlocked: Partial<Record<EggTrigger, boolean>>;
   /** 已从错题本毕业的课时数（≥1 解锁「错题毕业礼」） */
   graduatedWrongCount?: number;
+  /** 已写笔记数（≥1 解锁「第一条笔记」） */
+  notesCount?: number;
   graduatedWrongCount3?: boolean;
   /** 当前这本书的学习流进度已过半（done×2 ≥ total） */
   pathHalfDone?: boolean;
@@ -40,9 +42,11 @@ export function checkEasterEggPure(ctx: EggCheckContext): EggTrigger | null {
   if (ctx.daysLeft <= 30 && !isUnlocked(ctx, "exam30")) return "exam30";
   // 里程碑型（越靠后越稀有）
   if (ctx.doneCount === 1 && !isUnlocked(ctx, "firstLesson")) return "firstLesson";
+  if ((ctx.notesCount ?? 0) >= 1 && !isUnlocked(ctx, "notesFirst")) return "notesFirst";
   if (ctx.doneCount >= 100 && !isUnlocked(ctx, "hundred")) return "hundred";
   if (ctx.streakDays >= 3 && !isUnlocked(ctx, "streak3")) return "streak3";
   if (ctx.streakDays >= 7 && !isUnlocked(ctx, "streak7")) return "streak7";
+  if (ctx.streakDays >= 30 && !isUnlocked(ctx, "streak30")) return "streak30";
   if (ctx.wrongLessons >= 3 && !isUnlocked(ctx, "wrongbook3")) return "wrongbook3";
   if ((ctx.graduatedWrongCount ?? 0) >= 1 && !isUnlocked(ctx, "wrongGraduate")) return "wrongGraduate";
   // 全书通比过半更稀有：同页两枚都达成时先庆大的
