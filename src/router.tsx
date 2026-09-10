@@ -142,8 +142,8 @@ export const router = createBrowserRouter([
           { path: "law/stats", element: <PageSuspense><LawStatsPage /></PageSuspense> },
           { path: "law/flashcards", element: <PageSuspense><MotionConfig reducedMotion="user"><LawFlashcardPage /></MotionConfig></PageSuspense> },
           { path: "law/exam", element: <PageSuspense><MotionConfig reducedMotion="user"><LawExamPage /></MotionConfig></PageSuspense> },
-          { path: "law/:subjectId", element: <PageSuspense><MotionConfig reducedMotion="user"><LawSubjectPage /></MotionConfig></PageSuspense> },
           { path: "law/provisions", element: <PageSuspense><LawProvisionsPage /></PageSuspense> },
+          { path: "law/:subjectId", element: <PageSuspense><MotionConfig reducedMotion="user"><LawSubjectPage /></MotionConfig></PageSuspense> },
           { path: "law/learn/:lessonId", element: <PageSuspense><MotionConfig reducedMotion="user"><LawLessonPage /></MotionConfig></PageSuspense> },
           { path: "law/graphic/:lessonId", element: <PageSuspense><MotionConfig reducedMotion="user"><LawGraphicPage /></MotionConfig></PageSuspense> },
           {
