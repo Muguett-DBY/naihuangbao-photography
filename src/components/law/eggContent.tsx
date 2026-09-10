@@ -401,4 +401,7 @@ export const EGG_ORDER: EggTrigger[] = [
   "morning",
   "christmas",
   "symbol",
+  "fullScore",
+  "notesFirst",
+  "mockExamFirst",
 ];
