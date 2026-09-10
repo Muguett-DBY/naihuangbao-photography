@@ -282,6 +282,8 @@ export type EggTrigger =
   | "fullScore"
   | "notesFirst"
   | "mockExamFirst"
+  | "firstNote"
+  | "streak30"
   | "graphicFirst"
   | "exam30"
   | "christmas"

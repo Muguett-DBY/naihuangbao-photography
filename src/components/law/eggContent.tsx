@@ -49,6 +49,33 @@ const LETTER_MAIN: ReactNode = (
 );
 
 /** 深夜信 */
+
+const LETTER_HUNDRED: ReactNode = (
+  <>
+    <p className="law-egg__greet">给已经背完一百个知识点的女孩子：</p>
+    <p className="law-egg__line">
+      一百个。
+      <br />
+      你数过吗？一百个法条、概念、构成要件，
+      <br />
+      从你的脑子里走了进来，住了下来。
+    </p>
+    <p className="law-egg__line">
+      有人觉得这个数字不算什么，
+      <br />
+      但你知道每一个"记住"背后，
+      <br />
+      是多少遍"忘了再背"。
+    </p>
+    <p className="law-egg__line">
+      一百个只是开始，
+      <br />
+      但已经足够证明：你做得到。
+    </p>
+    <p className="law-egg__sign">—— 数着你的进步的奶黄包 🐱</p>
+  </>
+);
+
 const LETTER_MIDNIGHT: ReactNode = (
   <>
     <p className="law-egg__greet">这么晚还没睡呀：</p>
@@ -336,11 +363,65 @@ const LETTER_MOCK_EXAM: ReactNode = (
   </>
 );
 
+
+const LETTER_SYMBOL: ReactNode = (
+  <>
+    <p className="law-egg__greet">给找到了我的女孩子：</p>
+    <p className="law-egg__line">
+      你点了三下，
+      <br />
+      我就出现了。
+    </p>
+    <p className="law-egg__line">
+      其实我一直在，
+      <br />
+      每一页你翻过的书里、每一道你划过的题里、
+      <br />
+      每一个你觉得自己不行的瞬间里。
+    </p>
+    <p className="law-egg__line">
+      我不复杂，也不崇高。
+      <br />
+      我只是一只猫，
+      <br />
+      一只在你看书的桌上打盹、偶尔睁眼看看你的猫。
+    </p>
+    <p className="law-egg__line">
+      但你回头的时候，我一定在。
+    </p>
+    <p className="law-egg__sign">—— 打盹中但一直醒着的奶黄包 🐱</p>
+  </>
+);
+
+const LETTER_STREAK30: ReactNode = (
+  <>
+    <p className="law-egg__greet">给连续学习了三十天的女孩子：</p>
+    <p className="law-egg__line">
+      三十天。
+      <br />
+      720 个小时。
+      <br />
+      你一天都没有缺席。
+    </p>
+    <p className="law-egg__line">
+      不是因为你从不觉得累，
+      <br />
+      而是因为累的时候你选择了继续。
+    </p>
+    <p className="law-egg__line">
+      这种坚持不是谁都做得到的。
+      <br />
+      你已经很了不起了。
+    </p>
+    <p className="law-egg__sign">—— 见证了你全部坚持的奶黄包 🐱</p>
+  </>
+);
+
 export const LETTERS: Record<EggTrigger, ReactNode> = {
   midnight: LETTER_MIDNIGHT,
   morning: LETTER_MORNING,
   firstLesson: LETTER_MAIN,
-  hundred: LETTER_MAIN,
+  hundred: LETTER_HUNDRED,
   streak3: LETTER_STREAK3,
   streak7: LETTER_STREAK7,
   wrongbook3: LETTER_WRONG,
@@ -350,10 +431,12 @@ export const LETTERS: Record<EggTrigger, ReactNode> = {
   graphicFirst: LETTER_GRAPHIC,
   exam30: LETTER_EXAM30,
   christmas: LETTER_CHRISTMAS,
-  symbol: LETTER_MAIN,
+  symbol: LETTER_SYMBOL,
   fullScore: LETTER_FULL_SCORE,
   notesFirst: LETTER_NOTES_FIRST,
   mockExamFirst: LETTER_MOCK_EXAM,
+  firstNote: LETTER_NOTES_FIRST,
+  streak30: LETTER_STREAK30,
 };
 
 export interface EggMeta {
@@ -383,6 +466,8 @@ export const EGG_META: Record<EggTrigger, EggMeta> = {
   fullScore: { emoji: "💯", title: "满分时刻", preview: "四道题全对的那一刻，你比想象中厉害。", hint: "首次自测全对" },
   notesFirst: { emoji: "✏️", title: "第一条笔记", preview: "写下来的，比背过的更牢。", hint: "写下你的第一条学习笔记" },
   mockExamFirst: { emoji: "📋", title: "模考初体验", preview: "模拟一万次，只为考场那一遍。", hint: "完成第一次模拟考试" },
+  firstNote: { emoji: "✏️", title: "第一条笔记", preview: "写下来的，比背过的更牢。", hint: "写下你的第一条学习笔记" },
+  streak30: { emoji: "🌙", title: "三十天的月光", preview: "三十天，你一天都没缺席。", hint: "连续三十天完成课时" },
 };
 
 /** 图鉴展示顺序：里程碑 → 时间型 → 隐藏款 */
@@ -404,4 +489,6 @@ export const EGG_ORDER: EggTrigger[] = [
   "fullScore",
   "notesFirst",
   "mockExamFirst",
+  "firstNote",
+  "streak30",
 ];
