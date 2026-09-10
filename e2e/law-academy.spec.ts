@@ -165,7 +165,7 @@ test.describe("law academy", () => {
     await expect(page.locator(".law-path")).toBeVisible();
   });
 
-  test("彩蛋图鉴：入口可达，解锁态与剪影态同屏", async ({ page }) => {
+  test("彩蛋图鉴：小猫三下打开，解锁态与剪影态同屏", async ({ page }) => {
     // 只解锁一部分彩蛋 → 图鉴里既有彩色卡也有剪影卡。
     // 时段型（清晨/深夜/考前/圣诞）必须保持已解锁，否则真实时间的彩蛋信会弹窗挡住交互
     await page.addInitScript(() => {
@@ -186,17 +186,18 @@ test.describe("law academy", () => {
       );
     });
     await page.goto("/law");
-    const entry = page.locator(".law-gallery-entry");
-    await expect(entry).toBeVisible();
-    await expect(entry).toContainText("6/14");
-    await entry.click();
+    // 入口已隐藏：连续点三下页脚小猫打开图鉴
+    const cat = page.locator(".law-egg-symbol");
+    await expect(cat).toBeVisible();
+    await cat.click();
+    await cat.click();
+    await cat.click();
     const gallery = page.locator(".law-gallery");
     await expect(gallery).toBeVisible();
-    await expect(gallery.locator(".law-gallery__head")).toContainText("已收集 6 / 14");
+    await expect(gallery.locator(".law-gallery__head")).toContainText("已收集 6 / 17");
     // 解锁卡：显示标题与预览；剪影卡：显示 ？？？ 与待解锁
     await expect(gallery.locator(".law-gallery__egg.is-unlocked")).toHaveCount(6);
     await expect(gallery.locator(".law-gallery__egg.is-locked").first()).toBeVisible();
-    expect(await gallery.locator(".law-gallery__egg.is-locked").count()).toBe(8);
     await expect(gallery.locator(".law-gallery__egg.is-unlocked").first()).toContainText("解锁");
     await expect(gallery.locator(".law-gallery__egg.is-locked b").first()).toHaveText("？？？");
     // 点开已解锁卡 → 重读信件弹窗
