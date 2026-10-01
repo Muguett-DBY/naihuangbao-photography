@@ -567,8 +567,9 @@ describe("audit regression coverage", () => {
   });
 
   it("keeps GitHub Actions on Node 24 compatible action runtimes", () => {
-    expect(ciWorkflowSource).toContain("actions/checkout@v5");
-    expect(ciWorkflowSource).toContain("actions/setup-node@v6");
+    // Accept newer action releases while retaining the Node 24 runtime baseline.
+    expect(Number(ciWorkflowSource.match(/actions\/checkout@v(\d+)/)?.[1])).toBeGreaterThanOrEqual(5);
+    expect(Number(ciWorkflowSource.match(/actions\/setup-node@v(\d+)/)?.[1])).toBeGreaterThanOrEqual(6);
     expect(ciWorkflowSource).toContain("node-version: 24");
     expect(packageSource).toContain('"node": ">=22.22.0"');
     expect(ciWorkflowSource).not.toContain("actions/checkout@v4");
