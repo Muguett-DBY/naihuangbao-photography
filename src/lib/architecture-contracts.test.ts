@@ -166,7 +166,7 @@ describe("architecture optimization contracts", () => {
     expect(packageJson.scripts["deadcode:check"]).toContain("knip");
     expect(packageJson.dependencies.three).toBe("0.185.1");
     expect(packageJson.devDependencies["@types/three"]).toBe("0.185.4");
-    expect(packageJson.devDependencies.wrangler).toBe("4.120.1");
+    expect(packageJson.devDependencies.wrangler).toBe("4.145.0");
     expect(packageJson.devDependencies.playwright).toBeUndefined();
     expect(existsSync(resolve(root, "src/types/animal-island-ui.d.ts"))).toBe(false);
     expect(read("src/components/admin/AdminLoading.tsx")).not.toContain("animal-island-ui");
