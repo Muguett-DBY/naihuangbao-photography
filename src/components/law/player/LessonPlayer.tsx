@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router";
 import type { LawLesson } from "../../../types/law";
 import { buildQuiz } from "../../../lib/law-quiz";
+import { safeLocalStorage } from "../../../lib/browser-storage";
 import { getLessonProgress, markStepDone, recordQuiz, touchLesson, type RecordQuizOpts } from "../../../lib/law-progress";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
@@ -21,6 +22,10 @@ import {
   type AutoSpeedId,
 } from "./lessonHelpers";
 import { ResultPhase, SummaryPhase } from "./LessonPhases";
+import { TeacherBubble } from "../classroom/TeacherBubble";
+import { useClassroom } from "../classroom/useClassroom";
+
+import * as tts from "../../../lib/law-tts";
 import { NotesPanel } from "../NotesPanel";
 import "../../../styles/law-visual.css";
 
@@ -76,9 +81,7 @@ export function LessonPlayer({
   const [navHighlight, setNavHighlight] = useState(0);
   // 步骤前进/后退的方向感：新内容沿行进方向滑入
   const [direction, setDirection] = useState(1);
-  const navMenuRef = useRef<HTMLDivElement>(null);
-  const navBtnRef = useRef<HTMLButtonElement>(null);
-  const navOpenedRef = useRef(false);
+  const navMenuRef = useRef<HTMLDivElement>(null), navBtnRef = useRef<HTMLButtonElement>(null), navOpenedRef = useRef(false);
   const [quizAttempt, setQuizAttempt] = useState(0);
   const reducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -95,6 +98,7 @@ export function LessonPlayer({
   const isCurrentDone = currentStep ? !!stepDone[currentStep.id] : false;
   const totalSteps = steps.length;
   const doneSteps = Object.keys(stepDone).length;
+  const { classroomMode, teacherScript, toggleClassroom } = useClassroom(currentStep);
   const graphic = LAW_GRAPHIC_MAP[lesson.id];
 
   // 自测题确定性生成；总结页依据它决定展示"来自测"还是"标记掌握"
@@ -139,7 +143,7 @@ export function LessonPlayer({
     item?.scrollIntoView({ block: "nearest" });
   }, [navOpen, navHighlight]);
 
-  // 归还焦点仅在"浮层曾开→关闭"迁移时：挂载时也跑会把焦点从页首抢到段落导航按钮
+  // 归还焦点仅在"曾开→关"时（挂载即跑会抢页首焦点）
   useEffect(() => {
     if (!navOpen && navOpenedRef.current) navBtnRef.current?.focus();
     navOpenedRef.current = navOpen;
@@ -347,9 +351,8 @@ export function LessonPlayer({
             </span>
           </div>
 
-          <motion.div
-            ref={stageRef}
-            className="law-player__stage"
+          {classroomMode && currentStep ? <TeacherBubble script={teacherScript} isSpeaking compact /> : null}
+          <motion.div ref={stageRef} className="law-player__stage"
             key={`${stepIndex}-${replayKey}`}
             initial={reducedMotion ? false : { opacity: 0, x: 20 * direction }}
             animate={{ opacity: 1, x: 0 }}
@@ -400,14 +403,15 @@ export function LessonPlayer({
             >
               {currentIsPlaceholder
                 ? "全文加载中……"
-                : isCurrentDone
-                  ? stepIndex === totalSteps - 1
-                    ? "完成本课 →"
-                    : "下一步 →"
+                : isCurrentDone ? (stepIndex === totalSteps - 1 ? "完成本课 →" : "下一步 →")
                   : currentStep
                     ? KIND_PENDING_HINT[currentStep.kind] ?? "先完成上面的小任务哦"
                     : "先完成上面的小任务哦"}
             </button>
+            <button type="button" aria-pressed={classroomMode} title="课堂模式"
+              className={`law-player__classroom ${classroomMode ? "is-on" : ""}`}
+              onClick={() => { const n = toggleClassroom(); if (!n) tts.cancel(); }}
+            >🎓</button>
             <button
               type="button"
               className={`law-player__auto ${autoPlay ? "is-on" : ""}`}
@@ -490,4 +494,3 @@ export function LessonPlayer({
     </div>
   );
 }
-
