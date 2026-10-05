@@ -56,6 +56,8 @@ test.describe("law offline learning", () => {
     // ② 学科目录（整本装配全部来自运行时缓存）
     await page.goto(CACHED_SUBJECT);
     await expect(page.locator(".law-subject__hero h1")).toContainText("民法");
+    // 等待书本数据从 SW 缓存加载完成（骨架消失 → 路径地图出现）
+    await expect(page.locator(".law-loading")).toBeHidden({ timeout: 15_000 });
     await expect(page.locator(".law-path")).toBeVisible();
 
     // ③ 已学过的课
