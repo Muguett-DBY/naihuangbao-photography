@@ -37,7 +37,8 @@ function contentSecurityPolicy(hashes) {
     "style-src-attr 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
-    "connect-src 'self' https://static.cloudflareinsights.com https://cloudflareinsights.com",
+    // wss://speech.platform.bing.com = Edge TTS 神经嗓音合成端点（src/lib/edge-tts.ts）
+    "connect-src 'self' wss://speech.platform.bing.com https://static.cloudflareinsights.com https://cloudflareinsights.com",
     "media-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",
