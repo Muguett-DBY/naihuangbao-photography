@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link } from "react-router";
 import type { LawLesson } from "../../../types/law";
 import { buildQuiz } from "../../../lib/law-quiz";
@@ -7,7 +7,7 @@ import { safeLocalStorage } from "../../../lib/browser-storage";
 import { getLessonProgress, markStepDone, recordQuiz, touchLesson, type RecordQuizOpts } from "../../../lib/law-progress";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
-import { StepStage } from "./StepStage";
+import { ClassroomPlayer } from "../classroom/ClassroomPlayer";
 import { QuizRunner } from "./QuizRunner";
 import { RawProvisionPanel } from "./RawProvisionPanel";
 import { useLessonHydration } from "./useLessonHydration";
@@ -83,7 +83,6 @@ export function LessonPlayer({
   const [direction, setDirection] = useState(1);
   const navMenuRef = useRef<HTMLDivElement>(null), navBtnRef = useRef<HTMLButtonElement>(null), navOpenedRef = useRef(false);
   const [quizAttempt, setQuizAttempt] = useState(0);
-  const reducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
 
@@ -202,7 +201,7 @@ export function LessonPlayer({
     setMood("idle");
   }
 
-  function handleQuizDone(correct: number, total: number, _wrong: number, wrongDetails?: RecordQuizOpts["wrongDetails"]) {
+  function handleQuizDone(correct: number, total: number, _wrong = 0, wrongDetails?: RecordQuizOpts["wrongDetails"]) {
     // 及格线语义在 recordQuiz 内统一：不及格才进错题本，及格推进复习阶梯——
     // 结果页的"通过/错题本"文案从此和实际状态一致
     recordQuiz(lesson.id, correct, total, totalSteps, { wrongDetails });
@@ -352,26 +351,22 @@ export function LessonPlayer({
           </div>
 
           {classroomMode && currentStep ? <TeacherBubble script={teacherScript} isSpeaking compact /> : null}
-          <motion.div ref={stageRef} className="law-player__stage"
-            key={`${stepIndex}-${replayKey}`}
-            initial={reducedMotion ? false : { opacity: 0, x: 20 * direction }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -12 }}
-            transition={{ duration: 0.22 }}
-          >
-            {currentStep ? (
-              <StepStage
-                step={currentStep}
-                accent={subject.accent}
-                accentSoft={subject.accentSoft}
-                onDone={handleStepDone}
-              />
-            ) : currentIsPlaceholder ? (
-              <p className="law-player__restloading" role="status">
-                正在加载本课剩余全文……
-              </p>
-            ) : null}
-          </motion.div>
+          <ClassroomPlayer
+            classroomOn={classroomMode}
+            blocked={currentIsPlaceholder}
+            lesson={activeLesson}
+            quizItems={quiz.slice(0, 4)}
+            step={currentStep}
+            enterKey={`${stepIndex}-${replayKey}`}
+            direction={direction}
+            accent={subject.accent}
+            accentSoft={subject.accentSoft}
+            stageRef={stageRef}
+            onStageDone={handleStepDone}
+            onSceneStepDone={(stepId) => setStepDone((prev) => (prev[stepId] ? prev : { ...prev, [stepId]: true }))}
+            onComplete={() => { touchLesson(lesson.id); setPhase("summary"); }}
+            onQuizDone={handleQuizDone}
+          />
 
           <div className="law-player__controls">
             <button

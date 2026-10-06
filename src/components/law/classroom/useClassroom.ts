@@ -9,8 +9,9 @@ import type { LawStep } from "../../../types/law";
  * 持久化：nhb-law-classroom 存储用户偏好。
  */
 export function useClassroom(currentStep: LawStep | undefined) {
+  // 课堂模式（场景化视频课堂）为 opt-in：首次使用默认关闭，🎓 切换后记住偏好
   const [classroomMode, setClassroomMode] = useState(
-    () => safeLocalStorage.getItem("nhb-law-classroom") !== "off"
+    () => safeLocalStorage.getItem("nhb-law-classroom") === "on"
   );
 
   const teacherScript = useMemo(() => {
