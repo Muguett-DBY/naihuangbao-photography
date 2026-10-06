@@ -15,19 +15,10 @@ import type { ClassroomScene } from "../../../lib/law-classroom";
 import * as tts from "../../../lib/law-tts";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { C, SUBJECT_ACCENTS, VIDEO } from "../../../remotion/theme";
-import { ConceptScene } from "../../../remotion/scenes/ConceptScene";
-import { ListScene } from "../../../remotion/scenes/ListScene";
-import { CompareScene, type CompareRow } from "../../../remotion/scenes/CompareScene";
-import { FlowScene, flowSceneDurationInFrames } from "../../../remotion/scenes/FlowScene";
-import {
-  MnemonicScene,
-  mnemonicSceneDurationInFrames,
-} from "../../../remotion/scenes/MnemonicScene";
-import {
-  TimelineScene,
-  timelineSceneDurationInFrames,
-  type TimelineEvent,
-} from "../../../remotion/scenes/TimelineScene";
+import { flowSceneDurationInFrames } from "../../../remotion/scenes/FlowScene";
+import { mnemonicSceneDurationInFrames } from "../../../remotion/scenes/MnemonicScene";
+import { timelineSceneDurationInFrames } from "../../../remotion/scenes/TimelineScene";
+import { SceneView, splitMnemonic } from "./SceneView";
 import { LawMascot } from "../LawMascot";
 import { TeacherBubble } from "./TeacherBubble";
 import { ClassroomControls, CLASSROOM_SPEEDS } from "./ClassroomControls";
@@ -47,104 +38,6 @@ import "../../../styles/law-classroom.css";
  * 集成回调（可选）：onSceneChange 把推进到的场景同步给父级记进度，
  * onFinish 在全部场景播完时通知父级收课。
  */
-
-/* ==================== 场景 → Remotion 场景组件 ==================== */
-
-/** "概念甲与概念乙"式标题拆两栏；拆不开用兜底栏名 */
-function splitCompareTitles(title: string): [string, string] {
-  const m = /^([^与和]{2,10})[与和]([^与和]{2,10})$/.exec(title.trim());
-  if (m) return [m[1], m[2]];
-  return ["概念甲", "概念乙"];
-}
-
-/** "维度：甲值 ↔ 乙值" → 对比行；任一条解析不出返回 null（整场退回列表） */
-function parseCompareRows(items: readonly string[]): CompareRow[] | null {
-  if (items.length === 0) return null;
-  const rows: CompareRow[] = [];
-  for (const item of items) {
-    const at = item.indexOf("↔");
-    if (at < 0) return null;
-    const clean = (side: string) => side.replace(/^[^：:]{1,14}[：:]/, "").trim();
-    const left = clean(item.slice(0, at));
-    const right = clean(item.slice(at + 1));
-    if (!left || !right) return null;
-    rows.push({ left, right });
-  }
-  return rows;
-}
-
-/** "时点：事件" → 时间线事件；没有冒号就整条作事件文本 */
-function parseTimelineEvent(item: string): TimelineEvent {
-  const at = item.search(/[：:]/);
-  if (at <= 0) return { time: "·", event: item };
-  return { time: item.slice(0, at).trim(), event: item.slice(at + 1).trim() };
-}
-
-/** 记忆卡拆分：首行口诀，其余行作解释；单行时解释留空 */
-function splitMnemonic(content: string): [string, string] {
-  const lines = content.split(/\n+/).map((line) => line.trim()).filter(Boolean);
-  if (lines.length >= 2) return [lines[0], lines.slice(1).join(" ")];
-  return [content.trim(), ""];
-}
-
-/** 正文按空行/换行拆段（ConceptScene 逐段入场） */
-function paragraphsOf(content: string): string[] {
-  return content.split(/\n+/).map((p) => p.trim()).filter(Boolean);
-}
-
-/** 单场场景 → 对应的 Remotion 场景组件（帧驱动，确定性渲染） */
-function SceneView({ scene, accent }: { scene: ClassroomScene; accent: string }) {
-  switch (scene.type) {
-    case "compare": {
-      const rows = parseCompareRows(scene.items);
-      if (rows) {
-        const [leftTitle, rightTitle] = splitCompareTitles(scene.title);
-        return (
-          <CompareScene leftTitle={leftTitle} rightTitle={rightTitle} rows={rows} rightAccent={accent} />
-        );
-      }
-      return <ListScene title={scene.title} items={scene.items} accent={accent} />;
-    }
-    case "timeline":
-      return <TimelineScene title={scene.title} events={scene.items.map(parseTimelineEvent)} />;
-    case "flow":
-      return <FlowScene title={scene.title} steps={scene.items} />;
-    case "mnemonic": {
-      const [mnemonic, explanation] = splitMnemonic(scene.content);
-      return <MnemonicScene mnemonic={mnemonic} explanation={explanation} />;
-    }
-    case "alert":
-      // 例外/易错：警示色（theme.C.err）压过学科色，视觉上先声夺人
-      return (
-        <ConceptScene
-          title={scene.title}
-          content={paragraphsOf(scene.content)}
-          keyTerms={scene.keyTerms}
-          accent={C.err}
-        />
-      );
-    case "list":
-    case "checklist":
-    case "quiz":
-      // quiz 场景在课堂视频里只作"考点预告"逐条展示，互动测验仍由课时页承接
-      return (
-        <ListScene
-          title={scene.title}
-          items={scene.items.length > 0 ? scene.items : paragraphsOf(scene.content)}
-          accent={accent}
-        />
-      );
-    default:
-      return (
-        <ConceptScene
-          title={scene.title}
-          content={paragraphsOf(scene.content)}
-          keyTerms={scene.keyTerms}
-          accent={accent}
-        />
-      );
-  }
-}
 
 /* ==================== 时序：每场多长（帧） ==================== */
 
@@ -260,17 +153,43 @@ export function ClassroomPlayer({
   }, [frame, segments]);
   const current = segments[segIndex];
 
-  /* —— 播放器事件 → React 状态（帧号/播放态） —— */
+  /* —— 播放器事件 → React 状态（场景游标/播放态） ——
+   * 帧号不逐帧进 React 状态：组件消费的只有场景序号（角标/播报/进度/tts 同步
+   * 全部由 segIndex 派生），而每秒 30 次的 setFrame 会与 Remotion 播放循环自身
+   * 的每帧 setState 叠加，触发 React 嵌套更新上限（Maximum update depth exceeded）。
+   * 这里只在"跨场景（或 0↔正，代表播放已启动）"时落一次 state，React 对相同
+   * 返回值直接 bail-out，重渲染频率从 30/s 降到场景切换频率。 */
+  const segmentsRef = useRef(segments);
+  segmentsRef.current = segments;
   useEffect(() => {
     const player = playerRef.current;
     if (!player) return;
-    const onFrameUpdate = (event: { detail: { frame: number } }) => setFrame(event.detail.frame);
+    const indexAt = (frame: number) => {
+      let index = 0;
+      const list = segmentsRef.current;
+      for (let i = 0; i < list.length; i += 1) {
+        if (frame >= list[i].start) index = i;
+      }
+      return index;
+    };
+    const onFrameUpdate = (event: { detail: { frame: number } }) => {
+      const next = event.detail.frame;
+      setFrame((prev) => {
+        if (next === prev) return prev;
+        if ((prev > 0) === (next > 0) && indexAt(next) === indexAt(prev)) return prev;
+        return next;
+      });
+    };
     const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
     player.addEventListener("frameupdate", onFrameUpdate);
     player.addEventListener("play", onPlay);
     player.addEventListener("pause", onPause);
     player.addEventListener("ended", onPause);
+    // autoStart 的自动播放发生在 <Player>（子组件）的 effect 里且同步派发 play，
+    // 早于本订阅 —— 挂载后按播放器真实播放态对齐一次，否则首次点播放会变成
+    // 一次"看不见的暂停"（内部在播、界面停在暂停态），要按两下才真正开播。
+    setPlaying(player.isPlaying());
     return () => {
       player.removeEventListener("frameupdate", onFrameUpdate);
       player.removeEventListener("play", onPlay);

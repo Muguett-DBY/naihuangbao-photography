@@ -1,19 +1,27 @@
 import { safeLocalStorage } from "./browser-storage";
+import { edgeTtsAvailable, synthesizeSpeech, type EdgeWordBoundary } from "./edge-tts";
 
 /**
- * TTS 语音抽象层（双引擎，零外部依赖）：
+ * TTS 语音抽象层（三引擎，零外部依赖）：
  *
- * 引擎 1（优先）：浏览器 SpeechSynthesis API —— 零依赖、离线可用；
+ * 引擎 1（优先）：Edge TTS —— 浏览器 WebSocket 直连微软朗读服务（见 edge-tts.ts），
+ *   zh-CN-XiaoxiaoNeural 神经声线，MP3 经 <audio> 播放。首包 1.5 秒超时或任何
+ *   错误即无缝回退引擎 2，用户无感；端点连续失败 60 秒内不再尝试（避免每个
+ *   场景都白等超时）。讲稿按文本哈希做内存缓存（上限 50 条，LRU），语速变化
+ *   不重新合成 —— 同一段音频用 audio.playbackRate 变速重放；场景切换时旧
+ *   合成 abort、旧音频即停。
+ * 引擎 2（兜底）：浏览器 SpeechSynthesis API —— 零依赖、离线可用；
  *   自动挑选最佳中文声线（zh-CN 本地声线优先，已知高质量神经音色加权）。
- * 引擎 2（兜底）：节拍模拟 —— 环境不支持或用户关闭时，按中文语速估算
+ * 引擎 3（保底）：节拍模拟 —— 环境不支持或用户关闭时，按中文语速估算
  *   朗读时长走定时器，保证 speak 的 onEnd 节奏依然成立（课堂流程不会
  *   卡在"等朗读结束"，也不会在无语音环境里重叠推进）。
  *
  * 接口：
- * - isSupported —— 环境是否支持语音合成（引擎 1）
- * - speak(text, { rate?, onEnd?, onError? }) —— 朗读一段文字，结束回调
- * - cancel() —— 立即停止（真实朗读与模拟计时一并作废）
- * - pause() / resume() —— 暂停 / 恢复（仅引擎 1 有真实暂停语义）
+ * - isSupported —— 环境是否支持 SpeechSynthesis（引擎 2；引擎 1 可用性在
+ *   speak 时独立探测，两者都不支持才走节拍模拟）
+ * - speak(text, { rate?, onEnd?, onError?, onWordBoundary? }) —— 朗读一段文字
+ * - cancel() —— 立即停止（三种引擎一并作废）
+ * - pause() / resume() —— 暂停 / 恢复（引擎 1、2 有真实暂停语义）
  * - setTtsEnabled(bool) / isTtsEnabled() —— 用户总开关，关闭即静默并停止
  *
  * 队列管理：任意时刻最多一段朗读 —— 新的 speak 自动取消旧的；被取消
@@ -24,7 +32,14 @@ import { safeLocalStorage } from "./browser-storage";
 
 const TTS_ENABLED_KEY = "nhb-law-tts";
 
-/** 环境是否支持浏览器语音合成（引擎 1） */
+/** Edge 首包超时预算（与 edge-tts 默认一致，这里显式传便于语义集中） */
+const EDGE_FIRST_PACKET_TIMEOUT_MS = 1500;
+/** Edge 端点失败后的冷静期：期间直接走引擎 2，不让每个场景都白等超时 */
+const EDGE_FAILURE_BACKOFF_MS = 60000;
+/** 讲稿音频缓存上限（条） */
+const EDGE_CACHE_MAX = 50;
+
+/** 环境是否支持浏览器语音合成（引擎 2） */
 export const isSupported: boolean = typeof window !== "undefined" && "speechSynthesis" in window;
 
 let enabled = safeLocalStorage.getItem(TTS_ENABLED_KEY) !== "off";
@@ -41,7 +56,7 @@ export function setTtsEnabled(v: boolean): void {
   if (!v) cancel();
 }
 
-/* ---------------- 引擎 1：中文声线自动挑选 ---------------- */
+/* ---------------- 引擎 2：中文声线自动挑选 ---------------- */
 
 /** 高质量神经音色关键词（Edge/Chrome/macOS 常见中文声线，命中即加权） */
 const PREMIUM_HINTS = ["xiaoxiao", "xiaoyi", "yunxi", "yunyang", "yunjian", "yunxia", "tingting", "meijia"] as const;
@@ -91,13 +106,27 @@ function pickVoice(): SpeechSynthesisVoice | null {
 
 /* ---------------- 队列管理：代际号 + 朗读入口 ---------------- */
 
+/** 词边界事件：Edge 引擎给文本+毫秒偏移；SpeechSynthesis 引擎只给 charIndex */
+export interface WordBoundaryEvent {
+  /** 词文本（Edge 引擎；引擎 2 为空串） */
+  text: string;
+  /** 相对本次朗读音频开头的偏移（毫秒；引擎 2 为 0） */
+  offsetMs: number;
+  /** 词时长（毫秒；引擎 2 为 0） */
+  durationMs: number;
+  /** 字符下标（引擎 2 的 utterance.onboundary；Edge 引擎缺省） */
+  charIndex?: number;
+}
+
 export interface SpeakOptions {
-  /** 语速 0.5–2.0，默认 1.0（越界自动收敛到边界） */
+  /** 语速 0.5–2.0，默认 1.0（越界自动收敛到边界；Edge 引擎用 playbackRate 变速，不重新合成） */
   rate?: number;
   /** 朗读结束回调（被更新的 speak 或 cancel 取代后不再触发） */
   onEnd?: () => void;
-  /** 引擎 1 朗读出错回调 */
+  /** 引擎 2 朗读出错回调（引擎 1 出错时静默回退引擎 2，不触发） */
   onError?: () => void;
+  /** 词边界回调（引擎 1 来自服务端 WordBoundary 元数据；引擎 2 来自 onboundary，可能不触发） */
+  onWordBoundary?: (event: WordBoundaryEvent) => void;
 }
 
 let generation = 0;
@@ -115,30 +144,171 @@ function clampRate(rate: number | undefined): number {
   return Math.min(2, Math.max(0.5, r));
 }
 
-/** 朗读一段文字。任意时刻最多一段：新的 speak 自动取消旧的（旧 onEnd 不触发）。 */
-export function speak(text: string, options: SpeakOptions = {}): void {
-  // 先作废上一段（含空文本情形）：任何新的 speak 都不允许与旧朗读重叠
-  const gen = ++generation;
-  clearFallbackTimer();
+/* ---------------- 引擎 1：Edge TTS（合成缓存 + 播放） ---------------- */
 
-  if (!text) {
-    options.onEnd?.();
-    return;
+interface EdgeCacheEntry {
+  audio: ArrayBuffer;
+  boundaries: EdgeWordBoundary[];
+}
+
+/** 讲稿 → MP3 内存缓存（Map 保持插入序：命中即续期，淘汰最旧 → LRU） */
+const edgeCache = new Map<string, EdgeCacheEntry>();
+
+/** FNV-1a 32 位文本哈希（缓存 key；长度入尾避免同哈希不同长的碰撞） */
+function hashText(text: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i += 1) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
   }
+  return `${(h >>> 0).toString(16)}:${text.length.toString(16)}`;
+}
 
-  // —— 引擎 2：节拍模拟（不支持 / 用户关闭时兜底；中文 ≈ 每字 250ms，封顶 8s）
-  if (!isSupported || !enabled) {
-    const ms = Math.min((text.length * 250) / clampRate(options.rate), 8000);
-    fallbackTimer = setTimeout(() => {
-      if (gen === generation) {
-        fallbackTimer = null;
-        options.onEnd?.();
+function edgeCacheGet(key: string): EdgeCacheEntry | null {
+  const entry = edgeCache.get(key);
+  if (!entry) return null;
+  edgeCache.delete(key);
+  edgeCache.set(key, entry); // 触摸续期
+  return entry;
+}
+
+function edgeCachePut(key: string, entry: EdgeCacheEntry): void {
+  edgeCache.delete(key);
+  edgeCache.set(key, entry);
+  while (edgeCache.size > EDGE_CACHE_MAX) {
+    const oldest = edgeCache.keys().next().value;
+    if (oldest === undefined) break;
+    edgeCache.delete(oldest);
+  }
+}
+
+/** 正在播放的 Edge 音频（场景切换/取消时即停并回收 Blob URL） */
+interface EdgePlayback {
+  el: HTMLAudioElement;
+  url: string;
+  boundaries: EdgeWordBoundary[];
+  fired: number;
+  ticker: ReturnType<typeof setInterval> | null;
+}
+
+let edgePlayback: EdgePlayback | null = null;
+let edgeSynthAbort: AbortController | null = null;
+let edgeBackoffUntil = 0;
+let edgePaused = false; // pause() 落在合成等待期时，合成完成后不再自动开口
+
+/** 引擎 1 环境探测（调用时判断，不在模块顶层读浏览器全局） */
+function edgePlaybackAvailable(): boolean {
+  return edgeTtsAvailable()
+    && typeof Audio !== "undefined"
+    && typeof Blob !== "undefined"
+    && typeof URL !== "undefined"
+    && typeof URL.createObjectURL === "function";
+}
+
+/** 停掉正在播放的引擎 1 音频并回收 Blob URL（不动作废在途合成） */
+function stopEdgePlaybackOnly(): void {
+  if (edgePlayback) {
+    if (edgePlayback.ticker !== null) clearInterval(edgePlayback.ticker);
+    edgePlayback.el.pause();
+    edgePlayback.el.src = "";
+    URL.revokeObjectURL(edgePlayback.url);
+    edgePlayback = null;
+  }
+}
+
+/** 立即中止引擎 1：作废在途合成、停掉正在播放的音频（场景切换/取消共用） */
+function abortEdge(): void {
+  if (edgeSynthAbort) {
+    edgeSynthAbort.abort();
+    edgeSynthAbort = null;
+  }
+  stopEdgePlaybackOnly();
+}
+
+/** 播放缓存/新合成的 MP3：playbackRate 映射语速；onended 交还 onEnd */
+function playEdge(gen: number, text: string, entry: EdgeCacheEntry, options: SpeakOptions): void {
+  const url = URL.createObjectURL(new Blob([entry.audio], { type: "audio/mpeg" }));
+  const el = new Audio(url);
+  el.playbackRate = clampRate(options.rate);
+  const state: EdgePlayback = { el, url, boundaries: entry.boundaries, fired: 0, ticker: null };
+  edgePlayback = state;
+
+  // 所有回调先确认自己仍是"当前播放"（场景切换后 edgePlayback 已换人/清空），
+  // 防止旧音频的迟到事件干扰新场景的播放。
+  el.onended = () => {
+    if (edgePlayback !== state) return;
+    stopEdgePlaybackOnly();
+    if (gen === generation) options.onEnd?.();
+  };
+  const fallbackAfterPlaybackError = () => {
+    if (edgePlayback !== state || gen !== generation) return;
+    // 播放期错误属本机问题（非端点故障）：不进冷静期，直接无缝回退引擎 2
+    stopEdgePlaybackOnly();
+    fallbackFromEdge(gen, text, options);
+  };
+  el.onerror = fallbackAfterPlaybackError;
+
+  // 词边界推进：按音频媒体时间（currentTime 不受 playbackRate 影响）对齐 offsetMs
+  if (options.onWordBoundary && state.boundaries.length > 0) {
+    state.ticker = setInterval(() => {
+      if (gen !== generation || edgePlayback !== state) {
+        clearInterval(state.ticker as ReturnType<typeof setInterval>);
+        state.ticker = null;
+        return;
       }
-    }, ms);
-    return;
+      const nowMs = el.currentTime * 1000;
+      while (state.fired < state.boundaries.length && state.boundaries[state.fired].offsetMs <= nowMs) {
+        const b = state.boundaries[state.fired];
+        state.fired += 1;
+        options.onWordBoundary?.({ text: b.text, offsetMs: b.offsetMs, durationMs: b.durationMs });
+      }
+    }, 100);
   }
 
-  // —— 引擎 1：SpeechSynthesis
+  if (edgePaused) return; // 暂停落在合成等待期：合成完先挂起，resume() 再开口
+  const played = el.play();
+  if (played) played.catch(fallbackAfterPlaybackError);
+}
+
+/** 引擎 1 失败后的无缝兜底：有引擎 2 用引擎 2，否则节拍模拟保节奏 */
+function fallbackFromEdge(gen: number, text: string, options: SpeakOptions): void {
+  if (isSupported) speakWithSpeechSynthesis(gen, text, options);
+  else speakWithBeatSimulation(gen, text, options);
+}
+
+/** 引擎 1 主流程：查缓存 → 命中即播；未命中建连合成（首包 1.5s 预算）→ 失败回退引擎 2 */
+function startEdge(gen: number, text: string, options: SpeakOptions): void {
+  const key = hashText(text);
+  const cached = edgeCacheGet(key);
+  if (cached) {
+    playEdge(gen, text, cached, options);
+    return;
+  }
+  const controller = new AbortController();
+  edgeSynthAbort = controller;
+  synthesizeSpeech(text, {
+    firstPacketTimeoutMs: EDGE_FIRST_PACKET_TIMEOUT_MS,
+    signal: controller.signal,
+  }).then((result) => {
+    if (edgeSynthAbort === controller) edgeSynthAbort = null; // 只回收自己的控制器
+    // 合成结果无论是否已被取代都值得入缓存（用户拖回本场即秒开）
+    edgeCachePut(key, { audio: result.audio, boundaries: result.boundaries });
+    if (gen !== generation) return;
+    playEdge(gen, text, { audio: result.audio, boundaries: result.boundaries }, options);
+  }).catch((error: unknown) => {
+    if (edgeSynthAbort === controller) edgeSynthAbort = null;
+    if (gen !== generation) return;
+    if ((error as Error | undefined)?.name === "AbortError") return; // 只是场景切换作废，非端点故障
+    // 首包超时 / 连接失败 / turn.end 前断开：端点当前不可用 → 冷静期 + 无缝回退
+    edgeBackoffUntil = Date.now() + EDGE_FAILURE_BACKOFF_MS;
+    fallbackFromEdge(gen, text, options);
+  });
+}
+
+/* ---------------- 引擎 2：SpeechSynthesis ---------------- */
+
+/** 引擎 2：原 SpeechSynthesis 路径（引擎 1 不可用/失败时的无缝兜底） */
+function speakWithSpeechSynthesis(gen: number, text: string, options: SpeakOptions): void {
   // cancel() 与 speak() 同拍紧邻时 Chrome 偶发吞声，推迟到下一拍再开口。
   window.speechSynthesis.cancel();
   window.setTimeout(() => {
@@ -154,24 +324,95 @@ export function speak(text: string, options: SpeakOptions = {}): void {
     utterance.onerror = () => {
       if (gen === generation) options.onError?.();
     };
-    window.speechSynthesis.resume(); // 解除 Chrome 偶发的 paused 卡死
+    utterance.onboundary = (event) => {
+      if (gen !== generation) return;
+      options.onWordBoundary?.({
+        text: "",
+        offsetMs: 0,
+        durationMs: 0,
+        charIndex: event.charIndex,
+      });
+    };
+    // 解除 Chrome 偶发的 paused 卡死；但用户正暂停（pause 落在 Edge 在途窗口、
+    // 回退抵达时已被 pause）时不得解除 —— 让 utterance 入队挂起，resume() 再开口，
+    // 与引擎 1 的「合成完先挂起，resume() 再开口」语义对齐。
+    if (!edgePaused) window.speechSynthesis.resume();
     window.speechSynthesis.speak(utterance);
   }, 0);
 }
 
-/** 立即停止：真实朗读取消、模拟计时作废，两者的回调都不再触发 */
+/* ---------------- 引擎 3：节拍模拟 ---------------- */
+
+/** 引擎 3：中文 ≈ 每字 250ms，封顶 8s（无语音环境 / 用户关闭时的保底节奏） */
+function speakWithBeatSimulation(gen: number, text: string, options: SpeakOptions): void {
+  const ms = Math.min((text.length * 250) / clampRate(options.rate), 8000);
+  fallbackTimer = setTimeout(() => {
+    if (gen === generation) {
+      fallbackTimer = null;
+      options.onEnd?.();
+    }
+  }, ms);
+}
+
+/* ---------------- 朗读入口 ---------------- */
+
+/** 朗读一段文字。任意时刻最多一段：新的 speak 自动取消旧的（旧 onEnd 不触发）。 */
+export function speak(text: string, options: SpeakOptions = {}): void {
+  // 先作废上一段（含空文本情形）：任何新的 speak 都不允许与旧朗读重叠；
+  // 引擎 1 的在途合成与播放音频也在此一并 abort（场景切换即停旧声）。
+  const gen = ++generation;
+  clearFallbackTimer();
+  abortEdge();
+  edgePaused = false;
+
+  if (!text) {
+    options.onEnd?.();
+    return;
+  }
+
+  // —— 用户关闭：节拍模拟保节奏（与既有语义一致）
+  if (!enabled) {
+    speakWithBeatSimulation(gen, text, options);
+    return;
+  }
+
+  // —— 引擎 1：Edge TTS（端点冷静期内不尝试，免每个场景白等超时）
+  if (edgePlaybackAvailable() && Date.now() >= edgeBackoffUntil) {
+    startEdge(gen, text, options);
+    return;
+  }
+
+  // —— 引擎 2：SpeechSynthesis
+  if (isSupported) {
+    speakWithSpeechSynthesis(gen, text, options);
+    return;
+  }
+
+  // —— 引擎 3：节拍模拟
+  speakWithBeatSimulation(gen, text, options);
+}
+
+/** 立即停止：引擎 1 合成/播放、引擎 2 朗读、引擎 3 计时一并作废，回调都不再触发 */
 export function cancel(): void {
   generation += 1;
   clearFallbackTimer();
+  abortEdge();
   if (isSupported) window.speechSynthesis.cancel();
 }
 
-/** 暂停当前朗读（仅引擎 1；引擎 2 的模拟计时不支持暂停） */
+/** 暂停当前朗读（引擎 1、2 有真实暂停语义；引擎 3 的模拟计时不支持暂停） */
 export function pause(): void {
+  edgePaused = true;
+  if (edgePlayback) edgePlayback.el.pause();
   if (isSupported) window.speechSynthesis.pause();
 }
 
-/** 恢复当前朗读（仅引擎 1） */
+/** 恢复当前朗读（仅引擎 1、2；引擎 3 的模拟计时不支持暂停） */
 export function resume(): void {
+  edgePaused = false;
+  if (edgePlayback) {
+    const played = edgePlayback.el.play();
+    if (played) played.catch(() => { /* 恢复失败保持静默，ended 语义不受影响 */ });
+  }
   if (isSupported) window.speechSynthesis.resume();
 }
