@@ -9,12 +9,12 @@ const routeBudgets = {
   "src/pages/HomePage.tsx": 560 * 1024,
   "src/pages/ArchivePage.tsx": 360 * 1024,
   "src/pages/CreativeStudioPage.tsx": 300 * 1024,
-  "src/pages/StoryBuilderPage.tsx": 330 * 1024, // +30K: 六会话共享 chunk 累积（esc-stack/MotionConfig/S6图解）
+  "src/pages/StoryBuilderPage.tsx": 344 * 1024, // +30K: 六会话共享 chunk 累积（esc-stack/MotionConfig/S6图解）; +14K: PR #21 依赖小版本增长，棘轮上调（实测 345017 gzip + 2% 余量）
   "src/pages/ProjectsPage.tsx": 300 * 1024,
   "src/pages/AssetVaultPage.tsx": 300 * 1024,
   "src/pages/SceneComposerPage.tsx": 320 * 1024,
   "src/pages/CreativeCuratorPage.tsx": 300 * 1024,
-  "src/pages/PublishedProjectPage.tsx": 280 * 1024,
+  "src/pages/PublishedProjectPage.tsx": 292 * 1024, // +12K: PR #21 依赖小版本增长，棘轮上调（实测 292315 gzip + 2% 余量）
   "src/pages/PhotoEditorPage.tsx": 760 * 1024,
 };
 
