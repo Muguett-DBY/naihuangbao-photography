@@ -1,5 +1,5 @@
 import { safeLocalStorage } from "./browser-storage";
-import { edgeTtsAvailable, synthesizeSpeech, type EdgeWordBoundary } from "./edge-tts";
+import { edgeTtsAvailable, synthesizeEdge, type EdgeWordBoundary } from "./edge-tts";
 
 /**
  * TTS 语音抽象层（三引擎，零外部依赖）：
@@ -286,7 +286,7 @@ function startEdge(gen: number, text: string, options: SpeakOptions): void {
   }
   const controller = new AbortController();
   edgeSynthAbort = controller;
-  synthesizeSpeech(text, {
+  synthesizeEdge(text, {
     firstPacketTimeoutMs: EDGE_FIRST_PACKET_TIMEOUT_MS,
     signal: controller.signal,
   }).then((result) => {

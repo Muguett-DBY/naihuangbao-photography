@@ -177,6 +177,8 @@ beforeEach(() => {
   createObjectUrl.mockClear();
   revokeObjectUrl.mockClear();
   // 浏览器全局替身（law-tts 在模块加载时探测 window.speechSynthesis，必须先装再 import）
+  // Edge UA：统一入口 synthesizeEdge 按真机规则选中 direct 直连通道，测试 mock 的 WS 才能被走到
+  vi.stubGlobal("navigator", { userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0" });
   vi.stubGlobal("WebSocket", MockWebSocket);
   vi.stubGlobal("Audio", MockAudio);
   vi.stubGlobal("SpeechSynthesisUtterance", MockUtterance);

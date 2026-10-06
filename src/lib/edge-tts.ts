@@ -402,3 +402,63 @@ export function synthesizeSpeech(text: string, options: EdgeSynthesisOptions = {
       .catch(fail);
   });
 }
+
+/* ==================== 传输通道（直连 / 同域代理） ==================== */
+
+export type EdgeTransport = "direct" | "proxy";
+
+/** 同域 Pages Function 代理（functions/api/tts.ts：Worker 补发 Edge UA） */
+export const TTS_PROXY_ENDPOINT = "/api/tts";
+
+/**
+ * 通道选择：上游端点校验 User-Agent 必须含 Edg/（Edge 标识），而浏览器禁止自定义
+ * UA —— Edge 用户直连最快（不经服务端），其余浏览器走同域代理，两者都失败时
+ * 由调用方无缝回退 SpeechSynthesis。
+ */
+export function pickEdgeTransport(
+  userAgent: string = typeof navigator !== "undefined" ? navigator.userAgent : "",
+): EdgeTransport {
+  return /Edg\//.test(userAgent) ? "direct" : "proxy";
+}
+
+/** 走 /api/tts 代理合成：POST JSON → audio/mpeg 字节（词边界元数据代理侧未采集） */
+export async function synthesizeViaProxy(
+  text: string,
+  options: Pick<EdgeSynthesisOptions, "voice" | "rate" | "signal" | "onFirstPacket"> = {},
+): Promise<EdgeSynthesis> {
+  const controller = new AbortController();
+  const onAbort = () => controller.abort();
+  if (options.signal) {
+    if (options.signal.aborted) {
+      const err = new Error("Edge TTS synthesis aborted");
+      err.name = "AbortError";
+      throw err;
+    }
+    options.signal.addEventListener("abort", onAbort);
+  }
+  const totalTimer = setTimeout(() => controller.abort(), EDGE_TOTAL_TIMEOUT_MS);
+  try {
+    const response = await fetch(TTS_PROXY_ENDPOINT, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-nhb-public-action": "1" },
+      body: JSON.stringify({ text, voice: options.voice ?? EDGE_VOICE, rate: options.rate ?? "+0%" }),
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error(`Edge TTS proxy failed: HTTP ${response.status}`);
+    const audio = await response.arrayBuffer();
+    if (audio.byteLength === 0) throw new Error("Edge TTS proxy returned empty audio");
+    options.onFirstPacket?.();
+    return { audio, byteLength: audio.byteLength, boundaries: [] };
+  } finally {
+    clearTimeout(totalTimer);
+    options.signal?.removeEventListener("abort", onAbort);
+  }
+}
+
+/** 统一入口：按当前浏览器自动选通道 */
+export function synthesizeEdge(
+  text: string,
+  options: EdgeSynthesisOptions = {},
+): Promise<EdgeSynthesis> {
+  return pickEdgeTransport() === "direct" ? synthesizeSpeech(text, options) : synthesizeViaProxy(text, options);
+}

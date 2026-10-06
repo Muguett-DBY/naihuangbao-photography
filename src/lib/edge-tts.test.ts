@@ -9,6 +9,9 @@ import {
   generateSecMsGec,
   parseBinaryFrame,
   parseWordBoundaries,
+  pickEdgeTransport,
+  synthesizeViaProxy,
+  TTS_PROXY_ENDPOINT,
   TRUSTED_CLIENT_TOKEN,
 } from "./edge-tts";
 
@@ -185,5 +188,75 @@ describe("parseWordBoundaries（词边界元数据）", () => {
     expect(parseWordBoundaries(payload)).toEqual([{ text: "你好", offsetMs: 100, durationMs: 475 }]);
     expect(parseWordBoundaries(bytesOf("not-json{"))).toEqual([]);
     expect(parseWordBoundaries(bytesOf('{"nope":true}'))).toEqual([]);
+  });
+});
+
+describe("pickEdgeTransport（通道选择）", () => {
+  it("Edge 浏览器 UA（含 Edg/）→ direct 直连", () => {
+    expect(pickEdgeTransport("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0")).toBe("direct");
+  });
+
+  it("Chrome / Electron / 空 UA → proxy（端点只认 Edg/，浏览器不可自定义 UA）", () => {
+    expect(pickEdgeTransport("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/131.0.0.0 Safari/537.36")).toBe("proxy");
+    expect(pickEdgeTransport("Mozilla/5.0 ZCode/3.14.4 Chrome/146.0.0.0 Electron/41.0.3 Safari/537.36")).toBe("proxy");
+    expect(pickEdgeTransport("")).toBe("proxy");
+  });
+
+  it("Edge 大小写敏感边界：小写 edg/ 不算（真实 UA 恒为大写 Edg/）", () => {
+    expect(pickEdgeTransport("chrome edg/1.0")).toBe("proxy");
+  });
+});
+
+describe("synthesizeViaProxy（同域代理合成）", () => {
+  it("POST /api/tts 带 public-action 头与 JSON 负载；音频字节原样返回", async () => {
+    const calls: { url: string; init: RequestInit }[] = [];
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async (url: string | URL | Request, init?: RequestInit) => {
+      calls.push({ url: String(url), init: init ?? {} });
+      return new Response(MP3_SAMPLE, { status: 200, headers: { "content-type": "audio/mpeg" } });
+    }) as typeof fetch;
+    try {
+      let firstPacket = 0;
+      const result = await synthesizeViaProxy("法律部门又称部门法。", {
+        voice: "zh-CN-XiaoxiaoNeural",
+        rate: "+10%",
+        onFirstPacket: () => (firstPacket += 1),
+      });
+      expect(calls).toHaveLength(1);
+      expect(calls[0].url).toBe(TTS_PROXY_ENDPOINT);
+      const headers = new Headers(calls[0].init.headers);
+      expect(headers.get("x-nhb-public-action")).toBe("1");
+      const body = JSON.parse(String(calls[0].init.body)) as { text: string; voice: string; rate: string };
+      expect(body).toEqual({ text: "法律部门又称部门法。", voice: "zh-CN-XiaoxiaoNeural", rate: "+10%" });
+      expect(result.byteLength).toBe(MP3_SAMPLE.length);
+      expect(new Uint8Array(result.audio)).toEqual(MP3_SAMPLE);
+      expect(firstPacket).toBe(1);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("非 2xx 拒绝：抛错交给调用方回退", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async () => new Response("gone", { status: 503 })) as typeof fetch;
+    try {
+      await expect(synthesizeViaProxy("x")).rejects.toThrow(/HTTP 503/);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("已 abort 的 signal：直接抛 AbortError 不发请求", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async () => {
+      throw new Error("fetch should not be called");
+    }) as typeof fetch;
+    try {
+      const controller = new AbortController();
+      controller.abort();
+      await expect(synthesizeViaProxy("x", { signal: controller.signal })).rejects.toThrow("aborted");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 });
