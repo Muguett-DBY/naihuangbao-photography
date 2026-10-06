@@ -1,166 +1,496 @@
-import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import type { LawLesson, LawQuizItem, LawStep } from "../../../types/law";
-import { convertToClassroom, isClassroomCompatible, speakScene } from "../../../lib/law-classroom";
-import { markStepDone } from "../../../lib/law-progress";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type FC,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
+import { Player, type PlayerRef } from "@remotion/player";
+import { AbsoluteFill, Sequence } from "remotion";
+import type { LawSubjectId } from "../../../types/law";
+import type { ClassroomScene } from "../../../lib/law-classroom";
 import * as tts from "../../../lib/law-tts";
-import { StepStage } from "../player/StepStage";
-import { ClassroomStage } from "./ClassroomStage";
-import { ClassroomControls } from "./ClassroomControls";
+import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
+import { C, SUBJECT_ACCENTS, VIDEO } from "../../../remotion/theme";
+import { ConceptScene } from "../../../remotion/scenes/ConceptScene";
+import { ListScene } from "../../../remotion/scenes/ListScene";
+import { CompareScene, type CompareRow } from "../../../remotion/scenes/CompareScene";
+import { FlowScene, flowSceneDurationInFrames } from "../../../remotion/scenes/FlowScene";
+import {
+  MnemonicScene,
+  mnemonicSceneDurationInFrames,
+} from "../../../remotion/scenes/MnemonicScene";
+import {
+  TimelineScene,
+  timelineSceneDurationInFrames,
+  type TimelineEvent,
+} from "../../../remotion/scenes/TimelineScene";
+import { LawMascot } from "../LawMascot";
+import { TeacherBubble } from "./TeacherBubble";
+import { ClassroomControls, CLASSROOM_SPEEDS } from "./ClassroomControls";
+import "../../../styles/law-classroom.css";
 
 /**
- * ClassroomPlayer — 课堂舞台区总成：课堂模式开/关的双态切换。
+ * ClassroomPlayer — 课堂播放器（主组件）。
  *
- * - 课堂开：场景序列播放——ClassroomStage 渲染当前场景，ClassroomControls
- *   负责播放/上下场/TTS 开关/语速/进度；讲稿由 law-tts 朗读，读完自动推进
- *   下一场（视频化课堂）。推进到的场景把对应步骤记为完成（进度不丢）。
- * - 课堂关（或分层课全文未水合、课无实质内容）：回退既有 StepStage 步骤
- *   学习态，行为与旧版完全一致。
+ * 把 ClassroomScene[] 编排成一个 Remotion 组合（每场一个 <Sequence>，时长按
+ * 讲稿长度 + 场景动画需求确定），经 @remotion/player 的 <Player> 内嵌到页面：
+ * 帧驱动画面（场景组件全部确定性渲染），底部 ClassroomControls 悬浮控制条
+ * 提供 播放/暂停/上下场/拖动进度/语音开关/语速，另带键盘快捷键与奶黄包老师
+ * （头像 + 讲课气泡）。TTS 与时间线同步：进入新场景朗读该场讲稿，暂停即
+ * pause，恢复即 resume，拖动/切换场景由 law-tts 的队列语义自动接管（新的
+ * speak 作废旧朗读），视频节奏（playbackRate）与语速共用同一个 rate。
+ *
+ * 集成回调（可选）：onSceneChange 把推进到的场景同步给父级记进度，
+ * onFinish 在全部场景播完时通知父级收课。
  */
 
-export function ClassroomPlayer({
-  classroomOn,
-  blocked,
-  lesson,
-  quizItems,
-  step,
-  enterKey,
-  direction,
-  accent,
-  accentSoft,
-  stageRef,
-  onStageDone,
-  onSceneStepDone,
-  onComplete,
-  onQuizDone,
-}: {
-  /** 课堂模式总开关（用户 🎓 偏好） */
-  classroomOn: boolean;
-  /** 分层课全文未水合：场景序列不完整，课堂不可开，回退步骤态 */
-  blocked: boolean;
-  lesson: LawLesson;
-  /** 随堂测题目（quiz 场景的答题界面用） */
-  quizItems: LawQuizItem[];
-  /** 当前步骤（步骤态渲染 StepStage 用） */
-  step: LawStep | undefined;
-  /** 步骤态入场动画 key（换步/重播触发滑入） */
-  enterKey: string;
-  /** 步骤行进方向（1 前进 / -1 后退） */
-  direction: number;
-  accent: string;
-  accentSoft: string;
-  /** 换步滚动锚点（父级把舞台滚回视口顶部） */
-  stageRef: RefObject<HTMLDivElement | null>;
-  /** 步骤态：互动完成回调（沿用既有完成链路） */
-  onStageDone: () => void;
-  /** 课堂态：场景推进把步骤记为完成（父级同步点阵/计数状态） */
-  onSceneStepDone: (stepId: string) => void;
-  /** 课堂态：全部场景讲完（父级收课进总结页） */
-  onComplete: () => void;
-  /** 课堂态：随堂测完成（父级记分进结果页） */
-  onQuizDone: (correct: number, answered: number) => void;
-}) {
-  const reduced = useReducedMotion();
-  const scenes = useMemo(() => convertToClassroom(lesson).scenes, [lesson]);
-  const ready = classroomOn && !blocked && scenes.length > 0 && isClassroomCompatible(lesson);
+/* ==================== 场景 → Remotion 场景组件 ==================== */
 
-  const [sceneIndex, setSceneIndex] = useState(0);
+/** "概念甲与概念乙"式标题拆两栏；拆不开用兜底栏名 */
+function splitCompareTitles(title: string): [string, string] {
+  const m = /^([^与和]{2,10})[与和]([^与和]{2,10})$/.exec(title.trim());
+  if (m) return [m[1], m[2]];
+  return ["概念甲", "概念乙"];
+}
+
+/** "维度：甲值 ↔ 乙值" → 对比行；任一条解析不出返回 null（整场退回列表） */
+function parseCompareRows(items: readonly string[]): CompareRow[] | null {
+  if (items.length === 0) return null;
+  const rows: CompareRow[] = [];
+  for (const item of items) {
+    const at = item.indexOf("↔");
+    if (at < 0) return null;
+    const clean = (side: string) => side.replace(/^[^：:]{1,14}[：:]/, "").trim();
+    const left = clean(item.slice(0, at));
+    const right = clean(item.slice(at + 1));
+    if (!left || !right) return null;
+    rows.push({ left, right });
+  }
+  return rows;
+}
+
+/** "时点：事件" → 时间线事件；没有冒号就整条作事件文本 */
+function parseTimelineEvent(item: string): TimelineEvent {
+  const at = item.search(/[：:]/);
+  if (at <= 0) return { time: "·", event: item };
+  return { time: item.slice(0, at).trim(), event: item.slice(at + 1).trim() };
+}
+
+/** 记忆卡拆分：首行口诀，其余行作解释；单行时解释留空 */
+function splitMnemonic(content: string): [string, string] {
+  const lines = content.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  if (lines.length >= 2) return [lines[0], lines.slice(1).join(" ")];
+  return [content.trim(), ""];
+}
+
+/** 正文按空行/换行拆段（ConceptScene 逐段入场） */
+function paragraphsOf(content: string): string[] {
+  return content.split(/\n+/).map((p) => p.trim()).filter(Boolean);
+}
+
+/** 单场场景 → 对应的 Remotion 场景组件（帧驱动，确定性渲染） */
+function SceneView({ scene, accent }: { scene: ClassroomScene; accent: string }) {
+  switch (scene.type) {
+    case "compare": {
+      const rows = parseCompareRows(scene.items);
+      if (rows) {
+        const [leftTitle, rightTitle] = splitCompareTitles(scene.title);
+        return (
+          <CompareScene leftTitle={leftTitle} rightTitle={rightTitle} rows={rows} rightAccent={accent} />
+        );
+      }
+      return <ListScene title={scene.title} items={scene.items} accent={accent} />;
+    }
+    case "timeline":
+      return <TimelineScene title={scene.title} events={scene.items.map(parseTimelineEvent)} />;
+    case "flow":
+      return <FlowScene title={scene.title} steps={scene.items} />;
+    case "mnemonic": {
+      const [mnemonic, explanation] = splitMnemonic(scene.content);
+      return <MnemonicScene mnemonic={mnemonic} explanation={explanation} />;
+    }
+    case "alert":
+      // 例外/易错：警示色（theme.C.err）压过学科色，视觉上先声夺人
+      return (
+        <ConceptScene
+          title={scene.title}
+          content={paragraphsOf(scene.content)}
+          keyTerms={scene.keyTerms}
+          accent={C.err}
+        />
+      );
+    case "list":
+    case "checklist":
+    case "quiz":
+      // quiz 场景在课堂视频里只作"考点预告"逐条展示，互动测验仍由课时页承接
+      return (
+        <ListScene
+          title={scene.title}
+          items={scene.items.length > 0 ? scene.items : paragraphsOf(scene.content)}
+          accent={accent}
+        />
+      );
+    default:
+      return (
+        <ConceptScene
+          title={scene.title}
+          content={paragraphsOf(scene.content)}
+          keyTerms={scene.keyTerms}
+          accent={accent}
+        />
+      );
+  }
+}
+
+/* ==================== 时序：每场多长（帧） ==================== */
+
+const MIN_SCENE_FRAMES = 90; // 3s：再短的场景也留足呼吸
+const MAX_SCENE_FRAMES = 1800; // 60s：讲稿再长也封顶，避免一场拖满全片
+const ANIM_MIN_FRAMES = 60; // 无专属时长 helper 的场景的动画保底
+/** 朗读基准 4 字/秒（law-tts 兜底引擎同款）→ 30fps 下每字 7.5 帧 */
+const FRAMES_PER_CHAR = VIDEO.fps / 4;
+const TAIL_FRAMES = 15; // 0.5s 收尾余量，画面比语音多停半拍
+
+/** 讲稿时长换算成帧：让画面与语音大致同时收束 */
+function speechFrames(scene: ClassroomScene): number {
+  return Math.ceil(scene.teacherScript.length * FRAMES_PER_CHAR) + TAIL_FRAMES;
+}
+
+/** 单场时长：动画需求与讲稿时长取大，再夹进 [3s, 60s] */
+function sceneDuration(scene: ClassroomScene): number {
+  let anim = ANIM_MIN_FRAMES;
+  if (scene.type === "flow") anim = flowSceneDurationInFrames(scene.items.length);
+  else if (scene.type === "timeline") anim = timelineSceneDurationInFrames(scene.items.length);
+  else if (scene.type === "mnemonic") {
+    const [mnemonic, explanation] = splitMnemonic(scene.content);
+    anim = mnemonicSceneDurationInFrames(mnemonic, explanation);
+  }
+  return Math.min(MAX_SCENE_FRAMES, Math.max(MIN_SCENE_FRAMES, anim, speechFrames(scene)));
+}
+
+/** 场景在组合里的时间轴位置（start/duration 均为帧） */
+export type ClassroomSegment = {
+  scene: ClassroomScene;
+  start: number;
+  duration: number;
+};
+
+/** 编排：依次排布每场的起止帧 */
+export function buildSegments(scenes: readonly ClassroomScene[]): ClassroomSegment[] {
+  let cursor = 0;
+  return scenes.map((scene) => {
+    const duration = sceneDuration(scene);
+    const segment: ClassroomSegment = { scene, start: cursor, duration };
+    cursor += duration;
+    return segment;
+  });
+}
+
+/* ==================== Remotion 组合 ==================== */
+
+type ClassroomCompositionProps = {
+  segments: ClassroomSegment[];
+  accent: string;
+};
+
+/** 组合根：纸白铺底，每场一个 Sequence，帧号落在谁的区间就渲染谁 */
+const ClassroomComposition: FC<ClassroomCompositionProps> = ({ segments, accent }) => (
+  <AbsoluteFill style={{ backgroundColor: C.paper }}>
+    {segments.map((segment) => (
+      <Sequence
+        key={`${segment.scene.stepId}-${segment.start}`}
+        from={segment.start}
+        durationInFrames={segment.duration}
+        layout="none"
+        name={segment.scene.title}
+      >
+        <SceneView scene={segment.scene} accent={accent} />
+      </Sequence>
+    ))}
+  </AbsoluteFill>
+);
+
+/* ==================== 主组件 ==================== */
+
+export function ClassroomPlayer({
+  scenes,
+  subject,
+  accent,
+  autoStart = false,
+  onSceneChange,
+  onFinish,
+  className = "",
+}: {
+  /** 课堂场景序列（convertToClassroom(lesson).scenes） */
+  scenes: ClassroomScene[];
+  /** 学科 id（栏目标签 + 学科色兜底） */
+  subject: LawSubjectId;
+  /** 学科强调色（场景组件的 accent） */
+  accent: string;
+  /** 挂载即自动播放（父级在用户手势链路里开启课堂时传 true） */
+  autoStart?: boolean;
+  /** 播放推进到的场景（父级同步步骤完成度；quiz 哨兵场景由父级自行取舍） */
+  onSceneChange?: (scene: ClassroomScene) => void;
+  /** 全部场景播完（父级收课进总结） */
+  onFinish?: () => void;
+  className?: string;
+}) {
+  const playerRef = useRef<PlayerRef>(null);
+  const [frame, setFrame] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [rate, setRate] = useState(1);
   const [ttsOn, setTtsOn] = useState(() => tts.isTtsEnabled());
 
-  // 开课堂的上升沿：从当前步骤对应的场景接着讲，并自动开始播放
-  const wasOnRef = useRef(classroomOn);
-  useEffect(() => {
-    if (classroomOn && !wasOnRef.current) {
-      const at = scenes.findIndex((s) => s.stepId === step?.id);
-      setSceneIndex(at >= 0 ? at : 0);
-      setPlaying(true);
-    }
-    wasOnRef.current = classroomOn;
-  });
+  const segments = useMemo(() => buildSegments(scenes), [scenes]);
+  const totalFrames = segments.reduce((sum, segment) => sum + segment.duration, 0);
+  const subjectLabel = LAW_SUBJECT_MAP[subject]?.name ?? subject;
+  const accentFallback = SUBJECT_ACCENTS[subject]?.accent ?? accent;
 
-  // 播放引擎：朗读当前场景讲稿，读完自动推进；静音时不朗读也不自动推进（等手动 ⏭）
-  const advanceRef = useRef<() => void>(() => {});
-  advanceRef.current = () => {
-    if (sceneIndex + 1 >= scenes.length) {
-      setPlaying(false);
-      if (!blocked) onComplete(); // 全文未水合：停在末场景等水合，不提前收课
+  /** 当前场景下标：由帧号派生（自动推进/拖动/快捷键共用一条真源） */
+  const segIndex = useMemo(() => {
+    let index = 0;
+    for (let i = 0; i < segments.length; i += 1) {
+      if (frame >= segments[i].start) index = i;
+    }
+    return index;
+  }, [frame, segments]);
+  const current = segments[segIndex];
+
+  /* —— 播放器事件 → React 状态（帧号/播放态） —— */
+  useEffect(() => {
+    const player = playerRef.current;
+    if (!player) return;
+    const onFrameUpdate = (event: { detail: { frame: number } }) => setFrame(event.detail.frame);
+    const onPlay = () => setPlaying(true);
+    const onPause = () => setPlaying(false);
+    player.addEventListener("frameupdate", onFrameUpdate);
+    player.addEventListener("play", onPlay);
+    player.addEventListener("pause", onPause);
+    player.addEventListener("ended", onPause);
+    return () => {
+      player.removeEventListener("frameupdate", onFrameUpdate);
+      player.removeEventListener("play", onPlay);
+      player.removeEventListener("pause", onPause);
+      player.removeEventListener("ended", onPause);
+    };
+  }, []);
+
+  /* —— 集成回调走 ref：父级内联箭头函数不破坏订阅 —— */
+  const sceneChangeRef = useRef(onSceneChange);
+  sceneChangeRef.current = onSceneChange;
+  const finishRef = useRef(onFinish);
+  finishRef.current = onFinish;
+
+  const announcedRef = useRef(-1);
+  useEffect(() => {
+    if (!current) return;
+    if (playing || frame > 0) {
+      if (announcedRef.current !== segIndex) {
+        announcedRef.current = segIndex;
+        sceneChangeRef.current?.(current.scene);
+      }
+    }
+  }, [current, segIndex, playing, frame]);
+
+  const finishedRef = useRef(false);
+  useEffect(() => {
+    const player = playerRef.current;
+    if (!player) return;
+    const onEnded = () => {
+      if (!finishedRef.current) {
+        finishedRef.current = true;
+        finishRef.current?.();
+      }
+    };
+    player.addEventListener("ended", onEnded);
+    return () => player.removeEventListener("ended", onEnded);
+  }, []);
+
+  /* —— TTS 同步：场景/播放态/语速任一变化即重新对齐 ——
+   * 播放中进入新场景 → 朗读该场讲稿（law-tts 队列语义自动作废旧朗读）；
+   * 暂停 → tts.pause()（引擎 1 真暂停，恢复续读；节拍模拟引擎不支持则自然停）；
+   * 关语音 → cancel 并作废续读标记；拖动/切场 → key 变了 → 从头读新场景。 */
+  const spokenKeyRef = useRef("");
+  useEffect(() => {
+    if (!playing) {
+      tts.pause();
       return;
     }
-    setSceneIndex(sceneIndex + 1);
-  };
-
-  const sceneDoneRef = useRef(onSceneStepDone);
-  sceneDoneRef.current = onSceneStepDone;
-
-  useEffect(() => {
-    const scene = scenes[sceneIndex];
-    if (!playing || !scene) return;
-    if (scene.stepId !== "quiz") {
-      markStepDone(lesson.id, scene.stepId);
-      sceneDoneRef.current(scene.stepId);
-    }
-    if (!ttsOn) return;
-    let cancelled = false;
-    speakScene(scene, {
-      rate,
-      onEnd: () => {
-        if (!cancelled) advanceRef.current();
-      },
-    });
-    return () => {
-      cancelled = true;
+    if (!ttsOn) {
       tts.cancel();
-    };
-  }, [scenes, sceneIndex, playing, ttsOn, rate, lesson.id]);
+      spokenKeyRef.current = "";
+      return;
+    }
+    if (!current) return;
+    const key = `${current.scene.stepId}@${current.start}@${rate}`;
+    if (spokenKeyRef.current === key) {
+      tts.resume();
+      return;
+    }
+    spokenKeyRef.current = key;
+    tts.speak(current.scene.teacherScript, { rate });
+  }, [playing, ttsOn, current, rate]);
 
-  if (!ready) {
+  // 卸载收声：离开课堂绝不留下背台词的奶黄包
+  useEffect(() => () => tts.cancel(), []);
+
+  /* —— 操作 —— */
+  const seekToScene = useCallback(
+    (index: number) => {
+      if (segments.length === 0 || !playerRef.current) return;
+      const clamped = Math.min(Math.max(index, 0), segments.length - 1);
+      playerRef.current.seekTo(segments[clamped].start);
+    },
+    [segments],
+  );
+
+  const toggleTts = useCallback(() => {
+    setTtsOn((on) => {
+      tts.setTtsEnabled(!on);
+      spokenKeyRef.current = ""; // 重开语音时从当前场景重新开口
+      return !on;
+    });
+  }, []);
+
+  /* —— 键盘快捷键：焦点在播放器内（非原生控件上）即生效 —— */
+  const onKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("button, input, textarea, select, [role=option]")) return;
+      const player = playerRef.current;
+      switch (event.key) {
+        case " ":
+        case "Spacebar":
+        case "k":
+        case "K":
+          event.preventDefault();
+          event.stopPropagation();
+          player?.toggle();
+          break;
+        case "ArrowLeft":
+          event.preventDefault();
+          event.stopPropagation();
+          seekToScene(segIndex - 1);
+          break;
+        case "ArrowRight":
+          event.preventDefault();
+          event.stopPropagation();
+          seekToScene(segIndex + 1);
+          break;
+        case "ArrowUp":
+        case "ArrowDown": {
+          event.preventDefault();
+          event.stopPropagation();
+          const at = CLASSROOM_SPEEDS.findIndex((speed) => speed >= rate);
+          const step = event.key === "ArrowUp" ? 1 : -1;
+          setRate(CLASSROOM_SPEEDS[(at + step + CLASSROOM_SPEEDS.length) % CLASSROOM_SPEEDS.length]);
+          break;
+        }
+        case "m":
+        case "M":
+          event.stopPropagation();
+          toggleTts();
+          break;
+        case "Home":
+          event.preventDefault();
+          event.stopPropagation();
+          seekToScene(0);
+          break;
+        case "End":
+          event.preventDefault();
+          event.stopPropagation();
+          seekToScene(segments.length - 1);
+          break;
+        default:
+          break;
+      }
+    },
+    [rate, segIndex, seekToScene, segments.length, toggleTts],
+  );
+
+  const compositionProps = useMemo<ClassroomCompositionProps>(
+    () => ({ segments, accent }),
+    [segments, accent],
+  );
+
+  /* —— 空课堂：没有可播的场景，给一张安静的状态卡 —— */
+  if (segments.length === 0) {
     return (
-      <motion.div
-        ref={stageRef}
-        className="law-player__stage"
-        key={enterKey}
-        initial={reduced ? false : { opacity: 0, x: 20 * direction }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -12 }}
-        transition={{ duration: 0.22 }}
-      >
-        {step ? (
-          <StepStage step={step} accent={accent} accentSoft={accentSoft} onDone={onStageDone} />
-        ) : blocked ? (
-          <p className="law-player__restloading" role="status">正在加载本课剩余全文……</p>
-        ) : null}
-      </motion.div>
+      <div className={`law-classroom law-classroom-player ${className}`.trim()} style={{ "--cls-accent": accentFallback } as CSSProperties}>
+        <p className="law-classroom-player__empty" role="status">
+          这一课还没有可播放的课堂内容，先用普通步骤模式学习吧。
+        </p>
+      </div>
     );
   }
 
-  const scene = scenes[Math.min(sceneIndex, scenes.length - 1)];
   return (
-    <ClassroomStage
-      scene={scene}
-      quizItems={quizItems}
-      onQuizFinish={(correct, answered) => {
-        setPlaying(false);
-        onQuizDone(correct, answered);
-      }}
+    <div
+      className={`law-classroom law-classroom-player ${className}`.trim()}
+      style={{ "--cls-accent": accent || accentFallback } as CSSProperties}
+      role="region"
+      aria-label={`${subjectLabel}课堂播放器：空格播放暂停，左右键切场景，上下键调语速，M 键开关语音`}
+      tabIndex={0}
+      onKeyDown={onKeyDown}
     >
+      {/* 竖版课堂画面（Remotion 组合经 <Player> 内嵌，自带确定性帧动画） */}
+      <div className="law-classroom-player__screen">
+        <Player
+          ref={playerRef}
+          component={ClassroomComposition}
+          inputProps={compositionProps}
+          durationInFrames={Math.max(totalFrames, 1)}
+          compositionWidth={VIDEO.width}
+          compositionHeight={VIDEO.height}
+          fps={VIDEO.fps}
+          playbackRate={rate}
+          controls={false}
+          clickToPlay
+          spaceKeyToPlayOrPause={false}
+          moveToBeginningWhenEnded={false}
+          autoPlay={autoStart}
+          acknowledgeRemotionLicense
+          style={{ width: "100%", height: "100%" }}
+        />
+        <span className="law-classroom-player__scenebadge" aria-hidden="true">
+          {subjectLabel} · 第 {segIndex + 1}/{segments.length} 场
+        </span>
+      </div>
+
+      {/* 读屏用的场景播报（视觉上由进度条与角标呈现） */}
+      <p className="law-classroom-player__sronly" role="status">
+        第 {segIndex + 1} 场，共 {segments.length} 场：{current?.scene.title ?? ""}
+      </p>
+
+      {/* 奶黄包老师角：头像 + 讲课气泡（打字机逐字出稿） */}
+      <div className="law-classroom-player__teacher">
+        <LawMascot mood={playing ? (ttsOn ? "cheer" : "happy") : "idle"} size={52} />
+        <TeacherBubble script={current?.scene.teacherScript ?? ""} isSpeaking={playing && ttsOn} compact />
+      </div>
+
       <ClassroomControls
         playing={playing}
-        onTogglePlay={() => setPlaying((value) => !value)}
-        currentIndex={sceneIndex}
-        total={scenes.length}
-        onPrev={() => setSceneIndex((index) => Math.max(0, index - 1))}
-        onNext={() => advanceRef.current()}
+        onTogglePlay={() => playerRef.current?.toggle()}
+        currentIndex={segIndex}
+        total={segments.length}
+        onPrev={() => seekToScene(segIndex - 1)}
+        onNext={() => seekToScene(segIndex + 1)}
         ttsEnabled={ttsOn}
-        onToggleTts={() => {
-          tts.setTtsEnabled(!ttsOn);
-          setTtsOn(!ttsOn);
-        }}
+        onToggleTts={toggleTts}
         rate={rate}
         onRateChange={setRate}
-        onSeek={setSceneIndex}
+        onSeek={seekToScene}
       />
-    </ClassroomStage>
+
+      <p className="law-classroom-controls__hints" aria-hidden="true">
+        <kbd>空格</kbd> 播放 / 暂停 · <kbd>←</kbd>
+        <kbd>→</kbd> 切场景 · <kbd>↑</kbd>
+        <kbd>↓</kbd> 语速 · <kbd>M</kbd> 语音
+      </p>
+    </div>
   );
 }

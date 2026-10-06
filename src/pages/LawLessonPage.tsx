@@ -90,6 +90,8 @@ export function LawLessonPage() {
   // 下一课只认"学习流课时"（跳过索引空壳课与附录章），语义与整本版 nextFlowLesson 等价
   // （loader-chunks.test.ts 逐课锁定）；错题本"复习测试"入口：?review=1 直达自测
   const reviewMode = searchParams.get("review") === "1";
+  // 学习中心「开始学习」直达课堂入口：?classroom=1 本次进入直接开课堂模式
+  const startInClassroom = searchParams.get("classroom") === "1";
 
   return (
     <div className="law-academy law-lesson-page">
@@ -100,6 +102,7 @@ export function LawLessonPage() {
         initialPhase={reviewMode ? "quiz" : "steps"}
         restLoader={view.restLoader}
         lightBoundary={view.lightSteps ?? 0}
+        startInClassroom={startInClassroom}
         onExit={() => {
           navigate(`/law/${subjectId}`);
         }}

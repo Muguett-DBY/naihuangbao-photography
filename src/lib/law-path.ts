@@ -43,8 +43,13 @@ export interface LessonPath {
 
 const META_TITLE = /^(作者的话|使用说明|序言|前言|后记)$/;
 
+/** 书前说明章节名（序言/使用说明等）：不是考点，路径后置。loader 的 meta 级入口共用同一口径 */
+export function isMetaChapterName(name: string): boolean {
+  return META_TITLE.test(name.trim());
+}
+
 function isMetaChapter(chapter: Pick<LawChapter, "title" | "semanticTitle">): boolean {
-  return [chapter.title, chapter.semanticTitle ?? ""].some((name) => META_TITLE.test(name.trim()));
+  return [chapter.title, chapter.semanticTitle ?? ""].some(isMetaChapterName);
 }
 
 export function buildLessonPath(

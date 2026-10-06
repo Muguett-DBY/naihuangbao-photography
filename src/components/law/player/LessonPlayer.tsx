@@ -1,16 +1,19 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router";
 import type { LawLesson } from "../../../types/law";
 import { buildQuiz } from "../../../lib/law-quiz";
 import { safeLocalStorage } from "../../../lib/browser-storage";
 import { getLessonProgress, markStepDone, recordQuiz, touchLesson, type RecordQuizOpts } from "../../../lib/law-progress";
+import { convertToClassroom, isClassroomCompatible } from "../../../lib/law-classroom";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
 import { ClassroomPlayer } from "../classroom/ClassroomPlayer";
+import { StepStage } from "./StepStage";
 import { QuizRunner } from "./QuizRunner";
 import { RawProvisionPanel } from "./RawProvisionPanel";
 import { useLessonHydration } from "./useLessonHydration";
+import { StepNavPopover } from "./StepNavPopover";
 import { LawMascot, type LawMood } from "../LawMascot";
 import {
   AUTO_SPEEDS,
@@ -22,7 +25,6 @@ import {
   type AutoSpeedId,
 } from "./lessonHelpers";
 import { ResultPhase, SummaryPhase } from "./LessonPhases";
-import { TeacherBubble } from "../classroom/TeacherBubble";
 import { useClassroom } from "../classroom/useClassroom";
 
 import * as tts from "../../../lib/law-tts";
@@ -40,6 +42,7 @@ export function LessonPlayer({
   initialPhase = "steps",
   restLoader,
   lightBoundary = 0,
+  startInClassroom = false,
 }: {
   lesson: LawLesson;
   onExit: () => void;
@@ -52,6 +55,8 @@ export function LessonPlayer({
   restLoader?: () => Promise<LawLesson>;
   /** 课内分层：lesson.steps 前 lightBoundary 步为全文，其后是占位元数据 */
   lightBoundary?: number;
+  /** 直达课堂（学习中心「开始学习」?classroom=1）：本次进入直接开课堂模式并记住偏好 */
+  startInClassroom?: boolean;
 }) {
   const subject = LAW_SUBJECT_MAP[lesson.subject];
   const [phase, setPhase] = useState<Phase>(initialPhase);
@@ -76,12 +81,8 @@ export function LessonPlayer({
   const [showRaw, setShowRaw] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
   const [autoSpeed, setAutoSpeed] = useState<AutoSpeedId>(readAutoSpeed);
-  const [navOpen, setNavOpen] = useState(false);
-  // 段落导航浮层的键盘游标（>20 步长课：上下键选择，回车跳转）
-  const [navHighlight, setNavHighlight] = useState(0);
   // 步骤前进/后退的方向感：新内容沿行进方向滑入
   const [direction, setDirection] = useState(1);
-  const navMenuRef = useRef<HTMLDivElement>(null), navBtnRef = useRef<HTMLButtonElement>(null), navOpenedRef = useRef(false);
   const [quizAttempt, setQuizAttempt] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -97,8 +98,15 @@ export function LessonPlayer({
   const isCurrentDone = currentStep ? !!stepDone[currentStep.id] : false;
   const totalSteps = steps.length;
   const doneSteps = Object.keys(stepDone).length;
-  const { classroomMode, teacherScript, toggleClassroom } = useClassroom(currentStep);
+  const { classroomMode, toggleClassroom } = useClassroom(currentStep, startInClassroom);
   const graphic = LAW_GRAPHIC_MAP[lesson.id];
+
+  // 课堂播放器数据：steps → 场景序列（video 化课堂的画面与讲稿来源）。
+  // 分层课全文未水合（占位步骤在场）时课堂不可开，回退步骤学习态。
+  const classroom = useMemo(() => convertToClassroom(activeLesson), [activeLesson]);
+  const reducedMotion = useReducedMotion();
+  const classroomReady =
+    classroomMode && !currentIsPlaceholder && classroom.scenes.length > 0 && isClassroomCompatible(activeLesson);
 
   // 自测题确定性生成；总结页依据它决定展示"来自测"还是"标记掌握"
   // （不能依赖 phase 计算——总结页时 phase 是 summary，否则自测按钮永不出现）
@@ -129,24 +137,7 @@ export function LessonPlayer({
   }, [autoSpeed]);
 
   // 打开段落导航时键盘游标落在当前步，焦点同步进浮层（方向键立即可用，不必先 Tab 一次）；
-  // 关闭时焦点归还触发按钮（选项按钮随浮层卸载，焦点不能掉空）
-  useEffect(() => {
-    if (!navOpen) return;
-    setNavHighlight(stepIndex);
-    navMenuRef.current?.querySelector<HTMLElement>('[data-highlight="true"]')?.focus();
-  }, [navOpen, stepIndex]);
-
-  useEffect(() => {
-    if (!navOpen) return;
-    const item = navMenuRef.current?.querySelector<HTMLElement>('[data-highlight="true"]');
-    item?.scrollIntoView({ block: "nearest" });
-  }, [navOpen, navHighlight]);
-
-  // 归还焦点仅在"曾开→关"时（挂载即跑会抢页首焦点）
-  useEffect(() => {
-    if (!navOpen && navOpenedRef.current) navBtnRef.current?.focus();
-    navOpenedRef.current = navOpen;
-  }, [navOpen]);
+  // 关闭时焦点归还触发按钮（选项按钮随浮层卸载，焦点不能掉空）——见 StepNavPopover
 
   const goNextRef = useRef<() => void>(() => {});
   goNextRef.current = () => {
@@ -256,65 +247,7 @@ export function LessonPlayer({
           </Link>
         ) : null}
         {totalSteps > 8 ? (
-          <div className="law-player__navpop">
-            <button
-              type="button"
-              ref={navBtnRef}
-              className={`law-player__navpop-btn ${navOpen ? "is-open" : ""}`}
-              onClick={() => setNavOpen((value) => !value)}
-              aria-expanded={navOpen}
-              aria-haspopup="listbox"
-            >
-              🧭 段落导航
-            </button>
-            {navOpen ? (
-              <div
-                className="law-player__navpop-menu"
-                ref={navMenuRef}
-                role="listbox"
-                aria-label="段落导航"
-                tabIndex={-1}
-                onKeyDown={(event) => {
-                  // 长课键盘导航：上下选择、回车跳转、Esc 关闭
-                  if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-                    event.preventDefault();
-                    setNavHighlight((h) => {
-                      const next = event.key === "ArrowDown" ? Math.min(h + 1, totalSteps - 1) : Math.max(h - 1, 0);
-                      return next;
-                    });
-                  } else if (event.key === "Enter") {
-                    event.preventDefault();
-                    jumpToStep(navHighlight);
-                    setNavOpen(false);
-                  } else if (event.key === "Escape") {
-                    setNavOpen(false);
-                  }
-                }}
-              >
-                {steps.map((step, index) => (
-                  <button
-                    key={step.id}
-                    type="button"
-                    role="option"
-                    aria-selected={index === stepIndex}
-                    data-highlight={index === navHighlight || undefined}
-                    className={
-                      (index === stepIndex ? "is-current " : "") +
-                      (index === navHighlight ? "is-highlight" : "")
-                    }
-                    onMouseEnter={() => setNavHighlight(index)}
-                    onFocus={() => setNavHighlight(index)}
-                    onClick={() => {
-                      jumpToStep(index);
-                      setNavOpen(false);
-                    }}
-                  >
-                    {String(index + 1).padStart(2, "0")} · {kindLabel(step.kind)} · {step.text ? step.text.slice(0, 18) : "全文加载中…"}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </div>
+          <StepNavPopover steps={steps} stepIndex={stepIndex} onJump={jumpToStep} />
         ) : null}
         <button
           type="button"
@@ -350,23 +283,40 @@ export function LessonPlayer({
             </span>
           </div>
 
-          {classroomMode && currentStep ? <TeacherBubble script={teacherScript} isSpeaking compact /> : null}
-          <ClassroomPlayer
-            classroomOn={classroomMode}
-            blocked={currentIsPlaceholder}
-            lesson={activeLesson}
-            quizItems={quiz.slice(0, 4)}
-            step={currentStep}
-            enterKey={`${stepIndex}-${replayKey}`}
-            direction={direction}
-            accent={subject.accent}
-            accentSoft={subject.accentSoft}
-            stageRef={stageRef}
-            onStageDone={handleStepDone}
-            onSceneStepDone={(stepId) => setStepDone((prev) => (prev[stepId] ? prev : { ...prev, [stepId]: true }))}
-            onComplete={() => { touchLesson(lesson.id); setPhase("summary"); }}
-            onQuizDone={handleQuizDone}
-          />
+          {classroomReady ? (
+            <ClassroomPlayer
+              scenes={classroom.scenes}
+              subject={lesson.subject}
+              accent={subject.accent}
+              autoStart
+              onSceneChange={(scene) => {
+                // 课堂推进到的场景即视为该步已学（quiz 哨兵场景无对应步骤）
+                if (scene.stepId === "quiz") return;
+                setStepDone((prev) => (prev[scene.stepId] ? prev : { ...prev, [scene.stepId]: true }));
+                markStepDone(lesson.id, scene.stepId);
+              }}
+              onFinish={() => {
+                touchLesson(lesson.id);
+                setPhase("summary");
+              }}
+            />
+          ) : (
+            <motion.div
+              ref={stageRef}
+              className="law-player__stage"
+              key={`${stepIndex}-${replayKey}`}
+              initial={reducedMotion ? false : { opacity: 0, x: 20 * direction }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -12 }}
+              transition={{ duration: 0.22 }}
+            >
+              {currentStep ? (
+                <StepStage step={currentStep} accent={subject.accent} accentSoft={subject.accentSoft} onDone={handleStepDone} />
+              ) : currentIsPlaceholder ? (
+                <p className="law-player__restloading" role="status">正在加载本课剩余全文……</p>
+              ) : null}
+            </motion.div>
+          )}
 
           <div className="law-player__controls">
             <button
