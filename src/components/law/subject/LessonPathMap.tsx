@@ -79,7 +79,7 @@ function PathSlot({ node, isGraphic }: { node: PathNode; isGraphic: boolean }) {
     >
       {isCurrent ? <span className="law-path__start" aria-hidden="true">▶ 开始</span> : null}
       <PrefetchLink
-        to={`/law/learn/${lesson.id}`}
+        to={`/law/learn/${lesson.id}${isCurrent ? "?classroom=1" : ""}`}
         className={`law-path__node is-${state}`}
         aria-label={`第 ${order} 站 ${lesson.title}（${stateLabel}，${meta.steps}步约${meta.minutes}分钟）`}
         aria-describedby={showTip ? `law-path__tip-${order}` : undefined}

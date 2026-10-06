@@ -178,7 +178,8 @@ export function LawSubjectPage() {
 
       {book && lastRef ? (
         <section className="law-subject__resume">
-          <PrefetchLink to={`/law/learn/${lastRef.lesson.id}`} className="law-subject__resume-card">
+          {/* 继续学 → 直接进课堂（?classroom=1）；错题本入口保持分步模式以便测题 */}
+          <PrefetchLink to={`/law/learn/${lastRef.lesson.id}?classroom=1`} className="law-subject__resume-card">
             <span className="law-subject__resume-icon">⏱️</span>
             <span>
               <b>继续上次的学习</b>

@@ -53,8 +53,11 @@ export function LawAcademyPage() {
   // 今日学习卡的唯一主行动：优先"最近到访且未完成"的课（学到一半退出的那节），
   // 其次 lastLessonId（最近走完的课），没学过就从推荐路线第一本（民法）开始
   const resumeTarget = getRecentUnfinishedLesson() ?? getLastLessonId();
-  // 注意 resumeTarget 是裸课时 id，必须拼 /law/learn/ 前缀（曾直接拼成 /law/<id> 形成坏链）
-  const resumeHref = resumeTarget ? `/law/learn/${resumeTarget}` : "/law/minfa";
+  // 注意 resumeTarget 是裸课时 id，必须拼 /law/learn/ 前缀（曾直接拼成 /law/<id> 形成坏链）。
+  // ?classroom=1：点「继续学习/开始第一课」直接进课堂播放器，而不是先落到分步模式
+  const resumeHref = resumeTarget
+    ? `/law/learn/${resumeTarget}?classroom=1`
+    : "/law/minfa";
   const resumeLabel = resumeTarget ? "继续学习" : "开始第一课";
   // 「开始学习」直达课堂：每科沿学习路径的入口课（第一未完成的实质内容课，meta 级轻量推导）。
   // meta 未到/失败时卡片回退学科页链接，绝不阻塞首屏。
