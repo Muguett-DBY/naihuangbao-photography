@@ -2,11 +2,12 @@ import { motion, useReducedMotion } from "framer-motion";
 import "../../../styles/law-classroom.css";
 
 /**
- * ClassroomControls — 课堂底部控制条（毛玻璃、悬浮底部）。
+ * ClassroomControls — 课堂底部控制条（毛玻璃、悬浮底部、极简）。
  *
- * 播放/暂停 · 上一场景/下一场景 · TTS 开关 · 语速调节 · 进度条。
- * 受控组件：播放状态与场景游标由父级（课堂播放引擎）持有，
- * 这里只发回调。进度条可直接拖动跳场景（onSeek）。
+ * 播放/暂停 · 上一场景/下一场景 · TTS 开关 · 语速调节 · 进度条 + 快捷键提示。
+ * 受控组件：播放状态与场景游标由父级（ClassroomPlayer 的播放引擎）持有，
+ * 这里只发回调。进度条可直接拖动跳场景（onSeek）。全部控件可聚焦、
+ * ARIA 标签完整，快捷键同时标注在 aria-keyshortcuts 上。
  */
 
 /** 语速档位（与 law-tts 的 0.5–2.0 区间一致，取常用五档循环切换） */
@@ -24,7 +25,7 @@ export interface ClassroomControlsProps {
   /** TTS 开关（持久化在 law-tts 内部，父级只转发状态） */
   ttsEnabled: boolean;
   onToggleTts: () => void;
-  /** 朗读语速 0.5–2.0 */
+  /** 朗读语速 0.5–2.0（同时作用于画面 playbackRate） */
   rate: number;
   onRateChange: (rate: number) => void;
   /** 拖动进度条跳转场景；不传则进度条只作展示 */
@@ -94,7 +95,8 @@ export function ClassroomControls({
           onClick={onPrev}
           disabled={!canPrev}
           aria-label="上一场景"
-          title="上一场景"
+          aria-keyshortcuts="ArrowLeft"
+          title="上一场景（←）"
         >
           ⏮
         </button>
@@ -106,7 +108,8 @@ export function ClassroomControls({
           disabled={empty}
           aria-label={playing ? "暂停" : "播放"}
           aria-pressed={playing}
-          title={playing ? "暂停讲课" : "开始讲课"}
+          aria-keyshortcuts="Space k"
+          title={playing ? "暂停讲课（空格）" : "开始讲课（空格）"}
         >
           {playing ? "⏸" : "▶"}
         </button>
@@ -117,7 +120,8 @@ export function ClassroomControls({
           onClick={onNext}
           disabled={!canNext}
           aria-label="下一场景"
-          title="下一场景"
+          aria-keyshortcuts="ArrowRight"
+          title="下一场景（→）"
         >
           ⏭
         </button>
@@ -130,7 +134,8 @@ export function ClassroomControls({
           onClick={onToggleTts}
           aria-pressed={ttsEnabled}
           aria-label={ttsEnabled ? "关闭语音讲解" : "开启语音讲解"}
-          title={ttsEnabled ? "语音讲解：开" : "语音讲解：关"}
+          aria-keyshortcuts="m"
+          title={ttsEnabled ? "语音讲解：开（M）" : "语音讲解：关（M）"}
         >
           {ttsEnabled ? "🔊" : "🔇"}
         </button>
@@ -140,7 +145,8 @@ export function ClassroomControls({
           className="law-classroom-controls__btn law-classroom-controls__btn--speed"
           onClick={cycleRate}
           aria-label={`朗读速度 ${rate} 倍，点击切换`}
-          title="调节朗读速度"
+          aria-keyshortcuts="ArrowUp ArrowDown"
+          title="调节朗读速度（↑↓）"
         >
           {rate}×
         </button>

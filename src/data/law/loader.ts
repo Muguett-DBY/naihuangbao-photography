@@ -2,6 +2,7 @@ import type { LawBook, LawChapter, LawLesson, LawStep, LawSubjectId } from "../.
 import { isCleanTerm, isShellLesson } from "../../types/law";
 import type { LawProgressMap } from "../../lib/law-progress";
 import { decodeMeta, type LawMeta, type LawMetaChapter, type LawMetaLesson, type LawMetaWire } from "./metaWire";
+import { isMetaChapterName } from "../../lib/law-path";
 
 /**
  * 法学数据加载器（分块架构）：
@@ -235,6 +236,50 @@ export async function loadLawFlowStats(
     }
   }
   return { total, done };
+}
+
+/** ── 学习中心「开始学习」直达课堂入口 ──
+ *  每科沿学习路径挑一节实质内容课直接开课堂；只读 meta（KB 级），不下载正文分块。
+ *  口径与 buildLessonPath 一致：非附录章（ax≠1）+ 非元章节（序言/使用说明后置不占首位）
+ *  + 学习流课时（f=1，非索引空壳课）。 */
+
+/**
+ * 路径入口课 id：第一个未完成（completedAt 缺席）的路径课；
+ * 全部完成时回该书第一节实质内容课；无可学的课（理论上的空书）返回 null。
+ * 与 buildLessonPath 的节点序逐科等价（loader-chunks.test.ts 锁定）。
+ */
+export async function firstPathLessonId(
+  subject: LawSubjectId,
+  progress: LawProgressMap,
+): Promise<string | null> {
+  const meta = await loadMeta(subject);
+  let first: string | null = null;
+  for (const chapter of meta.chapters) {
+    if (chapter.ax === 1) continue;
+    // 与 buildLessonPath 同口径：title 或 semanticTitle 命中书前说明名即元章节
+    // （法理学/法制史的"作者的话"章语义标题是实质章名，只看 st 会漏判）
+    if (isMetaChapterName(chapter.t) || isMetaChapterName(chapter.st ?? "")) continue;
+    for (const lesson of chapter.ls) {
+      if (lesson.f !== 1) continue;
+      first ??= lesson.i;
+      if (!progress[lesson.i]?.completedAt) return lesson.i;
+    }
+  }
+  if (first) return first;
+  // 全部完成 → 回书首实质课（元章节里的课也作兜底候选，绝不返回空壳课）
+  for (const chapter of meta.chapters) {
+    if (chapter.ax === 1) continue;
+    const id = firstFlowLessonOf(chapter);
+    if (id) return id;
+  }
+  return null;
+}
+
+function firstFlowLessonOf(chapter: LawMetaChapter): string | null {
+  for (const lesson of chapter.ls) {
+    if (lesson.f === 1) return lesson.i;
+  }
+  return null;
 }
 
 /** 收集同章其它课的概念词，供选择题干扰项使用（答案永远出自本课） */

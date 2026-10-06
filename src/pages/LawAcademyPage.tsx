@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { LAW_SUBJECTS } from "../data/law/meta";
 import { LAW_GRAPHICS } from "../data/law/graphics";
 import type { LawSubjectId } from "../types/law";
+import { firstPathLessonId } from "../data/law/loader";
+import { getLawProgress } from "../lib/law-progress";
 import lawStats from "../data/law/stats.json";
 import { getPlan } from "../lib/law-plan";
 import { getDueReviewLessons, getLastLessonId, getRecentUnfinishedLesson, getTodayGoal, subjectStats } from "../lib/law-progress";
@@ -54,6 +56,23 @@ export function LawAcademyPage() {
   // 注意 resumeTarget 是裸课时 id，必须拼 /law/learn/ 前缀（曾直接拼成 /law/<id> 形成坏链）
   const resumeHref = resumeTarget ? `/law/learn/${resumeTarget}` : "/law/minfa";
   const resumeLabel = resumeTarget ? "继续学习" : "开始第一课";
+  // 「开始学习」直达课堂：每科沿学习路径的入口课（第一未完成的实质内容课，meta 级轻量推导）。
+  // meta 未到/失败时卡片回退学科页链接，绝不阻塞首屏。
+  const [entryLessons, setEntryLessons] = useState<Partial<Record<LawSubjectId, string>>>({});
+  useEffect(() => {
+    let cancelled = false;
+    const progress = getLawProgress();
+    Promise.all(
+      LAW_SUBJECTS.map(async (subject) => [subject.id, await firstPathLessonId(subject.id, progress)] as const),
+    )
+      .then((entries) => {
+        if (!cancelled) setEntryLessons(Object.fromEntries(entries.filter(([, id]) => id !== null)));
+      })
+      .catch(() => undefined); // 推导失败保持学科页链接（学习中心不打断）
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [galleryOpen, setGalleryOpen] = useState(false);
   useEffect(() => {
     const handler = () => setGalleryOpen(true);
@@ -178,6 +197,12 @@ export function LawAcademyPage() {
           const prog = progress[subject.id];
           const percent =
             prog && prog.total > 0 ? Math.round((prog.done / prog.total) * 100) : 0;
+          // 直达课堂：meta 推导出入口课后「开始学习」直落 /law/learn/:id?classroom=1（课堂播放器），
+          // 未就绪/失败时回退学科页（关卡地图）。两种落点都是实质内容课，绝不指向空壳索引页。
+          const entryLessonId = entryLessons[subject.id];
+          const cardTo = entryLessonId
+            ? `/law/learn/${entryLessonId}?classroom=1`
+            : `/law/${subject.id}`;
           return (
             <motion.div
               key={subject.id}
@@ -187,7 +212,7 @@ export function LawAcademyPage() {
               transition={{ delay: index * 0.08 }}
             >
               <PrefetchLink
-                to={`/law/${subject.id}`}
+                to={cardTo}
                 className="law-subject-card"
                 style={{
                   "--law-accent": subject.accent,

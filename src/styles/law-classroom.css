@@ -900,6 +900,123 @@
   }
 }
 
+/* ══════════ Remotion 播放器壳（ClassroomPlayer） ══════════ */
+
+/* 根容器复用 .law-classroom 的全部令牌（--cls-*），只补播放器专属排布 */
+.law-classroom-player {
+  gap: 14px;
+}
+
+/* 焦点态：键盘用户 Tab 进播放器即有清晰的学科色描边 */
+.law-classroom-player:focus-visible {
+  outline: 2.5px solid var(--cls-accent);
+  outline-offset: 3px;
+}
+
+/* 竖版画面（1080×1920）：宽度随高度收口，居中呈现，圆角出血裁切 */
+.law-classroom-player__screen {
+  position: relative;
+  width: min(100%, calc(62vh * (1080 / 1920)));
+  min-width: min(100%, 240px);
+  aspect-ratio: 1080 / 1920;
+  margin: 0 auto;
+  border: 1px solid var(--cls-line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--cls-bg);
+  box-shadow: var(--cls-shadow);
+}
+
+/* 场景角标：毛玻璃胶囊压在画面左上（学科色文字） */
+.law-classroom-player__scenebadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 5;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--cls-accent) 30%, transparent);
+  background: var(--cls-glass);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--cls-accent) 72%, var(--cls-ink));
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* 读屏场景播报：视觉隐藏 */
+.law-classroom-player__sronly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* 空课堂状态卡 */
+.law-classroom-player__empty {
+  margin: 0;
+  padding: clamp(24px, 5vw, 48px);
+  border: 1.5px dashed var(--cls-line);
+  border-radius: 16px;
+  background: var(--cls-surface);
+  color: var(--cls-muted);
+  text-align: center;
+}
+
+/* 奶黄包老师角：头像 + 讲课气泡（头像不随长稿挤压） */
+.law-classroom-player__teacher {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.law-classroom-player__teacher .law-mascot {
+  flex: none;
+}
+
+/* 快捷键提示行 */
+.law-classroom-controls__hints {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 10px;
+  margin: 0;
+  font-size: 12px;
+  color: var(--cls-muted);
+}
+
+.law-classroom-controls__hints kbd {
+  padding: 1px 7px;
+  border: 1px solid var(--cls-line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--cls-surface);
+  color: var(--cls-ink);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  /* 窄屏收起快捷键提示（触屏无键盘），画面高度让位给控制条 */
+  .law-classroom-controls__hints {
+    display: none;
+  }
+
+  .law-classroom-player__screen {
+    width: min(100%, calc(52vh * (1080 / 1920)));
+  }
+}
+
 /* ══════════ 播放器顶栏的课堂开关（🎓，胶囊样式与 law-academy 播放器一致） ══════════ */
 
 .law-player__classroom {

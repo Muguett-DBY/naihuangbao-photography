@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   collectSiblingTerms,
   findLesson,
+  firstPathLessonId,
   isFlowLesson,
   loadLawBook,
   loadLawLessonIndex,
@@ -11,6 +12,8 @@ import {
   nextFlowLesson,
   type LawLessonView,
 } from "./loader";
+import { buildLessonPath } from "../../lib/law-path";
+import type { LawProgressMap } from "../../lib/law-progress";
 import { isShellLesson, type LawBook, type LawSubjectId } from "../../types/law";
 
 /**
@@ -191,5 +194,56 @@ describe("law chunked loader equivalence", () => {
     const appendixChapter = booksOnDisk.zhishixiang.chapters.find((chapter) => chapter.appendix)!;
     const appendixView = await loadLawLessonView("zhishixiang", appendixChapter.lessons[0]!.id);
     expect(appendixView!.chapterId).toBe(appendixChapter.id);
+  });
+
+  it("firstPathLessonId agrees with buildLessonPath's entry node for every progress shape", async () => {
+    // 学习中心「开始学习」直达课堂的入口课必须与关卡地图同一口径：
+    // 空进度 → 路径首站；全部完成 → 回路径首站；完成一半 → 第一个未完成站（当前节点）。
+    const doneEntry = {
+      stepsDone: {}, quizBest: 1, quizTotal: 1, wrongCount: 0, lastVisitedAt: 1, completedAt: 1,
+    };
+    for (const id of SUBJECTS) {
+      const book = booksOnDisk[id];
+      const path = buildLessonPath(book, {});
+      const head = path.nodes[0]?.lesson.id ?? null;
+      expect(head, `${id} 必须有可走的路径`).not.toBeNull();
+
+      expect(await firstPathLessonId(id, {})).toBe(head);
+
+      const allDone: LawProgressMap = {};
+      for (const lesson of book.chapters.flatMap((chapter) => chapter.lessons)) {
+        allDone[lesson.id] = { ...doneEntry };
+      }
+      expect(await firstPathLessonId(id, allDone)).toBe(head);
+
+      const mid = Math.floor(path.nodes.length / 2);
+      const half: LawProgressMap = {};
+      for (const node of path.nodes.slice(0, mid)) {
+        half[node.lesson.id] = { ...doneEntry };
+      }
+      expect(await firstPathLessonId(id, half)).toBe(path.nodes[mid]?.lesson.id ?? null);
+    }
+  });
+
+  it("firstPathLessonId never returns a shell/index lesson", async () => {
+    for (const id of SUBJECTS) {
+      const book = booksOnDisk[id];
+      for (const progress of [{}, (() => {
+        // 只完成全部非空壳课：入口绝不能落进空壳课（应回第一个非空壳课）
+        const map: LawProgressMap = {};
+        for (const lesson of book.chapters.flatMap((chapter) => chapter.lessons)) {
+          if (!isShellLesson(lesson)) {
+            map[lesson.id] = { stepsDone: {}, quizBest: 1, quizTotal: 1, wrongCount: 0, lastVisitedAt: 1, completedAt: 1 };
+          }
+        }
+        return map;
+      })()]) {
+        const entry = await firstPathLessonId(id, progress);
+        expect(entry).not.toBeNull();
+        const lesson = book.chapters.flatMap((chapter) => chapter.lessons).find((item) => item.id === entry);
+        expect(lesson, `${entry} 必须是书内真实课时`).toBeDefined();
+        expect(isShellLesson(lesson!), `${entry} 不能是索引空壳课`).toBe(false);
+      }
+    }
   });
 });

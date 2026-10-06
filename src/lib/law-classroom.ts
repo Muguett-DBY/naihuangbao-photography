@@ -86,6 +86,17 @@ export function sceneTypeOf(step: LawStep): ClassroomSceneType {
   return KIND_TO_SCENE[step.kind] ?? "concept";
 }
 
+/**
+ * 场景实际渲染类型：结构化类型缺数据时回退 concept——
+ * timeline 类 step 有 46 步没有结构化时间线（OCR 源就没拆出来），
+ * 空时间线舞台会一个字都不上屏；回退 concept 让原文整段完整呈现。
+ */
+function renderTypeOf(step: LawStep): ClassroomSceneType {
+  const type = sceneTypeOf(step);
+  if (type === "timeline" && !(step.timeline?.length)) return "concept";
+  return type;
+}
+
 // ==================== 口语化辅助 ====================
 
 /** 把课本文本整理成"适合读出来"的口语串：括号/项目符号变停顿，清掉多余标点 */
@@ -281,7 +292,7 @@ export function convertToClassroom(lesson: LawLesson): ClassroomLesson {
   const validSteps = lesson.steps.filter((step) => step.text.trim().length >= 4);
 
   const scenes: ClassroomScene[] = validSteps.map((step, index) => {
-    const type = sceneTypeOf(step);
+    const type = renderTypeOf(step);
     return {
       index,
       stepId: step.id,
