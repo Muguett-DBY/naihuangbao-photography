@@ -28,6 +28,16 @@ test.describe("law flashcards & heatmap", () => {
 
   const dayAgo = (days: number) => Date.now() - days * 86_400_000;
 
+  // 本地正午锚点：`now - N*86400000` 的毫秒步进在有夏令时的时区会漂移自然日
+  // （如悉尼：10 月起 UTC+11，回退 100 天落在冬令时 UTC+10 的前一天深夜），
+  // 热力图按本地自然日聚合，种子必须用日历运算锚在正午，两课时才稳定落在同一天。
+  const noonAgo = (days: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    date.setHours(12, 0, 0, 0);
+    return date.getTime();
+  };
+
   test("空状态：无已完成课时显示引导与「去学习」入口", async ({ page }) => {
     await page.goto("/law/flashcards");
     const empty = page.locator(".law-flash__empty");
@@ -130,11 +140,11 @@ test.describe("law flashcards & heatmap", () => {
       },
       "minfa-q002": {
         stepsDone: { s1: true }, quizBest: 0, quizTotal: 0, wrongCount: 0,
-        lastVisitedAt: dayAgo(100), completedAt: dayAgo(100),
+        lastVisitedAt: noonAgo(100), completedAt: noonAgo(100),
       },
       "xingfa-q001": {
         stepsDone: { s1: true }, quizBest: 0, quizTotal: 0, wrongCount: 0,
-        lastVisitedAt: dayAgo(100), completedAt: dayAgo(100) + 7200_000,
+        lastVisitedAt: noonAgo(100), completedAt: noonAgo(100) + 7200_000,
       },
     });
 

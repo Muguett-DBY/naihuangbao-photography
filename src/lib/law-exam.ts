@@ -67,7 +67,8 @@ function subjectOfLessonId(lessonId: string): LawSubjectId | null {
 
 /**
  * 已完成课池：只认 completedAt 存在的课（掌握口径），按完成时间倒序（最近掌握的优先进卷），
- * 按科目分组返回。导览课（-tour）不出题，天然被 buildQuiz 过滤，这里不重复判。
+ * 按科目分组返回。导览课（-tour）/空壳课/元信息课由 buildQuiz 统一拦截返回空（law-quiz.ts），
+ * 因此即使进入本池也不会产题，这里不重复判。
  */
 export function completedLessonsBySubject(
   progress: LawProgressMap,

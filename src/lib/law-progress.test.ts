@@ -65,6 +65,19 @@ describe("law lesson progress", () => {
     expect(getLessonProgress("xingfa-q001")?.wrongCount ?? 0).toBe(0);
   });
 
+  it("touchLesson preserves the recent-quiz signal (quizLast/quizLastTotal)", () => {
+    // 近期成绩是自适应复习的输入（law-review 难度系数的"近期"信号）：
+    // 重走一节课 / 课堂收课都会 touchLesson，字段不能被重建的条目清掉
+    recordQuiz("minfa-q900", 0, 4, 2);
+    recordQuiz("minfa-q900", 4, 4, 2);
+    expect(getLessonProgress("minfa-q900")?.quizLast).toBe(4);
+    expect(getLessonProgress("minfa-q900")?.quizLastTotal).toBe(4);
+    touchLesson("minfa-q900");
+    const after = getLessonProgress("minfa-q900");
+    expect(after?.quizLast).toBe(4);
+    expect(after?.quizLastTotal).toBe(4);
+  });
+
   it("marks mastery and bumps the daily goal on a passing quiz", () => {
     markStepDone("minfa-q001", "minfa-q001-s0");
     recordQuiz("minfa-q001", 3, 4, 1);

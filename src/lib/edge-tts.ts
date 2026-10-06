@@ -421,11 +421,19 @@ export function pickEdgeTransport(
   return /Edg\//.test(userAgent) ? "direct" : "proxy";
 }
 
-/** 走 /api/tts 代理合成：POST JSON → audio/mpeg 字节（词边界元数据代理侧未采集） */
+/** 走 /api/tts 代理合成：POST JSON → audio/mpeg 字节（词边界元数据代理侧未采集）
+ *  首包/总超时预算与直连一致：代理 fetch 不分块（Worker 攒整段再回），
+ *  "首包"即响应抵达 —— 1.5s 内没回来就按端点不可用抛错，让调用方回退引擎 2，
+ *  而不是干等 Worker 侧 25s 上游超时。 */
 export async function synthesizeViaProxy(
   text: string,
-  options: Pick<EdgeSynthesisOptions, "voice" | "rate" | "signal" | "onFirstPacket"> = {},
+  options: Pick<
+    EdgeSynthesisOptions,
+    "voice" | "rate" | "signal" | "onFirstPacket" | "firstPacketTimeoutMs" | "totalTimeoutMs"
+  > = {},
 ): Promise<EdgeSynthesis> {
+  const firstPacketTimeoutMs = options.firstPacketTimeoutMs ?? EDGE_FIRST_PACKET_TIMEOUT_MS;
+  const totalTimeoutMs = options.totalTimeoutMs ?? EDGE_TOTAL_TIMEOUT_MS;
   const controller = new AbortController();
   const onAbort = () => controller.abort();
   if (options.signal) {
@@ -436,7 +444,17 @@ export async function synthesizeViaProxy(
     }
     options.signal.addEventListener("abort", onAbort);
   }
-  const totalTimer = setTimeout(() => controller.abort(), EDGE_TOTAL_TIMEOUT_MS);
+  // 两个超时预算都借 controller.abort() 掐断在途 fetch，但必须还原成超时错误
+  // 本身再抛：AbortError 会被调用方（law-tts）误判为"场景切换作废"而静默不回退
+  let timeoutError: Error | null = null;
+  const armTimeout = (ms: number, message: string): ReturnType<typeof setTimeout> =>
+    setTimeout(() => {
+      if (timeoutError !== null) return;
+      timeoutError = new Error(message);
+      controller.abort();
+    }, ms);
+  const firstPacketTimer = armTimeout(firstPacketTimeoutMs, `Edge TTS proxy first packet timeout (${firstPacketTimeoutMs}ms)`);
+  const totalTimer = armTimeout(totalTimeoutMs, `Edge TTS synthesis total timeout (${totalTimeoutMs}ms)`);
   try {
     const response = await fetch(TTS_PROXY_ENDPOINT, {
       method: "POST",
@@ -444,12 +462,23 @@ export async function synthesizeViaProxy(
       body: JSON.stringify({ text, voice: options.voice ?? EDGE_VOICE, rate: options.rate ?? "+0%" }),
       signal: controller.signal,
     });
+    clearTimeoutSafe(firstPacketTimer); // 响应已到：首包预算停表，余下由总超时兜底
     if (!response.ok) throw new Error(`Edge TTS proxy failed: HTTP ${response.status}`);
     const audio = await response.arrayBuffer();
     if (audio.byteLength === 0) throw new Error("Edge TTS proxy returned empty audio");
     options.onFirstPacket?.();
     return { audio, byteLength: audio.byteLength, boundaries: [] };
+  } catch (error) {
+    // 调用方主动 abort（场景切换）：保持 AbortError 语义（调用方据此静默作废，
+    // 不回退不冷静），与直连路径 onAbort 的行为对齐 —— 不依赖 fetch 拒绝的形态
+    if (options.signal?.aborted) {
+      const err = new Error("Edge TTS synthesis aborted");
+      err.name = "AbortError";
+      throw err;
+    }
+    throw (timeoutError as Error | null) ?? error;
   } finally {
+    clearTimeout(firstPacketTimer);
     clearTimeout(totalTimer);
     options.signal?.removeEventListener("abort", onAbort);
   }

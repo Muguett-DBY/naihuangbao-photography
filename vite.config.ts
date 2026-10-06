@@ -120,7 +120,8 @@ export default defineConfig({
           "**/en-*.js",
           "**/ja-*.js",
           "**/ko-*.js",
-          "**/zh-CN-*.js",
+          // 注意：zh-CN（站点主语言 locale chunk，约 69KB）刻意不排除 ——
+          // 它必须进 precache，否则全新安装后离线首启时框架文案回退英文
         ],
         runtimeCaching: [
           {

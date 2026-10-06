@@ -97,6 +97,9 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
         return (current + delta + hits.length) % hits.length;
       });
     } else if (event.key === "Enter") {
+      // 与上面 Escape 分支同口径：组合期的 Enter 是"上屏候选"不是跳转；
+      // keyCode 229 兜底 Safari 对"确认候选"回车上报 isComposing=false 的行为
+      if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
       event.preventDefault();
       const hit = hits[activeIndex] ?? hits[0];
       if (hit) onPick(hit.lesson.id);

@@ -229,12 +229,16 @@
   color: var(--ink);
 }
 .law-exam__clock.is-urgent {
-  color: #c0392b;
+  /* 紧急红随主题走（同 .is-truth 的 color-mix 做法）：硬编码 #c0392b 在暗色纸底
+     #2c2422 上只有约 2.8:1，混入 var(--ink) 后亮色约 6.1:1、暗色约 3.7:1（大字 ≥3:1） */
+  color: color-mix(in srgb, #c0392b 82%, var(--ink));
   animation: law-exam-pulse 1s ease-in-out infinite;
 }
+/* 脉冲从 opacity 改为向 var(--ink) 靠拢的颜色呼吸：opacity 谷值 0.55 混底后
+   亮色纸底会跌到约 2.3:1；改颜色后两头亮 6.1↔7.7、暗 3.7↔6.5，全程 ≥3:1 */
 @keyframes law-exam-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
+  0%, 100% { color: color-mix(in srgb, #c0392b 82%, var(--ink)); }
+  50% { color: color-mix(in srgb, #c0392b 50%, var(--ink)); }
 }
 @media (prefers-reduced-motion: reduce) {
   .law-exam__clock.is-urgent {
@@ -504,7 +508,8 @@
   font-size: 13px;
 }
 .law-exam__wrong-answer .is-user {
-  color: #c0392b;
+  /* 同 .is-truth 用 color-mix 随主题走：硬编码 #c0392b 暗色纸底只有约 2.8:1 */
+  color: color-mix(in srgb, #c0392b 82%, var(--ink));
 }
 .law-exam__wrong-answer .is-truth {
   color: color-mix(in srgb, #1e7d43 82%, var(--ink));

@@ -194,7 +194,7 @@ export function LawSubjectPage() {
         <section className="law-subject__wrong">
           <header>
             <h2>📕 我的错题本（{wrongIds.size}）</h2>
-            <span>按 1/2/4/7/15 天的节奏复习，连续 5 次通过就能从错题本毕业</span>
+            <span>按记忆曲线（1~15 天，按掌握度自适应伸缩）提醒复习，连续 5 次通过就能从错题本毕业</span>
             <Link to="/law/wrongbook" className="law-subject__wrong-open">五科错题本 →</Link>
           </header>
           <div className="law-subject__wrong-list">
@@ -262,12 +262,13 @@ export function LawSubjectPage() {
         </section>
       ) : null}
 
-      <div className="law-subject__viewbar" role="tablist" aria-label="视图切换">
-        <div className="law-subject__viewtoggle">
+      {/* 双视图切换用 aria-pressed 按钮而非 role=tab：没有 tabpanel/aria-controls 关联，
+          tab 语义会让读屏播报"已选中"却找不到对应面板（键盘方向键也无处生效） */}
+      <div className="law-subject__viewbar">
+        <div className="law-subject__viewtoggle" role="group" aria-label="视图切换">
           <button
             type="button"
-            role="tab"
-            aria-selected={view === "path"}
+            aria-pressed={view === "path"}
             className={view === "path" ? "is-active" : ""}
             onClick={() => switchView("path")}
           >
@@ -275,8 +276,7 @@ export function LawSubjectPage() {
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={view === "tree"}
+            aria-pressed={view === "tree"}
             className={view === "tree" ? "is-active" : ""}
             onClick={() => switchView("tree")}
           >

@@ -76,7 +76,7 @@ export function LessonPlayer({
     return restored;
   });
   const [mood, setMood] = useState<LawMood>("idle");
-  const [quizScore, setQuizScore] = useState<{ correct: number; total: number }>({ correct: 0, total: 0 });
+  const [quizScore, setQuizScore] = useState<{ correct: number; total: number; skipped?: boolean }>({ correct: 0, total: 0 });
   const [replayKey, setReplayKey] = useState(0);
   const [showRaw, setShowRaw] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
@@ -210,7 +210,7 @@ export function LessonPlayer({
       mountedRef.current = true;
       return;
     }
-    stageRef.current?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+    stageRef.current?.scrollIntoView?.({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
   }, [stepIndex, phase]);
 
   // 键盘导航：← 上一步，→ 下一步（仅在可用时生效），复习老课不用来回挪鼠标
@@ -332,9 +332,10 @@ export function LessonPlayer({
                 <button
                   key={step.id}
                   type="button"
-                  aria-label={`跳到第 ${index + 1} 步`}
+                  aria-label={`跳到第 ${index + 1} 步${stepDone[step.id] ? "（已完成）" : ""}`}
                   aria-current={index === stepIndex ? "step" : undefined}
-                  className={`law-player__dot ${index === stepIndex ? "is-current" : ""} ${doneSteps > index ? "is-done" : ""}`}
+                  // 完成态用每步真值，不用"完成总数 > 下标"：跳步/回跳会把未完成的圆点误标
+                  className={`law-player__dot ${index === stepIndex ? "is-current" : ""} ${stepDone[step.id] ? "is-done" : ""}`}
                   onClick={() => jumpToStep(index)}
                 />
               ))}
@@ -353,7 +354,11 @@ export function LessonPlayer({
                     ? KIND_PENDING_HINT[currentStep.kind] ?? "先完成上面的小任务哦"
                     : "先完成上面的小任务哦"}
             </button>
-            <button type="button" aria-pressed={classroomMode} title="课堂模式"
+            <button
+              type="button"
+              aria-pressed={classroomMode}
+              aria-label="课堂模式"
+              title="课堂模式"
               className={`law-player__classroom ${classroomMode ? "is-on" : ""}`}
               onClick={() => { const n = toggleClassroom(); if (!n) tts.cancel(); }}
             >🎓</button>
@@ -395,9 +400,10 @@ export function LessonPlayer({
             quizCount={quiz.length}
             onStartQuiz={startQuiz}
             onSkipQuiz={() => {
-              // 跳过自测 ≠ 复习通过：不动错题本的复习阶梯（曾把跳过记成"复习通过"）
+              // 跳过自测 ≠ 复习通过：不动错题本的复习阶梯（曾把跳过记成"复习通过"）；
+              // 结果页也不得展示 1/1 满分（没作答过的事不能凭空造分），skipped 标记走独立文案
               recordQuiz(lesson.id, 1, 1, totalSteps, { skipped: true });
-              setQuizScore({ correct: 1, total: 1 });
+              setQuizScore({ correct: 0, total: 0, skipped: true });
               setMood("cheer");
               setPhase("result");
             }}

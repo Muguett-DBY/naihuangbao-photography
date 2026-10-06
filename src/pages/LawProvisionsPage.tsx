@@ -95,7 +95,10 @@ export function LawProvisionsPage() {
       return next;
     });
     const timer = window.setTimeout(() => {
-      targetRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+      // behavior:"smooth" 是显式指定，CSS 的 scroll-behavior:auto !important 管不到 JS 调用，
+      // 减弱动效需在调用点降级为瞬时滚动
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      targetRef.current?.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
     }, 80);
     return () => window.clearTimeout(timer);
   }, [state, lawParam, articleParam]);

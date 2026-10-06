@@ -50,12 +50,16 @@ export function TeacherBubble({
           <span className="law-teacher__face">{avatar}</span>
           {isSpeaking ? <span className="law-teacher__pulse" /> : null}
         </div>
-        <div className="law-teacher__bubble" role="status" aria-live="polite" aria-label={`${name}老师说：${displayed}`}>
+        {/* 打字机逐字增量若处于 live region，30ms 一次的变更会把读屏播报队列刷屏
+            （课堂播放器另有 law-classroom-player__sronly 的 role=status 播报场景标题）：
+            动画文本对读屏隐藏，讲课稿全文经 sr-only 静态可读（与 reduced-motion 分支同稿） */}
+        <div className="law-teacher__bubble">
           <span className="law-teacher__name">{name}</span>
-          <p className="law-teacher__text">
+          <p className="law-teacher__text" aria-hidden="true">
             {displayed}
             {displayed.length < script.length ? <span className="law-teacher__cursor">▌</span> : null}
           </p>
+          <span className="sr-only">{name}老师说：{script}</span>
         </div>
       </div>
     </AnimatePresence>

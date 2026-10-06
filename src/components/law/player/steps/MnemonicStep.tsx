@@ -34,6 +34,15 @@ export function MnemonicStep({ step, accent, accentSoft, onDone }: StepProps) {
   const [memorizing, setMemorizing] = useState(false);
   const [peeking, setPeeking] = useState(false);
   const doneRef = useRef(false);
+  const peekTimerRef = useRef<number | null>(null);
+
+  // 偷看定时器卸载清理（与 NotesPanel 清 timer 的纪律一致）
+  useEffect(
+    () => () => {
+      if (peekTimerRef.current !== null) window.clearTimeout(peekTimerRef.current);
+    },
+    [],
+  );
 
   const revealedCount = flipped.filter(Boolean).length;
   const done = chars.length > 0 && revealedCount >= chars.length;
@@ -60,21 +69,21 @@ export function MnemonicStep({ step, accent, accentSoft, onDone }: StepProps) {
 
   function flip(index: number) {
     if (!memorizing) return;
-    setFlipped((prev) => {
-      const next = prev.map((value, i) => (i === index ? true : value));
-      if (next.filter(Boolean).length >= chars.length && !doneRef.current) {
-        doneRef.current = true;
-        onDone();
-      }
-      return next;
-    });
+    // 副作用（onDone）不进 state updater：先算 next，再在 updater 外做完成判定
+    const next = flipped.map((value, i) => (i === index ? true : value));
+    setFlipped(next);
+    if (next.filter(Boolean).length >= chars.length && !doneRef.current) {
+      doneRef.current = true;
+      onDone();
+    }
   }
 
   // 偷看提示：短暂展示全文后重新盖上（自测模式专属，纯视觉）
   function peek() {
     if (!memorizing || done) return;
     setPeeking(true);
-    window.setTimeout(() => setPeeking(false), 1300);
+    if (peekTimerRef.current !== null) window.clearTimeout(peekTimerRef.current);
+    peekTimerRef.current = window.setTimeout(() => setPeeking(false), 1300);
   }
 
   // 挂载时若不处于自测流程，先当"浏览"处理：不阻断完成（与翻卡模式的浏览一致）

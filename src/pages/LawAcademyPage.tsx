@@ -166,7 +166,8 @@ export function LawAcademyPage() {
           <b>{today.done}/{today.target}</b>
         </div>
         <div className="law-today-card__body">
-          <b>{today.done >= today.target ? "今日目标达成！⭐" : "今日目标：再学 1 课"}</b>
+          {/* 缺口按 target-done 现算：写死"再学 1 课"会与环形图 {done}/{target} 的计数矛盾 */}
+          <b>{today.done >= today.target ? "今日目标达成！⭐" : `今日目标：再学 ${today.target - today.done} 课`}</b>
           <span>
             距 2027 考研 {plan.daysLeft} 天 · 已掌握 {doneTotal} 个知识点
             {today.done < today.target ? " · 一课大约 5 分钟" : ""}
@@ -281,11 +282,11 @@ export function LawAcademyPage() {
         </div>
 
         <div className="law-graphics-browse" aria-label="全部图解">
-          <div className="law-graphics-browse__chips" role="tablist" aria-label="按学科筛选图解">
+          {/* 学科筛选 chips 是过滤器不是标签页：无对应 tabpanel，按 aria-pressed 切换钮表达状态 */}
+          <div className="law-graphics-browse__chips" role="group" aria-label="按学科筛选图解">
             <button
               type="button"
-              role="tab"
-              aria-selected={graphicFilter === "all"}
+              aria-pressed={graphicFilter === "all"}
               className={`law-graphics-browse__chip ${graphicFilter === "all" ? "is-current" : ""}`}
               onClick={() => {
                 setGraphicFilter("all");
@@ -298,8 +299,7 @@ export function LawAcademyPage() {
               <button
                 key={subject.id}
                 type="button"
-                role="tab"
-                aria-selected={graphicFilter === subject.id}
+                aria-pressed={graphicFilter === subject.id}
                 className={`law-graphics-browse__chip ${graphicFilter === subject.id ? "is-current" : ""}`}
                 style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
                 onClick={() => {

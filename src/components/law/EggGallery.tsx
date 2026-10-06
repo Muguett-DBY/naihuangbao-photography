@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LAW_EGG_UNLOCKED_EVENT, getEggState, type EggTrigger } from "../../lib/law-progress";
 import { isLawSoundEnabled, setLawSoundEnabled } from "../../lib/law-sound";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
@@ -34,17 +34,25 @@ export function EggGallery({ onClose }: { onClose: () => void }) {
     return () => document.removeEventListener(LAW_EGG_UNLOCKED_EVENT, refresh);
   }, []);
 
+  // onClose / replay 走 ref：Esc 栈层只在挂载时 acquire 一次。若把 replay 放进依赖，
+  // 重读信时本组件会在信纸弹层（子组件 effect 先跑、先入栈）之后重新 acquire，
+  // 把信纸的栈层顶成非顶层，两层 Esc 处理器都判定"不是顶层"而全部失灵
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+  const replayRef = useRef(replay);
+  replayRef.current = replay;
+
   useEffect(() => {
     const layer = acquireEscapeLayer();
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !replay && isTopEscapeLayer(layer)) onClose();
+      if (event.key === "Escape" && !replayRef.current && isTopEscapeLayer(layer)) onCloseRef.current();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
       releaseEscapeLayer(layer);
     };
-  }, [onClose, replay]);
+  }, []);
 
   if (replay) {
     return <EggModal trigger={replay} onClose={() => setReplay(null)} />;

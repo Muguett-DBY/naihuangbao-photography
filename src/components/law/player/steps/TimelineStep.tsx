@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { StepShell } from "../Animated";
 import type { StepProps } from "./types";
 
@@ -24,6 +24,7 @@ function guessTimeline(text: string): TimelineEvent[] {
 
 /** 时间线型步骤：拖移游标沿时间轴走，点击节点展开事件；全部看过即完成 */
 export function TimelineStep({ step, accent, accentSoft, onDone }: StepProps) {
+  const reducedMotion = useReducedMotion();
   const events = useMemo(() => step.timeline ?? guessTimeline(step.text), [step]);
   const [visited, setVisited] = useState<boolean[]>(() => events.map(() => false));
   const [active, setActive] = useState(0);
@@ -52,12 +53,12 @@ export function TimelineStep({ step, accent, accentSoft, onDone }: StepProps) {
     if (events.length < 2) onDone();
   }, [events.length, onDone]);
 
-  // 密度自适应：激活节点始终滚进视口（横向轨道在窄屏/多节点时看不全）
+  // 密度自适应：激活节点始终滚进视口（横向轨道在窄屏/多节点时看不全）；减弱动效时改瞬时滚动
   useEffect(() => {
     if (!dense) return;
     const dot = innerRef.current?.querySelector<HTMLElement>(`[data-index="${active}"]`);
-    dot?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
-  }, [active, dense]);
+    dot?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "nearest", inline: "center" });
+  }, [active, dense, reducedMotion]);
 
   if (events.length < 2) {
     return (

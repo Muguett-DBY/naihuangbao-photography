@@ -28,6 +28,12 @@ for (const lesson of all) {
   const title = lesson.title;
   // 1) 可疑字符
   if (SUSPICIOUS.test(title)) push("high", "suspicious-title", lesson.id, title.slice(0, 30));
+  // 1.5) 面包屑段名乱码（口/O/〇 等占位符开头的页眉段名）：law:scan 不覆盖 breadcrumb，这里兜底
+  for (const crumb of new Set(lesson.breadcrumb.map((c) => c.trim()))) {
+    if (/^[口O〇○□◊]/.test(crumb)) {
+      push("mid", "garbled-breadcrumb", lesson.id, `面包屑段「${crumb.slice(0, 12)}」疑似乱码段名`);
+    }
+  }
   const latinMatch = LATIN_RUN.exec(text);
   if (latinMatch && !LATIN_WORDS_OK.test(latinMatch[0])) {
     push("mid", "latin-run", lesson.id, latinMatch[0].slice(0, 20));
@@ -98,8 +104,11 @@ for (const lesson of all) {
       if (new Set(order).size !== order.length) {
         push("high", "quiz-order-duplicate", lesson.id, "排序项重复");
       }
+      // 排序卡经 cleanOrderPart 剥过页边［注记］，比对课文须用同一口径（先剥注记再查），
+      // 否则"剥了注记的卡"被误判为不在课文（曾致 falixue-q039 常亮假 MID）
+      const lessonTextBare = (lessonText + lesson.raw.join("")).replace(/［[^［］]{1,8}］/g, "");
       for (const part of order) {
-        if (!lessonText.includes(part.slice(0, 6))) {
+        if (!lessonTextBare.includes(part.slice(0, 6))) {
           push("mid", "quiz-order-not-in-lesson", lesson.id, `排序项「${part.slice(0, 10)}」不在课文`);
         }
       }

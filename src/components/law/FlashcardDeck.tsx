@@ -162,7 +162,11 @@ export function FlashcardDeck({ cards, onExit }: FlashcardDeckProps) {
         className={`law-flash__card ${subject ? "has-accent" : ""} ${flipped ? "is-flipped" : ""}`}
         style={subject ? ({ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as React.CSSProperties) : undefined}
         aria-pressed={flipped}
-        aria-label={`闪卡正面：${current.front}。${flipped ? "已翻面" : "点击或按空格键翻面看答案"}`}
+        aria-label={
+          flipped
+            ? `闪卡背面答案：${current.back}（正面：${current.front}）。点击或按空格键翻回正面`
+            : `闪卡正面：${current.front}。点击或按空格键翻面看答案`
+        }
         onClick={() => setFlipped((value) => !value)}
       >
         <span className="law-flash__card-inner">

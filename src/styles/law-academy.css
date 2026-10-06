@@ -847,15 +847,26 @@
   color: var(--text-muted);
 }
 
-/* 到期待复习的错题卡：暖色高亮引导点击 */
+/* 到期待复习的错题卡：暖色高亮引导点击（底/框 color-mix 随主题走，同 law-flow
+   复习横幅的做法；到期文字琥珀色暗底反向提亮，硬编码亮奶油块在暗界面里突兀刺眼） */
 .law-subject__wrong-item.is-due {
-  background: #fff4e8;
-  border-color: #e8b98a;
+  --law-due-ink: color-mix(in srgb, #a4611e 62%, #2a2118);
+  background: color-mix(in srgb, #e8b98a 22%, var(--paper));
+  border-color: color-mix(in srgb, #a4611e 45%, transparent);
 }
 
 .law-subject__wrong-item.is-due span {
-  color: #a4611e;
+  color: var(--law-due-ink);
   font-weight: 600;
+}
+
+:root[data-theme="dark"] .law-subject__wrong-item.is-due {
+  --law-due-ink: color-mix(in srgb, #a4611e 42%, #fff5ec);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-subject__wrong-item.is-due {
+    --law-due-ink: color-mix(in srgb, #a4611e 42%, #fff5ec);
+  }
 }
 
 /* ── 课时行元信息 ── */

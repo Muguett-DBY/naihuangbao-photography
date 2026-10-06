@@ -161,8 +161,12 @@ export function QuizRunner({
             value={fillInput}
             onChange={(event) => setFillInput(event.target.value)}
             onKeyDown={(event) => {
-              // 中文输入法组合期的 Enter 是"上屏候选"，不是提交（否则拼音串会立即判错锁死）
-              if (event.key === "Enter" && !event.nativeEvent.isComposing) submitFill();
+              // 中文输入法组合期的 Enter 是"上屏候选"，不是提交（否则拼音串会立即判错锁死）。
+              // Safari 对"确认候选"的回车在 compositionend 之前派发 isComposing=false 的 keydown，
+              // 按 MDN 口径用 keyCode 229 兜底（isComposing || keyCode === 229 视为组合期）
+              if (event.key === "Enter" && !(event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229)) {
+                submitFill();
+              }
             }}
             placeholder="输入挖空处的词"
             aria-label="填空作答"

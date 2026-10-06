@@ -69,6 +69,10 @@ export function touchLesson(lessonId: string): void {
     stepsDone: existing?.stepsDone ?? {},
     quizBest: existing?.quizBest ?? 0,
     quizTotal: existing?.quizTotal ?? 0,
+    // 最近一次成绩必须透传：law-review 的难度系数把 quizLast 缺省回退为 bestAcc，
+    // 这里丢字段等于用"旧光环"顶替"近期状态"，自适应复习的近期信号被清空
+    quizLast: existing?.quizLast,
+    quizLastTotal: existing?.quizLastTotal,
     wrongCount: existing?.wrongCount ?? 0,
     lastVisitedAt: Date.now(),
     completedAt: existing?.completedAt,

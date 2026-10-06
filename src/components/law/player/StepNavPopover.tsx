@@ -24,6 +24,7 @@ export function StepNavPopover({
   const [open, setOpen] = useState(false);
   // 浮层的键盘游标（上下键选择，回车跳转）
   const [highlight, setHighlight] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
   const openedRef = useRef(false);
@@ -41,14 +42,37 @@ export function StepNavPopover({
     item?.scrollIntoView({ block: "nearest" });
   }, [open, highlight]);
 
-  // 归还焦点仅在"曾开→关"时（挂载即跑会抢页首焦点）
+  // 归还焦点仅在"曾开→关"且焦点即将掉空时（Esc/跳转后选项按钮随浮层卸载）；
+  // 点击外部关闭时焦点已落到所点之处，不能再抢回触发钮
   useEffect(() => {
-    if (!open && openedRef.current) btnRef.current?.focus();
+    if (!open && openedRef.current) {
+      const active = document.activeElement;
+      if (!active || active === document.body) btnRef.current?.focus();
+    }
     openedRef.current = open;
   }, [open]);
 
+  // 点击浮层外 / 焦点移出浮层即关闭：浮层是 fixed 面板（小屏全宽），漏点会一直遮挡内容
+  useEffect(() => {
+    if (!open) return;
+    const root = rootRef.current;
+    if (!root) return;
+    const onOutsidePointer = (event: MouseEvent) => {
+      if (event.target instanceof Node && !root.contains(event.target)) setOpen(false);
+    };
+    const onFocusOut = (event: FocusEvent) => {
+      if (!root.contains(event.relatedTarget as Node | null)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onOutsidePointer);
+    root.addEventListener("focusout", onFocusOut);
+    return () => {
+      document.removeEventListener("mousedown", onOutsidePointer);
+      root.removeEventListener("focusout", onFocusOut);
+    };
+  }, [open]);
+
   return (
-    <div className="law-player__navpop">
+    <div className="law-player__navpop" ref={rootRef}>
       <button
         type="button"
         ref={btnRef}

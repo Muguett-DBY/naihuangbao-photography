@@ -326,9 +326,23 @@ export const LAW_GRAPHICS: LawGraphic[] = [
   ...LAW_GRAPHICS_S6,
 ];
 
-export const LAW_GRAPHIC_MAP: Record<string, LawGraphic> = Object.fromEntries(
-  LAW_GRAPHICS.map((g) => [g.lessonId, g]),
-);
+/**
+ * 课时 → 图解索引。同一课时只允许一张图解生效：先注册者优先（与 LAW_GRAPHICS 的
+ * find 顺序、扩展图解清单一致）。不用 Object.fromEntries 直排——后者会让后注册的
+ * 批次静默覆盖先注册的（曾致 zhishixiang-q124 的「清朝逐级审转制度」被 graphicsS6
+ * 的「明清会审制度全景」顶掉，图解不可达、卡片点了开错图）。
+ * 注意：UI 消费方（LessonPlayer / LawGraphicPage / 图解卡片）均按 lessonId 单值取图，
+ * 一课挂多张图解需要消费方支持多图路由，这里先保证映射确定、不再静默覆盖。
+ */
+function buildGraphicMap(graphics: LawGraphic[]): Record<string, LawGraphic> {
+  const map: Record<string, LawGraphic> = {};
+  for (const graphic of graphics) {
+    if (!(graphic.lessonId in map)) map[graphic.lessonId] = graphic;
+  }
+  return map;
+}
+
+export const LAW_GRAPHIC_MAP: Record<string, LawGraphic> = buildGraphicMap(LAW_GRAPHICS);
 
 export function graphicsOfSubject(subject: LawSubjectId): LawGraphic[] {
   return LAW_GRAPHICS.filter((g) => g.subject === subject);

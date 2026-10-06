@@ -253,7 +253,7 @@ export function ExamRunner({
                 type="button"
                 className={`law-quiz__option ${picked === option ? "is-selected" : ""}`}
                 onClick={() => setAnswer(item.id, option)}
-                aria-pressed={placed[0] === option}
+                aria-pressed={picked === option}
               >
                 {option}
               </button>

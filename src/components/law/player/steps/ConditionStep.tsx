@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { PopCard, StepShell } from "../Animated";
 import type { StepProps } from "./types";
@@ -9,20 +9,28 @@ export function ConditionStep({ step, accent, accentSoft, onDone }: StepProps) {
   const [checked, setChecked] = useState<boolean[]>(() => items.map(() => false));
   const [pop, setPop] = useState(false);
   const doneRef = useRef(false);
+  const doneTimerRef = useRef<number | null>(null);
+
+  // 完成 onDone 的延时句柄要可清理：卸载（换步/退出课）后不得再触发
+  useEffect(
+    () => () => {
+      if (doneTimerRef.current !== null) window.clearTimeout(doneTimerRef.current);
+    },
+    [],
+  );
 
   const doneCount = checked.filter(Boolean).length;
   const allDone = doneCount === items.length;
 
   function toggle(index: number) {
-    setChecked((prev) => {
-      const next = prev.map((value, i) => (i === index ? !value : value));
-      if (next.filter(Boolean).length >= items.length && !doneRef.current) {
-        doneRef.current = true;
-        setPop(true);
-        window.setTimeout(() => onDone(), 650);
-      }
-      return next;
-    });
+    // 副作用不进 state updater（updater 需保持纯函数）：先算 next，再在 updater 外做完成判定
+    const next = checked.map((value, i) => (i === index ? !value : value));
+    setChecked(next);
+    if (next.filter(Boolean).length >= items.length && !doneRef.current) {
+      doneRef.current = true;
+      setPop(true);
+      doneTimerRef.current = window.setTimeout(() => onDone(), 650);
+    }
   }
 
   return (

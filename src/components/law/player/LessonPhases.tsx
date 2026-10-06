@@ -66,13 +66,14 @@ export function ResultPhase({
   onNextLesson,
   onExit,
 }: {
-  quizScore: { correct: number; total: number };
+  quizScore: { correct: number; total: number; skipped?: boolean };
   onRestart: () => void;
   onRetryQuiz: () => void;
   onNextLesson?: (() => void) | null;
   onExit: () => void;
 }) {
-  const passed = quizScore.correct >= Math.ceil(quizScore.total / 2);
+  // 跳过自测（skipped）= 未作答，不展示任何分数，只报"标记掌握"的真实语义
+  const passed = quizScore.skipped || quizScore.correct >= Math.ceil(quizScore.total / 2);
   const mood: LawMood = passed ? "cheer" : "oops";
   return (
     <motion.div
@@ -84,7 +85,7 @@ export function ResultPhase({
       <LawMascot mood={mood} size={84} />
       <h2>{passed ? "通过！掌握啦 🎉" : "还差一点，再练一次 💪"}</h2>
       <p className="law-player__result-score">
-        自测 {quizScore.correct} / {quizScore.total} 题正确
+        {quizScore.skipped ? "已标记掌握（本次跳过了自测）" : `自测 ${quizScore.correct} / ${quizScore.total} 题正确`}
       </p>
       <p className="law-player__result-tip">
         {passed

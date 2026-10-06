@@ -6,6 +6,7 @@ import {
   isMutableSentence,
   isGarbledOrderPart,
   cleanOrderPart,
+  isWeldedByNoteStripping,
   hasFragmentCard,
   optionsAreDistinct,
 } from "./law-quiz-gates";
@@ -103,14 +104,28 @@ function isShortDefinition(text: string): boolean {
   return false;
 }
 
-/** 提取短定义句的句首概念（挖空目标） */
+/** 代词开头的"假概念"主语（"其特点""这是""它的任务"）：指代上文而非概念本身，挖空后学习者无从作答 */
+function isPronounHead(head: string): boolean {
+  return /^[这是那此其它她该彼]/.test(head);
+}
+
+/** 提取短定义句的句首概念（挖空目标）。代词主语（"其特点是…"）不配当挖空答案 */
 function headTermOf(text: string): string | null {
   let match = text.match(/^([\u4e00-\u9fa5]{2,14})[，、]?(是指|指|是)/);
-  if (match) return cleanTerm(match[1]);
+  if (match) {
+    const head = cleanTerm(match[1]);
+    if (head && !isPronounHead(head)) return head;
+  }
   match = text.match(/^所谓([\u4e00-\u9fa5]{2,12})[，、]?(是指|指|是)/);
-  if (match) return cleanTerm(match[1]);
+  if (match) {
+    const head = cleanTerm(match[1]);
+    if (head && !isPronounHead(head)) return head;
+  }
   match = text.match(/^([\u4e00-\u9fa5]{2,12})[：:](是指|指)/);
-  if (match) return cleanTerm(match[1]);
+  if (match) {
+    const head = cleanTerm(match[1]);
+    if (head && !isPronounHead(head)) return head;
+  }
   return null;
 }
 
@@ -173,9 +188,15 @@ function isMetaLesson(lesson: LawLesson): boolean {
   return lesson.breadcrumb.some((crumb) => /^(作者的话|使用说明|序言|前言|后记)$/.test(crumb.trim()));
 }
 
+/** 导览课（-tour）：章前思维导图页/书末考点清单，非正式课时，不出题也不进模拟考卷 */
+function isTourLesson(lesson: LawLesson): boolean {
+  return lesson.id.endsWith("-tour");
+}
+
 export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQuizItem[] {
-  // 索引空壳课（纯标题、无正文）不出题：无知识可考，题面也只是标题复读
-  if (isShellLesson(lesson) || isMetaLesson(lesson)) return [];
+  // 索引空壳课（纯标题、无正文）与导览课（-tour）不出题：前者无知识可考，
+  // 后者是导览/考点清单而非考点本身（曾产出 60 节导览课的自测题并随 completedAt 进考卷）
+  if (isShellLesson(lesson) || isMetaLesson(lesson) || isTourLesson(lesson)) return [];
   const rand = mulberry32(hashSeed(lesson.id));
   const items: LawQuizItem[] = [];
   const usedPrompts = new Set<string>();
@@ -255,6 +276,8 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
         (part) =>
           (/^[①②③④⑤⑥⑦⑧⑨⑩]|^\d{1,2}[.、．]|^[（(][一二三四五六七八九十]{1,4}[)）]/.test(part)),
       )
+      // 页边［注记］夹在汉字中间 = 剥注记会焊出原文没有的连读句，先整条剔除（须在 cleanOrderPart 之前判）
+      .filter((part) => !isWeldedByNoteStripping(part))
       .map(stripItemPrefix)
       .map(cleanOrderPart)
       // 与 multi 同款：条目尾部的表标签焊接词按 raw 独立行剥离（"…建议内容"→"…建议"）
@@ -294,6 +317,9 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     const byTerm = byNumber || byCn ? null : mutateQuotedTerm(sentence, [...terms, ...contextTerms], rand);
     const mutation = byNumber ?? byCn ?? byTerm;
     if (!mutation || mutation.text === sentence || usedPrompts.has(mutation.text)) continue;
+    // 术语替换后同一术语在句中重复出现（“正当程序”以及“正当程序”）= 可读性崩坏的伪句，跳过
+    const mutatedQuotes = mutation.text.match(/["“][^"”]{2,12}["”]/g) ?? [];
+    if (new Set(mutatedQuotes).size !== mutatedQuotes.length) continue;
     usedPrompts.add(mutation.text);
     judgeDone = true;
     items.push({
@@ -351,7 +377,8 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
     if (!quoted) continue;
     const target = cleanTerm(quoted[1]);
     if (!target) continue;
-    const prompt = sentence.replace(target, "＿＿＿");
+    // 题面剥掉书中列表序号前缀（"4.1908年《＿＿＿》…"→"1908年《＿＿＿》…"），解析仍保留原句
+    const prompt = stripItemPrefix(sentence).replace(target, "＿＿＿");
     if (!prompt || usedPrompts.has(prompt) || prompt.length > 90) continue;
     if (!endsClean(prompt)) continue;
     if (prompt.includes(target)) continue;
@@ -406,9 +433,10 @@ export function buildQuiz(lesson: LawLesson, contextTerms: string[] = []): LawQu
         if (aHit !== bHit) return aHit ? -1 : 1;
         return aHit ? ra - rb : Math.abs(a.length - concept.length) - Math.abs(b.length - concept.length);
       });
+    // 解析句优先取包含概念的完整干净短句（曾是 80 字硬截的焊接表格残句/"（1）宪法典包括…"）
     const contextLine = lesson.steps
-      .map((step) => step.text)
-      .find((text) => text.includes(concept));
+      .flatMap((step) => sentencesOf(step.text))
+      .find((sentence) => sentence.includes(concept) && isUsableSentence(sentence));
     // 组出一组互斥的选项（冲突则逐个换候补）
     let distractors = candidates.slice(0, 3);
     for (let i = 3; i <= candidates.length; i += 1) {

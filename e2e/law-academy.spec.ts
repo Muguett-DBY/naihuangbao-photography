@@ -512,7 +512,7 @@ test.describe("关卡地图扩展（浮层 / 自测入口 / 蜿蜒结构）", ()
   });
 
   test("当前节点「直接自测」直达复习模式", async ({ page }) => {
-    // q001-tour 导览课不出题：标记完成后当前节点变为有自测题的 q002
+    // q001-tour 导览课不出题（buildQuiz 对 -tour 直接返回空）：标记完成后当前节点变为有自测题的 q002
     await page.addInitScript(() => {
       localStorage.setItem(
         "nhb-law-academy-v1",

@@ -91,6 +91,16 @@ export function cleanOrderPart(part: string): string {
   return part.replace(/［[^［］]{1,8}］/g, "").trim();
 }
 
+/**
+ * 排序卡"注记剥离粘连"闸门：页边［注记］夹在两个汉字中间时，剥掉注记会把两截文字
+ * 焊成原文没有的连读句（"表达功能［反］没有法律概念"→"表达功能没有法律概念"，
+ * 且注记位置常伴随分栏串行的丢字）。注记在条目首尾时剥离无痕（"接受法律监督［保民］"），
+ * 放行；夹在句中的条目不可靠，先于 cleanOrderPart 判定、整条不出卡。
+ */
+export function isWeldedByNoteStripping(part: string): boolean {
+  return /[一-龥]［[^［］]{1,8}］[一-龥]/.test(part);
+}
+
 /** 卡组里任何一张卡是另一张的子串 → 组内有断头残卡（"督宪法的实"⊂"监督宪法的实施"），整组不可用 */
 export function hasFragmentCard(cards: string[]): boolean {
   const bare = cards.map((c) => c.replace(/[。．.，、；：:！？?]\s*$/, ""));

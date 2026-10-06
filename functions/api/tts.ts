@@ -105,7 +105,16 @@ async function synthesize(text: string, voice: string, rate: string): Promise<Ar
 
   const chunks: Uint8Array[] = [];
   await new Promise<void>((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`tts upstream timeout (${UPSTREAM_TIMEOUT_MS}ms)`)), UPSTREAM_TIMEOUT_MS);
+    const timer = setTimeout(() => {
+      // 超时路径也必须关上游连接：reject 后 line 137 的 socket.close() 被跳过，
+      // 不关就只剩 workerd GC 兜底（onClose 路径无需处理——已关）
+      try {
+        socket.close();
+      } catch {
+        // 未就绪/已关闭时忽略
+      }
+      reject(new Error(`tts upstream timeout (${UPSTREAM_TIMEOUT_MS}ms)`));
+    }, UPSTREAM_TIMEOUT_MS);
     const finish = (fn: () => void) => {
       clearTimeout(timer);
       socket.removeEventListener("message", onMessage);

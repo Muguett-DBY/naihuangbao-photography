@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState, useCallback, type CSSProperties, type ReactNode } from "react";
 
 const spring = { type: "spring", stiffness: 360, damping: 28 } as const;
@@ -171,14 +171,22 @@ export function TermChip({
       >
         {children ?? term}
       </button>
-      <motion.span
-        className="law-term__note"
-        initial={false}
-        animate={open ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
-        transition={{ duration: 0.18 }}
-      >
-        {note ?? `「${term}」——书中的关键词，上文已经讲过它啦`}
-      </motion.span>
+      {/* 仅在展开时挂载：关闭态既不出现在读屏树里（谜底提前泄露），
+          也不再占位留白；AnimatePresence 保留淡出动画 */}
+      <AnimatePresence>
+        {open ? (
+          <motion.span
+            key="note"
+            className="law-term__note"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.18 }}
+          >
+            {note ?? `「${term}」——书中的关键词，上文已经讲过它啦`}
+          </motion.span>
+        ) : null}
+      </AnimatePresence>
     </span>
   );
 }
