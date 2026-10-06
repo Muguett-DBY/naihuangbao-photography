@@ -39,7 +39,8 @@ function contentSecurityPolicy(hashes) {
     "font-src 'self' data:",
     // wss://speech.platform.bing.com = Edge TTS 神经嗓音合成端点（src/lib/edge-tts.ts）
     "connect-src 'self' wss://speech.platform.bing.com https://static.cloudflareinsights.com https://cloudflareinsights.com",
-    "media-src 'self' blob:",
+    // data: 供 @remotion/player 内置静音采样使用（阻塞会报 MEDIA_ERR 且污染控制台）
+    "media-src 'self' data: blob:",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
