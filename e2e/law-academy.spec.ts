@@ -546,6 +546,7 @@ test.describe("关卡地图扩展（浮层 / 自测入口 / 蜿蜒结构）", ()
     await page.locator(".law-subject__viewtoggle button", { hasText: "学习路径" }).click();
     // 分区：每章一个 section（宪法书正文 > 5 章）
     const sections = page.locator(".law-path__section");
+    await sections.first().waitFor({ state: "visible", timeout: 10_000 });
     expect(await sections.count()).toBeGreaterThan(5);
     // 蜿蜒：相邻节点 --dx 偏移交替（非全部同一值）
     const dxValues = await page.locator(".law-path__slot").evaluateAll((slots) => {
