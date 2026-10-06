@@ -126,7 +126,7 @@ test.describe("law flashcards & heatmap", () => {
     seedLessons(page, {
       "minfa-q001": {
         stepsDone: { s1: true }, quizBest: 0, quizTotal: 0, wrongCount: 0,
-        lastVisitedAt: Date.now(), completedAt: Date.now() - 3600_000,
+        lastVisitedAt: Date.now(), completedAt: Date.now(),
       },
       "minfa-q002": {
         stepsDone: { s1: true }, quizBest: 0, quizTotal: 0, wrongCount: 0,
