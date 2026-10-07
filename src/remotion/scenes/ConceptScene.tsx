@@ -177,9 +177,12 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
   });
 
   return (
-    <AbsoluteFill style={sceneFrameStyle}>
+    <AbsoluteFill style={{ backgroundColor: C.paper }}>
+      {/* 安全区 padding 必须放在这一层：内层 AbsoluteFill 是 absolute inset:0，
+          会无视父级的 padding 直接铺满画布（曾导致内容顶边裁切） */}
       <AbsoluteFill
         style={{
+          ...sceneFrameStyle,
           display: "flex",
           flexDirection: "column",
           alignItems: "stretch",
@@ -204,9 +207,9 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
             style={{
               margin: "18px 0 0",
               fontFamily: F.zhBlack,
-              fontSize: 76,
+              fontSize: 72,
               lineHeight: 1.2,
-              letterSpacing: "0.02em",
+              letterSpacing: "0.01em",
               color: C.ink,
               transform: `translateY(${titleY}px)`,
               opacity: titleOpacity,

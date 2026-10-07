@@ -927,24 +927,6 @@
   box-shadow: var(--cls-shadow);
 }
 
-/* 场景角标：毛玻璃胶囊压在画面左上（学科色文字） */
-.law-classroom-player__scenebadge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 5;
-  padding: 4px 12px;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--cls-accent) 30%, transparent);
-  background: var(--cls-glass);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  font-size: 12px;
-  font-weight: 800;
-  color: color-mix(in srgb, var(--cls-accent) 72%, var(--cls-ink));
-  font-variant-numeric: tabular-nums;
-  pointer-events: none;
-}
 
 /* 读屏场景播报：视觉隐藏 */
 .law-classroom-player__sronly {

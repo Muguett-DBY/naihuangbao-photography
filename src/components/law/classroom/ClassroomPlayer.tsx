@@ -375,10 +375,9 @@ export function ClassroomPlayer({
           acknowledgeRemotionLicense
           style={{ width: "100%", height: "100%" }}
         />
-        <span className="law-classroom-player__scenebadge" aria-hidden="true">
-          {subjectLabel} · 第 {segIndex + 1}/{segments.length} 场
-        </span>
-      </div>
+      {/* 场次指示只保留进度条右侧的 1/N 与读屏播报（悬浮角标曾压住场景内部
+          的「概念场景 · CONCEPT」标签，极简原则直接移除冗余层） */}
+</div>
 
       {/* 读屏用的场景播报（视觉上由进度条与角标呈现） */}
       <p className="law-classroom-player__sronly" role="status">
