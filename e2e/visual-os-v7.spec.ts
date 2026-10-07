@@ -30,6 +30,9 @@ test("@critical V7 Studio 4 与 Story Director 共享项目素材和场景参数
   // 前置面板操作会把页面滚到中线，LOAD ASSETS 位于长工作区下方：
   // 与真实用户一致，先滚动到目标再交互
   await page.getByRole("button", { name: /LOAD ASSETS/ }).scrollIntoViewIfNeeded();
+  // 按钮在项目素材异步加载完成前是 disabled（CompositionStudio: !activeProject.assets.length）；
+  // CI 慢容器里加载可超过 30 秒，盲点会 1006 次重试全打在禁用态（2026-10-06 CI flaky 根因）
+  await expect(page.getByRole("button", { name: /LOAD ASSETS/ })).toBeEnabled({ timeout: 60_000 });
   await page.getByRole("button", { name: /LOAD ASSETS/ }).click();
   await expect(page.locator(".studio-image-strip > div")).toHaveCount(6);
 
