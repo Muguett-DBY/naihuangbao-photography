@@ -1,40 +1,40 @@
 {
-  "generatedAt": "2026-09-08T19:08:31.592Z",
+  "generatedAt": "2026-10-07T01:45:35.526Z",
   "teachingLessons": 1431,
-  "coverage": 0.8155,
+  "coverage": 0.8092,
   "kindCount": {
-    "mcq": 539,
+    "mcq": 537,
     "order": 201,
-    "judge": 954,
-    "fill": 88,
-    "multi": 112
+    "judge": 927,
+    "fill": 87,
+    "multi": 111
   },
   "judge": {
-    "total": 954,
-    "yes": 768,
+    "total": 927,
+    "yes": 741,
     "no": 186,
-    "noRatio": 0.195
+    "noRatio": 0.2006
   },
   "optionDist": {
-    "2": 4,
-    "4": 535,
+    "2": 3,
+    "4": 534,
     "6": 6,
-    "7": 65,
+    "7": 64,
     "8": 41
   },
   "orderCardDist": {
-    "3": 90,
-    "4": 111
+    "3": 92,
+    "4": 109
   },
   "multiCorrectDist": {
-    "4": 65,
+    "4": 64,
     "5": 47
   },
   "distractor": {
-    "mcqTotal": 1609,
-    "confusionHits": 128,
-    "confusionHitRate": 0.0796,
-    "avgDice": 0.0379
+    "mcqTotal": 1605,
+    "confusionHits": 121,
+    "confusionHitRate": 0.0754,
+    "avgDice": 0.0364
   },
   "quality": {
     "ambiguousDistractors": 0,
@@ -50,7 +50,7 @@
   },
   "intercepted": {
     "orderIntercepted": 335,
-    "defIntercepted": 763,
+    "defIntercepted": 768,
     "judgeMutIntercepted": 410
   }
 }

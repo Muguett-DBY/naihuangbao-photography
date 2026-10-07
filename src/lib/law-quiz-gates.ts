@@ -26,6 +26,17 @@ export function cleanTerm(term: string | null | undefined): string | null {
   return text;
 }
 
+/** 栏目标签/导图标题/目录行/设问指令：不是一句可判断的话（五科精读审查 2026-10 实测抓出的伪句族） */
+function isStructuralFragment(sentence: string): boolean {
+  // 设问指令不是陈述句（"简述预告登记的效力。"被判题无意义）
+  if (/^(简述|试述|论述|谈谈|结合材料|分析材料|材料分析|法条分析)/.test(sentence)) return true;
+  // 栏目标签/导图标题开头（"表达逻辑出卖人的义务买受人的义务。""识诵内容自己的错自己处理。"）
+  if (/^(表达逻辑|考点名称|记忆主线|老马识途|背诵提示|背诵口诀|识记背诵|识诵内容|文意拆解|动作拆解|种类拆解|标准填充|表达逻辅)/.test(sentence)) return true;
+  // 目录/考点索引行：页码区间特征（"五刑制度主要罪名46-55民事行为能力所有权。"）
+  if (/\d{1,4}\s*[-—–~]\s*\d{1,4}/.test(sentence)) return true;
+  return false;
+}
+
 /** 判断题"原句重现"取材：必须是完整独立句，不带 OCR 残渣 */
 export function isCleanVerbatimSentence(sentence: string): boolean {
   // 必须以句末标点收尾（截断残句如"…社会规范，具"不可用作判断题）
@@ -38,6 +49,8 @@ export function isCleanVerbatimSentence(sentence: string): boolean {
   if (/[（(][0-9一二三四五六七八九]{1,2}[)）]/.test(sentence)) return false;
   // "含义/概述"开头的表格行标签焊接（"含义拾得迪失物、指…"）
   if (/^(含义|概述)/.test(sentence)) return false;
+  // 栏目标签/导图标题/目录行/设问指令（同上族）
+  if (isStructuralFragment(sentence)) return false;
   // OCR 糊字：□○ 等占位符直接排除；〇 仅在年份里合法（"二〇二五"的〇后是〇/数字/年），
   // "算二〇典合国"这类〇后接普通汉字的糊句拿去出判断题无法作答
   if (/[○□◊]/.test(sentence)) return false;
@@ -62,6 +75,8 @@ export function isMutableSentence(sentence: string): boolean {
   if (/[一-龥]["“]?[（(][0-9一二三四五六七八九]{1,2}[)）]/.test(sentence)) return false;
   // 汉字直贴年份（"…法律的特权1954年《宪法》…"）= 无句读焊接句；"公元1908年"合法放行
   if (/(?<!元)[一-龥]\d{4}年/.test(sentence)) return false;
+  // 栏目标签/导图标题/目录行/设问指令（与原句闸门同族）
+  if (isStructuralFragment(sentence)) return false;
   // 元信息句（真题设问/背诵方法标注）是书的排版家具不是考点
   if (
     /设问[：:]|真题|材料分析题|考试分析原文|背诵提示|背诵口诀|拆解法|填充法|常识法|类比法|接地气|一招制敌|表达逻辑|记忆主线/.test(

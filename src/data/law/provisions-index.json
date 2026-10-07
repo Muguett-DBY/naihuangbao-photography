@@ -903,6 +903,20 @@
     },
     {
       "law": "刑法",
+      "article": "430",
+      "clause": null,
+      "articleNumber": 430,
+      "lessons": [
+        {
+          "subject": "xingfa",
+          "lessonId": "xingfa-q160",
+          "title": "简述叛逃罪的概念和构成特征"
+        }
+      ],
+      "count": 1
+    },
+    {
+      "law": "刑法",
       "article": "449",
       "clause": null,
       "articleNumber": 449,
@@ -1925,6 +1939,6 @@
       "count": 2
     }
   ],
-  "totalProvisions": 126,
-  "totalReferences": 353
+  "totalProvisions": 127,
+  "totalReferences": 354
 }

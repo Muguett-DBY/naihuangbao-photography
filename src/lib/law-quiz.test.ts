@@ -304,6 +304,19 @@ describe("law quiz gates（取材闸门纯函数）", () => {
     expect(isCleanVerbatimSentence("有期徒刑是剥夺犯罪分子一定期限的人身自由的刑罚方法。")).toBe(true);
   });
 
+  it("isCleanVerbatimSentence rejects instruction lines, mind-map titles and catalog rows", () => {
+    // 设问指令不是陈述句
+    expect(isCleanVerbatimSentence("简述预告登记的效力。")).toBe(false);
+    expect(isCleanVerbatimSentence("结合材料一，阐述材料二的内涵。")).toBe(false);
+    // 导图标题/方法标签开头
+    expect(isCleanVerbatimSentence("表达逻辑出卖人的义务买受人的义务。")).toBe(false);
+    expect(isCleanVerbatimSentence("识诵内容自己的错自己处理。")).toBe(false);
+    // 目录/考点索引行（页码区间特征）
+    expect(isCleanVerbatimSentence("五刑制度主要罪名46-55民事行为能力所有权。")).toBe(false);
+    // 正常陈述句不受影响
+    expect(isCleanVerbatimSentence("遗嘱继承是指继承人按照被继承人所立的合法有效的遗嘱而继承其遗产的继承方式。")).toBe(true);
+  });
+
   it("isMutableSentence rejects orphan quotes, unbalanced titles, welded years and meta sentences", () => {
     expect(isMutableSentence("”1789年的法国《人权宣言》进一步丰富了理论。")).toBe(false);
     expect(isMutableSentence("代表法典有《汉谟拉比法典》《十二。")).toBe(false);
