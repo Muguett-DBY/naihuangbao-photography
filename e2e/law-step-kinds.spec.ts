@@ -126,10 +126,10 @@ test.describe("law quiz kinds 扩展（S1 上线后启用）", () => {
 
   test("fill 填空题型完整作答流", async ({ page }) => {
     test.skip(!fillShipped, "S1 的 fill 填空题型未上线（源码探测无 fill kind）");
-    await page.goto("/law/learn/falixue-q083?review=1");
+    await page.goto("/law/learn/falixue-q144?review=1");
     await expect(page.locator(".law-quiz")).toBeVisible();
 
-    // 题序不确定：逐题作答，直到遇到填空题（falixue-q083 必出 fill）
+    // 题序不确定：逐题作答，直到遇到填空题（falixue-q144 稳定出 fill）
     for (let i = 0; i < 4; i += 1) {
       const fillInput = page.locator(".law-quiz__fill-input");
       if (await fillInput.isVisible().catch(() => false)) {
@@ -146,7 +146,7 @@ test.describe("law quiz kinds 扩展（S1 上线后启用）", () => {
       }
       await answerGeneric(page);
     }
-    throw new Error("falixue-q083 应产生至少一道 fill 题（S1 数据变化时请更换课时）");
+    throw new Error("falixue-q144 应产生至少一道 fill 题（S1 数据变化时请更换课时）");
   });
 
   test("multi 多选题型完整作答流", async ({ page }) => {
