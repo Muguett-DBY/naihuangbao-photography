@@ -1561,3 +1561,13 @@ time,
     transform: scaleX(1);
   }
 }
+
+
+/* ── 法硕学习区沉浸模式：隐藏摄影站导航（全局规则——所有 law 页面生效，
+   不依赖各页是否导入 law-academy.css） ── */
+.law-immersive .site-nav,
+.law-immersive .site-footer,
+.law-immersive .mobile-bottom-nav,
+.law-immersive .mobile-bottom-nav__item {
+  display: none !important;
+}

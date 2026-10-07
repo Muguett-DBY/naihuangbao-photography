@@ -205,7 +205,9 @@ describe("law chunked loader equivalence", () => {
     for (const id of SUBJECTS) {
       const book = booksOnDisk[id];
       const path = buildLessonPath(book, {});
-      const head = path.nodes[0]?.lesson.id ?? null;
+      // 入口口径 = 路径首个「实质内容课」（导览课 -tour 是路径第一站但不当入口，
+      // 与「入口绝不返回空壳课」测试同口径；2026-10 修复学习中心直落导览课课堂）
+      const head = path.nodes.find((node) => !node.lesson.id.endsWith("-tour"))?.lesson.id ?? null;
       expect(head, `${id} 必须有可走的路径`).not.toBeNull();
 
       expect(await firstPathLessonId(id, {})).toBe(head);
@@ -221,7 +223,11 @@ describe("law chunked loader equivalence", () => {
       for (const node of path.nodes.slice(0, mid)) {
         half[node.lesson.id] = { ...doneEntry };
       }
-      expect(await firstPathLessonId(id, half)).toBe(path.nodes[mid]?.lesson.id ?? null);
+      // 半完成态的期望也要跳过导览课（当前节点若恰好落在 tour 课上，取其后第一个实质课）
+      const expectedCurrent = path.nodes
+        .slice(mid)
+        .find((node) => !node.lesson.id.endsWith("-tour"))?.lesson.id ?? null;
+      expect(await firstPathLessonId(id, half)).toBe(expectedCurrent);
     }
   });
 

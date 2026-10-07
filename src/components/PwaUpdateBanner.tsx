@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { RefreshCw, X } from "lucide-react";
 import { logAndIgnore } from "../lib/errors";
@@ -6,15 +7,23 @@ import { hasUnsavedCreativeWork, subscribeCreativeWorkState } from "../lib/creat
 
 const UPDATE_CHECK_INTERVAL_MS = 5 * 60 * 1000;
 
+/** 创作工作区：更新必须手动确认（可能有未保存内容）；其余页面自动应用 */
+function isCreativeWorkspacePath(pathname: string): boolean {
+  return /^\/(create|studio|editor|lab)(\/|$)/.test(pathname);
+}
+
 export function PwaUpdateBanner() {
   const { t } = useTranslation();
+  const location = useLocation();
   const [visible, setVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [creativeDirty, setCreativeDirty] = useState(hasUnsavedCreativeWork);
+  const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
   const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
   const reloadFallbackRef = useRef<number | null>(null);
   const refreshButtonRef = useRef<HTMLButtonElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const autoAppliedRef = useRef(false);
 
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return undefined;
@@ -38,6 +47,7 @@ export function PwaUpdateBanner() {
       if (!newWorker) return;
       newWorker.addEventListener("statechange", () => {
         if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+          setWaitingWorker(newWorker);
           setVisible(true);
         }
       });
@@ -67,6 +77,7 @@ export function PwaUpdateBanner() {
       registrationRef.current = reg;
 
       if (reg.waiting) {
+        setWaitingWorker(reg.waiting);
         setVisible(true);
       }
 
@@ -118,6 +129,22 @@ export function PwaUpdateBanner() {
   }, []);
 
   useEffect(() => subscribeCreativeWorkState(setCreativeDirty), []);
+
+  /* 非创作页自动应用更新：waiting SW 一出现（或路由离开创作区）即激活并刷新。
+   * 手动横幅只保留给创作工作区（可能有未保存内容）。
+   * 背景：skipWaiting:false/clientsClaim:false 的 prompt 策略让用户无限期停在旧
+   * bundle 上（2026-10 实测：用户在旧版里「返回学习中心」点不动），这里兜底。 */
+  const onCreativeWorkspace = isCreativeWorkspacePath(location.pathname);
+  useEffect(() => {
+    if (autoAppliedRef.current) return undefined;
+    if (!waitingWorker) return undefined;
+    if (onCreativeWorkspace || creativeDirty) return undefined;
+    autoAppliedRef.current = true;
+    setRefreshing(true);
+    waitingWorker.postMessage({ type: "SKIP_WAITING" });
+    reloadFallbackRef.current = window.setTimeout(() => window.location.reload(), 4000);
+    return undefined;
+  }, [waitingWorker, onCreativeWorkspace, creativeDirty]);
 
   useEffect(() => {
     if (!visible) return undefined;

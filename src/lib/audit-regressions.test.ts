@@ -1129,6 +1129,11 @@ describe("audit regression coverage", () => {
     expect(pwaUpdateBannerSource).toContain("visibilitychange");
     expect(pwaUpdateBannerSource).toContain("removeEventListener(\"updatefound\"");
     expect(pwaUpdateBannerSource).toContain("{ type: \"SKIP_WAITING\" }");
+    // 非创作页自动应用更新：waiting SW 一出现即 SKIP_WAITING + 刷新（创作页保留手动横幅）。
+    // 背景：prompt 策略曾让用户无限期停留在旧 bundle（2026-10 用户实测旧版返回键失效）。
+    expect(pwaUpdateBannerSource).toContain("setWaitingWorker(newWorker)");
+    expect(pwaUpdateBannerSource).toContain("autoAppliedRef.current = true");
+    expect(pwaUpdateBannerSource).toContain("onCreativeWorkspace || creativeDirty");
     expect(pwaUpdateBannerSource).toContain("pwaUpdate.refreshing");
     expect(zhLocaleSource).toContain("正在刷新到最新版本");
     expect(enLocaleSource).toContain("Refreshing to the latest version");

@@ -510,14 +510,8 @@
   }
 }
 
-/* ── 沉浸专注模式（隐藏摄影站导航，全屏学习） ── */
-.law-immersive .site-nav,
-.law-immersive .site-footer,
-.law-immersive .mobile-bottom-nav,
-.law-immersive .mobile-bottom-nav__item {
-  display: none !important;
-}
-
+/* ── 沉浸专注模式：导航隐藏规则已上移 base.css（全局生效——
+   曾因本页未导入 law-academy.css 导致闪卡页导航盖住返回链接） ── */
 .law-immersive .law-academy {
   padding-top: clamp(12px, 2vw, 24px);
 }

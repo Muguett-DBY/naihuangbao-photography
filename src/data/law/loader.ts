@@ -261,6 +261,8 @@ export async function firstPathLessonId(
     if (isMetaChapterName(chapter.t) || isMetaChapterName(chapter.st ?? "")) continue;
     for (const lesson of chapter.ls) {
       if (lesson.f !== 1) continue;
+      // 导览课（-tour）是索引空壳，不该当「开始学习」入口（与 buildLessonPath 同口径）
+      if (lesson.i.endsWith("-tour")) continue;
       first ??= lesson.i;
       if (!progress[lesson.i]?.completedAt) return lesson.i;
     }
