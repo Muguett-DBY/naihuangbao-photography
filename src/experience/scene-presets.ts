@@ -214,7 +214,17 @@ function normalizePathname(pathname: string): string {
 }
 
 function isExcludedPath(pathname: string): boolean {
-  return pathname === "/dashboard" || pathname.startsWith("/dashboard/") || pathname === "/admin" || pathname.startsWith("/admin/");
+  // /law/* 一并排除：法课套件有自己的奶油底视觉体系，全站 WebGL immersive
+  // canvas 的 boundary 深色面片会盖住浅底空态卡（如闪卡空态），且法课页不需要
+  // 这层 GPU 背景——排除即省一份 WebGL 上下文开销。
+  return (
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/") ||
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/") ||
+    pathname === "/law" ||
+    pathname.startsWith("/law/")
+  );
 }
 
 export function resolveRoutePreset(pathname: string): ScenePresetId | null {

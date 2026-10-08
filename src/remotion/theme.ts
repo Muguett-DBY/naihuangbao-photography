@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { ClassroomSceneType } from "../lib/law-classroom";
 import type { LawSubjectId } from "../types/law";
 
 /**
@@ -33,6 +34,33 @@ export const SUBJECT_ACCENTS: Record<
   zhishixiang: { accent: "#a9853f", accentSoft: "#f3ecd9" }, // 法制史
   minfa: { accent: "#5f7fae", accentSoft: "#e6ecf6" }, // 民法
   xingfa: { accent: "#96608f", accentSoft: "#efe6ee" }, // 刑法
+};
+
+/**
+ * 步骤类型 → 图形化图标与中文标签（SceneChrome 徽标 + 各场景条目前缀共用）。
+ * Record 键覆盖 ClassroomSceneType 全部九类，新类型漏配直接编译报错。
+ */
+export interface StepTypeMeta {
+  /** 图形化符号：徽标与条目前缀共用（升级清单：✓/⚠/？由 chrome 的 StepMark 承接） */
+  icon: string;
+  /** 类型关键词：定义/列举/对比/时间线/要件/例外/流程/口诀/测验 */
+  label: string;
+  /** 徽标展示名：如「概念场景」「随堂小测」 */
+  scene: string;
+  /** 英文小字：沿用各场景头部「概念场景 · CONCEPT」的惯例 */
+  en: string;
+}
+
+export const STEP_TYPE_META: Record<ClassroomSceneType, StepTypeMeta> = {
+  concept: { icon: "📖", label: "定义", scene: "概念场景", en: "CONCEPT" },
+  list: { icon: "🗂️", label: "列举", scene: "列举场景", en: "LIST" },
+  compare: { icon: "⚖️", label: "对比", scene: "对比场景", en: "COMPARE" },
+  checklist: { icon: "🔑", label: "要件", scene: "要件清单", en: "CHECKLIST" },
+  timeline: { icon: "🕰️", label: "时间线", scene: "时间线场景", en: "TIMELINE" },
+  alert: { icon: "⚠️", label: "例外", scene: "例外警示", en: "EXCEPTION" },
+  flow: { icon: "🔗", label: "流程", scene: "流程场景", en: "FLOW" },
+  mnemonic: { icon: "🧠", label: "口诀", scene: "口诀场景", en: "MNEMONIC" },
+  quiz: { icon: "❓", label: "测验", scene: "随堂小测", en: "QUIZ" },
 };
 
 /** 字体栈：系统已装 Noto Serif SC 全字重（Black/SemiBold 为独立家族名）+ Georgia */

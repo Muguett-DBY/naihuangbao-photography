@@ -18,6 +18,7 @@ import { C, SUBJECT_ACCENTS, VIDEO } from "../../../remotion/theme";
 import { flowSceneDurationInFrames } from "../../../remotion/scenes/FlowScene";
 import { mnemonicSceneDurationInFrames } from "../../../remotion/scenes/MnemonicScene";
 import { timelineSceneDurationInFrames } from "../../../remotion/scenes/TimelineScene";
+import { GraphicScene, graphicSceneDurationInFrames } from "../../../remotion/scenes/GraphicScene";
 import { SceneView, splitMnemonic } from "./SceneView";
 import { LawMascot } from "../LawMascot";
 import { TeacherBubble } from "./TeacherBubble";
@@ -36,7 +37,10 @@ import "../../../styles/law-classroom.css";
  * speak 作废旧朗读），视频节奏（playbackRate）与语速共用同一个 rate。
  *
  * 集成回调（可选）：onSceneChange 把推进到的场景同步给父级记进度，
- * onFinish 在全部场景播完时通知父级收课。
+ * onFinish 在全部场景播完时通知父级收课。图解联动：LAW_GRAPHIC_MAP 命中的课
+ * （convertToClassroom 追加 scene.graphic 哨兵场景）在序列尾部、quiz 哨兵之前
+ * 多排一场「完整图解」——GraphicScene 帧驱动重排图解的完整知识结构，计入场次
+ * 总数，但明确排除在 onSceneChange 步骤进度之外（无对应步骤，quiz 同款语义）。
  */
 
 /* ==================== 时序：每场多长（帧） ==================== */
@@ -56,7 +60,9 @@ function speechFrames(scene: ClassroomScene): number {
 /** 单场时长：动画需求与讲稿时长取大，再夹进 [3s, 60s] */
 function sceneDuration(scene: ClassroomScene): number {
   let anim = ANIM_MIN_FRAMES;
-  if (scene.type === "flow") anim = flowSceneDurationInFrames(scene.items.length);
+  // 图解场景：时长由图解解说步数决定（每步 2.8s 的确定性揭示节拍），优先于 type 判断
+  if (scene.graphic) anim = graphicSceneDurationInFrames(scene.graphic.captions.length);
+  else if (scene.type === "flow") anim = flowSceneDurationInFrames(scene.items.length);
   else if (scene.type === "timeline") anim = timelineSceneDurationInFrames(scene.items.length);
   else if (scene.type === "mnemonic") {
     const [mnemonic, explanation] = splitMnemonic(scene.content);
@@ -101,7 +107,13 @@ const ClassroomComposition: FC<ClassroomCompositionProps> = ({ segments, accent 
         layout="none"
         name={segment.scene.title}
       >
-        <SceneView scene={segment.scene} accent={accent} />
+        {/* 图解场景（scene.graphic 哨兵）→ GraphicScene 帧驱动重排图解完整结构；
+            其余场景照旧走 SceneView 的类型映射 */}
+        {segment.scene.graphic ? (
+          <GraphicScene graphic={segment.scene.graphic} accent={accent} />
+        ) : (
+          <SceneView scene={segment.scene} accent={accent} />
+        )}
       </Sequence>
     ))}
   </AbsoluteFill>
@@ -210,7 +222,13 @@ export function ClassroomPlayer({
     if (playing || frame > 0) {
       if (announcedRef.current !== segIndex) {
         announcedRef.current = segIndex;
-        sceneChangeRef.current?.(current.scene);
+        // 图解场景（stepId="graphic" 哨兵）明确排除在步骤进度之外：它无对应
+        // 原始步骤，上报会让父级 markStepDone 写入幻影步骤、把「已掌握 N 步」
+        // 虚增到总步数之外（quiz 哨兵同款语义，在父级 onSceneChange 里排除）。
+        // 场次计数（第 x/共 N 场、进度条、TTS 播报）仍正常包含它。
+        if (!current.scene.graphic) {
+          sceneChangeRef.current?.(current.scene);
+        }
       }
     }
   }, [current, segIndex, playing, frame]);
@@ -229,10 +247,17 @@ export function ClassroomPlayer({
     return () => player.removeEventListener("ended", onEnded);
   }, []);
 
-  /* —— TTS 同步：场景/播放态/语速任一变化即重新对齐 ——
+  /* —— TTS 同步：场景/播放态变化即重新对齐；语速变化走热更新，绝不重讲 ——
    * 播放中进入新场景 → 朗读该场讲稿（law-tts 队列语义自动作废旧朗读）；
    * 暂停 → tts.pause()（引擎 1 真暂停，恢复续读；节拍模拟引擎不支持则自然停）；
-   * 关语音 → cancel 并作废续读标记；拖动/切场 → key 变了 → 从头读新场景。 */
+   * 关语音 → cancel 并作废续读标记；拖动/切场 → key 变了 → 从头读新场景。
+   * spokenKey 刻意不含语速：中途变速不应把整段从头重读，画面也不重置 ——
+   * 语速走下方 tts.setPlaybackRate 热更新（引擎 1 当前音频原地变速续走，
+   * 引擎 2 记录新语速对下一句生效，utterance 无法热改、不打断当前句）。 */
+  /** 最新语速走 ref：语速变化只触发热更新 effect，不重跑场景对齐 effect（不重讲） */
+  const rateRef = useRef(rate);
+  rateRef.current = rate;
+
   const spokenKeyRef = useRef("");
   useEffect(() => {
     if (!playing) {
@@ -245,14 +270,19 @@ export function ClassroomPlayer({
       return;
     }
     if (!current) return;
-    const key = `${current.scene.stepId}@${current.start}@${rate}`;
+    const key = `${current.scene.stepId}@${current.start}`;
     if (spokenKeyRef.current === key) {
       tts.resume();
       return;
     }
     spokenKeyRef.current = key;
-    tts.speak(current.scene.teacherScript, { rate });
-  }, [playing, ttsOn, current, rate]);
+    tts.speak(current.scene.teacherScript, { rate: rateRef.current });
+  }, [playing, ttsOn, current]);
+
+  /* —— 语速热更新：变速即时生效（含 Player 画面 playbackRate），朗读只变速不重讲 —— */
+  useEffect(() => {
+    tts.setPlaybackRate(rate);
+  }, [rate]);
 
   // 卸载收声：离开课堂绝不留下背台词的奶黄包
   useEffect(() => () => tts.cancel(), []);
@@ -407,7 +437,7 @@ export function ClassroomPlayer({
       <p className="law-classroom-controls__hints" aria-hidden="true">
         <kbd>空格</kbd> 播放 / 暂停 · <kbd>←</kbd>
         <kbd>→</kbd> 切场景 · <kbd>↑</kbd>
-        <kbd>↓</kbd> 语速 · <kbd>M</kbd> 语音
+        <kbd>↓</kbd> 语速 · <kbd>M</kbd> 语音 · 🎓 回步骤模式
       </p>
     </div>
   );

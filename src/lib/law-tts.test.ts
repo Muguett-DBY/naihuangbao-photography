@@ -3,7 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 /**
  * law-tts 双引擎状态机测试（mock WebSocket / SpeechSynthesis / Audio）：
  * 验证「优先 Edge → 首包超时或任何错误 → 无缝回退 SpeechSynthesis」、
- * 讲稿哈希缓存 + playbackRate 语速映射、场景切换旧音频 abort、词边界回调。
+ * 讲稿哈希缓存 + playbackRate 语速映射、场景切换旧音频 abort、词边界回调、
+ * setPlaybackRate 语速热更新不重讲（引擎 1 原地变速，引擎 2 下一句生效）。
  */
 
 /* ==================== 测试替身 ==================== */
@@ -382,6 +383,85 @@ describe("讲稿哈希缓存 + 场景切换 abort", () => {
     MockAudio.instances[0].onended?.();
     expect(secondEnd).toHaveBeenCalledTimes(1);
     expect(firstEnd).not.toHaveBeenCalled(); // 被取代方的回调永不串扰
+  });
+});
+
+describe("setPlaybackRate：语速热更新不重讲", () => {
+  it("引擎 1：热更新当前 <audio> 的 playbackRate —— 不新建音频、不从头重播、不重新合成", async () => {
+    const lawTts = await loadLawTts();
+    lawTts.speak("变速中的讲稿", { rate: 1 });
+    await waitForWebSocketCount(0);
+    await driveSuccessfulSynthesis(MockWebSocket.instances[0]);
+
+    const audio = MockAudio.instances[0];
+    expect(audio.playbackRate).toBe(1);
+    expect(audio.playCalls).toBe(1);
+    const url = audio.src;
+    const connections = MockWebSocket.instances.length;
+
+    lawTts.setPlaybackRate(1.5);
+
+    expect(audio.playbackRate).toBe(1.5); // 同一音频原地变速
+    expect(audio.src).toBe(url); // 还是原来那个 <audio>（Blob URL 未换）
+    expect(MockAudio.instances).toHaveLength(1); // 没有新建音频元素
+    expect(audio.playCalls).toBe(1); // 没有从头重播（进度原地续走）
+    expect(MockWebSocket.instances.length).toBe(connections); // 没有重新合成
+    audio.onended?.();
+  });
+
+  it("引擎 1：合成在途时变速，开口（播放）即用新语速，且不重启合成", async () => {
+    const lawTts = await loadLawTts();
+    lawTts.speak("在途变速的讲稿", { rate: 1 });
+    await waitForWebSocketCount(0);
+    MockWebSocket.instances[0].serverOpen(); // 连上了，音频还在路上
+    const connections = MockWebSocket.instances.length;
+
+    lawTts.setPlaybackRate(2); // 合成在途：只记新语速，不作废在途连接
+    await driveSuccessfulSynthesis(MockWebSocket.instances[0]);
+
+    expect(MockWebSocket.instances.length).toBe(connections); // 没有重新合成
+    expect(MockAudio.instances).toHaveLength(1);
+    expect(MockAudio.instances[0].playbackRate).toBe(2); // 开口即新语速
+    MockAudio.instances[0].onended?.();
+  });
+
+  it("引擎 2：当前句不打断不重讲，记录的新语速对下一句生效", async () => {
+    const lawTts = await loadLawTts();
+    lawTts.speak("第一句讲稿", { rate: 1 });
+    await waitForWebSocketCount(0);
+    MockWebSocket.instances[0].onerror?.({}); // Edge 端点故障 → 冷静期 + 无缝回退引擎 2
+    await vi.advanceTimersByTimeAsync(1);
+
+    expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(1);
+    const current = mockSpeechSynthesis.speak.mock.calls[0][0] as MockUtterance;
+    expect(current.rate).toBe(1);
+    expect(current.onend).toBeTypeOf("function");
+
+    const connections = MockWebSocket.instances.length;
+    lawTts.setPlaybackRate(1.5);
+
+    expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(1); // 当前句不被打断、不重讲
+    expect(MockWebSocket.instances.length).toBe(connections); // 不重新合成
+    current.onend?.(); // 当前句自然结束
+
+    lawTts.speak("第二句讲稿"); // 省略 rate：取 setPlaybackRate 记录的语速
+    await vi.advanceTimersByTimeAsync(1);
+    expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(2);
+    expect((mockSpeechSynthesis.speak.mock.calls[1][0] as MockUtterance).rate).toBe(1.5); // 下一句生效
+  });
+
+  it("引擎 2：变速后下一句显式传 rate 以显式值为准", async () => {
+    const lawTts = await loadLawTts();
+    lawTts.speak("第一句讲稿", { rate: 1 });
+    await waitForWebSocketCount(0);
+    MockWebSocket.instances[0].onerror?.({});
+    await vi.advanceTimersByTimeAsync(1);
+    (mockSpeechSynthesis.speak.mock.calls[0][0] as MockUtterance).onend?.();
+
+    lawTts.setPlaybackRate(2);
+    lawTts.speak("第二句讲稿", { rate: 0.75 });
+    await vi.advanceTimersByTimeAsync(1);
+    expect((mockSpeechSynthesis.speak.mock.calls[1][0] as MockUtterance).rate).toBe(0.75);
   });
 });
 

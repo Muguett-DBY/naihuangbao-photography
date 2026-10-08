@@ -31,6 +31,9 @@
   padding: 36px 24px;
   border: 1.5px dashed color-mix(in srgb, var(--ink) 24%, transparent);
   border-radius: 18px;
+  /* 实底兜底：即使有全屏装饰层（如 WebGL 画布）压在页面下，空态文字也不与
+     深色面片直接混色——与错题本/总结卡同款实底卡口径 */
+  background: var(--law-flash-card-back);
 }
 .law-flash__empty h2 { margin: 12px 0 6px; }
 .law-flash__empty p { color: color-mix(in srgb, var(--ink) 70%, transparent); }

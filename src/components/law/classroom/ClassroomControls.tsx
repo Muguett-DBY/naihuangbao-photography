@@ -66,20 +66,24 @@ export function ClassroomControls({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
-      {/* 进度条：拖动跳场景；展示层同步一条学科色进度 */}
+      {/* 进度条：拖动跳场景；展示层同步一条学科色进度。
+          单场课时（total ≤ 1）range 的 max=0 是拖 regulation 不动的死控件，
+          直接隐藏滑杆只留计数，避免"能拖"的误导 */}
       <div className="law-classroom-controls__progress">
-        <input
-          type="range"
-          className="law-classroom-controls__range"
-          min={0}
-          max={Math.max(total - 1, 0)}
-          step={1}
-          value={Math.min(currentIndex, Math.max(total - 1, 0))}
-          onChange={(event) => onSeek?.(Number(event.target.value))}
-          disabled={empty || !onSeek}
-          aria-label="课堂进度"
-          aria-valuetext={`第 ${currentIndex + 1} 场，共 ${total} 场`}
-        />
+        {total > 1 && (
+          <input
+            type="range"
+            className="law-classroom-controls__range"
+            min={0}
+            max={Math.max(total - 1, 0)}
+            step={1}
+            value={Math.min(currentIndex, Math.max(total - 1, 0))}
+            onChange={(event) => onSeek?.(Number(event.target.value))}
+            disabled={empty || !onSeek}
+            aria-label="课堂进度"
+            aria-valuetext={`第 ${currentIndex + 1} 场，共 ${total} 场`}
+          />
+        )}
         <div className="law-classroom-controls__meter" aria-hidden="true">
           <span className="law-classroom-controls__meter-fill" style={{ width: `${progress}%` }} />
         </div>

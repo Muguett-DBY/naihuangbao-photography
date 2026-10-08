@@ -20,6 +20,9 @@ import { edgeTtsAvailable, synthesizeEdge, type EdgeWordBoundary } from "./edge-
  * - isSupported —— 环境是否支持 SpeechSynthesis（引擎 2；引擎 1 可用性在
  *   speak 时独立探测，两者都不支持才走节拍模拟）
  * - speak(text, { rate?, onEnd?, onError?, onWordBoundary? }) —— 朗读一段文字
+ * - setPlaybackRate(rate) —— 语速热更新：不重讲。引擎 1 原地改当前 <audio>
+ *   的 playbackRate（同一音频续走）；引擎 2/3 只记录新语速对下一句生效
+ *   （当前句不打断、不重启）
  * - cancel() —— 立即停止（三种引擎一并作废）
  * - pause() / resume() —— 暂停 / 恢复（引擎 1、2 有真实暂停语义）
  * - setTtsEnabled(bool) / isTtsEnabled() —— 用户总开关，关闭即静默并停止
@@ -149,6 +152,13 @@ function clampRate(rate: number | undefined): number {
   return Math.min(2, Math.max(0.5, r));
 }
 
+/**
+ * 当前语速（0.5–2.0）：speak 的显式 rate 与 setPlaybackRate 的汇合点。
+ * speak 入口把显式 rate 汇入这里；三处开口（playEdge / 引擎 2 utterance /
+ * 引擎 3 计时）一律读这里 —— 合成在途或句中变速只需记下，开口即生效。
+ */
+let currentRate = 1;
+
 /* ---------------- 引擎 1：Edge TTS（合成缓存 + 播放） ---------------- */
 
 interface EdgeCacheEntry {
@@ -236,7 +246,8 @@ function abortEdge(): void {
 function playEdge(gen: number, text: string, entry: EdgeCacheEntry, options: SpeakOptions): void {
   const url = URL.createObjectURL(new Blob([entry.audio], { type: "audio/mpeg" }));
   const el = new Audio(url);
-  el.playbackRate = clampRate(options.rate);
+  // 开口读当前语速：合成在途中的 setPlaybackRate 也能生效（显式 rate 已在 speak 入口汇入）
+  el.playbackRate = currentRate;
   const state: EdgePlayback = { el, url, boundaries: entry.boundaries, fired: 0, ticker: null };
   edgePlayback = state;
 
@@ -325,7 +336,7 @@ function speakWithSpeechSynthesis(gen: number, text: string, options: SpeakOptio
     if (gen !== generation) return; // 这一拍里已被更新的 speak/cancel 取代
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "zh-CN";
-    utterance.rate = clampRate(options.rate);
+    utterance.rate = currentRate; // 开口读当前语速（显式 rate 已在 speak 入口汇入）
     const voice = pickVoice();
     if (voice) utterance.voice = voice;
     utterance.onend = () => {
@@ -355,7 +366,7 @@ function speakWithSpeechSynthesis(gen: number, text: string, options: SpeakOptio
 
 /** 引擎 3：中文 ≈ 每字 250ms，封顶 8s（无语音环境 / 用户关闭时的保底节奏） */
 function speakWithBeatSimulation(gen: number, text: string, options: SpeakOptions): void {
-  const ms = Math.min((text.length * 250) / clampRate(options.rate), 8000);
+  const ms = Math.min((text.length * 250) / currentRate, 8000);
   fallbackTimer = setTimeout(() => {
     if (gen === generation) {
       fallbackTimer = null;
@@ -374,6 +385,8 @@ export function speak(text: string, options: SpeakOptions = {}): void {
   clearFallbackTimer();
   abortEdge();
   edgePaused = false;
+  // 显式 rate 即最新语速：记下，供在途变速（setPlaybackRate）后的开口处取用
+  if (typeof options.rate === "number") currentRate = clampRate(options.rate);
 
   if (!text) {
     options.onEnd?.();
@@ -400,6 +413,18 @@ export function speak(text: string, options: SpeakOptions = {}): void {
 
   // —— 引擎 3：节拍模拟
   speakWithBeatSimulation(gen, text, options);
+}
+
+/**
+ * 语速热更新：变速不重讲 —— 改的是「正在播的这一句」的快慢，不是从头再来。
+ * 引擎 1：直接热更新当前 <audio> 的 playbackRate（同一音频原地变速，进度原地
+ *   续走，不新建音频元素）；合成在途时只记新语速，playEdge 开口时生效。
+ * 引擎 2 / 3：当前 utterance/计时的语速无法热改 —— 只记录新语速，下一句
+ *   speak 生效，不打断、不重启当前句。
+ */
+export function setPlaybackRate(rate: number): void {
+  currentRate = clampRate(rate);
+  if (edgePlayback) edgePlayback.el.playbackRate = currentRate;
 }
 
 /** 立即停止：引擎 1 合成/播放、引擎 2 朗读、引擎 3 计时一并作废，回调都不再触发 */

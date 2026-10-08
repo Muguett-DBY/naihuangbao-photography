@@ -1,282 +1,288 @@
-import { Fragment, useEffect, useState, type FC } from "react";
+import { AbsoluteFill, interpolate } from "remotion";
+import type { FC } from "react";
+import type { LawSubjectId } from "../../types/law";
 import {
-  AbsoluteFill,
-  Easing,
-  interpolate,
-  spring,
-  useCurrentFrame,
-  useVideoConfig,
-} from "remotion";
+  C,
+  F,
+  SAFE,
+  SPRING,
+  SUBJECT_ACCENTS,
+  T,
+  sceneFrameStyle,
+  withAlpha,
+} from "../theme";
+import {
+  SceneChrome,
+  strokeDashStyle,
+  useStageProgress,
+} from "../chrome";
 
 /**
- * FlowScene — 流程场景。
- * 标题先行入场，随后步骤节点依次弹出、节点之间的连接线随之生长，
- * 呈现"步骤逐级串联展开"的流程图动画。
+ * FlowScene — 流程场景（竖版 S 形折线布局）。
+ * 标题先入场，步骤节点按序「落地」（spring 下坠归位），节点之间的 S 形连线
+ * 以 stroke-dashoffset 帧驱动描边生长，每段连线甩到位后箭头小三角弹出，
+ * 呈现「步骤逐级串联展开」的流程图动画。
  *
- * 动画完全由 useCurrentFrame() 驱动（确定性渲染），
- * 并尊重 prefers-reduced-motion：开启时直接呈现最终静态画面。
+ * 布局：节点卡片沿竖向蛇形排布（奇偶行左右交错铺满 1080×1920 安全区），
+ * 行距/卡高按节点数自适应（取代旧横排的 compact 布尔）。
+ *
+ * 动画完全帧驱动（chrome 的 spring helpers + interpolate，无 Math.random）；
+ * prefers-reduced-motion 时全部定格终态。
  */
 
 export interface FlowSceneProps {
   title: string;
   steps: string[];
+  /** 学科强调色（缺省宪法红 = 既有出片；SceneView 接线后走 SUBJECT_ACCENTS）。 */
+  accent?: string;
+  /** SceneChrome 底座入参：学科 id（accent 恒有值时仅占位）与场次进度。 */
+  subject?: LawSubjectId;
+  /** 第几场（0-based）；total 为 0 时 chrome 不画进度点。 */
+  sceneIndex?: number;
+  sceneTotal?: number;
 }
 
-/** 时序常量（帧，基于 30fps 设计，其他 fps 等比换算由调用方通过 duration helper 处理） */
+/** 时序常量（帧，30fps 基准；ClassroomPlayer 经 flowSceneDurationInFrames 依赖） */
 const TITLE_ENTER_FRAMES = 26;
 const STEP_STAGGER_FRAMES = 12;
 const CONNECTOR_LEAD_FRAMES = 5;
 const CONNECTOR_GROW_FRAMES = 14;
 const TAIL_HOLD_FRAMES = 36;
 
-/** 该场景完成全部动画（含收尾停留）所需的时长（帧）。用于注册 <Composition> 时给定 durationInFrames。 */
+/** 该场景完成全部动画（含收尾停留）所需的时长（帧）。 */
 export const flowSceneDurationInFrames = (stepCount: number): number => {
   if (stepCount <= 0) return TITLE_ENTER_FRAMES + TAIL_HOLD_FRAMES;
   const lastNode = TITLE_ENTER_FRAMES + (stepCount - 1) * STEP_STAGGER_FRAMES;
   return lastNode + CONNECTOR_GROW_FRAMES + TAIL_HOLD_FRAMES;
 };
 
-const COLORS = {
-  paper: "#fff8f0",
-  ink: "#2a2118",
-  accent: "#b1544e",
-  accentSoft: "#f6e5e2",
-  muted: "rgba(42, 33, 24, 0.58)",
-  line: "rgba(42, 33, 24, 0.16)",
-  card: "#fffdf9",
-} as const;
-
-const FONT_STACK =
-  '"PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif';
-
-/** 与项目其余课堂组件一致的 reduced-motion 探测（见 components/law/classroom/TeacherBubble.tsx） */
-function usePrefersReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
-  useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
-      return;
-    }
-    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const onChange = (event: MediaQueryListEvent) => setReduced(event.matches);
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  }, []);
-  return reduced;
-}
+/* —— 竖版几何（安区内 930×1486；顶部为 chrome 徽标让出 88px） —— */
+const HEADER_H = 168; // 标题块固定高
+const CHROME_TOP_CLEAR = 88;
+const AREA_H = 1486 - HEADER_H - CHROME_TOP_CLEAR; // 节点区可用高 1230
+const AREA_W = 930;
+const ZIGZAG_OFFSET = 140; // 蛇形交错的中轴偏移
 
 const nodeDelay = (index: number): number =>
   TITLE_ENTER_FRAMES + index * STEP_STAGGER_FRAMES;
 
-export const FlowScene: FC<FlowSceneProps> = ({ title, steps }) => {
-  const frame = useCurrentFrame();
-  const { width, height, fps } = useVideoConfig();
-  const reduced = usePrefersReducedMotion();
+export const FlowScene: FC<FlowSceneProps> = ({
+  title,
+  steps,
+  accent = SUBJECT_ACCENTS.xianfa.accent,
+  subject,
+  sceneIndex = 0,
+  sceneTotal = 0,
+}) => {
+  const progress = useStageProgress();
+  const n = steps.length;
 
-  const scale = Math.min(width, height) / 1080;
-  const compact = steps.length >= 6;
+  // 行距/卡高按节点数自适应：少则舒展、多则压排（取代旧 compact 布尔阈值）
+  const pitch = n > 0 ? Math.min(176, Math.max(96, Math.floor(AREA_H / n))) : 0;
+  const cardH = Math.min(120, pitch - 40);
+  const cardW = n > 1 ? 600 : 640;
+  const rowsH = n > 0 ? pitch * (n - 1) + cardH : 0;
+  const topOffset = Math.max(0, Math.floor((AREA_H - rowsH) / 2));
+  const centerX = (index: number): number =>
+    n <= 1 ? AREA_W / 2 : index % 2 === 0 ? AREA_W / 2 - ZIGZAG_OFFSET : AREA_W / 2 + ZIGZAG_OFFSET;
+  const cardY = (index: number): number => topOffset + index * pitch;
 
-  // —— 标题 ——
-  const titleOpacity = reduced
-    ? 1
-    : interpolate(frame, [0, TITLE_ENTER_FRAMES * 0.6], [0, 1], {
-        easing: Easing.out(Easing.cubic),
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      });
-  const titleRise = reduced
-    ? 0
-    : interpolate(frame, [0, TITLE_ENTER_FRAMES * 0.8], [26 * scale, 0], {
-        easing: Easing.out(Easing.cubic),
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      });
-  const barGrow = reduced
-    ? 1
-    : interpolate(frame, [8, TITLE_ENTER_FRAMES], [0, 1], {
-        easing: Easing.out(Easing.cubic),
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      });
+  const labelFont = pitch >= 150 ? 33 : pitch >= 118 ? 29 : 25;
+  const chipSize = Math.min(52, cardH - 20);
 
-  const nodeSize = (compact ? 64 : 78) * scale;
-  const labelWidth = (compact ? 116 : 148) * scale;
-  const labelSize = (compact ? 21 : 24) * scale;
-  const numberSize = (compact ? 24 : 28) * scale;
+  // 标题入场（theme 帧精确节拍）
+  const titleIn = progress(T.titleIn, SPRING.title);
+  const titleY = interpolate(titleIn, [0, 1], [40, 0]);
+  const ruleIn = progress(T.ruleIn, SPRING.soft);
+
+  /** 连线 i（节点 i-1 → i）：节点 i 落地前 CONNECTOR_LEAD_FRAMES 起笔 */
+  const connectorStart = (index: number): number =>
+    Math.max(0, nodeDelay(index) - CONNECTOR_LEAD_FRAMES);
+  /** S 形连线路径：竖向出发、横向摆渡、竖向到达 */
+  const connectorPath = (index: number): string => {
+    const x0 = centerX(index - 1);
+    const y0 = cardY(index - 1) + cardH;
+    const x1 = centerX(index);
+    const y1 = cardY(index);
+    const dy = Math.max(1, y1 - y0);
+    return `M ${x0} ${y0} C ${x0} ${y0 + dy * 0.55}, ${x1} ${y1 - dy * 0.55}, ${x1} ${y1}`;
+  };
 
   return (
-    <AbsoluteFill
-      style={{
-        background: `radial-gradient(1200px 560px at 50% -12%, ${COLORS.accentSoft}, transparent 70%), ${COLORS.paper}`,
-        fontFamily: FONT_STACK,
-        color: COLORS.ink,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 64 * scale,
-      }}
-    >
-      {/* 标题 */}
-      <div style={{ textAlign: "center", marginBottom: 72 * scale }}>
-        <h1
-          style={{
-            margin: 0,
-            fontSize: 58 * scale,
-            fontWeight: 700,
-            letterSpacing: "0.04em",
-            opacity: titleOpacity,
-            transform: `translateY(${titleRise}px)`,
-          }}
-        >
-          {title}
-        </h1>
-        <div
-          style={{
-            width: 96 * scale,
-            height: 5 * scale,
-            margin: `${26 * scale}px auto 0`,
-            borderRadius: 999,
-            background: COLORS.accent,
-            transform: `scaleX(${barGrow})`,
-          }}
-        />
-      </div>
+    <AbsoluteFill style={{ backgroundColor: C.paper }}>
+      {/* 内容层：sceneFrameStyle 安全区 padding + chrome 徽标让位 */}
+      <AbsoluteFill
+        style={{
+          ...sceneFrameStyle,
+          paddingTop: SAFE.top + CHROME_TOP_CLEAR,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}
+      >
+        {/* 标题 */}
+        <header style={{ flex: "none", height: HEADER_H, overflow: "hidden" }}>
+          <h1
+            style={{
+              margin: 0,
+              fontFamily: F.zhBlack,
+              fontSize: 48,
+              lineHeight: 1.3,
+              letterSpacing: "0.02em",
+              color: C.ink,
+              opacity: titleIn,
+              transform: `translateY(${titleY}px)`,
+            }}
+          >
+            {title}
+          </h1>
+          <div
+            style={{
+              width: AREA_W * 0.22,
+              height: 8,
+              marginTop: 18,
+              borderRadius: 4,
+              background: accent,
+              transformOrigin: "left center",
+              transform: `scaleX(${ruleIn})`,
+            }}
+          />
+        </header>
 
-      {/* 步骤节点 + 连接线 */}
-      {steps.length > 0 ? (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-start",
-            justifyContent: "center",
-            width: "100%",
-          }}
-        >
-          {steps.map((step, index) => {
-            const delay = nodeDelay(index);
-            const pop = reduced
-              ? 1
-              : spring({
-                  frame,
-                  fps,
-                  delay,
-                  config: { damping: 12, mass: 0.6 },
-                });
-            const labelOpacity = reduced
-              ? 1
-              : interpolate(frame, [delay + 4, delay + 16], [0, 1], {
-                  extrapolateLeft: "clamp",
-                  extrapolateRight: "clamp",
-                });
-            const labelRise = reduced
-              ? 0
-              : interpolate(frame, [delay + 4, delay + 16], [12 * scale, 0], {
-                  extrapolateLeft: "clamp",
-                  extrapolateRight: "clamp",
-                });
+        {/* 节点区：连线 SVG 垫底，卡片绝对定位其上 */}
+        {n > 0 && (
+          <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
+            <svg
+              width={AREA_W}
+              height={AREA_H}
+              viewBox={`0 0 ${AREA_W} ${AREA_H}`}
+              style={{ position: "absolute", left: 0, top: 0 }}
+              aria-hidden="true"
+            >
+              {steps.map((_, index) =>
+                index > 0 ? (
+                  <g key={`conn-${index}`}>
+                    {/* 浅色轨道 */}
+                    <path
+                      d={connectorPath(index)}
+                      fill="none"
+                      stroke={C.line}
+                      strokeWidth={4}
+                      strokeLinecap="round"
+                    />
+                    {/* 描边生长：pathLength 归一化 + dashoffset 帧驱动 */}
+                    <path
+                      d={connectorPath(index)}
+                      fill="none"
+                      stroke={accent}
+                      strokeWidth={5.5}
+                      strokeLinecap="round"
+                      pathLength={100}
+                      style={strokeDashStyle(progress(connectorStart(index), SPRING.soft))}
+                    />
+                    {/* 箭头：连线甩到位后弹出 */}
+                    {(() => {
+                      const pop = progress(
+                        connectorStart(index) + CONNECTOR_GROW_FRAMES - 6,
+                        SPRING.term,
+                      );
+                      const ax = centerX(index);
+                      const ay = cardY(index);
+                      return (
+                        <polygon
+                          points={`${ax - 10},${ay - 17} ${ax + 10},${ay - 17} ${ax},${ay - 2}`}
+                          fill={accent}
+                          opacity={Math.min(1, pop * 1.5)}
+                          style={{
+                            transformBox: "fill-box",
+                            transformOrigin: "center",
+                            transform: `scale(${interpolate(pop, [0, 1], [0.3, 1])})`,
+                          }}
+                        />
+                      );
+                    })()}
+                  </g>
+                ) : null,
+              )}
+            </svg>
 
-            return (
-              <Fragment key={`${index}-${step}`}>
-                {index > 0 ? (
-                  <Connector
-                    frame={frame}
-                    delay={Math.max(0, delay - CONNECTOR_LEAD_FRAMES)}
-                    nodeSize={nodeSize}
-                    reduced={reduced}
-                  />
-                ) : null}
+            {/* 步骤节点卡片 */}
+            {steps.map((step, index) => {
+              const land = progress(nodeDelay(index), SPRING.soft);
+              return (
                 <div
+                  key={`${index}-${step}`}
                   style={{
+                    position: "absolute",
+                    left: centerX(index) - cardW / 2,
+                    top: cardY(index),
+                    width: cardW,
+                    height: cardH,
+                    boxSizing: "border-box",
                     display: "flex",
-                    flexDirection: "column",
                     alignItems: "center",
-                    width: labelWidth,
+                    gap: 18,
+                    padding: "0 24px",
+                    background: C.surface,
+                    borderRadius: 20,
+                    border: `2px solid ${C.line}`,
+                    borderTop: `4px solid ${withAlpha(accent, 0.65)}`,
+                    boxShadow: `0 10px 30px ${withAlpha(C.ink, 0.07)}`,
+                    opacity: land,
+                    transform: `translateY(${interpolate(land, [0, 1], [36, 0])}px) scale(${interpolate(land, [0, 1], [0.94, 1])})`,
                   }}
                 >
                   <div
                     style={{
-                      width: nodeSize,
-                      height: nodeSize,
+                      flex: "none",
+                      width: chipSize,
+                      height: chipSize,
                       borderRadius: "50%",
-                      background: COLORS.accentSoft,
-                      border: `${3 * scale}px solid ${COLORS.accent}`,
+                      background: withAlpha(accent, 0.12),
+                      border: `3px solid ${accent}`,
+                      color: accent,
+                      fontFamily: F.enSerif,
+                      fontSize: chipSize * 0.5,
+                      fontWeight: 700,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: numberSize,
-                      fontWeight: 700,
-                      color: COLORS.accent,
-                      opacity: Math.min(1, pop * 1.6),
-                      transform: `scale(${0.55 + 0.45 * pop})`,
                     }}
                   >
                     {index + 1}
                   </div>
                   <p
                     style={{
-                      margin: `${18 * scale}px 0 0`,
-                      fontSize: labelSize,
-                      lineHeight: 1.45,
-                      textAlign: "center",
-                      opacity: labelOpacity,
-                      transform: `translateY(${labelRise}px)`,
+                      flex: 1,
+                      minWidth: 0,
+                      margin: 0,
+                      fontFamily: F.zhSerifSemi,
+                      fontSize: labelFont,
+                      lineHeight: 1.4,
+                      color: C.ink,
+                      display: "-webkit-box",
+                      WebkitBoxOrient: "vertical",
+                      WebkitLineClamp: 2,
+                      overflow: "hidden",
                     }}
                   >
                     {step}
                   </p>
                 </div>
-              </Fragment>
-            );
-          })}
-        </div>
-      ) : null}
-    </AbsoluteFill>
-  );
-};
+              );
+            })}
+          </div>
+        )}
+      </AbsoluteFill>
 
-/** 节点间连接线：底为浅色轨道，内部砖红色线段按进度从左向右生长 */
-const Connector: FC<{
-  frame: number;
-  delay: number;
-  nodeSize: number;
-  reduced: boolean;
-}> = ({ frame, delay, nodeSize, reduced }) => {
-  const { width, height } = useVideoConfig();
-  const scale = Math.min(width, height) / 1080;
-
-  const progress = reduced
-    ? 1
-    : interpolate(frame, [delay, delay + CONNECTOR_GROW_FRAMES], [0, 1], {
-        easing: Easing.out(Easing.cubic),
-        extrapolateLeft: "clamp",
-        extrapolateRight: "clamp",
-      });
-
-  return (
-    <div
-      style={{
-        flex: 1,
-        height: 4 * scale,
-        margin: `0 ${10 * scale}px`,
-        marginTop: nodeSize / 2 - 2 * scale,
-        borderRadius: 999,
-        background: COLORS.line,
-        position: "relative",
-        overflow: "hidden",
-        alignSelf: "flex-start",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: `${progress * 100}%`,
-          background: COLORS.accent,
-        }}
+      {/* 视觉底座叠加层 */}
+      <SceneChrome
+        type="flow"
+        subject={subject ?? "falixue"}
+        accent={accent}
+        index={sceneIndex}
+        total={sceneTotal}
       />
-    </div>
+    </AbsoluteFill>
   );
 };

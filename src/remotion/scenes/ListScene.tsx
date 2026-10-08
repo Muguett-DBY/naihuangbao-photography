@@ -1,175 +1,300 @@
-import { useSyncExternalStore } from "react";
+import { type FC } from "react";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
+import type { ClassroomSceneType } from "../../lib/law-classroom";
+import type { LawSubjectId } from "../../types/law";
 import {
-  AbsoluteFill,
-  interpolate,
-  spring,
-  useCurrentFrame,
-  useVideoConfig,
-} from "remotion";
+  SceneChrome,
+  StepMark,
+  useBounceIn,
+  usePrefersReducedMotion,
+  useStageProgress,
+  useStamp,
+} from "../chrome";
+import {
+  C,
+  F,
+  SPRING,
+  SUBJECT_ACCENTS,
+  T,
+  sceneFrameStyle,
+  withAlpha,
+} from "../theme";
 
-/** 列举场景入参：标题 + 若干条目，条目逐个 spring 入场。 */
+/**
+ * 列举场景（图解版）：标题 + 学科色横杠 → 列表容器整体轻微上移入场 →
+ * 条目改编号徽章卡片：序号圆片「盖章」砸落 + 卡片内容从左滑入，左侧
+ * 引导竖线随条目生长（时间轴导轨质感）；checklist/quiz 变体以 chrome 的
+ * StepMark（✓ 描边 / ？徽章）替代数字圆片。
+ *
+ * 全部走 chrome.tsx 帧驱动 helpers（useCurrentFrame + interpolate/spring，
+ * 无 Math.random）；reduced-motion 时定格终态；配色弃用自有 palette，
+ * 统一走 theme（C/F/SUBJECT_ACCENTS/sceneFrameStyle）。SceneChrome 包壳。
+ */
+
 export interface ListSceneProps {
   title: string;
   items: string[];
-  /** 强调色（编号徽章 / 标题下划线），默认品牌赭橙色。 */
+  /** 强调色（编号徽章 / 标题横杠 / 引导竖线），缺省取学科色 token */
   accent?: string;
+  /** 学科（SceneChrome 淡晕兜底色） */
+  subject?: LawSubjectId;
+  /** 第几场（0-based，SceneChrome 进度点用；未接线时不显示进度点） */
+  sceneIndex?: number;
+  /** 共几场（SceneChrome 进度点用） */
+  sceneTotal?: number;
+  /** 条目前缀样式：list=数字徽章（默认）；checklist=✓ 描边；quiz=？徽章 */
+  variant?: "list" | "checklist" | "quiz";
 }
 
 const ITEM_STAGGER_FRAMES = 4;
-const TITLE_ENTER_FRAMES = 2;
-const ITEMS_ENTER_FRAMES = 14;
+/** 序号圆片直径（px，1080×1920 基准） */
+const DISC = 52;
+/** 顶部徽标（chrome）下缘的让位高度 */
+const HEADER_CLEAR = 84;
 
-const palette = {
-  background: "#fdfaf3",
-  ink: "#221b14",
-  muted: "#6f6459",
-  card: "#ffffff",
-  cardBorder: "rgba(34, 27, 20, 0.08)",
-} as const;
-
-let reducedMotionQuery: MediaQueryList | null = null;
-
-function getReducedMotionQuery(): MediaQueryList | null {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
-    return null;
-  }
-  reducedMotionQuery ??= window.matchMedia("(prefers-reduced-motion: reduce)");
-  return reducedMotionQuery;
+/** 按字数/条数自适应条目字号（确定性，实拍长条目不再被裁切的第一道闸） */
+function itemFontSize(textLength: number, itemCount: number): number {
+  let size = 38;
+  if (textLength > 18) size = 34;
+  if (textLength > 30) size = 30;
+  if (textLength > 46) size = 27;
+  if (itemCount > 7) size = Math.min(size, 30);
+  if (itemCount > 10) size = Math.min(size, 27);
+  return size;
 }
 
-/**
- * 尊重系统"减弱动态效果"设置：命中时所有元素直接呈现最终状态，
- * 不做位移/缩放动画（渲染环境无 matchMedia 时同样按最终状态渲染）。
- */
-function usePrefersReducedMotion(): boolean {
-  return useSyncExternalStore(
-    (onStoreChange) => {
-      const query = getReducedMotionQuery();
-      if (!query) return () => undefined;
-      query.addEventListener("change", onStoreChange);
-      return () => query.removeEventListener("change", onStoreChange);
-    },
-    () => getReducedMotionQuery()?.matches ?? false,
-    () => false,
-  );
-}
+const MARK_BY_VARIANT: Partial<Record<"list" | "checklist" | "quiz", "checklist" | "quiz">> = {
+  checklist: "checklist",
+  quiz: "quiz",
+};
 
-/** 条目 spring 入场：从下方 32px 上浮 + 淡入，编号徽章同时放大归位。 */
-export function ListScene({ title, items, accent = "#c2552b" }: ListSceneProps) {
-  const frame = useCurrentFrame();
-  const { fps, height } = useVideoConfig();
-  const reducedMotion = usePrefersReducedMotion();
-  // 以 1080p 为基准做等比缩放，合成分辨率变化时排版保持一致。
-  const s = height / 1080;
+const CHROME_TYPE_BY_VARIANT: Record<"list" | "checklist" | "quiz", ClassroomSceneType> = {
+  list: "list",
+  checklist: "checklist",
+  quiz: "quiz",
+};
 
-  const titleEnter = reducedMotion
-    ? 1
-    : spring({
-        frame: frame - TITLE_ENTER_FRAMES,
-        fps,
-        config: { damping: 14, mass: 0.7, stiffness: 150 },
-      });
-  const titleY = interpolate(titleEnter, [0, 1], [26, 0]);
-  const titleOpacity = interpolate(titleEnter, [0, 1], [0, 1]);
-  const underlineWidth = interpolate(titleEnter, [0, 1], [0, 88]) * s;
+/** 编号徽章条目：序号圆片盖章砸落 + 卡片内容从左滑入（checklist/quiz 用 StepMark） */
+const ListRow: FC<{
+  item: string;
+  index: number;
+  enterAt: number;
+  accent: string;
+  fontSize: number;
+  clampLines?: number;
+  mark: "checklist" | "quiz" | null;
+}> = ({ item, index, enterAt, accent, fontSize, clampLines, mark }) => {
+  const stamp = useStamp(enterAt, { rotate: -8, scaleFrom: 1.5 });
+  const slide = useStageProgress()(enterAt + 4, SPRING.soft);
+  const x = interpolate(slide, [0, 1], [-34, 0], { extrapolateRight: "clamp" });
+  const opacity = Math.min(1, slide);
 
   return (
-    <AbsoluteFill style={{ background: palette.background, padding: 96 * s }}>
-      <h2
+    <li
+      style={{
+        position: "relative",
+        zIndex: 1,
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 22,
+        minHeight: DISC,
+      }}
+    >
+      {mark ? (
+        <StepMark kind={mark} accent={accent} enterAt={enterAt} size={DISC} />
+      ) : (
+        <span
+          aria-hidden="true"
+          style={{
+            flex: "none",
+            width: DISC,
+            height: DISC,
+            borderRadius: "50%",
+            backgroundColor: accent,
+            color: "#ffffff",
+            fontFamily: F.zhSans,
+            fontSize: 26,
+            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: `0 8px 18px ${withAlpha(accent, 0.35)}`,
+            opacity: stamp.opacity,
+            transform: `scale(${stamp.scale}) rotate(${stamp.rotate}deg)`,
+          }}
+        >
+          {index + 1}
+        </span>
+      )}
+      <span
         style={{
-          margin: 0,
-          fontFamily: "inherit",
-          fontSize: 64 * s,
-          fontWeight: 700,
-          color: palette.ink,
-          lineHeight: 1.2,
-          opacity: titleOpacity,
-          transform: `translateY(${titleY * s}px)`,
+          flex: 1,
+          minWidth: 0,
+          backgroundColor: C.surface,
+          border: `2px solid ${C.line}`,
+          borderRadius: 18,
+          padding: "18px 30px",
+          fontFamily: F.zhSerif,
+          fontSize,
+          lineHeight: 1.55,
+          color: C.ink,
+          opacity,
+          transform: `translateX(${x}px)`,
+          ...(clampLines
+            ? {
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+                WebkitLineClamp: clampLines,
+                overflow: "hidden",
+              }
+            : {}),
         }}
       >
-        {title}
-      </h2>
-      <div
-        aria-hidden="true"
+        {item}
+      </span>
+    </li>
+  );
+};
+
+export function ListScene({
+  title,
+  items,
+  accent = SUBJECT_ACCENTS.falixue.accent,
+  subject,
+  sceneIndex,
+  sceneTotal,
+  variant = "list",
+}: ListSceneProps) {
+  const frame = useCurrentFrame();
+  const reduced = usePrefersReducedMotion();
+
+  // 标题 bounce + 横杠展开；列表容器整体轻微上移入场
+  const titleEnter = useBounceIn(T.titleIn, { distance: 26 });
+  const containerEnter = useBounceIn(T.bodyIn, { distance: 24, scaleFrom: 0.985 });
+  const ruleScaleX = useStageProgress()(T.ruleIn, SPRING.soft);
+
+  // 引导竖线：随条目逐个入场从上往下生长（时间轴导轨）
+  const spineStart = T.bodyIn + 8;
+  const spineEnd = spineStart + Math.max(0, items.length - 1) * ITEM_STAGGER_FRAMES + 12;
+  const spine = reduced
+    ? 1
+    : interpolate(frame, [spineStart, spineEnd], [0, 1], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+      });
+
+  // 溢出保护：长条目截断加省略（第二道闸，配合上面的自适应字号）
+  const clampFor = (text: string): number | undefined =>
+    text.length > 92 ? 3 : undefined;
+
+  const mark = MARK_BY_VARIANT[variant] ?? null;
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: C.paper }}>
+      <AbsoluteFill
         style={{
-          width: underlineWidth,
-          height: 6 * s,
-          borderRadius: 3 * s,
-          background: accent,
-          margin: "18px 0 40px",
-        }}
-      />
-      <ul
-        style={{
-          listStyle: "none",
-          margin: 0,
-          padding: 0,
+          ...sceneFrameStyle,
           display: "flex",
           flexDirection: "column",
-          gap: 22 * s,
+          overflow: "hidden",
         }}
       >
-        {items.map((item, index) => {
-          const start = ITEMS_ENTER_FRAMES + index * ITEM_STAGGER_FRAMES;
-          const enter = reducedMotion
-            ? 1
-            : spring({
-                frame: frame - start,
-                fps,
-                config: { damping: 12, mass: 0.8, stiffness: 130 },
-              });
-          const itemY = interpolate(enter, [0, 1], [32, 0]);
-          const itemOpacity = interpolate(enter, [0, 1], [0, 1]);
-          const badgeScale = interpolate(enter, [0, 1], [0.6, 1]);
+        <header style={{ flexShrink: 0, marginTop: HEADER_CLEAR }}>
+          <h2
+            style={{
+              margin: 0,
+              fontFamily: F.zhBlack,
+              fontSize: 68,
+              lineHeight: 1.22,
+              color: C.ink,
+              opacity: titleEnter.opacity,
+              transform: `translateY(${titleEnter.y}px)`,
+            }}
+          >
+            {title}
+          </h2>
+          <div
+            aria-hidden="true"
+            style={{
+              width: 190,
+              height: 8,
+              marginTop: 24,
+              borderRadius: 4,
+              backgroundColor: accent,
+              transform: `scaleX(${ruleScaleX})`,
+              transformOrigin: "left center",
+            }}
+          />
+        </header>
 
-          return (
-            <li
-              key={`${item}-${index}`}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 20 * s,
-                opacity: itemOpacity,
-                transform: `translateY(${itemY * s}px)`,
-              }}
-            >
-              <span
+        <main
+          style={{
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            overflow: "hidden",
+            marginTop: 40,
+            opacity: containerEnter.opacity,
+            transform: `translateY(${containerEnter.y}px)`,
+          }}
+        >
+          <div style={{ position: "relative" }}>
+            {/* 左侧引导竖线：随条目生长 */}
+            {items.length > 1 && (
+              <div
                 aria-hidden="true"
                 style={{
-                  flex: "none",
-                  width: 48 * s,
-                  height: 48 * s,
-                  borderRadius: "50%",
-                  background: accent,
-                  color: "#fff",
-                  fontSize: 24 * s,
-                  fontWeight: 700,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transform: `scale(${badgeScale})`,
+                  position: "absolute",
+                  left: DISC / 2 - 2,
+                  top: DISC / 2,
+                  bottom: DISC / 2,
+                  width: 4,
+                  borderRadius: 999,
+                  backgroundColor: withAlpha(accent, 0.28),
+                  transform: `scaleY(${spine})`,
+                  transformOrigin: "top center",
                 }}
-              >
-                {index + 1}
-              </span>
-              <span
-                style={{
-                  flex: 1,
-                  padding: `${18 * s}px ${26 * s}px`,
-                  borderRadius: 16 * s,
-                  background: palette.card,
-                  border: `1px solid ${palette.cardBorder}`,
-                  fontSize: 34 * s,
-                  color: palette.ink,
-                  lineHeight: 1.45,
-                }}
-              >
-                {item}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
+              />
+            )}
+            <ul
+              style={{
+                position: "relative",
+                zIndex: 1,
+                listStyle: "none",
+                margin: 0,
+                padding: 0,
+                display: "flex",
+                flexDirection: "column",
+                gap: items.length > 8 ? 14 : 22,
+              }}
+            >
+              {items.map((item, index) => (
+                <ListRow
+                  key={`${item}-${index}`}
+                  item={item}
+                  index={index}
+                  enterAt={T.bodyIn + 6 + index * ITEM_STAGGER_FRAMES}
+                  accent={accent}
+                  fontSize={itemFontSize(item.length, items.length)}
+                  clampLines={clampFor(item)}
+                  mark={mark}
+                />
+              ))}
+            </ul>
+          </div>
+        </main>
+      </AbsoluteFill>
+
+      {/* 视觉底座叠加层：类型徽标 + 学科色淡晕 + 课程进度点 */}
+      <SceneChrome
+        type={CHROME_TYPE_BY_VARIANT[variant]}
+        subject={subject ?? "falixue"}
+        accent={accent}
+        index={sceneIndex ?? 0}
+        total={sceneTotal ?? 0}
+      />
     </AbsoluteFill>
   );
 }

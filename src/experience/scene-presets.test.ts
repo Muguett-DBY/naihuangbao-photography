@@ -30,6 +30,12 @@ describe("immersive route presets", () => {
     expect(resolveRoutePreset(path)).toBeNull();
   });
 
+  // 法课套件有自己的奶油底视觉体系：/law/* 全部不拿 immersive preset，
+  // 否则 boundary 深色面片会盖住浅底空态卡（闪卡空态遮挡事故的根因）
+  it.each(["/law", "/law/stats", "/law/flashcards", "/law/learn/minfa-q005-tour"])("excludes %s", (path) => {
+    expect(resolveRoutePreset(path)).toBeNull();
+  });
+
   it("keeps public preset definitions immutable and within tier budgets", () => {
     expect(Object.isFrozen(SCENE_PRESETS)).toBe(true);
 

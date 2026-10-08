@@ -357,11 +357,11 @@ export function LessonPlayer({
             <button
               type="button"
               aria-pressed={classroomMode}
-              aria-label="课堂模式"
-              title="课堂模式"
+              aria-label={classroomMode ? "切换到步骤模式" : "切换到课堂模式"}
+              title={classroomMode ? "切换到步骤模式" : "切换到课堂模式"}
               className={`law-player__classroom ${classroomMode ? "is-on" : ""}`}
               onClick={() => { const n = toggleClassroom(); if (!n) tts.cancel(); }}
-            >🎓</button>
+            >🎓 {classroomMode ? "课堂" : "步骤"}</button>
             <button
               type="button"
               className={`law-player__auto ${autoPlay ? "is-on" : ""}`}

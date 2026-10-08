@@ -73,8 +73,14 @@ function ActivityChart({ series }: { series: ReturnType<typeof dailyActivityWith
         <span>{formatDayLabel(series[Math.floor(series.length / 2)].dayStart)}</span>
         <span>今天</span>
       </div>
-      {totalLessons === 0 ? (
+      {totalLessons === 0 && totalSteps === 0 ? (
         <p className="law-stats__chart-empty">最近 30 天还没有完成过课时——今天的柱子等你来点亮。</p>
+      ) : totalLessons === 0 ? (
+        // 有步数无课时：过渡文案。柱状图画的是步数（今日满高红柱是真实步数），
+        // 若仍显示"还没有完成过课时"会图文自相矛盾，让人以为记录没保存。
+        <p className="law-stats__chart-empty">
+          近 30 天完成 <b>0</b> 课时 · <b>{totalSteps}</b> 步——再完成一课自测就点亮课时。
+        </p>
       ) : (
         <p className="law-stats__chart-summary">
           近 30 天完成 <b>{totalLessons}</b> 课时 · <b>{totalSteps}</b> 步

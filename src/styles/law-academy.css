@@ -330,6 +330,10 @@
   color: var(--law-accent-ink, var(--law-accent));
   font-weight: 800;
   text-decoration: none;
+  /* 触控目标 ≥24×24（WCAG 2.5.8）：padding 撑命中区、负 margin 抵消，视觉不变 */
+  display: inline-block;
+  padding: 4px 2px;
+  margin: -4px -2px;
 }
 
 .law-academy__home:hover {
@@ -1706,6 +1710,7 @@
 }
 
 .law-player__dots button {
+  position: relative;
   width: 14px;
   height: 14px;
   padding: 0;
@@ -1714,6 +1719,14 @@
   border-radius: 50%;
   background: radial-gradient(circle, color-mix(in srgb, var(--law-accent) 18%, var(--paper)) 0 45%, transparent 46%);
   transition: transform 0.2s, background 0.2s;
+}
+
+/* 触控目标 ≥24×24（WCAG 2.5.8）：透明命中层外扩 5px，圆点视觉尺寸不变 */
+.law-player__dots button::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
 }
 
 .law-player__dots button.is-current {

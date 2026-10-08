@@ -13,7 +13,8 @@
  * 有结构就按结构讲（"第一…第二…""先…然后…"），没结构才整段照读；
  * 完整原文始终留在 scene.content 里上屏，朗读不逐字复读两遍。
  */
-import type { LawLesson, LawStep, LawSubjectId, LawTerm } from "../types/law";
+import type { LawGraphic, LawLesson, LawStep, LawSubjectId, LawTerm } from "../types/law";
+import { LAW_GRAPHIC_MAP } from "../data/law/graphics";
 import { speak } from "./law-tts";
 
 // ==================== 类型定义 ====================
@@ -35,7 +36,7 @@ export type ClassroomSceneType =
 export interface ClassroomScene {
   /** 场景序号（0-based） */
   index: number;
-  /** 对应的原始步骤 id（进度追踪用；quiz 场景无原步骤，用 "quiz" 哨兵） */
+  /** 对应的原始步骤 id（进度追踪用；quiz 场景无原步骤，用 "quiz" 哨兵，图解场景用 "graphic" 哨兵） */
   stepId: string;
   /** 场景类型（决定渲染方式） */
   type: ClassroomSceneType;
@@ -51,6 +52,14 @@ export interface ClassroomScene {
   teacherScript: string;
   /** 步骤原始类型（保留上下文） */
   stepKind: string;
+  /**
+   * 完整图解（LAW_GRAPHIC_MAP 命中的课才有）：场景渲染的哨兵字段——
+   * 播放器见到它就用 GraphicScene 帧驱动重排图解的完整知识结构。
+   * type 沿用类型白名单内的 "list"（内容完整性测试锁定类型口径，图解不新增
+   * 场景类型），GraphicScene 因故缺位时 ListScene 也能拿 items（=图解解说步）
+   * 兜底呈现，内容不丢。
+   */
+  graphic?: LawGraphic;
 }
 
 /** 一节课的完整课堂数据 */
@@ -284,6 +293,19 @@ export function generateScript(step: LawStep, type: ClassroomSceneType): string 
     .trim();
 }
 
+/**
+ * 完整图解场景的讲稿：解说步（captions）由画面字幕逐帧展示，不逐字口播
+ * （读一遍要一分多钟，课堂收尾拖不起）；这里只口播导览——这张图讲什么、
+ * 知识结构怎么搭、以及去哪里手动逐帧回看（课时页顶栏「📐 图解」入口）。
+ */
+function graphicSceneScript(graphic: LawGraphic): string {
+  return [
+    `这节课的内容就讲完了，最后送你一张完整图解——${graphic.title}。`,
+    `${toSpoken(graphic.intro)} 你看，整课的知识结构就是这样一步步搭起来的。`,
+    "想自己动手逐帧回看，随时回课时页点顶栏的「📐 图解」。",
+  ].join("");
+}
+
 // ==================== 核心转换函数 ====================
 
 /** 把一个 LawLesson 转换为 ClassroomLesson（课堂播放数据） */
@@ -305,6 +327,28 @@ export function convertToClassroom(lesson: LawLesson): ClassroomLesson {
       stepKind: step.kind,
     };
   });
+
+  // 完整图解联动：LAW_GRAPHIC_MAP 命中的课，在步骤场景之后、quiz 收尾哨兵之前
+  // 追加一场「完整图解」收尾回顾（GraphicScene 帧驱动重排图解知识结构）。
+  // - 只在有实质步骤场景时追加：导览课/空课仍返回 0 场景，课堂不可开的口径不变
+  // - stepId 用 "graphic" 哨兵（quiz 同款语义，无对应步骤）：播放器把它明确排除在
+  //   onSceneChange 步骤进度之外，markStepDone 绝不写幻影步骤
+  // - quiz 哨兵永远收尾（课时收尾语义 + 内容完整性测试锁定 scenes.at(-1) 为 quiz）
+  const graphic = scenes.length > 0 ? LAW_GRAPHIC_MAP[lesson.id] : undefined;
+  if (graphic) {
+    scenes.push({
+      index: scenes.length,
+      stepId: "graphic",
+      type: "list", // 类型白名单内的降级位：渲染走 graphic 哨兵字段（见 ClassroomScene.graphic）
+      title: `图解·${graphic.title}`,
+      content: graphic.intro,
+      keyTerms: [],
+      items: [...graphic.captions],
+      teacherScript: graphicSceneScript(graphic),
+      stepKind: "graphic",
+      graphic,
+    });
+  }
 
   // 自测题运行时存在（buildQuiz 生成）时，追加一个 quiz 收尾场景
   if (lesson.quiz?.length) {
