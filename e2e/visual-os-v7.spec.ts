@@ -19,6 +19,11 @@ test("@critical V7 Studio 4 与 Story Director 共享项目素材和场景参数
   await page.locator(".archive-intelligence__results article").first().getByRole("button", { name: /Add to project/ }).click();
   // 确认真的有素材进了项目（0 素材时 /create 的 LOAD ASSETS 会永久 disabled）
   await expect(page.locator(".project-dock__trigger")).toContainText("1");
+  // dock 的 "1" 来自内存态；/create 是整页重载，从 IndexedDB 重读项目。
+  // CI 慢盘上写入落盘可能晚于导航 → 重载后素材读到 0，按钮永久 disabled
+  // （2026-10-07 CI 两次复现）。这里给写队列留出落盘时间再走。
+  await expect(page.locator(".project-dock__trigger")).toContainText("1", { timeout: 5_000 });
+  await page.waitForTimeout(1_200);
   await page.goto("/create");
   await page.getByRole("group", { name: "Artboard preset" }).getByRole("button", { name: /9:16/ }).click();
   await expect(page.locator(".studio-canvas-frame canvas")).toHaveAttribute("width", "1080");
