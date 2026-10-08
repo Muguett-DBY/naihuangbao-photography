@@ -34,8 +34,13 @@ const TTS_ENABLED_KEY = "nhb-law-tts";
 
 /** Edge 首包超时预算（与 edge-tts 默认一致，这里显式传便于语义集中） */
 const EDGE_FIRST_PACKET_TIMEOUT_MS = 1500;
-/** Edge 端点失败后的冷静期：期间直接走引擎 2，不让每个场景都白等超时 */
-const EDGE_FAILURE_BACKOFF_MS = 60000;
+/**
+ * Edge 端点失败后的冷静期：期间直接走引擎 2，不让每个场景都白等超时。
+ * 指数退避：首次 12s，连续失败翻倍至 96s 封顶——单次网络抖动只损失一场的
+ * 神经嗓音，而不是把整课都打成机器人声（2026-10 用户反馈「声音机械」）。
+ */
+const EDGE_BACKOFF_BASE_MS = 12000;
+const EDGE_BACKOFF_MAX_MS = 96000;
 /** 讲稿音频缓存上限（条） */
 const EDGE_CACHE_MAX = 50;
 
@@ -194,6 +199,8 @@ interface EdgePlayback {
 let edgePlayback: EdgePlayback | null = null;
 let edgeSynthAbort: AbortController | null = null;
 let edgeBackoffUntil = 0;
+/** 连续失败次数（成功一次即清零）：驱动冷静期指数退避 */
+let edgeConsecutiveFailures = 0;
 let edgePaused = false; // pause() 落在合成等待期时，合成完成后不再自动开口
 
 /** 引擎 1 环境探测（调用时判断，不在模块顶层读浏览器全局） */
@@ -293,14 +300,17 @@ function startEdge(gen: number, text: string, options: SpeakOptions): void {
     if (edgeSynthAbort === controller) edgeSynthAbort = null; // 只回收自己的控制器
     // 合成结果无论是否已被取代都值得入缓存（用户拖回本场即秒开）
     edgeCachePut(key, { audio: result.audio, boundaries: result.boundaries });
+    edgeConsecutiveFailures = 0; // 成功即清零：下次失败从最短冷静期重新计
     if (gen !== generation) return;
     playEdge(gen, text, { audio: result.audio, boundaries: result.boundaries }, options);
   }).catch((error: unknown) => {
     if (edgeSynthAbort === controller) edgeSynthAbort = null;
     if (gen !== generation) return;
     if ((error as Error | undefined)?.name === "AbortError") return; // 只是场景切换作废，非端点故障
-    // 首包超时 / 连接失败 / turn.end 前断开：端点当前不可用 → 冷静期 + 无缝回退
-    edgeBackoffUntil = Date.now() + EDGE_FAILURE_BACKOFF_MS;
+    // 首包超时 / 连接失败 / turn.end 前断开：端点当前不可用 → 指数退避冷静期 + 无缝回退
+    edgeConsecutiveFailures += 1;
+    const backoff = Math.min(EDGE_BACKOFF_BASE_MS * 2 ** (edgeConsecutiveFailures - 1), EDGE_BACKOFF_MAX_MS);
+    edgeBackoffUntil = Date.now() + backoff;
     fallbackFromEdge(gen, text, options);
   });
 }

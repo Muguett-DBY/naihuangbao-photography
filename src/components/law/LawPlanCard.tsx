@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { examDateISO, getPlan, setPlanTier, type LawPlan, type PlanTier } from "../../lib/law-plan";
 
 const TIERS: { id: PlanTier; label: string; desc: string }[] = [
@@ -26,11 +25,8 @@ export function LawPlanCard() {
   }
 
   return (
-    <motion.section
+    <section
       className="law-plan-card"
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
       aria-label="考研倒计时与每日计划"
     >
       <div className="law-plan-card__countdown">
@@ -58,24 +54,14 @@ export function LawPlanCard() {
           <div className="law-plan-card__bar">
             <span style={{ width: `${(plan.doneSteps / plan.totalSteps) * 100}%` }} />
           </div>
-          {plan.finishEstimate && !finished ? (
-            <p className="law-plan-card__estimate">
-              ✍️ 按现在的节奏，预计 <b>{formatDate(plan.finishEstimate)}</b> 学完全部
-              {plan.finishEstimate <= examIso ? "，赶在考试前！" : "，可以切「冲刺」档提前收尾"}
-            </p>
-          ) : null}
         </div>
 
         <div className="law-plan-card__today">
-          <b>今日已学 {plan.todayDone} 步</b>
-          <span>
-            建议 {plan.dailyTarget} 步 ≈ {Math.max(1, Math.round((plan.dailyTarget * 20) / 60))} 分钟，
-            就能保证考前全部学完
-          </span>
+          <b>今日 {plan.todayDone} / {plan.dailyTarget} 步</b>
+          <span>{plan.todayPercent >= 100 ? "今日达标 ✓ 太棒了" : `还差 ${Math.max(0, plan.dailyTarget - plan.todayDone)} 步达标`}</span>
           <div className="law-plan-card__today-bar">
             <span style={{ width: `${plan.todayPercent}%` }} />
           </div>
-          <em>{plan.todayPercent >= 100 ? "今日达标 ✓ 太棒了" : `距离今日达标还差 ${Math.max(0, plan.dailyTarget - plan.todayDone)} 步`}</em>
         </div>
       </div>
 
@@ -104,10 +90,10 @@ export function LawPlanCard() {
             onClick={() => choose(item.id)}
           >
             <b>{item.label}</b>
-            <small>{item.desc}</small>
+            <small className="law-plan-card__tier-desc">{item.desc}</small>
           </button>
         ))}
       </div>
-    </motion.section>
+    </section>
   );
 }

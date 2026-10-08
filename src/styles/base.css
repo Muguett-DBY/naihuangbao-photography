@@ -1571,3 +1571,8 @@ time,
 .law-immersive .mobile-bottom-nav__item {
   display: none !important;
 }
+
+/* 数字等宽：步数/天数/百分比列对齐更稳（Vercel 界面规范） */
+body.law-immersive {
+  font-variant-numeric: tabular-nums;
+}

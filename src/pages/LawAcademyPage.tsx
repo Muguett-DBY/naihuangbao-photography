@@ -196,7 +196,7 @@ export function LawAcademyPage() {
       </section>
 
       <section className="law-academy__subjects" aria-label="选择学科">
-        {LAW_SUBJECTS.map((subject, index) => {
+        {LAW_SUBJECTS.map((subject) => {
           const stat = stats[subject.id] ?? { lessonCount: 0, chapterTitles: [] };
           const prog = progress[subject.id];
           const percent =
@@ -207,13 +207,11 @@ export function LawAcademyPage() {
           const cardTo = entryLessonId
             ? `/law/learn/${entryLessonId}?classroom=1`
             : `/law/${subject.id}`;
+          // 内容直接呈现：滚动触发的入场动画会卡在 opacity:0（2026-10 实测学科卡隐身），
+          // 且属生成感反模式——动效预算只留给操作反馈
           return (
-            <motion.div
+            <div
               key={subject.id}
-              initial={{ opacity: 0, y: 22 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.1, margin: "0px 0px 160px 0px" }}
-              transition={{ delay: index * 0.08 }}
             >
               <PrefetchLink
                 to={cardTo}
@@ -241,7 +239,7 @@ export function LawAcademyPage() {
                 </span>
                 <span className="law-subject-card__go">开始学习 →</span>
               </PrefetchLink>
-            </motion.div>
+            </div>
           );
         })}
       </section>
@@ -254,15 +252,11 @@ export function LawAcademyPage() {
           </span>
         </header>
         <div className="law-academy__graphics-grid">
-          {LAW_GRAPHICS.slice(0, 6).map((graphic, index) => {
+          {LAW_GRAPHICS.slice(0, 6).map((graphic) => {
             const subject = LAW_SUBJECTS.find((item) => item.id === graphic.subject)!;
             return (
-              <motion.div
+              <div
                 key={graphic.lessonId}
-                initial={{ opacity: 0, y: 18 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.1, margin: "0px 0px 160px 0px" }}
-                transition={{ delay: index * 0.06 }}
               >
                 <PrefetchLink
                   to={`/law/graphic/${graphic.lessonId}`}
@@ -276,7 +270,7 @@ export function LawAcademyPage() {
                   </span>
                   <span className="law-graphic-card__go">看动画 →</span>
                 </PrefetchLink>
-              </motion.div>
+              </div>
             );
           })}
         </div>

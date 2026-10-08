@@ -498,6 +498,11 @@
   font-size: 12px;
   color: var(--text-muted);
   line-height: 1.6;
+  /* 极简：描述只留给激活档（低频设置不占首屏黄金位），title 属性兜底完整说明 */
+  display: none;
+}
+.law-plan-card__tier.is-active small {
+  display: block;
 }
 
 @media (max-width: 760px) {
@@ -3011,17 +3016,17 @@
   font-weight: 900;
   font-size: 16.5px;
   text-decoration: none;
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--law-accent) 52%, #20100c);
-  transition: transform 0.1s, box-shadow 0.1s, filter 0.15s;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--law-accent) 30%, transparent);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.15s ease;
 }
 .law-today-card__cta:hover {
-  filter: brightness(1.06);
+  filter: brightness(1.05);
   transform: translateY(-1px);
-  box-shadow: 0 5px 0 color-mix(in srgb, var(--law-accent) 52%, #20100c);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--law-accent) 36%, transparent);
 }
 .law-today-card__cta:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--law-accent) 52%, #20100c);
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--law-accent) 26%, transparent);
 }
 @media (max-width: 560px) {
   .law-today-card {

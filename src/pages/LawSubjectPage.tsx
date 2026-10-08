@@ -236,13 +236,9 @@ export function LawSubjectPage() {
             <span>打开对应课程时，也可以从课时顶部进入</span>
           </header>
           <div className="law-graphics-grid">
-            {graphics.map((graphic, index) => (
-              <motion.div
+            {graphics.map((graphic) => (
+              <div
                 key={graphic.lessonId}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ delay: index * 0.05 }}
               >
                 <PrefetchLink
                   to={`/law/graphic/${graphic.lessonId}`}
@@ -256,7 +252,7 @@ export function LawSubjectPage() {
                   </span>
                   <span className="law-graphic-card__go">看动画 →</span>
                 </PrefetchLink>
-              </motion.div>
+              </div>
             ))}
           </div>
         </section>
