@@ -25,6 +25,21 @@ npm run dev
 
 The frontend runs locally. Booking and other backend features need Cloudflare bindings and local secrets; see the [configuration reference](docs/MAINTENANCE.md).
 
+<details>
+<summary>Backend and deployment secrets</summary>
+
+Local secrets belong in ignored `.dev.vars`. The deployed Pages project requires `ADMIN_PASSWORD`, `AUTH_SECRET`, and `RATE_LIMIT_SECRET`. Set them through Wrangler's interactive prompts:
+
+```bash
+npx wrangler pages secret put ADMIN_PASSWORD --project-name naihuangbao-photography
+npx wrangler pages secret put AUTH_SECRET --project-name naihuangbao-photography
+npx wrangler pages secret put RATE_LIMIT_SECRET --project-name naihuangbao-photography
+```
+
+Password-reset email also needs `RESEND_API_KEY` and `RESET_EMAIL_FROM`. Never put secret values in source files.
+
+</details>
+
 ## Work on the project
 
 ```bash
