@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="280" viewBox="0 0 1080 280" role="img" aria-labelledby="title desc">
+<title id="title">Naihuangbao Photography</title><desc id="desc">Galleries, stories and a creative playground.</desc>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#101522"/><stop offset="1" stop-color="#202139"/></linearGradient><radialGradient id="glow"><stop stop-color="#f2b5b5" stop-opacity=".16"/><stop offset="1" stop-color="#f2b5b5" stop-opacity="0"/></radialGradient></defs>
+<rect width="1080" height="280" rx="20" fill="url(#bg)"/>
+<circle cx="910" cy="124" r="210" fill="url(#glow)"/>
+<path d="M743 30v220" stroke="#ffffff" opacity=".1"/>
+<path d="M40 246h660" stroke="#ffffff" opacity=".12"/>
+<rect x="42" y="43" width="4" height="14" rx="2" fill="#f2b5b5"/>
+<text x="57" y="55" font-family="Consolas,monospace" font-size="12" letter-spacing="2" fill="#f2b5b5">PORTRAITS / WEB EXPERIMENTS</text>
+<text x="40" y="117" font-family="Segoe UI,Arial,sans-serif" font-weight="700" font-size="37" fill="#f5f3fb">Naihuangbao Photography</text>
+<text x="42" y="156" font-family="Segoe UI,Arial,sans-serif" font-size="18" fill="#c5c9db">Galleries, stories and a creative playground.</text>
+<text x="42" y="214" font-family="Consolas,monospace" font-size="12" letter-spacing="1" fill="#e0ca96">BY CUSTARD</text>
+<g stroke="#f2b5b5" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="803" y="78" width="186" height="128" rx="16"/><path d="M829 78l16-20h64l16 20"/><circle cx="896" cy="142" r="44"/><circle cx="896" cy="142" r="24"/><circle cx="966" cy="99" r="5"/></g><path d="M896 91v102M845 142h102" stroke="#e0ca96" opacity=".25"/>
+</svg>

@@ -1,10 +1,27 @@
-# Naihuangbao Photography
+<!-- Project artwork created for this repository. -->
+<p align="center">
+  <img src="./docs/assets/readme-banner.svg" width="100%" alt="Naihuangbao Photography — Galleries, stories and a creative playground." />
+</p>
+
+<h1 align="center">Naihuangbao Photography</h1>
+
+<p align="center">
+  <img src="./docs/assets/readme-badges.svg" alt="Personal project · React · TypeScript · Vite · Cloudflare Pages" />
+</p>
 
 **A portrait-photography website experiment, with galleries, booking flows, and a creative playground.**
 
+<p align="center"><a href="#explore">Explore</a> &nbsp; · &nbsp; <a href="#run-locally">Run locally</a> &nbsp; · &nbsp; <a href="#work-on-the-project">Work on the project</a></p>
+
 [Visit the site](https://shoot.custard.top) · [Architecture](docs/ARCHITECTURE.md) · [Contributing](CONTRIBUTING.md)
 
-`React` · `TypeScript` · `Vite` · `Cloudflare Pages`
+
+<p align="center">
+  <img src="./docs/assets/interface.png" width="100%" alt="Live homepage, captured on 2026-10-10." />
+</p>
+
+<sub>Live homepage, captured on 2026-10-10.</sub>
+
 
 ## Explore
 
