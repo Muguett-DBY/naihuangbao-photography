@@ -73,3 +73,5 @@ Before a release, use `npm run verify:release` to include the browser tests.
 | Build and content tools | `scripts/` |
 
 Edit source content, then regenerate its manifests; do not hand-edit generated JSON. Detailed content, database, and release steps are in the [maintenance reference](docs/MAINTENANCE.md).
+
+Original code is available for noncommercial use under [PolyForm Noncommercial 1.0.0](LICENSE). See [license scope and third-party assets](docs/LICENSE_SCOPE.md).
