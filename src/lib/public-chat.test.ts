@@ -39,7 +39,7 @@ describe("public AI chat integration", () => {
     expect(publicApiSource).not.toContain("sk-");
 
     expect(chatHelperSource).toContain("https://opencode.ai/zen/go/v1/chat/completions");
-    expect(chatHelperSource).toContain('primaryModel = "deepseek-v4-flash"');
+    expect(chatHelperSource).toContain('primaryModel = "deepseek-v4.1-flash"');
     expect(chatHelperSource).toContain("openCodeModels");
     expect(chatHelperSource).toContain("authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`");
     expect(chatHelperSource).toContain("buildOpenCodeChatBody");
@@ -138,7 +138,7 @@ describe("public AI chat integration", () => {
 
   it("sends OpenCode request JSON as ASCII so MiniMax preserves Chinese text", async () => {
     const chatModule = await import("../../functions/_chat");
-    const stringifyOpenCodeBody = chatModule.__test_stringifyOpenCodeBody as
+    const stringifyOpenCodeBody = chatModule.stringifyOpenCodeBody as
       | ((value: unknown) => string)
       | undefined;
 

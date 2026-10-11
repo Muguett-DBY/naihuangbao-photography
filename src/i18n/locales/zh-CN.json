@@ -23,6 +23,7 @@
     "details": "详情",
     "reviews": "评价",
     "about": "关于",
+    "chat": "聊天",
     "faq": "常见问题",
     "packages": "套餐",
     "backToHome": "回到首页",
@@ -31,6 +32,17 @@
     "preferences": "显示与语言设置",
     "utilityMenu": "显示与语言设置"
   },
+  "usChat": {
+    "title": "和我们聊天",
+    "note": "AI 模拟的我们 · 仅自己人可进",
+    "personas": {
+      "su": { "name": "苏一平", "tag": "飛燕 · 2001", "line": "异地恋里先低头的那个人，凌晨还亮着输入框。" },
+      "liao": { "name": "廖文静", "tag": "小狗狗 · 2004", "line": "情绪全写在脸上、和好也最快的那个人。" }
+    },
+    "pick": { "heading": "想先和谁说话？", "hint": "选一个人，用只有我们自己知道的暗号开门。", "choose": "和{{name}}聊天" },
+    "gate": { "heading": "暗号门", "hint": "输入只有我们知道的那串数字，回车进入。", "label": "暗号", "placeholder": "····", "submit": "开门", "back": "换个人", "checking": "对暗号中…", "error": "密码不对，再想想？" },
+    "chat": { "logLabel": "聊天记录", "inputLabel": "聊天消息", "placeholder": "说点什么…", "send": "发送", "retry": "重试", "waiting": "正在输入…", "switch": "换人", "errorBubble": "这条没接上，网络岔了。点「重试」再说一次。", "empty": "……" }
+},
   "mobileNav": {
     "label": "移动端主要导航",
     "home": "首页",
@@ -106,7 +118,8 @@
       "projects": "管理本地视觉项目与创作线索",
       "studio": "编排胶片条、联系表与灵感板",
       "lab": "打开项目中的练习系统",
-      "about": "了解这个个人项目如何制作"
+      "about": "了解这个个人项目如何制作",
+      "chat": "和 AI 模拟的我们聊聊天"
     },
     "practice": {
       "gallery": "原有公开人像作品库",
@@ -1775,6 +1788,8 @@
     "homeDesc": "南京个人摄影师，提供柔和自然的女生写真、情侣约拍与城市旅拍，支持在线查看套餐和预约档期。",
     "aboutTitle": "关于摄影师 | 奶黄包摄影",
     "aboutDesc": "认识奶黄包摄影：南京个人摄影师，专注女生写真、情侣约拍、拍前沟通和全程动作引导。",
+    "chatTitle": "我们的聊天室 | 奶黄包摄影",
+    "chatDesc": "AI 模拟的我们：选一个人，用只有自己人知道的暗号进入聊天。",
     "galleryTitle": "作品集 | 奶黄包摄影",
     "galleryDesc": "南京写真摄影作品集——公园日常、江南感、街拍、室内写真和情侣约拍。真实授权作品展示。",
     "coursesTitle": "摄影课程 | 奶黄包摄影",

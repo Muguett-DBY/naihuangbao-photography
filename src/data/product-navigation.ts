@@ -11,6 +11,7 @@ export const primaryNavigation: ProductRoute[] = [
   { id: "gallery", to: "/gallery", labelKey: "nav.gallery", descriptionKey: "platform.practice.gallery", keywords: ["gallery", "客片", "portfolio", "作品"] },
   { id: "booking", to: "/booking", labelKey: "nav.booking", descriptionKey: "platform.practice.booking", keywords: ["booking", "预约", "calendar", "套餐"] },
   { id: "about", to: "/about", labelKey: "nav.about", descriptionKey: "platform.routes.about", keywords: ["about", "关于", "photographer", "摄影师"] },
+  { id: "chat", to: "/chat", labelKey: "nav.chat", descriptionKey: "platform.routes.chat", keywords: ["chat", "聊天", "us", "对话"] },
 ];
 
 export const practiceNavigation: ProductRoute[] = [

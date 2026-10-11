@@ -3662,7 +3662,7 @@ body:has(.workshop-filter-overlay) .mobile-bottom-nav {
     left: 0;
     z-index: 900;
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     align-items: stretch;
     min-height: var(--mobile-bottom-nav-offset);
     border: 0;

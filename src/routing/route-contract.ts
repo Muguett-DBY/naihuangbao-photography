@@ -23,6 +23,7 @@ export const routeContract = [
   { path: "/projects", scope: "practice" },
   { path: "/share/:slug", scope: "practice", dynamic: true },
   { path: "/about", scope: "primary" },
+  { path: "/chat", scope: "primary" },
   { path: "/editor", scope: "practice" },
   { path: "/practice", scope: "practice" },
   { path: "/lab", scope: "practice", edgeRedirect: "/practice" },

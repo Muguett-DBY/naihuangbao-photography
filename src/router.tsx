@@ -26,6 +26,7 @@ const PublishedProjectPage = lazy(routeLoaders["/share/:slug"]);
 const LabPage = lazy(routeLoaders["/lab"]);
 const PracticePage = lazy(routeLoaders["/practice"]);
 const AboutPage = lazy(routeLoaders["/about"]);
+const ChatPage = lazy(routeLoaders["/chat"]);
 const GalleryPage = lazy(routeLoaders["/gallery"]);
 const CoursesPage = lazy(routeLoaders["/courses"]);
 const CourseDetailPage = lazy(routeLoaders["/courses/:id"]);
@@ -132,6 +133,7 @@ export const router = createBrowserRouter([
           { index: true, element: <PageSuspense fallback={<HomePremiereFallback />}><HomePage /></PageSuspense> },
           { path: "archive", element: <PageSuspense><ArchivePage /></PageSuspense> },
           { path: "about", element: <PageSuspense><AboutPage /></PageSuspense> },
+          { path: "chat", element: <PageSuspense><ChatPage /></PageSuspense> },
           { path: "gallery", element: <PageSuspense><GalleryPage /></PageSuspense> },
           { path: "gallery/:id", element: <PageSuspense><PhotoDetailPage /></PageSuspense> },
           { path: "booking", element: <PageSuspense><BookingPage /></PageSuspense> },

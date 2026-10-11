@@ -64,6 +64,10 @@
       "scope": "primary"
     },
     {
+      "path": "/chat",
+      "scope": "primary"
+    },
+    {
       "path": "/editor",
       "scope": "practice"
     },

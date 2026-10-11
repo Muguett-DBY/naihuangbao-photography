@@ -27,6 +27,7 @@ export const routeLoaders = {
   "/lab": () => import("../pages/LabPage").then((module) => asDefault(module.LabPage)),
   "/practice": () => import("../pages/LabPage").then((module) => asDefault(module.LabPage)),
   "/about": () => import("../pages/AboutPage").then((module) => asDefault(module.AboutPage)),
+  "/chat": () => import("../pages/ChatPage").then((module) => asDefault(module.ChatPage)),
   "/gallery": () => import("../pages/GalleryPage").then((module) => asDefault(module.GalleryPage)),
   "/gallery/:id": () => import("../pages/PhotoDetailPage").then((module) => asDefault(module.PhotoDetailPage)),
   "/courses": () => import("../pages/CoursesPage").then((module) => asDefault(module.CoursesPage)),

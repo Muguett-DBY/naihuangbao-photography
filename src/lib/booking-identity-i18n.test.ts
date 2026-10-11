@@ -19,7 +19,7 @@ function flattenKeys(value: unknown, prefix = ""): string[] {
 
 describe("booking-first identity and locale completeness", () => {
   it("keeps the primary navigation on the customer booking journey", () => {
-    expect(primaryNavigation.map((item) => item.to)).toEqual(["/", "/gallery", "/booking", "/about"]);
+    expect(primaryNavigation.map((item) => item.to)).toEqual(["/", "/gallery", "/booking", "/about", "/chat"]);
 
     const header = read("src/components/shared/Header.tsx");
     const mobile = read("src/components/shared/MobileBottomNav.tsx");

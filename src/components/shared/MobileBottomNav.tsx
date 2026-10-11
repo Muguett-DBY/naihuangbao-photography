@@ -1,4 +1,4 @@
-import { CalendarCheck, CircleUserRound, Home, Images, UserRound } from "lucide-react";
+import { CalendarCheck, CircleUserRound, Home, Images, MessageCircleHeart, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -59,6 +59,12 @@ export function MobileBottomNav() {
         label={t("nav.about")}
         active={pathname === "/about"}
         icon={<UserRound size={21} aria-hidden="true" />}
+      />
+      <MobileNavLink
+        to="/chat"
+        label={t("nav.chat")}
+        active={pathname.startsWith("/chat")}
+        icon={<MessageCircleHeart size={21} aria-hidden="true" />}
       />
       <MobileNavLink
         to="/dashboard"

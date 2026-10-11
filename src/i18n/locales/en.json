@@ -14,6 +14,7 @@
     "details": "Details",
     "reviews": "Reviews",
     "about": "About",
+    "chat": "Chat",
     "faq": "FAQ",
     "booking": "Book Now",
     "skipLink": "Skip navigation to main content",
@@ -31,6 +32,17 @@
     "preferences": "Display and language settings",
     "utilityMenu": "Display and language settings"
   },
+  "usChat": {
+    "title": "Chat with us",
+    "note": "AI versions of us · insiders only",
+    "personas": {
+      "su": { "name": "Su Yiping", "tag": "Feiyan · 2001", "line": "The one who apologizes first, still typing at 3 a.m." },
+      "liao": { "name": "Liao Wenjing", "tag": "Little Puppy · 2004", "line": "Every emotion on her sleeve, and the first to make peace." }
+    },
+    "pick": { "heading": "Who do you want to talk to first?", "hint": "Pick one, then open the door with a passphrase only we know.", "choose": "Chat with {{name}}" },
+    "gate": { "heading": "The passphrase door", "hint": "Type the number only we know, then press Enter.", "label": "Passphrase", "placeholder": "····", "submit": "Enter", "back": "Pick someone else", "checking": "Checking…", "error": "Wrong password. Think again?" },
+    "chat": { "logLabel": "Conversation", "inputLabel": "Chat message", "placeholder": "Say something…", "send": "Send", "retry": "Retry", "waiting": "typing…", "switch": "Switch person", "errorBubble": "That one got lost on the way. Hit retry to say it again.", "empty": "…" }
+},
   "mobileNav": {
     "label": "Primary mobile navigation",
     "home": "Home",
@@ -106,7 +118,8 @@
       "projects": "Manage local visual projects and creative threads",
       "studio": "Compose a filmstrip, contact sheet, or moodboard",
       "lab": "Open the project's practice systems",
-      "about": "Learn how this personal project is made"
+      "about": "Learn how this personal project is made",
+      "chat": "Chat with the AI versions of us"
     },
     "practice": {
       "gallery": "Original public portrait gallery",
@@ -1727,6 +1740,8 @@
     "homeDesc": "A Nanjing personal photographer for soft, natural portraits, couple sessions, and city walks, with clear packages and online booking.",
     "aboutTitle": "About the Photographer | Naihuangbao Photography",
     "aboutDesc": "Meet Naihuangbao Photography, a Nanjing personal photographer focused on portraits, couples, thoughtful planning, and full posing guidance.",
+    "chatTitle": "Our Chat Room | Naihuangbao Photography",
+    "chatDesc": "AI versions of us: pick a person and unlock the chat with an insiders-only passphrase.",
     "galleryTitle": "Portfolio | Naihuangbao Photography",
     "galleryDesc": "Browse our portfolio of Nanjing portrait photography — park shoots, Jiangnan vibes, street style, indoor portraits and couple sessions.",
     "coursesTitle": "Photography Courses | Naihuangbao Photography",

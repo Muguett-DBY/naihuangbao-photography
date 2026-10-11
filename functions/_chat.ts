@@ -37,7 +37,7 @@ type RateLimitResult =
   | { ok: false; retryAfter: number };
 
 const openCodeEndpoint = "https://opencode.ai/zen/go/v1/chat/completions";
-const primaryModel = "deepseek-v4-flash";
+const primaryModel = "deepseek-v4.1-flash";
 const openCodeModels = [primaryModel];
 const openCodeMaxAttempts = 1;
 const openCodeResponseTimeoutMs = 18_000;
@@ -136,6 +136,7 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
           headers: {
             "content-type": "application/json",
             authorization: `Bearer ${env.OPENCODE_GO_API_KEY}`,
+            "x-opencode-session": crypto.randomUUID(),
           },
           body: stringifyOpenCodeBody(buildOpenCodeChatBody(model, messages, siteContent)),
         }, openCodeResponseTimeoutMs);
@@ -169,7 +170,7 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
   throw new Error(lastError);
 }
 
-function stringifyOpenCodeBody(value: unknown) {
+export function stringifyOpenCodeBody(value: unknown) {
   return JSON.stringify(value).replace(/[^\x00-\x7F]/g, (char) => (
     Array.from(char)
       .map((unit) => `\\u${unit.charCodeAt(0).toString(16).padStart(4, "0")}`)
@@ -229,7 +230,7 @@ function isMaleSoloQuestion(content: string) {
     && !/情侣|女朋友|女友|对象|伴侣/.test(content);
 }
 
-async function fetchOpenCodeWithResponseTimeout(url: string, init: RequestInit, timeoutMs: number) {
+export async function fetchOpenCodeWithResponseTimeout(url: string, init: RequestInit, timeoutMs: number) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -268,7 +269,7 @@ function extractOpenAiChatReply(text: string) {
   }
 }
 
-function textToReadableStream(text: string) {
+export function textToReadableStream(text: string) {
   const encoder = new TextEncoder();
   return new ReadableStream<Uint8Array>({
     start(controller) {
@@ -323,4 +324,3 @@ export async function enforcePublicChatRateLimit(request: Request, env: ChatEnv)
 
 export const __test_buildOpenCodeChatBody = buildOpenCodeChatBody;
 export const __test_buildOpenCodeMessages = buildOpenCodeMessages;
-export const __test_stringifyOpenCodeBody = stringifyOpenCodeBody;
