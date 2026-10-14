@@ -28,6 +28,16 @@ interface LawStats {
 
 const stats = lawStats as LawStats;
 
+/** 五科粉彩装饰层 + 固定文字色（可爱化令牌：pastel 只做底色块/图标/进度轨；
+ *  ink 承载文字，对奶油底/粉彩底双底实测 ≥5.54:1。暗色主题由 CSS 反向公式接管） */
+const SUBJECT_TINT: Record<LawSubjectId, { pastel: string; ink: string }> = {
+  falixue: { pastel: "#dcebe1", ink: "#44614f" },
+  minfa: { pastel: "#dde8f4", ink: "#41567a" },
+  xianfa: { pastel: "#f4e0dc", ink: "#7a3a34" },
+  xingfa: { pastel: "#ede1eb", ink: "#64415e" },
+  zhishixiang: { pastel: "#f2e9d3", ink: "#6d5622" },
+};
+
 /** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
 function useLawPageTitle(title: string) {
   useEffect(() => {
@@ -121,9 +131,7 @@ export function LawAcademyPage() {
   return (
     <div className="law-academy">
       <header className="law-academy__hero">
-        <div className="law-academy__mascot" aria-hidden="true">
-          <LawMascot mood="cheer" size={96} />
-        </div>
+        {/* 吉祥物陪伴位让给下方今日卡（每屏 ≤1 只，hero 不再常驻大号 cheer） */}
         <p className="law-academy__kicker">法硕考研 · 学习中心</p>
         <h1>把五本书，一页一页讲给你听</h1>
         <p className="law-academy__lead">
@@ -160,9 +168,14 @@ export function LawAcademyPage() {
       ) : null}
 
       <section className="law-today-card" aria-label="今日学习">
+        {/* 吉祥物陪伴位①：今日卡右上角 mood=idle 56px，气泡引言温柔邀约（纯装饰，不承载信息） */}
+        <span className="law-today-card__mascot" aria-hidden="true">
+          <span className="law-today-card__bubble">今天也来一点点？</span>
+          <LawMascot mood="idle" size={56} />
+        </span>
         <div className="law-today-card__ring" role="img" aria-label={`今日目标完成 ${todayPercent}%`}>
           <svg viewBox="0 0 72 72" width="72" height="72" aria-hidden="true">
-            <circle cx="36" cy="36" r="30" fill="none" strokeWidth="8" style={{ stroke: "var(--law-accent)", opacity: 0.25 }} />
+            <circle cx="36" cy="36" r="30" fill="none" strokeWidth="8" style={{ stroke: "var(--law-accent-pastel)" }} />
             <circle
               cx="36"
               cy="36"
@@ -179,10 +192,10 @@ export function LawAcademyPage() {
         </div>
         <div className="law-today-card__body">
           {/* 缺口按 target-done 现算：写死"再学 1 课"会与环形图 {done}/{target} 的计数矛盾 */}
-          <b>{today.done >= today.target ? "今日目标达成！⭐" : `今日目标：再学 ${today.target - today.done} 课`}</b>
+          <b>{today.done >= today.target ? "今日目标达成 ⭐" : `今日目标：再学 ${today.target - today.done} 课`}</b>
           <span>
             距 2027 考研 {plan.daysLeft} 天 · 已掌握 {doneTotal} 个知识点
-            {today.done < today.target ? " · 一课大约 5 分钟" : ""}
+            {today.done < today.target ? " · 一课大约 5 分钟" : " · 今天的进度都算数"}
           </span>
         </div>
         <Link to={resumeHref} className="law-today-card__cta">
@@ -231,6 +244,8 @@ export function LawAcademyPage() {
                 style={{
                   "--law-accent": subject.accent,
                   "--law-accent-soft": subject.accentSoft,
+                  "--law-accent-pastel": SUBJECT_TINT[subject.id].pastel,
+                  "--law-accent-ink": SUBJECT_TINT[subject.id].ink,
                 } as CSSProperties}
               >
                 <span className="law-subject-card__emoji">{subject.emoji}</span>
@@ -273,7 +288,12 @@ export function LawAcademyPage() {
                 <PrefetchLink
                   to={`/law/graphic/${graphic.lessonId}`}
                   className="law-graphic-card law-graphic-card--featured"
-                  style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
+                  style={{
+                    "--law-accent": subject.accent,
+                    "--law-accent-soft": subject.accentSoft,
+                    "--law-accent-pastel": SUBJECT_TINT[graphic.subject].pastel,
+                    "--law-accent-ink": SUBJECT_TINT[graphic.subject].ink,
+                  } as CSSProperties}
                 >
                   <span className="law-graphic-card__kind">{graphicEmoji(graphic.kind)}</span>
                   <span className="law-graphic-card__body">
@@ -307,7 +327,12 @@ export function LawAcademyPage() {
                 type="button"
                 aria-pressed={graphicFilter === subject.id}
                 className={`law-graphics-browse__chip ${graphicFilter === subject.id ? "is-current" : ""}`}
-                style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
+                style={{
+                  "--law-accent": subject.accent,
+                  "--law-accent-soft": subject.accentSoft,
+                  "--law-accent-pastel": SUBJECT_TINT[subject.id].pastel,
+                  "--law-accent-ink": SUBJECT_TINT[subject.id].ink,
+                } as CSSProperties}
                 onClick={() => {
                   setGraphicFilter(subject.id);
                   setShowAllGraphics(false);
@@ -325,7 +350,12 @@ export function LawAcademyPage() {
                   key={graphic.lessonId}
                   to={`/law/graphic/${graphic.lessonId}`}
                   className="law-graphic-card law-graphic-card--browse"
-                  style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
+                  style={{
+                    "--law-accent": subject.accent,
+                    "--law-accent-soft": subject.accentSoft,
+                    "--law-accent-pastel": SUBJECT_TINT[graphic.subject].pastel,
+                    "--law-accent-ink": SUBJECT_TINT[graphic.subject].ink,
+                  } as CSSProperties}
                 >
                   <span className="law-graphic-card__kind">{graphicEmoji(graphic.kind)}</span>
                   <span className="law-graphic-card__body">
@@ -383,6 +413,10 @@ export function LawAcademyPage() {
       <LawFinishBanner subjects={finishSubjects} />
 
       <footer className="law-academy__foot">
+        {/* 信件语气落款：鼓励指向坚持本身（文楷），事实行保持原样不动 */}
+        <p className="law-academy__foot-letter">
+          不必赶路，一页一页来——今天坐在这里的你，已经在往前走了。
+        </p>
         <Link to="/" className="law-academy__home">
           ← 回主页
         </Link>

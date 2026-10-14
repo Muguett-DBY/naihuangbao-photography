@@ -849,3 +849,273 @@
   border: 1.5px solid color-mix(in srgb, var(--law-accent) 35%, transparent);
   color: var(--law-accent-ink, var(--law-accent));
 }
+
+/* ══════════════════════════════════════════════════════════════
+   奶油可爱系令牌与改造（学科页 + 课时页共用，两页都 import 本文件）
+   原则：奶油底 + 大圆角 + 吉祥物陪伴三件套；粉彩/奶黄只做底色、图标、
+   进度轨，任何文字一律 ink / muted / 学科墨；阴影一层讲完（soft 常态、
+   lift 仅 hover）；不新增任何 keyframes / transition（reduced-motion 零负担）。
+   暗色同步可爱：暖黑奶油底 + color-mix 暗调粉彩，双轨选择器与 base.css 一致。
+   ══════════════════════════════════════════════════════════════ */
+
+.law-academy.law-subject,
+.law-academy.law-lesson-page {
+  --law-cream-bg: #fdfaf5;
+  --law-cream-surface: #fffefb;
+  --law-cream-raised: #ffffff;
+  --law-custard: #f0c264;
+  --law-radius-pill: 999px;
+  --law-radius-card: 20px;
+  --law-radius-control: 14px;
+  --law-radius-inner: 12px;
+  --law-radius-bubble: 18px;
+  --law-shadow-soft: 0 2px 10px rgba(75, 59, 55, 0.05), 0 10px 30px rgba(75, 59, 55, 0.06);
+  --law-shadow-lift: 0 4px 14px rgba(75, 59, 55, 0.07), 0 16px 36px rgba(75, 59, 55, 0.08);
+  --law-line: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+  --law-font-heading: "Naihuangbao WenKai", "Kaiti SC", "KaiTi", serif;
+  --law-mascot-sm: 44px;
+  --law-mascot-md: 56px;
+  --law-mascot-lg: 72px;
+  --law-mascot-hero: 96px;
+}
+
+:root[data-theme="dark"] .law-academy.law-subject,
+:root[data-theme="dark"] .law-academy.law-lesson-page {
+  --law-cream-bg: #262019;
+  --law-cream-surface: #2f2820;
+  --law-cream-raised: #382f26;
+  --law-custard: #d9ad5e;
+  --law-shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(0, 0, 0, 0.28);
+  --law-shadow-lift: 0 4px 14px rgba(0, 0, 0, 0.26), 0 16px 36px rgba(0, 0, 0, 0.32);
+  --law-line: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-academy.law-subject,
+  :root:not([data-theme="light"]) .law-academy.law-lesson-page {
+    --law-cream-bg: #262019;
+    --law-cream-surface: #2f2820;
+    --law-cream-raised: #382f26;
+    --law-custard: #d9ad5e;
+    --law-shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(0, 0, 0, 0.28);
+    --law-shadow-lift: 0 4px 14px rgba(0, 0, 0, 0.26), 0 16px 36px rgba(0, 0, 0, 0.32);
+    --law-line: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  }
+}
+
+/* 五科粉彩装饰层 + 文字级学科墨（固定色，双底实测 ≥4.5:1）。
+   学科页根 .law-subject--<id>（LawSubjectPage 注入）、课时播放器根
+   .law-player--<id>（LessonPlayer 注入）各持一份；暗色反向提亮。 */
+.law-academy.law-subject--falixue,
+.law-academy .law-player--falixue {
+  --law-accent-pastel: #dcebe1;
+  --law-accent-ink: #44614f;
+}
+
+.law-academy.law-subject--minfa,
+.law-academy .law-player--minfa {
+  --law-accent-pastel: #dde8f4;
+  --law-accent-ink: #41567a;
+}
+
+.law-academy.law-subject--xianfa,
+.law-academy .law-player--xianfa {
+  --law-accent-pastel: #f4e0dc;
+  --law-accent-ink: #7a3a34;
+}
+
+.law-academy.law-subject--xingfa,
+.law-academy .law-player--xingfa {
+  --law-accent-pastel: #ede1eb;
+  --law-accent-ink: #64415e;
+}
+
+.law-academy.law-subject--zhishixiang,
+.law-academy .law-player--zhishixiang {
+  --law-accent-pastel: #f2e9d3;
+  --law-accent-ink: #6d5622;
+}
+
+/* 暗色：粉彩转暗调底、学科墨反向提亮（沿用 law-academy.css 的混色公式）。
+   元素自带声明的优先级高于继承，必须显式覆盖亮色固定值 */
+:root[data-theme="dark"] .law-academy.law-subject,
+:root[data-theme="dark"] .law-academy .law-player {
+  --law-accent-pastel: color-mix(in srgb, var(--law-accent) 22%, #262019);
+  --law-accent-ink: color-mix(in srgb, var(--law-accent) 52%, #fff5ec);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-academy.law-subject,
+  :root:not([data-theme="light"]) .law-academy .law-player {
+    --law-accent-pastel: color-mix(in srgb, var(--law-accent) 22%, #262019);
+    --law-accent-ink: color-mix(in srgb, var(--law-accent) 52%, #fff5ec);
+  }
+}
+
+/* ── 页面底：奶油暖底（去掉装饰径向渐变，层级做减法） ── */
+.law-academy.law-subject,
+.law-academy.law-lesson-page {
+  background: var(--law-cream-bg);
+}
+
+/* ── 学科页 · 图解课堂区块卡片化 ── */
+.law-subject .law-subject__graphics {
+  background: var(--law-cream-surface);
+  border: 0;
+  border-radius: var(--law-radius-card);
+  box-shadow: var(--law-shadow-soft);
+}
+
+.law-subject .law-graphics-head h2 {
+  font-family: var(--law-font-heading);
+}
+
+.law-subject .law-graphic-card {
+  background: var(--law-cream-bg);
+  border: 0;
+  border-radius: var(--law-radius-inner);
+  box-shadow: none;
+}
+
+.law-subject .law-graphic-card:hover {
+  box-shadow: var(--law-shadow-lift);
+  border-color: transparent;
+}
+
+.law-subject .law-graphic-card__kind {
+  background: var(--law-accent-pastel);
+  border-radius: var(--law-radius-inner);
+}
+
+/* ── 课时页 · 步骤模式奶油化 ── */
+/* 吸顶工具条：奶油半透明（原 paper 底与新奶油底有色差） */
+.law-lesson-page .law-player__bar {
+  background: color-mix(in srgb, var(--law-cream-bg) 90%, transparent);
+}
+
+/* 步骤舞台 / 自测 / 总结 / 结果：无边框奶油卡 + 一层软阴影 */
+.law-lesson-page .law-player__stage,
+.law-lesson-page .law-player__summary,
+.law-lesson-page .law-player__result,
+.law-lesson-page .law-quiz {
+  background: var(--law-cream-surface);
+  border: 0;
+  border-radius: var(--law-radius-card);
+  box-shadow: var(--law-shadow-soft);
+}
+
+/* 进度轨：粉彩轨 + 学科色平涂填充（退役渐变与内描边） */
+.law-lesson-page .law-player__progress-track {
+  background: var(--law-accent-pastel);
+  box-shadow: none;
+}
+
+.law-lesson-page .law-player__progress {
+  background: var(--law-accent);
+}
+
+/* 课型 chip：粉彩底 + 学科墨 */
+.law-lesson-page .law-player__kind {
+  background: var(--law-accent-pastel);
+  color: var(--law-accent-ink);
+}
+
+/* 播放控制：圆角轻量化（8px 刻度 → 14px 控件圆角），线级分隔 */
+.law-lesson-page .law-player__nav {
+  background: var(--law-cream-surface);
+  border: var(--law-line);
+  border-radius: var(--law-radius-control);
+}
+
+.law-lesson-page .law-player__nav.is-primary {
+  border: 0;
+  /* 白字实底 token 不动（五科 ≥5.16:1），只退役 3D 底边改单层软阴影 */
+  box-shadow: var(--law-shadow-soft);
+}
+
+.law-lesson-page .law-player__nav.is-primary:hover:not(:disabled) {
+  box-shadow: var(--law-shadow-lift);
+}
+
+.law-lesson-page .law-player__nav.is-primary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: var(--law-shadow-soft);
+}
+
+/* 步骤眉标：粉彩胶囊 + 学科墨（13px/900，对粉彩 ≥5.54:1） */
+.law-lesson-page .law-step__eyebrow {
+  background: var(--law-accent-pastel);
+  color: var(--law-accent-ink);
+}
+
+/* 等待提示卡：退役虚线框，粉彩底微差分层 */
+.law-lesson-page .law-step__hint,
+.law-lesson-page .law-step__hint.is-done {
+  background: var(--law-accent-pastel);
+  border: 0;
+  color: var(--law-accent-ink);
+}
+
+/* 关键词胶囊：pill 圆角；展开态白字压实底 token（原纯 accent 白字 3.4-4.1:1 不达 AA） */
+.law-lesson-page .law-term__chip {
+  border: 0;
+  border-radius: var(--law-radius-pill);
+}
+
+.law-lesson-page .law-term__chip.is-open {
+  background: var(--law-accent-solid);
+}
+
+/* 自测选项 / 反馈：圆角控件刻度 + 线级分隔（对错态保留学科外的新强调色） */
+.law-lesson-page .law-quiz__option,
+.law-lesson-page .law-quiz__feedback {
+  border: var(--law-line);
+  border-radius: var(--law-radius-control);
+  background: var(--law-cream-bg);
+}
+
+.law-lesson-page .law-quiz__option:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--law-accent) 40%, transparent);
+}
+
+.law-lesson-page .law-quiz__option.is-correct {
+  border-color: var(--moss);
+  background: color-mix(in srgb, var(--moss) 12%, var(--law-cream-surface));
+}
+
+.law-lesson-page .law-quiz__option.is-wrong {
+  border-color: var(--coral-dark);
+  background: color-mix(in srgb, var(--coral-dark) 12%, var(--law-cream-surface));
+}
+
+.law-lesson-page .law-quiz__feedback.is-correct {
+  border: var(--law-line);
+  border-color: color-mix(in srgb, var(--moss) 50%, transparent);
+  background: color-mix(in srgb, var(--moss) 8%, var(--law-cream-surface));
+}
+
+.law-lesson-page .law-quiz__feedback.is-wrong {
+  border: var(--law-line);
+  border-color: color-mix(in srgb, var(--coral-dark) 50%, transparent);
+  background: color-mix(in srgb, var(--coral-dark) 7%, var(--law-cream-surface));
+}
+
+/* 原文对照抽屉：退役虚线框 */
+.law-lesson-page .law-player__rawpanel {
+  border: var(--law-line);
+  border-radius: var(--law-radius-inner);
+  background: var(--law-cream-surface);
+}
+
+/* 课堂开关（🎓）：奶油胶囊（本文件随课时页急加载，课堂引擎懒加载前也有样式） */
+.law-lesson-page .law-player__classroom {
+  border: var(--law-line);
+  background: var(--law-cream-surface);
+  border-radius: var(--law-radius-pill);
+}
+
+.law-lesson-page .law-player__classroom.is-on {
+  color: var(--law-accent-ink);
+  border-color: transparent;
+  background: var(--law-accent-pastel);
+}

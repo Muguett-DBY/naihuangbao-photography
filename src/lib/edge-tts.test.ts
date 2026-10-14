@@ -82,8 +82,8 @@ describe("generateSecMsGec（Sec-MS-GEC 防伪令牌）", () => {
 describe("buildSynthUrl（合成连接 URL）", () => {
   it("带 TrustedClientToken / Sec-MS-GEC / 版本 / 连接 id，端点路径正确", async () => {
     const url = await buildSynthUrl(1759712345678);
-    expect(url.startsWith("wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?")).toBe(true);
-    expect(url).toContain(`TrustedClientToken=${TRUSTED_CLIENT_TOKEN}`);
+    expect(url.startsWith("wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1?")).toBe(true);
+    expect(url).toContain(`Ocp-Apim-Subscription-Key=${TRUSTED_CLIENT_TOKEN}`); // 2026-10 上游迁移后参数名
     expect(url).toContain("Sec-MS-GEC-Version=1-143.0.3650.96");
     expect(url).toMatch(/Sec-MS-GEC=[0-9A-F]{64}/);
     expect(url).toMatch(/ConnectionId=[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);

@@ -25,7 +25,7 @@
 /* ==================== 协议常量（对齐 msedge-tts@2.1.0 的握手变更） ==================== */
 
 export const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
-export const WSS_URL = "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1";
+export const WSS_URL = "wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1";
 export const SEC_MS_GEC_VERSION = "1-143.0.3650.96";
 /**
  * 2026-10 上游迁移：端点换 api.msedgeservices.com、鉴权参数名 TrustedClientToken →

@@ -37,7 +37,7 @@ export function LawPlanCard() {
             <span className="law-plan-card__unit">天</span>
           </>
         ) : (
-          <strong>就是今天！</strong>
+          <strong>就是今天</strong>
         )}
         <span className="law-plan-card__date">{formatDate(examIso)} · 就这几天，稳住</span>
       </div>
@@ -48,7 +48,7 @@ export function LawPlanCard() {
             <b>总进度</b>
             <span>
               {plan.doneSteps} / {plan.totalSteps} 步
-              {finished ? " 🎉 已经全部学完啦！" : ` · 还剩 ${plan.remainingSteps} 步`}
+              {finished ? " 🎉 已经全部学完" : ` · 还剩 ${plan.remainingSteps} 步`}
             </span>
           </div>
           <div className="law-plan-card__bar">
@@ -58,7 +58,7 @@ export function LawPlanCard() {
 
         <div className="law-plan-card__today">
           <b>今日 {plan.todayDone} / {plan.dailyTarget} 步</b>
-          <span>{plan.todayPercent >= 100 ? "今日达标 ✓ 太棒了" : `还差 ${Math.max(0, plan.dailyTarget - plan.todayDone)} 步达标`}</span>
+          <span>{plan.todayPercent >= 100 ? "今日达标 ✓ 今天到这里就很好" : `还差 ${Math.max(0, plan.dailyTarget - plan.todayDone)} 步达标`}</span>
           <div className="law-plan-card__today-bar">
             <span style={{ width: `${plan.todayPercent}%` }} />
           </div>
