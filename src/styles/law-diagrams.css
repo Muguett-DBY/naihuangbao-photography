@@ -128,23 +128,24 @@
   gap: 12px;
 }
 
-/* 课时页图解入口 */
+/* 课时页图解入口（奶油化：退役虚线框，线级分隔 + 卡片圆角） */
 .law-lesson-graphic-entry {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 14px 16px;
-  border-radius: 18px;
-  background: linear-gradient(120deg, color-mix(in srgb, var(--law-accent) 12%, var(--paper)), var(--paper));
-  border: 2px dashed color-mix(in srgb, var(--law-accent) 40%, var(--hairline));
+  border-radius: var(--law-radius-card, 18px);
+  background: var(--law-cream-surface, var(--paper));
+  border: var(--law-line, 1px solid var(--hairline));
   color: var(--ink);
   text-decoration: none;
-  transition: transform 0.2s var(--ease-spring), border-color 0.2s;
+  transition: transform 0.2s var(--ease-spring), box-shadow 0.2s, border-color 0.2s;
 }
 
 .law-lesson-graphic-entry:hover {
   transform: translateY(-2px) scale(1.01);
-  border-color: var(--law-accent-ink, var(--law-accent));
+  box-shadow: var(--law-shadow-lift, var(--warm-shadow-strong));
+  border-color: color-mix(in srgb, var(--law-accent) 40%, transparent);
 }
 
 .law-lesson-graphic-entry__icon {

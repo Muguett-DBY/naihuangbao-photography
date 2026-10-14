@@ -485,7 +485,7 @@
 }
 
 
-/* ── 路径地图：节点浮层 + 当前站直接自测入口 ── */
+/* ── 路径地图：节点浮层 + 当前站直接自测入口（奶油化：浮层改浮层白+线级分隔） ── */
 .law-path__tip {
   position: absolute;
   bottom: calc(100% + 8px);
@@ -497,10 +497,10 @@
   gap: 2px;
   max-width: 240px;
   padding: 8px 12px;
-  border-radius: 10px;
-  background: var(--paper);
-  border: 1.5px solid color-mix(in srgb, var(--law-accent) 40%, transparent);
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--law-accent) 18%, transparent);
+  border-radius: var(--law-radius-inner, 12px);
+  background: var(--law-cream-raised, var(--paper));
+  border: var(--law-line, 1.5px solid color-mix(in srgb, var(--law-accent) 40%, transparent));
+  box-shadow: var(--law-shadow-lift, 0 8px 20px color-mix(in srgb, var(--law-accent) 18%, transparent));
   pointer-events: none;
   white-space: normal;
   text-align: center;
@@ -519,9 +519,9 @@
   display: inline-flex;
   align-items: center;
   padding: 6px 14px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--law-accent) 14%, var(--paper));
-  border: 1.5px solid color-mix(in srgb, var(--law-accent) 36%, transparent);
+  border-radius: var(--law-radius-pill, 999px);
+  background: var(--law-accent-pastel, color-mix(in srgb, var(--law-accent) 14%, var(--paper)));
+  border: 0;
   color: var(--law-accent-ink, var(--law-accent));
   font-size: 12.5px;
   font-weight: 800;
@@ -529,7 +529,7 @@
   transition: background 0.15s, transform 0.15s;
 }
 .law-path__quiz:hover {
-  background: color-mix(in srgb, var(--law-accent) 22%, var(--paper));
+  background: color-mix(in srgb, var(--law-accent) 20%, var(--law-cream-raised, var(--paper)));
   transform: translateY(-1px);
 }
 

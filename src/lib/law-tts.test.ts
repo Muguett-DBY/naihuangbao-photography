@@ -208,7 +208,7 @@ describe("引擎 1：Edge TTS 优先路径", () => {
     await waitForWebSocketCount(0);
 
     const ws = MockWebSocket.instances[0];
-    expect(ws.url).toContain("TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4");
+    expect(ws.url).toContain("Ocp-Apim-Subscription-Key=6A5AA1D4EAFF4E9FB37E23D68491D6F4"); // 2026-10 上游迁移后参数名
     expect(ws.url).toMatch(/Sec-MS-GEC=[0-9A-F]{64}/);
     ws.serverOpen();
     expect(ws.sent[0]).toContain("Path:speech.config");
