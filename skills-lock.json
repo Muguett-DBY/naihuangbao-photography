@@ -7,11 +7,41 @@
       "skillPath": "skills/accessibility/SKILL.md",
       "computedHash": "612f913bcb03f0787b103c848cd7664b676a9aaf31f25d3270cc69cf5caaab95"
     },
+    "cognitive-load-analyser": {
+      "source": "garethmanning/education-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/memory-learning-science/cognitive-load-analyser/SKILL.md",
+      "computedHash": "54b85c246647daaf87612edc6eb1764f8cc7a71e64fb0adc37476c7d3fff8dac"
+    },
+    "elaborative-interrogation-generator": {
+      "source": "garethmanning/education-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/memory-learning-science/elaborative-interrogation-generator/SKILL.md",
+      "computedHash": "395be21cc987ea7ef8acf46f80ce8e08a60f6935ea15d58812377c1aa0fec8fa"
+    },
+    "feedback-quality-analyser": {
+      "source": "garethmanning/education-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/memory-learning-science/feedback-quality-analyser/SKILL.md",
+      "computedHash": "2c6c914be88d31444e167fef8dcd91cae3df06dc34354b5b24f068ac11f1a13c"
+    },
     "frontend-ui-engineering": {
       "source": "addyosmani/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/frontend-ui-engineering/SKILL.md",
       "computedHash": "49bb6ccfc41753bdd679f368ce75629ae9d424c5b8abc33faf949a4a55f919a1"
+    },
+    "interleaving-unit-planner": {
+      "source": "garethmanning/education-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/memory-learning-science/interleaving-unit-planner/SKILL.md",
+      "computedHash": "e4ea3c735c0c36b4f4c8383691c36724d57d107014d7671b5d88fc867f8a2e41"
+    },
+    "motivation-diagnostic-task-redesign": {
+      "source": "garethmanning/education-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/wellbeing-motivation-agency/motivation-diagnostic-task-redesign/SKILL.md",
+      "computedHash": "34735a7651ec5db4cfb882cd92bea4a6c7ee238b8e07a8dc2454c68cd094adf9"
     },
     "performance": {
       "source": "addyosmani/web-quality-skills",
@@ -24,6 +54,30 @@
       "sourceType": "github",
       "skillPath": "skills/remotion-video-creation/SKILL.md",
       "computedHash": "d0b8d3dcf67a9118e37d239dd252904473f1e8bb913dd5edc3abae04cf616b80"
+    },
+    "retrieval-practice-generator": {
+      "source": "garethmanning/education-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/memory-learning-science/retrieval-practice-generator/SKILL.md",
+      "computedHash": "7e4d47fba46df7e985f3da7713466be8ebba82c2c21e6a27386969811767f3d6"
+    },
+    "self-regulation-scaffold-generator": {
+      "source": "garethmanning/education-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/self-regulated-learning/self-regulation-scaffold-generator/SKILL.md",
+      "computedHash": "3efd2315879b06941b63326e7ccb898af41599a241f1eafd4f2b19927380e1cd"
+    },
+    "spaced-practice-scheduler": {
+      "source": "garethmanning/education-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/memory-learning-science/spaced-practice-scheduler/SKILL.md",
+      "computedHash": "559114e849e76c31faa63c1378160af4575337f26fe6fc46367c4755e487436a"
+    },
+    "srl-session-wrapper": {
+      "source": "garethmanning/education-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/student-learning/srl-session-wrapper/SKILL.md",
+      "computedHash": "e5e3f43e26d7fd226dea76770362a757bc235261fa4d76d81a00692c201d766e"
     },
     "vercel-optimize": {
       "source": "vercel-labs/agent-skills",
