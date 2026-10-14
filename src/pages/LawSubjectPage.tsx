@@ -105,7 +105,7 @@ export function LawSubjectPage() {
     return (
       <div className="law-academy">
         <div className="law-notfound">
-          <LawMascot mood="oops" size={80} />
+          <LawMascot mood="oops" size={72} />
           <h1>这门学科不在书单里哦</h1>
           <Link to="/law" className="law-player__cta">← 回学习中心</Link>
         </div>
@@ -151,7 +151,10 @@ export function LawSubjectPage() {
     );
 
   return (
-    <div className="law-academy law-subject" style={style}>
+    <div
+      className={`law-academy law-subject law-subject--${subject.id}`}
+      style={style}
+    >
       <header className="law-subject__hero">
         <Link to="/law" className="law-subject__back">← 学习中心</Link>
         <div className="law-subject__title">

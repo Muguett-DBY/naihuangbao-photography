@@ -295,7 +295,7 @@ export function GraphicStage({
 
       {active >= total - 1 ? (
         <div className="law-graphic__finish">
-          <LawMascot mood="cheer" size={44} />
+          <LawMascot mood="happy" size={44} />
           <motion.span initial={{ scale: 0.6 }} animate={{ scale: 1 }} transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 16 }}>
             🎉
           </motion.span>

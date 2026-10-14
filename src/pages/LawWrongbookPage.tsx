@@ -78,11 +78,12 @@ export function LawWrongbookPage() {
           <h1>📕 我的错题本</h1>
         </header>
         <div className="law-wrongbook__empty" aria-live="polite">
-          <LawMascot mood="cheer" size={88} />
+          {/* 吉祥物陪伴位③：错题本空态居中 think——空着不庆祝也不催促，陪着就好 */}
+          <LawMascot mood="think" size={72} />
           <h2>还是空白的，继续保持！</h2>
           <p>
-            自测答错的课会自动收进这里，按记忆曲线（1~15 天，按你的掌握度自适应伸缩）提醒你复习，
-            连续 5 次通过就"毕业"移出。现在去学新课吧。
+            做错了再回来，我们一起收拾它——答错过的课会按记忆曲线（1~15 天，随你的掌握度伸缩）
+            提醒你复习，连续 5 次通过就"毕业"移出。现在去学新课吧。
           </p>
           <Link to="/law" className="law-wrongbook__empty-cta">去学习 →</Link>
         </div>
@@ -96,7 +97,8 @@ export function LawWrongbookPage() {
         <Link to="/law" className="law-wrongbook__back">← 学习中心</Link>
         <h1>📕 我的错题本</h1>
         <p className="law-wrongbook__lead">
-          五科错题都在这：到期的先测，没到期的按记忆曲线排队，五轮全过就毕业。
+          错了不可怕，都是还没长牢的地方：到期的先复习，五轮全过就毕业——
+          这些标记过的坑，考试时你就绕得开。
         </p>
         <div className="law-wrongbook__summary">
           <span className="law-wrongbook__chip is-due">今天到期 {groups.dueToday.length}</span>
@@ -115,22 +117,22 @@ export function LawWrongbookPage() {
       ) : null}
 
       <WrongGroup
-        title="🔴 今天到期 · 先测这些"
-        hint="记忆刚好到遗忘边缘，现在复习性价比最高"
+        title="🔴 今天到期 · 先复习这些"
+        hint="记忆刚好走到遗忘边缘，现在见一面最划算"
         items={groups.dueToday}
         directory={directory}
         now={now}
       />
       <WrongGroup
         title="🟡 未来到期 · 排队中"
-        hint="还不到复习时间，提前翻看也可以，但别急着测"
+        hint="还不到复习时间，提前翻看可以，不急着测"
         items={groups.upcoming}
         directory={directory}
         now={now}
       />
       <WrongGroup
         title="🟢 已毕业 · 战绩存档"
-        hint="这些题曾经错过，如今五轮全对——考前可以回来扫一眼"
+        hint="曾经错过、如今五轮全对——考前回来扫一眼就有底"
         items={groups.graduated}
         directory={directory}
         now={now}
@@ -184,9 +186,10 @@ function WrongRow({ item, entry, now }: { item: WrongItem; entry?: LawLessonDire
       <PrefetchLink
         to={href}
         className={`law-wrongbook__item ${due ? "is-due" : ""} ${item.reviewDueAt === undefined ? "is-graduated" : ""}`}
+        style={subject ? ({ "--law-accent": subject.accent } as CSSProperties) : undefined}
       >
         {subject ? (
-          <span className="law-wrongbook__subject" style={{ "--law-accent": subject.accent } as CSSProperties}>
+          <span className="law-wrongbook__subject">
             {subject.emoji} {subject.name}
           </span>
         ) : null}

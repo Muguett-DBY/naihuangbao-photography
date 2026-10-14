@@ -1900,7 +1900,9 @@
   font: inherit;
   font-weight: 800;
   font-size: 15px;
-  background: var(--law-accent);
+  /* 白字实底走 solid 公式（本类也出现在 404/加载失败页——无 .law-lesson-page
+     提权，纯 accent 白字 3.4-4.1:1 不达 AA） */
+  background: var(--law-accent-solid, var(--law-accent));
   color: #fff;
   cursor: pointer;
   box-shadow: var(--button-shadow);
@@ -2602,7 +2604,7 @@
 }
 
 .law-flow__node.is-lit {
-  background: color-mix(in srgb, var(--law-accent) 8%, var(--paper));
+  background: color-mix(in srgb, var(--law-accent) 8%, var(--law-cream-surface, var(--paper)));
 }
 
 .law-flow__ball {
@@ -2664,10 +2666,10 @@
 }
 
 .law-plain__term {
-  border: 2px solid color-mix(in srgb, var(--law-accent) 46%, var(--paper));
-  background: var(--paper);
+  border: var(--law-line, 2px solid color-mix(in srgb, var(--law-accent) 46%, var(--paper)));
+  background: var(--law-cream-surface, var(--paper));
   color: var(--law-accent-ink, var(--law-accent));
-  border-radius: 999px;
+  border-radius: var(--law-radius-pill, 999px);
   padding: 9px 18px;
   font: inherit;
   font-size: 14px;
@@ -2734,9 +2736,9 @@
 }
 
 .law-quiz__option {
-  border: 1.5px solid var(--hairline);
-  background: var(--paper);
-  border-radius: 14px;
+  border: var(--law-line, 1.5px solid var(--hairline));
+  background: var(--law-cream-bg, var(--paper));
+  border-radius: var(--law-radius-control, 14px);
   padding: 13px 16px;
   font: inherit;
   font-size: 15px;
@@ -2753,24 +2755,25 @@
 
 .law-quiz__option.is-correct {
   border-color: var(--moss);
-  background: color-mix(in srgb, var(--moss) 12%, var(--paper));
+  background: color-mix(in srgb, var(--moss) 12%, var(--law-cream-surface, var(--paper)));
 }
 
 .law-quiz__option.is-wrong {
   border-color: var(--coral-dark);
-  background: color-mix(in srgb, var(--coral-dark) 12%, var(--paper));
+  background: color-mix(in srgb, var(--coral-dark) 12%, var(--law-cream-surface, var(--paper)));
 }
 
 .law-quiz__feedback {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-radius: 14px;
-  border: 1.5px solid var(--hairline);
+  border-radius: var(--law-radius-control, 14px);
+  border: var(--law-line, 1.5px solid var(--hairline));
   padding: 14px 16px;
   font-size: 14px;
   line-height: 1.7;
   margin-top: auto;
+  background: var(--law-cream-bg, var(--paper));
 }
 
 .law-quiz__feedback.is-correct {
@@ -2843,10 +2846,10 @@
 }
 
 .law-quiz__order-chip {
-  border: 2px solid color-mix(in srgb, var(--law-accent) 44%, var(--paper));
-  background: var(--paper);
+  border: var(--law-line, 2px solid color-mix(in srgb, var(--law-accent) 44%, var(--paper)));
+  background: var(--law-cream-surface, var(--paper));
   color: var(--ink);
-  border-radius: 999px;
+  border-radius: var(--law-radius-pill, 999px);
   padding: 10px 18px;
   font: inherit;
   font-size: 14px;
@@ -2870,9 +2873,9 @@
 .law-quiz__fill-input {
   flex: 1;
   min-width: 0;
-  border: 1.5px solid var(--hairline);
-  border-radius: 14px;
-  background: var(--paper);
+  border: var(--law-line, 1.5px solid var(--hairline));
+  border-radius: var(--law-radius-control, 14px);
+  background: var(--law-cream-surface, var(--paper));
   color: var(--ink);
   padding: 13px 16px;
   font: inherit;
@@ -2928,9 +2931,9 @@
 
 .law-quiz__multi-confirm {
   align-self: flex-start;
-  border: 2px solid color-mix(in srgb, var(--law-accent) 55%, var(--hairline));
-  border-radius: 999px;
-  background: var(--paper);
+  border: var(--law-line, 2px solid color-mix(in srgb, var(--law-accent) 55%, var(--hairline)));
+  border-radius: var(--law-radius-pill, 999px);
+  background: var(--law-cream-surface, var(--paper));
   color: var(--ink);
   padding: 11px 22px;
   font: inherit;

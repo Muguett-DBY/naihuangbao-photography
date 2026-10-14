@@ -1,13 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Flashcard } from "../../lib/law-flashcard";
 import { LAW_SUBJECTS } from "../../data/law/meta";
+import { LawMascot, type LawMood } from "./LawMascot";
 
 /**
  * 闪卡牌堆交互（P2·T2）：
  * - 点击/空格翻面（CSS 3D，respects prefers-reduced-motion）；← → 或滑动切上一张/下一张；
  * - 😭 不会 → 重排到队列末尾；😐 模糊 → 重排到剩余队列中部；😊 会了 → 移出队列；
  * - 队列清空后进入总结页：本轮张数 + 会了/模糊/不会，可"再来一轮"。
+ * - 奶黄包陪伴位：随翻卡/打分换表情（happy=会了、think=回忆/模糊、oops=不会），
+ *   气泡只说鼓励不说评判；总结页全对才动用 cheer。
  */
+
+/** 打分 → 陪伴反应（mood→场景映射：happy=完成一步、think=回忆、oops=没记住） */
+const RATE_REACTION: Record<keyof DeckRating, { mood: LawMood; line: string }> = {
+  known: { mood: "happy", line: "这张稳了" },
+  fuzzy: { mood: "think", line: "有点印象，下一轮再见一面" },
+  unknown: { mood: "oops", line: "这次没记住，再来一遍就好" },
+};
 
 export interface DeckRating {
   known: number;
@@ -30,6 +40,10 @@ export function FlashcardDeck({ cards, onExit }: FlashcardDeckProps) {
   const [pos, setPos] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [rating, setRating] = useState<DeckRating>({ known: 0, fuzzy: 0, unknown: 0 });
+  const [companion, setCompanion] = useState<{ mood: LawMood; line: string }>({
+    mood: "idle",
+    line: "慢慢翻，不着急",
+  });
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const rated = rating.known + rating.fuzzy + rating.unknown;
@@ -59,6 +73,7 @@ export function FlashcardDeck({ cards, onExit }: FlashcardDeckProps) {
         setDeck([...rest.slice(0, at), card, ...rest.slice(at)]);
       }
       setRating((value) => ({ ...value, [kind]: value[kind] + 1 }));
+      setCompanion(RATE_REACTION[kind]);
       setFlipped(false);
       setPos((value) => Math.min(value, rest.length - 1 < 0 ? 0 : rest.length - 1));
     },
@@ -70,6 +85,7 @@ export function FlashcardDeck({ cards, onExit }: FlashcardDeckProps) {
     setPos(0);
     setFlipped(false);
     setRating({ known: 0, fuzzy: 0, unknown: 0 });
+    setCompanion({ mood: "idle", line: "慢慢翻，不着急" });
   }, [cards]);
 
   useEffect(() => {
@@ -113,10 +129,14 @@ export function FlashcardDeck({ cards, onExit }: FlashcardDeckProps) {
   };
 
   if (current === null) {
+    const allKnown = rated > 0 && rating.unknown === 0 && rating.fuzzy === 0;
     return (
       <div className="law-flash__summary" aria-live="polite">
-        <p className="law-flash__summary-emoji">🎉</p>
-        <h2>这一轮刷完了！</h2>
+        {/* 总结页吉祥物：全对才 cheer（满分里程碑），其余 happy 收尾 */}
+        <span className="law-flash__summary-companion" aria-hidden="true">
+          <LawMascot mood={allKnown ? "cheer" : "happy"} size={56} />
+        </span>
+        <h2>这一轮刷完了</h2>
         <p className="law-flash__summary-total">
           本轮 <b>{rated}</b> 张
         </p>
@@ -167,7 +187,10 @@ export function FlashcardDeck({ cards, onExit }: FlashcardDeckProps) {
             ? `闪卡背面答案：${current.back}（正面：${current.front}）。点击或按空格键翻回正面`
             : `闪卡正面：${current.front}。点击或按空格键翻面看答案`
         }
-        onClick={() => setFlipped((value) => !value)}
+        onClick={() => {
+          setFlipped((value) => !value);
+          setCompanion({ mood: "think", line: "对照一下自己刚想的" });
+        }}
       >
         <span className="law-flash__card-inner">
           <span className="law-flash__face law-flash__face--front" aria-hidden={flipped}>
@@ -183,6 +206,12 @@ export function FlashcardDeck({ cards, onExit }: FlashcardDeckProps) {
           </span>
         </span>
       </button>
+
+      {/* 陪伴位：随打分换表情，气泡鼓励不评判（装饰性陪伴，不承载作答信息） */}
+      <div className="law-flash__companion" aria-hidden="true">
+        <LawMascot mood={companion.mood} size={44} />
+        <span className="law-flash__companion-bubble">{companion.line}</span>
+      </div>
 
       <div className="law-flash__rate" role="group" aria-label="给这张卡打分">
         <button type="button" className="law-flash__rate-btn is-unknown" onClick={() => rate("unknown")}>

@@ -17,6 +17,7 @@ import {
 import { FlashcardDeck } from "../components/law/FlashcardDeck";
 import { LawMascot } from "../components/law/LawMascot";
 import { useLawImmersive } from "../components/law/EasterEgg";
+import "../styles/law-academy.css";
 import "../styles/law-flash.css";
 
 /**
@@ -159,7 +160,7 @@ export function LawFlashcardPage() {
 
       {completedTotal === 0 ? (
         <div className="law-flash__empty" aria-live="polite">
-          <LawMascot mood="think" size={88} />
+          <LawMascot mood="think" size={72} />
           <h2>还没有可抽的闪卡</h2>
           <p>闪卡从「已掌握」的课里来——先学完一课（过自测），这里就会长出你的牌堆。</p>
           <Link to="/law" className="law-flash__empty-cta">去学习 →</Link>
@@ -168,7 +169,7 @@ export function LawFlashcardPage() {
         <FlashcardDeck key={round} cards={cards} onExit={() => setPhase("setup")} />
       ) : phase === "loading" ? (
         <div className="law-flash__loading" aria-live="polite">
-          <LawMascot mood="cheer" size={64} />
+          <LawMascot mood="think" size={56} />
           <p>正在把 {candidates.length} 课内容整理成闪卡……</p>
         </div>
       ) : phase === "error" ? (

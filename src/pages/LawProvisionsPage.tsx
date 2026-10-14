@@ -165,11 +165,12 @@ export function LawProvisionsPage() {
 
       {state.phase === "error" ? (
         <div className="law-provisions__empty" role="alert">
-          <LawMascot mood="oops" size={88} />
+          {/* 加载失败=oops 陪伴位：安慰不指责，配「再来一遍就好」口径 */}
+          <LawMascot mood="oops" size={72} />
           <h2>法条索引没打开</h2>
-          <p>加载失败了（{state.message}）。</p>
+          <p>这次没加载出来（{state.message}），再来一遍就好。</p>
           <button type="button" className="law-provisions__retry" onClick={() => setAttempt((n) => n + 1)}>
-            重试
+            再试一遍
           </button>
         </div>
       ) : null}
@@ -216,7 +217,7 @@ export function LawProvisionsPage() {
 
           {groups.length === 0 ? (
             <div className="law-provisions__empty" aria-live="polite">
-              <LawMascot mood="think" size={88} />
+              <LawMascot mood="think" size={72} />
               <h2>{query ? `没有找到「${query.trim()}」相关的法条` : "索引里还没有法条"}</h2>
               <p>
                 {query

@@ -19,7 +19,6 @@ import { QuizRunner } from "./QuizRunner";
 import { RawProvisionPanel } from "./RawProvisionPanel";
 import { useLessonHydration } from "./useLessonHydration";
 import { StepNavPopover } from "./StepNavPopover";
-import { LawMascot, type LawMood } from "../LawMascot";
 import {
   AUTO_SPEEDS,
   AUTO_SPEED_KEY,
@@ -80,7 +79,6 @@ export function LessonPlayer({
     }
     return restored;
   });
-  const [mood, setMood] = useState<LawMood>("idle");
   const [quizScore, setQuizScore] = useState<{ correct: number; total: number; skipped?: boolean }>({ correct: 0, total: 0 });
   const [replayKey, setReplayKey] = useState(0);
   const [showRaw, setShowRaw] = useState(false);
@@ -149,7 +147,6 @@ export function LessonPlayer({
     if (stepIndex < totalSteps - 1) {
       setDirection(1);
       setStepIndex((index) => index + 1);
-      setMood("idle");
       setReplayKey((key) => key + 1);
     } else {
       touchLesson(lesson.id);
@@ -176,13 +173,11 @@ export function LessonPlayer({
       markStepDone(lesson.id, currentStep.id);
       return next;
     });
-    setMood("happy");
   }
 
   function jumpToStep(index: number) {
     setDirection(index > stepIndex ? 1 : -1);
     setStepIndex(index);
-    setMood("idle");
     setReplayKey((key) => key + 1);
   }
 
@@ -194,19 +189,16 @@ export function LessonPlayer({
     if (stepIndex <= 0) return;
     setDirection(-1);
     setStepIndex((index) => index - 1);
-    setMood("idle");
     setReplayKey((key) => key + 1);
   }
 
   function startQuiz() {
     setPhase("quiz");
-    setMood("idle");
   }
 
   function retryQuiz() {
     setQuizAttempt((attempt) => attempt + 1);
     setPhase("quiz");
-    setMood("idle");
   }
 
   function handleQuizDone(correct: number, total: number, _wrong = 0, wrongDetails?: RecordQuizOpts["wrongDetails"]) {
@@ -214,7 +206,6 @@ export function LessonPlayer({
     // 结果页的"通过/错题本"文案从此和实际状态一致
     recordQuiz(lesson.id, correct, total, totalSteps, { wrongDetails });
     setQuizScore({ correct, total });
-    setMood(correct >= Math.ceil(total / 2) ? "cheer" : "idle");
     setPhase("result");
   }
 
@@ -232,7 +223,7 @@ export function LessonPlayer({
 
   // 键盘导航：← 上一步，→ 下一步（仅在可用时生效），复习老课不用来回挪鼠标。
   // 回调经 ref 取最新值（同 goNextRef 模式），依赖数组只留 [phase]——
-  // 否则 mood/stepDone/direction 等任一 state 变化都会重挂一遍 window 监听
+  // 否则 stepDone/direction 等任一 state 变化都会重挂一遍 window 监听
   const keyNavRef = useRef<(event: KeyboardEvent) => void>(() => {});
   keyNavRef.current = (event: KeyboardEvent) => {
     const target = event.target as HTMLElement | null;
@@ -282,7 +273,6 @@ export function LessonPlayer({
         >
           📄 原文对照
         </button>
-        <LawMascot mood={mood} size={40} />
       </header>
 
       {showRaw ? <RawProvisionPanel raw={activeLesson.raw} /> : null}
@@ -435,7 +425,6 @@ export function LessonPlayer({
               // 结果页也不得展示 1/1 满分（没作答过的事不能凭空造分），skipped 标记走独立文案
               recordQuiz(lesson.id, 1, 1, totalSteps, { skipped: true });
               setQuizScore({ correct: 0, total: 0, skipped: true });
-              setMood("cheer");
               setPhase("result");
             }}
           />
@@ -465,7 +454,6 @@ export function LessonPlayer({
             // 再学一遍 = 从头快走一遍：保留已完成的勾（曾在此清空全部进度，答错一题就要重点整课互动）
             setStepIndex(0);
             setPhase("steps");
-            setMood("idle");
             setReplayKey((key) => key + 1);
           }}
           onRetryQuiz={retryQuiz}

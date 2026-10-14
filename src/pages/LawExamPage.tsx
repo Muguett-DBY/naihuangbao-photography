@@ -240,7 +240,8 @@ export function LawExamPage() {
           <h1>🎓 模拟考试</h1>
         </header>
         <div className="law-exam__empty" aria-live="polite">
-          <LawMascot mood="cheer" size={88} />
+          {/* 引导空态=think 陪伴（cheer 只留给通关/满分里程碑），文案指向第一步 */}
+          <LawMascot mood="think" size={72} />
           <h2>还没有可以出题的课</h2>
           <p>
             模拟考试的题目全部来自你「已掌握」的课时。先去学习中心学完一课的自测

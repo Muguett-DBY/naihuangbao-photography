@@ -47,7 +47,7 @@ export function LawGraphicPage() {
     return (
       <div className="law-academy">
         <div className="law-notfound">
-          <LawMascot mood="oops" size={80} />
+          <LawMascot mood="oops" size={72} />
           <h1>课件加载失败：{error}</h1>
           <button type="button" className="law-player__cta" onClick={() => navigate("/law")}>
             ← 回学习中心
@@ -61,7 +61,7 @@ export function LawGraphicPage() {
     return (
       <div className="law-academy">
         <div className="law-notfound">
-          <LawMascot mood="oops" size={80} />
+          <LawMascot mood="oops" size={72} />
           <h1>没有这个图解哦</h1>
           <button type="button" className="law-player__cta" onClick={() => navigate("/law")}>
             ← 回学习中心

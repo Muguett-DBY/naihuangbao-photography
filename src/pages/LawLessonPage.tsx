@@ -76,7 +76,7 @@ export function LawLessonPage() {
     return (
       <div className="law-academy">
         <div className="law-notfound">
-          <LawMascot mood="oops" size={80} />
+          <LawMascot mood="oops" size={72} />
           <h1>找不到这节课（{error ?? "链接有误"}）</h1>
           <Link to="/law" className="law-player__cta">← 回学习中心</Link>
         </div>
@@ -92,7 +92,7 @@ export function LawLessonPage() {
     return (
       <div className="law-academy">
         <div className="law-notfound">
-          <LawMascot mood="oops" size={80} />
+          <LawMascot mood="oops" size={72} />
           <h1>找不到这节课（{lessonId}）</h1>
           <p>可能这节课换了个编号，回目录找找看。</p>
           <Link to="/law" className="law-player__cta">← 回学习中心</Link>

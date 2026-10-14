@@ -1,6 +1,7 @@
 /* ── 课堂模式视觉层（law-classroom）──
    奶黄包老师讲课的舞台 + 底部控制条。
-   白底 #fafafa、圆角 16px、柔和阴影、大留白、正文 16px / 行高 1.8。
+   奶油暖底三件套：奶油底 + 大圆角 + 吉祥物陪伴位；正文 16px / 行高 1.8；
+   粉彩/奶黄只做底色、图标、进度轨，文字一律 ink/muted 级，全档 ≥4.5:1。
    强调色走学科色变量 --law-accent（由父级注入，见 LAW_SUBJECT_MAP.accent）。
    暗色主题随 base.css 的双轨机制（data-theme="dark" / prefers-color-scheme）。
    全部动画统一 respects prefers-reduced-motion（见文件尾）。 */
@@ -10,18 +11,36 @@
 .law-classroom {
   /* 学科色：父级注入 --law-accent / --law-accent-soft，这里给兜底色 */
   --cls-accent: var(--law-accent, #a9853f);
-  --cls-accent-soft: var(--law-accent-soft, color-mix(in srgb, var(--law-accent, #a9853f) 12%, #fafafa));
+  --cls-accent-soft: var(--law-accent-soft, color-mix(in srgb, var(--law-accent, #a9853f) 12%, #fdfaf5));
   /* 小字号强调文本用的学科色：亮学科色（金/绿/蓝）直接做 12px 粗字不达 WCAG AA
      （民法 #5f7fae 压白气泡仅 4.09:1），亮色 62% 混深墨压白面五科 ≥6.0:1；
      暗色在下方反向提亮（深气泡底压深会更看不清） */
   --cls-accent-ink: color-mix(in srgb, var(--cls-accent) 62%, #2a2118);
-  --cls-bg: #fafafa;
-  --cls-surface: #ffffff;
+  /* 奶油可爱系令牌（与 law-diagrams.css 同值；课堂 chunk 可脱离学科/课时页
+     独立懒加载，必须自带一份，不能依赖页根上的定义） */
+  --law-cream-bg: #fdfaf5;
+  --law-cream-surface: #fffefb;
+  --law-cream-raised: #ffffff;
+  --law-custard: #f0c264;
+  --law-radius-pill: 999px;
+  --law-radius-card: 20px;
+  --law-radius-control: 14px;
+  --law-radius-inner: 12px;
+  --law-radius-bubble: 18px;
+  --law-shadow-soft: 0 2px 10px rgba(75, 59, 55, 0.05), 0 10px 30px rgba(75, 59, 55, 0.06);
+  --law-shadow-lift: 0 4px 14px rgba(75, 59, 55, 0.07), 0 16px 36px rgba(75, 59, 55, 0.08);
+  --law-line: 1px solid color-mix(in srgb, var(--cls-ink, #322a28) 9%, transparent);
+  --law-font-heading: "Naihuangbao WenKai", "Kaiti SC", "KaiTi", serif;
+  /* 课堂语义面：root=卡面 surface；卡内嵌块=bg（比卡面深一档的奶油底）；
+     浮层/控制条=raised（toast 级白）。文字组对奶油底 5.9–14:1 */
+  --cls-bg: #fdfaf5;
+  --cls-surface: #fffefb;
+  --cls-raised: #ffffff;
   --cls-ink: #322a28;
-  --cls-muted: #8a7e76;
+  --cls-muted: #6b5f5a;
   --cls-line: rgba(50, 42, 40, 0.12);
-  --cls-shadow: 0 12px 44px rgba(50, 42, 40, 0.08), 0 2px 10px rgba(50, 42, 40, 0.05);
-  --cls-glass: rgba(250, 250, 250, 0.94); /* 近实底：控制条不再走 backdrop-filter（见 .law-classroom-controls 注释） */
+  --cls-shadow: 0 2px 10px rgba(75, 59, 55, 0.05), 0 10px 30px rgba(75, 59, 55, 0.06);
+  --cls-glass: rgba(255, 254, 251, 0.94); /* 近实底：控制条不再走 backdrop-filter（见 .law-classroom-controls 注释） */
   --cls-ok: #5c8264;
   --cls-err: #b1544e;
 
@@ -29,24 +48,32 @@
   flex-direction: column;
   gap: 18px;
   padding: clamp(20px, 4vw, 40px); /* 大留白，随视口呼吸 */
-  background: var(--cls-bg);
+  background: var(--cls-surface);
   color: var(--cls-ink);
   font-size: 16px;
   line-height: 1.8;
-  border: 1px solid var(--cls-line);
-  border-radius: 16px;
-  box-shadow: var(--cls-shadow);
+  border: 0;
+  border-radius: var(--law-radius-card);
+  box-shadow: var(--law-shadow-soft);
 }
 
-/* 暗色主题（与 base.css 同一套双轨选择器） */
+/* 暗色主题（与 base.css 同一套双轨选择器）：暖黑奶油同步可爱 */
 :root[data-theme="dark"] .law-classroom {
-  --cls-bg: #241d1b;
-  --cls-surface: #2c2422;
+  --law-cream-bg: #262019;
+  --law-cream-surface: #2f2820;
+  --law-cream-raised: #382f26;
+  --law-custard: #d9ad5e;
+  --law-shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(0, 0, 0, 0.28);
+  --law-shadow-lift: 0 4px 14px rgba(0, 0, 0, 0.26), 0 16px 36px rgba(0, 0, 0, 0.32);
+  --law-line: 1px solid rgba(255, 245, 236, 0.14);
+  --cls-bg: #262019;
+  --cls-surface: #2f2820;
+  --cls-raised: #382f26;
   --cls-ink: #fff5ec;
-  --cls-muted: #b6a89f;
+  --cls-muted: #cfc0b5;
   --cls-line: rgba(255, 245, 236, 0.16);
-  --cls-shadow: 0 14px 44px rgba(0, 0, 0, 0.4);
-  --cls-glass: rgba(36, 29, 27, 0.94);
+  --cls-shadow: 0 2px 10px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(0, 0, 0, 0.28);
+  --cls-glass: rgba(56, 47, 38, 0.94);
   --cls-accent-ink: color-mix(in srgb, var(--cls-accent) 52%, #fff5ec);
   --cls-ok: #99b6a2;
   --cls-err: #e5a198;
@@ -54,13 +81,21 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .law-classroom {
-    --cls-bg: #241d1b;
-    --cls-surface: #2c2422;
+    --law-cream-bg: #262019;
+    --law-cream-surface: #2f2820;
+    --law-cream-raised: #382f26;
+    --law-custard: #d9ad5e;
+    --law-shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(0, 0, 0, 0.28);
+    --law-shadow-lift: 0 4px 14px rgba(0, 0, 0, 0.26), 0 16px 36px rgba(0, 0, 0, 0.32);
+    --law-line: 1px solid rgba(255, 245, 236, 0.14);
+    --cls-bg: #262019;
+    --cls-surface: #2f2820;
+    --cls-raised: #382f26;
     --cls-ink: #fff5ec;
-    --cls-muted: #b6a89f;
+    --cls-muted: #cfc0b5;
     --cls-line: rgba(255, 245, 236, 0.16);
-    --cls-shadow: 0 14px 44px rgba(0, 0, 0, 0.4);
-    --cls-glass: rgba(36, 29, 27, 0.94);
+    --cls-shadow: 0 2px 10px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(0, 0, 0, 0.28);
+    --cls-glass: rgba(56, 47, 38, 0.94);
     --cls-accent-ink: color-mix(in srgb, var(--cls-accent) 52%, #fff5ec);
     --cls-ok: #99b6a2;
     --cls-err: #e5a198;
@@ -615,10 +650,21 @@
   flex-direction: column;
   gap: 8px;
   padding: 12px 18px;
-  border: 1px solid var(--cls-line);
-  border-radius: 16px;
+  border: 0;
+  border-radius: var(--law-radius-control);
   background: var(--cls-glass);
-  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.14);
+  /* 圆角轻量化：单层低α软阴影讲完（原 0 10px 34px/.14 收 α 提散） */
+  box-shadow: 0 2px 10px rgba(75, 59, 55, 0.06), 0 8px 24px rgba(75, 59, 55, 0.1);
+}
+
+:root[data-theme="dark"] .law-classroom-controls {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.36);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-classroom-controls {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.36);
+  }
 }
 
 .law-classroom-controls__progress {
@@ -641,13 +687,13 @@
   opacity: 0.5;
 }
 
-/* 学科色展示进度 */
+/* 学科色展示进度：粉彩轨（装饰，不承载信息边界） */
 .law-classroom-controls__meter {
   flex: none;
   width: 72px;
   height: 6px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--cls-accent) 15%, var(--cls-line));
+  background: var(--cls-accent-soft);
   overflow: hidden;
 }
 
@@ -682,19 +728,21 @@
   min-width: 42px;
   min-height: 42px;
   padding: 0 12px;
-  border: 1.5px solid var(--cls-line);
-  border-radius: 999px;
+  border: 0;
+  border-radius: var(--law-radius-pill);
   background: var(--cls-surface);
   color: var(--cls-ink);
   font-size: 16px;
   font-weight: 800;
   line-height: 1;
   cursor: pointer;
+  /* 边框减法：按钮靠卡面底色差 + 一层极轻投影成立 */
+  box-shadow: 0 1px 4px rgba(50, 42, 40, 0.08);
   transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
 }
 
 .law-classroom-controls__btn:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--cls-accent) 55%, var(--cls-line));
+  background: var(--cls-accent-soft);
   transform: translateY(-1px);
 }
 
@@ -704,19 +752,18 @@
 }
 
 .law-classroom-controls__btn.is-on {
-  border-color: color-mix(in srgb, var(--cls-accent) 60%, transparent);
   background: var(--cls-accent-soft);
+  color: var(--cls-accent-ink);
 }
 
-/* 播放/暂停：主按钮，学科色实心 */
+/* 播放/暂停：主按钮，学科色实底（白图标走 72% 混深墨 token，五科 ≥5.16:1） */
 .law-classroom-controls__btn--play {
   min-width: 54px;
   min-height: 54px;
-  border: 0;
   font-size: 19px;
   color: #fff;
-  background: var(--cls-accent);
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--cls-accent) 45%, transparent);
+  background: color-mix(in srgb, var(--cls-accent) 72%, #2a2118);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--cls-accent) 40%, transparent);
 }
 
 .law-classroom-controls__btn--speed {
@@ -732,7 +779,7 @@
   background: var(--cls-line);
 }
 
-/* ══════════ 奶黄包老师气泡（TeacherBubble，此前无样式） ══════════ */
+/* ══════════ 奶黄包老师气泡（TeacherBubble） ══════════ */
 
 .law-teacher {
   display: flex;
@@ -741,7 +788,7 @@
 }
 
 .law-teacher--compact {
-  gap: 10px;
+  gap: 12px;
 }
 
 .law-teacher__avatar {
@@ -757,6 +804,11 @@
   border: 1.5px solid color-mix(in srgb, var(--cls-accent, var(--law-accent, #a9853f)) 40%, transparent);
 }
 
+/* 课堂讲台已由 LawMascot（奶黄包本包）常驻陪伴：emoji 头像退场，一屏只留一只吉祥物 */
+.law-classroom-player__teacher .law-teacher__avatar {
+  display: none;
+}
+
 /* 说话时的呼吸光环 */
 .law-teacher__pulse {
   position: absolute;
@@ -766,12 +818,25 @@
   animation: law-classroom-pulse 1.6s ease-out infinite;
 }
 
+/* 气泡更软糯：18px 大圆角 + 朝向奶黄包的 6px 尾角，浮层白 + 单层软阴影 */
 .law-teacher__bubble {
-  padding: 10px 16px 12px;
-  border: 1px solid var(--cls-line, rgba(50, 42, 40, 0.12));
-  border-radius: 4px 16px 16px 16px;
-  background: var(--cls-surface, #fff);
-  box-shadow: 0 4px 16px rgba(50, 42, 40, 0.08);
+  flex: 1;
+  min-width: 0;
+  padding: 12px 18px 14px;
+  border: 0;
+  border-radius: 6px var(--law-radius-bubble, 18px) var(--law-radius-bubble, 18px) var(--law-radius-bubble, 18px);
+  background: var(--cls-raised, #fff);
+  box-shadow: 0 2px 10px rgba(75, 59, 55, 0.05), 0 10px 30px rgba(75, 59, 55, 0.06);
+}
+
+:root[data-theme="dark"] .law-teacher__bubble {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(0, 0, 0, 0.28);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-teacher__bubble {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22), 0 10px 30px rgba(0, 0, 0, 0.28);
+  }
 }
 
 .law-teacher__name {
@@ -781,10 +846,12 @@
   color: var(--cls-accent-ink, var(--law-accent-ink, var(--cls-accent)));
 }
 
+/* 讲稿 = 吉祥物气泡引言：文楷语气载体（正文/题面/按钮仍无衬线） */
 .law-teacher__text {
   margin: 2px 0 0;
-  font-size: 15px;
-  line-height: 1.75;
+  font-family: var(--law-font-heading, var(--font-note));
+  font-size: 15.5px;
+  line-height: 1.8;
 }
 
 /* 打字机光标 */
@@ -921,18 +988,18 @@
   outline-offset: 3px;
 }
 
-/* 竖版画面（1080×1920）：宽度随高度收口，居中呈现，圆角出血裁切 */
+/* 竖版画面（1080×1920）：宽度随高度收口，居中呈现，圆角出血裁切（外卡-8px 递减） */
 .law-classroom-player__screen {
   position: relative;
   width: min(100%, calc(62vh * (1080 / 1920)));
   min-width: min(100%, 240px);
   aspect-ratio: 1080 / 1920;
   margin: 0 auto;
-  border: 1px solid var(--cls-line);
-  border-radius: 16px;
+  border: 0;
+  border-radius: var(--law-radius-inner, 12px);
   overflow: hidden;
   background: var(--cls-bg);
-  box-shadow: var(--cls-shadow);
+  box-shadow: none;
 }
 
 
@@ -953,9 +1020,9 @@
 .law-classroom-player__empty {
   margin: 0;
   padding: clamp(24px, 5vw, 48px);
-  border: 1.5px dashed var(--cls-line);
-  border-radius: 16px;
-  background: var(--cls-surface);
+  border: var(--law-line, 1.5px dashed var(--cls-line));
+  border-radius: var(--law-radius-inner, 12px);
+  background: var(--cls-bg);
   color: var(--cls-muted);
   text-align: center;
 }
@@ -1007,12 +1074,12 @@
   }
 }
 
-/* ══════════ 播放器顶栏的课堂开关（🎓，胶囊样式与 law-academy 播放器一致） ══════════ */
+/* ══════════ 播放器顶栏的课堂开关（🎓，奶油胶囊与课时页样式一致） ══════════ */
 
 .law-player__classroom {
-  border: 1.5px solid var(--hairline);
-  background: var(--paper);
-  border-radius: 999px;
+  border: var(--law-line, 1.5px solid var(--hairline));
+  background: var(--law-cream-surface, var(--paper));
+  border-radius: var(--law-radius-pill, 999px);
   padding: 10px 14px;
   font: inherit;
   font-size: 14px;
@@ -1029,6 +1096,6 @@
 
 .law-player__classroom.is-on {
   color: var(--law-accent-ink, var(--law-accent));
-  border-color: color-mix(in srgb, var(--law-accent) 46%, var(--hairline));
-  background: color-mix(in srgb, var(--law-accent) 8%, var(--paper));
+  border-color: transparent;
+  background: var(--law-accent-pastel, color-mix(in srgb, var(--law-accent) 8%, var(--paper)));
 }

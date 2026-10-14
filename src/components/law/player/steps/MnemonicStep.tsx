@@ -197,7 +197,7 @@ export function MnemonicStep({ step, accent, accentSoft, onDone }: StepProps) {
               exit={{ opacity: 0 }}
               transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 18 }}
             >
-              <LawMascot mood="cheer" size={44} />
+              <LawMascot mood="happy" size={44} />
               <span>{mode === "quiz" ? "自测全部对上，口诀拿下！" : "口诀点亮完成！"}</span>
             </motion.div>
           ) : null}

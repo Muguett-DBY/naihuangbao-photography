@@ -125,7 +125,7 @@ export function QuizRunner({
   if (finished || !item) {
     return (
       <div className="law-quiz__done" style={styleVars(accent, accentSoft)}>
-        <LawMascot mood="cheer" size={72} />
+        <LawMascot mood="happy" size={72} />
         <p>自测结束，成绩已记录！</p>
         <button type="button" className="law-player__cta" onClick={() => onDone(correctCount, items.length, wrongCount, wrongDetailsRef.current)}>
           查看结果 →

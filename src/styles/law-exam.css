@@ -32,6 +32,8 @@
 }
 .law-exam__head h1 {
   margin: 0;
+  /* 文楷只上标题 */
+  font-family: var(--law-font-heading, inherit);
   font-size: clamp(24px, 4vw, 32px);
   color: var(--ink);
 }
@@ -47,13 +49,14 @@
 /* ── 配置面板 ── */
 .law-exam__panel {
   padding: 26px 24px;
-  border-radius: 20px;
-  background: var(--paper);
-  border: 1px solid color-mix(in srgb, var(--law-accent) 18%, transparent);
-  box-shadow: 0 6px 24px rgba(42, 33, 24, 0.06);
+  border-radius: var(--law-radius-card, 20px);
+  background: var(--law-cream-surface, var(--paper));
+  border: 0;
+  box-shadow: var(--law-shadow-soft, 0 6px 24px rgba(42, 33, 24, 0.06));
 }
 .law-exam__panel h2 {
   margin: 18px 0 10px;
+  font-family: var(--law-font-heading, inherit);
   font-size: 16px;
   color: var(--ink);
 }
@@ -71,15 +74,17 @@
   align-items: center;
   gap: 9px;
   padding: 10px 12px;
-  border-radius: 14px;
-  border: 1.5px solid color-mix(in srgb, var(--law-accent) 22%, transparent);
-  background: color-mix(in srgb, var(--law-accent-soft) 55%, var(--paper));
+  border-radius: var(--law-radius-control, 14px);
+  border: var(--law-line, 1.5px solid color-mix(in srgb, var(--law-accent) 22%, transparent));
+  background: var(--law-cream-bg, color-mix(in srgb, var(--law-accent-soft) 55%, var(--paper)));
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 .law-exam__subject.is-on {
-  border-color: var(--law-accent);
-  box-shadow: 0 2px 10px color-mix(in srgb, var(--law-accent) 22%, transparent);
+  /* 选中态：学科粉彩底（label 带 inline --law-accent 就地产色），退役描边 */
+  border-color: transparent;
+  background: color-mix(in srgb, var(--law-accent) 23%, var(--law-cream-surface, var(--paper)));
+  box-shadow: var(--law-shadow-soft);
 }
 .law-exam__subject.is-disabled {
   opacity: 0.55;
@@ -137,8 +142,8 @@
 .law-exam__error {
   margin: 12px 0 0;
   padding: 10px 14px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--law-accent) 12%, var(--paper));
+  border-radius: var(--law-radius-inner, 12px);
+  background: color-mix(in srgb, var(--law-accent) 12%, var(--law-cream-surface, var(--paper)));
   font-size: 13px;
   color: var(--law-accent-ink);
 }
@@ -149,17 +154,19 @@
   margin-top: 20px;
   padding: 14px 20px;
   border: none;
-  border-radius: 16px;
-  background: var(--law-accent);
+  border-radius: var(--law-radius-control, 16px);
+  /* 白字实底走 solid 公式（白字 ≥5.16:1）；硬底边阴影退役，单层软阴影讲完 */
+  background: var(--law-accent-solid, var(--law-accent));
   color: #fff;
   font-size: 17px;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--law-accent) 52%, #20100c);
+  box-shadow: var(--law-shadow-soft);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 .law-exam__start:hover:not(:disabled) {
   transform: translateY(-1px);
+  box-shadow: var(--law-shadow-lift);
 }
 .law-exam__start:disabled {
   opacity: 0.5;
@@ -171,14 +178,16 @@
 .law-exam__empty {
   max-width: 520px;
   margin: 40px auto;
-  padding: 34px 26px;
-  border-radius: 20px;
-  background: var(--paper);
-  border: 1px dashed color-mix(in srgb, var(--law-accent) 35%, transparent);
+  padding: 36px 28px;
+  border-radius: var(--law-radius-card, 20px);
+  background: var(--law-cream-surface, var(--paper));
+  border: 0;
+  box-shadow: var(--law-shadow-soft);
   text-align: center;
 }
 .law-exam__empty h2 {
   margin: 12px 0 8px;
+  font-family: var(--law-font-heading, inherit);
   font-size: 19px;
   color: var(--ink);
 }
@@ -190,9 +199,9 @@
 }
 .law-exam__empty-cta {
   display: inline-block;
-  padding: 11px 24px;
-  border-radius: 14px;
-  background: var(--law-accent);
+  padding: 12px 26px;
+  border-radius: var(--law-radius-control, 14px);
+  background: var(--law-accent-solid, var(--law-accent));
   color: #fff;
   font-weight: 900;
   text-decoration: none;
@@ -229,16 +238,24 @@
   color: var(--ink);
 }
 .law-exam__clock.is-urgent {
-  /* 紧急红随主题走（同 .is-truth 的 color-mix 做法）：硬编码 #c0392b 在暗色纸底
-     #2c2422 上只有约 2.8:1，混入 var(--ink) 后亮色约 6.1:1、暗色约 3.7:1（大字 ≥3:1） */
-  color: color-mix(in srgb, #c0392b 82%, var(--ink));
+  /* 减压呈现：紧急态弃刺红改暖奶黄鼓励色——亮色 #8a6414 对奶油面 5.15:1+（大字≥3 更富余），
+     紧迫感交给 ⚠️ 图标与「不足 30 秒」文案（1.4.1 不靠颜色单独传达），颜色只提醒不惊吓 */
+  color: #8a6414;
   animation: law-exam-pulse 1s ease-in-out infinite;
 }
-/* 脉冲从 opacity 改为向 var(--ink) 靠拢的颜色呼吸：opacity 谷值 0.55 混底后
-   亮色纸底会跌到约 2.3:1；改颜色后两头亮 6.1↔7.7、暗 3.7↔6.5，全程 ≥3:1 */
+/* 呼吸脉冲两端都向 var(--ink) 靠拢：亮色两端 5.6↔7.0、暗色（ink=奶油白）两端 ≥3:1（大字口径） */
 @keyframes law-exam-pulse {
-  0%, 100% { color: color-mix(in srgb, #c0392b 82%, var(--ink)); }
-  50% { color: color-mix(in srgb, #c0392b 50%, var(--ink)); }
+  0%, 100% { color: color-mix(in srgb, #8a6414 88%, var(--ink)); }
+  50% { color: color-mix(in srgb, #8a6414 55%, var(--ink)); }
+}
+:root[data-theme="dark"] .law-exam__clock.is-urgent {
+  /* 暗色提亮（暗底上压深会看不清）：对暗奶油面 9.1:1 */
+  color: #e8c98a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-exam__clock.is-urgent {
+    color: #e8c98a;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .law-exam__clock.is-urgent {
@@ -248,28 +265,28 @@
 .law-exam__submit {
   padding: 9px 18px;
   border: none;
-  border-radius: 12px;
-  background: var(--law-accent);
+  border-radius: var(--law-radius-inner, 12px);
+  background: var(--law-accent-solid, var(--law-accent));
   color: #fff;
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
 }
 .law-exam__submit:hover {
-  filter: brightness(1.05);
+  box-shadow: var(--law-shadow-soft);
 }
 
 .law-exam__progress {
   height: 8px;
-  border-radius: 99px;
-  background: color-mix(in srgb, var(--law-accent) 14%, var(--paper));
+  border-radius: var(--law-radius-pill, 99px);
+  background: color-mix(in srgb, var(--law-accent) 14%, var(--law-cream-surface, var(--paper)));
   overflow: hidden;
 }
 .law-exam__progress span {
   display: block;
   height: 100%;
-  border-radius: 99px;
-  background: var(--law-accent);
+  border-radius: var(--law-radius-pill, 99px);
+  background: var(--law-accent-solid, var(--law-accent));
   transition: width 0.25s ease;
 }
 
@@ -281,22 +298,22 @@
 .law-exam__dot {
   width: 30px;
   height: 30px;
-  border: 1.5px solid color-mix(in srgb, var(--law-accent) 26%, transparent);
-  border-radius: 9px;
-  background: var(--paper);
+  border: var(--law-line, 1.5px solid color-mix(in srgb, var(--law-accent) 26%, transparent));
+  border-radius: 10px;
+  background: var(--law-cream-surface, var(--paper));
   font-size: 12px;
   font-weight: 700;
   color: var(--text-muted);
   cursor: pointer;
 }
 .law-exam__dot.is-done {
-  background: color-mix(in srgb, var(--law-accent) 16%, var(--paper));
+  background: color-mix(in srgb, var(--law-accent) 16%, var(--law-cream-surface, var(--paper)));
   color: var(--law-accent-ink);
-  border-color: var(--law-accent);
+  border-color: transparent;
 }
 .law-exam__dot.is-current {
-  background: var(--law-accent);
-  border-color: var(--law-accent);
+  background: var(--law-accent-solid, var(--law-accent));
+  border-color: transparent;
   color: #fff;
 }
 .law-exam__dot:focus-visible {
@@ -306,10 +323,10 @@
 
 .law-exam__card {
   padding: 22px 22px 26px;
-  border-radius: 20px;
-  background: var(--paper);
-  border: 1px solid color-mix(in srgb, var(--law-accent) 16%, transparent);
-  box-shadow: 0 6px 24px rgba(42, 33, 24, 0.06);
+  border-radius: var(--law-radius-card, 20px);
+  background: var(--law-cream-surface, var(--paper));
+  border: 0;
+  box-shadow: var(--law-shadow-soft, 0 6px 24px rgba(42, 33, 24, 0.06));
 }
 
 .law-exam__nav {
@@ -320,9 +337,9 @@
 }
 .law-exam__nav-btn {
   padding: 11px 20px;
-  border: 1.5px solid color-mix(in srgb, var(--law-accent) 30%, transparent);
-  border-radius: 13px;
-  background: var(--paper);
+  border: var(--law-line, 1.5px solid color-mix(in srgb, var(--law-accent) 30%, transparent));
+  border-radius: var(--law-radius-control, 13px);
+  background: var(--law-cream-surface, var(--paper));
   font-size: 14px;
   font-weight: 800;
   color: var(--law-accent-ink);
@@ -333,8 +350,8 @@
   cursor: not-allowed;
 }
 .law-exam__nav-btn.is-primary {
-  background: var(--law-accent);
-  border-color: var(--law-accent);
+  background: var(--law-accent-solid, var(--law-accent));
+  border-color: transparent;
   color: #fff;
 }
 .law-exam__nav-btn:focus-visible,
@@ -350,11 +367,12 @@
   color: var(--text-muted);
 }
 
-/* 考试模式的选项：选中态（判分在交卷后才发生，用中性与选中两态） */
+/* 考试模式的选项：选中态（判分在交卷后才发生，用中性与选中两态）；
+   粉彩底 + 描边单层讲完，退役 inset 双描边 */
 .law-quiz .law-quiz__option.is-selected {
   border-color: var(--law-accent);
-  background: color-mix(in srgb, var(--law-accent) 14%, var(--paper));
-  box-shadow: inset 0 0 0 1px var(--law-accent);
+  background: color-mix(in srgb, var(--law-accent) 14%, var(--law-cream-surface, var(--paper)));
+  box-shadow: none;
 }
 
 /* ── 结果页 ── */
@@ -365,9 +383,15 @@
 }
 .law-exam__score {
   padding: 28px 24px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--law-accent) 16%, var(--paper)), var(--paper));
-  border: 1px solid color-mix(in srgb, var(--law-accent) 22%, transparent);
+  border-radius: var(--law-radius-card, 20px);
+  /* 奶黄缎带庆祝感：低α暖光渐变 + 无边框软阴影 */
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--law-custard, #f0c264) 22%, var(--law-cream-surface, var(--paper))),
+    var(--law-cream-surface, var(--paper))
+  );
+  border: 0;
+  box-shadow: var(--law-shadow-soft);
   text-align: center;
 }
 .law-exam__score-kicker {
@@ -384,6 +408,8 @@
 .law-exam__score-num b {
   font-size: 44px;
   line-height: 1;
+  font-family: "Nunito", var(--font-body);
+  font-weight: 900;
   color: var(--law-accent-ink);
 }
 .law-exam__score-num span {
@@ -402,9 +428,10 @@
 .law-exam__wrongs,
 .law-exam__trend {
   padding: 20px 22px;
-  border-radius: 18px;
-  background: var(--paper);
-  border: 1px solid color-mix(in srgb, var(--law-accent) 14%, transparent);
+  border-radius: var(--law-radius-card, 18px);
+  background: var(--law-cream-surface, var(--paper));
+  border: 0;
+  box-shadow: var(--law-shadow-soft);
 }
 .law-exam__by-subject h2,
 .law-exam__wrongs h2,
@@ -442,16 +469,29 @@
 .law-exam__subject-bar,
 .law-exam__trend-bar {
   height: 10px;
-  border-radius: 99px;
-  background: color-mix(in srgb, var(--law-accent) 12%, var(--paper));
+  border-radius: var(--law-radius-pill, 99px);
+  /* 粉彩只做进度轨（li 带 inline 学科 accent 就地产色） */
+  background: color-mix(in srgb, var(--law-accent) 20%, var(--law-cream-surface, var(--paper)));
   overflow: hidden;
 }
 .law-exam__subject-bar span,
 .law-exam__trend-bar span {
   display: block;
   height: 100%;
-  border-radius: 99px;
-  background: var(--law-accent);
+  border-radius: var(--law-radius-pill, 99px);
+  /* 亮色实底公式（对粉彩轨 ≥4:1 非文字） */
+  background: color-mix(in srgb, var(--law-accent) 72%, #2a2118);
+}
+/* 暗色反向提亮（实底在暗底太沉，对暗粉彩轨 ≥5.8:1） */
+:root[data-theme="dark"] .law-exam__subject-bar span,
+:root[data-theme="dark"] .law-exam__trend-bar span {
+  background: color-mix(in srgb, var(--law-accent) 52%, #fff5ec);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-exam__subject-bar span,
+  :root:not([data-theme="light"]) .law-exam__trend-bar span {
+    background: color-mix(in srgb, var(--law-accent) 52%, #fff5ec);
+  }
 }
 .law-exam__subject-num,
 .law-exam__trend-num {
@@ -471,9 +511,10 @@
 }
 .law-exam__wrong {
   padding: 14px 16px;
-  border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--law-accent) 18%, transparent);
-  background: color-mix(in srgb, var(--law-accent-soft) 40%, var(--paper));
+  border-radius: var(--law-radius-inner, 14px);
+  border: 0;
+  /* 学科粉彩微差底（li 带 inline 学科 accent） */
+  background: color-mix(in srgb, var(--law-accent) 10%, var(--law-cream-surface, var(--paper)));
 }
 .law-exam__wrong header {
   display: flex;
@@ -487,9 +528,9 @@
 }
 .law-exam__wrong-kind {
   flex: none;
-  padding: 2px 8px;
-  border-radius: 99px;
-  background: color-mix(in srgb, var(--law-accent) 14%, var(--paper));
+  padding: 2px 9px;
+  border-radius: var(--law-radius-pill, 99px);
+  background: color-mix(in srgb, var(--law-accent) 14%, var(--law-cream-surface, var(--paper)));
   font-size: 11px;
   color: var(--law-accent-ink);
 }
@@ -565,18 +606,18 @@
 .law-exam__again {
   padding: 13px 26px;
   border: none;
-  border-radius: 15px;
-  background: var(--law-accent);
+  border-radius: var(--law-radius-control, 15px);
+  background: var(--law-accent-solid, var(--law-accent));
   color: #fff;
   font-size: 15px;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: 0 4px 0 color-mix(in srgb, var(--law-accent) 52%, #20100c);
+  box-shadow: var(--law-shadow-soft);
 }
 .law-exam__home {
   padding: 13px 22px;
-  border-radius: 15px;
-  border: 1.5px solid color-mix(in srgb, var(--law-accent) 30%, transparent);
+  border-radius: var(--law-radius-control, 15px);
+  border: var(--law-line, 1.5px solid color-mix(in srgb, var(--law-accent) 30%, transparent));
   color: var(--law-accent-ink);
   font-size: 14px;
   font-weight: 800;

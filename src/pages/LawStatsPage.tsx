@@ -140,7 +140,7 @@ export function LawStatsPage() {
 
       {!started ? (
         <div className="law-stats__empty" aria-live="polite">
-          <LawMascot mood="think" size={88} />
+          <LawMascot mood="think" size={72} />
           <h2>还没有可统计的学习记录</h2>
           <p>先去学第一课，这里就会长出你的进度条、柱状图和连续天数。</p>
           <Link to="/law" className="law-stats__empty-cta">从学习中心开始 →</Link>
@@ -156,7 +156,7 @@ export function LawStatsPage() {
               <b>{studyDays}</b>
               <span>累计学习天数</span>
             </div>
-            <div className="law-stats__kpi">
+            <div className={`law-stats__kpi ${streak >= 3 ? "is-cheer" : ""}`}>
               <b>{streak} 天{streak >= 3 ? " 🔥" : ""}</b>
               <span>当前连续</span>
             </div>
@@ -165,6 +165,19 @@ export function LawStatsPage() {
               <span>错题健康度（今日到期/未毕业）</span>
             </div>
           </section>
+
+          {/* 达标庆祝：连续 ≥7 天才出条（≥30 天才动用 cheer+彩点，日常用 happy 克制） */}
+          {streak >= 7 ? (
+            <p className="law-stats__milestone">
+              <span className="law-stats__milestone-mascot" aria-hidden="true">
+                <LawMascot mood={streak >= 30 ? "cheer" : "happy"} size={44} />
+              </span>
+              <span className="law-stats__milestone-text">
+                连续学习 <b>{streak}</b> 天——{streak >= 30 ? "这个习惯已经长成了" : "习惯正在一点点长出来"}，
+                按自己的节奏继续就好。
+              </span>
+            </p>
+          ) : null}
 
           <section className="law-stats__section" aria-label="学习热力图">
             <h2>学习热力图</h2>
@@ -204,7 +217,7 @@ export function LawStatsPage() {
           <section className="law-stats__section" aria-label="错题健康度">
             <h2>错题健康度</h2>
             {wrongActive === 0 ? (
-              <p className="law-stats__wrong-ok">错题本干净：没有未毕业的错题。继续保持，答错也别慌——错题会按记忆曲线帮你安排复习。</p>
+              <p className="law-stats__wrong-ok">✨ 错题本干净：没有未毕业的错题。继续保持，答错也别慌——错题会按记忆曲线帮你安排复习。</p>
             ) : (
               <div className="law-stats__wrong">
                 <p>

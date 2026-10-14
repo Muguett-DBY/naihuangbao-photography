@@ -90,7 +90,7 @@ export function DefinitionStep({ step, accent, accentSoft, onDone }: StepProps) 
             initial={{ opacity: 0 }}
             animate={locked ? { opacity: 1 } : {}}
           >
-            <LawMascot mood="cheer" size={44} />
+            <LawMascot mood="happy" size={44} />
             <span>关键词「{target}」已记住！</span>
           </motion.div>
         ) : null}

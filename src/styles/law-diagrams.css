@@ -201,7 +201,7 @@
 
 .law-graphic__title {
   flex: 1;
-  font-family: var(--font-display);
+  font-family: var(--law-font-heading, var(--font-display));
   font-size: clamp(17px, 2.4vw, 22px);
   font-weight: 800;
   color: var(--law-accent-ink, var(--law-accent));
@@ -234,10 +234,10 @@
 
 .law-graphic__stage {
   flex: 1;
-  border-radius: 22px;
-  background: var(--paper);
-  border: 1.5px solid var(--hairline);
-  box-shadow: var(--warm-shadow);
+  border-radius: var(--law-radius-card, 22px);
+  background: var(--law-cream-surface, var(--paper));
+  border: 0;
+  box-shadow: var(--law-shadow-soft, var(--warm-shadow));
   min-height: 420px;
   padding: clamp(14px, 2.6vw, 26px);
   display: flex;
@@ -251,9 +251,9 @@
   min-height: 60px;
   text-align: center;
   padding: 12px 18px;
-  border-radius: 16px;
+  border-radius: var(--law-radius-inner, 16px);
   background: var(--law-accent-soft);
-  border: 1.5px solid color-mix(in srgb, var(--law-accent) 26%, var(--hairline));
+  border: 0;
 }
 
 .law-graphic__caption p {
@@ -275,14 +275,13 @@
 }
 
 .law-graphic__nav {
-  border: 0;
-  border-radius: 999px;
+  border: var(--law-line, 1.5px solid var(--hairline));
+  border-radius: var(--law-radius-pill, 999px);
   padding: 12px 20px;
   font: inherit;
   font-weight: 800;
   font-size: 14px;
-  background: var(--paper);
-  border: 1.5px solid var(--hairline);
+  background: var(--law-cream-surface, var(--paper));
   color: var(--ink);
   cursor: pointer;
   transition: transform 0.16s var(--ease-spring);
@@ -299,10 +298,11 @@
 
 .law-graphic__nav.is-primary {
   margin-left: auto;
-  background: var(--law-accent);
+  /* 白字实底走 solid 公式（72% 混深墨，白字五科 ≥5.16:1），退役纯 accent 直压 */
+  background: var(--law-accent-solid, var(--law-accent));
   color: #fff;
-  border-color: var(--law-accent-ink, var(--law-accent));
-  box-shadow: var(--button-shadow);
+  border-color: transparent;
+  box-shadow: var(--law-shadow-soft, var(--button-shadow));
 }
 
 .law-graphic__dots {
@@ -318,16 +318,16 @@
   border: 0;
   border-radius: 50%;
   cursor: pointer;
-  background: radial-gradient(circle, color-mix(in srgb, var(--law-accent) 25%, var(--paper)) 0 42%, transparent 44%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--law-accent) 25%, var(--law-cream-surface, var(--paper))) 0 42%, transparent 44%);
 }
 
 .law-graphic__dots button.is-current {
   transform: scale(1.35);
-  background: var(--law-accent);
+  background: var(--law-accent-solid, var(--law-accent));
 }
 
 .law-graphic__dots button.is-done {
-  background: color-mix(in srgb, var(--law-accent) 65%, var(--paper));
+  background: color-mix(in srgb, var(--law-accent) 65%, var(--law-cream-surface, var(--paper)));
 }
 
 .law-graphic__finish {
@@ -337,7 +337,7 @@
   gap: 12px;
   flex-wrap: wrap;
   padding: 14px;
-  border-radius: 16px;
+  border-radius: var(--law-radius-inner, 16px);
   background: var(--law-accent-soft);
   font-size: 14.5px;
   color: var(--ink);
@@ -345,15 +345,16 @@
 
 .law-graphic__cta {
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--law-radius-pill, 999px);
   padding: 11px 22px;
   font: inherit;
   font-weight: 900;
   font-size: 14px;
-  background: var(--law-accent);
+  /* 白字实底走 solid 公式（白字五科 ≥5.16:1） */
+  background: var(--law-accent-solid, var(--law-accent));
   color: #fff;
   cursor: pointer;
-  box-shadow: var(--button-shadow);
+  box-shadow: var(--law-shadow-soft, var(--button-shadow));
   transition: transform 0.18s var(--ease-spring);
 }
 
@@ -1089,6 +1090,12 @@
   background: color-mix(in srgb, var(--coral-dark) 12%, var(--law-cream-surface));
 }
 
+/* 多选勾选态：粉彩选中底（基础覆写会压掉原 is-selected 底色，这里补回） */
+.law-lesson-page .law-quiz__option--multi.is-selected {
+  border-color: var(--law-accent);
+  background: var(--law-accent-soft);
+}
+
 .law-lesson-page .law-quiz__feedback.is-correct {
   border: var(--law-line);
   border-color: color-mix(in srgb, var(--moss) 50%, transparent);
@@ -1119,4 +1126,71 @@
   color: var(--law-accent-ink);
   border-color: transparent;
   background: var(--law-accent-pastel);
+}
+
+/* 白字压实底统一走 token：纯 accent 上白字仅 3.4–4.1:1，72% 混深墨五科 ≥5.16:1
+   （步骤内部的推进按钮/口诀揭示/流程下一步/时间线到站点/总结 CTA/细读命中/例外揭示） */
+.law-lesson-page .law-player__cta,
+.law-lesson-page .law-quiz__next,
+.law-lesson-page .law-quiz__fill-submit,
+.law-lesson-page .law-mnemonic__go,
+.law-lesson-page .law-flow__next,
+.law-lesson-page .law-condition__pop,
+.law-lesson-page .law-timeline__dot.is-visited,
+.law-lesson-page .law-plain__term.is-found,
+.law-lesson-page .law-exception__catch {
+  background: var(--law-accent-solid);
+}
+
+/* 例外揭示「但是」纽：退役硬编码红渐变（白字对 #e0604e 仅 3.53:1）与红色光晕，
+   走学科 solid + 单层软阴影；注意力语义交给「但是」字号与文案 */
+.law-lesson-page .law-exception__catch {
+  box-shadow: var(--law-shadow-soft);
+}
+
+/* 例外标签：moss 直压白字 3.20:1（12px/900 小字），同 72% 混深墨公式 */
+.law-lesson-page .law-exception__tag {
+  background: color-mix(in srgb, var(--moss) 72%, #2a2118);
+}
+
+/* 步骤内嵌行块（列举/对比/要件）：与自测选项同口径——线级分隔 + 奶油底微差，
+   退役 paper 底与 hairline 描边（暗色下两套底色有色差） */
+.law-lesson-page .law-list__item,
+.law-lesson-page .law-compare__row,
+.law-lesson-page .law-condition__item {
+  border: var(--law-line);
+  border-radius: var(--law-radius-control);
+  background: var(--law-cream-bg);
+}
+
+.law-lesson-page .law-compare__cell {
+  border: var(--law-line);
+}
+
+.law-lesson-page .law-mnemonic__glyph {
+  border: var(--law-line);
+  border-radius: var(--law-radius-inner);
+  background: var(--law-cream-surface);
+}
+
+/* 定义锁扣：退役装饰虚线框，粉彩底（text 已是学科墨） */
+.law-lesson-page .law-definition__lock {
+  border: 0;
+  background: var(--law-accent-pastel);
+  border-radius: var(--law-radius-control);
+}
+
+/* 时间线卡：accent-soft 底保留，退役叠描边（层级做减法） */
+.law-lesson-page .law-timeline__card {
+  border: 0;
+}
+
+/* 行块勾选/展开态：cream 底混色（原 paper 混色在暗色下与奶油面有色差） */
+.law-lesson-page .law-list__item.is-checked,
+.law-lesson-page .law-condition__item.is-checked {
+  background: color-mix(in srgb, var(--law-accent) 8%, var(--law-cream-surface));
+}
+
+.law-lesson-page .law-compare__row.is-open {
+  background: color-mix(in srgb, var(--law-accent) 5%, var(--law-cream-surface));
 }

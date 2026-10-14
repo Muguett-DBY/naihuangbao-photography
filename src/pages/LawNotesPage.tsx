@@ -253,7 +253,8 @@ export function LawNotesPage() {
 
       {!hasNotes ? (
         <div className="law-notes-page__empty" aria-live="polite">
-          <LawMascot mood="cheer" size={88} />
+          {/* 空态=陪伴等待（think），不为空白庆祝；文案指向第一步行为 */}
+          <LawMascot mood="think" size={72} />
           <h2>还没有笔记</h2>
           <p>
             学完一节课，在总结页下方就能写笔记——记下容易混的地方、自己的例子，
@@ -270,7 +271,7 @@ export function LawNotesPage() {
           ) : null}
           {filtered.length === 0 ? (
             <div className="law-notes-page__empty" aria-live="polite">
-              <LawMascot mood="idle" size={72} />
+              <LawMascot mood="think" size={72} />
               <h2>没找到相关笔记</h2>
               <p>换个关键词试试，或者清空搜索框看全部。</p>
               <button type="button" className="law-notes-page__empty-cta" onClick={() => setKeyword("")}>

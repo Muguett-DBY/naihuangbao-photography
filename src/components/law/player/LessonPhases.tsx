@@ -82,7 +82,7 @@ export function ResultPhase({
       animate={{ opacity: 1, scale: 1 }}
     >
       {passed ? <CelebrateBurst /> : null}
-      <LawMascot mood={mood} size={84} />
+      <LawMascot mood={mood} size={72} />
       <h2>{passed ? "通过！掌握啦 🎉" : "还差一点，再练一次 💪"}</h2>
       <p className="law-player__result-score">
         {quizScore.skipped ? "已标记掌握（本次跳过了自测）" : `自测 ${quizScore.correct} / ${quizScore.total} 题正确`}

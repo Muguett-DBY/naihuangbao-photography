@@ -9,10 +9,11 @@
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
-  border-radius: 22px;
-  background: var(--paper);
-  border: 1.5px solid var(--hairline);
-  box-shadow: var(--warm-shadow);
+  /* 轻盈化：无边框奶油卡 + 单层软阴影 + 大圆角（令牌来自 law-academy.css） */
+  border-radius: var(--law-radius-card, 22px);
+  background: var(--law-cream-surface, var(--paper));
+  border: 0;
+  box-shadow: var(--law-shadow-soft, var(--warm-shadow));
   padding: clamp(16px, 4vw, 28px);
   font-family: var(--font-body);
   text-align: left;
@@ -46,8 +47,8 @@
 .law-notes__empty {
   margin: 8px 0 14px;
   padding: 18px 14px;
-  border: 1.5px dashed var(--hairline);
-  border-radius: 14px;
+  border: var(--law-line, 1.5px dashed var(--hairline));
+  border-radius: var(--law-radius-inner, 14px);
   color: var(--text-muted);
   font-size: 14.5px;
   line-height: 1.7;
@@ -65,10 +66,10 @@
 }
 
 .law-notes__item {
-  border: 1.5px solid var(--hairline);
-  border-radius: 14px;
+  border: 0;
+  border-radius: var(--law-radius-inner, 14px);
   padding: 12px 14px;
-  background: color-mix(in srgb, var(--newsprint) 60%, var(--paper));
+  background: color-mix(in srgb, var(--law-accent, var(--coral)) 6%, var(--law-cream-surface, var(--paper)));
 }
 
 .law-notes__item.is-editing {
@@ -95,9 +96,9 @@
 }
 
 .law-notes__step-tag {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--law-accent, var(--coral)) 14%, var(--paper));
+  padding: 2px 9px;
+  border-radius: var(--law-radius-pill, 999px);
+  background: color-mix(in srgb, var(--law-accent, var(--coral)) 14%, var(--law-cream-surface, var(--paper)));
   color: var(--text-muted);
 }
 
@@ -118,30 +119,31 @@
 
 /* ── 按钮 ── */
 .law-notes__btn {
-  border: 1.5px solid var(--hairline);
-  border-radius: 999px;
-  background: var(--paper);
+  border: var(--law-line, 1.5px solid var(--hairline));
+  border-radius: var(--law-radius-pill, 999px);
+  background: var(--law-cream-surface, var(--paper));
   color: var(--ink);
   font: inherit;
   font-size: 12.5px;
   font-weight: 700;
   padding: 4px 12px;
   cursor: pointer;
-  transition: transform 0.15s, filter 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
 .law-notes__btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  filter: brightness(1.03);
+  box-shadow: var(--law-shadow-soft);
 }
 
 .law-notes__btn:active:not(:disabled) {
   transform: translateY(0);
+  box-shadow: none;
 }
 
 .law-notes__btn.is-primary {
   border-color: transparent;
-  background: color-mix(in srgb, var(--law-accent, var(--coral)) 72%, #2a2118);
+  background: var(--law-accent-solid, color-mix(in srgb, var(--law-accent, var(--coral)) 72%, #2a2118));
   color: #fff;
   padding: 6px 16px;
 }
@@ -256,7 +258,8 @@
 
 .law-notes-page__head h1 {
   margin: 6px 0;
-  font-family: var(--font-display);
+  /* 文楷只上标题 */
+  font-family: var(--law-font-heading, var(--font-display));
   font-size: clamp(24px, 4vw, 34px);
   color: var(--ink);
 }
@@ -278,9 +281,9 @@
 .law-notes-page__search {
   flex: 1 1 220px;
   min-width: 0;
-  border: 1.5px solid var(--hairline);
-  border-radius: 999px;
-  background: var(--paper);
+  border: var(--law-line, 1.5px solid var(--hairline));
+  border-radius: var(--law-radius-pill, 999px);
+  background: var(--law-cream-surface, var(--paper));
   color: var(--ink);
   font: inherit;
   font-size: 14px;
@@ -293,21 +296,21 @@
 }
 
 .law-notes-page__tool {
-  border: 1.5px solid color-mix(in srgb, var(--law-accent, var(--coral)) 30%, transparent);
-  border-radius: 999px;
-  background: var(--paper);
+  border: var(--law-line, 1.5px solid color-mix(in srgb, var(--law-accent, var(--coral)) 30%, transparent));
+  border-radius: var(--law-radius-pill, 999px);
+  background: var(--law-cream-surface, var(--paper));
   color: var(--law-accent-ink, var(--coral-dark));
   font: inherit;
   font-size: 13px;
   font-weight: 800;
   padding: 8px 16px;
   cursor: pointer;
-  transition: transform 0.15s, filter 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
 .law-notes-page__tool:hover:not(:disabled) {
   transform: translateY(-1px);
-  filter: brightness(1.03);
+  box-shadow: var(--law-shadow-soft);
 }
 
 .law-notes-page__tool:disabled {
@@ -361,7 +364,7 @@
   align-items: baseline;
   gap: 8px;
   margin: 0 0 10px;
-  font-family: var(--font-display);
+  font-family: var(--law-font-heading, var(--font-display));
   font-size: 17px;
   color: var(--ink);
 }
@@ -374,11 +377,12 @@
 }
 
 .law-notes-page__lesson {
+  /* 轻盈化：无边框奶油卡 + 单层软阴影（学科 inline --law-accent 供内部粉彩就地产色） */
   margin-bottom: 14px;
-  border: 1.5px solid var(--hairline);
-  border-radius: 16px;
-  background: var(--paper);
-  box-shadow: var(--warm-shadow);
+  border: 0;
+  border-radius: var(--law-radius-card, 16px);
+  background: var(--law-cream-surface, var(--paper));
+  box-shadow: var(--law-shadow-soft, var(--warm-shadow));
   padding: 14px 16px;
 }
 
@@ -411,17 +415,18 @@
 
 .law-notes-page__note {
   display: block;
-  border: 1.5px solid var(--hairline);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--newsprint) 60%, var(--paper));
+  border: 0;
+  border-radius: var(--law-radius-inner, 12px);
+  /* 学科粉彩微差底（section 带 inline --law-accent），暗色随 cream-surface 自动转暗调 */
+  background: color-mix(in srgb, var(--law-accent, var(--coral)) 7%, var(--law-cream-surface, var(--paper)));
   padding: 10px 12px;
   text-decoration: none;
-  transition: transform 0.15s, border-color 0.15s;
+  transition: transform 0.15s, background 0.15s;
 }
 
 .law-notes-page__note:hover {
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--law-accent, var(--coral)) 40%, var(--hairline));
+  background: color-mix(in srgb, var(--law-accent, var(--coral)) 16%, var(--law-cream-surface, var(--paper)));
 }
 
 .law-notes-page__note p {
@@ -461,15 +466,16 @@
 /* ── 空态 / 无结果 ── */
 .law-notes-page__empty {
   text-align: center;
-  border: 1.5px dashed var(--hairline);
-  border-radius: 22px;
-  background: var(--paper);
+  border: 0;
+  border-radius: var(--law-radius-card, 22px);
+  background: var(--law-cream-surface, var(--paper));
+  box-shadow: var(--law-shadow-soft);
   padding: clamp(24px, 5vw, 48px) 20px;
 }
 
 .law-notes-page__empty h2 {
   margin: 10px 0 6px;
-  font-family: var(--font-display);
+  font-family: var(--law-font-heading, var(--font-display));
   font-size: 22px;
   color: var(--ink);
 }
@@ -485,8 +491,8 @@
 .law-notes-page__empty-cta {
   display: inline-block;
   border: 0;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--law-accent, var(--coral)) 72%, #2a2118);
+  border-radius: var(--law-radius-control, 999px);
+  background: var(--law-accent-solid, color-mix(in srgb, var(--law-accent, var(--coral)) 72%, #2a2118));
   color: #fff;
   font: inherit;
   font-size: 14px;
