@@ -9,6 +9,17 @@ import { onRequestDelete as deleteAdminSession } from "./api/admin/session";
 
 const authSecret = "test-auth-secret-with-32-characters";
 
+/** 最小内存 D1：只满足 enforceRateLimit 的读写（计数查询 0 命中、insert/update 成功）。
+ *  限流 fail-closed 后（0eb69ab 安全修复），无 DB 的 env 会在校验前撞 429。 */
+const rateLimitDb = () => ({
+  prepare: (_sql: string) => ({
+    bind: () => ({
+      all: async () => ({ results: [] }),
+      run: async () => ({ success: true }),
+    }),
+  }),
+});
+
 describe("mutation request boundaries", () => {
   it.each([
     ["profile update", updateUserProfile, "/api/user/profile", "PUT", {}],
@@ -42,7 +53,7 @@ describe("mutation request boundaries", () => {
           name: "Guest",
         }),
       }),
-      env: {},
+      env: { DB: rateLimitDb() },
     } as never);
     const body = (await response.json()) as { error?: string };
 
