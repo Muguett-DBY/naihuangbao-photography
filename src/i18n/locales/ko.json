@@ -40,8 +40,8 @@
       "liao": { "name": "랴오원징", "tag": "소형견 · 2004", "line": "감정이 얼굴에 그대로 드러나고 화해도 가장 빠른 사람." }
     },
     "pick": { "heading": "먼저 누구랑 이야기할까?", "hint": "한 사람을 고르고, 우리만 아는 암호로 문을 열어요.", "choose": "{{name}}와(과) 대화하기" },
-    "gate": { "heading": "암호 문", "hint": "우리만 아는 숫자를 입력하고 Enter를 누르세요.", "label": "암호", "placeholder": "····", "submit": "열기", "back": "다른 사람 고르기", "checking": "확인 중…", "error": "암호가 틀렸어요. 다시 생각해볼까요?" },
-    "chat": { "logLabel": "대화 기록", "inputLabel": "채팅 메시지", "placeholder": "무언가 말해보기…", "send": "보내기", "retry": "다시 시도", "waiting": "입력 중…", "switch": "사람 바꾸기", "errorBubble": "이 메시지는 전달되지 않았어요. 다시 시도해주세요.", "empty": "…" }
+    "gate": { "heading": "암호 문", "hint": "우리만 아는 숫자를 입력하고 Enter를 누르세요.", "label": "암호", "placeholder": "····", "submit": "열기", "back": "다른 사람 고르기", "checking": "확인 중…", "error": "암호가 틀렸어요. 다시 생각해볼까요?", "expired": "세션이 만료되었어요. 암호를 다시 입력하면 들어올 수 있어요(이전 대화는 저장되지 않아요)." },
+    "chat": { "logLabel": "대화 기록", "inputLabel": "채팅 메시지", "placeholder": "무언가 말해보기…", "emptyState": "방이 열렸어요. 첫마디를 건네보세요.", "send": "보내기", "retry": "다시 시도", "retryCooldown": "다시 시도(약 {{seconds}}초 후)", "waiting": "입력 중…", "switch": "사람 바꾸기", "errorBubble": "이 메시지는 전달되지 않았어요. 다시 시도해주세요.", "rateLimited": "잠시 쉬는 시간이에요. 약 {{minutes}}분 후에 다시 와주세요.", "charCount": "{{used}} / {{max}}", "empty": "…" }
 },
   "mobileNav": {
     "label": "모바일 주요 내비게이션",

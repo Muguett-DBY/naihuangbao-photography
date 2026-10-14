@@ -49,8 +49,20 @@ function groupProvisions(provisions: LawProvisionEntry[]): LawGroup[] {
   });
 }
 
+/** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
+function useLawPageTitle(title: string) {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
+
 export function LawProvisionsPage() {
   useLawImmersive();
+  useLawPageTitle("法条检索｜奶黄包法硕课堂");
   const [searchParams] = useSearchParams();
   const [state, setState] = useState<LoadState>({ phase: "loading" });
   const [query, setQuery] = useState("");

@@ -37,6 +37,20 @@ export function QuizRunner({
   const [multiPicked, setMultiPicked] = useState<string[]>([]);
   // 错题明细（题型+陷阱+所选项）：ref 避免收卷闭包读到旧值
   const wrongDetailsRef = useRef<QuizWrongDetail[]>([]);
+  // 焦点连续性（2.4.3）：判分后选项即 disabled，焦点若掉回 body 键盘用户要重新摸位置——
+  // 判分后移入反馈区（解释与「下一题」都在其中，读屏聚焦即朗读对错与讲解）；
+  // 翻题后反馈区卸载，由新题卡接管焦点（首次挂载不抢焦点）
+  const cardRef = useRef<HTMLDivElement>(null);
+  const feedbackRef = useRef<HTMLDivElement>(null);
+  const focusedOnceRef = useRef(false);
+  useEffect(() => {
+    if (state !== "idle") {
+      feedbackRef.current?.focus();
+      return;
+    }
+    if (focusedOnceRef.current) cardRef.current?.focus();
+    focusedOnceRef.current = true;
+  }, [state, index]);
 
   const item = items[index];
   const race = item ? RACE_LABEL[item.kind] ?? "🔍 选择题" : "mcq";
@@ -133,6 +147,8 @@ export function QuizRunner({
       className="law-quiz"
       style={styleVars(accent, accentSoft)}
       key={item.id}
+      ref={cardRef}
+      tabIndex={-1}
       initial={{ opacity: 0, x: 14 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.22 }}
@@ -210,8 +226,9 @@ export function QuizRunner({
       )}
 
       {state !== "idle" ? (
-        <div className={`law-quiz__feedback is-${state}`} role="status">
-          {/* role=status：答题结果（对错+解释）出现时读屏即时播报，与排序题结果区一致 */}
+        <div className={`law-quiz__feedback is-${state}`} role="status" ref={feedbackRef} tabIndex={-1}>
+          {/* role=status：答题结果（对错+解释）出现时读屏即时播报，与排序题结果区一致；
+              tabIndex=-1：判分后焦点移入这里（选项已 disabled，焦点不能掉回 body） */}
           {state === "correct" ? "✅ 答对啦！" : "❌ 不对哦，看看解释："}
           {reveal ? <b className="law-quiz__reveal">{reveal}</b> : null}
           <span>{item.explain}</span>

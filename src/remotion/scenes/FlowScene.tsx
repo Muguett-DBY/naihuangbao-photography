@@ -120,8 +120,8 @@ export const FlowScene: FC<FlowSceneProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* 标题 */}
-        <header style={{ flex: "none", height: HEADER_H, overflow: "hidden" }}>
+        {/* 标题（div：header 在课堂 Player 的页面 DOM 里会产出无标签 landmark，WCAG 1.3.1） */}
+        <div style={{ flex: "none", height: HEADER_H, overflow: "hidden" }}>
           <h1
             style={{
               margin: 0,
@@ -147,7 +147,7 @@ export const FlowScene: FC<FlowSceneProps> = ({
               transform: `scaleX(${ruleIn})`,
             }}
           />
-        </header>
+        </div>
 
         {/* 节点区：连线 SVG 垫底，卡片绝对定位其上 */}
         {n > 0 && (

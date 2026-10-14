@@ -85,6 +85,27 @@ export function ExamRunner({
     return () => clearInterval(timer);
   }, [deadline]);
 
+  // 读屏播报剩余时间（WCAG 4.1.3）：倒计时文本每秒都在变，直接 aria-live 会刷屏；
+  // 按分钟粒度播报 + 30 秒紧迫阈值单独提醒一次，读屏用户与视障用户同等感知时间压力
+  const [timeAnnouncement, setTimeAnnouncement] = useState("");
+  const announcedMinuteRef = useRef<number | null>(null);
+  const urgentAnnouncedRef = useRef(false);
+  useEffect(() => {
+    if (remaining <= 0) return;
+    if (remaining < 30_000) {
+      if (!urgentAnnouncedRef.current) {
+        urgentAnnouncedRef.current = true;
+        setTimeAnnouncement("注意：剩余时间不足 30 秒，到时将自动交卷");
+      }
+      return;
+    }
+    const minutes = Math.ceil(remaining / 60_000);
+    if (announcedMinuteRef.current !== minutes) {
+      announcedMinuteRef.current = minutes;
+      setTimeAnnouncement(minutes >= 1 ? `剩余时间 ${minutes} 分钟` : "剩余时间不足 1 分钟");
+    }
+  }, [remaining]);
+
   const item = items[index];
   const answeredCount = useMemo(
     () => items.filter((entry) => answers[entry.id] !== undefined).length,
@@ -132,9 +153,14 @@ export function ExamRunner({
         <span
           className={`law-exam__clock ${urgent ? "is-urgent" : ""}`}
           role="timer"
-          aria-label={`剩余时间 ${fmtClock(remaining)}`}
+          aria-label={`剩余时间 ${fmtClock(remaining)}${urgent ? "，不足 30 秒" : ""}`}
         >
-          ⏳ {fmtClock(remaining)}
+          {/* 紧迫态除变色外换警示图标（不靠颜色单独传达，1.4.1 同源口径） */}
+          {urgent ? "⚠️" : "⏳"} {fmtClock(remaining)}
+        </span>
+        {/* 分钟粒度 + 30 秒阈值的时间播报（见上方 effect），与每秒跳动的时钟解耦 */}
+        <span className="sr-only" aria-live="polite" aria-atomic="true">
+          {timeAnnouncement}
         </span>
         <button type="button" className="law-exam__submit" onClick={manualSubmit}>
           {confirming ? (unanswered > 0 ? `确认交卷（还有 ${unanswered} 题未答）` : "确认交卷") : "交卷"}

@@ -62,8 +62,20 @@ function Highlighted({ text, query }: { text: string; query: string }) {
 
 const SEARCH_DEBOUNCE = 300;
 
+/** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
+function useLawPageTitle(title: string) {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
+
 export function LawNotesPage() {
   useLawImmersive();
+  useLawPageTitle("我的笔记｜奶黄包法硕课堂");
   const [notes, setNotes] = useState<NoteRow[]>(() => getAllNotes());
   const [keyword, setKeyword] = useState("");
   const [query, setQuery] = useState("");

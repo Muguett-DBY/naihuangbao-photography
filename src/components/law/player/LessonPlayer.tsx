@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, useCallback, type CSSProperties } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router";
 import type { LawLesson } from "../../../types/law";
@@ -8,7 +8,12 @@ import { getLessonProgress, markStepDone, recordQuiz, touchLesson, type RecordQu
 import { convertToClassroom, isClassroomCompatible } from "../../../lib/law-classroom";
 import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
-import { ClassroomPlayer } from "../classroom/ClassroomPlayer";
+// 课堂播放器（remotion + @remotion/player + 场景组件）懒加载出课时页主 chunk：
+// 课堂模式默认关闭，步骤模式用户不该为用不到的视频引擎付下载+解析成本。
+// 🎓 按钮 hover/focus、?classroom=1 直达、课堂已开启时预取（见 preloadClassroomEngine）
+const ClassroomPlayer = lazy(() =>
+  import("../classroom/ClassroomPlayer").then((module) => ({ default: module.ClassroomPlayer })),
+);
 import { StepStage } from "./StepStage";
 import { QuizRunner } from "./QuizRunner";
 import { RawProvisionPanel } from "./RawProvisionPanel";
@@ -152,6 +157,18 @@ export function LessonPlayer({
     }
   };
 
+  // 课堂引擎预取：与上方 lazy() 同一模块说明符（同一 chunk），触发过一次后不重复。
+  // 直达课堂入口/偏好已开课堂时立即预取；🎓 按钮见 onMouseEnter/onFocus
+  const classroomEnginePreloadedRef = useRef(false);
+  const preloadClassroomEngine = useCallback(() => {
+    if (classroomEnginePreloadedRef.current) return;
+    classroomEnginePreloadedRef.current = true;
+    void import("../classroom/ClassroomPlayer");
+  }, []);
+  useEffect(() => {
+    if (classroomMode || startInClassroom) preloadClassroomEngine();
+  }, [classroomMode, startInClassroom, preloadClassroomEngine]);
+
   function handleStepDone() {
     if (!currentStep) return;
     setStepDone((prev) => {
@@ -213,21 +230,25 @@ export function LessonPlayer({
     stageRef.current?.scrollIntoView?.({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
   }, [stepIndex, phase]);
 
-  // 键盘导航：← 上一步，→ 下一步（仅在可用时生效），复习老课不用来回挪鼠标
+  // 键盘导航：← 上一步，→ 下一步（仅在可用时生效），复习老课不用来回挪鼠标。
+  // 回调经 ref 取最新值（同 goNextRef 模式），依赖数组只留 [phase]——
+  // 否则 mood/stepDone/direction 等任一 state 变化都会重挂一遍 window 监听
+  const keyNavRef = useRef<(event: KeyboardEvent) => void>(() => {});
+  keyNavRef.current = (event: KeyboardEvent) => {
+    const target = event.target as HTMLElement | null;
+    if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+    if (event.key === "ArrowLeft") {
+      goPrev();
+    } else if (event.key === "ArrowRight" && isCurrentDone) {
+      goNext();
+    }
+  };
   useEffect(() => {
     if (phase !== "steps") return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
-      if (event.key === "ArrowLeft") {
-        goPrev();
-      } else if (event.key === "ArrowRight" && isCurrentDone) {
-        goNext();
-      }
-    };
+    const onKeyDown = (event: KeyboardEvent) => keyNavRef.current(event);
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  });
+  }, [phase]);
 
   const style = {
     "--law-accent": subject.accent,
@@ -284,7 +305,14 @@ export function LessonPlayer({
           </div>
 
           {classroomReady ? (
-            <ClassroomPlayer
+            <Suspense
+              fallback={
+                <div className="law-player__stage">
+                  <p className="law-player__restloading" role="status">正在打开课堂……</p>
+                </div>
+              }
+            >
+              <ClassroomPlayer
               scenes={classroom.scenes}
               subject={lesson.subject}
               accent={subject.accent}
@@ -300,6 +328,7 @@ export function LessonPlayer({
                 setPhase("summary");
               }}
             />
+            </Suspense>
           ) : (
             <motion.div
               ref={stageRef}
@@ -361,6 +390,8 @@ export function LessonPlayer({
               title={classroomMode ? "切换到步骤模式" : "切换到课堂模式"}
               className={`law-player__classroom ${classroomMode ? "is-on" : ""}`}
               onClick={() => { const n = toggleClassroom(); if (!n) tts.cancel(); }}
+              onMouseEnter={preloadClassroomEngine}
+              onFocus={preloadClassroomEngine}
             >🎓 {classroomMode ? "课堂" : "步骤"}</button>
             <button
               type="button"

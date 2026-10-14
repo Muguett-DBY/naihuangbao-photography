@@ -40,8 +40,8 @@
       "liao": { "name": "廖文静", "tag": "小犬・2004", "line": "感情が全部顔に出て、一番早く仲直りする子。" }
     },
     "pick": { "heading": "どちらから話す？", "hint": "誰かを選んで、私たちだけが知る合言葉で扉を開けて。", "choose": "{{name}}と話す" },
-    "gate": { "heading": "合言葉の扉", "hint": "私たちだけが知る数字を入れて、Enterで入場。", "label": "合言葉", "placeholder": "····", "submit": "開ける", "back": "他の人を選ぶ", "checking": "確認中…", "error": "合言葉が違うよ。もう一度考えてみて。" },
-    "chat": { "logLabel": "会話ログ", "inputLabel": "チャットメッセージ", "placeholder": "何か話す…", "send": "送信", "retry": "再試行", "waiting": "入力中…", "switch": "人を変える", "errorBubble": "この一通は届かなかった。再試行でもう一度。", "empty": "…" }
+    "gate": { "heading": "合言葉の扉", "hint": "私たちだけが知る数字を入れて、Enterで入場。", "label": "合言葉", "placeholder": "····", "submit": "開ける", "back": "他の人を選ぶ", "checking": "確認中…", "error": "合言葉が違うよ。もう一度考えてみて。", "expired": "セッションが切れました。もう一度合言葉を入れて戻りましょう（これまでの会話は残りません）。" },
+    "chat": { "logLabel": "会話ログ", "inputLabel": "チャットメッセージ", "placeholder": "何か話す…", "emptyState": "部屋が開いたよ。最初の一言をどうぞ。", "send": "送信", "retry": "再試行", "retryCooldown": "再試行（約{{seconds}}秒後）", "waiting": "入力中…", "switch": "人を変える", "errorBubble": "この一通は届かなかった。再試行でもう一度。", "rateLimited": "少し休憩中です。約{{minutes}}分後にまた来てね。", "charCount": "{{used}} / {{max}}", "empty": "…" }
 },
   "mobileNav": {
     "label": "モバイル主要ナビゲーション",

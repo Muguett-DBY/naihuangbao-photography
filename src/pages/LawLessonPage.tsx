@@ -6,10 +6,22 @@ import { LessonPlayer } from "../components/law/player/LessonPlayer";
 import { LawLoadingSkeleton } from "../components/law/LawLoadingSkeleton";
 import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, useLawImmersive } from "../components/law/EasterEgg";
+import { LAW_SUBJECT_MAP } from "../data/law/meta";
 import "../styles/law-academy.css";
 import "../styles/law-diagrams.css";
 
 const SUBJECT_PATTERN = /^([a-z]+)-q/;
+
+/** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
+function useLawPageTitle(title: string) {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
 
 export function LawLessonPage() {
   const { lessonId } = useParams();
@@ -49,6 +61,16 @@ export function LawLessonPage() {
 
   const siblingTerms = view && view !== "missing" ? view.siblingTerms : [];
   const nextId = view && view !== "missing" ? view.nextFlowId : null;
+
+  // 页题随加载态演进：未找到/加载中/课名（含学科名），读屏靠它区分页签与历史
+  const subjectName = subjectId ? LAW_SUBJECT_MAP[subjectId]?.name : undefined;
+  useLawPageTitle(
+    view && view !== "missing" && subjectName
+      ? `${view.lesson.title}（${subjectName}）｜奶黄包法硕课堂`
+      : view === "missing" || error || !subjectId
+        ? "课时未找到｜奶黄包法硕课堂"
+        : "正在打开课件｜奶黄包法硕课堂",
+  );
 
   if (error || !subjectId) {
     return (

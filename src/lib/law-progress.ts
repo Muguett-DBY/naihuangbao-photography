@@ -38,20 +38,38 @@ interface LawProgressStore {
   lastLessonId: string | null;
 }
 
+/** 读缓存：以 localStorage 原文为键——store 随学习量线性膨胀，每次读都整库 JSON.parse
+ *  的成本无谓重复（LessonPlayer 挂载即连读两次、课堂模式每推进一步 markStepDone
+ *  全量往返）。原文未变（绝大多数读）直接复用解析结果；跨标签页写入/测试桩换 storage
+ *  后原文变化即自动失效重解析，localStorage 仍是唯一事实源 */
+let cachedRaw: string | null = null;
+let cachedStore: LawProgressStore | null = null;
+
+function emptyStore(): LawProgressStore {
+  return { version: 1, lessons: {}, lastLessonId: null };
+}
+
 function readStore(): LawProgressStore {
   const raw = safeLocalStorage.getItem(KEY);
-  if (!raw) return { version: 1, lessons: {}, lastLessonId: null };
-  try {
-    const parsed = JSON.parse(raw) as LawProgressStore;
-    if (parsed?.version !== 1 || !parsed.lessons) return { version: 1, lessons: {}, lastLessonId: null };
-    return parsed;
-  } catch {
-    return { version: 1, lessons: {}, lastLessonId: null };
+  if (raw === cachedRaw && cachedStore) return cachedStore;
+  let parsed: LawProgressStore = emptyStore();
+  if (raw) {
+    try {
+      const candidate = JSON.parse(raw) as LawProgressStore;
+      if (candidate?.version === 1 && candidate.lessons) parsed = candidate;
+    } catch {
+      parsed = emptyStore();
+    }
   }
+  cachedRaw = raw;
+  cachedStore = parsed;
+  return parsed;
 }
 
 function writeStore(store: LawProgressStore) {
-  safeLocalStorage.setItem(KEY, JSON.stringify(store));
+  cachedStore = store;
+  cachedRaw = JSON.stringify(store);
+  safeLocalStorage.setItem(KEY, cachedRaw);
 }
 
 export function getLawProgress(): LawProgressMap {

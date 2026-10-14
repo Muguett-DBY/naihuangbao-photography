@@ -28,11 +28,23 @@ interface LawStats {
 
 const stats = lawStats as LawStats;
 
+/** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
+function useLawPageTitle(title: string) {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
+
 /** 图解按科浏览的分页步长：收起时每科先亮 8 张 */
 const GRAPHIC_BROWSE_PAGE = 8;
 
 export function LawAcademyPage() {
   useLawImmersive();
+  useLawPageTitle("法硕学习中心｜奶黄包法硕课堂");
   // 全部图解按科浏览：组件级筛选，不改路由（S5/T5）
   const [graphicFilter, setGraphicFilter] = useState<LawSubjectId | "all">("all");
   const [showAllGraphics, setShowAllGraphics] = useState(false);

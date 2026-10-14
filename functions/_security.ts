@@ -61,8 +61,10 @@ export async function enforceRateLimit(
   windowSeconds: number,
 ) {
   if (!env.DB) {
-    // In-memory fallback when D1 is unavailable — allows traffic but logs a warning
-    return { ok: true as const, degraded: true as const };
+    // D1 绑定缺失属于部署配置错误：与公开聊天的 enforcePublicChatRateLimit 一致地
+    // fail-closed，避免 us-chat 暗号爆破等限流防线在配置错误时静默消失。
+    console.warn("Rate-limit DB binding missing — failing closed");
+    return { ok: false as const, retryAfter: windowSeconds };
   }
 
   const nowSeconds = Math.floor(Date.now() / 1000);

@@ -60,7 +60,7 @@ export const onRequestPost: PagesFunction<ChatEnv> = async (context) => {
     usChatWindowSeconds,
   );
   if (!rateLimit.ok) {
-    return rateLimited(rateLimit.retryAfter);
+    return rateLimited(rateLimit.retryAfter, usChatMaxRequestsPerHour);
   }
 
   const card = typeof body.persona === "string" ? getPersonaCard(body.persona) : null;
@@ -100,7 +100,7 @@ export async function requestUsChatCompletion(env: ChatEnv, card: PersonaCard, m
     throw new Error("missing-api-key");
   }
 
-  const response = await fetchOpenCodeWithResponseTimeout(usChatEndpoint, {
+  const { response, readText } = await fetchOpenCodeWithResponseTimeout(usChatEndpoint, {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -114,7 +114,7 @@ export async function requestUsChatCompletion(env: ChatEnv, card: PersonaCard, m
     throw new Error(`us-chat-upstream-${response.status}`);
   }
 
-  const parsed = JSON.parse(await response.text()) as {
+  const parsed = JSON.parse(await readText()) as {
     choices?: Array<{ message?: { content?: string } }>;
   };
   const reply = parsed.choices?.[0]?.message?.content?.trim() ?? "";

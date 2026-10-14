@@ -27,6 +27,10 @@
   /* 小字号文本用的强调色（亮色主题）：亮 accent（金/绿/蓝）直接做 13px 文字不达 WCAG AA，
      统一经 color-mix 压深；暗色主题在下方反向提亮（底是深色，压深会更看不清） */
   --law-accent-ink: color-mix(in srgb, var(--law-accent) 62%, #2a2118);
+  /* 白字实底强调色：亮学科色直接铺白字不达 WCAG AA（法理学 3.47 / 法制史 3.43 / 民法 4.09），
+     72% 混深墨后五科默认 ≥5.16:1、hover brightness(1.07) 下仍 ≥4.64:1（同 is-primary 终审口径）；
+     白字压实底的元素（视图切换激活钮/路径节点/开始旗标）一律走它，不直接用 --law-accent */
+  --law-accent-solid: color-mix(in srgb, var(--law-accent) 72%, #2a2118);
   min-height: 100vh;
   background:
     radial-gradient(1200px 500px at 85% -10%, color-mix(in srgb, var(--law-accent-soft) 70%, transparent), transparent),
@@ -37,6 +41,10 @@
 }
 
 /* ── 暗色主题适配：法学模块的强调色是按亮色底调的，暗底上要反向提亮 ── */
+/* 白字实底强调色不随主题翻转：白字对比只看 chip 自己的底色（.law-graphic 同享该 token） */
+.law-graphic {
+  --law-accent-solid: color-mix(in srgb, var(--law-accent) 72%, #2a2118);
+}
 :root[data-theme="dark"] .law-academy,
 :root[data-theme="dark"] .law-graphic {
   --law-accent-ink: color-mix(in srgb, var(--law-accent) 52%, #fff5ec);
@@ -842,7 +850,9 @@
 
 .law-subject__wrong-item b {
   font-size: 13px;
-  color: var(--coral-dark, #a95f57);
+  /* AA 对比度：#a95f57 压纸白 4.63:1、到期卡暖底仅 4.12:1，亮色压深一档走信纸强调字
+     token（#96504a 压纸白 5.83:1、到期卡 5.18:1）；暗色随 --law-letter-accent 反向提亮 */
+  color: var(--law-letter-accent, #96504a);
 }
 
 .law-subject__wrong-item span {
@@ -1672,8 +1682,8 @@
 
 .law-player__nav.is-primary {
   margin-left: auto;
-  /* 对比度终审：72% accent 混深墨，白字五科 ≥4.61:1 */
-  background: color-mix(in srgb, var(--law-accent) 72%, #2a2118);
+  /* 对比度终审：72% accent 混深墨，白字五科 ≥4.61:1（token --law-accent-solid 同源） */
+  background: var(--law-accent-solid);
   border: 0;
   color: #fff;
   font-weight: 900;
@@ -1706,35 +1716,39 @@
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
-  max-width: 200px;
+  /* 8 步以内单行放得下（24×8 + 5×7 = 227px）；更长的课走段落导航浮层 */
+  max-width: 232px;
 }
 
 .law-player__dots button {
+  /* WCAG 2.5.8 Target Size：真实命中区直接做足 24×24（此前 14×14 + ::before 外扩 5px
+     的透明命中层相邻互相叠压，等效目标被啃掉不足 24），视觉圆点缩到 ::before 里画 */
   position: relative;
-  width: 14px;
-  height: 14px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 0;
   cursor: pointer;
+  border-radius: 50%;
+  background: transparent;
+}
+
+/* 视觉圆点：14px 居中（inset 5px = (24-14)/2），随按钮一起命中 */
+.law-player__dots button::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
   border-radius: 50%;
   background: radial-gradient(circle, color-mix(in srgb, var(--law-accent) 18%, var(--paper)) 0 45%, transparent 46%);
   transition: transform 0.2s, background 0.2s;
 }
 
-/* 触控目标 ≥24×24（WCAG 2.5.8）：透明命中层外扩 5px，圆点视觉尺寸不变 */
-.law-player__dots button::before {
-  content: "";
-  position: absolute;
-  inset: -5px;
-  border-radius: 50%;
-}
-
-.law-player__dots button.is-current {
+.law-player__dots button.is-current::before {
   transform: scale(1.35);
   background: radial-gradient(circle, var(--law-accent) 0 45%, transparent 46%);
 }
 
-.law-player__dots button.is-done {
+.law-player__dots button.is-done::before {
   background: radial-gradient(circle, color-mix(in srgb, var(--law-accent) 60%, var(--paper)) 0 45%, transparent 46%);
 }
 
@@ -3101,7 +3115,8 @@
   transition: background 0.2s, color 0.2s;
 }
 .law-subject__viewtoggle button.is-active {
-  background: var(--law-accent);
+  /* AA 对比度：白字直接压亮学科色仅 3.43–4.09:1，改实底 token（五科 ≥5.16:1） */
+  background: var(--law-accent-solid);
   color: #fff;
   box-shadow: 0 2px 0 color-mix(in srgb, var(--law-accent) 52%, #20100c);
 }
@@ -3165,9 +3180,9 @@
   box-shadow: 0 3px 0 color-mix(in srgb, var(--law-accent) 14%, var(--paper));
 }
 .law-path__node.is-todo:hover { transform: translateY(-2px); }
-/* 已完成：实色 + 3D 底边 */
+/* 已完成：实色 + 3D 底边（白字走实底 token，五科 ≥5.16:1，hover 提亮后 ≥4.64:1） */
 .law-path__node.is-done {
-  background: var(--law-accent);
+  background: var(--law-accent-solid);
   color: #fff;
   box-shadow: 0 4px 0 color-mix(in srgb, var(--law-accent) 52%, #20100c);
 }
@@ -3178,7 +3193,7 @@
   width: 64px;
   height: 64px;
   font-size: 18px;
-  background: var(--law-accent);
+  background: var(--law-accent-solid);
   color: #fff;
   animation: law-path-pulse 2.2s ease-in-out infinite;
 }
@@ -3194,7 +3209,7 @@
   left: 50%;
   padding: 5px 13px;
   border-radius: 999px;
-  background: var(--law-accent);
+  background: var(--law-accent-solid);
   color: #fff;
   font-size: 12px;
   font-weight: 900;

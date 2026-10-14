@@ -116,8 +116,9 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* 头部：徽标 + 标题 + 强调杠 + intro +（时间线）色带 */}
-        <header style={{ flex: "none", height: HEADER_H, overflow: "hidden" }}>
+        {/* 头部：徽标 + 标题 + 强调杠 + intro +（时间线）色带
+            （div：header 在课堂 Player 的页面 DOM 里会产出无标签 landmark，WCAG 1.3.1） */}
+        <div style={{ flex: "none", height: HEADER_H, overflow: "hidden" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14, opacity: badge }}>
             <span
               style={{
@@ -198,12 +199,12 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
                     aria-hidden="true"
                     style={{ width: 14, height: 14, borderRadius: 4, backgroundColor: era.color, display: "inline-block" }}
                   />
-                  {era.label}
-                </span>
-              ))}
-            </div>
-          ) : null}
-        </header>
+              {era.label}
+            </span>
+          ))}
+        </div>
+      ) : null}
+        </div>
 
         {/* 结构区：逐行揭示（树根/树枝+叶 / 节点卡 / 天平行 / 矩阵行；行渲染见 GraphicSceneRows） */}
         <div style={{ position: "relative", flex: 1, minHeight: 0 }}>

@@ -40,8 +40,8 @@
       "liao": { "name": "廖文静", "tag": "小狗狗 · 2004", "line": "情绪全写在脸上、和好也最快的那个人。" }
     },
     "pick": { "heading": "想先和谁说话？", "hint": "选一个人，用只有我们自己知道的暗号开门。", "choose": "和{{name}}聊天" },
-    "gate": { "heading": "暗号门", "hint": "输入只有我们知道的那串数字，回车进入。", "label": "暗号", "placeholder": "····", "submit": "开门", "back": "换个人", "checking": "对暗号中…", "error": "密码不对，再想想？" },
-    "chat": { "logLabel": "聊天记录", "inputLabel": "聊天消息", "placeholder": "说点什么…", "send": "发送", "retry": "重试", "waiting": "正在输入…", "switch": "换人", "errorBubble": "这条没接上，网络岔了。点「重试」再说一次。", "empty": "……" }
+    "gate": { "heading": "暗号门", "hint": "输入只有我们知道的那串数字，回车进入。", "label": "暗号", "placeholder": "····", "submit": "开门", "back": "换个人", "checking": "对暗号中…", "error": "密码不对，再想想？", "expired": "这间房的会话过期了——重新对一次暗号就能回来（刚才的对话不再保留）。" },
+    "chat": { "logLabel": "聊天记录", "inputLabel": "聊天消息", "placeholder": "说点什么…", "emptyState": "房间开门了，先说一句吧。", "send": "发送", "retry": "重试", "retryCooldown": "重试（约 {{seconds}} 秒后）", "waiting": "正在输入…", "switch": "换人", "errorBubble": "这条没接上，网络岔了。点「重试」再说一次。", "rateLimited": "小房间去休息了，约 {{minutes}} 分钟后再来。", "charCount": "{{used}} / {{max}}", "empty": "……" }
 },
   "mobileNav": {
     "label": "移动端主要导航",

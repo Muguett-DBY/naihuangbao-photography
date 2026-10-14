@@ -16,6 +16,18 @@ const routeBudgets = {
   "src/pages/CreativeCuratorPage.tsx": 300 * 1024,
   "src/pages/PublishedProjectPage.tsx": 292 * 1024, // +12K: PR #21 依赖小版本增长，棘轮上调（实测 292315 gzip + 2% 余量）
   "src/pages/PhotoEditorPage.tsx": 760 * 1024,
+  // ── 法考路由（ratchet 起点锁现状：法考页是全站最大的入口图之一，此前无任何护栏）──
+  // 数值来源：manifest 依赖图实测 gzip（LawLessonPage 362.4KB / LawSubjectPage 347.6KB /
+  // LawAcademyPage 353.1KB / LawWrongbookPage 306.0KB / LawNotesPage 307.5KB），超 300KB
+  // 技能预算的页按「实测 + 2%」棘轮锁现状，做完内容/依赖拆分后应逐页下调到 ≤300KB；
+  // 未超 300KB 的页（Exam 190.0 / Graphic 221.3）直接锁技能预算上限防增长
+  "src/pages/LawLessonPage.tsx": 370 * 1024, // 实测 362.4KB + 2% 余量
+  "src/pages/LawSubjectPage.tsx": 355 * 1024, // 实测 347.6KB + 2% 余量
+  "src/pages/LawAcademyPage.tsx": 361 * 1024, // 实测 353.1KB + 2% 余量
+  "src/pages/LawWrongbookPage.tsx": 313 * 1024, // 实测 306.0KB + 2% 余量
+  "src/pages/LawNotesPage.tsx": 314 * 1024, // 实测 307.5KB + 2% 余量
+  "src/pages/LawExamPage.tsx": 300 * 1024, // 实测 190.0KB，锁技能预算上限
+  "src/pages/LawGraphicPage.tsx": 300 * 1024, // 实测 221.3KB，锁技能预算上限
 };
 
 async function collectEntry(entryKey) {

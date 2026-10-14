@@ -11,13 +11,17 @@
   /* 学科色：父级注入 --law-accent / --law-accent-soft，这里给兜底色 */
   --cls-accent: var(--law-accent, #a9853f);
   --cls-accent-soft: var(--law-accent-soft, color-mix(in srgb, var(--law-accent, #a9853f) 12%, #fafafa));
+  /* 小字号强调文本用的学科色：亮学科色（金/绿/蓝）直接做 12px 粗字不达 WCAG AA
+     （民法 #5f7fae 压白气泡仅 4.09:1），亮色 62% 混深墨压白面五科 ≥6.0:1；
+     暗色在下方反向提亮（深气泡底压深会更看不清） */
+  --cls-accent-ink: color-mix(in srgb, var(--cls-accent) 62%, #2a2118);
   --cls-bg: #fafafa;
   --cls-surface: #ffffff;
   --cls-ink: #322a28;
   --cls-muted: #8a7e76;
   --cls-line: rgba(50, 42, 40, 0.12);
   --cls-shadow: 0 12px 44px rgba(50, 42, 40, 0.08), 0 2px 10px rgba(50, 42, 40, 0.05);
-  --cls-glass: rgba(250, 250, 250, 0.78);
+  --cls-glass: rgba(250, 250, 250, 0.94); /* 近实底：控制条不再走 backdrop-filter（见 .law-classroom-controls 注释） */
   --cls-ok: #5c8264;
   --cls-err: #b1544e;
 
@@ -42,7 +46,8 @@
   --cls-muted: #b6a89f;
   --cls-line: rgba(255, 245, 236, 0.16);
   --cls-shadow: 0 14px 44px rgba(0, 0, 0, 0.4);
-  --cls-glass: rgba(36, 29, 27, 0.78);
+  --cls-glass: rgba(36, 29, 27, 0.94);
+  --cls-accent-ink: color-mix(in srgb, var(--cls-accent) 52%, #fff5ec);
   --cls-ok: #99b6a2;
   --cls-err: #e5a198;
 }
@@ -55,7 +60,8 @@
     --cls-muted: #b6a89f;
     --cls-line: rgba(255, 245, 236, 0.16);
     --cls-shadow: 0 14px 44px rgba(0, 0, 0, 0.4);
-    --cls-glass: rgba(36, 29, 27, 0.78);
+    --cls-glass: rgba(36, 29, 27, 0.94);
+    --cls-accent-ink: color-mix(in srgb, var(--cls-accent) 52%, #fff5ec);
     --cls-ok: #99b6a2;
     --cls-err: #e5a198;
   }
@@ -596,7 +602,10 @@
   font-weight: 900;
 }
 
-/* ══════════ 底部控制条：毛玻璃 + 悬浮 ══════════ */
+/* ══════════ 底部控制条：近实底 + 悬浮 ══════════ */
+/* 性能：控制条 sticky 叠在 Player 画布上方，画布 30fps 重绘时 backdrop-filter
+   每帧都要重采样+模糊+合成（18px 半径在中低端 GPU 是持续性每帧开销），
+   改 ≥0.92 近实底去掉 backdrop-filter；真机验证走 DevTools 性能面板 GPU 轨道 */
 
 .law-classroom-controls {
   position: sticky;
@@ -609,8 +618,6 @@
   border: 1px solid var(--cls-line);
   border-radius: 16px;
   background: var(--cls-glass);
-  -webkit-backdrop-filter: blur(18px) saturate(1.3);
-  backdrop-filter: blur(18px) saturate(1.3);
   box-shadow: 0 10px 34px rgba(0, 0, 0, 0.14);
 }
 
@@ -770,7 +777,8 @@
 .law-teacher__name {
   font-size: 12px;
   font-weight: 900;
-  color: var(--cls-accent, var(--law-accent, #a9853f));
+  /* AA 对比度：12px/900 是小字，直接用学科色（民法 4.09:1）不达 4.5，走压深/提亮 token */
+  color: var(--cls-accent-ink, var(--law-accent-ink, var(--cls-accent)));
 }
 
 .law-teacher__text {

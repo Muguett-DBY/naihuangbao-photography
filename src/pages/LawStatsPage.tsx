@@ -1,4 +1,4 @@
-import { useMemo, type CSSProperties } from "react";
+import { useEffect, useMemo, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { LAW_SUBJECTS } from "../data/law/meta";
 import lawStats from "../data/law/stats.json";
@@ -94,8 +94,20 @@ function ActivityChart({ series }: { series: ReturnType<typeof dailyActivityWith
   );
 }
 
+/** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
+function useLawPageTitle(title: string) {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
+
 export function LawStatsPage() {
   useLawImmersive();
+  useLawPageTitle("学习统计｜奶黄包法硕课堂");
   const now = useMemo(() => Date.now(), []);
   const progress = useMemo(() => getLawProgress(), []);
   const history = useMemo(() => getLawHistory(), [now]);

@@ -334,8 +334,10 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* 标题区：衬线大字保留；类型小字删掉（SceneChrome 徽标已承载类型语义） */}
-        <header style={{ flexShrink: 0, marginTop: HEADER_CLEAR }}>
+        {/* 标题区：衬线大字保留；类型小字删掉（SceneChrome 徽标已承载类型语义）。
+            布局容器一律用 div：课堂 Player 会把场景渲染进页面 DOM，header/main/footer
+            会产出无标签 landmark + 嵌套第二个 main，污染读屏的 landmark 导航（WCAG 1.3.1） */}
+        <div style={{ flexShrink: 0, marginTop: HEADER_CLEAR }}>
           <h1
             style={{
               margin: 0,
@@ -361,10 +363,10 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
               transformOrigin: "left center",
             }}
           />
-        </header>
+        </div>
 
         {/* 要点卡片：逐张弹入（每张卡片=术语加粗+短句，左缘学科色书脊） */}
-        <main
+        <div
           style={{
             flex: 1,
             minHeight: 0,
@@ -385,11 +387,11 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
               segments={segments}
             />
           ))}
-        </main>
+        </div>
 
         {/* 术语条：胶囊逐个盖章弹出（保证未在正文出现的术语也可见） */}
         {keyTerms.length > 0 && (
-          <footer
+          <div
             style={{
               flexShrink: 0,
               display: "flex",
@@ -409,7 +411,7 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
                 accent={accent}
               />
             ))}
-          </footer>
+          </div>
         )}
       </AbsoluteFill>
 

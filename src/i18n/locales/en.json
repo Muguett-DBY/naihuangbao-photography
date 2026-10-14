@@ -40,8 +40,8 @@
       "liao": { "name": "Liao Wenjing", "tag": "Little Puppy · 2004", "line": "Every emotion on her sleeve, and the first to make peace." }
     },
     "pick": { "heading": "Who do you want to talk to first?", "hint": "Pick one, then open the door with a passphrase only we know.", "choose": "Chat with {{name}}" },
-    "gate": { "heading": "The passphrase door", "hint": "Type the number only we know, then press Enter.", "label": "Passphrase", "placeholder": "····", "submit": "Enter", "back": "Pick someone else", "checking": "Checking…", "error": "Wrong password. Think again?" },
-    "chat": { "logLabel": "Conversation", "inputLabel": "Chat message", "placeholder": "Say something…", "send": "Send", "retry": "Retry", "waiting": "typing…", "switch": "Switch person", "errorBubble": "That one got lost on the way. Hit retry to say it again.", "empty": "…" }
+    "gate": { "heading": "The passphrase door", "hint": "Type the number only we know, then press Enter.", "label": "Passphrase", "placeholder": "····", "submit": "Enter", "back": "Pick someone else", "checking": "Checking…", "error": "Wrong password. Think again?", "expired": "That session expired — re-enter the passphrase to get back in (the earlier chat isn't kept)." },
+    "chat": { "logLabel": "Conversation", "inputLabel": "Chat message", "placeholder": "Say something…", "emptyState": "The room is open — say the first word.", "send": "Send", "retry": "Retry", "retryCooldown": "Retry (in about {{seconds}}s)", "waiting": "typing…", "switch": "Switch person", "errorBubble": "That one got lost on the way. Hit retry to say it again.", "rateLimited": "The room is taking a break — come back in about {{minutes}} minutes.", "charCount": "{{used}} / {{max}}", "empty": "…" }
 },
   "mobileNav": {
     "label": "Primary mobile navigation",

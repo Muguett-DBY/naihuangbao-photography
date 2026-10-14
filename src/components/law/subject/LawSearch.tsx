@@ -19,6 +19,19 @@ const SEARCH_EXAMPLES: Record<string, string> = {
   xingfa: "正当防卫",
 };
 
+/** 课文全文 join 缓存：书对象在会话内不变（WeakMap 随课对象回收），
+ *  避免每次防抖命中都对 500+ 课逐课重新 join 出整本书量级的临时串再 indexOf */
+const rawTextCache = new WeakMap<LawLesson, string>();
+
+function rawTextOf(lesson: LawLesson): string {
+  let text = rawTextCache.get(lesson);
+  if (text === undefined) {
+    text = lesson.raw.join("；");
+    rawTextCache.set(lesson, text);
+  }
+  return text;
+}
+
 /** 学科内全文搜索：标题 + 原文正文；输入防抖 160ms，结果片段高亮关键词 */
 export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: string) => void }) {
   const [query, setQuery] = useState("");
@@ -52,7 +65,7 @@ export function LawSearch({ book, onPick }: { book: LawBook; onPick: (lessonId: 
           });
           continue;
         }
-        const raw = lesson.raw.join("；");
+        const raw = rawTextOf(lesson);
         const index = raw.indexOf(keyword);
         if (index >= 0) {
           const start = Math.max(0, index - 18);

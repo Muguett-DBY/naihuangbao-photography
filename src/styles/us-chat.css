@@ -4,9 +4,9 @@
   --us-paper: #fbf7ef;
   --us-card: #fffdf8;
   --us-ink: #33302a;
-  --us-muted: #85796b;
+  --us-muted: #7a6e60; /* 对纸底 4.65:1 / 卡底 4.89:1，≥ AA 4.5:1 */
   --us-line: rgba(74, 62, 52, 0.14);
-  --us-accent: #a9714b;
+  --us-accent: #9a6743; /* 深化后白字/自身作小字均 ≥4.5:1（对卡底 4.70:1） */
   --us-accent-soft: color-mix(in srgb, var(--us-accent) 12%, var(--us-card));
   --us-accent-line: color-mix(in srgb, var(--us-accent) 32%, transparent);
   --us-shadow: 0 18px 42px rgba(74, 62, 52, 0.08);
@@ -18,11 +18,11 @@
 }
 
 .us-chat-page[data-persona="su-yiping"] {
-  --us-accent: #a9714b;   /* 苏一平 · 焦糖棕 */
+  --us-accent: #9a6743;   /* 苏一平 · 焦糖棕（AA 达标版） */
 }
 
 .us-chat-page[data-persona="liao-wenjing"] {
-  --us-accent: #c4708b;   /* 廖文静 · 莓果粉 */
+  --us-accent: #b05675;   /* 廖文静 · 莓果粉（AA 达标版：#fffdf8 上 4.66:1） */
 }
 
 /* ---------- 页头 ---------- */
@@ -34,7 +34,7 @@
 
 .us-chat-eyebrow {
   margin: 0 0 10px;
-  color: #697b64;
+  color: #616f5c; /* 对纸底 4.99:1，≥ AA */
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.24em;
@@ -86,7 +86,7 @@
 }
 
 .us-chat-persona-card {
-  --card-accent: #a9714b;
+  --card-accent: #9a6743;
   display: flex;
   align-items: center;
   gap: 18px;
@@ -101,8 +101,8 @@
   transition: transform 220ms ease, box-shadow 220ms ease;
 }
 
-.us-chat-persona-card[data-persona="su-yiping"] { --card-accent: #a9714b; }
-.us-chat-persona-card[data-persona="liao-wenjing"] { --card-accent: #c4708b; }
+.us-chat-persona-card[data-persona="su-yiping"] { --card-accent: #9a6743; }
+.us-chat-persona-card[data-persona="liao-wenjing"] { --card-accent: #b05675; }
 
 .us-chat-persona-card:hover,
 .us-chat-persona-card:focus-visible {
@@ -317,7 +317,7 @@
 }
 
 .us-chat-side__card {
-  --card-accent: #a9714b;
+  --card-accent: #9a6743;
   display: grid;
   justify-items: center;
   gap: 6px;
@@ -330,8 +330,8 @@
   box-shadow: var(--us-shadow);
 }
 
-.us-chat-side__card[data-persona="su-yiping"] { --card-accent: #a9714b; }
-.us-chat-side__card[data-persona="liao-wenjing"] { --card-accent: #c4708b; }
+.us-chat-side__card[data-persona="su-yiping"] { --card-accent: #9a6743; }
+.us-chat-side__card[data-persona="liao-wenjing"] { --card-accent: #b05675; }
 
 .us-chat-side__avatar {
   display: grid;
@@ -453,15 +453,15 @@
   padding: 6px 12px;
   font: inherit;
   font-size: 12.5px;
-  color: #a95f57;
+  color: #9f5850; /* 对错误气泡底 4.75:1，≥ AA */
   background: none;
-  border: 1px solid rgba(169, 95, 87, 0.45);
+  border: 1px solid rgba(159, 88, 80, 0.45);
   border-radius: 999px;
   cursor: pointer;
   transition: background 160ms ease;
 }
 
-.us-chat-retry:hover:not(:disabled) { background: rgba(169, 95, 87, 0.1); }
+.us-chat-retry:hover:not(:disabled) { background: rgba(159, 88, 80, 0.1); }
 .us-chat-retry:disabled { opacity: 0.5; cursor: wait; }
 
 /* 流式光标（等待回复时三点，输出时尾随光标） */
@@ -499,6 +499,7 @@
 /* ---------- 输入区 ---------- */
 
 .us-chat-composer {
+  --us-composer-max: 132px; /* 与 ChatPage 的 COMPOSER_MAX_HEIGHT 同一上限 */
   display: flex;
   align-items: flex-end;
   gap: 10px;
@@ -510,10 +511,20 @@
   box-shadow: var(--us-shadow);
 }
 
-.us-chat-composer__input {
+.us-chat-composer__field {
   flex: 1;
   min-width: 0;
-  max-height: 132px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.us-chat-composer__input {
+  flex: none; /* 在 __field 列式容器里不做 flex 拉伸：高度由 rows/JS 自适应决定 */
+  width: 100%;
+  box-sizing: border-box;
+  /* 高度由 JS 按 scrollHeight 自适应（rows=1 起步），封顶后在框内滚动 */
+  max-height: var(--us-composer-max);
   padding: 10px 12px;
   font: inherit;
   font-size: 15px;
@@ -522,6 +533,16 @@
   background: none;
   border: none;
   resize: none;
+  overflow-y: auto;
+}
+
+.us-chat-composer__count {
+  margin: 0;
+  color: var(--us-muted);
+  font-size: 11.5px;
+  line-height: 1.4;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .us-chat-composer__input:focus-visible {
@@ -551,6 +572,57 @@
 
 .us-chat-composer__send:hover:not(:disabled) { filter: brightness(1.06); }
 .us-chat-composer__send:disabled { opacity: 0.45; cursor: default; }
+
+/* ---------- chat 阶段：视口内钉住 log + composer ----------
+   站点顶部导航与移动端底部导航都是 fixed 覆盖层；进入对话后整页改为视口高度布局：
+   log 弹性伸缩、composer 恒在折叠线之上且不被底部导航遮挡，页面自身不再滚动。
+   移动端高度里扣除 --mobile-bottom-nav-offset（sections.css 在 ≤768px 定义，
+   与 .site-shell 的 padding-bottom 相加恰好铺满视口，不留多余滚动行程）。 */
+.us-chat-page[data-stage="chat"] {
+  display: flex;
+  flex-direction: column;
+  height: calc(100svh - var(--mobile-bottom-nav-offset, 0px));
+  min-height: 0;
+  padding-bottom: clamp(16px, 3vw, 40px);
+  overflow: hidden;
+}
+
+.us-chat-page[data-stage="chat"] .us-chat-head {
+  flex: none;
+  margin-bottom: clamp(12px, 2.2vw, 24px);
+}
+
+.us-chat-page[data-stage="chat"] .us-chat-title {
+  font-size: clamp(26px, 4vw, 44px);
+}
+
+.us-chat-page[data-stage="chat"] .us-chat-layout {
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+  grid-template-rows: minmax(0, 1fr); /* 桌面双列：行高吃满剩余高度，main 不再依赖侧栏内容高度 */
+}
+
+.us-chat-page[data-stage="chat"] .us-chat-side {
+  position: static;
+}
+
+.us-chat-page[data-stage="chat"] .us-chat-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto; /* ≤960 单列 flex 布局里也要长满 */
+}
+
+.us-chat-page[data-stage="chat"] .us-chat-log {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+}
+
+.us-chat-page[data-stage="chat"] .us-chat-composer {
+  flex: none;
+}
 
 /* ---------- 焦点可见性（全站一致的珊瑚色焦点环） ---------- */
 
@@ -592,6 +664,34 @@
   .us-chat-side__card span:last-child { display: none; }
 
   .us-chat-side__note { text-align: left; }
+
+  /* chat 阶段单列：人设卡与「换人」并成一行，把纵向空间留给 log + composer */
+  .us-chat-page[data-stage="chat"] .us-chat-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .us-chat-page[data-stage="chat"] .us-chat-side {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .us-chat-page[data-stage="chat"] .us-chat-side__card {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .us-chat-page[data-stage="chat"] .us-chat-side__note {
+    display: none; /* 页头已有同一句提示，聊天态里省一行 */
+  }
+
+  .us-chat-page[data-stage="chat"] .us-chat-ghost-button {
+    flex: none;
+    margin: 0;
+  }
 }
 
 @media (max-width: 640px) {
@@ -627,6 +727,13 @@
 
   .us-chat-composer__send {
     padding: 10px 14px;
+  }
+}
+
+/* 矮视口（横屏手机等）：chat 阶段再省一行页头提示，保住 log 与 composer 可见 */
+@media (max-height: 600px) {
+  .us-chat-page[data-stage="chat"] .us-chat-note {
+    display: none;
   }
 }
 

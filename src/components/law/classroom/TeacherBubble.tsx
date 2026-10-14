@@ -20,27 +20,34 @@ export function TeacherBubble({
   compact?: boolean;
 }) {
   const [displayed, setDisplayed] = useState("");
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const prefersReduced = useRef(
     typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 
-  // 打字机效果：逐字显示讲课稿
+  // 打字机效果：逐字显示讲课稿。rAF 按显示刷新对齐（30ms/字节奏不变），
+  // 与 Remotion Player 自身的 rAF 渲染同帧调度，替代任意时刻触发的 setInterval
+  // 逐字 setState（≈33 次/秒）在播放期与 30fps 整树重渲染抢主线程；
+  // 字数没变的帧跳过 setState，reduced-motion 分支直出全文保持不变
   useEffect(() => {
     if (!script) { setDisplayed(""); return; }
     if (prefersReduced.current) { setDisplayed(script); return; }
 
     setDisplayed("");
-    let i = 0;
-    timerRef.current = setInterval(() => {
-      i += 1;
-      setDisplayed(script.slice(0, i));
-      if (i >= script.length && timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
+    const CHAR_MS = 30;
+    let frame = 0;
+    let startedAt = 0;
+    let shown = 0;
+    const step = (now: number) => {
+      if (!startedAt) startedAt = now;
+      const count = Math.min(script.length, Math.floor((now - startedAt) / CHAR_MS) + 1);
+      if (count !== shown) {
+        shown = count;
+        setDisplayed(script.slice(0, count));
       }
-    }, 30);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+      if (count < script.length) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
   }, [script]);
 
   return (

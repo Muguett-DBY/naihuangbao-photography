@@ -11,6 +11,17 @@ import "../styles/law-visual.css";
 
 const SUBJECT_PATTERN = /^([a-z]+)-q/;
 
+/** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
+function useLawPageTitle(title: string) {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
+
 export function LawGraphicPage() {
   useLawImmersive();
   const { lessonId } = useParams();
@@ -29,6 +40,8 @@ export function LawGraphicPage() {
       ? id
       : null;
   }, [lessonId]);
+
+  useLawPageTitle(graphic ? `${graphic.title}（图解）｜奶黄包法硕课堂` : "图解未找到｜奶黄包法硕课堂");
 
   if (error) {
     return (

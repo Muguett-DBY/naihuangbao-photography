@@ -46,9 +46,19 @@ function isMetaChapter(chapter: { title: string; semanticTitle?: string }): bool
   );
 }
 
+/** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
+function useLawPageTitle(title: string) {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
+
 export function LawSubjectPage() {
-  useLawImmersive();
-  const { subjectId } = useParams();
+  useLawImmersive();  const { subjectId } = useParams();
   const navigate = useNavigate();
   const [book, setBook] = useState<LawBook | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +75,7 @@ export function LawSubjectPage() {
 
   const valid = isLawSubjectId(subjectId);
   const subject = valid ? LAW_SUBJECT_MAP[subjectId] : null;
+  useLawPageTitle(subject ? `${subject.fullName}｜奶黄包法硕课堂` : "法硕学科｜奶黄包法硕课堂");
 
   useEffect(() => {
     if (!valid || !subjectId) return;

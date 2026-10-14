@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { LAW_SUBJECTS } from "../data/law/meta";
 import type { LawSubjectId } from "../types/law";
@@ -34,8 +34,20 @@ const SCOPE_OPTIONS: { value: FlashcardScope; label: string; hint: string }[] = 
   { value: "fresh", label: "仅未复习", hint: "只抽跳过/没做过自测的课" },
 ];
 
+/** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
+function useLawPageTitle(title: string) {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
+
 export function LawFlashcardPage() {
   useLawImmersive();
+  useLawPageTitle("闪卡快刷｜奶黄包法硕课堂");
   const [phase, setPhase] = useState<Phase>("setup");
   const [scope, setScope] = useState<FlashcardScope>("all");
   const [selected, setSelected] = useState<Set<LawSubjectId>>(() => new Set(LAW_SUBJECTS.map((s) => s.id)));

@@ -131,7 +131,7 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
   for (const model of openCodeModels) {
     for (let attempt = 1; attempt <= openCodeMaxAttempts; attempt += 1) {
       try {
-        const response = await fetchOpenCodeWithResponseTimeout(openCodeEndpoint, {
+        const { response, readText } = await fetchOpenCodeWithResponseTimeout(openCodeEndpoint, {
           method: "POST",
           headers: {
             "content-type": "application/json",
@@ -148,7 +148,7 @@ export async function requestChatCompletionStream(env: ChatEnv, messages: ChatMe
           continue;
         }
 
-        const result = extractOpenAiChatReply(await response.text());
+        const result = extractOpenAiChatReply(await readText());
         const reply = normalizeAssistantReply(result.reply, result.finishReason);
         if (reply) {
           return textToReadableStream(reply);
@@ -230,19 +230,47 @@ function isMaleSoloQuestion(content: string) {
     && !/情侣|女朋友|女友|对象|伴侣/.test(content);
 }
 
-export async function fetchOpenCodeWithResponseTimeout(url: string, init: RequestInit, timeoutMs: number) {
+export type OpenCodeTimedResponse = {
+  response: Response;
+  /** 在与 fetch 相同的截止时间内读完响应体（头 + 体共享同一 timeoutMs 预算）。 */
+  readText(): Promise<string>;
+};
+
+export async function fetchOpenCodeWithResponseTimeout(
+  url: string,
+  init: RequestInit,
+  timeoutMs: number,
+): Promise<OpenCodeTimedResponse> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
-    return await fetch(url, { ...init, signal: controller.signal });
+    const response = await fetch(url, { ...init, signal: controller.signal });
+    // 注意：这里不能立刻 clearTimeout——截止时间必须继续覆盖读体阶段，
+    // 否则慢滴上游可在响应头到达后无限拖住 response.text()，把 worker
+    // 拖过整个超时预算直到平台强制终止。计时器由 readText() 结束时清理；
+    // 调用方不读体时（如非 2xx 直接抛错），到点 abort 只会取消未读的流，无害。
+    return {
+      response,
+      readText: async () => {
+        try {
+          return await response.text();
+        } catch (error) {
+          if (controller.signal.aborted) {
+            throw new Error("upstream-timeout");
+          }
+          throw error;
+        } finally {
+          clearTimeout(timeout);
+        }
+      },
+    };
   } catch (error) {
+    clearTimeout(timeout);
     if (controller.signal.aborted) {
       throw new Error("upstream-timeout");
     }
     throw error;
-  } finally {
-    clearTimeout(timeout);
   }
 }
 
@@ -309,10 +337,8 @@ function waitBeforeRetry(attempt: number) {
 }
 
 export async function enforcePublicChatRateLimit(request: Request, env: ChatEnv): Promise<RateLimitResult> {
-  if (!env.DB) {
-    return { ok: false, retryAfter: publicChatWindowSeconds };
-  }
-
+  // enforceRateLimit 自身已对缺失 DB fail-closed（retryAfter=windowSeconds），
+  // 公开聊天与 us-chat 等所有调用方保持同一语义。
   return enforceRateLimit(
     request,
     env,

@@ -199,7 +199,9 @@ export function ListScene({
           overflow: "hidden",
         }}
       >
-        <header style={{ flexShrink: 0, marginTop: HEADER_CLEAR }}>
+        {/* 布局容器用 div：课堂 Player 会把场景渲染进页面 DOM，header/main 会产出
+            无标签 landmark + 嵌套第二个 main，污染读屏的 landmark 导航（WCAG 1.3.1） */}
+        <div style={{ flexShrink: 0, marginTop: HEADER_CLEAR }}>
           <h2
             style={{
               margin: 0,
@@ -225,9 +227,9 @@ export function ListScene({
               transformOrigin: "left center",
             }}
           />
-        </header>
+        </div>
 
-        <main
+        <div
           style={{
             flex: 1,
             minHeight: 0,
@@ -284,7 +286,7 @@ export function ListScene({
               ))}
             </ul>
           </div>
-        </main>
+        </div>
       </AbsoluteFill>
 
       {/* 视觉底座叠加层：类型徽标 + 学科色淡晕 + 课程进度点 */}

@@ -63,7 +63,23 @@ export const STEP_TYPE_META: Record<ClassroomSceneType, StepTypeMeta> = {
   quiz: { icon: "❓", label: "测验", scene: "随堂小测", en: "QUIZ" },
 };
 
-/** 字体栈：系统已装 Noto Serif SC 全字重（Black/SemiBold 为独立家族名）+ Georgia */
+/**
+ * 字体栈 F 的确定性前提（诚实版声明，替代旧注释「系统已装」——那是作者机器的前提，不是部署环境的事实）：
+ *
+ * 1. 前提：目标机器已安装「Noto Serif SC」及独立家族名「Noto Serif SC SemiBold / Black」
+ *    （Google Noto 官方分字重安装才有独立家族名）。本仓库未内置该字体（public/fonts/ 只有
+ *    摄影站的 naihuangbao-wenkai-subset.woff2），也没有 @remotion/fonts / @remotion/google-fonts
+ *    依赖（package.json 仅 remotion + @remotion/player）。
+ * 2. 回退行为（未装机器上实际发生的渲染）：zhBlack/zhSerifSemi/zhSerif → SimSun/serif（宋体系），
+ *    zhSans → Microsoft YaHei/sans-serif（黑体系）。字重与度量与 Noto 不一致，课堂画面会出现
+ *    非预期的字形/换行差异——这是已知缺陷，不是静默正常。
+ * 3. 确定性升级路径（按 .agents/skills/remotion-video-creation/rules/fonts.md，改法不外溢调用点）：
+ *    a) 用 `npx remotion add @remotion/fonts` 装包；
+ *    b) 取 Noto Serif SC 三字重（Regular/SemiBold/Black）做中文 subset 后放 public/fonts/，
+ *       每字重一个 woff2（切莫直接全量引入：CJK 全字重是数 MB 级传输，正踩 fonts.md 的雷）；
+ *    c) 在本文件顶部按字重分别 `loadFont({ family, url: staticFile(...), weight, display: "block" })`
+ *       （loadFont 会阻塞渲染到字体就绪，Player 首帧即正确字形），F 栈家族名保持不变即可生效。
+ */
 export const F = {
   zhBlack: '"Noto Serif SC Black","Noto Serif SC",serif',
   zhSerifSemi: '"Noto Serif SC SemiBold","Noto Serif SC",serif',

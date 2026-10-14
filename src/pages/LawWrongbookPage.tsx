@@ -25,8 +25,20 @@ function subjectOfLesson(lessonId: string): LawSubjectId | null {
   return subject in LAW_SUBJECT_MAP ? subject : null;
 }
 
+/** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
+function useLawPageTitle(title: string) {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
+
 export function LawWrongbookPage() {
   useLawImmersive();
+  useLawPageTitle("我的错题本｜奶黄包法硕课堂");
   const now = useMemo(() => Date.now(), []);
   const groups = useMemo(() => groupWrongLessons(getLawProgress(), now), [now]);
   const total = wrongTotalOf(groups);

@@ -48,6 +48,17 @@ interface ExamDraft {
 
 type Phase = "config" | "loading" | "running" | "result";
 
+/** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
+function useLawPageTitle(title: string) {
+  useEffect(() => {
+    const previous = document.title;
+    document.title = title;
+    return () => {
+      document.title = previous;
+    };
+  }, [title]);
+}
+
 function subjectOfLessonId(lessonId: string): LawSubjectId | null {
   const subject = lessonId.split("-q", 1)[0];
   return (LAW_SUBJECTS.some((entry) => entry.id === subject) ? subject : null) as LawSubjectId | null;
@@ -101,6 +112,7 @@ function clearDraft(): void {
 
 export function LawExamPage() {
   useLawImmersive();
+  useLawPageTitle("模拟考试｜奶黄包法硕课堂");
   const completed = useMemo(() => completedLessonsBySubject(getLawProgress(), LAW_SUBJECTS.map((s) => s.id)), []);
   const completedTotal = useMemo(
     () => Object.values(completed).reduce((sum, list) => sum + (list?.length ?? 0), 0),

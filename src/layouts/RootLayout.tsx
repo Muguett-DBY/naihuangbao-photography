@@ -117,6 +117,11 @@ export function RootLayout() {
 
   const isEditor = location.pathname === "/editor";
   const isCreativeWorkspace = isEditor || location.pathname === "/create" || location.pathname.startsWith("/create/") || location.pathname === "/studio";
+  // 法硕学习模块全部路由走沉浸模式（useLawImmersive 隐藏摄影站导航/页脚）：
+  // 「跳转到导航」「跳转到页脚」在那里没有可见目标（#site-navigation-menu 不存在、
+  // #site-footer display:none），按下后焦点原地不动——这两条链在 /law 下不渲染，
+  // 保留「跳转到内容」维持 2.4.1 Bypass Blocks
+  const isLawRoute = location.pathname === "/law" || location.pathname.startsWith("/law/");
   const routePreset = resolveRoutePreset(location.pathname);
   const showProjectDock = isProjectDockRoute(location.pathname);
   const workspace = isWorkspaceRoute(location.pathname);
@@ -137,41 +142,56 @@ export function RootLayout() {
         >
           {t("common.skipToContent", "跳转到内容")}
         </a>
-        <a
-          href="#site-navigation-menu"
-          className="skip-link skip-link--secondary"
-          onClick={(e) => {
-            e.preventDefault();
-            const drawerNavigation = document.getElementById("site-navigation-menu");
-            const hamburger = document.querySelector<HTMLElement>(".hamburger");
-            const inlineNavigation = document.querySelector<HTMLElement>(".nav-menu--inline");
-            const hamburgerIsVisible = hamburger !== null && window.getComputedStyle(hamburger).display !== "none";
-            const target = drawerNavigation ?? (hamburgerIsVisible ? hamburger : inlineNavigation);
-            if (target) {
-              const focusable = target.matches("a[href], button:not([disabled])")
-                ? target
-                : target.querySelector<HTMLElement>("a[href], button:not([disabled])");
-              if (focusable) {
-                focusable.focus();
-              } else {
-                focusWithTemporaryTabIndex(target);
-              }
-            }
-          }}
-        >
-          {t("common.skipToNav", "跳转到导航")}
-        </a>
-        <a
-          href="#site-footer"
-          className="skip-link skip-link--secondary"
-          onClick={(e) => {
-            e.preventDefault();
-            const target = document.getElementById("site-footer");
-            if (target) focusWithTemporaryTabIndex(target);
-          }}
-        >
-          {t("common.skipToFooter", "跳转到页脚")}
-        </a>
+        {!isLawRoute ? (
+          <>
+            <a
+              href="#site-navigation-menu"
+              className="skip-link skip-link--secondary"
+              onClick={(e) => {
+                e.preventDefault();
+                const drawerNavigation = document.getElementById("site-navigation-menu");
+                const hamburger = document.querySelector<HTMLElement>(".hamburger");
+                const inlineNavigation = document.querySelector<HTMLElement>(".nav-menu--inline");
+                const hamburgerIsVisible =
+                  hamburger !== null && window.getComputedStyle(hamburger).display !== "none";
+                const target = drawerNavigation ?? (hamburgerIsVisible ? hamburger : inlineNavigation);
+                if (target && target.getClientRects().length > 0) {
+                  const focusable = target.matches("a[href], button:not([disabled])")
+                    ? target
+                    : target.querySelector<HTMLElement>("a[href], button:not([disabled])");
+                  if (focusable) {
+                    focusable.focus();
+                  } else {
+                    focusWithTemporaryTabIndex(target);
+                  }
+                } else {
+                  // 目标不存在或不可见（如沉浸门隐藏导航）：退回主内容，别让焦点原地不动
+                  const main = document.getElementById("main-content");
+                  if (main) focusWithTemporaryTabIndex(main);
+                }
+              }}
+            >
+              {t("common.skipToNav", "跳转到导航")}
+            </a>
+            <a
+              href="#site-footer"
+              className="skip-link skip-link--secondary"
+              onClick={(e) => {
+                e.preventDefault();
+                const target = document.getElementById("site-footer");
+                if (target && target.getClientRects().length > 0) {
+                  focusWithTemporaryTabIndex(target);
+                } else {
+                  // 页脚被隐藏（沉浸模式等）：退回主内容，别让焦点原地不动
+                  const main = document.getElementById("main-content");
+                  if (main) focusWithTemporaryTabIndex(main);
+                }
+              }}
+            >
+              {t("common.skipToFooter", "跳转到页脚")}
+            </a>
+          </>
+        ) : null}
       </nav>
       {!isCreativeWorkspace && (
         <ErrorBoundary fallback={null}>

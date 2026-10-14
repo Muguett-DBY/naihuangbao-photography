@@ -1,94 +1,69 @@
 import "../styles/us-chat.css";
 import { ArrowLeft, KeyRound, RotateCcw, Send } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { memo, useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { PageTransition } from "../components/shared/PageTransition";
 import { useChatReveal } from "../hooks/useChatReveal";
 import { useSEO } from "../hooks/useSEO";
+import {
+  COMPOSER_MAX_HEIGHT, HISTORY_LIMIT, MESSAGE_MAX_LENGTH, PERSONA_DIGESTS, PERSONA_SALTS, PERSONAS, SESSION_STORAGE_KEY,
+  RateLimitError, ReplyServerError, UnauthorizedError, createMessageId, isAbortError, loadSession, readErrorMessage, sha256Hex,
+  type ChatMessage, type ChatSession, type PersonaId,
+} from "../lib/us-chat-client";
 
-type PersonaId = "su-yiping" | "liao-wenjing";
 type Stage = "pick" | "gate" | "chat";
 
-type ChatMessage = {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  pending?: boolean;
-  error?: boolean;
+type ChatMessageRowProps = {
+  message: ChatMessage;
+  avatar: string | undefined;
+  waitingLabel: string;
+  errorFallback: string;
+  retryLabel: string;
+  retryDisabled: boolean;
+  onRetry: () => void;
 };
 
-type ChatSession = { persona: PersonaId; password: string };
-
-/** 前端只放展示层信息 + 暗号摘要；人设提示词全部留在服务端。 */
-const PERSONAS = [
-  { id: "su-yiping", avatar: "🐻", nameKey: "usChat.personas.su.name", tagKey: "usChat.personas.su.tag", lineKey: "usChat.personas.su.line" },
-  { id: "liao-wenjing", avatar: "💕", nameKey: "usChat.personas.liao.name", tagKey: "usChat.personas.liao.tag", lineKey: "usChat.personas.liao.line" },
-] as const;
-
-const PERSONA_SALTS: Record<PersonaId, string> = {
-  "su-yiping": "salt-su-2025",
-  "liao-wenjing": "salt-liao-2025",
-};
-
-/** SHA-256(盐 + 明文) 的十六进制摘要，服务端会按同一规则二次校验。 */
-const PERSONA_DIGESTS: Record<PersonaId, string> = {
-  "su-yiping": "802b6255a20a557ebfa47d0b763f78ba64a9a04af395cc2a43b928b70e36d58b",
-  "liao-wenjing": "6d29e02d873f17ae24a24281c3bc5c9ad21a6e475a424bad9b1787afe1fa2458",
-};
-
-const SESSION_STORAGE_KEY = "us-chat-session";
-const HISTORY_LIMIT = 12;
-const MESSAGE_MAX_LENGTH = 500;
-
-class UnauthorizedError extends Error {
-  constructor() {
-    super("unauthorized");
-    this.name = "UnauthorizedError";
+/**
+ * 单条消息行：memo 化后，打字机每 24ms 的 tick 只重绘正在流式输出的那一行，
+ * 其余行与页头/侧栏/输入区不参与 diff。
+ * 读屏策略：流式逐 tick 重写的部分文本挂 aria-hidden，等揭示完成才进入无障碍树，
+ * 避免 aria-live 区域被同一句话切碎播报几十次。
+ */
+const ChatMessageRow = memo(function ChatMessageRow({
+  message, avatar, waitingLabel, errorFallback, retryLabel, retryDisabled, onRetry,
+}: ChatMessageRowProps) {
+  if (message.error) {
+    return (
+      <div className="us-chat-row us-chat-row--error">
+        <div className="us-chat-bubble us-chat-bubble--error">
+          <p>{message.content || errorFallback}</p>
+          <button type="button" className="us-chat-retry" onClick={onRetry} disabled={retryDisabled}>
+            <RotateCcw size={14} aria-hidden="true" />
+            {retryLabel}
+          </button>
+        </div>
+      </div>
+    );
   }
-}
-
-function isPersonaId(value: unknown): value is PersonaId {
-  return value === "su-yiping" || value === "liao-wenjing";
-}
-
-function createMessageId() {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
-  return `msg-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
-
-function loadSession(): ChatSession | null {
-  try {
-    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<ChatSession>;
-    if (isPersonaId(parsed.persona) && typeof parsed.password === "string" && parsed.password.length > 0) {
-      return { persona: parsed.persona, password: parsed.password };
-    }
-  } catch {
-    /* 关掉标签页或解析失败都视为未登录 */
-  }
-  return null;
-}
-
-async function sha256Hex(text: string): Promise<string | null> {
-  try {
-    if (typeof crypto === "undefined" || !crypto.subtle) return null;
-    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-    return Array.from(new Uint8Array(digest)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
-  } catch {
-    return null;
-  }
-}
-
-async function readErrorMessage(response: Response): Promise<string> {
-  try {
-    const data = (await response.json()) as { error?: string };
-    if (data && typeof data.error === "string" && data.error.length > 0) return data.error;
-  } catch {
-    /* 非 JSON 响应按通用错误处理 */
-  }
-  return "";
-}
+  return (
+    <div className={`us-chat-row us-chat-row--${message.role}`}>
+      {message.role === "assistant" ? (
+        <span className="us-chat-row__avatar" aria-hidden="true">{avatar}</span>
+      ) : null}
+      <div className={`us-chat-bubble us-chat-bubble--${message.role}${message.pending ? " is-typing" : ""}`}>
+        {message.pending
+          ? message.content
+            ? <span aria-hidden="true">{message.content}</span>
+            : (
+              <span className="us-chat-typing" aria-label={waitingLabel}>
+                <i /><i /><i />
+              </span>
+            )
+          : message.content}
+      </div>
+    </div>
+  );
+});
 
 export function ChatPage() {
   const { t } = useTranslation();
@@ -101,12 +76,16 @@ export function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [cooldownLeft, setCooldownLeft] = useState(0);
 
   const sessionRef = useRef<ChatSession | null>(null);
   const busyRef = useRef(false);
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
   const shakeTimerRef = useRef<number | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const cooldownEndRef = useRef(0);
+  const cooldownTimerRef = useRef<number | null>(null);
   const gateInputRef = useRef<HTMLInputElement>(null);
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
@@ -131,6 +110,9 @@ export function ChatPage() {
 
   useEffect(() => () => {
     if (shakeTimerRef.current !== null) window.clearTimeout(shakeTimerRef.current);
+    if (cooldownTimerRef.current !== null) window.clearInterval(cooldownTimerRef.current);
+    // 卸载时取消进行中的请求：流读取与限流计数不再白白消耗。
+    abortRef.current?.abort();
   }, []);
 
   // 对话流自动吸底：用户往上翻时不抢滚动。
@@ -154,13 +136,45 @@ export function ChatPage() {
     shakeTimerRef.current = window.setTimeout(() => setGateShake(false), 520);
   }, []);
 
+  /** 429 冷却：按服务端 Retry-After 倒计时，期间重试/发送按钮禁用，避免反复重试续窗。 */
+  const startCooldown = useCallback((seconds: number) => {
+    cooldownEndRef.current = Date.now() + seconds * 1000;
+    setCooldownLeft(seconds);
+    if (cooldownTimerRef.current !== null) window.clearInterval(cooldownTimerRef.current);
+    cooldownTimerRef.current = window.setInterval(() => {
+      const left = Math.max(0, Math.ceil((cooldownEndRef.current - Date.now()) / 1000));
+      setCooldownLeft(left);
+      if (left <= 0 && cooldownTimerRef.current !== null) {
+        window.clearInterval(cooldownTimerRef.current);
+        cooldownTimerRef.current = null;
+      }
+    }, 1000);
+  }, []);
+
+  /** 输入框随内容自增高，封顶后在框内滚动（COMPOSER_MAX_HEIGHT 与 CSS 上限一致）。 */
+  const resizeComposer = useCallback(() => {
+    const node = chatInputRef.current;
+    if (!node) return;
+    node.style.height = "auto";
+    node.style.height = `${Math.min(node.scrollHeight, COMPOSER_MAX_HEIGHT)}px`;
+  }, []);
+
+  useEffect(() => {
+    resizeComposer();
+  }, [input, resizeComposer]);
+
   const requestReply = useCallback(async (history: ChatMessage[], session: ChatSession) => {
     const assistantId = createMessageId();
     setMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: "", pending: true }]);
+    // 顶替旧请求（正常流程 busy 不会并发，这里兜底取消残留的流读取）。
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
     try {
       const response = await fetch("/api/us-chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           persona: session.persona,
           password: session.password,
@@ -171,7 +185,12 @@ export function ChatPage() {
         }),
       });
       if (response.status === 401) throw new UnauthorizedError();
-      if (!response.ok || !response.body) throw new Error(await readErrorMessage(response));
+      if (response.status === 429) {
+        const header = Number(response.headers.get("retry-after"));
+        const retryAfter = Number.isFinite(header) && header > 0 ? Math.min(Math.ceil(header), 7200) : 0;
+        throw new RateLimitError(retryAfter, await readErrorMessage(response));
+      }
+      if (!response.ok || !response.body) throw new ReplyServerError(await readErrorMessage(response));
       startReveal(assistantId);
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -186,10 +205,22 @@ export function ChatPage() {
       finishReveal(assistantId, received.trim().length > 0 ? received : t("usChat.chat.empty"));
     } catch (error) {
       stopReveal();
-      const fallback = error instanceof UnauthorizedError ? "" : error instanceof Error ? error.message : "";
-      setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content: fallback, pending: undefined, error: true } : m)));
+      if (isAbortError(error)) {
+        // 用户主动离开（返回重选/卸载）：安静撤掉占位气泡，不算错误。
+        setMessages((prev) => prev.filter((m) => m.id !== assistantId));
+        return;
+      }
+      if (error instanceof RateLimitError) {
+        const wait = error.retryAfterSeconds;
+        if (wait > 0) startCooldown(wait);
+        const text = wait > 0
+          ? t("usChat.chat.rateLimited", { minutes: Math.max(1, Math.ceil(wait / 60)) })
+          : error.serverText || t("usChat.chat.errorBubble");
+        setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content: text, pending: undefined, error: true } : m)));
+        return;
+      }
       if (error instanceof UnauthorizedError) {
-        // 暗号失效：回到暗号门等下一次输入，不自动重发（无死循环）。
+        // 会话中途暗号失效：回暗号门，文案与“密码输错”区分开，并说明记录不再保留。
         sessionRef.current = null;
         try {
           sessionStorage.removeItem(SESSION_STORAGE_KEY);
@@ -198,16 +229,21 @@ export function ChatPage() {
         }
         setMessages([]);
         setStage("gate");
-        setGateError(t("usChat.gate.error"));
+        setGateError(t("usChat.gate.expired"));
         shakeGate();
+        return;
       }
+      // 网络层异常（fetch 直接 reject，如断网的 "Failed to fetch"）没有服务端文案，走本地化兜底。
+      const serverText = error instanceof ReplyServerError ? error.message : "";
+      const fallback = serverText.length > 0 ? serverText : t("usChat.chat.errorBubble");
+      setMessages((prev) => prev.map((m) => (m.id === assistantId ? { ...m, content: fallback, pending: undefined, error: true } : m)));
     }
-  }, [finishReveal, pushReveal, shakeGate, startReveal, stopReveal, t]);
+  }, [finishReveal, pushReveal, shakeGate, startCooldown, startReveal, stopReveal, t]);
 
   const runSend = useCallback((text: string) => {
     const content = text.trim();
     const session = sessionRef.current;
-    if (!content || busyRef.current || !session) return;
+    if (!content || busyRef.current || cooldownLeft > 0 || !session) return;
     busyRef.current = true;
     setBusy(true);
     stickToBottomRef.current = true;
@@ -219,11 +255,11 @@ export function ChatPage() {
       busyRef.current = false;
       setBusy(false);
     });
-  }, [requestReply]);
+  }, [cooldownLeft, requestReply]);
 
   const retryLast = useCallback(() => {
     const session = sessionRef.current;
-    if (busyRef.current || !session) return;
+    if (busyRef.current || cooldownLeft > 0 || !session) return;
     const current = messagesRef.current;
     const lastUserIndex = current.map((message) => message.role).lastIndexOf("user");
     if (lastUserIndex === -1) return;
@@ -236,7 +272,7 @@ export function ChatPage() {
       busyRef.current = false;
       setBusy(false);
     });
-  }, [requestReply]);
+  }, [cooldownLeft, requestReply]);
 
   const choosePersona = (id: PersonaId) => {
     setPersonaId(id);
@@ -280,7 +316,9 @@ export function ChatPage() {
     } catch {
       /* 同上 */
     }
+    // 先停打字机，再中断进行中的网络请求与流读取（不再消耗带宽和限流配额）。
     stopReveal();
+    abortRef.current?.abort();
     setMessages([]);
     setPassword("");
     setGateError("");
@@ -307,10 +345,16 @@ export function ChatPage() {
   };
 
   const errorText = t("usChat.chat.errorBubble");
-  const rowAvatar = <span className="us-chat-row__avatar" aria-hidden="true">{persona?.avatar}</span>;
+  const waitingLabel = t("usChat.chat.waiting");
+  const retryLabel = cooldownLeft > 0
+    ? t("usChat.chat.retryCooldown", { seconds: cooldownLeft })
+    : t("usChat.chat.retry");
+  const retryDisabled = busy || cooldownLeft > 0;
+  const nearLimit = input.length >= MESSAGE_MAX_LENGTH - 100;
+  const personaAvatar = persona?.avatar;
 
   return (
-    <PageTransition className="us-chat-page" data-persona={personaId ?? undefined}>
+    <PageTransition className="us-chat-page" data-persona={personaId ?? undefined} data-stage={stage}>
       <header className="us-chat-head">
         <p className="us-chat-eyebrow" aria-hidden="true">{t("nav.chat")}</p>
         <h1 className="us-chat-title">{t("usChat.title")}</h1>
@@ -398,45 +442,41 @@ export function ChatPage() {
               className="us-chat-log" role="log" aria-live="polite" aria-label={t("usChat.chat.logLabel")}
               ref={logRef} onScroll={onLogScroll}
             >
-              {messages.length === 0 ? <p className="us-chat-log__empty">{t("usChat.chat.placeholder")}</p> : null}
-              {messages.map((message) =>
-                message.error ? (
-                  <div key={message.id} className="us-chat-row us-chat-row--error">
-                    <div className="us-chat-bubble us-chat-bubble--error">
-                      <p>{message.content || errorText}</p>
-                      <button type="button" className="us-chat-retry" onClick={retryLast} disabled={busy}>
-                        <RotateCcw size={14} aria-hidden="true" />
-                        {t("usChat.chat.retry")}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div key={message.id} className={`us-chat-row us-chat-row--${message.role}`}>
-                    {message.role === "assistant" ? rowAvatar : null}
-                    <div className={`us-chat-bubble us-chat-bubble--${message.role}${message.pending ? " is-typing" : ""}`}>
-                      {message.content ||
-                        (message.pending ? (
-                          <span className="us-chat-typing" aria-label={t("usChat.chat.waiting")}>
-                            <i /><i /><i />
-                          </span>
-                        ) : null)}
-                    </div>
-                  </div>
-                ),
-              )}
+              {messages.length === 0 ? <p className="us-chat-log__empty">{t("usChat.chat.emptyState")}</p> : null}
+              {messages.map((message) => (
+                <ChatMessageRow
+                  key={message.id}
+                  message={message}
+                  avatar={message.role === "assistant" ? personaAvatar : undefined}
+                  waitingLabel={waitingLabel}
+                  errorFallback={errorText}
+                  retryLabel={retryLabel}
+                  retryDisabled={retryDisabled}
+                  onRetry={retryLast}
+                />
+              ))}
               <div ref={logEndRef} aria-hidden="true" />
             </div>
 
             <form className="us-chat-composer" onSubmit={(event) => { event.preventDefault(); runSend(input); }}>
               <label className="sr-only" htmlFor="us-chat-input">{t("usChat.chat.inputLabel")}</label>
-              <textarea
-                id="us-chat-input" ref={chatInputRef} className="us-chat-composer__input" rows={1}
-                placeholder={t("usChat.chat.placeholder")} value={input}
-                onChange={(event) => setInput(event.target.value)} onKeyDown={onChatKeyDown}
-              />
+              <div className="us-chat-composer__field">
+                <textarea
+                  id="us-chat-input" ref={chatInputRef} className="us-chat-composer__input" rows={1}
+                  maxLength={MESSAGE_MAX_LENGTH}
+                  placeholder={t("usChat.chat.placeholder")} value={input}
+                  onChange={(event) => setInput(event.target.value)} onKeyDown={onChatKeyDown}
+                  onFocus={(event) => event.currentTarget.scrollIntoView({ block: "nearest" })}
+                />
+                {nearLimit ? (
+                  <p className="us-chat-composer__count">
+                    {t("usChat.chat.charCount", { used: input.length, max: MESSAGE_MAX_LENGTH })}
+                  </p>
+                ) : null}
+              </div>
               <button
                 className="us-chat-composer__send" type="submit"
-                disabled={busy || input.trim().length === 0} aria-label={t("usChat.chat.send")}
+                disabled={retryDisabled || input.trim().length === 0} aria-label={t("usChat.chat.send")}
               >
                 <Send size={17} aria-hidden="true" />
                 {t("usChat.chat.send")}
