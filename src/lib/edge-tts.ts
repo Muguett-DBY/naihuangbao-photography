@@ -3,7 +3,7 @@
  *
  * 协议与本机已验证跑通的 msedge-tts@2.0.9 对齐（参考本机
  * tts-test/synth_msedge.cjs 用同一包产出过可用 MP3）：
- * - 端点  wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1
+ * - 端点  wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1
  * - 令牌  TrustedClientToken=6A5AA1D4EAFF4E9FB37E23D68491D6F4（msedge-tts 同款常量）
  * - 防伪  Sec-MS-GEC = SHA-256(Windows 文件时间(向下取整到 5 分钟) + 令牌) 十六进制大写，
  *         Sec-MS-GEC-Version=1-143.0.3650.96（与 msedge-tts@2.0.9 一致）
@@ -22,12 +22,16 @@
  * （原生 WebSocket + WebCrypto）直接连通性验证，也便于单测注入 mock。
  */
 
-/* ==================== 协议常量（与 msedge-tts@2.0.9 一致） ==================== */
+/* ==================== 协议常量（对齐 msedge-tts@2.1.0 的握手变更） ==================== */
 
 export const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
 export const WSS_URL = "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1";
 export const SEC_MS_GEC_VERSION = "1-143.0.3650.96";
-/** AUDIO_24KHZ_48KBITRATE_MONO_MP3（本机验证过的输出格式） */
+/**
+ * 2026-10 上游迁移：端点换 api.msedgeservices.com、鉴权参数名 TrustedClientToken →
+ * Ocp-Apim-Subscription-Key（旧组合 403，对齐 msedge-tts@2.1.0）。格式实测仅 24kHz
+ * 可用（48kHz 请求被 1007 拒绝），维持 24kHz/48kbps。
+ */
 export const EDGE_OUTPUT_FORMAT = "audio-24khz-48kbitrate-mono-mp3";
 /** 课堂默认声线（奶黄包老师；本机验证过的音色） */
 export const EDGE_VOICE = "zh-CN-XiaoxiaoNeural";
@@ -70,10 +74,11 @@ function generateUUID(): string {
   });
 }
 
-/** 合成连接 URL：令牌 + Sec-MS-GEC 防伪 + 版本 + 连接 id */
+/** 合成连接 URL：令牌 + Sec-MS-GEC 防伪 + 版本 + 连接 id。
+ *  鉴权参数名用 Ocp-Apim-Subscription-Key（2.1.0 起上游仅认此名，旧 TrustedClientToken → 403）。 */
 export async function buildSynthUrl(nowMs: number = Date.now()): Promise<string> {
   const secMsGec = await generateSecMsGec(TRUSTED_CLIENT_TOKEN, nowMs);
-  return `${WSS_URL}?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}&Sec-MS-GEC=${secMsGec}`
+  return `${WSS_URL}?Ocp-Apim-Subscription-Key=${TRUSTED_CLIENT_TOKEN}&Sec-MS-GEC=${secMsGec}`
     + `&Sec-MS-GEC-Version=${SEC_MS_GEC_VERSION}&ConnectionId=${generateUUID()}`;
 }
 

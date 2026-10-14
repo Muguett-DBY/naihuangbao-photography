@@ -14,7 +14,7 @@ import { validateString } from "../_validation";
 const EDGE_UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0";
 const TRUSTED_CLIENT_TOKEN = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
-const WSS_URL = "wss://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1";
+const WSS_URL = "wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1";
 const GEC_VERSION = "1-143.0.3650.96";
 const OUTPUT_FORMAT = "audio-24khz-48kbitrate-mono-mp3";
 const MAX_TEXT = 800;
@@ -73,7 +73,7 @@ function audioPayloadOf(frame: ArrayBuffer): Uint8Array | null {
 async function synthesize(text: string, voice: string, rate: string): Promise<ArrayBuffer> {
   const gec = await secMsGec();
   const url =
-    `${WSS_URL}?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}&Sec-MS-GEC=${gec}` +
+    `${WSS_URL}?Ocp-Apim-Subscription-Key=${TRUSTED_CLIENT_TOKEN}&Sec-MS-GEC=${gec}` +
     `&Sec-MS-GEC-Version=${GEC_VERSION}&ConnectionId=${crypto.randomUUID()}`;
   // Workers 的 WebSocket 客户端：fetch + Upgrade 头，运行时自动生成握手 key
   const upstream = await fetch(url.replace("wss://", "https://"), {
