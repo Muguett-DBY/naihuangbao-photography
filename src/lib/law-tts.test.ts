@@ -530,3 +530,18 @@ describe("既有语义保持", () => {
     expect(MockWebSocket.instances.length).toBe(afterFiftyOne + 1); // 未淘汰，缓存命中
   });
 });
+
+describe("后台静音（visibilitychange）", () => {
+  it("标签页隐藏时立即 cancel 朗读；可见时不打扰", async () => {
+    const lawTts = await loadLawTts();
+    // 模拟隐藏（不依赖引擎路径——cancel 是全局语义，无论引擎 1/2 都必须停）
+    Object.defineProperty(document, "hidden", { configurable: true, get: () => true });
+    lawTts.handleTtsVisibilityChange();
+    expect(mockSpeechSynthesis.cancel).toHaveBeenCalled();
+    // 模拟回到可见（不应再次触发 cancel——不打扰正常状态）
+    mockSpeechSynthesis.cancel.mockClear();
+    Object.defineProperty(document, "hidden", { configurable: true, get: () => false });
+    lawTts.handleTtsVisibilityChange();
+    expect(mockSpeechSynthesis.cancel).not.toHaveBeenCalled();
+  });
+});

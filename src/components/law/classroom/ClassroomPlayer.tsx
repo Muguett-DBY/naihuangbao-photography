@@ -305,6 +305,16 @@ export function ClassroomPlayer({
   // 卸载收声：离开课堂绝不留下背台词的奶黄包
   useEffect(() => () => tts.cancel(), []);
 
+  // 后台静音：标签页不可见时暂停播放（语音随 playing 状态停，law-tts 另有全局
+  // cancel 兜底）。不自动恢复——回到页面由用户按播放，杜绝"后台一直响"。
+  useEffect(() => {
+    const onHide = () => {
+      if (document.hidden) playerRef.current?.pause();
+    };
+    document.addEventListener("visibilitychange", onHide);
+    return () => document.removeEventListener("visibilitychange", onHide);
+  }, []);
+
   /* —— 操作 —— */
   const seekToScene = useCallback(
     (index: number) => {

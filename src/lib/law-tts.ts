@@ -52,6 +52,19 @@ export const isSupported: boolean = typeof window !== "undefined" && "speechSynt
 
 let enabled = safeLocalStorage.getItem(TTS_ENABLED_KEY) !== "off";
 
+/**
+ * 后台静音：标签页不可见（切走/最小化/被覆盖）时立即停止全部朗读。
+ * 根因（2026-10 用户实测）：课堂页在后台标签会继续播 TTS，"电脑一直在响"
+ * 却找不到来源。朗读不自动恢复——回到页面由用户重新按播放，避免打扰。
+ */
+export function handleTtsVisibilityChange(): void {
+  if (typeof document !== "undefined" && document.hidden) cancel();
+}
+
+if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", handleTtsVisibilityChange);
+}
+
 /** 用户是否开启了语音 */
 export function isTtsEnabled(): boolean {
   return enabled;
