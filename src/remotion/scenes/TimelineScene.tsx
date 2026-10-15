@@ -4,7 +4,9 @@ import type { LawSubjectId } from "../../types/law";
 import {
   C,
   F,
+  RADIUS,
   SAFE,
+  SHADOW,
   SPRING,
   SUBJECT_ACCENTS,
   T,
@@ -15,14 +17,18 @@ import {
   SceneChrome,
   strokeDashStyle,
   usePrefersReducedMotion,
+  useQBounceIn,
   useStageProgress,
 } from "../chrome";
 
 /**
- * TimelineScene — 时间线场景（横轴版）。
- * 标题入场后，横贯安全区的「时间轴」自左向右描边生长（stroke-dashoffset 帧驱动），
- * 轴尖带高亮光点；事件圆点沿轴依次弹出，事件卡（年份大字 + 事件短句）随点
- * 上下交替展开，末端的箭头在轴线贯通时弹出入位。
+ * TimelineScene — 时间线场景（可爱令牌 · 横轴版）。
+ * 标题入场后，横贯安全区的「时间轴」自左向右描边生长：粉彩宽轨（圆头胶囊轨）
+ * 垫底 + ink 细线铺成长（stroke-dashoffset 帧驱动），轴尖带高亮光点；
+ * 事件糖果圆点沿轴依次弹出，事件卡（年份糖果徽章 + 事件短句）随点上下交替
+ * Q 弹展开，末端的箭头在轴线贯通时弹出入位。
+ *
+ * 年份糖果徽章：粉彩芯胶囊 + ink 描边 + 年份 ink 文楷字（对比度红线）。
  *
  * 动画完全帧驱动（chrome 的 spring helpers + interpolate，无 Math.random）；
  * prefers-reduced-motion 时全部定格终态。
@@ -75,6 +81,81 @@ const DOT_R = 12.5;
 
 const clamp = (value: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, value));
+
+/**
+ * 事件卡（可爱令牌）：浮层白卡大圆角 + 粉彩描边 + 软阴影，年份是糖果徽章
+ * （粉彩芯胶囊 + ink 细描边 + ink 文楷字）。useQBounceIn 朝轴心方向 Q 弹展开
+ * （过冲 ≤5px，朝离开轴的方向轻微过头再回正）。抽成组件以便逐卡持 hook。
+ */
+const TimelineEventCard: FC<{
+  item: TimelineEvent;
+  tone: string;
+  enterAt: number;
+  above: boolean;
+  anchorY: number;
+  left: number;
+  width: number;
+  yearFont: number;
+  eventFont: number;
+}> = ({ item, tone, enterAt, above, anchorY, left, width, yearFont, eventFont }) => {
+  const pop = useQBounceIn(enterAt, { distance: 18, scaleFrom: 0.92, overshootPx: 5 });
+  // 上卡从轴心上方落回（y 正→0、过冲为负=向上过头），下卡镜像
+  const dir = above ? 1 : -1;
+  const anchor: CSSProperties = above
+    ? { bottom: anchorY }
+    : { top: anchorY };
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left,
+        width,
+        boxSizing: "border-box",
+        padding: "14px 18px",
+        background: C.raised,
+        borderRadius: RADIUS.inner,
+        border: `2.5px solid ${withAlpha(tone, 0.35)}`,
+        boxShadow: SHADOW.soft,
+        opacity: pop.opacity,
+        transform: `translateY(${dir * pop.y}px) scale(${pop.scale})`,
+        ...anchor,
+      }}
+    >
+      {/* 年份糖果徽章：粉彩芯胶囊 + ink 细描边 */}
+      <div
+        style={{
+          display: "inline-block",
+          padding: "2px 18px",
+          borderRadius: RADIUS.pill,
+          background: withAlpha(tone, 0.16),
+          border: `2px solid ${withAlpha(tone, 0.45)}`,
+          fontFamily: F.zhSerifSemi,
+          fontSize: yearFont,
+          lineHeight: 1.3,
+          color: tone,
+          letterSpacing: "0.02em",
+        }}
+      >
+        {item.time}
+      </div>
+      <p
+        style={{
+          margin: `${Math.round(yearFont * 0.18)}px 0 0`,
+          fontFamily: F.zhSerif,
+          fontSize: eventFont,
+          lineHeight: 1.5,
+          color: C.ink,
+          display: "-webkit-box",
+          WebkitBoxOrient: "vertical",
+          WebkitLineClamp: 3,
+          overflow: "hidden",
+        }}
+      >
+        {item.event}
+      </p>
+    </div>
+  );
+};
 
 export const TimelineScene: FC<TimelineSceneProps> = ({
   title,
@@ -153,13 +234,14 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
           >
             {title}
           </h1>
+          {/* 强调杠：粉彩胶囊下划线（可爱令牌——替代重描边式色杠） */}
           <div
             style={{
               width: AREA_W * 0.22,
-              height: 8,
+              height: 10,
               marginTop: 18,
-              borderRadius: 4,
-              background: accent,
+              borderRadius: RADIUS.pill,
+              background: withAlpha(accent, 0.32),
               transformOrigin: "left center",
               transform: `scaleX(${ruleIn})`,
             }}
@@ -176,15 +258,15 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
               style={{ position: "absolute", left: 0, top: 0 }}
               aria-hidden="true"
             >
-              {/* 浅色轨道 */}
+              {/* 粉彩宽轨（圆头胶囊轨，可爱令牌的时间轴本体） */}
               <path
                 d={`M ${AXIS_X0} ${AXIS_Y} L ${AXIS_X1} ${AXIS_Y}`}
                 fill="none"
-                stroke={C.line}
-                strokeWidth={6}
+                stroke={withAlpha(accent, 0.2)}
+                strokeWidth={16}
                 strokeLinecap="round"
               />
-              {/* 描边生长：左 → 右 */}
+              {/* 描边生长：左 → 右（ink 细线铺在粉彩轨上） */}
               <path
                 d={`M ${AXIS_X0} ${AXIS_Y} L ${AXIS_X1} ${AXIS_Y}`}
                 fill="none"
@@ -213,7 +295,7 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
                 }}
               />
 
-              {/* 事件圆点 + 引线 */}
+              {/* 事件糖果圆点 + 引线 */}
               {events.map((_, index) => {
                 const pop = progress(appearAt(index), SPRING.term);
                 const above = index % 2 === 0;
@@ -237,7 +319,7 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
                       cx={x}
                       cy={AXIS_Y}
                       r={DOT_R}
-                      fill={C.surface}
+                      fill={C.raised}
                       stroke={accent}
                       strokeWidth={5}
                       opacity={Math.min(1, pop * 1.6)}
@@ -252,61 +334,26 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
               })}
             </svg>
 
-            {/* 事件卡：年份大字 + 事件短句，沿轴上下交替 */}
+            {/* 事件卡：年份糖果徽章 + 事件短句，沿轴上下交替 Q 弹展开 */}
             {events.map((item, index) => {
               const above = index % 2 === 0;
               const dist = distOf(index);
-              const enter = progress(appearAt(index) + 5, SPRING.soft);
               const x = eventX(index);
               const cardLeft = clamp(x - cardW / 2, 0, AREA_W - cardW);
-              const anchor: CSSProperties = above
-                ? { bottom: AREA_H - AXIS_Y + dist }
-                : { top: AXIS_Y + dist };
+              const anchorY = above ? AREA_H - AXIS_Y + dist : AXIS_Y + dist;
               return (
-                <div
+                <TimelineEventCard
                   key={`${index}-${item.time}`}
-                  style={{
-                    position: "absolute",
-                    left: cardLeft,
-                    width: cardW,
-                    boxSizing: "border-box",
-                    padding: "14px 18px",
-                    background: C.surface,
-                    borderRadius: 18,
-                    border: `2.5px solid ${withAlpha(accent, 0.4)}`,
-                    boxShadow: `0 10px 28px ${withAlpha(C.ink, 0.08)}`,
-                    opacity: enter,
-                    transform: `translateY(${(above ? 1 : -1) * interpolate(enter, [0, 1], [18, 0])}px)`,
-                    ...anchor,
-                  }}
-                >
-                  <div
-                    style={{
-                      fontFamily: F.zhBlack,
-                      fontSize: yearFont,
-                      lineHeight: 1.15,
-                      color: accent,
-                      letterSpacing: "0.02em",
-                    }}
-                  >
-                    {item.time}
-                  </div>
-                  <p
-                    style={{
-                      margin: `${Math.round(yearFont * 0.18)}px 0 0`,
-                      fontFamily: F.zhSerif,
-                      fontSize: eventFont,
-                      lineHeight: 1.5,
-                      color: C.ink,
-                      display: "-webkit-box",
-                      WebkitBoxOrient: "vertical",
-                      WebkitLineClamp: 3,
-                      overflow: "hidden",
-                    }}
-                  >
-                    {item.event}
-                  </p>
-                </div>
+                  item={item}
+                  tone={accent}
+                  enterAt={appearAt(index) + 5}
+                  above={above}
+                  anchorY={anchorY}
+                  left={cardLeft}
+                  width={cardW}
+                  yearFont={yearFont}
+                  eventFont={eventFont}
+                />
               );
             })}
           </div>

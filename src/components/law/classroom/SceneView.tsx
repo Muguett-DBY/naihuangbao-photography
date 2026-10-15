@@ -1,4 +1,5 @@
 import type { ClassroomScene } from "../../../lib/law-classroom";
+import type { LawSubjectId } from "../../../types/law";
 import { C } from "../../../remotion/theme";
 import { ConceptScene } from "../../../remotion/scenes/ConceptScene";
 import { ListScene } from "../../../remotion/scenes/ListScene";
@@ -55,25 +56,85 @@ function paragraphsOf(content: string): string[] {
 }
 
 /** 单场场景 → 对应的 Remotion 场景组件（帧驱动，确定性渲染） */
-export function SceneView({ scene, accent }: { scene: ClassroomScene; accent: string }) {
+export function SceneView({
+  scene,
+  accent,
+  subject,
+  sceneIndex,
+  sceneTotal,
+}: {
+  scene: ClassroomScene;
+  accent: string;
+  /** 学科 id：接通场景粉彩 token 与 SceneChrome 学科淡晕（缺省时场景自混兜底） */
+  subject?: LawSubjectId;
+  /** 第几场（0-based，SceneChrome 进度点） */
+  sceneIndex?: number;
+  /** 共几场（0 时 chrome 不画进度点） */
+  sceneTotal?: number;
+}) {
   switch (scene.type) {
     case "compare": {
       const rows = parseCompareRows(scene.items);
       if (rows) {
         const [leftTitle, rightTitle] = splitCompareTitles(scene.title);
         return (
-          <CompareScene leftTitle={leftTitle} rightTitle={rightTitle} rows={rows} rightAccent={accent} />
+          <CompareScene
+            leftTitle={leftTitle}
+            rightTitle={rightTitle}
+            rows={rows}
+            rightAccent={accent}
+            accent={accent}
+            subject={subject}
+            sceneIndex={sceneIndex}
+            sceneTotal={sceneTotal}
+          />
         );
       }
-      return <ListScene title={scene.title} items={scene.items} accent={accent} />;
+      return (
+        <ListScene
+          title={scene.title}
+          items={scene.items}
+          accent={accent}
+          subject={subject}
+          sceneIndex={sceneIndex}
+          sceneTotal={sceneTotal}
+        />
+      );
     }
     case "timeline":
-      return <TimelineScene title={scene.title} events={scene.items.map(parseTimelineEvent)} />;
+      return (
+        <TimelineScene
+          title={scene.title}
+          events={scene.items.map(parseTimelineEvent)}
+          accent={accent}
+          subject={subject}
+          sceneIndex={sceneIndex}
+          sceneTotal={sceneTotal}
+        />
+      );
     case "flow":
-      return <FlowScene title={scene.title} steps={scene.items} />;
+      return (
+        <FlowScene
+          title={scene.title}
+          steps={scene.items}
+          accent={accent}
+          subject={subject}
+          sceneIndex={sceneIndex}
+          sceneTotal={sceneTotal}
+        />
+      );
     case "mnemonic": {
       const [mnemonic, explanation] = splitMnemonic(scene.content);
-      return <MnemonicScene mnemonic={mnemonic} explanation={explanation} />;
+      return (
+        <MnemonicScene
+          mnemonic={mnemonic}
+          explanation={explanation}
+          accent={accent}
+          subject={subject}
+          sceneIndex={sceneIndex}
+          sceneTotal={sceneTotal}
+        />
+      );
     }
     case "alert":
       // 例外/易错：警示色（theme.C.err）压过学科色，视觉上先声夺人
@@ -83,6 +144,8 @@ export function SceneView({ scene, accent }: { scene: ClassroomScene; accent: st
           content={paragraphsOf(scene.content)}
           keyTerms={scene.keyTerms}
           accent={C.err}
+          sceneIndex={sceneIndex}
+          sceneTotal={sceneTotal}
         />
       );
     case "list":
@@ -94,6 +157,9 @@ export function SceneView({ scene, accent }: { scene: ClassroomScene; accent: st
           title={scene.title}
           items={scene.items.length > 0 ? scene.items : paragraphsOf(scene.content)}
           accent={accent}
+          subject={subject}
+          sceneIndex={sceneIndex}
+          sceneTotal={sceneTotal}
         />
       );
     default:
@@ -103,6 +169,9 @@ export function SceneView({ scene, accent }: { scene: ClassroomScene; accent: st
           content={paragraphsOf(scene.content)}
           keyTerms={scene.keyTerms}
           accent={accent}
+          subject={subject}
+          sceneIndex={sceneIndex}
+          sceneTotal={sceneTotal}
         />
       );
   }

@@ -93,13 +93,16 @@ export function buildSegments(scenes: readonly ClassroomScene[]): ClassroomSegme
 
 type ClassroomCompositionProps = {
   segments: ClassroomSegment[];
+  /** 场景强调墨（SUBJECT_ACCENTS[subject].ink）：承载场景内文字色，双底 ≥5.54:1 */
   accent: string;
+  /** 学科 id：接通场景粉彩 token 与 SceneChrome 学科淡晕 */
+  subject: LawSubjectId;
 };
 
 /** 组合根：纸白铺底，每场一个 Sequence，帧号落在谁的区间就渲染谁 */
-const ClassroomComposition: FC<ClassroomCompositionProps> = ({ segments, accent }) => (
+const ClassroomComposition: FC<ClassroomCompositionProps> = ({ segments, accent, subject }) => (
   <AbsoluteFill style={{ backgroundColor: C.paper }}>
-    {segments.map((segment) => (
+    {segments.map((segment, index) => (
       <Sequence
         key={`${segment.scene.stepId}-${segment.start}`}
         from={segment.start}
@@ -108,11 +111,18 @@ const ClassroomComposition: FC<ClassroomCompositionProps> = ({ segments, accent 
         name={segment.scene.title}
       >
         {/* 图解场景（scene.graphic 哨兵）→ GraphicScene 帧驱动重排图解完整结构；
-            其余场景照旧走 SceneView 的类型映射 */}
+            其余场景照旧走 SceneView 的类型映射。
+            sceneIndex/sceneTotal 接通 SceneChrome 底部进度点（每场自己的序号） */}
         {segment.scene.graphic ? (
-          <GraphicScene graphic={segment.scene.graphic} accent={accent} />
+          <GraphicScene graphic={segment.scene.graphic} accent={accent} subject={subject} />
         ) : (
-          <SceneView scene={segment.scene} accent={accent} />
+          <SceneView
+            scene={segment.scene}
+            accent={accent}
+            subject={subject}
+            sceneIndex={index}
+            sceneTotal={segments.length}
+          />
         )}
       </Sequence>
     ))}
@@ -154,6 +164,14 @@ export function ClassroomPlayer({
   const totalFrames = segments.reduce((sum, segment) => sum + segment.duration, 0);
   const subjectLabel = LAW_SUBJECT_MAP[subject]?.name ?? subject;
   const accentFallback = SUBJECT_ACCENTS[subject]?.accent ?? accent;
+  /**
+   * 场景强调墨：一律取学科 ink token（SUBJECT_ACCENTS[subject].ink）。
+   * 页面层传入的 accent 是 LAW_SUBJECT_MAP 的旧中间调（如民法 #5f7fae），
+   * 直接当场景文字色用对奶油底只有 2.8-4.1:1（AA 不达），且场景粉彩全靠
+   * 低透明度自混、拿不到页面外壳的粉彩 token——在组合入口统一换成 ink
+   * （双底 ≥5.54:1），alert 场景仍在 SceneView 内用 C.err 覆盖。
+   */
+  const sceneAccent = SUBJECT_ACCENTS[subject]?.ink ?? accent;
 
   /** 当前场景下标：由帧号派生（自动推进/拖动/快捷键共用一条真源） */
   const segIndex = useMemo(() => {
@@ -362,8 +380,8 @@ export function ClassroomPlayer({
   );
 
   const compositionProps = useMemo<ClassroomCompositionProps>(
-    () => ({ segments, accent }),
-    [segments, accent],
+    () => ({ segments, accent: sceneAccent, subject }),
+    [segments, sceneAccent, subject],
   );
 
   /* —— 空课堂：没有可播的场景，给一张安静的状态卡 —— */

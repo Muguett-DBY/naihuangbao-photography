@@ -1,22 +1,39 @@
 import { type FC } from "react";
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import type { LawSubjectId } from "../../types/law";
-import { SceneChrome, usePrefersReducedMotion, useStageProgress } from "../chrome";
-import { C, F, SUBJECT_ACCENTS, sceneFrameStyle, withAlpha } from "../theme";
+import {
+  SceneChrome,
+  usePrefersReducedMotion,
+  useStageProgress,
+} from "../chrome";
+import {
+  C,
+  F,
+  RADIUS,
+  SHADOW,
+  SUBJECT_ACCENTS,
+  sceneFrameStyle,
+  withAlpha,
+} from "../theme";
 
 /**
- * MnemonicScene — 口诀记忆卡（图解版）。四段式节奏：
+ * MnemonicScene — 口诀记忆卡（可爱化）。四段式节奏：
  *   ① 逐字入场：口诀每个字依次浮入（spring 上浮 + 淡入，保留）；
- *   ② 停留：口诀完整停留，下划线在停留期内从中心划出；
- *   ③ 盖住→揭示：一张遮罩从左擦入盖住口诀（试背时刻），停顿后从右
- *      擦出揭示——帧驱动遮罩擦除动画，呼应"先背再对答案"的记忆节奏；
+ *   ② 停留：口诀完整停留，粉彩→强调墨渐变胶囊下划线从中心划出；
+ *   ③ 盖住→揭示：一张「粉彩渐变遮罩」从左擦入盖住口诀（试背时刻），
+ *      停顿后从右擦出揭示——擦出节奏本身承载「背对了」的奖励感；
+ *      遮罩为粉彩渐变（多层背景叠不透明
+ *      底，保证盖得住字），呼应"先背再对答案"的记忆节奏；
  *   ④ 逐句揭示：解释文本按句号/问号等断句，一句一句上滑淡入。
  *
  * 动画完全由 useCurrentFrame() + interpolate()/spring() 驱动（确定性渲染，
- * 无 Math.random），全部走 chrome.tsx 的帧驱动 helpers；配色弃用硬编码，
- * 统一走 theme（C/F/SUBJECT_ACCENTS），accent 缺省取 xianfa 学科色 token
- * （与旧版 #b1544e 视觉一致）。尊重 prefers-reduced-motion：定格在"揭示
- * 完成"的最终静态画面（遮罩不出现）。SceneChrome 包壳提供徽标/淡晕/进度点。
+ * 无 Math.random），帧驱动 helpers 全部复用 chrome.tsx（含 SceneChrome 自带的
+ * 右上奶黄包贴纸——本场景不再另摆第二只，遵守吉祥物不堆砌红线）；配色统一
+ * 走 theme
+ * （C/F/RADIUS/SHADOW/SUBJECT_ACCENTS），accent 缺省取 xianfa 学科 ink
+ * token。粉彩派生与 chrome 同规则：有 subject 用学科粉彩 token，缺省用
+ * accent 低透明度自混。尊重 prefers-reduced-motion：定格在"揭示完成"的
+ * 最终静态画面（遮罩不出现）。SceneChrome 包壳。
  */
 
 export interface MnemonicSceneProps {
@@ -138,6 +155,10 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
   const mnemonicSize =
     chars.length > 20 ? 44 : chars.length > 12 ? 58 : 72;
 
+  // 粉彩派生（chrome 同规则）：真 token 或 accent 低透明度自混兜底
+  const pastel = subject ? SUBJECT_ACCENTS[subject].pastel : null;
+  const pastelLayer = pastel ?? withAlpha(accent, 0.2);
+
   return (
     <AbsoluteFill style={{ backgroundColor: C.paper }}>
       <AbsoluteFill
@@ -152,10 +173,10 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
           style={{
             width: "100%",
             backgroundColor: C.surface,
-            border: `2px solid ${C.line}`,
-            borderRadius: 28,
+            border: `2.5px solid ${pastel ?? withAlpha(accent, 0.22)}`,
+            borderRadius: RADIUS.card,
             padding: "56px 60px",
-            boxShadow: "0 24px 64px rgba(50, 42, 40, 0.08)",
+            boxShadow: SHADOW.lift,
           }}
         >
           {/* 阶段① 逐字入场（保留）+ 阶段③ 盖住→揭示遮罩（覆盖整个口诀区） */}
@@ -195,17 +216,18 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
               );
             })}
 
-            {/* 遮罩：纸色卡片盖住口诀，虚线描边示意"先自己背一遍" */}
+            {/* 粉彩渐变遮罩：多层背景（渐变层叠在不透明 C.raised 底上）保证
+                盖得住字——渐变层即使是半透明兜底路也不透字 */}
             {coverScale > 0.001 && (
               <div
                 aria-hidden="true"
                 style={{
                   position: "absolute",
                   inset: -14,
-                  borderRadius: 18,
-                  backgroundColor: C.paper,
-                  border: `2px dashed ${withAlpha(accent, 0.45)}`,
-                  boxShadow: "0 12px 30px rgba(50, 42, 40, 0.10)",
+                  borderRadius: RADIUS.bubble,
+                  background: `linear-gradient(120deg, ${pastelLayer}, ${C.raised}), ${C.raised}`,
+                  border: `2.5px dashed ${withAlpha(accent, 0.4)}`,
+                  boxShadow: SHADOW.lift,
                   transform: `scaleX(${coverScale})`,
                   transformOrigin: coverOrigin,
                   display: "flex",
@@ -218,7 +240,7 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
                     fontFamily: F.zhSans,
                     fontSize: 26,
                     letterSpacing: "0.2em",
-                    color: C.gray,
+                    color: C.ink,
                     opacity: hintOpacity,
                   }}
                 >
@@ -228,15 +250,18 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
             )}
           </div>
 
-          {/* 阶段② 停留期下划线 */}
+          {/* 阶段② 停留期下划线：粉彩→强调墨渐变胶囊（居中 64%）。
+              「背对了」的奖励陪伴不在此处再加贴纸——SceneChrome 右上奶黄包
+              贴纸已在场，同帧出现两只画面吉祥物 + 页面层老师即堆砌
+              （吉祥物不堆砌红线），奖励感由遮罩揭示节奏本身承载 */}
           <div
             aria-hidden="true"
             style={{
               width: "64%",
               height: 6,
               margin: "40px auto 44px",
-              borderRadius: 999,
-              backgroundColor: accent,
+              borderRadius: RADIUS.pill,
+              background: `linear-gradient(90deg, ${pastelLayer}, ${accent})`,
               transform: `scaleX(${underlineGrow})`,
             }}
           />

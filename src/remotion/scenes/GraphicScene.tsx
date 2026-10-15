@@ -4,13 +4,15 @@ import type { LawGraphic, LawSubjectId } from "../../types/law";
 import {
   C,
   F,
+  RADIUS,
   SAFE,
+  SHADOW,
   SPRING,
   SUBJECT_ACCENTS,
   sceneFrameStyle,
   withAlpha,
 } from "../theme";
-import { useStageProgress } from "../chrome";
+import { MascotSticker, useQBounceIn, useStageProgress } from "../chrome";
 import {
   GraphicStructureRow,
   buildRows,
@@ -27,18 +29,21 @@ import {
  * 故本组件按「图解高潮帧」口径以 remotion spring/interpolate 原生重排图解的完整
  * 知识结构——解说步进（captions）驱动节点逐批揭示，帧号唯一决定画面，确定性成立。
  *
- * 布局（1080×1920 竖版）：头部（图解徽标 + 标题 + intro + 时间线色带）→ 结构区
- * （按 kind 分型：tree 根/枝/叶、balance 天平两侧、matrix 对照矩阵、其余按序节点卡）
- * → 底部解说字幕（与 GraphicStage 同语义的「第 x / N 步」步进）。
+ * 布局（1080×1920 竖版，可爱令牌）：头部（粉彩胶囊徽标 + 文楷标题 + intro +
+ * 粉彩胶囊强调杠 + 时间线色带）→ 结构区（粉彩大圆角底板卡，按 kind 分型：tree
+ * 根/枝/叶、balance 天平两侧、matrix 对照矩阵、其余按序节点卡）→ 底部解说字幕
+ * （与 GraphicStage 同语义的「第 x / N 步」步进胶囊）→ 右上奶黄包贴纸（chrome
+ * 同款位置，本场景自带徽标不挂 SceneChrome，故贴纸自摆）。
  *
- * 动画完全帧驱动（chrome 的 useStageProgress + interpolate，无 Math.random/Date/
- * localStorage/framer-motion）；prefers-reduced-motion 时全部定格终态。
+ * 动画完全帧驱动（chrome 的 useStageProgress/useQBounceIn + interpolate，无
+ * Math.random/Date/localStorage/framer-motion）；prefers-reduced-motion 时全部定格终态。
  */
 
 /* ==================== 时序常量（帧，30fps 基准） ==================== */
 
 const BADGE_IN = 6; // 徽标/标题起跳（与 T.titleIn 同拍）
 const INTRO_IN = 20; // intro 行起跳
+const PANEL_IN = 30; // 结构区粉彩底板起跳（首批结构行之前）
 const REVEAL_START = 46; // 第一批结构行起跳（头部完成入位之后）
 const PER_CAPTION = 84; // 每条解说步停留 2.8s（GraphicStage 自动播放 3.2s 的收紧版）
 const TAIL_HOLD = 30; // 收尾停留
@@ -67,8 +72,12 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const progress = useStageProgress();
+  const badgePop = useQBounceIn(BADGE_IN, { distance: 26, scaleFrom: 0.9, overshootPx: 6 });
 
   const tone = accent ?? SUBJECT_ACCENTS[subject].accent;
+  /** 粉彩装饰层：学科默认走 theme pastel；覆盖色（非学科 ink）以低透明度自混 */
+  const tints = SUBJECT_ACCENTS[subject];
+  const pastel = accent === tints.accent ? tints.pastel : withAlpha(accent, 0.16);
   const captions = graphic.captions;
   const total = Math.max(captions.length, 1);
   const rows = buildRows(graphic);
@@ -85,6 +94,7 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
   // 头部
   const badge = progress(BADGE_IN, SPRING.title);
   const intro = progress(INTRO_IN, SPRING.soft);
+  const panel = progress(PANEL_IN, SPRING.soft);
   const hint = progress(REVEAL_START + 12, SPRING.soft);
 
   // 结构区自适应行距：行少舒展、行多压排（行高夹在 [86, 176]）
@@ -94,6 +104,9 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
   const areaH = SAFE.bottom - SAFE.top - CHROME_TOP_CLEAR - HEADER_H - CAPTION_H;
   const pitch = rows.length > 0 ? Math.min(176, Math.max(86, Math.floor(areaH / rows.length))) : 0;
   const rowsTop = Math.max(0, Math.floor((areaH - pitch * rows.length) / 2));
+  // 粉彩底板卡：贴住结构行外扩 14px（行少时不过分空荡）
+  const panelTop = Math.max(0, rowsTop - 14);
+  const panelH = rows.length > 0 ? Math.min(areaH - panelTop, pitch * rows.length + 28) : 0;
 
   const labelFont = pitch >= 150 ? 33 : pitch >= 116 ? 30 : 26;
   const detailFont = pitch >= 150 ? 24 : pitch >= 116 ? 22 : 20;
@@ -116,23 +129,26 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* 头部：徽标 + 标题 + 强调杠 + intro +（时间线）色带
+        {/* 头部：粉彩胶囊徽标 + 文楷标题 + 粉彩胶囊强调杠 + intro +（时间线）色带
             （div：header 在课堂 Player 的页面 DOM 里会产出无标签 landmark，WCAG 1.3.1） */}
         <div style={{ flex: "none", height: HEADER_H, overflow: "hidden" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 14, opacity: badge }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <span
               style={{
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 12,
-                padding: "10px 24px",
-                borderRadius: 999,
-                border: `2px solid ${withAlpha(tone, 0.35)}`,
-                backgroundColor: withAlpha(tone, 0.1),
-                fontFamily: F.zhSans,
+                padding: "10px 26px",
+                borderRadius: RADIUS.pill,
+                border: `2.5px solid ${withAlpha(tone, 0.18)}`,
+                backgroundColor: pastel,
+                boxShadow: SHADOW.soft,
+                fontFamily: F.heading,
                 fontSize: 27,
-                letterSpacing: "0.12em",
+                letterSpacing: "0.14em",
                 color: C.ink,
+                opacity: badgePop.opacity,
+                transform: `translateY(${badgePop.y}px) scale(${badgePop.scale})`,
               }}
             >
               <span aria-hidden="true" style={{ fontSize: 30, lineHeight: 1 }}>📐</span>
@@ -153,13 +169,14 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
           >
             {graphic.title}
           </h1>
+          {/* 强调杠：粉彩胶囊下划线（可爱令牌——替代重描边式色杠） */}
           <div
             style={{
               width: 210,
-              height: 8,
+              height: 10,
               marginTop: 16,
-              borderRadius: 4,
-              background: tone,
+              borderRadius: RADIUS.pill,
+              background: withAlpha(tone, 0.32),
               transformOrigin: "left center",
               transform: `scaleX(${progress(BADGE_IN + 8, SPRING.soft)})`,
             }}
@@ -197,17 +214,36 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
                 >
                   <span
                     aria-hidden="true"
-                    style={{ width: 14, height: 14, borderRadius: 4, backgroundColor: era.color, display: "inline-block" }}
+                    style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: era.color, display: "inline-block" }}
                   />
-              {era.label}
+                  {era.label}
             </span>
           ))}
         </div>
       ) : null}
         </div>
 
-        {/* 结构区：逐行揭示（树根/树枝+叶 / 节点卡 / 天平行 / 矩阵行；行渲染见 GraphicSceneRows） */}
+        {/* 结构区：粉彩大圆角底板卡先行铺开，逐行揭示（树根/树枝+叶 / 节点卡 /
+            天平行 / 矩阵行；行渲染见 GraphicSceneRows） */}
         <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
+          {rows.length > 0 && (
+            <div
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: panelTop,
+                height: panelH,
+                boxSizing: "border-box",
+                borderRadius: RADIUS.card,
+                background: pastel,
+                border: `2px solid ${withAlpha(tone, 0.1)}`,
+                opacity: panel,
+                transform: `translateY(${interpolate(panel, [0, 1], [14, 0])}px)`,
+              }}
+            />
+          )}
           {rows.map((row, index) => (
             <GraphicStructureRow
               key={structureRowKey(row, index)}
@@ -224,7 +260,7 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
           ))}
         </div>
 
-        {/* 底部：解说字幕（「第 x / N 步」步进，与 GraphicStage 同语义）+ 回看提示 */}
+        {/* 底部：解说字幕（「第 x / N 步」粉彩胶囊步进，与 GraphicStage 同语义）+ 回看提示 */}
         <div style={{ flex: "none", height: CAPTION_H, position: "relative", overflow: "hidden" }}>
           {captions.map((caption, index) => {
             const [t0, t1] = captionWindow(index);
@@ -257,8 +293,9 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
                   style={{
                     flex: "none",
                     padding: "8px 18px",
-                    borderRadius: 999,
-                    background: withAlpha(tone, 0.14),
+                    borderRadius: RADIUS.pill,
+                    background: pastel,
+                    border: `2px solid ${withAlpha(tone, 0.3)}`,
                     fontFamily: F.enSerif,
                     fontSize: 26,
                     fontWeight: 700,
@@ -305,14 +342,22 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
         </div>
       </AbsoluteFill>
 
-      {/* 学科色角落淡晕（与 SceneChrome 同款，此处自绘以携带「完整图解」专属徽标） */}
+      {/* 学科粉彩角落淡晕（与 SceneChrome 同款口径，此处自绘以携带「完整图解」专属徽标） */}
       <AbsoluteFill
         style={{
           pointerEvents: "none",
           opacity: badge,
-          background: `radial-gradient(920px 640px at 90% 2%, ${withAlpha(tone, 0.13)}, transparent 68%)`,
+          background: `radial-gradient(920px 640px at 90% 2%, ${
+            accent === tints.accent ? withAlpha(tints.pastel, 0.55) : withAlpha(tone, 0.14)
+          }, transparent 68%)`,
         }}
       />
+
+      {/* 右上奶黄包贴纸：chrome 同款位置（SAFE.top 之上无内容，天然不打架），
+          Q 弹入场后 ≤5px 浮动（reduced 停） */}
+      <div style={{ position: "absolute", right: 56, top: 34 }}>
+        <MascotSticker size={64} enterAt={10} />
+      </div>
     </AbsoluteFill>
   );
 };

@@ -13,7 +13,9 @@ import {
   C,
   CONTENT_WIDTH,
   F,
+  RADIUS,
   SAFE,
+  SHADOW,
   SPRING,
   STEP_TYPE_META,
   SUBJECT_ACCENTS,
@@ -23,15 +25,19 @@ import {
 } from "./theme";
 
 /**
- * 课堂场景视觉底座（七种场景共用）：
- * - SceneChrome：顶部类型徽标 + 底部课程进度点 + 学科色角落淡晕（纯叠加层，不碰内容）
- * - 帧驱动动画 helpers：弹跳入场 / 描边生长 / 序号盖章（全部 useCurrentFrame +
- *   interpolate/spring，确定性渲染；需随机感时用 pseudoRandom 的帧号种子）
+ * 课堂场景视觉底座（七种场景共用，可爱化：奶油底 + 粉彩 + 吉祥物）：
+ * - SceneChrome：顶部类型徽标（粉彩胶囊 + 文楷 + 软阴影）+ 底部课程进度点
+ *   （粉彩描边）+ 学科粉彩角落淡晕 + 右上奶黄包贴纸（纯叠加层，不碰内容）
+ * - 帧驱动动画 helpers：弹跳入场 / Q 弹入场 / 描边生长 / 序号盖章 / 贴纸浮动
+ *   （全部 useCurrentFrame + interpolate/spring，确定性渲染；需随机感时用
+ *   pseudoRandom 的帧号种子）
  * - StepMark：list/checklist/alert/quiz 条目前的图形化符号（✓ 描边 / ⚠ / ？徽章）
+ *   ——已拆至 step-mark.tsx（守本文件 500 行架构预算），动效仍回这里取 helpers
  *
  * 挂载约定：SceneChrome 是全画布叠加层，与带 sceneFrameStyle padding 的内容层
  * 同级摆放（内层 AbsoluteFill 是 absolute inset:0，塞进 padding 层里会把 SAFE
- * 坐标再叠一次偏移）。动效只在入场时刻发生，之后保持静止。
+ * 坐标再叠一次偏移）。动效只落在入场时刻（吉祥物贴纸浮动是可爱令牌明示的
+ * 唯一持续动效例外，≤6px、reduced 停）。
  */
 
 // ==================== prefers-reduced-motion ====================
@@ -158,114 +164,140 @@ export function useStamp(
   };
 }
 
-// ==================== StepMark：条目图形化符号 ====================
-
-export type StepMarkKind = "checklist" | "alert" | "quiz";
+/** Q 弹入场返回值：progress 夹 [0,1]；y/scale 允许轻微过冲（过头再回正） */
+export interface QBounceIn {
+  progress: number;
+  opacity: number;
+  y: number;
+  scale: number;
+}
 
 /**
- * 条目前的 SVG 符号（升级清单：checklist ✓ 描边生长 / alert ⚠ / quiz ？徽章，
- * 替代纯数字圆点）。全部走本文件的帧驱动 helpers，reduced 时定格终态。
+ * Q 弹入场（可爱令牌）：SPRING.bouncy（ζ≈0.47）的 spring 值不夹顶，
+ * y/scale 线性外推出可见过冲——上浮越过落点再回正、缩放弹过 1 再收回，
+ * 过冲幅度显式封顶（y ≤ overshootPx=6px、scale ≤ +6%），永不糊脸。
+ * 与 useBounceIn（进度夹 [0,1]、无过冲，供场景内容稳定排版）互补。
+ * reduced 时定格终态。
  */
-export const StepMark: FC<{
-  kind: StepMarkKind;
-  accent: string;
+export function useQBounceIn(
+  startFrame: number,
+  options?: {
+    config?: SpringConfig;
+    distance?: number;
+    scaleFrom?: number;
+    overshootPx?: number;
+  },
+): QBounceIn {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const reduced = usePrefersReducedMotion();
+  const config = options?.config ?? SPRING.bouncy;
+  const distance = options?.distance ?? 30;
+  const scaleFrom = options?.scaleFrom ?? 0.86;
+  const overshootPx = Math.min(6, Math.max(0, options?.overshootPx ?? 6));
+  if (reduced) return { progress: 1, opacity: 1, y: 0, scale: 1 };
+  const value = spring({ frame: frame - startFrame, fps, config });
+  const progress = Math.min(1, Math.max(0, value));
+  const overshoot = Math.max(0, value - 1);
+  return {
+    progress,
+    opacity: progress,
+    y: Math.max(-overshootPx, (1 - value) * distance),
+    scale: 1 + Math.min(0.06, overshoot * (1 - scaleFrom) * 2),
+  };
+}
+
+/**
+ * 贴纸浮动（吉祥物专用例外）：正弦上下浮动，帧驱动（useCurrentFrame，
+ * 禁 CSS/库动画——animations.md），幅度硬封顶 ≤6px；reduced-motion 定格 0。
+ * 这是全片唯一允许的持续动效：可爱令牌明示「吉祥物可帧驱动轻微浮动 ≤6px，
+ * reduced 停」，其余装饰仍只做一次性入场。
+ */
+export function useStickerFloat(options?: {
+  amplitude?: number;
+  periodFrames?: number;
+  phase?: number;
+}): number {
+  const frame = useCurrentFrame();
+  const reduced = usePrefersReducedMotion();
+  const amplitude = Math.min(6, Math.max(0, options?.amplitude ?? 4));
+  const period = Math.max(30, options?.periodFrames ?? 90);
+  const phase = options?.phase ?? 0;
+  if (reduced) return 0;
+  const t = ((((frame + phase) % period) + period) % period) / period; // [0, 1)
+  return amplitude * Math.sin(t * Math.PI * 2);
+}
+
+/**
+ * 吉祥物贴纸：奶黄包（LawMascot 的 idle 静态形态逐字移植——Remotion 内禁
+ * framer-motion/CSS 动画，浮动改由 useStickerFloat 帧驱动）。Q 弹入场
+ * （useQBounceIn）后轻微浮动；halo 为奶黄光晕底（C.custard 低透明度，纯装饰）。
+ */
+export const MascotSticker: FC<{
+  /** 渲染尺寸（正方形边长，px；页面对齐 --law-mascot-sm 44 起步） */
+  size?: number;
   /** 入场起跳帧（场景局部帧号） */
   enterAt?: number;
-  /** 渲染尺寸（正方形边长，px） */
-  size?: number;
-}> = ({ kind, accent, enterAt = 0, size = 44 }) => {
-  const check = useStrokeProgress(enterAt + 6, SPRING.term);
-  const alert = useBounceIn(enterAt, { distance: 20, scaleFrom: 0.8 });
-  const quiz = useStamp(enterAt, { rotate: 8, scaleFrom: 1.5 });
-
-  const shared: CSSProperties = { flex: "none", width: size, height: size };
-
-  if (kind === "checklist") {
-    return (
-      <svg viewBox="0 0 34 34" style={shared} aria-hidden="true">
-        <rect
-          x={3}
-          y={3}
-          width={28}
-          height={28}
-          rx={9}
-          fill={withAlpha(accent, 0.1)}
-          stroke={withAlpha(accent, 0.45)}
-          strokeWidth={2.5}
-        />
-        <path
-          d="M10 17.5 L15 22.5 L24.5 11.5"
-          fill="none"
-          stroke={accent}
-          strokeWidth={3.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          pathLength={100}
-          style={strokeDashStyle(check)}
-        />
-      </svg>
-    );
-  }
-
-  if (kind === "alert") {
-    return (
-      <svg
-        viewBox="0 0 34 34"
-        style={{
-          ...shared,
-          opacity: alert.opacity,
-          transform: `translateY(${alert.y}px) scale(${alert.scale})`,
-        }}
-        aria-hidden="true"
-      >
-        <path
-          d="M17 4.5 L31.5 29 H2.5 Z"
-          fill={withAlpha(accent, 0.12)}
-          stroke={accent}
-          strokeWidth={2.5}
-          strokeLinejoin="round"
-        />
-        <path
-          d="M17 13 V20.5"
-          stroke={accent}
-          strokeWidth={3.5}
-          strokeLinecap="round"
-        />
-        <circle cx={17} cy={25} r={1.9} fill={accent} />
-      </svg>
-    );
-  }
+  /** 奶黄光晕底（默认开） */
+  halo?: boolean;
+  /** 入场后是否轻微浮动（默认开；reduced-motion 由 helper 内部定格） */
+  float?: boolean;
+}> = ({ size = 56, enterAt = 12, halo = true, float = true }) => {
+  const pop = useQBounceIn(enterAt, { distance: 24, scaleFrom: 0.7, overshootPx: 6 });
+  const bob = useStickerFloat({ amplitude: 5, periodFrames: 96 });
+  const drift = float ? bob : 0;
 
   return (
-    <svg
-      viewBox="0 0 34 34"
+    <div
       style={{
-        ...shared,
-        opacity: quiz.opacity,
-        transform: `scale(${quiz.scale}) rotate(${quiz.rotate}deg)`,
+        position: "relative",
+        width: size,
+        height: size,
+        opacity: pop.opacity,
+        transform: `translateY(${pop.y + drift}px) scale(${pop.scale})`,
       }}
       aria-hidden="true"
     >
-      <circle
-        cx={17}
-        cy={17}
-        r={14}
-        fill={withAlpha(accent, 0.14)}
-        stroke={withAlpha(accent, 0.45)}
-        strokeWidth={2.5}
-      />
-      <text
-        x={17}
-        y={23}
-        textAnchor="middle"
-        fontFamily={F.zhSans}
-        fontSize={19}
-        fontWeight={700}
-        fill={accent}
+      {halo && (
+        <div
+          style={{
+            position: "absolute",
+            inset: -size * 0.12,
+            borderRadius: "50%",
+            backgroundColor: withAlpha(C.custard, 0.28),
+          }}
+        />
+      )}
+      <svg
+        viewBox="0 0 100 100"
+        width={size}
+        height={size}
+        style={{ position: "relative", display: "block" }}
       >
-        ？
-      </text>
-    </svg>
+        {/* 耳朵 */}
+        <ellipse cx={24} cy={26} rx={10} ry={14} fill="#f2c9a0" transform="rotate(-18 24 26)" />
+        <ellipse cx={76} cy={26} rx={10} ry={14} fill="#f2c9a0" transform="rotate(18 76 26)" />
+        {/* 脸 */}
+        <ellipse cx={50} cy={56} rx={42} ry={38} fill="#ffdfb3" />
+        <ellipse cx={50} cy={70} rx={20} ry={12} fill="#ffe9cb" />
+        {/* 眼睛（idle 静态形态） */}
+        <circle cx={34} cy={46} r={5.2} fill="#5e3a28" />
+        <circle cx={66} cy={46} r={5.2} fill="#5e3a28" />
+        <circle cx={36} cy={44} r={1.8} fill="#fff" />
+        <circle cx={68} cy={44} r={1.8} fill="#fff" />
+        {/* 嘴 */}
+        <path
+          d="M38 62 q12 12 24 0"
+          stroke="#8a4b34"
+          strokeWidth={4.6}
+          fill="none"
+          strokeLinecap="round"
+        />
+        {/* 腮红 */}
+        <ellipse cx={22} cy={58} rx={7} ry={4.6} fill="#f6a98c" opacity={0.75} />
+        <ellipse cx={78} cy={58} rx={7} ry={4.6} fill="#f6a98c" opacity={0.75} />
+      </svg>
+    </div>
   );
 };
 
@@ -291,10 +323,12 @@ const DOT_MAX = 18; // 与 GraphicStage 的 18px 进度点同规格
 const DOT_MIN = 8;
 
 /**
- * SceneChrome — 单场场景的视觉底座叠加层：
- * 顶部类型徽标（bounce 入场）、底部课程进度点（第 M/共 N 场，已过实心、
- * 当前盖章放大、未来空心圈，样式照搬 GraphicStage 的 dots）、学科色角落淡晕
- * （入场淡入一次后静止）。pointer-events 全关，绝不拦截播放器手势。
+ * SceneChrome — 单场场景的视觉底座叠加层（可爱化）：
+ * 顶部类型徽标（粉彩胶囊 + ink 文楷标签 + 软阴影，Q 弹 bounce 入场）、
+ * 底部课程进度点（当前 ink 实心盖章放大、已过粉彩芯 + ink 描边、未来 ink
+ * 细描边空心）、学科粉彩角落淡晕（粉彩高透明度铺色，比旧 ink 淡晕更奶油）、
+ * 右上奶黄包贴纸（顶部 chrome 带内，不与安全区内容打架；入场后轻微浮动）。
+ * pointer-events 全关，绝不拦截播放器手势。
  */
 export const SceneChrome: FC<SceneChromeProps> = ({
   type,
@@ -306,9 +340,19 @@ export const SceneChrome: FC<SceneChromeProps> = ({
   const frame = useCurrentFrame();
   const reduced = usePrefersReducedMotion();
   const meta = STEP_TYPE_META[type];
-  const tone = accent ?? SUBJECT_ACCENTS[subject].accent;
+  const tints = SUBJECT_ACCENTS[subject];
+  /** 强调墨：文字/实心元素的承载色（对比度红线，双底 ≥5.54:1）；alert 覆盖时为 C.err */
+  const inkTone = accent ?? tints.ink;
+  /** 粉彩：底色块/淡晕/描边的装饰层。accent 恰为学科 ink（课堂层标准接线）时
+   *  直接用学科粉彩 token（与页面外壳 SUBJECT_TINT 同值）；无粉彩变体的覆盖色
+   *  （如 alert 的 C.err）才走低透明度自混——口径与 GraphicScene 一致 */
+  const pastel =
+    !accent || accent === tints.accent ? tints.pastel : withAlpha(accent, 0.16);
+  /** 淡晕铺色：学科粉彩高透明度（token 路径）；覆盖色自混时压到 0.14 防抢内容 */
+  const washColor =
+    !accent || accent === tints.accent ? withAlpha(tints.pastel, 0.55) : withAlpha(accent, 0.14);
 
-  const badge = useBounceIn(CHROME_T.badgeIn);
+  const badge = useQBounceIn(CHROME_T.badgeIn);
   const stamp = useStamp(CHROME_T.stampIn, { rotate: 0, scaleFrom: 1.6 });
 
   // 淡晕/进度点整行只做一次入场淡入，之后静止（动效只落在入场时刻）
@@ -339,15 +383,15 @@ export const SceneChrome: FC<SceneChromeProps> = ({
 
   return (
     <AbsoluteFill style={{ pointerEvents: "none" }}>
-      {/* 学科色角落淡晕：右上角一处足矣，subtle wash 不抢内容 */}
+      {/* 学科粉彩角落淡晕：右上角一处足矣，粉彩高透明度铺出奶油感，不抢内容 */}
       <AbsoluteFill
         style={{
           opacity: wash,
-          background: `radial-gradient(920px 640px at 90% 2%, ${withAlpha(tone, 0.13)}, transparent 68%)`,
+          background: `radial-gradient(960px 660px at 92% 0%, ${washColor}, transparent 70%)`,
         }}
       />
 
-      {/* 顶部场景类型徽标：类型图标 + 中文标签 */}
+      {/* 顶部场景类型徽标：粉彩胶囊 + 文楷标签 + 软阴影（可爱令牌） */}
       <div
         style={{
           position: "absolute",
@@ -356,11 +400,12 @@ export const SceneChrome: FC<SceneChromeProps> = ({
           display: "flex",
           alignItems: "center",
           gap: 14,
-          padding: "14px 28px",
-          borderRadius: 999,
-          border: `2px solid ${withAlpha(tone, 0.35)}`,
-          backgroundColor: withAlpha(tone, 0.1),
-          fontFamily: F.zhSans,
+          padding: "14px 30px",
+          borderRadius: RADIUS.pill,
+          border: `2.5px solid ${withAlpha(inkTone, 0.18)}`,
+          backgroundColor: pastel,
+          boxShadow: SHADOW.soft,
+          fontFamily: F.heading,
           opacity: badge.opacity,
           transform: `translateY(${badge.y}px) scale(${badge.scale})`,
         }}
@@ -368,12 +413,27 @@ export const SceneChrome: FC<SceneChromeProps> = ({
         <span aria-hidden="true" style={{ fontSize: 34, lineHeight: 1 }}>
           {meta.icon}
         </span>
-        <span style={{ fontSize: 30, lineHeight: 1, letterSpacing: "0.14em", color: C.ink }}>
+        {/* 标签用 ink 承载（对比度红线）：学科 ink 对粉彩底 ≥5.54:1；
+            覆盖色路径（C.err 4.0:1 < 4.5）回落全局暖墨 */}
+        <span
+          style={{
+            fontSize: 30,
+            lineHeight: 1,
+            letterSpacing: "0.14em",
+            color: accent ? C.ink : inkTone,
+          }}
+        >
           {meta.scene}
         </span>
       </div>
 
-      {/* 底部课程进度点：已过实心（65% 学科色）· 当前盖章放大 1.35 · 未来空心圈 */}
+      {/* 吉祥物贴纸：右上 chrome 带内（SAFE.top 之上无内容，天然不打架），
+          Q 弹入场后 ≤5px 浮动（reduced 停） */}
+      <div style={{ position: "absolute", right: 56, top: 34 }}>
+        <MascotSticker size={64} enterAt={CHROME_T.stampIn} />
+      </div>
+
+      {/* 底部课程进度点：当前 ink 实心盖章放大 1.35 · 已过粉彩芯 + ink 描边 · 未来细描边空心 */}
       {count > 0 && (
         <div
           style={{
@@ -400,11 +460,13 @@ export const SceneChrome: FC<SceneChromeProps> = ({
                   height: dotSize,
                   borderRadius: "50%",
                   backgroundColor: isCurrent
-                    ? tone
+                    ? inkTone
                     : isDone
-                      ? withAlpha(tone, 0.65)
+                      ? pastel
                       : "transparent",
-                  border: isCurrent || isDone ? "none" : `2px solid ${withAlpha(tone, 0.35)}`,
+                  border: isCurrent
+                    ? "none"
+                    : `2px solid ${withAlpha(inkTone, isDone ? 0.5 : 0.25)}`,
                   transform: isCurrent ? `scale(${stamp.scale * 1.35})` : undefined,
                 }}
               />

@@ -10,8 +10,8 @@ import type { ClassroomSceneType } from "../../lib/law-classroom";
 import type { LawSubjectId } from "../../types/law";
 import {
   SceneChrome,
-  useBounceIn,
   usePrefersReducedMotion,
+  useQBounceIn,
   useStageProgress,
   useStamp,
 } from "../chrome";
@@ -19,22 +19,28 @@ import {
   C,
   CONTENT_WIDTH,
   F,
+  RADIUS,
+  SHADOW,
   SPRING,
+  SUBJECT_ACCENTS,
   T,
   sceneFrameStyle,
   withAlpha,
 } from "../theme";
 
 /**
- * 概念场景（图解版）：标题衬线大字 spring 入场 → 正文改造为「要点卡片」
- * 逐张弹入（卡片=术语加粗+短句，左侧学科色书脊）→ 关键术语命中处学科色
- * 下划线脉冲（逻辑保留）→ 底部术语条升级为胶囊逐个「盖章」弹出
- * （有释义数据时升级为两行术语卡）。
+ * 概念场景（可爱化）：标题文楷大字 spring 入场 → 要点卡片改粉彩圆角卡
+ * （奶油卡面 + 粉彩发丝描边 + 软阴影，Q 弹入场：上浮过冲再回正）→
+ * 关键术语命中处改「粉彩胶囊下划线」（高亮荧光笔下划手感，一次性 spring
+ * 点亮，替代旧的重描边 + 持续脉冲循环——动效纪律：入场之外不加循环，
+ * 持续动效仅 chrome 吉祥物贴纸一处）→ 底部术语条粉彩胶囊逐个「盖章」
+ * 弹出（有释义数据时升级为两行术语卡）。
  *
- * 动画全部走 chrome.tsx 的帧驱动 helpers（useStageProgress/useBounceIn/
- * useStamp：useCurrentFrame + interpolate/spring，无 Math.random，同帧必然
- * 同画面）；reduced-motion 时全部定格终态。SceneChrome 包壳提供类型徽标、
- * 学科色淡晕与课程进度点（进度点需 sceneTotal 接线后出现）。
+ * 粉彩派生与 chrome.tsx 同规则：有 subject 用学科粉彩 token，缺省（生产
+ * 路径 SceneView 只传 accent）用 accent 低透明度自混出粉彩感，双路确定性。
+ * 动画全部走 chrome.tsx 的帧驱动 helpers（useCurrentFrame + interpolate/
+ * spring，无 Math.random，同帧必然同画面）；reduced-motion 时全部定格终态。
+ * SceneChrome 包壳提供类型徽标、学科色淡晕、进度点与右上奶黄包贴纸。
  */
 
 export interface ConceptSceneProps {
@@ -122,19 +128,6 @@ function segmentText(text: string, terms: readonly string[]): TextSegment[] {
   return segments;
 }
 
-/** 术语脉冲：以 pulseFrames 为周期的三角波 0→1→0，纯 interpolate、无随机 */
-function pulseWave(localFrame: number, phase: number, pulseFrames: number): number {
-  if (localFrame <= 0) return 0;
-  const span = Math.max(1, pulseFrames);
-  const shifted = (localFrame + phase) % span;
-  return interpolate(
-    shifted,
-    [0, span * 0.25, span * 0.75, span],
-    [0, 1, 0, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
-}
-
 /** 按最长段落字数自适应卡片字号（确定性，防长文撑爆画布） */
 function bodyFontSizeFor(content: readonly string[]): number {
   const longest = content.reduce((max, text) => Math.max(max, text.length), 0);
@@ -143,27 +136,37 @@ function bodyFontSizeFor(content: readonly string[]): number {
   return 38;
 }
 
-/** 要点卡片：整卡 bounce 弹入；卡内术语命中处学科色下划线脉冲（逻辑保留） */
+/**
+ * 粉彩派生（chrome.tsx SceneChrome 同规则）：有 subject 用学科粉彩 token
+ * （SUBJECT_ACCENTS.pastel）；缺省时 accent 低透明度自混——返回 null 表示
+ * 「无真粉彩」，调用点改用 withAlpha(accent, …) 走兜底，避免对 rgba 字符串
+ * 再 withAlpha（解析失败会兜成墨色）。
+ */
+function pastelOf(subject?: LawSubjectId): string | null {
+  return subject ? SUBJECT_ACCENTS[subject].pastel : null;
+}
+
+/** 要点卡片：粉彩圆角卡 Q 弹入场；卡内术语命中处粉彩胶囊下划线（一次性点亮） */
 const PointCard: FC<{
   enterAt: number;
   accent: string;
+  pastel: string | null;
   fontSize: number;
   segments: readonly TextSegment[];
-}> = ({ enterAt, accent, fontSize, segments }) => {
+}> = ({ enterAt, accent, pastel, fontSize, segments }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const reduced = usePrefersReducedMotion();
-  const enter = useBounceIn(enterAt, { distance: 30, scaleFrom: 0.94 });
+  const enter = useQBounceIn(enterAt, { distance: 30, scaleFrom: 0.94, overshootPx: 5 });
 
   return (
     <section
       style={{
         backgroundColor: C.surface,
-        border: `2px solid ${C.line}`,
-        borderLeft: `8px solid ${withAlpha(accent, 0.55)}`,
-        borderRadius: 22,
+        border: `2.5px solid ${pastel ?? withAlpha(accent, 0.22)}`,
+        borderRadius: RADIUS.card,
         padding: "26px 34px",
-        boxShadow: "0 12px 32px rgba(50, 42, 40, 0.05)",
+        boxShadow: SHADOW.soft,
         opacity: enter.opacity,
         transform: `translateY(${enter.y}px) scale(${enter.scale})`,
       }}
@@ -182,19 +185,18 @@ const PointCard: FC<{
             return <span key={segmentIndex}>{segment.text}</span>;
           }
 
-          // 术语高亮脉冲：术语序决定节拍，卡片入场晚则以卡片为准（术语不抢跑）
+          // 术语粉彩胶囊下划线：一次性 spring 点亮（bloom 0→1），无持续循环
           const localFrame =
             frame -
             Math.max(T.termIn + segment.hit.order * T.termStagger, enterAt + 8);
           const bloom = reduced
             ? 1
             : spring({ frame: localFrame, fps, config: SPRING.term });
-          const wave = reduced
-            ? 0.5
-            : pulseWave(localFrame, segment.hit.order * 7, T.pulseFrames);
-          const glow = Math.min(1, bloom); // 0→1 快速点亮
-          const bgAlpha = 0.08 + glow * 0.14 + wave * 0.08 * glow;
-          const underlineAlpha = 0.25 + glow * 0.45 + wave * 0.2 * glow;
+          const glow = Math.min(1, Math.max(0, bloom));
+          // 胶囊下划线的填充色：真粉彩直接淡入；兜底路用 accent 低透明度自混
+          const band = pastel
+            ? withAlpha(pastel, 0.45 + 0.55 * glow)
+            : withAlpha(accent, 0.12 + 0.16 * glow);
 
           return (
             <span
@@ -203,11 +205,10 @@ const PointCard: FC<{
                 color: accent,
                 fontFamily: F.zhSerifSemi,
                 fontWeight: 700,
-                backgroundColor: withAlpha(accent, bgAlpha),
-                borderRadius: 6,
-                padding: "2px 6px",
+                borderRadius: RADIUS.pill,
+                padding: "1px 8px",
                 margin: "0 2px",
-                boxShadow: `inset 0 -3px 0 ${withAlpha(accent, underlineAlpha)}`,
+                backgroundImage: `linear-gradient(transparent 66%, ${band} 66%)`,
               }}
             >
               {segment.text}
@@ -219,13 +220,14 @@ const PointCard: FC<{
   );
 };
 
-/** 底部术语：胶囊盖章弹出；带释义时升级为「术语加粗 + 释义两行」术语卡 */
+/** 底部术语：粉彩胶囊盖章弹出；带释义时升级为「术语加粗 + 释义两行」术语卡 */
 const TermChip: FC<{
   term: string;
   note?: string;
   enterAt: number;
   accent: string;
-}> = ({ term, note, enterAt, accent }) => {
+  pastel: string | null;
+}> = ({ term, note, enterAt, accent, pastel }) => {
   const stamp = useStamp(enterAt, { rotate: -6 });
 
   if (note) {
@@ -234,9 +236,10 @@ const TermChip: FC<{
         style={{
           maxWidth: 300,
           backgroundColor: C.surface,
-          border: `2px solid ${withAlpha(accent, 0.4)}`,
-          borderRadius: 18,
+          border: `2.5px solid ${pastel ?? withAlpha(accent, 0.24)}`,
+          borderRadius: RADIUS.inner,
           padding: "14px 22px",
+          boxShadow: SHADOW.soft,
           opacity: stamp.opacity,
           transform: `scale(${stamp.scale}) rotate(${stamp.rotate}deg)`,
         }}
@@ -280,9 +283,9 @@ const TermChip: FC<{
         lineHeight: 1,
         fontWeight: 600,
         color: accent,
-        backgroundColor: withAlpha(accent, 0.12),
-        border: `2px solid ${withAlpha(accent, 0.35)}`,
-        borderRadius: 999,
+        backgroundColor: pastel ?? withAlpha(accent, 0.14),
+        border: `2px solid ${withAlpha(accent, 0.22)}`,
+        borderRadius: RADIUS.pill,
         padding: "14px 26px",
         opacity: stamp.opacity,
         transform: `scale(${stamp.scale}) rotate(${stamp.rotate}deg)`,
@@ -305,6 +308,8 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
   sceneKind = "concept",
 }) => {
   const progress = useStageProgress();
+  /** 学科粉彩（真 token 或 null → 调用点 accent 自混兜底） */
+  const pastel = pastelOf(subject);
 
   // 每段正文的切分结果：内容/术语不变则不重算（帧循环里保持纯渲染）
   const paragraphs = useMemo(
@@ -313,7 +318,7 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
   );
   const bodyFontSize = useMemo(() => bodyFontSizeFor(content), [content]);
 
-  // 标题 spring 入场 + 强调色横杠从左向右展开（reduced 时 helper 定格终态）
+  // 标题 spring 入场 + 粉彩→强调墨渐变胶囊横杠从左向右展开（reduced 时定格终态）
   const titleSpring = progress(T.titleIn, SPRING.title);
   const titleY = interpolate(titleSpring, [0, 1], [44, 0], {
     extrapolateRight: "clamp",
@@ -357,15 +362,15 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
               width: CONTENT_WIDTH * 0.24,
               height: 8,
               marginTop: 30,
-              borderRadius: 4,
-              backgroundColor: accent,
+              borderRadius: RADIUS.pill,
+              background: `linear-gradient(90deg, ${pastel ?? withAlpha(accent, 0.2)}, ${accent})`,
               transform: `scaleX(${ruleScaleX})`,
               transformOrigin: "left center",
             }}
           />
         </div>
 
-        {/* 要点卡片：逐张弹入（每张卡片=术语加粗+短句，左缘学科色书脊） */}
+        {/* 要点卡片：粉彩圆角卡逐张 Q 弹入场（每张卡=术语胶囊下划线+短句） */}
         <div
           style={{
             flex: 1,
@@ -383,13 +388,14 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
               key={paragraphIndex}
               enterAt={T.bodyIn + paragraphIndex * T.bodyStagger}
               accent={accent}
+              pastel={pastel}
               fontSize={bodyFontSize}
               segments={segments}
             />
           ))}
         </div>
 
-        {/* 术语条：胶囊逐个盖章弹出（保证未在正文出现的术语也可见） */}
+        {/* 术语条：粉彩胶囊逐个盖章弹出（保证未在正文出现的术语也可见） */}
         {keyTerms.length > 0 && (
           <div
             style={{
@@ -409,6 +415,7 @@ export const ConceptScene: FC<ConceptSceneProps> = ({
                 note={keyTermNotes?.[termIndex]}
                 enterAt={T.termIn + termIndex * T.termStagger}
                 accent={accent}
+                pastel={pastel}
               />
             ))}
           </div>

@@ -4,15 +4,18 @@ import type { ClassroomSceneType } from "../../lib/law-classroom";
 import type { LawSubjectId } from "../../types/law";
 import {
   SceneChrome,
-  StepMark,
   useBounceIn,
   usePrefersReducedMotion,
+  useQBounceIn,
   useStageProgress,
   useStamp,
 } from "../chrome";
+import { StepMark } from "../step-mark";
 import {
   C,
   F,
+  RADIUS,
+  SHADOW,
   SPRING,
   SUBJECT_ACCENTS,
   T,
@@ -21,36 +24,50 @@ import {
 } from "../theme";
 
 /**
- * 列举场景（图解版）：标题 + 学科色横杠 → 列表容器整体轻微上移入场 →
- * 条目改编号徽章卡片：序号圆片「盖章」砸落 + 卡片内容从左滑入，左侧
- * 引导竖线随条目生长（时间轴导轨质感）；checklist/quiz 变体以 chrome 的
- * StepMark（✓ 描边 / ？徽章）替代数字圆片。
+ * 列举场景（可爱化）：标题 + 粉彩→强调墨渐变胶囊横杠 → 列表容器整体轻微
+ * 上移入场 → 条目改编号徽章卡片：序号改「糖果色圆片」（五科粉彩轮换：
+ * 粉彩底 + 对应 ink 数字，对比度红线内）盖章砸落 + 卡片内容粉彩圆角卡
+ * Q 弹入场，左侧引导竖线随条目生长（时间轴导轨质感）；checklist/quiz
+ * 变体以 step-mark 的 StepMark（✓ 描边 / ？徽章）替代糖果圆片。
  *
+ * 糖果轮换是确定性的（下标 % 5，无随机），全部取自 theme 有限调色板。
  * 全部走 chrome.tsx 帧驱动 helpers（useCurrentFrame + interpolate/spring，
- * 无 Math.random）；reduced-motion 时定格终态；配色弃用自有 palette，
- * 统一走 theme（C/F/SUBJECT_ACCENTS/sceneFrameStyle）。SceneChrome 包壳。
+ * 无 Math.random）；reduced-motion 时定格终态；配色统一走 theme
+ * （C/F/RADIUS/SHADOW/SUBJECT_ACCENTS/sceneFrameStyle）。SceneChrome 包壳。
  */
 
 export interface ListSceneProps {
   title: string;
   items: string[];
-  /** 强调色（编号徽章 / 标题横杠 / 引导竖线），缺省取学科色 token */
+  /** 强调色（标题横杠 / 引导竖线 / StepMark），缺省取学科色 token */
   accent?: string;
-  /** 学科（SceneChrome 淡晕兜底色） */
+  /** 学科（SceneChrome 淡晕兜底色；条目卡粉彩描边优先用学科粉彩 token） */
   subject?: LawSubjectId;
   /** 第几场（0-based，SceneChrome 进度点用；未接线时不显示进度点） */
   sceneIndex?: number;
   /** 共几场（SceneChrome 进度点用） */
   sceneTotal?: number;
-  /** 条目前缀样式：list=数字徽章（默认）；checklist=✓ 描边；quiz=？徽章 */
+  /** 条目前缀样式：list=糖果圆片（默认）；checklist=✓ 描边；quiz=？徽章 */
   variant?: "list" | "checklist" | "quiz";
 }
 
 const ITEM_STAGGER_FRAMES = 4;
-/** 序号圆片直径（px，1080×1920 基准） */
+/** 糖果圆片直径（px，1080×1920 基准） */
 const DISC = 52;
 /** 顶部徽标（chrome）下缘的让位高度 */
 const HEADER_CLEAR = 84;
+
+/**
+ * 糖果轮换：五科 { pastel, ink } 按条目下标轮着戴——粉彩糖纸底 + 对应
+ * ink 数字（token 声明双底 ≥5.54:1），顺序写死保证确定性。
+ */
+const CANDY: ReadonlyArray<{ pastel: string; ink: string }> = [
+  SUBJECT_ACCENTS.falixue,
+  SUBJECT_ACCENTS.xianfa,
+  SUBJECT_ACCENTS.zhishixiang,
+  SUBJECT_ACCENTS.minfa,
+  SUBJECT_ACCENTS.xingfa,
+];
 
 /** 按字数/条数自适应条目字号（确定性，实拍长条目不再被裁切的第一道闸） */
 function itemFontSize(textLength: number, itemCount: number): number {
@@ -74,20 +91,20 @@ const CHROME_TYPE_BY_VARIANT: Record<"list" | "checklist" | "quiz", ClassroomSce
   quiz: "quiz",
 };
 
-/** 编号徽章条目：序号圆片盖章砸落 + 卡片内容从左滑入（checklist/quiz 用 StepMark） */
+/** 编号徽章条目：糖果圆片盖章砸落 + 粉彩圆角卡 Q 弹入场（checklist/quiz 用 StepMark） */
 const ListRow: FC<{
   item: string;
   index: number;
   enterAt: number;
   accent: string;
+  pastel: string | null;
   fontSize: number;
   clampLines?: number;
   mark: "checklist" | "quiz" | null;
-}> = ({ item, index, enterAt, accent, fontSize, clampLines, mark }) => {
+}> = ({ item, index, enterAt, accent, pastel, fontSize, clampLines, mark }) => {
   const stamp = useStamp(enterAt, { rotate: -8, scaleFrom: 1.5 });
-  const slide = useStageProgress()(enterAt + 4, SPRING.soft);
-  const x = interpolate(slide, [0, 1], [-34, 0], { extrapolateRight: "clamp" });
-  const opacity = Math.min(1, slide);
+  const pop = useQBounceIn(enterAt + 4, { distance: 20, scaleFrom: 0.95, overshootPx: 4 });
+  const candy = CANDY[index % CANDY.length];
 
   return (
     <li
@@ -110,15 +127,16 @@ const ListRow: FC<{
             width: DISC,
             height: DISC,
             borderRadius: "50%",
-            backgroundColor: accent,
-            color: "#ffffff",
+            backgroundColor: candy.pastel,
+            color: candy.ink,
+            border: `2.5px solid ${withAlpha(candy.ink, 0.2)}`,
             fontFamily: F.zhSans,
             fontSize: 26,
             fontWeight: 700,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: `0 8px 18px ${withAlpha(accent, 0.35)}`,
+            boxShadow: SHADOW.soft,
             opacity: stamp.opacity,
             transform: `scale(${stamp.scale}) rotate(${stamp.rotate}deg)`,
           }}
@@ -131,15 +149,16 @@ const ListRow: FC<{
           flex: 1,
           minWidth: 0,
           backgroundColor: C.surface,
-          border: `2px solid ${C.line}`,
-          borderRadius: 18,
+          border: `2.5px solid ${pastel ?? withAlpha(accent, 0.2)}`,
+          borderRadius: RADIUS.inner,
           padding: "18px 30px",
+          boxShadow: SHADOW.soft,
           fontFamily: F.zhSerif,
           fontSize,
           lineHeight: 1.55,
           color: C.ink,
-          opacity,
-          transform: `translateX(${x}px)`,
+          opacity: pop.opacity,
+          transform: `translateY(${pop.y}px) scale(${pop.scale})`,
           ...(clampLines
             ? {
                 display: "-webkit-box",
@@ -167,8 +186,10 @@ export function ListScene({
 }: ListSceneProps) {
   const frame = useCurrentFrame();
   const reduced = usePrefersReducedMotion();
+  /** 学科粉彩（真 token 或 null → 条目卡描边走 accent 自混兜底） */
+  const pastel = subject ? SUBJECT_ACCENTS[subject].pastel : null;
 
-  // 标题 bounce + 横杠展开；列表容器整体轻微上移入场
+  // 标题 bounce + 粉彩→强调墨渐变胶囊横杠展开；列表容器整体轻微上移入场
   const titleEnter = useBounceIn(T.titleIn, { distance: 26 });
   const containerEnter = useBounceIn(T.bodyIn, { distance: 24, scaleFrom: 0.985 });
   const ruleScaleX = useStageProgress()(T.ruleIn, SPRING.soft);
@@ -221,8 +242,8 @@ export function ListScene({
               width: 190,
               height: 8,
               marginTop: 24,
-              borderRadius: 4,
-              backgroundColor: accent,
+              borderRadius: RADIUS.pill,
+              background: `linear-gradient(90deg, ${pastel ?? withAlpha(accent, 0.2)}, ${accent})`,
               transform: `scaleX(${ruleScaleX})`,
               transformOrigin: "left center",
             }}
@@ -279,6 +300,7 @@ export function ListScene({
                   index={index}
                   enterAt={T.bodyIn + 6 + index * ITEM_STAGGER_FRAMES}
                   accent={accent}
+                  pastel={pastel}
                   fontSize={itemFontSize(item.length, items.length)}
                   clampLines={clampFor(item)}
                   mark={mark}
