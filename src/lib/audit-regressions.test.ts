@@ -1111,11 +1111,8 @@ describe("audit regression coverage", () => {
 
   it("prompts for PWA updates without interrupting unsaved creative work", () => {
     expect(viteConfigSource).toContain('registerType: "prompt"');
-    // 2026-10-15 一次性热推：skipWaiting/clientsClaim 临时开启，让所有仍开着的
-    // 旧版页面（后台课堂标签一直在响 TTS）经 controllerchange 自动 reload 升级到
-    // 带后台静音的新版。热推完成后改回 false 并同步本断言。
-    expect(viteConfigSource).toContain("skipWaiting: true");
-    expect(viteConfigSource).toContain("clientsClaim: true");
+    expect(viteConfigSource).toContain("skipWaiting: false");
+    expect(viteConfigSource).toContain("clientsClaim: false");
     expect(viteConfigSource).toContain("cleanupOutdatedCaches: true");
     expect(pwaUpdateBannerSource).toContain("hasUnsavedCreativeWork");
     expect(pwaUpdateBannerSource).toContain("subscribeCreativeWorkState");
