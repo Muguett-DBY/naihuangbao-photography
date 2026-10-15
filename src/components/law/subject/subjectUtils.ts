@@ -60,17 +60,17 @@ export function lessonMeta(lesson: LawLesson) {
 export function lessonKindEmoji(lesson: LawLesson): string {
   const kind = lesson.steps[0]?.kind ?? "plain";
   const map: Record<string, string> = {
-    definition: "📖",
-    list: "🗂️",
-    compare: "⚖️",
-    mnemonic: "🧠",
-    timeline: "🕰️",
-    condition: "🔑",
-    exception: "⚠️",
-    flow: "🔗",
-    plain: "📝",
+    definition: "◆",
+    list: "≡",
+    compare: "⇄",
+    mnemonic: "◉",
+    timeline: "▬",
+    condition: "✓",
+    exception: "▲",
+    flow: "→",
+    plain: "▤",
   };
-  return map[kind] ?? "📝";
+  return map[kind] ?? "▤";
 }
 
 export function lessonKindLabel(lesson: LawLesson): string {

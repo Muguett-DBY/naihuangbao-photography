@@ -32,7 +32,7 @@ export function FlowStep({ step, accent, accentSoft, onDone }: StepProps) {
 
   return (
     <StepShell
-      eyebrow="🔗 流程型 · 一步一步来"
+      eyebrow="→ 流程型 · 一步一步来"
       title={`流程 · ${nodes.length} 步`}
       hint={
         done

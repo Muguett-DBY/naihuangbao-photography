@@ -1,8 +1,8 @@
 /* ── 彩蛋图鉴 / 音效开关 / 通关庆祝（会话 A：law-easter.css）──
-   依赖 law-academy.css 的主题变量（--paper/--ink/--hairline/--text-muted/--coral），
+   Apple 黑白灰极简：依赖 law-academy.css 的灰阶令牌（--law-surface/--law-ink*），
    必须在 law-academy.css 之后引入。所有动画均尊重 prefers-reduced-motion。 */
 
-/* 页脚小组件：音效开关 + 图鉴入口（与页脚小猫同一视觉量级） */
+/* 页脚小组件：音效开关 + 图鉴入口 */
 .law-academy__foot-tools {
   display: inline-flex;
   align-items: center;
@@ -11,29 +11,29 @@
 
 .law-sound-toggle,
 .law-gallery-entry {
-  border: 1.5px solid var(--hairline);
-  border-radius: 999px;
-  background: var(--paper);
-  color: var(--text-muted);
+  border: 0;
+  border-radius: var(--law-radius-pill, 999px);
+  background: var(--law-surface, #fff);
+  color: var(--law-ink-2, #6e6e73);
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 4px 12px;
   cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, transform 0.2s var(--ease-spring, ease);
+  transition: color var(--law-dur-1, 100ms) var(--law-ease, ease), background var(--law-dur-1, 100ms) var(--law-ease, ease);
 }
 
 .law-sound-toggle:hover,
 .law-gallery-entry:hover {
-  color: var(--coral-dark, #a95f57);
-  border-color: color-mix(in srgb, var(--coral, #d8897f) 45%, var(--hairline));
-  transform: translateY(-1px);
+  color: var(--law-ink, #1d1d1f);
+  background: var(--law-sunken, #f2f2f7);
 }
 
+/* 开启态 = 全局交互蓝（功能状态，非装饰） */
 .law-sound-toggle.is-on {
-  color: var(--coral-dark, #a95f57);
+  color: var(--law-blue, #0071e3);
 }
 
-/* ── 彩蛋图鉴弹层 ── */
+/* ── 彩蛋图鉴弹层：真实浮层 = 白卡 + pop 阴影 ── */
 .law-gallery-overlay {
   position: fixed;
   inset: 0;
@@ -41,7 +41,7 @@
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(75, 59, 55, 0.4);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
 }
 
@@ -52,12 +52,10 @@
   width: min(720px, 94vw);
   max-height: 86vh;
   overflow: auto;
-  border-radius: 24px;
-  background:
-    radial-gradient(420px 200px at 90% 0%, var(--law-sun-wash), transparent 70%),
-    var(--paper);
-  border: 2px solid color-mix(in srgb, var(--coral, #d8897f) 36%, var(--hairline));
-  box-shadow: 0 30px 80px rgba(75, 59, 55, 0.35);
+  border-radius: var(--law-radius-pop, 20px);
+  background: var(--law-surface, #fff);
+  border: 0;
+  box-shadow: var(--law-shadow-pop, 0 8px 24px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06));
   padding: clamp(18px, 3vw, 28px);
 }
 
@@ -69,9 +67,10 @@
 
 .law-gallery__head h3 {
   margin: -28px 0 2px;
-  font-family: var(--font-display);
+  font-family: var(--font-body, inherit);
   font-size: 22px;
-  color: var(--coral-dark, #a95f57);
+  font-weight: 700;
+  color: var(--law-ink, #1d1d1f);
   text-align: center;
 }
 
@@ -79,11 +78,11 @@
   margin: 0 0 16px;
   text-align: center;
   font-size: 13px;
-  color: var(--text-muted);
+  color: var(--law-ink-2, #6e6e73);
 }
 
 .law-gallery__head b {
-  color: var(--coral-dark, #a95f57);
+  color: var(--law-ink, #1d1d1f);
   font-size: 15px;
 }
 
@@ -99,13 +98,13 @@
   align-items: center;
   gap: 4px;
   text-align: center;
-  border-radius: 16px;
-  border: 1.5px solid var(--hairline);
-  background: color-mix(in srgb, var(--coral, #d8897f) 6%, var(--paper));
+  border-radius: var(--law-radius-card, 16px);
+  border: 0;
+  background: var(--law-sunken, #f2f2f7);
   padding: 14px 10px 10px;
   font-size: 13px;
-  color: var(--ink);
-  transition: transform 0.2s var(--ease-spring, ease), border-color 0.2s, box-shadow 0.2s;
+  color: var(--law-ink, #1d1d1f);
+  transition: background var(--law-dur-1, 100ms) var(--law-ease, ease);
 }
 
 button.law-gallery__egg {
@@ -113,15 +112,13 @@ button.law-gallery__egg {
 }
 
 button.law-gallery__egg:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in srgb, var(--coral, #d8897f) 55%, var(--hairline));
-  box-shadow: 0 10px 24px rgba(75, 59, 55, 0.14);
+  background: color-mix(in srgb, var(--law-ink, #1d1d1f) 5%, var(--law-sunken, #f2f2f7));
 }
 
 .law-gallery__egg.is-locked {
-  background: var(--paper);
-  border-style: dashed;
-  color: var(--text-muted);
+  background: transparent;
+  border: 1.5px dashed var(--law-separator, #d2d2d7);
+  color: var(--law-ink-2, #6e6e73);
   cursor: default;
 }
 
@@ -145,17 +142,17 @@ button.law-gallery__egg:hover {
 .law-gallery__egg-preview {
   font-size: 12px;
   line-height: 1.5;
-  color: var(--text-muted);
+  color: var(--law-ink-2, #6e6e73);
 }
 
 .law-gallery__egg small {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--law-ink-2, #6e6e73);
   opacity: 0.85;
 }
 
 .is-unlocked small {
-  color: var(--coral-dark, #a95f57);
+  color: var(--law-blue, #0071e3);
   opacity: 1;
 }
 
@@ -163,10 +160,10 @@ button.law-gallery__egg:hover {
   margin: 14px 0 0;
   text-align: center;
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--law-ink-2, #6e6e73);
 }
 
-/* ── 单书通关庆祝横幅 ── */
+/* ── 单书通关庆祝横幅：白卡 + 锚点圆点序列 ── */
 .law-finish-banner {
   max-width: 1040px;
   margin: clamp(20px, 3vw, 32px) auto 0;
@@ -177,12 +174,10 @@ button.law-gallery__egg:hover {
 
 .law-finish-banner__card {
   position: relative;
-  border-radius: 20px;
-  border: 1.5px solid color-mix(in srgb, var(--coral, #d8897f) 40%, var(--hairline));
-  background:
-    radial-gradient(360px 160px at 8% 0%, var(--law-sun-wash), transparent 70%),
-    color-mix(in srgb, var(--coral, #d8897f) 7%, var(--paper));
-  box-shadow: var(--warm-shadow, 0 18px 44px rgba(75, 59, 55, 0.16));
+  border-radius: var(--law-radius-card, 16px);
+  border: 0;
+  background: var(--law-surface, #fff);
+  box-shadow: none;
   padding: 18px 20px 16px;
   text-align: center;
 }
@@ -194,11 +189,12 @@ button.law-gallery__egg:hover {
   margin-bottom: 10px;
 }
 
+/* 通关圆点：五科锚点（由 LawFinishBanner 内联 --law-anchor 供给） */
 .law-finish-banner__dot {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--coral, #d8897f) 55%, var(--paper));
+  background: var(--law-anchor, var(--law-ink, #1d1d1f));
   opacity: 0.25;
   animation: finishDotLight 0.5s ease-out forwards;
 }
@@ -206,20 +202,21 @@ button.law-gallery__egg:hover {
 @keyframes finishDotLight {
   0% { opacity: 0.25; transform: scale(0.8); }
   60% { opacity: 1; transform: scale(1.3); }
-  100% { opacity: 1; transform: scale(1); background: var(--coral, #d8897f); }
+  100% { opacity: 1; transform: scale(1); background: var(--law-anchor, var(--law-ink, #1d1d1f)); }
 }
 
 .law-finish-banner__title {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--font-body, inherit);
   font-size: clamp(18px, 3vw, 22px);
-  color: var(--coral-dark, #a95f57);
+  font-weight: 700;
+  color: var(--law-ink, #1d1d1f);
 }
 
 .law-finish-banner__sub {
   margin: 6px 0 0;
   font-size: 13.5px;
-  color: var(--text-muted);
+  color: var(--law-ink-2, #6e6e73);
 }
 
 /* ── 降级：减少动态的用户 ── */
@@ -233,6 +230,5 @@ button.law-gallery__egg:hover {
   .law-finish-banner__dot {
     animation: none;
     opacity: 1;
-    background: var(--coral, #d8897f);
   }
 }

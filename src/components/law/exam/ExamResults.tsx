@@ -50,7 +50,7 @@ export function ExamResults({ grade, records, onRetry }: ExamResultsProps) {
 
       {subjects.length > 0 ? (
         <section className="law-exam__by-subject" aria-label="按科目得分">
-          <h2>📚 按科目得分</h2>
+          <h2>按科目得分</h2>
           <ul>
             {subjects.map((subject) => {
               const score = grade.bySubject[subject.id]!;
@@ -58,7 +58,7 @@ export function ExamResults({ grade, records, onRetry }: ExamResultsProps) {
               return (
                 <li key={subject.id} style={{ "--law-accent": subject.accent } as CSSProperties}>
                   <span className="law-exam__subject-name">
-                    {subject.emoji} {subject.name}
+                    {subject.name}
                   </span>
                   <span className="law-exam__subject-bar">
                     <span style={{ width: `${subjectPercent}%` }} />
@@ -75,7 +75,7 @@ export function ExamResults({ grade, records, onRetry }: ExamResultsProps) {
 
       {grade.wrong.length > 0 ? (
         <section className="law-exam__wrongs" aria-label="错题列表">
-          <h2>❌ 错题回顾（{grade.wrong.length} 题）</h2>
+          <h2>错题回顾（{grade.wrong.length} 题）</h2>
           <ol>
             {grade.wrong.map((entry, index) => (
               <WrongCard key={entry.item.id} entry={entry} index={index} />
@@ -130,7 +130,7 @@ function WrongCard({ entry, index }: { entry: LawExamWrong; index: number }) {
     <li className="law-exam__wrong">
       <header>
         <b>
-          {index + 1}. {subject ? `${subject.emoji} ` : ""}
+          {index + 1}.
           {item.lessonTitle}
         </b>
         <span className="law-exam__wrong-kind">{item.kind}</span>

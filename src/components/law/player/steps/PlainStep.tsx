@@ -112,7 +112,7 @@ export function PlainStep({ step, accent, accentSoft, onDone }: StepProps) {
 
   return (
     <StepShell
-      eyebrow="📝 细读型 · 慢慢来"
+      eyebrow="▤ 细读型 · 慢慢来"
       title={title}
       hint={targets.length > 0 ? "👆 点关键词可标记「已理解」，直接下一步也完全可以" : undefined}
       done

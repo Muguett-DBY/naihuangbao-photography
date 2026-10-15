@@ -162,8 +162,8 @@ export function GraphicStage({
   );
 
   const style = {
-    "--law-accent": subjectMeta.accent,
-    "--law-accent-soft": subjectMeta.accentSoft,
+    "--law-accent": "var(--law-blue, #0071e3)",
+    "--law-accent-soft": "var(--law-sunken, #f2f2f7)",
   } as CSSProperties;
 
   const captionTransition = reducedMotion ? { duration: 0 } : { duration: 0.24 };
@@ -326,7 +326,7 @@ function kindLabel(kind: string): string {
     case "timeline":
       return "🕰️ 时间线";
     case "balance":
-      return "⚖️ 对比";
+      return "⇄ 对比";
     case "stairs":
       return "🪜 阶梯";
     case "matrix":

@@ -45,8 +45,8 @@ export function FlowDiagram({ graphic, active }: { graphic: LawGraphic; active: 
                 transition={{ type: "spring", stiffness: 260, damping: 17, delay: 0.22 }}
                 style={{ transformOrigin: `${to.x}px ${to.y}px` }}
               >
-                <circle cx={to.x} cy={to.y} r="15" fill="var(--law-accent-soft, #f6e5e2)" stroke="var(--law-accent, #b1544e)" strokeWidth="2" />
-                <text x={to.x} y={to.y + 5} textAnchor="middle" fontSize="13" fontWeight="800" fill="var(--law-accent, #b1544e)">
+                <circle cx={to.x} cy={to.y} r="15" style={{ fill: "var(--law-surface, #fff)", stroke: "var(--law-blue, #0071e3)" }} strokeWidth="2" />
+                <text x={to.x} y={to.y + 5} textAnchor="middle" fontSize="13" fontWeight="600" style={{ fill: "var(--law-blue, #0071e3)" }}>
                   {index + 1}
                 </text>
               </motion.g>
@@ -55,8 +55,8 @@ export function FlowDiagram({ graphic, active }: { graphic: LawGraphic; active: 
                 y={to.y - 24}
                 textAnchor="middle"
                 fontSize="12"
-                fontWeight="800"
-                fill="var(--ink)"
+                fontWeight="600"
+                style={{ fill: "var(--law-ink, #1d1d1f)" }}
                 initial={{ opacity: 0 }}
                 animate={shown ? { opacity: 1 } : {}}
                 transition={{ delay: 0.3 }}

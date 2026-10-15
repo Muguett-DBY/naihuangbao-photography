@@ -21,9 +21,6 @@ export function TimelineDiagram({ graphic, active }: { graphic: LawGraphic; acti
           {nodes.map((node, index) => {
             const left = `${(index + 0.5) / nodes.length * 100}%`;
             const shown = index < visible;
-            const ring = (graphic.eras ?? []).some((era) => era.label === node.step)
-              ? graphic.eras!.find((era) => era.label === node.step)!.color
-              : "var(--law-accent, #b1544e)";
             return (
               <div className="dia-timeline__node" key={node.label} style={{ left }}>
                 <motion.div
@@ -31,7 +28,6 @@ export function TimelineDiagram({ graphic, active }: { graphic: LawGraphic; acti
                   initial={{ y: -46, opacity: 0, scale: 0.7 }}
                   animate={shown ? { y: 0, opacity: 1, scale: 1 } : { y: -46, opacity: 0, scale: 0.7 }}
                   transition={{ type: "spring", stiffness: 260, damping: 17 }}
-                  style={{ "--era": ring } as React.CSSProperties}
                 >
                   <b>{node.label}</b>
                   <small>{node.step}</small>
@@ -50,9 +46,10 @@ export function TimelineDiagram({ graphic, active }: { graphic: LawGraphic; acti
         </div>
       </div>
 
+      {/* 时代分区条：灰阶胶囊（文字承载时代名，色彩预算不给数据上色） */}
       <div className="dia-timeline__eras" aria-hidden="true">
         {(graphic.eras ?? []).map((era) => (
-          <span key={era.label} style={{ background: era.color }}>
+          <span key={era.label}>
             {era.label}
           </span>
         ))}

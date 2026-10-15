@@ -6,68 +6,45 @@ import {
   SceneChrome,
   useBounceIn,
   usePrefersReducedMotion,
-  useQBounceIn,
+  useRiseIn,
   useStageProgress,
   useStamp,
 } from "../chrome";
 import { StepMark } from "../step-mark";
-import {
-  C,
-  F,
-  RADIUS,
-  SHADOW,
-  SPRING,
-  SUBJECT_ACCENTS,
-  T,
-  sceneFrameStyle,
-  withAlpha,
-} from "../theme";
+import { C, F, RADIUS, SPRING, T, sceneFrameStyle } from "../theme";
 
 /**
- * 列举场景（可爱化）：标题 + 粉彩→强调墨渐变胶囊横杠 → 列表容器整体轻微
- * 上移入场 → 条目改编号徽章卡片：序号改「糖果色圆片」（五科粉彩轮换：
- * 粉彩底 + 对应 ink 数字，对比度红线内）盖章砸落 + 卡片内容粉彩圆角卡
- * Q 弹入场，左侧引导竖线随条目生长（时间轴导轨质感）；checklist/quiz
- * 变体以 step-mark 的 StepMark（✓ 描边 / ？徽章）替代糖果圆片。
+ * 列举场景（Apple 黑白灰）：标题 + 墨色横杠 → 列表容器整体轻微上移入场 →
+ * 条目为「序号灰阶圆片（浅灰底 + 墨色数字）+ 白卡发丝线条目卡」缓出落位，
+ * 左侧引导竖线随条目生长（时间轴导轨质感）；checklist/quiz 变体以 step-mark
+ * 的 StepMark（✓ 描边 / ？徽章，墨色单色）替代序号圆片。
  *
- * 糖果轮换是确定性的（下标 % 5，无随机），全部取自 theme 有限调色板。
  * 全部走 chrome.tsx 帧驱动 helpers（useCurrentFrame + interpolate/spring，
  * 无 Math.random）；reduced-motion 时定格终态；配色统一走 theme
- * （C/F/RADIUS/SHADOW/SUBJECT_ACCENTS/sceneFrameStyle）。SceneChrome 包壳。
+ * （C/F/RADIUS/sceneFrameStyle）。SceneChrome 包壳（徽标 + 学科锚点进度点）。
+ * accent prop 仅为 SceneView 既有接线保留，画面不再随学科变色。
  */
 
 export interface ListSceneProps {
   title: string;
   items: string[];
-  /** 强调色（标题横杠 / 引导竖线 / StepMark），缺省取学科色 token */
+  /** 兼容接线（SceneView 恒传）：Apple 化后画面不随此值变色 */
   accent?: string;
-  /** 学科（SceneChrome 淡晕兜底色；条目卡粉彩描边优先用学科粉彩 token） */
+  /** 学科（SceneChrome 进度点锚点色） */
   subject?: LawSubjectId;
   /** 第几场（0-based，SceneChrome 进度点用；未接线时不显示进度点） */
   sceneIndex?: number;
   /** 共几场（SceneChrome 进度点用） */
   sceneTotal?: number;
-  /** 条目前缀样式：list=糖果圆片（默认）；checklist=✓ 描边；quiz=？徽章 */
+  /** 条目前缀样式：list=灰阶圆片（默认）；checklist=✓ 描边；quiz=？徽章 */
   variant?: "list" | "checklist" | "quiz";
 }
 
 const ITEM_STAGGER_FRAMES = 4;
-/** 糖果圆片直径（px，1080×1920 基准） */
+/** 序号圆片直径（px，1080×1920 基准） */
 const DISC = 52;
 /** 顶部徽标（chrome）下缘的让位高度 */
 const HEADER_CLEAR = 84;
-
-/**
- * 糖果轮换：五科 { pastel, ink } 按条目下标轮着戴——粉彩糖纸底 + 对应
- * ink 数字（token 声明双底 ≥5.54:1），顺序写死保证确定性。
- */
-const CANDY: ReadonlyArray<{ pastel: string; ink: string }> = [
-  SUBJECT_ACCENTS.falixue,
-  SUBJECT_ACCENTS.xianfa,
-  SUBJECT_ACCENTS.zhishixiang,
-  SUBJECT_ACCENTS.minfa,
-  SUBJECT_ACCENTS.xingfa,
-];
 
 /** 按字数/条数自适应条目字号（确定性，实拍长条目不再被裁切的第一道闸） */
 function itemFontSize(textLength: number, itemCount: number): number {
@@ -91,20 +68,17 @@ const CHROME_TYPE_BY_VARIANT: Record<"list" | "checklist" | "quiz", ClassroomSce
   quiz: "quiz",
 };
 
-/** 编号徽章条目：糖果圆片盖章砸落 + 粉彩圆角卡 Q 弹入场（checklist/quiz 用 StepMark） */
+/** 编号徽章条目：灰阶圆片落位 + 白卡发丝线条目卡缓出（checklist/quiz 用墨色 StepMark） */
 const ListRow: FC<{
   item: string;
   index: number;
   enterAt: number;
-  accent: string;
-  pastel: string | null;
   fontSize: number;
   clampLines?: number;
   mark: "checklist" | "quiz" | null;
-}> = ({ item, index, enterAt, accent, pastel, fontSize, clampLines, mark }) => {
-  const stamp = useStamp(enterAt, { rotate: -8, scaleFrom: 1.5 });
-  const pop = useQBounceIn(enterAt + 4, { distance: 20, scaleFrom: 0.95, overshootPx: 4 });
-  const candy = CANDY[index % CANDY.length];
+}> = ({ item, index, enterAt, fontSize, clampLines, mark }) => {
+  const stamp = useStamp(enterAt);
+  const pop = useRiseIn(enterAt + 4, { distance: 16 });
 
   return (
     <li
@@ -118,7 +92,7 @@ const ListRow: FC<{
       }}
     >
       {mark ? (
-        <StepMark kind={mark} accent={accent} enterAt={enterAt} size={DISC} />
+        <StepMark kind={mark} accent={C.ink} enterAt={enterAt} size={DISC} />
       ) : (
         <span
           aria-hidden="true"
@@ -127,18 +101,16 @@ const ListRow: FC<{
             width: DISC,
             height: DISC,
             borderRadius: "50%",
-            backgroundColor: candy.pastel,
-            color: candy.ink,
-            border: `2.5px solid ${withAlpha(candy.ink, 0.2)}`,
-            fontFamily: F.zhSans,
+            backgroundColor: C.paper,
+            color: C.ink,
+            fontFamily: F.enSerif,
             fontSize: 26,
             fontWeight: 700,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: SHADOW.soft,
             opacity: stamp.opacity,
-            transform: `scale(${stamp.scale}) rotate(${stamp.rotate}deg)`,
+            transform: `scale(${stamp.scale})`,
           }}
         >
           {index + 1}
@@ -149,16 +121,15 @@ const ListRow: FC<{
           flex: 1,
           minWidth: 0,
           backgroundColor: C.surface,
-          border: `2.5px solid ${pastel ?? withAlpha(accent, 0.2)}`,
+          border: `2px solid ${C.line}`,
           borderRadius: RADIUS.inner,
           padding: "18px 30px",
-          boxShadow: SHADOW.soft,
           fontFamily: F.zhSerif,
           fontSize,
           lineHeight: 1.55,
           color: C.ink,
           opacity: pop.opacity,
-          transform: `translateY(${pop.y}px) scale(${pop.scale})`,
+          transform: `translateY(${pop.y}px)`,
           ...(clampLines
             ? {
                 display: "-webkit-box",
@@ -178,7 +149,6 @@ const ListRow: FC<{
 export function ListScene({
   title,
   items,
-  accent = SUBJECT_ACCENTS.falixue.accent,
   subject,
   sceneIndex,
   sceneTotal,
@@ -186,12 +156,10 @@ export function ListScene({
 }: ListSceneProps) {
   const frame = useCurrentFrame();
   const reduced = usePrefersReducedMotion();
-  /** 学科粉彩（真 token 或 null → 条目卡描边走 accent 自混兜底） */
-  const pastel = subject ? SUBJECT_ACCENTS[subject].pastel : null;
 
-  // 标题 bounce + 粉彩→强调墨渐变胶囊横杠展开；列表容器整体轻微上移入场
-  const titleEnter = useBounceIn(T.titleIn, { distance: 26 });
-  const containerEnter = useBounceIn(T.bodyIn, { distance: 24, scaleFrom: 0.985 });
+  // 标题缓入 + 墨色横杠展开；列表容器整体轻微上移入场
+  const titleEnter = useBounceIn(T.titleIn, { distance: 20 });
+  const containerEnter = useBounceIn(T.bodyIn, { distance: 18, scaleFrom: 0.99 });
   const ruleScaleX = useStageProgress()(T.ruleIn, SPRING.soft);
 
   // 引导竖线：随条目逐个入场从上往下生长（时间轴导轨）
@@ -211,7 +179,7 @@ export function ListScene({
   const mark = MARK_BY_VARIANT[variant] ?? null;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.paper }}>
+    <AbsoluteFill style={{ backgroundColor: C.surface }}>
       <AbsoluteFill
         style={{
           ...sceneFrameStyle,
@@ -227,6 +195,7 @@ export function ListScene({
             style={{
               margin: 0,
               fontFamily: F.zhBlack,
+              fontWeight: 700,
               fontSize: 68,
               lineHeight: 1.22,
               color: C.ink,
@@ -240,10 +209,10 @@ export function ListScene({
             aria-hidden="true"
             style={{
               width: 190,
-              height: 8,
+              height: 6,
               marginTop: 24,
               borderRadius: RADIUS.pill,
-              background: `linear-gradient(90deg, ${pastel ?? withAlpha(accent, 0.2)}, ${accent})`,
+              backgroundColor: C.ink,
               transform: `scaleX(${ruleScaleX})`,
               transformOrigin: "left center",
             }}
@@ -264,7 +233,7 @@ export function ListScene({
           }}
         >
           <div style={{ position: "relative" }}>
-            {/* 左侧引导竖线：随条目生长 */}
+            {/* 左侧引导竖线：随条目生长（发丝线，结构性导轨） */}
             {items.length > 1 && (
               <div
                 aria-hidden="true"
@@ -275,7 +244,7 @@ export function ListScene({
                   bottom: DISC / 2,
                   width: 4,
                   borderRadius: 999,
-                  backgroundColor: withAlpha(accent, 0.28),
+                  backgroundColor: C.line,
                   transform: `scaleY(${spine})`,
                   transformOrigin: "top center",
                 }}
@@ -299,8 +268,6 @@ export function ListScene({
                   item={item}
                   index={index}
                   enterAt={T.bodyIn + 6 + index * ITEM_STAGGER_FRAMES}
-                  accent={accent}
-                  pastel={pastel}
                   fontSize={itemFontSize(item.length, items.length)}
                   clampLines={clampFor(item)}
                   mark={mark}
@@ -311,11 +278,10 @@ export function ListScene({
         </div>
       </AbsoluteFill>
 
-      {/* 视觉底座叠加层：类型徽标 + 学科色淡晕 + 课程进度点 */}
+      {/* 视觉底座叠加层：类型徽标 + 学科锚点进度点 */}
       <SceneChrome
         type={CHROME_TYPE_BY_VARIANT[variant]}
         subject={subject ?? "falixue"}
-        accent={accent}
         index={sceneIndex ?? 0}
         total={sceneTotal ?? 0}
       />

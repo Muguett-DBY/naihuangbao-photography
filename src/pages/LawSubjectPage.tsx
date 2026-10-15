@@ -105,7 +105,7 @@ export function LawSubjectPage() {
     return (
       <div className="law-academy">
         <div className="law-notfound">
-          <LawMascot mood="oops" size={72} />
+          <LawMascot mood="oops" size={56} />
           <h1>这门学科不在书单里哦</h1>
           <Link to="/law" className="law-player__cta">← 回学习中心</Link>
         </div>
@@ -126,8 +126,8 @@ export function LawSubjectPage() {
 
 
   const style = {
-    "--law-accent": subject.accent,
-    "--law-accent-soft": subject.accentSoft,
+    "--law-accent": "var(--law-blue, #0071e3)",
+    "--law-accent-soft": "var(--law-sunken, #f2f2f7)",
   } as CSSProperties;
   const graphics = graphicsOfSubject(subject.id);
   const graphicIds = new Set(graphics.map((g) => g.lessonId));
@@ -158,20 +158,19 @@ export function LawSubjectPage() {
       <header className="law-subject__hero">
         <Link to="/law" className="law-subject__back">← 学习中心</Link>
         <div className="law-subject__title">
-          <span className="law-subject__emoji">{subject.emoji}</span>
           <div>
             <h1>{subject.name}</h1>
             <p>{subject.fullName} · {book ? book.lessonCount : '…'} 个知识点</p>
           </div>
         </div>
         <div className="law-subject__goal" aria-label="今日目标">
-          <span>🎯 今日目标</span>
-          <b>{today.done >= today.target ? "达成！⭐" : `${today.done}/${today.target} 课`}</b>
+          <span>今日目标</span>
+          <b>{today.done >= today.target ? "已达成" : `${today.done}/${today.target} 课`}</b>
           <div className="law-subject__goal-bar">
             <span style={{ width: `${Math.min(100, (today.done / today.target) * 100)}%` }} />
           </div>
           <span className="law-subject__goal-steps">
-            {dueCount > 0 ? `🔁 今日待复习 ${dueCount} 课` : `📖 本册共 ${subjectSteps(subject.id)} 步`}
+            {dueCount > 0 ? `今日待复习 ${dueCount} 课` : `本册共 ${subjectSteps(subject.id)} 步`}
           </span>
         </div>
       </header>
@@ -194,7 +193,7 @@ export function LawSubjectPage() {
         <section className="law-subject__resume">
           {/* 继续学 → 直接进课堂（?classroom=1）；错题本入口保持分步模式以便测题 */}
           <PrefetchLink to={`/law/learn/${lastRef.lesson.id}?classroom=1`} className="law-subject__resume-card">
-            <span className="law-subject__resume-icon">⏱️</span>
+            <span className="law-subject__resume-icon" aria-hidden="true">续</span>
             <span>
               <b>继续上次的学习</b>
               <small>{lastRef.chapter.title ? semanticChapterTitle(lastRef.chapter) : ""} · {lastRef.lesson.title}</small>
@@ -207,7 +206,7 @@ export function LawSubjectPage() {
       {book && wrongIds.size > 0 ? (
         <section className="law-subject__wrong">
           <header>
-            <h2>📕 我的错题本（{wrongIds.size}）</h2>
+            <h2>我的错题本（{wrongIds.size}）</h2>
             <span>按记忆曲线（1~15 天，按掌握度自适应伸缩）提醒复习，连续 5 次通过就能从错题本毕业</span>
             <Link to="/law/wrongbook" className="law-subject__wrong-open">五科错题本 →</Link>
           </header>
@@ -224,7 +223,7 @@ export function LawSubjectPage() {
                 >
                   <b>{ref.lesson.title}</b>
                   <span>
-                    {due ? "🔁 到期了，复习测试" : "🗓️ 还没到期"} ·{" "}
+                    {due ? "到期了，复习测试" : "还没到期"} ·{" "}
                     {ref.chapter.title ? semanticChapterTitle(ref.chapter) : ""}
                   </span>
                 </PrefetchLink>
@@ -246,7 +245,7 @@ export function LawSubjectPage() {
       {book && graphics.length > 0 ? (
         <section className="law-subject__graphics" aria-label={`${subject.name}图解课堂`}>
           <header className="law-graphics-head">
-            <h2>📐 图解课堂 · 先看动画懂概念</h2>
+            <h2>图解课堂 · 先看动画懂概念</h2>
             <span>打开对应课程时，也可以从课时顶部进入</span>
           </header>
           <div className="law-graphics-grid">
@@ -257,9 +256,8 @@ export function LawSubjectPage() {
                 <PrefetchLink
                   to={`/law/graphic/${graphic.lessonId}`}
                   className="law-graphic-card"
-                  style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
                 >
-                  <span className="law-graphic-card__kind">{graphicKindEmoji(graphic.kind)}</span>
+                  <span className="law-graphic-card__kind" aria-hidden="true">{graphicKindMark(graphic.kind)}</span>
                   <span className="law-graphic-card__body">
                     <strong>{graphic.title}</strong>
                     <small>{graphic.intro}</small>
@@ -282,7 +280,7 @@ export function LawSubjectPage() {
             className={view === "path" ? "is-active" : ""}
             onClick={() => switchView("path")}
           >
-            🗺️ 学习路径
+            学习路径
           </button>
           <button
             type="button"
@@ -290,7 +288,7 @@ export function LawSubjectPage() {
             className={view === "tree" ? "is-active" : ""}
             onClick={() => switchView("tree")}
           >
-            📋 章节目录
+            章节目录
           </button>
         </div>
       </div>
@@ -321,7 +319,7 @@ export function LawSubjectPage() {
 
       {appendixLines.length > 0 ? (
         <section className="law-subject__leftover">
-          <h2>📎 附录 · 考点速查索引（不进学习流）</h2>
+          <h2>附录 · 考点速查索引（不进学习流）</h2>
           <details>
             <summary>点击展开查看（索引内容完整保留）</summary>
             <pre>{appendixLines.join("\n")}</pre>
@@ -331,7 +329,7 @@ export function LawSubjectPage() {
 
       {book && book.leftover.length > 0 ? (
         <section className="law-subject__leftover">
-          <h2>📎 附录 · 未归入章节的原文</h2>
+          <h2>附录 · 未归入章节的原文</h2>
           <details>
             <summary>点击展开查看（这些内容也完整保留，未删除）</summary>
             <pre>{book.leftover.join("\n")}</pre>
@@ -344,21 +342,22 @@ export function LawSubjectPage() {
   );
 }
 
-function graphicKindEmoji(kind: string): string {
+/** 图解类型标识：单色汉字记号（彩色 emoji 退役，颜色语义交给墨阶） */
+function graphicKindMark(kind: string): string {
   switch (kind) {
     case "assemble":
-      return "🧩";
+      return "构";
     case "flow":
-      return "🔗";
+      return "流";
     case "tree":
-      return "🌳";
+      return "树";
     case "timeline":
-      return "🕰️";
+      return "轴";
     case "balance":
-      return "⚖️";
+      return "衡";
     case "stairs":
-      return "🪜";
+      return "阶";
     default:
-      return "📊";
+      return "图";
   }
 }

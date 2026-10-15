@@ -95,7 +95,7 @@ type ClassroomCompositionProps = {
   segments: ClassroomSegment[];
   /** 场景强调墨（SUBJECT_ACCENTS[subject].ink）：承载场景内文字色，双底 ≥5.54:1 */
   accent: string;
-  /** 学科 id：接通场景粉彩 token 与 SceneChrome 学科淡晕 */
+  /** 学科 id：接通学科锚点与 SceneChrome 进度点 */
   subject: LawSubjectId;
 };
 

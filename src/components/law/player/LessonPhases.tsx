@@ -30,7 +30,7 @@ export function SummaryPhase({
       <p>{lesson.title}</p>
       <div className="law-player__summary-info">
         <span>📖 {totalSteps} 个知识点</span>
-        <span>✅ {doneSteps} 步已确认掌握</span>
+        <span>✓ {doneSteps} 步已确认掌握</span>
         {lesson.mnemonic ? <span>🧠 口诀：{lesson.mnemonic}</span> : null}
       </div>
       <div className="law-player__summary-actions">

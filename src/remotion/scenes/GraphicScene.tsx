@@ -1,18 +1,8 @@
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import type { FC } from "react";
 import type { LawGraphic, LawSubjectId } from "../../types/law";
-import {
-  C,
-  F,
-  RADIUS,
-  SAFE,
-  SHADOW,
-  SPRING,
-  SUBJECT_ACCENTS,
-  sceneFrameStyle,
-  withAlpha,
-} from "../theme";
-import { MascotSticker, useQBounceIn, useStageProgress } from "../chrome";
+import { C, F, RADIUS, SAFE, SPRING, sceneFrameStyle } from "../theme";
+import { useRiseIn, useStageProgress } from "../chrome";
 import {
   GraphicStructureRow,
   buildRows,
@@ -29,21 +19,22 @@ import {
  * 故本组件按「图解高潮帧」口径以 remotion spring/interpolate 原生重排图解的完整
  * 知识结构——解说步进（captions）驱动节点逐批揭示，帧号唯一决定画面，确定性成立。
  *
- * 布局（1080×1920 竖版，可爱令牌）：头部（粉彩胶囊徽标 + 文楷标题 + intro +
- * 粉彩胶囊强调杠 + 时间线色带）→ 结构区（粉彩大圆角底板卡，按 kind 分型：tree
- * 根/枝/叶、balance 天平两侧、matrix 对照矩阵、其余按序节点卡）→ 底部解说字幕
- * （与 GraphicStage 同语义的「第 x / N 步」步进胶囊）→ 右上奶黄包贴纸（chrome
- * 同款位置，本场景自带徽标不挂 SceneChrome，故贴纸自摆）。
+ * 布局（1080×1920 竖版，Apple 黑白灰）：头部（浅灰胶囊徽标 + 无衬线标题 +
+ * intro + 墨色强调杠 + 时间线色带图例）→ 结构区（浅灰分区底板，按 kind 分型：
+ * tree 根/枝/叶、balance 天平两侧、matrix 对照矩阵、其余按序节点卡——白卡 +
+ * 发丝线行卡逐行揭示）→ 底部解说字幕（与 GraphicStage 同语义的「x / N 步」
+ * 灰阶步进胶囊）。
  *
- * 动画完全帧驱动（chrome 的 useStageProgress/useQBounceIn + interpolate，无
+ * 动画完全帧驱动（chrome 的 useStageProgress/useRiseIn + interpolate，无
  * Math.random/Date/localStorage/framer-motion）；prefers-reduced-motion 时全部定格终态。
+ * accent prop 仅为 ClassroomPlayer 既有接线保留，画面不随学科变色。
  */
 
 /* ==================== 时序常量（帧，30fps 基准） ==================== */
 
 const BADGE_IN = 6; // 徽标/标题起跳（与 T.titleIn 同拍）
 const INTRO_IN = 20; // intro 行起跳
-const PANEL_IN = 30; // 结构区粉彩底板起跳（首批结构行之前）
+const PANEL_IN = 30; // 结构区浅灰底板起跳（首批结构行之前）
 const REVEAL_START = 46; // 第一批结构行起跳（头部完成入位之后）
 const PER_CAPTION = 84; // 每条解说步停留 2.8s（GraphicStage 自动播放 3.2s 的收紧版）
 const TAIL_HOLD = 30; // 收尾停留
@@ -59,25 +50,17 @@ export const graphicSceneDurationInFrames = (captionCount: number): number =>
 
 export interface GraphicSceneProps {
   graphic: LawGraphic;
-  /** 学科强调色（课堂层永远传入；缺省走学科色兜底） */
+  /** 兼容接线（ClassroomPlayer 恒传）：Apple 化后画面不随此值变色 */
   accent?: string;
-  /** 学科 id（accent 恒有值时仅作兜底占位） */
+  /** 学科 id（仅作语义兜底占位） */
   subject?: LawSubjectId;
 }
 
-export const GraphicScene: FC<GraphicSceneProps> = ({
-  graphic,
-  accent = SUBJECT_ACCENTS[graphic.subject].accent,
-  subject = graphic.subject,
-}) => {
+export const GraphicScene: FC<GraphicSceneProps> = ({ graphic }) => {
   const frame = useCurrentFrame();
   const progress = useStageProgress();
-  const badgePop = useQBounceIn(BADGE_IN, { distance: 26, scaleFrom: 0.9, overshootPx: 6 });
+  const badgePop = useRiseIn(BADGE_IN, { distance: 18, durationFrames: 7 });
 
-  const tone = accent ?? SUBJECT_ACCENTS[subject].accent;
-  /** 粉彩装饰层：学科默认走 theme pastel；覆盖色（非学科 ink）以低透明度自混 */
-  const tints = SUBJECT_ACCENTS[subject];
-  const pastel = accent === tints.accent ? tints.pastel : withAlpha(accent, 0.16);
   const captions = graphic.captions;
   const total = Math.max(captions.length, 1);
   const rows = buildRows(graphic);
@@ -104,7 +87,7 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
   const areaH = SAFE.bottom - SAFE.top - CHROME_TOP_CLEAR - HEADER_H - CAPTION_H;
   const pitch = rows.length > 0 ? Math.min(176, Math.max(86, Math.floor(areaH / rows.length))) : 0;
   const rowsTop = Math.max(0, Math.floor((areaH - pitch * rows.length) / 2));
-  // 粉彩底板卡：贴住结构行外扩 14px（行少时不过分空荡）
+  // 浅灰分区底板：贴住结构行外扩 14px（行少时不过分空荡）
   const panelTop = Math.max(0, rowsTop - 14);
   const panelH = rows.length > 0 ? Math.min(areaH - panelTop, pitch * rows.length + 28) : 0;
 
@@ -119,7 +102,7 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
   };
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.paper }}>
+    <AbsoluteFill style={{ backgroundColor: C.surface }}>
       <AbsoluteFill
         style={{
           ...sceneFrameStyle,
@@ -129,7 +112,7 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* 头部：粉彩胶囊徽标 + 文楷标题 + 粉彩胶囊强调杠 + intro +（时间线）色带
+        {/* 头部：浅灰胶囊徽标 + 无衬线标题 + 墨色强调杠 + intro +（时间线）图例
             （div：header 在课堂 Player 的页面 DOM 里会产出无标签 landmark，WCAG 1.3.1） */}
         <div style={{ flex: "none", height: HEADER_H, overflow: "hidden" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -140,18 +123,17 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
                 gap: 12,
                 padding: "10px 26px",
                 borderRadius: RADIUS.pill,
-                border: `2.5px solid ${withAlpha(tone, 0.18)}`,
-                backgroundColor: pastel,
-                boxShadow: SHADOW.soft,
+                backgroundColor: C.paper,
                 fontFamily: F.heading,
+                fontWeight: 600,
                 fontSize: 27,
                 letterSpacing: "0.14em",
                 color: C.ink,
                 opacity: badgePop.opacity,
-                transform: `translateY(${badgePop.y}px) scale(${badgePop.scale})`,
+                transform: `translateY(${badgePop.y}px)`,
               }}
             >
-              <span aria-hidden="true" style={{ fontSize: 30, lineHeight: 1 }}>📐</span>
+              <span aria-hidden="true" style={{ fontSize: 26, lineHeight: 1 }}>◆</span>
               完整图解 · {kindLabel(graphic.kind)}
             </span>
           </div>
@@ -159,24 +141,25 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
             style={{
               margin: "18px 0 0",
               fontFamily: F.zhBlack,
+              fontWeight: 700,
               fontSize: 46,
               lineHeight: 1.25,
               letterSpacing: "0.02em",
               color: C.ink,
               opacity: badge,
-              transform: `translateY(${interpolate(badge, [0, 1], [36, 0])}px)`,
+              transform: `translateY(${interpolate(badge, [0, 1], [26, 0])}px)`,
             }}
           >
             {graphic.title}
           </h1>
-          {/* 强调杠：粉彩胶囊下划线（可爱令牌——替代重描边式色杠） */}
+          {/* 强调杠：墨色细横杠（层级靠字重与墨色，不加彩色） */}
           <div
             style={{
               width: 210,
-              height: 10,
+              height: 6,
               marginTop: 16,
               borderRadius: RADIUS.pill,
-              background: withAlpha(tone, 0.32),
+              background: C.ink,
               transformOrigin: "left center",
               transform: `scaleX(${progress(BADGE_IN + 8, SPRING.soft)})`,
             }}
@@ -212,19 +195,21 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
                     color: C.gray,
                   }}
                 >
+                  {/* 时代分区点：画布灰阶（彩色预算 7 槽不接纳数据态颜色） */}
                   <span
                     aria-hidden="true"
-                    style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: era.color, display: "inline-block" }}
+                    style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: C.ink, display: "inline-block" }}
                   />
                   {era.label}
-            </span>
-          ))}
-        </div>
-      ) : null}
+                </span>
+              ))}
+            </div>
+          ) : null}
         </div>
 
-        {/* 结构区：粉彩大圆角底板卡先行铺开，逐行揭示（树根/树枝+叶 / 节点卡 /
-            天平行 / 矩阵行；行渲染见 GraphicSceneRows） */}
+        {/* 结构区：浅灰分区底板先行铺开（白卡行卡在其上逐行揭示——底色分区，
+            行卡靠 hairline 与底板分层）；树根/树枝+叶 / 节点卡 / 天平行 / 矩阵行，
+            行渲染见 GraphicSceneRows */}
         <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
           {rows.length > 0 && (
             <div
@@ -237,8 +222,7 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
                 height: panelH,
                 boxSizing: "border-box",
                 borderRadius: RADIUS.card,
-                background: pastel,
-                border: `2px solid ${withAlpha(tone, 0.1)}`,
+                background: C.paper,
                 opacity: panel,
                 transform: `translateY(${interpolate(panel, [0, 1], [14, 0])}px)`,
               }}
@@ -250,7 +234,6 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
               row={row}
               index={index}
               enter={rowIn(index)}
-              tone={tone}
               pitch={pitch}
               labelFont={labelFont}
               detailFont={detailFont}
@@ -260,7 +243,7 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
           ))}
         </div>
 
-        {/* 底部：解说字幕（「第 x / N 步」粉彩胶囊步进，与 GraphicStage 同语义）+ 回看提示 */}
+        {/* 底部：解说字幕（「x / N 步」灰阶步进胶囊，与 GraphicStage 同语义）+ 回看提示 */}
         <div style={{ flex: "none", height: CAPTION_H, position: "relative", overflow: "hidden" }}>
           {captions.map((caption, index) => {
             const [t0, t1] = captionWindow(index);
@@ -294,12 +277,11 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
                     flex: "none",
                     padding: "8px 18px",
                     borderRadius: RADIUS.pill,
-                    background: pastel,
-                    border: `2px solid ${withAlpha(tone, 0.3)}`,
+                    background: C.paper,
                     fontFamily: F.enSerif,
                     fontSize: 26,
                     fontWeight: 700,
-                    color: tone,
+                    color: C.ink,
                   }}
                 >
                   {index + 1} / {total}
@@ -309,6 +291,7 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
                     flex: 1,
                     minWidth: 0,
                     fontFamily: F.zhSerifSemi,
+                    fontWeight: 600,
                     fontSize: 30,
                     lineHeight: 1.5,
                     color: C.ink,
@@ -337,27 +320,10 @@ export const GraphicScene: FC<GraphicSceneProps> = ({
               opacity: hint * 0.9,
             }}
           >
-            想手动逐帧回看：课时页顶栏点「📐 图解」
+            想手动逐帧回看：课时页顶栏点「图解」
           </p>
         </div>
       </AbsoluteFill>
-
-      {/* 学科粉彩角落淡晕（与 SceneChrome 同款口径，此处自绘以携带「完整图解」专属徽标） */}
-      <AbsoluteFill
-        style={{
-          pointerEvents: "none",
-          opacity: badge,
-          background: `radial-gradient(920px 640px at 90% 2%, ${
-            accent === tints.accent ? withAlpha(tints.pastel, 0.55) : withAlpha(tone, 0.14)
-          }, transparent 68%)`,
-        }}
-      />
-
-      {/* 右上奶黄包贴纸：chrome 同款位置（SAFE.top 之上无内容，天然不打架），
-          Q 弹入场后 ≤5px 浮动（reduced 停） */}
-      <div style={{ position: "absolute", right: 56, top: 34 }}>
-        <MascotSticker size={64} enterAt={10} />
-      </div>
     </AbsoluteFill>
   );
 };

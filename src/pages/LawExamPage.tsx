@@ -29,6 +29,15 @@ const COUNT_MIN = 5;
 const COUNT_MAX = 20;
 const COUNT_DEFAULT = 10;
 
+/** 学科 → 五科锚点色（CSS 变量引用，亮暗同槽变体由令牌翻转； Apple 灰阶下唯一的学科彩色预算） */
+const SUBJECT_ANCHOR: Record<LawSubjectId, string> = {
+  falixue: "var(--law-a-green, #1F7A3D)",
+  xianfa: "var(--law-a-indigo, #5856D6)",
+  zhishixiang: "var(--law-a-bronze, #C93400)",
+  minfa: "var(--law-a-teal, #0F7B83)",
+  xingfa: "var(--law-a-purple, #8944AB)",
+};
+
 /** sessionStorage 草稿键：作答/翻题/截止时间刷新后不丢 */
 const DRAFT_KEY = "nhb-law-exam-draft-v1";
 
@@ -237,11 +246,11 @@ export function LawExamPage() {
       <div className="law-academy law-exam">
         <header className="law-exam__head">
           <Link to="/law" className="law-exam__back">← 学习中心</Link>
-          <h1>🎓 模拟考试</h1>
+          <h1>模拟考试</h1>
         </header>
         <div className="law-exam__empty" aria-live="polite">
           {/* 引导空态=think 陪伴（cheer 只留给通关/满分里程碑），文案指向第一步 */}
-          <LawMascot mood="think" size={72} />
+          <LawMascot mood="think" size={56} />
           <h2>还没有可以出题的课</h2>
           <p>
             模拟考试的题目全部来自你「已掌握」的课时。先去学习中心学完一课的自测
@@ -257,7 +266,7 @@ export function LawExamPage() {
     <div className="law-academy law-exam">
       <header className="law-exam__head">
         <Link to="/law" className="law-exam__back">← 学习中心</Link>
-        <h1>🎓 模拟考试</h1>
+        <h1>模拟考试</h1>
       </header>
 
       {phase === "config" ? (
@@ -271,7 +280,7 @@ export function LawExamPage() {
                 <label
                   key={subject.id}
                   className={`law-exam__subject ${disabled ? "is-disabled" : ""} ${selected.includes(subject.id) ? "is-on" : ""}`}
-                  style={{ "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties}
+                  style={{ "--law-a": SUBJECT_ANCHOR[subject.id] } as CSSProperties}
                 >
                   <input
                     type="checkbox"
@@ -279,7 +288,6 @@ export function LawExamPage() {
                     disabled={disabled}
                     onChange={() => toggleSubject(subject.id)}
                   />
-                  <span className="law-exam__subject-emoji" aria-hidden="true">{subject.emoji}</span>
                   <span className="law-exam__subject-body">
                     <b>{subject.name}</b>
                     <small>{disabled ? "还没有已掌握的课" : `已掌握 ${available} 课`}</small>

@@ -23,6 +23,15 @@ interface LawStatsShape {
 
 const stats = lawStats as LawStatsShape;
 
+/** 学科 → 五科锚点色（CSS 变量引用，亮暗同槽变体由令牌翻转；--law-accent 同步供旧样式消费） */
+const SUBJECT_ANCHOR: Record<string, string> = {
+  falixue: "var(--law-a-green, #1F7A3D)",
+  xianfa: "var(--law-a-indigo, #5856D6)",
+  zhishixiang: "var(--law-a-bronze, #C93400)",
+  minfa: "var(--law-a-teal, #0F7B83)",
+  xingfa: "var(--law-a-purple, #8944AB)",
+};
+
 /** 近 30 天柱状图（纯 SVG，无图表库）。
  *  柱高口径（S6·T2）：有逐日历史的日子 = 真实步数；历史之前的老数据日子 = 课时数
  *  （stepsDone 无逐日时间戳，存量数据只能按 completedAt 归集——首日为基线，不算丢失）。 */
@@ -134,13 +143,13 @@ export function LawStatsPage() {
     <div className="law-academy law-stats">
       <header className="law-stats__head">
         <Link to="/law" className="law-stats__back">← 学习中心</Link>
-        <h1>📊 学习统计</h1>
+        <h1>学习统计</h1>
         <p className="law-stats__lead">数据只存在你自己的浏览器里，随时回来看看脚步。</p>
       </header>
 
       {!started ? (
         <div className="law-stats__empty" aria-live="polite">
-          <LawMascot mood="think" size={72} />
+          <LawMascot mood="think" size={56} />
           <h2>还没有可统计的学习记录</h2>
           <p>先去学第一课，这里就会长出你的进度条、柱状图和连续天数。</p>
           <Link to="/law" className="law-stats__empty-cta">从学习中心开始 →</Link>
@@ -157,7 +166,7 @@ export function LawStatsPage() {
               <span>累计学习天数</span>
             </div>
             <div className={`law-stats__kpi ${streak >= 3 ? "is-cheer" : ""}`}>
-              <b>{streak} 天{streak >= 3 ? " 🔥" : ""}</b>
+              <b>{streak} 天</b>
               <span>当前连续</span>
             </div>
             <div className={`law-stats__kpi ${wrongActive > 0 ? "is-warn" : "is-ok"}`}>
@@ -198,9 +207,14 @@ export function LawStatsPage() {
                 const done = prog?.done ?? 0;
                 const percent = total > 0 ? Math.round((done / total) * 100) : 0;
                 return (
-                  <li key={subject.id} style={{ "--law-accent": subject.accent } as CSSProperties}>
+                  <li
+                    key={subject.id}
+                    style={
+                      { "--law-accent": SUBJECT_ANCHOR[subject.id], "--law-a": SUBJECT_ANCHOR[subject.id] } as CSSProperties
+                    }
+                  >
                     <Link to={`/law/${subject.id}`} className="law-stats__subject">
-                      <span className="law-stats__subject-name">{subject.emoji} {subject.name}</span>
+                      <span className="law-stats__subject-name">{subject.name}</span>
                       <span className="law-stats__subject-bar">
                         <span style={{ width: `${percent}%` }} />
                       </span>
@@ -217,7 +231,7 @@ export function LawStatsPage() {
           <section className="law-stats__section" aria-label="错题健康度">
             <h2>错题健康度</h2>
             {wrongActive === 0 ? (
-              <p className="law-stats__wrong-ok">✨ 错题本干净：没有未毕业的错题。继续保持，答错也别慌——错题会按记忆曲线帮你安排复习。</p>
+              <p className="law-stats__wrong-ok">错题本干净：没有未毕业的错题。继续保持，答错也别慌——错题会按记忆曲线帮你安排复习。</p>
             ) : (
               <div className="law-stats__wrong">
                 <p>

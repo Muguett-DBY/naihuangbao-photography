@@ -31,6 +31,15 @@ interface LawGroup {
   references: number;
 }
 
+/** 学科 → 五科锚点色（CSS 变量引用，亮暗同槽变体由令牌翻转） */
+const SUBJECT_ANCHOR: Record<string, string> = {
+  falixue: "var(--law-a-green, #1F7A3D)",
+  xianfa: "var(--law-a-indigo, #5856D6)",
+  zhishixiang: "var(--law-a-bronze, #C93400)",
+  minfa: "var(--law-a-teal, #0F7B83)",
+  xingfa: "var(--law-a-purple, #8944AB)",
+};
+
 /** 按法律分组：组内引用次数降序（同数按法名码点序，稳定） */
 function groupProvisions(provisions: LawProvisionEntry[]): LawGroup[] {
   const groups = new Map<string, LawGroup>();
@@ -151,7 +160,7 @@ export function LawProvisionsPage() {
     <div className="law-academy law-provisions">
       <header className="law-provisions__head">
         <Link to="/law" className="law-provisions__back">← 学习中心</Link>
-        <h1>📖 法条检索</h1>
+        <h1>法条检索</h1>
         <p className="law-provisions__lead">
           五本书里引用过的每一部法律、每一个条号，都串成了索引——点开就能跳去讲它的课。
         </p>
@@ -166,7 +175,7 @@ export function LawProvisionsPage() {
       {state.phase === "error" ? (
         <div className="law-provisions__empty" role="alert">
           {/* 加载失败=oops 陪伴位：安慰不指责，配「再来一遍就好」口径 */}
-          <LawMascot mood="oops" size={72} />
+          <LawMascot mood="oops" size={56} />
           <h2>法条索引没打开</h2>
           <p>这次没加载出来（{state.message}），再来一遍就好。</p>
           <button type="button" className="law-provisions__retry" onClick={() => setAttempt((n) => n + 1)}>
@@ -194,7 +203,11 @@ export function LawProvisionsPage() {
 
           <div className="law-search law-provisions__search">
             <div className="law-search__box">
-              <span aria-hidden="true">🔍</span>
+              {/* 单色放大镜（currentColor 跟随墨阶，退役彩色 emoji） */}
+              <svg aria-hidden="true" width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <circle cx="7" cy="7" r="5.2" stroke="currentColor" strokeWidth="1.6" />
+                <line x1="11" y1="11" x2="14.6" y2="14.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
               <input
                 type="search"
                 value={query}
@@ -217,7 +230,7 @@ export function LawProvisionsPage() {
 
           {groups.length === 0 ? (
             <div className="law-provisions__empty" aria-live="polite">
-              <LawMascot mood="think" size={72} />
+              <LawMascot mood="think" size={56} />
               <h2>{query ? `没有找到「${query.trim()}」相关的法条` : "索引里还没有法条"}</h2>
               <p>
                 {query
@@ -287,10 +300,9 @@ export function LawProvisionsPage() {
                                       to={`/law/learn/${lesson.lessonId}`}
                                       className="law-provisions__lesson"
                                       style={
-                                        { "--law-accent": subject.accent, "--law-accent-soft": subject.accentSoft } as CSSProperties
+                                        { "--law-a": SUBJECT_ANCHOR[lesson.subject] } as CSSProperties
                                       }
                                     >
-                                      <span aria-hidden="true">{subject.emoji}</span>
                                       {lesson.title}
                                       <small>{subject.name}</small>
                                     </Link>

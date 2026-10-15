@@ -96,7 +96,7 @@ export function MnemonicStep({ step, accent, accentSoft, onDone }: StepProps) {
 
   return (
     <StepShell
-      eyebrow="🧠 口诀型 · 记得快"
+      eyebrow="◉ 口诀型 · 记得快"
       title="口诀记忆卡"
       hint={
         !memorizing

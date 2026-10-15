@@ -62,7 +62,7 @@ export function TimelineStep({ step, accent, accentSoft, onDone }: StepProps) {
 
   if (events.length < 2) {
     return (
-      <StepShell eyebrow="🕰️ 时间线型" title={step.text} done>
+      <StepShell eyebrow="▬ 时间线型" title={step.text} done>
         <p className="law-note">本条内容请按顺序熟读；旁边的原文可以随时查阅。</p>
       </StepShell>
     );
@@ -70,7 +70,7 @@ export function TimelineStep({ step, accent, accentSoft, onDone }: StepProps) {
 
   return (
     <StepShell
-      eyebrow="🕰️ 时间线型 · 顺着时间走"
+      eyebrow="▬ 时间线型 · 顺着时间走"
       title={`时间线 · ${events.length} 个节点`}
       hint={
         done

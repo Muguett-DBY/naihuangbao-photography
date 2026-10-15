@@ -25,6 +25,15 @@ function subjectOfLesson(lessonId: string): LawSubjectId | null {
   return subject in LAW_SUBJECT_MAP ? subject : null;
 }
 
+/** 学科 → 五科锚点色（CSS 变量引用，亮暗同槽变体由令牌翻转；--law-accent 同步供旧样式消费） */
+const SUBJECT_ANCHOR: Record<LawSubjectId, string> = {
+  falixue: "var(--law-a-green, #1F7A3D)",
+  xianfa: "var(--law-a-indigo, #5856D6)",
+  zhishixiang: "var(--law-a-bronze, #C93400)",
+  minfa: "var(--law-a-teal, #0F7B83)",
+  xingfa: "var(--law-a-purple, #8944AB)",
+};
+
 /** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
 function useLawPageTitle(title: string) {
   useEffect(() => {
@@ -75,11 +84,11 @@ export function LawWrongbookPage() {
       <div className="law-academy law-wrongbook">
         <header className="law-wrongbook__head">
           <Link to="/law" className="law-wrongbook__back">← 学习中心</Link>
-          <h1>📕 我的错题本</h1>
+          <h1>我的错题本</h1>
         </header>
         <div className="law-wrongbook__empty" aria-live="polite">
           {/* 吉祥物陪伴位③：错题本空态居中 think——空着不庆祝也不催促，陪着就好 */}
-          <LawMascot mood="think" size={72} />
+          <LawMascot mood="think" size={56} />
           <h2>还是空白的，继续保持！</h2>
           <p>
             做错了再回来，我们一起收拾它——答错过的课会按记忆曲线（1~15 天，随你的掌握度伸缩）
@@ -95,7 +104,7 @@ export function LawWrongbookPage() {
     <div className="law-academy law-wrongbook">
       <header className="law-wrongbook__head">
         <Link to="/law" className="law-wrongbook__back">← 学习中心</Link>
-        <h1>📕 我的错题本</h1>
+        <h1>我的错题本</h1>
         <p className="law-wrongbook__lead">
           错了不可怕，都是还没长牢的地方：到期的先复习，五轮全过就毕业——
           这些标记过的坑，考试时你就绕得开。
@@ -117,21 +126,21 @@ export function LawWrongbookPage() {
       ) : null}
 
       <WrongGroup
-        title="🔴 今天到期 · 先复习这些"
+        title="今天到期 · 先复习这些"
         hint="记忆刚好走到遗忘边缘，现在见一面最划算"
         items={groups.dueToday}
         directory={directory}
         now={now}
       />
       <WrongGroup
-        title="🟡 未来到期 · 排队中"
+        title="未来到期 · 排队中"
         hint="还不到复习时间，提前翻看可以，不急着测"
         items={groups.upcoming}
         directory={directory}
         now={now}
       />
       <WrongGroup
-        title="🟢 已毕业 · 战绩存档"
+        title="已毕业 · 战绩存档"
         hint="曾经错过、如今五轮全对——考前回来扫一眼就有底"
         items={groups.graduated}
         directory={directory}
@@ -186,11 +195,15 @@ function WrongRow({ item, entry, now }: { item: WrongItem; entry?: LawLessonDire
       <PrefetchLink
         to={href}
         className={`law-wrongbook__item ${due ? "is-due" : ""} ${item.reviewDueAt === undefined ? "is-graduated" : ""}`}
-        style={subject ? ({ "--law-accent": subject.accent } as CSSProperties) : undefined}
+        style={
+          subjectId
+            ? ({ "--law-accent": SUBJECT_ANCHOR[subjectId], "--law-a": SUBJECT_ANCHOR[subjectId] } as CSSProperties)
+            : undefined
+        }
       >
         {subject ? (
           <span className="law-wrongbook__subject">
-            {subject.emoji} {subject.name}
+            {subject.name}
           </span>
         ) : null}
         <span className="law-wrongbook__body">
@@ -210,7 +223,7 @@ function WrongRow({ item, entry, now }: { item: WrongItem; entry?: LawLessonDire
             <small className="law-wrongbook__tags">
               {tags.map((tag) => (
                 <span key={tag} className="law-wrongbook__tag">
-                  🏷️ {tag} ×{item.wrongTags?.[tag]}
+                  {tag} ×{item.wrongTags?.[tag]}
                 </span>
               ))}
             </small>

@@ -1,513 +1,236 @@
 /* ────────────────────────────────────────────────────────────
-   学习笔记与标注系统 · Law Notes (P3)
-   课时内面板 + 总览页共用。颜色全部走全局主题变量（base.css
-   在 data-theme="dark" / prefers-color-scheme 下整体翻转），
-   亮暗双主题无需在这里重复声明。
+   学习笔记与标注系统 · Law Notes (P3) · Apple 黑白灰极简
+   课时内面板（.law-notes）+ 总览页（.law-notes-page）共用。
+   令牌（--law-*）来自 law-academy.css 的 .law-academy 根；本文件
+   全部走 var(--x, 灰阶兜底)。三层灰底分区、白卡零阴影、
+   搜索命中高亮走苹果蓝槽；暗色随令牌双通道自动翻转。
    ──────────────────────────────────────────────────────────── */
 
+/* 吉祥物：静态灰阶（!important 压掉 framer 内联 transform 的循环浮动） */
+.law-notes .law-mascot, .law-notes-page .law-mascot,
+.law-notes .law-mascot *, .law-notes-page .law-mascot * { transform: none !important; }
+.law-notes .law-mascot svg, .law-notes-page .law-mascot svg { filter: grayscale(1); }
+
+/* ══ 课时内面板 ══ */
 .law-notes {
   width: 100%;
   max-width: 680px;
   margin: 0 auto;
-  /* 轻盈化：无边框奶油卡 + 单层软阴影 + 大圆角（令牌来自 law-academy.css） */
-  border-radius: var(--law-radius-card, 22px);
-  background: var(--law-cream-surface, var(--paper));
+  border-radius: var(--law-radius-card, 16px);
+  background: var(--law-surface, #fff);
   border: 0;
-  box-shadow: var(--law-shadow-soft, var(--warm-shadow));
+  box-shadow: var(--law-shadow-card, none);
   padding: clamp(16px, 4vw, 28px);
-  font-family: var(--font-body);
+  font-family: var(--law-font-body, var(--font-body));
   text-align: left;
 }
 
-.law-notes__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.law-notes__head h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 20px;
-}
-
-.law-notes__count {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.law-notes__saved {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--moss-dark);
-}
+.law-notes__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.law-notes__head h2 { margin: 0; font-family: inherit; font-size: 20px; font-weight: 600; color: var(--law-ink, #1d1d1f); }
+.law-notes__count { font-size: 13px; color: var(--law-ink-2, #6e6e73); }
+/* 保存确认：墨色 ✓（正确态不引入绿） */
+.law-notes__saved { font-size: 13px; font-weight: 600; color: var(--law-ink, #1d1d1f); }
 
 .law-notes__empty {
   margin: 8px 0 14px;
   padding: 18px 14px;
-  border: var(--law-line, 1.5px dashed var(--hairline));
-  border-radius: var(--law-radius-inner, 14px);
-  color: var(--text-muted);
-  font-size: 14.5px;
+  border: 0;
+  border-radius: var(--law-radius-inner, 8px);
+  background: var(--law-sunken, #f2f2f7);
+  color: var(--law-ink-2, #6e6e73);
+  font-size: 14px;
   line-height: 1.7;
   text-align: center;
 }
 
 /* ── 笔记列表 ── */
-.law-notes__list {
-  list-style: none;
-  margin: 0 0 14px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.law-notes__item {
-  border: 0;
-  border-radius: var(--law-radius-inner, 14px);
-  padding: 12px 14px;
-  background: color-mix(in srgb, var(--law-accent, var(--coral)) 6%, var(--law-cream-surface, var(--paper)));
-}
-
-.law-notes__item.is-editing {
-  border-color: color-mix(in srgb, var(--law-accent, var(--coral)) 45%, var(--hairline));
-}
-
-.law-notes__item-text {
-  margin: 0;
-  font-size: 14.5px;
-  line-height: 1.75;
-  color: var(--ink);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.law-notes__meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  font-size: 12.5px;
-  color: var(--text-muted);
-}
-
-.law-notes__step-tag {
-  padding: 2px 9px;
-  border-radius: var(--law-radius-pill, 999px);
-  background: color-mix(in srgb, var(--law-accent, var(--coral)) 14%, var(--law-cream-surface, var(--paper)));
-  color: var(--text-muted);
-}
-
-.law-notes__actions {
-  display: inline-flex;
-  gap: 6px;
-  margin-left: auto;
-}
-
-.law-notes__confirm {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  color: var(--coral-dark);
-  font-weight: 700;
+.law-notes__list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.law-notes__item { border: 0; border-radius: var(--law-radius-inner, 8px); padding: 12px 14px; background: var(--law-sunken, #f2f2f7); }
+.law-notes__item.is-editing { box-shadow: inset 0 0 0 1.5px var(--law-blue, #0071e3); }
+.law-notes__item-text { margin: 0; font-size: 14.5px; line-height: 1.75; color: var(--law-ink, #1d1d1f); white-space: pre-wrap; overflow-wrap: anywhere; }
+.law-notes__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; font-size: 12.5px; color: var(--law-ink-2, #6e6e73); }
+.law-notes__step-tag { padding: 2px 9px; border-radius: var(--law-radius-pill, 999px); background: color-mix(in srgb, var(--law-ink, #1d1d1f) 6%, transparent); color: var(--law-ink-2, #6e6e73); }
+.law-notes__actions { display: inline-flex; gap: 6px; margin-left: auto; }
+.law-notes__confirm { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--law-red, #d70015); font-weight: 600; }
+/* 暗色 sunken 上红 4.09 → 提亮变体（5.95） */
+:root[data-theme="dark"] .law-notes__confirm { color: color-mix(in srgb, var(--law-red, #ff453a) 65%, #fff); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .law-notes__confirm { color: color-mix(in srgb, var(--law-red, #ff453a) 65%, #fff); }
 }
 
 /* ── 按钮 ── */
 .law-notes__btn {
-  border: var(--law-line, 1.5px solid var(--hairline));
-  border-radius: var(--law-radius-pill, 999px);
-  background: var(--law-cream-surface, var(--paper));
-  color: var(--ink);
+  border: 0;
+  border-radius: var(--law-radius-control, 12px);
+  background: color-mix(in srgb, var(--law-ink, #1d1d1f) 6%, transparent);
+  color: var(--law-ink, #1d1d1f);
   font: inherit;
   font-size: 12.5px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 4px 12px;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
-
-.law-notes__btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--law-shadow-soft);
-}
-
-.law-notes__btn:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-.law-notes__btn.is-primary {
-  border-color: transparent;
-  background: var(--law-accent-solid, color-mix(in srgb, var(--law-accent, var(--coral)) 72%, #2a2118));
-  color: #fff;
-  padding: 6px 16px;
-}
-
-.law-notes__btn.is-danger {
-  border-color: transparent;
-  background: color-mix(in srgb, var(--coral-dark) 82%, #2a2118);
-  color: #fff;
-}
-
-.law-notes__btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.law-notes :focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--law-accent, var(--coral)) 55%, #2a2118);
-  outline-offset: 2px;
-  border-radius: 6px;
-}
+.law-notes__btn:hover:not(:disabled) { background: color-mix(in srgb, var(--law-ink, #1d1d1f) 12%, transparent); }
+.law-notes__btn.is-primary { background: var(--law-blue, #0071e3); color: #fff; padding: 6px 16px; }
+.law-notes__btn.is-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--law-blue, #0071e3) 88%, #000); }
+.law-notes__btn.is-danger { background: var(--law-red, #d70015); color: #fff; }
+.law-notes__btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.law-notes :focus-visible { outline: 2px solid var(--law-blue, #0071e3); outline-offset: 2px; border-radius: 4px; }
 
 /* ── 输入区 ── */
-.law-notes__composer {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.law-notes__composer-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
+.law-notes__composer { display: flex; flex-direction: column; gap: 8px; }
+.law-notes__composer-label { font-size: 13px; font-weight: 600; color: var(--law-ink-2, #6e6e73); }
 .law-notes__textarea {
   width: 100%;
   min-height: 84px;
   resize: vertical;
-  border: 1.5px solid var(--hairline);
-  border-radius: 14px;
-  background: var(--newsprint);
-  color: var(--ink);
+  border: 0;
+  border-radius: var(--law-radius-control, 12px);
+  background: var(--law-sunken, #f2f2f7);
+  color: var(--law-ink, #1d1d1f);
   font: inherit;
   font-size: 14.5px;
   line-height: 1.7;
   padding: 10px 12px;
   box-sizing: border-box;
 }
-
-.law-notes__textarea::placeholder {
-  color: var(--text-muted);
-  opacity: 0.75;
-}
-
-.law-notes__composer-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.law-notes__limit {
-  font-size: 12.5px;
-  color: var(--coral-dark);
-  font-variant-numeric: tabular-nums;
-}
+.law-notes__textarea:focus-visible { outline: 2px solid var(--law-blue, #0071e3); outline-offset: 0; }
+.law-notes__textarea::placeholder { color: var(--law-ink-3, #86868b); }
+.law-notes__composer-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.law-notes__limit { font-size: 12.5px; color: var(--law-ink-2, #6e6e73); font-variant-numeric: tabular-nums; }
 
 /* ── 移动端 390px：收紧内边距，操作按钮换行不挤压 ── */
 @media (max-width: 480px) {
-  .law-notes {
-    border-radius: 16px;
-  }
-
-  .law-notes__actions,
-  .law-notes__confirm {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .law-notes__meta {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
+  .law-notes__actions, .law-notes__confirm { margin-left: 0; width: 100%; }
+  .law-notes__meta { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 
 /* ════════════════════════════════════════════════════════════
    笔记总览页（/law/notes）
    ════════════════════════════════════════════════════════════ */
 
-.law-notes-page {
-  max-width: 920px;
-  margin: 0 auto;
+/* 页面根全幅铺灰底（站点壳层外不留奶油边），920px 内容列随视口居中 */
+.law-academy.law-notes-page {
+  max-width: none;
+  padding-inline: max(clamp(16px, 4vw, 64px), calc((100% - 920px) / 2));
 }
-
-.law-notes-page__head {
-  margin-bottom: 18px;
-}
-
-.law-notes-page__back {
-  display: inline-block;
-  margin-bottom: 10px;
-  font-size: 13.5px;
-  font-weight: 800;
-  color: var(--law-accent-ink, var(--coral-dark));
-  text-decoration: none;
-}
-
-.law-notes-page__back:hover {
-  text-decoration: underline;
-}
-
+.law-notes-page { max-width: 920px; margin: 0 auto; font-family: var(--law-font-body, var(--font-body)); }
+.law-notes-page__head { margin-bottom: 18px; }
+.law-notes-page__back { display: inline-block; margin: 0 0 10px -2px; font-size: 15px; font-weight: 600; color: var(--law-ink, #1d1d1f); text-decoration: none; }
+.law-notes-page__back:hover { text-decoration: underline; }
 .law-notes-page__head h1 {
   margin: 6px 0;
-  /* 文楷只上标题 */
-  font-family: var(--law-font-heading, var(--font-display));
-  font-size: clamp(24px, 4vw, 34px);
-  color: var(--ink);
+  font-family: inherit;
+  font-size: clamp(30px, 4.5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--law-ink, #1d1d1f);
 }
+.law-notes-page__lead { margin: 0 0 14px; font-size: 15px; line-height: 1.6; color: var(--law-ink-2, #6e6e73); }
 
-.law-notes-page__lead {
-  margin: 0 0 14px;
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--text-muted);
-}
-
-.law-notes-page__toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
+.law-notes-page__toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .law-notes-page__search {
   flex: 1 1 220px;
   min-width: 0;
-  border: var(--law-line, 1.5px solid var(--hairline));
-  border-radius: var(--law-radius-pill, 999px);
-  background: var(--law-cream-surface, var(--paper));
-  color: var(--ink);
+  border: 0;
+  border-radius: var(--law-radius-control, 12px);
+  background: var(--law-surface, #fff);
+  color: var(--law-ink, #1d1d1f);
   font: inherit;
   font-size: 14px;
   padding: 9px 16px;
 }
-
-.law-notes-page__search::placeholder {
-  color: var(--text-muted);
-  opacity: 0.75;
-}
+.law-notes-page__search::placeholder { color: var(--law-ink-3, #86868b); }
+.law-notes-page__search:focus-visible { outline: 2px solid var(--law-blue, #0071e3); outline-offset: 0; }
 
 .law-notes-page__tool {
-  border: var(--law-line, 1.5px solid color-mix(in srgb, var(--law-accent, var(--coral)) 30%, transparent));
-  border-radius: var(--law-radius-pill, 999px);
-  background: var(--law-cream-surface, var(--paper));
-  color: var(--law-accent-ink, var(--coral-dark));
+  border: 0;
+  border-radius: var(--law-radius-control, 12px);
+  background: var(--law-surface, #fff);
+  color: var(--law-ink, #1d1d1f);
   font: inherit;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   padding: 8px 16px;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
-
-.law-notes-page__tool:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: var(--law-shadow-soft);
-}
-
-.law-notes-page__tool:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
+.law-notes-page__tool:hover:not(:disabled) { background: var(--law-sunken, #f2f2f7); }
+.law-notes-page__tool:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* 视觉隐藏的原生文件输入（导入按钮代点，键盘可达：label/aria 关联） */
-.law-notes-page__file {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
+.law-notes-page__file { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-.law-notes-page__feedback {
-  margin: 10px 0 0;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--moss-dark);
-}
-
-.law-notes-page__error {
-  margin: 0 0 14px;
-  font-size: 13px;
-  color: var(--coral-dark);
-}
-
-.law-notes-page__loading {
-  margin: 0 0 14px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.law-notes-page__result-info {
-  margin: 0 0 14px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--ink);
-}
+.law-notes-page__feedback { margin: 10px 0 0; font-size: 13.5px; font-weight: 600; color: var(--law-ink, #1d1d1f); }
+.law-notes-page__error { margin: 0 0 14px; font-size: 13px; color: var(--law-red, #d70015); }
+.law-notes-page__loading { margin: 0 0 14px; font-size: 13px; color: var(--law-ink-2, #6e6e73); }
+.law-notes-page__result-info { margin: 0 0 14px; font-size: 13.5px; font-weight: 600; color: var(--law-ink, #1d1d1f); }
 
 /* ── 学科/课时分组 ── */
-.law-notes-page__subject {
-  margin-bottom: 26px;
+.law-notes-page__subject { margin-bottom: 26px; }
+.law-notes-page__subject h2 { display: flex; align-items: baseline; gap: 8px; margin: 0 0 10px; font-family: inherit; font-size: 17px; font-weight: 600; color: var(--law-ink, #1d1d1f); }
+/* 学科标识点：h2 前缀 8px 锚点圆点（section 带 inline --law-a） */
+.law-notes-page__subject h2::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  align-self: center;
+  border-radius: var(--law-radius-pill, 999px);
+  background: var(--law-a, var(--law-ink-2, #6e6e73));
 }
+.law-notes-page__subject h2 span { font-size: 12.5px; font-weight: 400; color: var(--law-ink-2, #6e6e73); }
 
-.law-notes-page__subject h2 {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  margin: 0 0 10px;
-  font-family: var(--law-font-heading, var(--font-display));
-  font-size: 17px;
-  color: var(--ink);
-}
-
-.law-notes-page__subject h2 span {
-  font-family: var(--font-body);
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-.law-notes-page__lesson {
-  /* 轻盈化：无边框奶油卡 + 单层软阴影（学科 inline --law-accent 供内部粉彩就地产色） */
-  margin-bottom: 14px;
-  border: 0;
-  border-radius: var(--law-radius-card, 16px);
-  background: var(--law-cream-surface, var(--paper));
-  box-shadow: var(--law-shadow-soft, var(--warm-shadow));
-  padding: 14px 16px;
-}
-
-.law-notes-page__lesson-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.law-notes-page__lesson-head b {
-  font-size: 14.5px;
-  color: var(--ink);
-}
-
-.law-notes-page__lesson-head small {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.law-notes-page__lesson ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+.law-notes-page__lesson { margin-bottom: 14px; border: 0; border-radius: var(--law-radius-card, 16px); background: var(--law-surface, #fff); box-shadow: var(--law-shadow-card, none); padding: 14px 16px; }
+.law-notes-page__lesson-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.law-notes-page__lesson-head b { font-size: 14.5px; font-weight: 600; color: var(--law-ink, #1d1d1f); }
+.law-notes-page__lesson-head small { font-size: 12px; color: var(--law-ink-2, #6e6e73); }
+.law-notes-page__lesson ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 
 .law-notes-page__note {
   display: block;
   border: 0;
-  border-radius: var(--law-radius-inner, 12px);
-  /* 学科粉彩微差底（section 带 inline --law-accent），暗色随 cream-surface 自动转暗调 */
-  background: color-mix(in srgb, var(--law-accent, var(--coral)) 7%, var(--law-cream-surface, var(--paper)));
+  border-radius: var(--law-radius-inner, 8px);
+  background: var(--law-sunken, #f2f2f7);
   padding: 10px 12px;
   text-decoration: none;
-  transition: transform 0.15s, background 0.15s;
+  transition: background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
-
-.law-notes-page__note:hover {
-  transform: translateY(-1px);
-  background: color-mix(in srgb, var(--law-accent, var(--coral)) 16%, var(--law-cream-surface, var(--paper)));
-}
-
-.law-notes-page__note p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--ink);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.law-notes-page__note mark {
-  background: color-mix(in srgb, var(--sun-note) 65%, transparent);
-  /* 高亮底（sun-note）在暗色主题下仍是浅金色，文字必须固定深墨——
-     不能 inherit --ink（暗色下近白，实测 1.59:1 不达标） */
-  color: #2a2118;
-  border-radius: 3px;
-  padding: 0 2px;
-}
-
-.law-notes-page__note footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.law-notes-page__go {
-  margin-left: auto;
-  font-weight: 800;
-  color: var(--law-accent-ink, var(--coral-dark));
-}
+.law-notes-page__note:hover { background: color-mix(in srgb, var(--law-ink, #1d1d1f) 10%, var(--law-surface, #fff)); }
+.law-notes-page__note p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--law-ink, #1d1d1f); white-space: pre-wrap; overflow-wrap: anywhere; }
+/* 搜索命中高亮：苹果蓝淡底（蓝槽），文字恒墨阶随主题翻转 */
+.law-notes-page__note mark { background: color-mix(in srgb, var(--law-blue, #0071e3) 22%, transparent); color: inherit; border-radius: 3px; padding: 0 2px; }
+.law-notes-page__note footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; font-size: 12px; color: var(--law-ink-2, #6e6e73); }
+.law-notes-page__go { margin-left: auto; font-weight: 600; color: var(--law-ink, #1d1d1f); }
 
 /* ── 空态 / 无结果 ── */
 .law-notes-page__empty {
   text-align: center;
   border: 0;
-  border-radius: var(--law-radius-card, 22px);
-  background: var(--law-cream-surface, var(--paper));
-  box-shadow: var(--law-shadow-soft);
+  border-radius: var(--law-radius-card, 16px);
+  background: var(--law-surface, #fff);
+  box-shadow: var(--law-shadow-card, none);
   padding: clamp(24px, 5vw, 48px) 20px;
 }
-
-.law-notes-page__empty h2 {
-  margin: 10px 0 6px;
-  font-family: var(--law-font-heading, var(--font-display));
-  font-size: 22px;
-  color: var(--ink);
-}
-
-.law-notes-page__empty p {
-  max-width: 460px;
-  margin: 0 auto 16px;
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--text-muted);
-}
-
+.law-notes-page__empty h2 { margin: 10px 0 6px; font-family: inherit; font-size: 22px; font-weight: 600; color: var(--law-ink, #1d1d1f); }
+.law-notes-page__empty p { max-width: 460px; margin: 0 auto 16px; font-size: 14px; line-height: 1.8; color: var(--law-ink-2, #6e6e73); }
 .law-notes-page__empty-cta {
   display: inline-block;
   border: 0;
-  border-radius: var(--law-radius-control, 999px);
-  background: var(--law-accent-solid, color-mix(in srgb, var(--law-accent, var(--coral)) 72%, #2a2118));
+  border-radius: var(--law-radius-control, 12px);
+  background: var(--law-blue, #0071e3);
   color: #fff;
   font: inherit;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 600;
   padding: 12px 24px;
   text-decoration: none;
   cursor: pointer;
 }
 
 @media (max-width: 480px) {
-  .law-notes-page__toolbar .law-notes-page__tool {
-    flex: 1 1 auto;
-  }
-
-  .law-notes-page__go {
-    margin-left: 0;
-  }
+  .law-notes-page__toolbar .law-notes-page__tool { flex: 1 1 auto; }
+  .law-notes-page__go { margin-left: 0; }
 }

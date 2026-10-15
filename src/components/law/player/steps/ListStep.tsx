@@ -21,7 +21,7 @@ export function ListStep({ step, accent, accentSoft, onDone }: StepProps) {
 
   return (
     <StepShell
-      eyebrow="🗂️ 列举型 · 一条一条过"
+      eyebrow="≡ 列举型 · 一条一条过"
       title={`共 ${items.length} 条，一条都别漏`}
       hint={
         allDone

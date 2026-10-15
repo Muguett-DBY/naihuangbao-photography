@@ -65,7 +65,7 @@ export function SceneView({
 }: {
   scene: ClassroomScene;
   accent: string;
-  /** 学科 id：接通场景粉彩 token 与 SceneChrome 学科淡晕（缺省时场景自混兜底） */
+  /** 学科 id：接通学科锚点与 SceneChrome 进度点（缺省时场景自混兜底） */
   subject?: LawSubjectId;
   /** 第几场（0-based，SceneChrome 进度点） */
   sceneIndex?: number;

@@ -48,10 +48,10 @@ export function BalanceDiagram({ graphic, active }: { graphic: LawGraphic; activ
             animate={{ opacity: active >= 1 ? 1 : 0 }}
             transition={{ duration: 0.5 }}
           >
-            <text x="66" y="132" textAnchor="middle" fontSize="14" fontWeight="900" fill="var(--law-accent, #b1544e)">
+            <text x="66" y="132" textAnchor="middle" fontSize="14" fontWeight="700" style={{ fill: "var(--law-ink, #1d1d1f)" }}>
               {balance?.left ?? "甲"}
             </text>
-            <text x="274" y="132" textAnchor="middle" fontSize="14" fontWeight="900" fill="var(--law-accent, #b1544e)">
+            <text x="274" y="132" textAnchor="middle" fontSize="14" fontWeight="700" style={{ fill: "var(--law-ink, #1d1d1f)" }}>
               {balance?.right ?? "乙"}
             </text>
             <line x1="12" y1="150" x2="328" y2="150" stroke="currentColor" strokeWidth="0" />

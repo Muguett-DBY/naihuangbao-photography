@@ -23,7 +23,7 @@ export function ExceptionStep({ step, accent, accentSoft, onDone }: StepProps) {
 
   return (
     <StepShell
-      eyebrow={'⚠️ 例外型 · 小心"但书"'}
+      eyebrow={'▲ 例外型 · 小心"但书"'}
       title="规则之外，必有例外"
       hint={
         caught

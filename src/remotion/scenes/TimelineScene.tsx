@@ -1,37 +1,21 @@
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
-import type { CSSProperties, FC } from "react";
+import type { FC } from "react";
 import type { LawSubjectId } from "../../types/law";
-import {
-  C,
-  F,
-  RADIUS,
-  SAFE,
-  SHADOW,
-  SPRING,
-  SUBJECT_ACCENTS,
-  T,
-  sceneFrameStyle,
-  withAlpha,
-} from "../theme";
-import {
-  SceneChrome,
-  strokeDashStyle,
-  usePrefersReducedMotion,
-  useQBounceIn,
-  useStageProgress,
-} from "../chrome";
+import { C, F, RADIUS, SAFE, SPRING, T, sceneFrameStyle, withAlpha } from "../theme";
+import { SceneChrome, strokeDashStyle, usePrefersReducedMotion, useRiseIn, useStageProgress } from "../chrome";
 
 /**
- * TimelineScene — 时间线场景（可爱令牌 · 横轴版）。
- * 标题入场后，横贯安全区的「时间轴」自左向右描边生长：粉彩宽轨（圆头胶囊轨）
- * 垫底 + ink 细线铺成长（stroke-dashoffset 帧驱动），轴尖带高亮光点；
- * 事件糖果圆点沿轴依次弹出，事件卡（年份糖果徽章 + 事件短句）随点上下交替
- * Q 弹展开，末端的箭头在轴线贯通时弹出入位。
+ * TimelineScene — 时间线场景（Apple 黑白灰 · 横轴版）。
+ * 标题入场后，横贯安全区的「时间轴」自左向右描边生长：发丝线宽轨（圆头胶囊轨）
+ * 垫底 + 墨色细线铺成长（stroke-dashoffset 帧驱动），轴尖带行进光点；
+ * 事件墨色圆点沿轴依次弹出，事件卡（年份灰阶胶囊 + 事件短句）随点上下交替
+ * 缓出展开，末端的箭头在轴线贯通时弹出入位。
  *
- * 年份糖果徽章：粉彩芯胶囊 + ink 描边 + 年份 ink 文楷字（对比度红线）。
+ * 年份徽章：浅灰底胶囊 + 墨色 600 字（对比度红线）。
  *
- * 动画完全帧驱动（chrome 的 spring helpers + interpolate，无 Math.random）；
- * prefers-reduced-motion 时全部定格终态。
+ * 动画完全帧驱动（chrome 的 helpers + interpolate，无 Math.random）；
+ * prefers-reduced-motion 时全部定格终态。accent prop 仅为 SceneView 既有
+ * 接线保留，画面不随学科变色。
  */
 
 export interface TimelineEvent {
@@ -42,9 +26,9 @@ export interface TimelineEvent {
 export interface TimelineSceneProps {
   title: string;
   events: TimelineEvent[];
-  /** 学科强调色（缺省宪法红 = 既有出片；SceneView 接线后走 SUBJECT_ACCENTS）。 */
+  /** 兼容接线（SceneView 恒传）：Apple 化后画面不随此值变色 */
   accent?: string;
-  /** SceneChrome 底座入参：学科 id（accent 恒有值时仅占位）与场次进度。 */
+  /** SceneChrome 底座入参：学科 id（进度点锚点色）与场次进度。 */
   subject?: LawSubjectId;
   /** 第几场（0-based）；total 为 0 时 chrome 不画进度点。 */
   sceneIndex?: number;
@@ -83,13 +67,11 @@ const clamp = (value: number, min: number, max: number): number =>
   Math.min(max, Math.max(min, value));
 
 /**
- * 事件卡（可爱令牌）：浮层白卡大圆角 + 粉彩描边 + 软阴影，年份是糖果徽章
- * （粉彩芯胶囊 + ink 细描边 + ink 文楷字）。useQBounceIn 朝轴心方向 Q 弹展开
- * （过冲 ≤5px，朝离开轴的方向轻微过头再回正）。抽成组件以便逐卡持 hook。
+ * 事件卡（Apple 化）：白卡 + 发丝线描边，年份是灰阶胶囊（浅灰底 + 墨色
+ * 600 字）。useRiseIn 朝轴心方向缓出展开（无过冲）。抽成组件以便逐卡持 hook。
  */
 const TimelineEventCard: FC<{
   item: TimelineEvent;
-  tone: string;
   enterAt: number;
   above: boolean;
   anchorY: number;
@@ -97,13 +79,11 @@ const TimelineEventCard: FC<{
   width: number;
   yearFont: number;
   eventFont: number;
-}> = ({ item, tone, enterAt, above, anchorY, left, width, yearFont, eventFont }) => {
-  const pop = useQBounceIn(enterAt, { distance: 18, scaleFrom: 0.92, overshootPx: 5 });
-  // 上卡从轴心上方落回（y 正→0、过冲为负=向上过头），下卡镜像
+}> = ({ item, enterAt, above, anchorY, left, width, yearFont, eventFont }) => {
+  const pop = useRiseIn(enterAt, { distance: 14 });
+  // 上卡从轴心上方落回，下卡镜像
   const dir = above ? 1 : -1;
-  const anchor: CSSProperties = above
-    ? { bottom: anchorY }
-    : { top: anchorY };
+  const anchor = above ? { bottom: anchorY } : { top: anchorY };
   return (
     <div
       style={{
@@ -112,27 +92,26 @@ const TimelineEventCard: FC<{
         width,
         boxSizing: "border-box",
         padding: "14px 18px",
-        background: C.raised,
+        background: C.surface,
         borderRadius: RADIUS.inner,
-        border: `2.5px solid ${withAlpha(tone, 0.35)}`,
-        boxShadow: SHADOW.soft,
+        border: `2px solid ${C.line}`,
         opacity: pop.opacity,
-        transform: `translateY(${dir * pop.y}px) scale(${pop.scale})`,
+        transform: `translateY(${dir * pop.y}px)`,
         ...anchor,
       }}
     >
-      {/* 年份糖果徽章：粉彩芯胶囊 + ink 细描边 */}
+      {/* 年份灰阶胶囊：浅灰底 + 墨色字 */}
       <div
         style={{
           display: "inline-block",
           padding: "2px 18px",
           borderRadius: RADIUS.pill,
-          background: withAlpha(tone, 0.16),
-          border: `2px solid ${withAlpha(tone, 0.45)}`,
+          background: C.paper,
           fontFamily: F.zhSerifSemi,
+          fontWeight: 600,
           fontSize: yearFont,
           lineHeight: 1.3,
-          color: tone,
+          color: C.ink,
           letterSpacing: "0.02em",
         }}
       >
@@ -160,7 +139,6 @@ const TimelineEventCard: FC<{
 export const TimelineScene: FC<TimelineSceneProps> = ({
   title,
   events,
-  accent = SUBJECT_ACCENTS.xianfa.accent,
   subject,
   sceneIndex = 0,
   sceneTotal = 0,
@@ -172,7 +150,7 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
 
   // 标题（theme 帧精确节拍）
   const titleIn = progress(T.titleIn, SPRING.title);
-  const titleY = interpolate(titleIn, [0, 1], [40, 0]);
+  const titleY = interpolate(titleIn, [0, 1], [28, 0]);
   const ruleIn = progress(T.ruleIn, SPRING.soft);
 
   // 轴线生长：按事件数匀速铺满（非 spring，保证事件点与轴尖同步律动）
@@ -207,7 +185,7 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
   const endArrow = progress(AXIS_START_FRAME + axisDuration, SPRING.term);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.paper }}>
+    <AbsoluteFill style={{ backgroundColor: C.surface }}>
       {/* 内容层：sceneFrameStyle 安全区 padding + chrome 徽标让位 */}
       <AbsoluteFill
         style={{
@@ -224,6 +202,7 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
             style={{
               margin: 0,
               fontFamily: F.zhBlack,
+              fontWeight: 700,
               fontSize: 48,
               lineHeight: 1.3,
               letterSpacing: "0.02em",
@@ -234,14 +213,14 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
           >
             {title}
           </h1>
-          {/* 强调杠：粉彩胶囊下划线（可爱令牌——替代重描边式色杠） */}
+          {/* 强调杠：墨色细横杠（层级靠字重与墨色，不加彩色） */}
           <div
             style={{
               width: AREA_W * 0.22,
-              height: 10,
+              height: 6,
               marginTop: 18,
               borderRadius: RADIUS.pill,
-              background: withAlpha(accent, 0.32),
+              background: C.ink,
               transformOrigin: "left center",
               transform: `scaleX(${ruleIn})`,
             }}
@@ -258,35 +237,35 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
               style={{ position: "absolute", left: 0, top: 0 }}
               aria-hidden="true"
             >
-              {/* 粉彩宽轨（圆头胶囊轨，可爱令牌的时间轴本体） */}
+              {/* 发丝线宽轨（圆头胶囊轨，时间轴本体） */}
               <path
                 d={`M ${AXIS_X0} ${AXIS_Y} L ${AXIS_X1} ${AXIS_Y}`}
                 fill="none"
-                stroke={withAlpha(accent, 0.2)}
+                stroke={C.line}
                 strokeWidth={16}
                 strokeLinecap="round"
               />
-              {/* 描边生长：左 → 右（ink 细线铺在粉彩轨上） */}
+              {/* 描边生长：左 → 右（墨色细线铺在发丝轨上） */}
               <path
                 d={`M ${AXIS_X0} ${AXIS_Y} L ${AXIS_X1} ${AXIS_Y}`}
                 fill="none"
-                stroke={accent}
+                stroke={C.ink}
                 strokeWidth={7}
                 strokeLinecap="round"
                 pathLength={100}
                 style={strokeDashStyle(axisProgress)}
               />
-              {/* 轴尖高亮光点：生长期间点亮，贯通后淡出 */}
+              {/* 轴尖行进光点：生长期间点亮，贯通后淡出 */}
               {tipFade > 0.01 && axisProgress < 0.995 && (
                 <g opacity={tipFade}>
-                  <circle cx={tipX} cy={AXIS_Y} r={22} fill={withAlpha(accent, 0.25)} />
-                  <circle cx={tipX} cy={AXIS_Y} r={9} fill={accent} />
+                  <circle cx={tipX} cy={AXIS_Y} r={22} fill={withAlpha(C.gray, 0.25)} />
+                  <circle cx={tipX} cy={AXIS_Y} r={9} fill={C.gray} />
                 </g>
               )}
               {/* 末端箭头：轴线贯通时弹出 */}
               <polygon
                 points={`${AXIS_X1 + 2},${AXIS_Y} ${AXIS_X1 - 14},${AXIS_Y - 11} ${AXIS_X1 - 14},${AXIS_Y + 11}`}
-                fill={accent}
+                fill={C.ink}
                 opacity={Math.min(1, endArrow * 1.5)}
                 style={{
                   transformBox: "fill-box",
@@ -295,7 +274,7 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
                 }}
               />
 
-              {/* 事件糖果圆点 + 引线 */}
+              {/* 事件墨色圆点 + 引线 */}
               {events.map((_, index) => {
                 const pop = progress(appearAt(index), SPRING.term);
                 const above = index % 2 === 0;
@@ -309,7 +288,7 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
                     <path
                       d={`M ${x} ${stubStart} L ${x} ${stubEnd}`}
                       fill="none"
-                      stroke={withAlpha(accent, 0.65)}
+                      stroke={C.gray}
                       strokeWidth={3.5}
                       strokeLinecap="round"
                       pathLength={100}
@@ -319,9 +298,7 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
                       cx={x}
                       cy={AXIS_Y}
                       r={DOT_R}
-                      fill={C.raised}
-                      stroke={accent}
-                      strokeWidth={5}
+                      fill={C.ink}
                       opacity={Math.min(1, pop * 1.6)}
                       style={{
                         transformBox: "fill-box",
@@ -334,7 +311,7 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
               })}
             </svg>
 
-            {/* 事件卡：年份糖果徽章 + 事件短句，沿轴上下交替 Q 弹展开 */}
+            {/* 事件卡：年份灰阶胶囊 + 事件短句，沿轴上下交替缓出展开 */}
             {events.map((item, index) => {
               const above = index % 2 === 0;
               const dist = distOf(index);
@@ -345,7 +322,6 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
                 <TimelineEventCard
                   key={`${index}-${item.time}`}
                   item={item}
-                  tone={accent}
                   enterAt={appearAt(index) + 5}
                   above={above}
                   anchorY={anchorY}
@@ -364,7 +340,6 @@ export const TimelineScene: FC<TimelineSceneProps> = ({
       <SceneChrome
         type="timeline"
         subject={subject ?? "falixue"}
-        accent={accent}
         index={sceneIndex}
         total={sceneTotal}
       />

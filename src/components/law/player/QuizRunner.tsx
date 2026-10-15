@@ -9,11 +9,11 @@ import { LawMascot } from "../LawMascot";
 type AnswerState = "idle" | "correct" | "wrong";
 
 const RACE_LABEL: Record<string, string> = {
-  order: "🧩 排序题",
-  judge: "⚡ 判断题",
-  mcq: "🔍 选择题",
-  fill: "✏️ 填空题",
-  multi: "☑️ 多选题",
+  order: "排序题",
+  judge: "判断题",
+  mcq: "选择题",
+  fill: "填空题",
+  multi: "多选题",
 };
 
 export function QuizRunner({
@@ -53,7 +53,7 @@ export function QuizRunner({
   }, [state, index]);
 
   const item = items[index];
-  const race = item ? RACE_LABEL[item.kind] ?? "🔍 选择题" : "mcq";
+  const race = item ? RACE_LABEL[item.kind] ?? "选择题" : "mcq";
 
   const finished = index >= items.length;
 
@@ -229,7 +229,7 @@ export function QuizRunner({
         <div className={`law-quiz__feedback is-${state}`} role="status" ref={feedbackRef} tabIndex={-1}>
           {/* role=status：答题结果（对错+解释）出现时读屏即时播报，与排序题结果区一致；
               tabIndex=-1：判分后焦点移入这里（选项已 disabled，焦点不能掉回 body） */}
-          {state === "correct" ? "✅ 答对啦！" : "❌ 不对哦，看看解释："}
+          {state === "correct" ? "✓ 答对啦！" : "✕ 不对哦，看看解释："}
           {reveal ? <b className="law-quiz__reveal">{reveal}</b> : null}
           <span>{item.explain}</span>
           <button type="button" className="law-quiz__next" onClick={next}>
@@ -331,7 +331,7 @@ function OrderChoice({
     <div className="law-quiz__order">
       <div className="law-quiz__order-result" aria-live="polite">
         {tryList.length === 0 ? (
-          <span className="law-quiz__order-hint">👆 按书中的顺序，依次点选下面的卡片（点错了可再点一下撤回）</span>
+          <span className="law-quiz__order-hint">按书中的顺序，依次点选下面的卡片（点错了可再点一下撤回）</span>
         ) : (
           tryList.map((part, index) => (
             <motion.button

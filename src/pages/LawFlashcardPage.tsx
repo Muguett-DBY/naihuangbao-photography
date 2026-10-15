@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { LAW_SUBJECTS } from "../data/law/meta";
 import type { LawSubjectId } from "../types/law";
@@ -28,6 +28,15 @@ import "../styles/law-flash.css";
 const LESSON_CAP = 30;
 
 type Phase = "setup" | "loading" | "review" | "error";
+
+/** 学科 → 五科锚点色（CSS 变量引用，亮暗同槽变体由令牌翻转） */
+const SUBJECT_ANCHOR: Record<LawSubjectId, string> = {
+  falixue: "var(--law-a-green, #1F7A3D)",
+  xianfa: "var(--law-a-indigo, #5856D6)",
+  zhishixiang: "var(--law-a-bronze, #C93400)",
+  minfa: "var(--law-a-teal, #0F7B83)",
+  xingfa: "var(--law-a-purple, #8944AB)",
+};
 
 const SCOPE_OPTIONS: { value: FlashcardScope; label: string; hint: string }[] = [
   { value: "all", label: "全部已完成", hint: "所有掌握过的课都会出卡" },
@@ -152,7 +161,7 @@ export function LawFlashcardPage() {
     <div className="law-academy law-flash">
       <header className="law-flash__head">
         <Link to="/law" className="law-flash__back">← 学习中心</Link>
-        <h1>🃏 闪卡快刷</h1>
+        <h1>闪卡快刷</h1>
         <p className="law-flash__lead">
           把掌握过的课拆成一张张小卡：正面是术语，背面是课本原文。通勤、排队、睡前刷一轮。
         </p>
@@ -160,7 +169,7 @@ export function LawFlashcardPage() {
 
       {completedTotal === 0 ? (
         <div className="law-flash__empty" aria-live="polite">
-          <LawMascot mood="think" size={72} />
+          <LawMascot mood="think" size={56} />
           <h2>还没有可抽的闪卡</h2>
           <p>闪卡从「已掌握」的课里来——先学完一课（过自测），这里就会长出你的牌堆。</p>
           <Link to="/law" className="law-flash__empty-cta">去学习 →</Link>
@@ -183,7 +192,7 @@ export function LawFlashcardPage() {
         <section className="law-flash__setup" aria-label="选择复习范围">
           {dueCount > 0 ? (
             <p className="law-flash__due-hint" role="status">
-              🔁 有 <b>{dueCount}</b> 课的错题/新卡已到期，会排在牌堆最前面。
+              有 <b>{dueCount}</b> 课的错题/新卡已到期，会排在牌堆最前面。
             </p>
           ) : null}
 
@@ -193,14 +202,18 @@ export function LawFlashcardPage() {
               {LAW_SUBJECTS.map((subject) => {
                 const count = completedBySubject.get(subject.id) ?? 0;
                 return (
-                  <label key={subject.id} className={`law-flash__check ${selected.has(subject.id) ? "is-on" : ""} ${count === 0 ? "is-empty" : ""}`}>
+                  <label
+                    key={subject.id}
+                    className={`law-flash__check ${selected.has(subject.id) ? "is-on" : ""} ${count === 0 ? "is-empty" : ""}`}
+                    style={{ "--law-a": SUBJECT_ANCHOR[subject.id] } as CSSProperties}
+                  >
                     <input
                       type="checkbox"
                       checked={selected.has(subject.id)}
                       onChange={() => toggleSubject(subject.id)}
                       disabled={count === 0}
                     />
-                    <span>{subject.emoji} {subject.name}</span>
+                    <span>{subject.name}</span>
                     <small>{count > 0 ? `${count} 课` : "未开始"}</small>
                   </label>
                 );

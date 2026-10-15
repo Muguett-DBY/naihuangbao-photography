@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
-import { motion } from "framer-motion";
 import { LAW_SUBJECTS } from "../data/law/meta";
 import { LAW_GRAPHICS } from "../data/law/graphics";
 import type { LawSubjectId } from "../types/law";
@@ -9,7 +8,6 @@ import { getLawProgress } from "../lib/law-progress";
 import lawStats from "../data/law/stats.json";
 import { getPlan } from "../lib/law-plan";
 import { getDueReviewLessons, getLastLessonId, getRecentUnfinishedLesson, getTodayGoal, subjectStats } from "../lib/law-progress";
-import { LawMascot } from "../components/law/LawMascot";
 import { LawEggListener, LawEggSymbol, useLawImmersive } from "../components/law/EasterEgg";
 import { EggGallery, LawSoundToggle } from "../components/law/EggGallery";
 import { LawFinishBanner } from "../components/law/LawFinishBanner";
@@ -28,14 +26,14 @@ interface LawStats {
 
 const stats = lawStats as LawStats;
 
-/** 五科粉彩装饰层 + 固定文字色（可爱化令牌：pastel 只做底色块/图标/进度轨；
- *  ink 承载文字，对奶油底/粉彩底双底实测 ≥5.54:1。暗色主题由 CSS 反向公式接管） */
-const SUBJECT_TINT: Record<LawSubjectId, { pastel: string; ink: string }> = {
-  falixue: { pastel: "#dcebe1", ink: "#44614f" },
-  minfa: { pastel: "#dde8f4", ink: "#41567a" },
-  xianfa: { pastel: "#f4e0dc", ink: "#7a3a34" },
-  xingfa: { pastel: "#ede1eb", ink: "#64415e" },
-  zhishixiang: { pastel: "#f2e9d3", ink: "#6d5622" },
+/** 五科锚点色（Apple 化令牌：锚点只出现在学科标识点/进度/选中态；
+ *  值为 CSS 变量引用，亮暗主题由 law-academy.css 同槽变体自动切换） */
+const SUBJECT_ANCHOR: Record<LawSubjectId, string> = {
+  falixue: "var(--law-a-green)",
+  minfa: "var(--law-a-teal)",
+  xianfa: "var(--law-a-indigo)",
+  xingfa: "var(--law-a-purple)",
+  zhishixiang: "var(--law-a-bronze)",
 };
 
 /** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
@@ -131,7 +129,6 @@ export function LawAcademyPage() {
   return (
     <div className="law-academy">
       <header className="law-academy__hero">
-        {/* 吉祥物陪伴位让给下方今日卡（每屏 ≤1 只，hero 不再常驻大号 cheer） */}
         <p className="law-academy__kicker">法硕考研 · 学习中心</p>
         <h1>把五本书，一页一页讲给你听</h1>
         <p className="law-academy__lead">
@@ -139,16 +136,16 @@ export function LawAcademyPage() {
           不赶时间，不跳内容——五本书 931 页，全部都在。
         </p>
         <div className="law-academy__stats">
-          <span>📚 5 门学科</span>
-          <span>🧩 {totalLessons} 个知识点</span>
-          <span>🎮 边玩边学</span>
+          <span>5 门学科</span>
+          <span>{totalLessons} 个知识点</span>
+          <span>边玩边学</span>
         </div>
         <div className="law-academy__quick">
-          <Link to="/law/wrongbook" className="law-academy__quick-link">📕 错题本</Link>
-          <Link to="/law/notes" className="law-academy__quick-link">📝 我的笔记</Link>
-          <Link to="/law/stats" className="law-academy__quick-link">📊 学习统计</Link>
-          <Link to="/law/flashcards" className="law-academy__quick-link">🃏 闪卡快刷</Link>
-          <Link to="/law/provisions" className="law-academy__quick-link">📖 法条检索</Link>
+          <Link to="/law/wrongbook" className="law-academy__quick-link">错题本</Link>
+          <Link to="/law/notes" className="law-academy__quick-link">我的笔记</Link>
+          <Link to="/law/stats" className="law-academy__quick-link">学习统计</Link>
+          <Link to="/law/flashcards" className="law-academy__quick-link">闪卡快刷</Link>
+          <Link to="/law/provisions" className="law-academy__quick-link">法条检索</Link>
         </div>
       </header>
 
@@ -156,7 +153,7 @@ export function LawAcademyPage() {
         // 直达第一节到期课的复习测试，不再绕道学科页多跳一次
         <div className="law-academy__review-banner" role="status">
           <span className="law-academy__review-banner-text">
-            🔁 {dueIds.length} 课错题已到复习期，最早一节现在就测：
+            {dueIds.length} 课错题已到复习期，最早一节现在就测：
           </span>
           <Link to={`/law/learn/${dueIds[0]}?review=1`} className="law-academy__review-banner-go">
             开始复习 →
@@ -168,14 +165,9 @@ export function LawAcademyPage() {
       ) : null}
 
       <section className="law-today-card" aria-label="今日学习">
-        {/* 吉祥物陪伴位①：今日卡右上角 mood=idle 56px，气泡引言温柔邀约（纯装饰，不承载信息） */}
-        <span className="law-today-card__mascot" aria-hidden="true">
-          <span className="law-today-card__bubble">今天也来一点点？</span>
-          <LawMascot mood="idle" size={56} />
-        </span>
         <div className="law-today-card__ring" role="img" aria-label={`今日目标完成 ${todayPercent}%`}>
           <svg viewBox="0 0 72 72" width="72" height="72" aria-hidden="true">
-            <circle cx="36" cy="36" r="30" fill="none" strokeWidth="8" style={{ stroke: "var(--law-accent-pastel)" }} />
+            <circle cx="36" cy="36" r="30" fill="none" strokeWidth="8" style={{ stroke: "var(--law-sunken)" }} />
             <circle
               cx="36"
               cy="36"
@@ -183,7 +175,7 @@ export function LawAcademyPage() {
               fill="none"
               strokeWidth="8"
               strokeLinecap="round"
-              style={{ stroke: "var(--law-accent)", transition: "stroke-dasharray 0.6s var(--ease-out)" }}
+              style={{ stroke: "var(--law-blue)", transition: "stroke-dasharray 0.35s var(--law-ease, ease)" }}
               strokeDasharray={`${(todayPercent / 100) * 188.5} 188.5`}
               transform="rotate(-90 36 36)"
             />
@@ -192,7 +184,7 @@ export function LawAcademyPage() {
         </div>
         <div className="law-today-card__body">
           {/* 缺口按 target-done 现算：写死"再学 1 课"会与环形图 {done}/{target} 的计数矛盾 */}
-          <b>{today.done >= today.target ? "今日目标达成 ⭐" : `今日目标：再学 ${today.target - today.done} 课`}</b>
+          <b>{today.done >= today.target ? "今日目标达成 ✓" : `今日目标：再学 ${today.target - today.done} 课`}</b>
           <span>
             距 2027 考研 {plan.daysLeft} 天 · 已掌握 {doneTotal} 个知识点
             {today.done < today.target ? " · 一课大约 5 分钟" : " · 今天的进度都算数"}
@@ -206,7 +198,7 @@ export function LawAcademyPage() {
       <LawPlanCard />
 
       <section className="law-academy__route" aria-label="推荐学习路线">
-        <h2>🧭 推荐学习路线</h2>
+        <h2>推荐学习路线</h2>
         <p className="law-academy__route-lead">
           法硕的主流打法是"理解先行、背诵后置"：先啃需要长期理解的刑法与民法，再集中背诵理论法。
           按下面的顺序走，每本书都为下一本打底。
@@ -241,16 +233,13 @@ export function LawAcademyPage() {
               <PrefetchLink
                 to={cardTo}
                 className="law-subject-card"
-                style={{
-                  "--law-accent": subject.accent,
-                  "--law-accent-soft": subject.accentSoft,
-                  "--law-accent-pastel": SUBJECT_TINT[subject.id].pastel,
-                  "--law-accent-ink": SUBJECT_TINT[subject.id].ink,
-                } as CSSProperties}
+                style={{ "--law-anchor": SUBJECT_ANCHOR[subject.id] } as CSSProperties}
               >
-                <span className="law-subject-card__emoji">{subject.emoji}</span>
                 <span className="law-subject-card__body">
-                  <strong>{subject.name}</strong>
+                  <strong>
+                    <i className="law-subject-card__dot" aria-hidden="true" />
+                    {subject.name}
+                  </strong>
                   <small>{subject.short}</small>
                   <span className="law-subject-card__meta">
                     {stat.lessonCount} 个知识点 · {stat.chapterTitles.length} 个章节
@@ -273,7 +262,7 @@ export function LawAcademyPage() {
 
       <section className="law-academy__graphics" aria-label="图解精选">
         <header className="law-academy__graphics-head">
-          <h2>📐 图解课堂 —— 把概念「画」出来</h2>
+          <h2>图解课堂 —— 把概念「画」出来</h2>
           <span>
             犯罪构成为什么缺一不可？行为能力分几级？千年法制思想怎么变？——先看动画建立画面，再逐句背诵。
           </span>
@@ -288,14 +277,9 @@ export function LawAcademyPage() {
                 <PrefetchLink
                   to={`/law/graphic/${graphic.lessonId}`}
                   className="law-graphic-card law-graphic-card--featured"
-                  style={{
-                    "--law-accent": subject.accent,
-                    "--law-accent-soft": subject.accentSoft,
-                    "--law-accent-pastel": SUBJECT_TINT[graphic.subject].pastel,
-                    "--law-accent-ink": SUBJECT_TINT[graphic.subject].ink,
-                  } as CSSProperties}
+                  style={{ "--law-anchor": SUBJECT_ANCHOR[graphic.subject] } as CSSProperties}
                 >
-                  <span className="law-graphic-card__kind">{graphicEmoji(graphic.kind)}</span>
+                  <span className="law-graphic-card__kind">{graphicGlyph(graphic.kind)}</span>
                   <span className="law-graphic-card__body">
                     <small>{subject.name} · {graphic.title}</small>
                     <strong>{graphic.title}</strong>
@@ -327,12 +311,7 @@ export function LawAcademyPage() {
                 type="button"
                 aria-pressed={graphicFilter === subject.id}
                 className={`law-graphics-browse__chip ${graphicFilter === subject.id ? "is-current" : ""}`}
-                style={{
-                  "--law-accent": subject.accent,
-                  "--law-accent-soft": subject.accentSoft,
-                  "--law-accent-pastel": SUBJECT_TINT[subject.id].pastel,
-                  "--law-accent-ink": SUBJECT_TINT[subject.id].ink,
-                } as CSSProperties}
+                style={{ "--law-anchor": SUBJECT_ANCHOR[subject.id] } as CSSProperties}
                 onClick={() => {
                   setGraphicFilter(subject.id);
                   setShowAllGraphics(false);
@@ -350,14 +329,9 @@ export function LawAcademyPage() {
                   key={graphic.lessonId}
                   to={`/law/graphic/${graphic.lessonId}`}
                   className="law-graphic-card law-graphic-card--browse"
-                  style={{
-                    "--law-accent": subject.accent,
-                    "--law-accent-soft": subject.accentSoft,
-                    "--law-accent-pastel": SUBJECT_TINT[graphic.subject].pastel,
-                    "--law-accent-ink": SUBJECT_TINT[graphic.subject].ink,
-                  } as CSSProperties}
+                  style={{ "--law-anchor": SUBJECT_ANCHOR[graphic.subject] } as CSSProperties}
                 >
-                  <span className="law-graphic-card__kind">{graphicEmoji(graphic.kind)}</span>
+                  <span className="law-graphic-card__kind">{graphicGlyph(graphic.kind)}</span>
                   <span className="law-graphic-card__body">
                     <small>{subject.name}</small>
                     <strong>{graphic.title}</strong>
@@ -381,7 +355,6 @@ export function LawAcademyPage() {
       </section>
 
       <Link to="/law/exam" className="law-exam-entry">
-        <i aria-hidden="true">🎓</i>
         <span>
           <b>模拟考试</b>
           <small>把已掌握的课组成一张限时卷，看看能拿多少分</small>
@@ -413,7 +386,7 @@ export function LawAcademyPage() {
       <LawFinishBanner subjects={finishSubjects} />
 
       <footer className="law-academy__foot">
-        {/* 信件语气落款：鼓励指向坚持本身（文楷），事实行保持原样不动 */}
+        {/* 落款保持鼓励语气（Apple 化：正文族字体 + 墨阶，不再用文楷） */}
         <p className="law-academy__foot-letter">
           不必赶路，一页一页来——今天坐在这里的你，已经在往前走了。
         </p>
@@ -433,23 +406,24 @@ export function LawAcademyPage() {
   );
 }
 
-function graphicEmoji(kind: string): string {
+/** 图解类型符号：单色几何字符（随文字色渲染），替代彩色 emoji */
+function graphicGlyph(kind: string): string {
   switch (kind) {
     case "assemble":
-      return "🧩";
+      return "◆";
     case "flow":
-      return "🔗";
+      return "●";
     case "tree":
-      return "🌳";
+      return "▲";
     case "timeline":
-      return "🕰️";
+      return "■";
     case "balance":
-      return "⚖️";
+      return "◇";
     case "stairs":
-      return "🪜";
+      return "△";
     case "matrix":
-      return "🧮";
+      return "▼";
     default:
-      return "📊";
+      return "○";
   }
 }

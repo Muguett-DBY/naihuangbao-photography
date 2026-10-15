@@ -17,23 +17,23 @@ export const KIND_PENDING_HINT: Record<string, string> = {
 export function kindLabel(kind: string): string {
   switch (kind) {
     case "definition":
-      return "📖 定义";
+      return "◆ 定义";
     case "list":
-      return "🗂️ 列举";
+      return "≡ 列举";
     case "compare":
-      return "⚖️ 对比";
+      return "⇄ 对比";
     case "mnemonic":
-      return "🧠 口诀";
+      return "◉ 口诀";
     case "timeline":
-      return "🕰️ 时间线";
+      return "▬ 时间线";
     case "condition":
-      return "🔑 要件";
+      return "✓ 要件";
     case "exception":
-      return "⚠️ 例外";
+      return "▲ 例外";
     case "flow":
-      return "🔗 流程";
+      return "→ 流程";
     default:
-      return "📝 细读";
+      return "▤ 细读";
   }
 }
 
@@ -57,7 +57,7 @@ export function cleanBreadcrumb(crumbs: string[]): string[] {
 
 /** 通过时的庆祝彩带：一次性的纯视觉爆发，不挡交互 */
 export function CelebrateBurst() {
-  const bits = ["🎉", "✨", "⭐", "🎊", "✨", "💛", "🎉", "⭐"];
+  const bits = ["◆", "●", "▲", "■", "●", "◆", "▲", "■"];
   return (
     <div className="law-celebrate" aria-hidden="true">
       {bits.map((bit, index) => {
@@ -80,9 +80,9 @@ export function CelebrateBurst() {
 
 // ── 自动串联速度配置（从 LessonPlayer 抽出，纯数据 + 纯函数）──
 export const AUTO_SPEEDS = [
-  { id: "slow", label: "🐢 慢", delay: 2600 },
-  { id: "mid", label: "▶ 中", delay: 1400 },
-  { id: "fast", label: "🐇 快", delay: 800 },
+  { id: "slow", label: "慢", delay: 2600 },
+  { id: "mid", label: "中", delay: 1400 },
+  { id: "fast", label: "快", delay: 800 },
 ] as const;
 export type AutoSpeedId = (typeof AUTO_SPEEDS)[number]["id"];
 export const AUTO_SPEED_KEY = "nhb-law-autoplay-speed";

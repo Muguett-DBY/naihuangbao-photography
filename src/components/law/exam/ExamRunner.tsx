@@ -4,10 +4,10 @@ import type { LawExamAnswer, LawExamItem } from "../../../lib/law-exam";
 /** 考试题型徽标（与课时自测的题型名一致） */
 const RACE_LABEL: Record<string, string> = {
   order: "🧩 排序题",
-  judge: "⚡ 判断题",
-  mcq: "🔍 选择题",
-  fill: "✏️ 填空题",
-  multi: "☑️ 多选题",
+  judge: "判断题",
+  mcq: "选择题",
+  fill: "填空题",
+  multi: "多选题",
 };
 
 export interface ExamRunnerProps {
@@ -156,7 +156,7 @@ export function ExamRunner({
           aria-label={`剩余时间 ${fmtClock(remaining)}${urgent ? "，不足 30 秒" : ""}`}
         >
           {/* 紧迫态除变色外换警示图标（不靠颜色单独传达，1.4.1 同源口径） */}
-          {urgent ? "⚠️" : "⏳"} {fmtClock(remaining)}
+          {urgent ? "不足 30 秒 ⚠" : ""}{urgent ? "" : "⏱ "}{fmtClock(remaining)}
         </span>
         {/* 分钟粒度 + 30 秒阈值的时间播报（见上方 effect），与每秒跳动的时钟解耦 */}
         <span className="sr-only" aria-live="polite" aria-atomic="true">
@@ -197,7 +197,7 @@ export function ExamRunner({
           <span className="law-quiz__counter">
             第 {index + 1} / {items.length} 题
           </span>
-          <span className="law-quiz__race">{RACE_LABEL[item.kind] ?? "🔍 选择题"}</span>
+          <span className="law-quiz__race">{RACE_LABEL[item.kind] ?? "选择题"}</span>
         </header>
         <p className="law-quiz__prompt">{item.prompt}</p>
 

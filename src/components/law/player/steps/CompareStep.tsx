@@ -55,7 +55,7 @@ export function CompareStep({ step, accent, accentSoft, onDone }: StepProps) {
 
   return (
     <StepShell
-      eyebrow="⚖️ 对比型 · 分清异同"
+      eyebrow="⇄ 对比型 · 分清异同"
       title={
         <span>
           <Rise aria={a} accent={accent} accentSoft={accentSoft} /> vs{" "}

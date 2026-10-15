@@ -1,11 +1,12 @@
 import { interpolate } from "remotion";
 import type { CSSProperties, FC } from "react";
 import type { GraphicNode, LawGraphic } from "../../types/law";
-import { C, F, withAlpha } from "../theme";
+import { C, F, RADIUS } from "../theme";
 
 /**
  * GraphicSceneRows — GraphicScene 的结构行子模块（行数架构预算拆分，逻辑与样式
- * 自 GraphicScene.tsx 原样平移，动画帧号口径不变）：
+ * 自 GraphicScene.tsx 平移，动画帧号口径不变；Apple 化：白卡行 + 发丝线，
+ * 层级靠字重）：
  * - buildRows：LawGraphic → 逐行揭示单元（纯函数）
  * - GraphicStructureRow：单行渲染（root / branch+叶 / node 卡 / diff 天平行 / 矩阵行）
  *
@@ -66,25 +67,25 @@ export function buildRows(graphic: LawGraphic): StructureRow[] {
   }));
 }
 
-/** 图解 kind → 头部徽标文案（GraphicScene 头部使用） */
+/** 图解 kind → 头部徽标文案（GraphicScene 头部使用；纯文字，无 emoji） */
 export function kindLabel(kind: LawGraphic["kind"]): string {
   switch (kind) {
     case "assemble":
-      return "🧩 装配图";
+      return "装配图";
     case "flow":
-      return "🔗 流程图";
+      return "流程图";
     case "tree":
-      return "🌳 体系树";
+      return "体系树";
     case "timeline":
-      return "🕰️ 时间线";
+      return "时间线";
     case "balance":
-      return "⚖️ 对比图";
+      return "对比图";
     case "stairs":
-      return "🪜 阶梯图";
+      return "阶梯图";
     case "matrix":
-      return "🧮 对照矩阵";
+      return "对照矩阵";
     default:
-      return "📊 图解";
+      return "图解";
   }
 }
 
@@ -106,15 +107,13 @@ export function structureRowKey(row: StructureRow, index: number): string {
 
 /* ==================== 单行渲染 ==================== */
 
-/** 结构卡底座（root/branch/node/diff 共用；矩阵行样式自持） */
-function cardBaseStyle(tone: string): CSSProperties {
+/** 结构卡底座（root/branch/node/diff 共用；矩阵行样式自持）：白卡 + 发丝线，零阴影 */
+function cardBaseStyle(): CSSProperties {
   return {
     boxSizing: "border-box",
     background: C.surface,
-    borderRadius: 18,
+    borderRadius: RADIUS.inner,
     border: `2px solid ${C.line}`,
-    borderTop: `4px solid ${withAlpha(tone, 0.6)}`,
-    boxShadow: `0 8px 24px ${withAlpha(C.ink, 0.06)}`,
   };
 }
 
@@ -123,7 +122,6 @@ interface GraphicStructureRowProps {
   index: number;
   /** 行揭示进度（GraphicScene 帧驱动算出；0 = 未揭示） */
   enter: number;
-  tone: string;
   pitch: number;
   labelFont: number;
   detailFont: number;
@@ -137,7 +135,6 @@ export const GraphicStructureRow: FC<GraphicStructureRowProps> = ({
   row,
   index,
   enter,
-  tone,
   pitch,
   labelFont,
   detailFont,
@@ -152,32 +149,33 @@ export const GraphicStructureRow: FC<GraphicStructureRowProps> = ({
     top,
     height: pitch - 14,
     opacity: enter,
-    transform: `translateY(${interpolate(enter, [0, 1], [28, 0])}px) scale(${interpolate(enter, [0, 1], [0.96, 1])})`,
+    transform: `translateY(${interpolate(enter, [0, 1], [28, 0])}px)`,
   };
-  const cardBase = cardBaseStyle(tone);
+  const cardBase = cardBaseStyle();
 
   if (row.kind === "root") {
+    // 树根行：墨底反白（灰阶反差定层级，不加彩色）
     return (
       <div
         style={{
           ...style,
-          ...cardBase,
-          borderTop: `4px solid ${tone}`,
-          background: withAlpha(tone, 0.12),
+          background: C.ink,
+          borderRadius: RADIUS.inner,
+          border: "none",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           padding: "0 30px",
         }}
       >
-        <b style={{ fontFamily: F.zhBlack, fontSize: labelFont + 4, color: tone, lineHeight: 1.3 }}>
+        <b style={{ fontFamily: F.zhBlack, fontWeight: 700, fontSize: labelFont + 4, color: C.surface, lineHeight: 1.3 }}>
           {row.label}
         </b>
         <small
           style={{
             fontFamily: F.zhSerif,
             fontSize: detailFont,
-            color: C.ink,
+            color: C.paper,
             lineHeight: 1.4,
             marginTop: 6,
             display: "-webkit-box",
@@ -206,7 +204,7 @@ export const GraphicStructureRow: FC<GraphicStructureRowProps> = ({
         }}
       >
         <div style={{ display: "flex", alignItems: "baseline", gap: 16, minWidth: 0 }}>
-          <b style={{ fontFamily: F.zhSerifSemi, fontSize: labelFont, color: C.ink, flex: "none" }}>
+          <b style={{ fontFamily: F.zhSerifSemi, fontWeight: 600, fontSize: labelFont, color: C.ink, flex: "none" }}>
             {row.label}
           </b>
           <small
@@ -233,8 +231,7 @@ export const GraphicStructureRow: FC<GraphicStructureRowProps> = ({
                 style={{
                   padding: "6px 16px",
                   borderRadius: 999,
-                  border: `2px solid ${withAlpha(tone, 0.4)}`,
-                  backgroundColor: withAlpha(tone, 0.08),
+                  backgroundColor: C.paper,
                   fontFamily: F.zhSans,
                   fontSize: 21,
                   color: C.ink,
@@ -268,9 +265,8 @@ export const GraphicStructureRow: FC<GraphicStructureRowProps> = ({
             width: chip,
             height: chip,
             borderRadius: "50%",
-            background: withAlpha(tone, 0.12),
-            border: `3px solid ${tone}`,
-            color: tone,
+            background: C.paper,
+            color: C.ink,
             fontFamily: F.enSerif,
             fontSize: chip * 0.48,
             fontWeight: 700,
@@ -282,7 +278,7 @@ export const GraphicStructureRow: FC<GraphicStructureRowProps> = ({
           {row.index + 1}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <b style={{ fontFamily: F.zhSerifSemi, fontSize: labelFont, color: C.ink, lineHeight: 1.3 }}>
+          <b style={{ fontFamily: F.zhSerifSemi, fontWeight: 600, fontSize: labelFont, color: C.ink, lineHeight: 1.3 }}>
             {row.label}
           </b>
           {pitch >= 108 ? (
@@ -308,11 +304,12 @@ export const GraphicStructureRow: FC<GraphicStructureRowProps> = ({
             style={{
               flex: "none",
               padding: "6px 16px",
-              borderRadius: 10,
-              background: withAlpha(tone, 0.14),
+              borderRadius: RADIUS.control,
+              background: C.paper,
               fontFamily: F.zhSans,
+              fontWeight: 600,
               fontSize: 21,
-              color: tone,
+              color: C.ink,
             }}
           >
             {row.step}
@@ -346,8 +343,8 @@ export const GraphicStructureRow: FC<GraphicStructureRowProps> = ({
         }}
       >
         <b style={{ fontFamily: F.zhSans, fontSize: detailFont, color: C.gray }}>{row.dim}</b>
-        <span style={{ ...cell, color: tone, fontFamily: F.zhSerifSemi }}>{row.a}</span>
-        <span style={{ ...cell, color: tone, fontFamily: F.zhSerifSemi }}>{row.b}</span>
+        <span style={{ ...cell, fontFamily: F.zhSerifSemi, fontWeight: 600 }}>{row.a}</span>
+        <span style={{ ...cell, fontFamily: F.zhSerifSemi, fontWeight: 600 }}>{row.b}</span>
       </div>
     );
   }
@@ -363,9 +360,9 @@ export const GraphicStructureRow: FC<GraphicStructureRowProps> = ({
         alignItems: "center",
         gap: 12,
         padding: "0 22px",
-        borderRadius: 16,
-        border: `2px solid ${isHead ? withAlpha(tone, 0.45) : C.line}`,
-        background: isHead ? withAlpha(tone, 0.12) : C.surface,
+        borderRadius: RADIUS.control,
+        border: `2px solid ${isHead ? C.gray : C.line}`,
+        background: C.surface,
         opacity: isHead ? headProgress : enter,
         transform: isHead
           ? `translateY(${interpolate(headProgress, [0, 1], [28, 0])}px)`
@@ -379,7 +376,7 @@ export const GraphicStructureRow: FC<GraphicStructureRowProps> = ({
             fontFamily: cellIndex === 0 ? F.zhSans : F.zhSerifSemi,
             fontSize: cellIndex === 0 ? detailFont : detailFont + 1,
             fontWeight: isHead || cellIndex === 0 ? 700 : 400,
-            color: cellIndex === 0 ? C.gray : isHead ? tone : C.ink,
+            color: cellIndex === 0 ? C.gray : isHead ? C.ink : C.ink,
             lineHeight: 1.35,
             display: "-webkit-box",
             WebkitBoxOrient: "vertical",

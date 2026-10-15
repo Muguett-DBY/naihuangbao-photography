@@ -62,6 +62,15 @@ function Highlighted({ text, query }: { text: string; query: string }) {
 
 const SEARCH_DEBOUNCE = 300;
 
+/** 学科 → 五科锚点色（CSS 变量引用，亮暗同槽变体由令牌翻转） */
+const SUBJECT_ANCHOR: Record<string, string> = {
+  falixue: "var(--law-a-green, #1F7A3D)",
+  xianfa: "var(--law-a-indigo, #5856D6)",
+  zhishixiang: "var(--law-a-bronze, #C93400)",
+  minfa: "var(--law-a-teal, #0F7B83)",
+  xingfa: "var(--law-a-purple, #8944AB)",
+};
+
 /** 法硕模块不走 useSEO/i18n（内容纯中文）：直接落描述性 document.title（WCAG 2.4.2 Page Titled），离开还原摄影站默认题 */
 function useLawPageTitle(title: string) {
   useEffect(() => {
@@ -207,7 +216,7 @@ export function LawNotesPage() {
     <div className="law-academy law-notes-page">
       <header className="law-notes-page__head">
         <Link to="/law" className="law-notes-page__back">← 学习中心</Link>
-        <h1>📝 我的笔记</h1>
+        <h1>我的笔记</h1>
         <p className="law-notes-page__lead">
           课时里写下的理解都收在这里：按学科与课时归档，搜关键词、导出备份、换设备导入。
         </p>
@@ -226,14 +235,14 @@ export function LawNotesPage() {
             onClick={() => exportAllNotes()}
             disabled={!hasNotes}
           >
-            ⬇️ 导出 JSON
+            导出 JSON
           </button>
           <button
             type="button"
             className="law-notes-page__tool"
             onClick={() => fileInputRef.current?.click()}
           >
-            ⬆️ 导入恢复
+            导入恢复
           </button>
           <input
             ref={fileInputRef}
@@ -254,7 +263,7 @@ export function LawNotesPage() {
       {!hasNotes ? (
         <div className="law-notes-page__empty" aria-live="polite">
           {/* 空态=陪伴等待（think），不为空白庆祝；文案指向第一步行为 */}
-          <LawMascot mood="think" size={72} />
+          <LawMascot mood="think" size={56} />
           <h2>还没有笔记</h2>
           <p>
             学完一节课，在总结页下方就能写笔记——记下容易混的地方、自己的例子，
@@ -271,7 +280,7 @@ export function LawNotesPage() {
           ) : null}
           {filtered.length === 0 ? (
             <div className="law-notes-page__empty" aria-live="polite">
-              <LawMascot mood="think" size={72} />
+              <LawMascot mood="think" size={56} />
               <h2>没找到相关笔记</h2>
               <p>换个关键词试试，或者清空搜索框看全部。</p>
               <button type="button" className="law-notes-page__empty-cta" onClick={() => setKeyword("")}>
@@ -295,12 +304,12 @@ export function LawNotesPage() {
                   aria-label={group.subject ? `${group.subject.name}的笔记` : "其他笔记"}
                   style={
                     group.subject
-                      ? ({ "--law-accent": group.subject.accent } as CSSProperties)
+                      ? ({ "--law-a": SUBJECT_ANCHOR[group.subject.id] } as CSSProperties)
                       : undefined
                   }
                 >
                   <h2>
-                    {group.subject ? `${group.subject.emoji} ${group.subject.name}` : "📁 其他"}{" "}
+                    {group.subject ? group.subject.name : "其他"}{" "}
                     <span>{group.lessons.reduce((sum, lesson) => sum + lesson.notes.length, 0)} 条</span>
                   </h2>
                   {group.lessons.map((lesson) => (
@@ -325,7 +334,7 @@ export function LawNotesPage() {
                                   {note.updatedAt - note.createdAt > 60_000 ? "编辑于 " : ""}
                                   {formatStamp(note.updatedAt)}
                                 </time>
-                                {note.stepId ? <span className="law-notes__step-tag">📍 关联步骤</span> : null}
+                                {note.stepId ? <span className="law-notes__step-tag">关联步骤</span> : null}
                                 <span className="law-notes-page__go">回顾本课 →</span>
                               </footer>
                             </PrefetchLink>

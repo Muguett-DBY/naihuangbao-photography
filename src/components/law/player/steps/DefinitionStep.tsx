@@ -37,7 +37,7 @@ export function DefinitionStep({ step, accent, accentSoft, onDone }: StepProps) 
 
   return (
     <StepShell
-      eyebrow="📖 定义型 · 先理解"
+      eyebrow="◆ 定义型 · 先理解"
       title={
         step.text.length > 60 ? (
           <SentenceLines text={step.text} terms={(step.terms ?? []).map((t) => t.term)} />
@@ -47,7 +47,7 @@ export function DefinitionStep({ step, accent, accentSoft, onDone }: StepProps) 
       }
       hint={
         revealedText && !locked && target
-          ? "👆 这句话里藏着一个核心词——点「解锁关键词」看看是什么"
+          ? "这句话里藏着一个核心词——点「解锁关键词」看看是什么"
           : undefined
       }
       done={locked || !target}
@@ -77,11 +77,11 @@ export function DefinitionStep({ step, accent, accentSoft, onDone }: StepProps) 
                   complete();
                 }}
               >
-                ❓ 解锁关键词
+                解锁关键词 →
               </button>
             )
           ) : (
-            <span className="law-definition__plain">这句话要记牢哦！</span>
+            <span className="law-definition__plain">这句话要记牢</span>
           )}
         </motion.div>
         {target ? (

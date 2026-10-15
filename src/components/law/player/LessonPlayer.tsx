@@ -10,7 +10,7 @@ import { LAW_SUBJECT_MAP } from "../../../data/law/meta";
 import { LAW_GRAPHIC_MAP } from "../../../data/law/graphics";
 // 课堂播放器（remotion + @remotion/player + 场景组件）懒加载出课时页主 chunk：
 // 课堂模式默认关闭，步骤模式用户不该为用不到的视频引擎付下载+解析成本。
-// 🎓 按钮 hover/focus、?classroom=1 直达、课堂已开启时预取（见 preloadClassroomEngine）
+// 课堂按钮 hover/focus、?classroom=1 直达、课堂已开启时预取（见 preloadClassroomEngine）
 const ClassroomPlayer = lazy(() =>
   import("../classroom/ClassroomPlayer").then((module) => ({ default: module.ClassroomPlayer })),
 );
@@ -155,7 +155,7 @@ export function LessonPlayer({
   };
 
   // 课堂引擎预取：与上方 lazy() 同一模块说明符（同一 chunk），触发过一次后不重复。
-  // 直达课堂入口/偏好已开课堂时立即预取；🎓 按钮见 onMouseEnter/onFocus
+  // 直达课堂入口/偏好已开课堂时立即预取；课堂按钮见 onMouseEnter/onFocus
   const classroomEnginePreloadedRef = useRef(false);
   const preloadClassroomEngine = useCallback(() => {
     if (classroomEnginePreloadedRef.current) return;
@@ -242,8 +242,8 @@ export function LessonPlayer({
   }, [phase]);
 
   const style = {
-    "--law-accent": subject.accent,
-    "--law-accent-soft": subject.accentSoft,
+    "--law-accent": "var(--law-blue, #0071e3)",
+    "--law-accent-soft": "var(--law-sunken, #f2f2f7)",
   } as CSSProperties;
 
   return (
@@ -255,7 +255,7 @@ export function LessonPlayer({
         <div className="law-player__crumb">{cleanBreadcrumb(lesson.breadcrumb).join(" / ")}</div>
         {graphic ? (
           <Link className="law-player__graphic" to={`/law/graphic/${lesson.id}`}>
-            📐 图解
+            图解
           </Link>
         ) : null}
         {totalSteps > 8 ? (
@@ -271,7 +271,7 @@ export function LessonPlayer({
           }}
           aria-expanded={showRaw}
         >
-          📄 原文对照
+          原文对照
         </button>
       </header>
 
@@ -382,7 +382,7 @@ export function LessonPlayer({
               onClick={() => { const n = toggleClassroom(); if (!n) tts.cancel(); }}
               onMouseEnter={preloadClassroomEngine}
               onFocus={preloadClassroomEngine}
-            >🎓 {classroomMode ? "课堂" : "步骤"}</button>
+            >{classroomMode ? "课堂" : "步骤"}</button>
             <button
               type="button"
               className={`law-player__auto ${autoPlay ? "is-on" : ""}`}
@@ -390,7 +390,7 @@ export function LessonPlayer({
               aria-pressed={autoPlay}
               title="自动串联模式：每一步完成后按所选速度自动进入下一步"
             >
-              🔁 自动
+              自动
             </button>
             {autoPlay ? (
               <div className="law-player__autospeed" role="group" aria-label="自动串联速度">

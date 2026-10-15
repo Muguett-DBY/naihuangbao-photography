@@ -86,19 +86,19 @@ test.describe("law flashcards & heatmap", () => {
     await page.keyboard.press("Space");
     await expect(card).toHaveAttribute("aria-pressed", "true");
 
-    // 「不会」重排：当前卡沉底，仍是同一张卡在队列里
-    await page.getByRole("button", { name: "😭 不会" }).click();
+    // 「不会」重排：当前卡沉底，仍是同一张卡在队列里（减压化后评分钮无表情前缀）
+    await page.getByRole("button", { name: "不会" }).click();
     await expect(page.locator(".law-flash__summary")).toHaveCount(0);
 
     // 连按「会了」直到队列清空出总结页
-    const known = page.getByRole("button", { name: "😊 会了" });
+    const known = page.getByRole("button", { name: "会了" });
     for (let round = 0; round < 30; round += 1) {
       if (await page.locator(".law-flash__summary").isVisible().catch(() => false)) break;
       await known.click();
     }
     const summary = page.locator(".law-flash__summary");
     await expect(summary).toContainText("这一轮刷完了");
-    await expect(summary).toContainText("😭 不会");
+    await expect(summary).toContainText("不会");
 
     // 再来一轮 → 牌堆重置；退出 → 返回选择面板
     await summary.getByRole("button", { name: "再来一轮" }).click();
@@ -118,14 +118,14 @@ test.describe("law flashcards & heatmap", () => {
     await page.goto("/law/flashcards");
     await page.getByRole("button", { name: /开始复习/ }).click();
     await expect(page.locator(".law-flash__card")).toBeVisible();
-    for (const name of ["😭 不会", "😐 模糊", "😊 会了"]) {
+    for (const name of ["不会", "模糊", "会了"]) {
       await expect(page.getByRole("button", { name })).toBeVisible();
     }
   });
 
   test("学习中心入口卡片可直达闪卡页", async ({ page }) => {
     await page.goto("/law");
-    const entry = page.locator(".law-academy__quick").getByRole("link", { name: "🃏 闪卡快刷" });
+    const entry = page.locator(".law-academy__quick").getByRole("link", { name: "闪卡快刷" });
     await expect(entry).toBeVisible();
     await entry.click();
     await expect(page).toHaveURL(/\/law\/flashcards$/);

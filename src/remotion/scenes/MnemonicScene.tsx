@@ -1,47 +1,32 @@
 import { type FC } from "react";
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import type { LawSubjectId } from "../../types/law";
-import {
-  SceneChrome,
-  usePrefersReducedMotion,
-  useStageProgress,
-} from "../chrome";
-import {
-  C,
-  F,
-  RADIUS,
-  SHADOW,
-  SUBJECT_ACCENTS,
-  sceneFrameStyle,
-  withAlpha,
-} from "../theme";
+import { SceneChrome, usePrefersReducedMotion } from "../chrome";
+import { C, F, RADIUS, SHADOW, sceneFrameStyle } from "../theme";
 
 /**
- * MnemonicScene — 口诀记忆卡（可爱化）。四段式节奏：
- *   ① 逐字入场：口诀每个字依次浮入（spring 上浮 + 淡入，保留）；
- *   ② 停留：口诀完整停留，粉彩→强调墨渐变胶囊下划线从中心划出；
- *   ③ 盖住→揭示：一张「粉彩渐变遮罩」从左擦入盖住口诀（试背时刻），
+ * MnemonicScene — 口诀记忆卡（Apple 黑白灰）。四段式节奏：
+ *   ① 逐字入场：口诀每个字依次上浮淡入（200ms ease-out，无过冲）；
+ *   ② 停留：口诀完整停留，墨色下划线从中心划出；
+ *   ③ 盖住→揭示：一张「浅灰遮罩」从左擦入盖住口诀（试背时刻），
  *      停顿后从右擦出揭示——擦出节奏本身承载「背对了」的奖励感；
- *      遮罩为粉彩渐变（多层背景叠不透明
- *      底，保证盖得住字），呼应"先背再对答案"的记忆节奏；
+ *      遮罩为不透明浅灰分区底 + 发丝线描边（唯一真实浮层，配 pop 阴影），
+ *      呼应"先背再对答案"的记忆节奏；
  *   ④ 逐句揭示：解释文本按句号/问号等断句，一句一句上滑淡入。
  *
- * 动画完全由 useCurrentFrame() + interpolate()/spring() 驱动（确定性渲染，
- * 无 Math.random），帧驱动 helpers 全部复用 chrome.tsx（含 SceneChrome 自带的
- * 右上奶黄包贴纸——本场景不再另摆第二只，遵守吉祥物不堆砌红线）；配色统一
- * 走 theme
- * （C/F/RADIUS/SHADOW/SUBJECT_ACCENTS），accent 缺省取 xianfa 学科 ink
- * token。粉彩派生与 chrome 同规则：有 subject 用学科粉彩 token，缺省用
- * accent 低透明度自混。尊重 prefers-reduced-motion：定格在"揭示完成"的
- * 最终静态画面（遮罩不出现）。SceneChrome 包壳。
+ * 动画完全由 useCurrentFrame() + interpolate() 驱动（确定性渲染，
+ * 无 Math.random），帧驱动 helpers 复用 chrome.tsx；配色统一走 theme
+ * （C/F/RADIUS/SHADOW）。尊重 prefers-reduced-motion：定格在"揭示完成"的
+ * 最终静态画面（遮罩不出现）。accent prop 仅为 SceneView 既有接线保留，
+ * 画面不随学科变色。SceneChrome 包壳（灰阶徽标 + 学科锚点进度点）。
  */
 
 export interface MnemonicSceneProps {
   mnemonic: string;
   explanation: string;
-  /** 强调色（下划线/遮罩虚线/淡晕），缺省 xianfa 学科色 token */
+  /** 兼容接线（SceneView 恒传）：Apple 化后画面不随此值变色 */
   accent?: string;
-  /** 学科（SceneChrome 淡晕兜底色） */
+  /** 学科（SceneChrome 进度点锚点色） */
   subject?: LawSubjectId;
   /** 第几场（0-based，SceneChrome 进度点用；未接线时不显示进度点） */
   sceneIndex?: number;
@@ -51,7 +36,7 @@ export interface MnemonicSceneProps {
 
 /** 时序常量（帧，30fps 基准） */
 const CHAR_STAGGER_FRAMES = 3;
-const CHAR_ENTER_FRAMES = 14;
+const CHAR_ENTER_FRAMES = 7; // ≈233ms ease-out 逐字落位
 const HOLD_FRAMES = 42;
 const UNDERLINE_FRAMES = 20;
 const COVER_IN_FRAMES = 16; // 遮罩擦入（盖住）
@@ -100,14 +85,12 @@ export const mnemonicSceneDurationInFrames = (
 export const MnemonicScene: FC<MnemonicSceneProps> = ({
   mnemonic,
   explanation,
-  accent = SUBJECT_ACCENTS.xianfa.accent,
   subject,
   sceneIndex,
   sceneTotal,
 }) => {
   const frame = useCurrentFrame();
   const reduced = usePrefersReducedMotion();
-  const progress = useStageProgress();
 
   const chars = Array.from(mnemonic.trim());
   const sentences = splitSentences(explanation);
@@ -155,12 +138,8 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
   const mnemonicSize =
     chars.length > 20 ? 44 : chars.length > 12 ? 58 : 72;
 
-  // 粉彩派生（chrome 同规则）：真 token 或 accent 低透明度自混兜底
-  const pastel = subject ? SUBJECT_ACCENTS[subject].pastel : null;
-  const pastelLayer = pastel ?? withAlpha(accent, 0.2);
-
   return (
-    <AbsoluteFill style={{ backgroundColor: C.paper }}>
+    <AbsoluteFill style={{ backgroundColor: C.surface }}>
       <AbsoluteFill
         style={{
           ...sceneFrameStyle,
@@ -173,13 +152,12 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
           style={{
             width: "100%",
             backgroundColor: C.surface,
-            border: `2.5px solid ${pastel ?? withAlpha(accent, 0.22)}`,
+            border: `2px solid ${C.line}`,
             borderRadius: RADIUS.card,
             padding: "56px 60px",
-            boxShadow: SHADOW.lift,
           }}
         >
-          {/* 阶段① 逐字入场（保留）+ 阶段③ 盖住→揭示遮罩（覆盖整个口诀区） */}
+          {/* 阶段① 逐字入场（ease-out 上浮淡入）+ 阶段③ 盖住→揭示遮罩（覆盖整个口诀区） */}
           <div
             style={{
               position: "relative",
@@ -190,25 +168,27 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
             }}
           >
             {chars.map((char, index) => {
-              const pop = progress(index * CHAR_STAGGER_FRAMES, {
-                damping: 13,
-                mass: 0.5,
-                stiffness: 170,
-                overshootClamping: false,
-              });
+              const start = index * CHAR_STAGGER_FRAMES;
+              const pop = reduced
+                ? 1
+                : interpolate(frame, [start, start + CHAR_ENTER_FRAMES], [0, 1], {
+                    easing: Easing.out(Easing.cubic),
+                    extrapolateLeft: "clamp",
+                    extrapolateRight: "clamp",
+                  });
               return (
                 <span
                   key={`${index}-${char}`}
                   style={{
                     display: "inline-block",
                     fontFamily: F.zhSerifSemi,
-                    fontSize: mnemonicSize,
                     fontWeight: 700,
+                    fontSize: mnemonicSize,
                     lineHeight: 1.3,
                     color: C.ink,
                     whiteSpace: "pre",
-                    opacity: Math.min(1, pop * 1.5),
-                    transform: `translateY(${(1 - pop) * 30}px) scale(${0.82 + 0.18 * pop})`,
+                    opacity: pop,
+                    transform: `translateY(${(1 - pop) * 22}px)`,
                   }}
                 >
                   {char}
@@ -216,18 +196,18 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
               );
             })}
 
-            {/* 粉彩渐变遮罩：多层背景（渐变层叠在不透明 C.raised 底上）保证
-                盖得住字——渐变层即使是半透明兜底路也不透字 */}
+            {/* 浅灰遮罩：不透明 paper 分区底 + 发丝线描边，盖得住字；
+                全片唯一真实浮层（盖住内容），配 pop 阴影 */}
             {coverScale > 0.001 && (
               <div
                 aria-hidden="true"
                 style={{
                   position: "absolute",
                   inset: -14,
-                  borderRadius: RADIUS.bubble,
-                  background: `linear-gradient(120deg, ${pastelLayer}, ${C.raised}), ${C.raised}`,
-                  border: `2.5px dashed ${withAlpha(accent, 0.4)}`,
-                  boxShadow: SHADOW.lift,
+                  borderRadius: RADIUS.control,
+                  background: C.paper,
+                  border: `2px solid ${C.line}`,
+                  boxShadow: SHADOW.pop,
                   transform: `scaleX(${coverScale})`,
                   transformOrigin: coverOrigin,
                   display: "flex",
@@ -240,7 +220,7 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
                     fontFamily: F.zhSans,
                     fontSize: 26,
                     letterSpacing: "0.2em",
-                    color: C.ink,
+                    color: C.gray,
                     opacity: hintOpacity,
                   }}
                 >
@@ -250,10 +230,8 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
             )}
           </div>
 
-          {/* 阶段② 停留期下划线：粉彩→强调墨渐变胶囊（居中 64%）。
-              「背对了」的奖励陪伴不在此处再加贴纸——SceneChrome 右上奶黄包
-              贴纸已在场，同帧出现两只画面吉祥物 + 页面层老师即堆砌
-              （吉祥物不堆砌红线），奖励感由遮罩揭示节奏本身承载 */}
+          {/* 阶段② 停留期下划线：墨色细横杠（居中 64%），
+              「背对了」的奖励感由遮罩揭示节奏本身承载 */}
           <div
             aria-hidden="true"
             style={{
@@ -261,7 +239,7 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
               height: 6,
               margin: "40px auto 44px",
               borderRadius: RADIUS.pill,
-              background: `linear-gradient(90deg, ${pastelLayer}, ${accent})`,
+              background: C.ink,
               transform: `scaleX(${underlineGrow})`,
             }}
           />
@@ -306,7 +284,7 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
                       fontFamily: F.zhSerif,
                       fontSize: 28,
                       lineHeight: 1.7,
-                      color: withAlpha(C.ink, 0.78),
+                      color: C.ink,
                       opacity,
                       transform: `translateY(${rise}px)`,
                     }}
@@ -320,11 +298,10 @@ export const MnemonicScene: FC<MnemonicSceneProps> = ({
         </section>
       </AbsoluteFill>
 
-      {/* 视觉底座叠加层：类型徽标 + 学科色淡晕 + 课程进度点 */}
+      {/* 视觉底座叠加层：类型徽标 + 学科锚点进度点 */}
       <SceneChrome
         type="mnemonic"
         subject={subject ?? "falixue"}
-        accent={accent}
         index={sceneIndex ?? 0}
         total={sceneTotal ?? 0}
       />

@@ -1,32 +1,28 @@
 /* ────────────────────────────────────────────────────────────
-   P2 · 闪卡快刷 + 学习热力图（law-flash）
-   可爱化：奶油底/大圆角/单层软阴影令牌来自 law-academy.css（页面已 import），
-   粉彩只做底/进度轨，文字一律 ink/muted；暗色主题双轨跟随。
+   P2 · 闪卡快刷 + 学习热力图（law-flash）· Apple 黑白灰极简
+   令牌（--law-*）来自 law-academy.css 的 .law-academy 根；本文件
+   全部走 var(--x, 灰阶兜底)。三层灰底分区、翻转细动效 350ms 单曲线；
+   热力图灰阶空格 + 苹果蓝强度梯度；暗色随令牌双通道自动翻转。
    ──────────────────────────────────────────────────────────── */
 
-.law-flash {
-  --law-flash-accent: #b1544e;
-  --law-flash-card-back: var(--law-cream-surface, #fffdf8);
-  min-height: 100vh;
-  padding: clamp(16px, 4vw, 48px) clamp(16px, 4vw, 64px) 72px;
-  font-family: var(--law-font-body, var(--font-body));
-}
+/* 吉祥物：静态灰阶（!important 压掉 framer 内联 transform 的循环浮动） */
+.law-flash .law-mascot, .law-flash .law-mascot * { transform: none !important; }
+.law-flash .law-mascot svg { filter: grayscale(1); }
 
 /* ── 页头 / 空态 / 加载 ── */
 .law-flash__head { max-width: 860px; margin: 0 auto 20px; }
-.law-flash__back {
-  display: inline-block;
-  color: var(--law-accent-ink, var(--law-flash-accent));
-  text-decoration: none;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
+.law-flash__back { display: inline-block; color: var(--law-ink, #1d1d1f); text-decoration: none; font-size: 15px; font-weight: 600; margin: 0 0 10px -2px; }
+.law-flash__back:hover { text-decoration: underline; }
 .law-flash__head h1 {
   margin: 0 0 8px;
-  font-family: var(--law-font-heading, var(--font-display));
-  font-size: clamp(26px, 5vw, 36px);
+  font-family: inherit;
+  font-size: clamp(30px, 4.5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--law-ink, #1d1d1f);
 }
-.law-flash__lead { margin: 0; color: var(--text-muted); }
+.law-flash__lead { margin: 0; font-size: 15px; line-height: 1.6; color: var(--law-ink-2, #6e6e73); }
 
 .law-flash__empty {
   max-width: 560px;
@@ -34,136 +30,96 @@
   text-align: center;
   padding: 36px 24px;
   border: 0;
-  border-radius: var(--law-radius-card, 18px);
-  box-shadow: var(--law-shadow-soft);
-  /* 实底兜底：即使有全屏装饰层（如 WebGL 画布）压在页面下，空态文字也不与
-     深色面片直接混色——与错题本/总结卡同款实底卡口径 */
-  background: var(--law-flash-card-back);
+  border-radius: var(--law-radius-card, 16px);
+  box-shadow: var(--law-shadow-card, none);
+  background: var(--law-surface, #fff);
 }
-.law-flash__empty h2 {
-  margin: 12px 0 6px;
-  font-family: var(--law-font-heading, var(--font-display));
-}
-.law-flash__empty p { color: var(--text-muted); }
-.law-flash__empty-cta {
-  display: inline-block;
-  margin-top: 14px;
-  padding: 11px 24px;
-  border-radius: var(--law-radius-control, 999px);
-  background: var(--law-accent-solid, var(--law-flash-accent));
-  color: #fff;
-  font-weight: 700;
-  text-decoration: none;
-}
+.law-flash__empty h2 { margin: 12px 0 6px; font-family: inherit; font-size: 22px; font-weight: 600; color: var(--law-ink, #1d1d1f); }
+.law-flash__empty p { font-size: 14px; line-height: 1.7; color: var(--law-ink-2, #6e6e73); }
+.law-flash__empty-cta { display: inline-block; margin-top: 14px; padding: 11px 24px; border-radius: var(--law-radius-control, 12px); background: var(--law-blue, #0071e3); color: #fff; font-weight: 600; text-decoration: none; }
 
-.law-flash__loading, .law-flash__error {
-  max-width: 560px;
-  margin: 56px auto;
-  text-align: center;
-  display: grid;
-  gap: 12px;
-  justify-items: center;
-}
+.law-flash__loading, .law-flash__error { max-width: 560px; margin: 56px auto; text-align: center; display: grid; gap: 12px; justify-items: center; color: var(--law-ink-2, #6e6e73); }
 
 /* ── 选择面板 ── */
 .law-flash__setup { max-width: 860px; margin: 0 auto; display: grid; gap: 22px; }
-.law-flash__due-hint {
-  margin: 0;
-  padding: 12px 16px;
-  border-radius: var(--law-radius-inner, 12px);
-  background: color-mix(in srgb, var(--law-custard, #f0c264) 22%, var(--law-flash-card-back));
-  color: var(--ink);
-}
-.law-flash__due-hint b { font-family: "Nunito", var(--font-body); }
+.law-flash__due-hint { margin: 0; padding: 12px 16px; border-radius: var(--law-radius-inner, 8px); background: var(--law-sunken, #f2f2f7); font-size: 14px; color: var(--law-ink, #1d1d1f); }
+.law-flash__due-hint b { font-variant-numeric: tabular-nums; }
 .law-flash__group {
   border: 0;
   border-radius: var(--law-radius-card, 16px);
   padding: 16px 18px 18px;
   margin: 0;
-  background: var(--law-flash-card-back);
-  box-shadow: var(--law-shadow-soft);
+  background: var(--law-surface, #fff);
+  box-shadow: var(--law-shadow-card, none);
 }
-.law-flash__group legend {
-  font-weight: 800;
-  padding: 0;
-  color: var(--ink);
-}
+.law-flash__group legend { font-weight: 600; font-size: 17px; padding: 0; color: var(--law-ink, #1d1d1f); }
 .law-flash__subjects, .law-flash__scopes { display: flex; flex-wrap: wrap; gap: 10px; }
 
 .law-flash__check, .law-flash__scope {
   display: grid;
   gap: 2px;
   padding: 10px 14px;
-  border: var(--law-line, 1.5px solid color-mix(in srgb, var(--ink) 16%, transparent));
+  border: 0;
   border-radius: var(--law-radius-control, 12px);
   cursor: pointer;
-  background: color-mix(in srgb, var(--law-flash-card-back) 70%, transparent);
+  background: var(--law-sunken, #f2f2f7);
+  transition: background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
+/* 选中态：苹果蓝 12% 底 + 蓝描线（白卡面蓝小字达标） */
 .law-flash__check.is-on, .law-flash__scope.is-on {
-  border-color: transparent;
-  /* 奶油卡内嵌粉彩块（label 无学科 accent，用模块 accent 混学科默认粉彩） */
-  background: color-mix(in srgb, var(--law-flash-accent) 20%, var(--law-flash-card-back));
+  background: color-mix(in srgb, var(--law-blue, #0071e3) 12%, var(--law-surface, #fff));
+  box-shadow: inset 0 0 0 1.5px var(--law-blue, #0071e3);
 }
 .law-flash__check.is-empty { opacity: 0.55; cursor: not-allowed; }
-.law-flash__check span, .law-flash__scope-label { font-weight: 700; color: var(--ink); }
-.law-flash__check input, .law-flash__scope input { accent-color: var(--law-flash-accent); margin-right: 6px; }
-.law-flash__check small, .law-flash__scope small {
-  color: var(--text-muted);
-  font-size: 12px;
+.law-flash__check span, .law-flash__scope-label { font-weight: 600; color: var(--law-ink, #1d1d1f); }
+/* 学科标识点：8px 锚点圆点（label 带 inline --law-a 就地取锚色） */
+.law-flash__check span::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: var(--law-radius-pill, 999px);
+  background: var(--law-a, var(--law-ink-2, #6e6e73));
+  vertical-align: 1px;
 }
+.law-flash__check input, .law-flash__scope input { accent-color: var(--law-blue, #0071e3); margin-right: 6px; }
+.law-flash__check small, .law-flash__scope small { color: var(--law-ink-2, #6e6e73); font-size: 12px; }
+/* 选中态淡蓝底上小字提为墨色（ink-2 对蓝12%底 4.30 <4.5） */
+.law-flash__check.is-on small, .law-flash__scope.is-on small { color: var(--law-ink, #1d1d1f); }
 .law-flash__scope { max-width: 220px; }
 
 .law-flash__start { display: grid; gap: 10px; justify-items: center; text-align: center; }
-.law-flash__start-hint { margin: 0; font-size: 13px; color: var(--text-muted); }
+.law-flash__start-hint { margin: 0; font-size: 13px; color: var(--law-ink-2, #6e6e73); }
 
 /* ── 按钮 ── */
 .law-flash__btn {
   padding: 10px 20px;
-  border-radius: var(--law-radius-pill, 999px);
-  border: var(--law-line, 1.5px solid color-mix(in srgb, var(--ink) 22%, transparent));
-  background: var(--law-flash-card-back);
-  color: var(--ink);
-  font-weight: 700;
+  border-radius: var(--law-radius-control, 12px);
+  border: 0;
+  background: var(--law-sunken, #f2f2f7);
+  color: var(--law-ink, #1d1d1f);
+  font: inherit;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
+.law-flash__btn:hover:not(:disabled) { background: color-mix(in srgb, var(--law-ink, #1d1d1f) 8%, var(--law-sunken, #f2f2f7)); }
 .law-flash__btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.law-flash__btn--primary {
-  /* 白字实底走 solid 公式（白字 ≥5.16:1） */
-  background: var(--law-accent-solid, var(--law-flash-accent));
-  border-color: transparent;
-  color: #fff;
-}
+.law-flash__btn--primary { background: var(--law-blue, #0071e3); color: #fff; }
+.law-flash__btn--primary:hover:not(:disabled) { background: color-mix(in srgb, var(--law-blue, #0071e3) 88%, #000); }
 .law-flash__btn--big { padding: 14px 30px; font-size: 17px; }
 .law-flash__btn--small { padding: 6px 14px; font-size: 13px; }
 
 /* ── 复习中的牌堆 ── */
-.law-flash__deck {
-  max-width: 640px;
-  margin: 0 auto;
-  display: grid;
-  gap: 16px;
-}
-.law-flash__deck-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.law-flash__progress { margin: 0; font-size: 14px; color: var(--text-muted); }
-.law-flash__progress b { font-family: "Nunito", var(--font-body); color: var(--ink); }
+.law-flash__deck { max-width: 640px; margin: 0 auto; display: grid; gap: 16px; }
+.law-flash__deck-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.law-flash__progress { margin: 0; font-size: 14px; color: var(--law-ink-2, #6e6e73); }
+.law-flash__progress b { font-variant-numeric: tabular-nums; color: var(--law-ink, #1d1d1f); }
 
-/* 3D 翻转卡：正面术语 / 背面原文（大圆角奶油卡，粉彩只做底） */
-.law-flash__card {
-  --card-h: min(58vh, 420px);
-  display: block;
-  width: 100%;
-  height: var(--card-h);
-  perspective: 1400px;
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-}
+/* 3D 翻转卡：正面术语 / 背面原文；白卡零阴影、350ms 细动效单曲线 */
+.law-flash__card { --card-h: min(58vh, 420px); display: block; width: 100%; height: var(--card-h); perspective: 1400px; border: none; background: none; padding: 0; cursor: pointer; }
+.law-flash__card:focus-visible { outline: 2px solid var(--law-blue, #0071e3); outline-offset: 3px; border-radius: calc(var(--law-radius-card, 16px) + 3px); }
 .law-flash__card.is-flipped .law-flash__card-inner { transform: rotateY(180deg); }
 .law-flash__card-inner {
   display: block;
@@ -171,7 +127,7 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform 0.5s var(--ease-out, ease-out);
+  transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 .law-flash__face {
   position: absolute;
@@ -182,51 +138,38 @@
   justify-content: center;
   gap: 14px;
   padding: 26px;
-  /* 翻转圆角：两面统一 --law-radius-card，单层软阴影讲完层次 */
-  border-radius: var(--law-radius-card, 20px);
+  border-radius: var(--law-radius-card, 16px);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   text-align: center;
+  background: var(--law-surface, #fff);
 }
-.law-flash__face--front {
-  /* 学科粉彩底（卡按钮带 inline --law-accent，就地产色；暗色随 cream-surface 自动转暗调） */
-  background: linear-gradient(
-    165deg,
-    color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 23%, var(--law-flash-card-back)),
-    color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 8%, var(--law-flash-card-back))
-  );
-  box-shadow: var(--law-shadow-soft);
-}
-.law-flash__face--back {
-  transform: rotateY(180deg);
-  background: var(--law-flash-card-back);
-  box-shadow: var(--law-shadow-soft);
-  overflow-y: auto;
-}
+.law-flash__face--back { transform: rotateY(180deg); overflow-y: auto; }
 .law-flash__face-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
   padding: 4px 14px;
   border-radius: var(--law-radius-pill, 999px);
-  background: var(--law-cream-raised, #fff);
-  color: var(--ink);
-  font-weight: 700;
+  background: var(--law-sunken, #f2f2f7);
+  color: var(--law-ink-2, #6e6e73);
+  font-weight: 600;
 }
-.law-flash__face-text {
-  font-size: clamp(20px, 4.6vw, 30px);
-  font-weight: 700;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-  color: var(--ink);
-}
-.law-flash__face--back .law-flash__face-text { font-size: clamp(16px, 3.6vw, 21px); font-weight: 500; }
-.law-flash__face-hint { font-size: 12px; color: var(--text-muted); }
+/* 学科标识点：kind 徽标内 8px 锚点圆点（卡按钮带 inline --law-a） */
+.law-flash__face-kind::before { content: ""; width: 8px; height: 8px; border-radius: var(--law-radius-pill, 999px); background: var(--law-a, var(--law-ink-2, #6e6e73)); }
+.law-flash__face-text { font-size: clamp(20px, 4.6vw, 30px); font-weight: 700; line-height: 1.45; overflow-wrap: anywhere; color: var(--law-ink, #1d1d1f); }
+.law-flash__face--back .law-flash__face-text { font-size: clamp(16px, 3.6vw, 21px); font-weight: 400; }
+.law-flash__face-hint { font-size: 12px; color: var(--law-ink-2, #6e6e73); }
 .law-flash__face-source {
   font-size: 13px;
-  color: var(--text-muted);
-  border-top: var(--law-line, 1px solid color-mix(in srgb, var(--ink) 14%, transparent));
-  padding-top: 10px;
+  color: var(--law-ink-2, #6e6e73);
+  background: var(--law-sunken, #f2f2f7);
+  border-radius: var(--law-radius-inner, 8px);
+  padding: 8px 12px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 /* reduced-motion：直接切换，不播放翻转 */
@@ -234,54 +177,29 @@
   .law-flash__card-inner { transition: none; }
 }
 
-/* 陪伴位：随打分换表情，气泡文楷（尾角 6px 指向吉祥物）；装饰不承载信息 */
-.law-flash__companion {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 52px;
-}
-.law-flash__companion-bubble {
-  padding: 8px 14px;
-  border-radius: var(--law-radius-bubble, 18px) var(--law-radius-bubble, 18px) var(--law-radius-bubble, 18px) 6px;
-  background: var(--law-cream-raised, var(--law-flash-card-back));
-  box-shadow: var(--law-shadow-soft);
-  font-family: var(--law-font-heading, var(--font-display));
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--ink);
-}
+/* 陪伴位：静态灰阶吉祥物 + 一行次级灰文案（装饰不承载信息） */
+.law-flash__companion { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; }
+.law-flash__companion-bubble { font-size: 13px; line-height: 1.6; color: var(--law-ink-2, #6e6e73); }
 
+/* 打分：三枚白底控件钮，语义由文字承担（退役绿/琥珀/红粉彩底） */
 .law-flash__rate { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
 .law-flash__rate-btn {
   padding: 12px 22px;
-  border-radius: var(--law-radius-pill, 999px);
+  border-radius: var(--law-radius-control, 12px);
   border: 0;
-  /* 三档粉彩底（纯装饰分色，语义由 😊😐😭 文字承担）；ink 文字 ≥8:1 双主题 */
-  background: var(--law-flash-card-back);
-  box-shadow: var(--law-shadow-soft);
+  background: var(--law-surface, #fff);
+  font: inherit;
   font-size: 16px;
-  font-weight: 700;
-  color: var(--ink);
+  font-weight: 600;
+  color: var(--law-ink, #1d1d1f);
   cursor: pointer;
-  transition: transform 0.12s var(--ease-out, ease), box-shadow 0.12s;
+  transition: background 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
-.law-flash__rate-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--law-shadow-lift);
-}
-.law-flash__rate-btn.is-known { background: color-mix(in srgb, #5e8d6a 20%, var(--law-flash-card-back)); }
-.law-flash__rate-btn.is-fuzzy { background: color-mix(in srgb, #b98a3a 24%, var(--law-flash-card-back)); }
-.law-flash__rate-btn.is-unknown { background: color-mix(in srgb, #b1544e 20%, var(--law-flash-card-back)); }
+.law-flash__rate-btn:hover { background: var(--law-sunken, #f2f2f7); }
+.law-flash__rate-btn:focus-visible { outline: 2px solid var(--law-blue, #0071e3); outline-offset: 2px; }
 
-.law-flash__nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.law-flash__remaining { font-size: 13px; color: var(--text-muted); }
+.law-flash__nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.law-flash__remaining { font-size: 13px; color: var(--law-ink-2, #6e6e73); }
 
 /* ── 总结页 ── */
 .law-flash__summary {
@@ -292,72 +210,39 @@
   gap: 10px;
   justify-items: center;
   padding: 32px 24px;
-  border-radius: var(--law-radius-card, 20px);
+  border-radius: var(--law-radius-card, 16px);
   border: 0;
-  background: var(--law-flash-card-back);
-  box-shadow: var(--law-shadow-soft);
+  background: var(--law-surface, #fff);
+  box-shadow: var(--law-shadow-card, none);
 }
 .law-flash__summary-companion { display: inline-flex; }
-.law-flash__summary h2 {
-  margin: 0;
-  font-family: var(--law-font-heading, var(--font-display));
-}
-.law-flash__summary-total { margin: 0; color: var(--ink); }
-.law-flash__summary-stats {
-  list-style: none;
-  display: flex;
-  gap: 18px;
-  padding: 0;
-  margin: 6px 0;
-  color: var(--ink);
-}
-.law-flash__summary-stats b {
-  display: block;
-  font-size: 22px;
-  font-family: "Nunito", var(--font-body);
-  font-weight: 900;
-}
-.law-flash__summary-hint { margin: 0; font-size: 13px; color: var(--text-muted); }
+.law-flash__summary h2 { margin: 0; font-family: inherit; font-size: 22px; font-weight: 600; color: var(--law-ink, #1d1d1f); }
+.law-flash__summary-total { margin: 0; color: var(--law-ink, #1d1d1f); }
+.law-flash__summary-stats { list-style: none; display: flex; gap: 18px; padding: 0; margin: 6px 0; color: var(--law-ink-2, #6e6e73); }
+.law-flash__summary-stats b { display: block; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--law-ink, #1d1d1f); }
+.law-flash__summary-hint { margin: 0; font-size: 13px; color: var(--law-ink-2, #6e6e73); }
 .law-flash__summary-actions { display: flex; gap: 12px; margin-top: 8px; }
 
-/* ── 学习热力图（挂在学习统计页）── */
+/* ── 学习热力图（挂在学习统计页；令牌继承 .law-academy 根） ── */
 .law-heat { display: grid; gap: 10px; }
-.law-heat__toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.law-heat__summary { margin: 0; font-size: 14px; color: var(--ink); }
-.law-heat__summary b { font-family: "Nunito", var(--font-body); }
+.law-heat__toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.law-heat__summary { margin: 0; font-size: 14px; color: var(--law-ink, #1d1d1f); }
+.law-heat__summary b { font-variant-numeric: tabular-nums; }
 .law-heat__ranges { display: flex; gap: 6px; }
-.law-heat__range {
-  padding: 4px 12px;
-  border-radius: var(--law-radius-pill, 999px);
-  border: var(--law-line, 1.5px solid color-mix(in srgb, var(--ink) 18%, transparent));
-  background: none;
-  font-size: 13px;
-  cursor: pointer;
-  color: var(--ink);
-}
-.law-heat__range.is-current {
-  border-color: transparent;
-  background: color-mix(in srgb, var(--law-accent, var(--law-flash-accent)) 20%, var(--law-cream-surface, transparent));
-  font-weight: 700;
-}
+.law-heat__range { padding: 4px 12px; border-radius: var(--law-radius-pill, 999px); border: 0; background: var(--law-sunken, #f2f2f7); font: inherit; font-size: 13px; cursor: pointer; color: var(--law-ink-2, #6e6e73); }
+.law-heat__range.is-current { background: var(--law-ink, #1d1d1f); font-weight: 600; color: var(--law-surface, #fff); }
+.law-heat__range:focus-visible { outline: 2px solid var(--law-blue, #0071e3); outline-offset: 2px; }
 .law-heat__scroll { overflow-x: auto; padding-bottom: 4px; }
 .law-heat__svg { display: block; }
-.law-heat__month, .law-heat__weekday { font-size: 10px; fill: var(--text-muted); }
+.law-heat__month, .law-heat__weekday { font-size: 10px; fill: var(--law-ink-2, #6e6e73); }
+/* 灰阶空格 + 苹果蓝强度梯度（蓝同槽深浅变体，不增彩色计数）；
+   纯装饰编码——数据由 title/summary 承载 */
 .law-heat__cell {
-  /* 5 级奶黄梯度（与奶黄包同色系）：淡奶黄→焦糖，色深随天数单调递增；
-     纯装饰编码（数据由 title/summary 承载），暗色反向调亮 */
-  --heat-0: color-mix(in srgb, var(--ink) 8%, transparent);
-  --heat-1: color-mix(in srgb, var(--law-custard, #f0c264) 48%, var(--law-cream-bg, #fdfaf5));
-  --heat-2: color-mix(in srgb, var(--law-custard, #f0c264) 80%, var(--law-cream-bg, #fdfaf5));
-  --heat-3: var(--law-custard, #f0c264);
-  --heat-4: color-mix(in srgb, var(--law-custard, #f0c264) 55%, #2a2118);
-  /* 格子更圆润（rx 是 SVG2 presentation attribute，CSS 可覆写） */
+  --heat-0: color-mix(in srgb, var(--law-ink, #1d1d1f) 7%, transparent);
+  --heat-1: color-mix(in srgb, var(--law-blue, #0071e3) 30%, var(--law-surface, #fff));
+  --heat-2: color-mix(in srgb, var(--law-blue, #0071e3) 55%, var(--law-surface, #fff));
+  --heat-3: color-mix(in srgb, var(--law-blue, #0071e3) 80%, var(--law-surface, #fff));
+  --heat-4: var(--law-blue, #0071e3);
   rx: 3.5px;
 }
 .law-heat__cell--l0 { fill: var(--heat-0); }
@@ -365,38 +250,9 @@
 .law-heat__cell--l2 { fill: var(--heat-2); }
 .law-heat__cell--l3 { fill: var(--heat-3); }
 .law-heat__cell--l4 { fill: var(--heat-4); }
-.law-heat__cell.is-today { stroke: var(--ink); stroke-width: 1.2; }
-.law-heat__legend {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-.law-heat__legend i {
-  width: 12px;
-  height: 12px;
-  border-radius: 3.5px;
-  display: inline-block;
-}
-
-/* ── 暗色主题：卡片底走奶油令牌自动翻转，热力梯度反向调亮 ── */
-:root[data-theme="dark"] .law-heat__cell {
-  --heat-0: color-mix(in srgb, var(--ink) 14%, transparent);
-  --heat-1: color-mix(in srgb, var(--law-custard) 26%, #262019);
-  --heat-2: color-mix(in srgb, var(--law-custard) 44%, #262019);
-  --heat-3: color-mix(in srgb, var(--law-custard) 64%, #262019);
-  --heat-4: color-mix(in srgb, var(--law-custard) 78%, #fff5ec);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .law-heat__cell {
-    --heat-0: color-mix(in srgb, var(--ink) 14%, transparent);
-    --heat-1: color-mix(in srgb, var(--law-custard) 26%, #262019);
-    --heat-2: color-mix(in srgb, var(--law-custard) 44%, #262019);
-    --heat-3: color-mix(in srgb, var(--law-custard) 64%, #262019);
-    --heat-4: color-mix(in srgb, var(--law-custard) 78%, #fff5ec);
-  }
-}
+.law-heat__cell.is-today { stroke: var(--law-ink, #1d1d1f); stroke-width: 1.2; }
+.law-heat__legend { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--law-ink-2, #6e6e73); }
+.law-heat__legend i { width: 12px; height: 12px; border-radius: 3.5px; display: inline-block; }
 
 /* ── 390px 移动端 ── */
 @media (max-width: 480px) {

@@ -82,7 +82,7 @@ export function ChapterTree({
           {packs.map((pack, packIndex) => (
             <li key={`pack-${packIndex}`}>
               <div className="law-pack">
-                <span className="law-pack__label">⚡ 速览包 · {pack.length} 个速览点</span>
+                <span className="law-pack__label">速览包 · {pack.length} 个速览点</span>
                 <div className="law-pack__items">
                   {pack.map((lesson) => {
                     const meta = lessonMeta(lesson);
@@ -126,7 +126,7 @@ export function ChapterTree({
                       {lessonKindEmoji(lesson)} {lessonKindLabel(lesson)} · ⏱ {meta.steps}步≈{meta.minutes}分
                     </span>
                     <span className="law-lesson-link__state">
-                      {prog?.completedAt ? "⭐ 已掌握" : prog ? "👀 看过" : "开始"}
+                      {prog?.completedAt ? "已掌握 ✓" : prog ? "看过" : "开始"}
                     </span>
                   </PrefetchLink>
                 </li>

@@ -1,47 +1,31 @@
 import { AbsoluteFill, interpolate } from "remotion";
 import type { FC } from "react";
 import type { LawSubjectId } from "../../types/law";
-import {
-  C,
-  F,
-  RADIUS,
-  SAFE,
-  SHADOW,
-  SPRING,
-  SUBJECT_ACCENTS,
-  T,
-  sceneFrameStyle,
-  withAlpha,
-} from "../theme";
-import {
-  SceneChrome,
-  strokeDashStyle,
-  useQBounceIn,
-  useStageProgress,
-} from "../chrome";
+import { C, F, RADIUS, SAFE, SPRING, T, sceneFrameStyle } from "../theme";
+import { SceneChrome, strokeDashStyle, useRiseIn, useStageProgress } from "../chrome";
 
 /**
- * FlowScene — 流程场景（可爱令牌 · 竖版 S 形折线布局）。
- * 标题先入场，糖果节点卡按序 Q 弹「落地」（useQBounceIn 过冲 ≤6px，过头再回正），
- * 节点之间的 S 形圆头连线以 stroke-dashoffset 帧驱动描边生长（粉彩宽轨垫底、
- * ink 细线铺成长），每段连线甩到位后箭头小三角弹出，呈现「步骤逐级串联展开」。
+ * FlowScene — 流程场景（Apple 黑白灰 · 竖版 S 形折线布局）。
+ * 标题先入场，节点白卡按序缓出「落地」（useRiseIn，200-300ms ease-out 无过冲），
+ * 节点之间的 S 形圆头连线以 stroke-dashoffset 帧驱动描边生长（发丝线宽轨垫底、
+ * 墨色细线铺成长），每段连线甩到位后箭头小三角弹出，呈现「步骤逐级串联展开」。
  *
- * 糖果节点（candy）：白卡软阴影 + 粉彩描边 + 糖果序号章（粉彩芯、ink 描边、
- * 左上高光点——确定性装饰，无随机）。
+ * 节点卡：白卡 + 发丝线描边 + 灰阶序号圆片（浅灰底、墨色等宽数字）。
  *
  * 布局：节点卡片沿竖向蛇形排布（奇偶行左右交错铺满 1080×1920 安全区），
  * 行距/卡高按节点数自适应（取代旧横排的 compact 布尔）。
  *
- * 动画完全帧驱动（chrome 的 spring helpers + interpolate，无 Math.random）；
- * prefers-reduced-motion 时全部定格终态。
+ * 动画完全帧驱动（chrome 的 helpers + interpolate，无 Math.random）；
+ * prefers-reduced-motion 时全部定格终态。accent prop 仅为 SceneView 既有
+ * 接线保留，画面不随学科变色。
  */
 
 export interface FlowSceneProps {
   title: string;
   steps: string[];
-  /** 学科强调色（缺省宪法红 = 既有出片；SceneView 接线后走 SUBJECT_ACCENTS）。 */
+  /** 兼容接线（SceneView 恒传）：Apple 化后画面不随此值变色 */
   accent?: string;
-  /** SceneChrome 底座入参：学科 id（accent 恒有值时仅占位）与场次进度。 */
+  /** SceneChrome 底座入参：学科 id（进度点锚点色）与场次进度。 */
   subject?: LawSubjectId;
   /** 第几场（0-based）；total 为 0 时 chrome 不画进度点。 */
   sceneIndex?: number;
@@ -73,14 +57,13 @@ const nodeDelay = (index: number): number =>
   TITLE_ENTER_FRAMES + index * STEP_STAGGER_FRAMES;
 
 /**
- * 糖果节点卡（可爱令牌）：白卡大圆角 + 粉彩描边 + 软阴影，序号是糖果章
- * （粉彩芯 + ink 描边 + 左上白高光点）。useQBounceIn 落地（过冲 ≤6px）。
- * 抽成组件以便逐节点持 hook（map 内联函数不能调 hook）。
+ * 节点卡（Apple 化）：白卡 + 发丝线描边，序号是灰阶圆片（浅灰底 + 墨色
+ * 等宽数字）。useRiseIn 落地（缓出无过冲）。抽成组件以便逐节点持 hook
+ * （map 内联函数不能调 hook）。
  */
 const FlowNodeCard: FC<{
   step: string;
   index: number;
-  tone: string;
   enterAt: number;
   left: number;
   top: number;
@@ -88,8 +71,8 @@ const FlowNodeCard: FC<{
   height: number;
   chipSize: number;
   labelFont: number;
-}> = ({ step, index, tone, enterAt, left, top, width, height, chipSize, labelFont }) => {
-  const pop = useQBounceIn(enterAt, { distance: 32, scaleFrom: 0.9, overshootPx: 6 });
+}> = ({ step, index, enterAt, left, top, width, height, chipSize, labelFont }) => {
+  const pop = useRiseIn(enterAt, { distance: 24 });
   return (
     <div
       style={{
@@ -105,51 +88,29 @@ const FlowNodeCard: FC<{
         padding: "0 24px",
         background: C.surface,
         borderRadius: RADIUS.inner,
-        border: `2.5px solid ${withAlpha(tone, 0.32)}`,
-        boxShadow: SHADOW.soft,
+        border: `2px solid ${C.line}`,
         opacity: pop.opacity,
-        transform: `translateY(${pop.y}px) scale(${pop.scale})`,
+        transform: `translateY(${pop.y}px)`,
       }}
     >
-      {/* 糖果序号章：粉彩芯 + ink 描边 + 左上高光点 */}
+      {/* 灰阶序号圆片：浅灰底 + 墨色等宽数字 */}
       <div
         style={{
           flex: "none",
-          position: "relative",
           width: chipSize,
           height: chipSize,
+          borderRadius: "50%",
+          background: C.paper,
+          color: C.ink,
+          fontFamily: F.enSerif,
+          fontSize: chipSize * 0.5,
+          fontWeight: 700,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: "50%",
-            background: withAlpha(tone, 0.18),
-            border: `3px solid ${tone}`,
-            color: tone,
-            fontFamily: F.enSerif,
-            fontSize: chipSize * 0.5,
-            fontWeight: 700,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {index + 1}
-        </div>
-        <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            left: "18%",
-            top: "12%",
-            width: "26%",
-            height: "18%",
-            borderRadius: "50%",
-            background: "rgba(255, 255, 255, 0.6)",
-          }}
-        />
+        {index + 1}
       </div>
       <p
         style={{
@@ -157,6 +118,7 @@ const FlowNodeCard: FC<{
           minWidth: 0,
           margin: 0,
           fontFamily: F.zhSerifSemi,
+          fontWeight: 600,
           fontSize: labelFont,
           lineHeight: 1.4,
           color: C.ink,
@@ -175,7 +137,6 @@ const FlowNodeCard: FC<{
 export const FlowScene: FC<FlowSceneProps> = ({
   title,
   steps,
-  accent = SUBJECT_ACCENTS.xianfa.accent,
   subject,
   sceneIndex = 0,
   sceneTotal = 0,
@@ -198,7 +159,7 @@ export const FlowScene: FC<FlowSceneProps> = ({
 
   // 标题入场（theme 帧精确节拍）
   const titleIn = progress(T.titleIn, SPRING.title);
-  const titleY = interpolate(titleIn, [0, 1], [40, 0]);
+  const titleY = interpolate(titleIn, [0, 1], [28, 0]);
   const ruleIn = progress(T.ruleIn, SPRING.soft);
 
   /** 连线 i（节点 i-1 → i）：节点 i 落地前 CONNECTOR_LEAD_FRAMES 起笔 */
@@ -215,7 +176,7 @@ export const FlowScene: FC<FlowSceneProps> = ({
   };
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.paper }}>
+    <AbsoluteFill style={{ backgroundColor: C.surface }}>
       {/* 内容层：sceneFrameStyle 安全区 padding + chrome 徽标让位 */}
       <AbsoluteFill
         style={{
@@ -232,6 +193,7 @@ export const FlowScene: FC<FlowSceneProps> = ({
             style={{
               margin: 0,
               fontFamily: F.zhBlack,
+              fontWeight: 700,
               fontSize: 48,
               lineHeight: 1.3,
               letterSpacing: "0.02em",
@@ -242,21 +204,21 @@ export const FlowScene: FC<FlowSceneProps> = ({
           >
             {title}
           </h1>
-          {/* 强调杠：粉彩胶囊下划线（可爱令牌——替代重描边式色杠） */}
+          {/* 强调杠：墨色细横杠（层级靠字重与墨色，不加彩色） */}
           <div
             style={{
               width: AREA_W * 0.22,
-              height: 10,
+              height: 6,
               marginTop: 18,
               borderRadius: RADIUS.pill,
-              background: withAlpha(accent, 0.32),
+              background: C.ink,
               transformOrigin: "left center",
               transform: `scaleX(${ruleIn})`,
             }}
           />
         </div>
 
-        {/* 节点区：圆头连线 SVG 垫底，糖果节点卡绝对定位其上 */}
+        {/* 节点区：圆头连线 SVG 垫底，节点卡绝对定位其上 */}
         {n > 0 && (
           <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
             <svg
@@ -269,19 +231,19 @@ export const FlowScene: FC<FlowSceneProps> = ({
               {steps.map((_, index) =>
                 index > 0 ? (
                   <g key={`conn-${index}`}>
-                    {/* 粉彩宽轨（圆头胶囊轨） */}
+                    {/* 发丝线宽轨（圆头胶囊轨） */}
                     <path
                       d={connectorPath(index)}
                       fill="none"
-                      stroke={withAlpha(accent, 0.2)}
+                      stroke={C.line}
                       strokeWidth={10}
                       strokeLinecap="round"
                     />
-                    {/* 描边生长：pathLength 归一化 + dashoffset 帧驱动（ink 圆头细线） */}
+                    {/* 描边生长：pathLength 归一化 + dashoffset 帧驱动（墨色圆头细线） */}
                     <path
                       d={connectorPath(index)}
                       fill="none"
-                      stroke={accent}
+                      stroke={C.ink}
                       strokeWidth={5.5}
                       strokeLinecap="round"
                       pathLength={100}
@@ -298,7 +260,7 @@ export const FlowScene: FC<FlowSceneProps> = ({
                       return (
                         <polygon
                           points={`${ax - 10},${ay - 17} ${ax + 10},${ay - 17} ${ax},${ay - 2}`}
-                          fill={accent}
+                          fill={C.ink}
                           opacity={Math.min(1, pop * 1.5)}
                           style={{
                             transformBox: "fill-box",
@@ -313,13 +275,12 @@ export const FlowScene: FC<FlowSceneProps> = ({
               )}
             </svg>
 
-            {/* 糖果节点卡 */}
+            {/* 节点卡 */}
             {steps.map((step, index) => (
               <FlowNodeCard
                 key={`${index}-${step}`}
                 step={step}
                 index={index}
-                tone={accent}
                 enterAt={nodeDelay(index)}
                 left={centerX(index) - cardW / 2}
                 top={cardY(index)}
@@ -337,7 +298,6 @@ export const FlowScene: FC<FlowSceneProps> = ({
       <SceneChrome
         type="flow"
         subject={subject ?? "falixue"}
-        accent={accent}
         index={sceneIndex}
         total={sceneTotal}
       />

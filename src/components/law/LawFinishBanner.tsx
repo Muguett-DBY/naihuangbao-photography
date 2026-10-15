@@ -64,10 +64,10 @@ export function LawFinishBanner({ subjects }: { subjects: LawFinishCandidate[] }
             ))}
           </div>
           <p className="law-finish-banner__title">
-            {book.emoji} 《{book.name}》已通！
+            《{book.name}》已通 ✓
           </p>
           <p className="law-finish-banner__sub">
-            {book.total} 个知识点全部掌握 —— 一整本书，被你一页一页走完了 🎓
+            {book.total} 个知识点全部掌握 —— 一整本书，被你一页一页走完了
           </p>
         </div>
       ))}

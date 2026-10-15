@@ -88,8 +88,8 @@ test.describe("law exam", () => {
     await page.locator(".law-exam__start").click();
     const running = page.locator(".law-exam__running");
     await expect(running).toBeVisible({ timeout: 15_000 });
-    // 倒计时出现（5 题 × 45 秒 = 3:45 起）
-    await expect(page.locator(".law-exam__clock")).toContainText(/⏳/);
+    // 倒计时出现（5 题 × 45 秒 = 3:45 起；正常态前缀 ⏱，不足 30 秒换 ⚠）
+    await expect(page.locator(".law-exam__clock")).toContainText(/⏱/);
     // 题号面板 5 枚
     await expect(page.locator(".law-exam__dot")).toHaveCount(5);
 

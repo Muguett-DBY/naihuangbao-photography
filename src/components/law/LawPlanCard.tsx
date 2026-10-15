@@ -2,9 +2,9 @@ import { useMemo, useState } from "react";
 import { examDateISO, getPlan, setPlanTier, type LawPlan, type PlanTier } from "../../lib/law-plan";
 
 const TIERS: { id: PlanTier; label: string; desc: string }[] = [
-  { id: "relaxed", label: "🛋️ 轻松", desc: "每天少学点，也能在考前稳稳过完" },
-  { id: "standard", label: "🎯 标准", desc: "每天这个量，考前刚好全部学完一遍" },
-  { id: "intense", label: "🔥 冲刺", desc: "提前 20 天收尾，留时间二轮背诵" },
+  { id: "relaxed", label: "轻松", desc: "每天少学点，也能在考前稳稳过完" },
+  { id: "standard", label: "标准", desc: "每天这个量，考前刚好全部学完一遍" },
+  { id: "intense", label: "冲刺", desc: "提前 20 天收尾，留时间二轮背诵" },
 ];
 
 function formatDate(iso: string): string {
@@ -30,7 +30,7 @@ export function LawPlanCard() {
       aria-label="考研倒计时与每日计划"
     >
       <div className="law-plan-card__countdown">
-        <span className="law-plan-card__label">📅 距离 2027 法硕考研初试</span>
+        <span className="law-plan-card__label">距离 2027 法硕考研初试</span>
         {plan.daysLeft > 0 ? (
           <>
             <strong>{plan.daysLeft}</strong>
@@ -48,7 +48,7 @@ export function LawPlanCard() {
             <b>总进度</b>
             <span>
               {plan.doneSteps} / {plan.totalSteps} 步
-              {finished ? " 🎉 已经全部学完" : ` · 还剩 ${plan.remainingSteps} 步`}
+              {finished ? " 已经全部学完 ✓" : ` · 还剩 ${plan.remainingSteps} 步`}
             </span>
           </div>
           <div className="law-plan-card__bar">

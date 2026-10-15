@@ -131,7 +131,7 @@ test.describe("law notes", () => {
 
     await page.goto("/law/notes");
     const downloadPromise = page.waitForEvent("download");
-    await page.getByRole("button", { name: "⬇️ 导出 JSON" }).click();
+    await page.getByRole("button", { name: "导出 JSON" }).click();
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toMatch(/^law-notes-\d{4}-\d{2}-\d{2}\.json$/);
   });
@@ -160,7 +160,7 @@ test.describe("law notes", () => {
 
   test("学习中心有笔记入口卡片", async ({ page }) => {
     await page.goto("/law");
-    await expect(page.getByRole("link", { name: "📝 我的笔记" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "我的笔记" })).toBeVisible();
   });
 
   // ── 巡逻轮：渲染边界与多标签页 ──
