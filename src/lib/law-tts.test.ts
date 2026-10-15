@@ -532,7 +532,9 @@ describe("既有语义保持", () => {
 });
 
 describe("后台静音（visibilitychange）", () => {
-  it("标签页隐藏时立即 cancel 朗读；可见时不打扰", async () => {
+  // 本套件跑在 node 环境（无 jsdom）：无 document 时仅跳过，浏览器行为由真实页面保障
+  const maybeIt = typeof document !== "undefined" ? it : it.skip;
+  maybeIt("标签页隐藏时立即 cancel 朗读；可见时不打扰", async () => {
     const lawTts = await loadLawTts();
     // 模拟隐藏（不依赖引擎路径——cancel 是全局语义，无论引擎 1/2 都必须停）
     Object.defineProperty(document, "hidden", { configurable: true, get: () => true });
