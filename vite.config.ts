@@ -97,8 +97,8 @@ export default defineConfig({
         "icons/pwa-maskable-512.png",
       ],
       workbox: {
-        skipWaiting: false,
-        clientsClaim: false,
+        skipWaiting: true, // 热推#2：旧会话浏览器面板里的旧版课堂标签强制升级（这次保持到用户确认静音）
+        clientsClaim: true,
         cleanupOutdatedCaches: true,
         navigateFallback: "index.html",
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,

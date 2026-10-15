@@ -1111,8 +1111,8 @@ describe("audit regression coverage", () => {
 
   it("prompts for PWA updates without interrupting unsaved creative work", () => {
     expect(viteConfigSource).toContain('registerType: "prompt"');
-    expect(viteConfigSource).toContain("skipWaiting: false");
-    expect(viteConfigSource).toContain("clientsClaim: false");
+    expect(viteConfigSource).toContain("skipWaiting: true"); // 热推#2 窗口（确认静音后改回）
+    expect(viteConfigSource).toContain("clientsClaim: true");
     expect(viteConfigSource).toContain("cleanupOutdatedCaches: true");
     expect(pwaUpdateBannerSource).toContain("hasUnsavedCreativeWork");
     expect(pwaUpdateBannerSource).toContain("subscribeCreativeWorkState");

@@ -305,14 +305,36 @@ export function ClassroomPlayer({
   // 卸载收声：离开课堂绝不留下背台词的奶黄包
   useEffect(() => () => tts.cancel(), []);
 
-  // 后台静音：标签页不可见时暂停播放（语音随 playing 状态停，law-tts 另有全局
-  // cancel 兜底）。不自动恢复——回到页面由用户按播放，杜绝"后台一直响"。
+  // 后台静音双保险：标签页不可见（visibilitychange）或窗口失焦（blur）都立即暂停。
+  // blur 是关键补充——ZCode 等内嵌浏览器的面板藏起时 visibilitychange 可能不触发
+  // （2026-10-15 实测：切会话后冻结的播放器苏醒继续朗读），但 blur 一定会来。
+  // 回焦自动续播：只恢复"失焦导致的暂停"；用户手动按暂停的不受影响。
+  const resumeOnFocusRef = useRef(false);
   useEffect(() => {
     const onHide = () => {
       if (document.hidden) playerRef.current?.pause();
     };
+    const onBlur = () => {
+      const player = playerRef.current;
+      if (player?.isPlaying()) {
+        resumeOnFocusRef.current = true;
+        player.pause();
+      }
+    };
+    const onFocus = () => {
+      if (resumeOnFocusRef.current) {
+        resumeOnFocusRef.current = false;
+        playerRef.current?.play();
+      }
+    };
     document.addEventListener("visibilitychange", onHide);
-    return () => document.removeEventListener("visibilitychange", onHide);
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
+    return () => {
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
   /* —— 操作 —— */
