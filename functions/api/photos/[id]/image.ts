@@ -1,4 +1,4 @@
-import { withSecurityHeaders } from "../../../_responses";
+import { jsonResponse, withSecurityHeaders } from "../../../_responses";
 
 type PhotoObjectRow = {
   object_key: string;
@@ -9,6 +9,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (typeof id !== "string") {
     return notFound();
   }
+  const bucket = context.env.PHOTO_BUCKET;
+  if (!bucket) return jsonResponse({ error: "Photo storage is not configured" }, 503, { "cache-control": "no-store" });
 
   const row = await context.env.DB.prepare(
     `select object_key
@@ -22,7 +24,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     return notFound();
   }
 
-  const object = await context.env.PHOTO_BUCKET.get(row.object_key);
+  const object = await bucket.get(row.object_key);
   if (!object) {
     return notFound();
   }

@@ -22,6 +22,8 @@ export const onRequestPost: PagesFunction<PublishEnv> = async (context) => {
   if (!secret) return jsonResponse({ error: "Project publishing is not configured" }, 503);
   const user = await getUserFromRequest(context.request, secret, context.env.DB);
   if (!user) return unauthorized("Sign in to publish visual projects");
+  const bucket = context.env.PHOTO_BUCKET;
+  if (!bucket) return jsonResponse({ error: "Project storage is not configured" }, 503, { "cache-control": "no-store" });
 
   const limit = await enforceRateLimit(context.request, context.env, `project-publish:${user.userId}`, 20, 60 * 60);
   if (!limit.ok) return rateLimited(limit.retryAfter);
@@ -55,7 +57,7 @@ export const onRequestPost: PagesFunction<PublishEnv> = async (context) => {
     const publishedAt = new Date().toISOString();
     const objectKey = `published-projects/${slug}/${id}.json`;
     const snapshot: PublishedProjectSnapshot = { ...body.draft, contentHash, id, slug, version, publishedAt };
-    await context.env.PHOTO_BUCKET.put(objectKey, JSON.stringify(snapshot), {
+    await bucket.put(objectKey, JSON.stringify(snapshot), {
       httpMetadata: { contentType: "application/json; charset=utf-8", cacheControl: "public, max-age=31536000, immutable" },
       customMetadata: { projectId: snapshot.project.id, ownerUserId: user.userId, contentHash },
     });
@@ -65,7 +67,7 @@ export const onRequestPost: PagesFunction<PublishEnv> = async (context) => {
          values (?, ?, ?, ?, ?, ?, ?, ?)`,
       ).bind(id, slug, snapshot.project.id, version, snapshot.project.name, objectKey, snapshot.contentHash, publishedAt).run();
     } catch (error) {
-      await context.env.PHOTO_BUCKET.delete(objectKey);
+      await bucket.delete(objectKey);
       throw error;
     }
     return jsonResponse({ id, slug, version, publishedAt, contentHash: snapshot.contentHash, url: `/share/${slug}` }, 201, { "cache-control": "no-store" });

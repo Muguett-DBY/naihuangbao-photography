@@ -15,6 +15,8 @@ function projectId(context: EventContext<ProjectSyncEnv, string, unknown>) {
 export const onRequestGet: PagesFunction<ProjectSyncEnv> = async (context) => {
   const auth = await requireProjectSyncUser(context.request, context.env);
   if (!auth.ok) return auth.response;
+  const bucket = context.env.PHOTO_BUCKET;
+  if (!bucket) return jsonResponse({ error: "Project storage is not configured" }, 503, { "cache-control": "no-store" });
   const id = projectId(context);
   if (!id) return badRequest("Invalid project id");
   const url = new URL(context.request.url);
@@ -38,7 +40,7 @@ export const onRequestGet: PagesFunction<ProjectSyncEnv> = async (context) => {
          where user_id = ? and project_id = ?`,
       ).bind(auth.userId, id).first<CurrentProjectRow>();
     if (!row) return jsonResponse({ error: "Synced project not found" }, 404);
-    const object = await context.env.PHOTO_BUCKET.get(row.object_key);
+    const object = await bucket.get(row.object_key);
     if (!object) return jsonResponse({ error: "Synced project payload is unavailable" }, 404);
     const project = await object.json();
     if (!isSyncWorkspaceProject(project)) throw new Error("Stored project payload is invalid");
@@ -53,6 +55,8 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
   if (actionError) return actionError;
   const auth = await requireProjectSyncUser(context.request, context.env);
   if (!auth.ok) return auth.response;
+  const bucket = context.env.PHOTO_BUCKET;
+  if (!bucket) return jsonResponse({ error: "Project storage is not configured" }, 503, { "cache-control": "no-store" });
   const limit = await enforceRateLimit(context.request, context.env, `project-sync-projects:${auth.userId}`, 120, 60 * 60);
   if (!limit.ok) return rateLimited(limit.retryAfter, 120);
   const id = projectId(context);
@@ -94,7 +98,7 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
     const updatedAt = new Date().toISOString();
     const versionId = crypto.randomUUID();
     objectKey = `workspace-users/${auth.userId}/projects/${id}/v${revision}-${versionId}.json`;
-    await context.env.PHOTO_BUCKET.put(objectKey, JSON.stringify(body.project), {
+    await bucket.put(objectKey, JSON.stringify(body.project), {
       httpMetadata: { contentType: "application/json; charset=utf-8", cacheControl: "private, no-store" },
       customMetadata: { userId: auth.userId, projectId: id, revision: String(revision), contentHash },
     });
@@ -144,7 +148,7 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
       ).bind(version.id, auth.userId, auth.userId, id, revision, objectKey)),
     ]);
     if (Number(writeResults[0]?.meta.changes ?? 0) !== 1) {
-      await context.env.PHOTO_BUCKET.delete(objectKey).catch(() => undefined);
+      await bucket.delete(objectKey).catch(() => undefined);
       objectKey = "";
       const latest = await context.env.DB.prepare(
         "select revision, content_hash, object_key, updated_at from synced_workspace_projects where user_id = ? and project_id = ?",
@@ -156,13 +160,13 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
     }
     if (staleVersions.length > 0) {
       context.waitUntil(
-        context.env.PHOTO_BUCKET.delete(staleVersions.map((version) => version.object_key))
+        bucket.delete(staleVersions.map((version) => version.object_key))
           .catch((error) => console.warn("Failed to prune workspace project versions", error)),
       );
     }
     return jsonResponse({ projectId: id, revision, contentHash, updatedAt }, 200, { "cache-control": "no-store" });
   } catch (error) {
-    if (objectKey) await context.env.PHOTO_BUCKET.delete(objectKey).catch(() => undefined);
+    if (objectKey) await bucket.delete(objectKey).catch(() => undefined);
     return unavailable("Failed to sync project", error, { route: "/api/projects/sync/:id", method: "PUT" });
   }
 };

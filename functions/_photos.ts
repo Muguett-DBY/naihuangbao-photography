@@ -120,9 +120,11 @@ async function recordQueuedPhotoObjectFailure(env: Env, objectKeys: string[], er
 
 async function deleteQueuedPhotoObjects(env: Env, objectKeys: string[]) {
   if (objectKeys.length === 0) return { cleanupQueued: 0 };
+  const bucket = env.PHOTO_BUCKET;
+  if (!bucket) return { cleanupQueued: objectKeys.length };
 
   try {
-    await env.PHOTO_BUCKET.delete(objectKeys.length === 1 ? objectKeys[0] : objectKeys);
+    await bucket.delete(objectKeys.length === 1 ? objectKeys[0] : objectKeys);
     await removeQueuedPhotoObjects(env, objectKeys);
     return { cleanupQueued: 0 };
   } catch (error) {
@@ -171,7 +173,9 @@ async function commitPhotoRowsForDeletion(env: Env, ids: string[], rows: PhotoDe
 }
 
 export async function createPhotoWithCompensation(env: Env, input: PhotoCreateInput) {
-  await env.PHOTO_BUCKET.put(input.objectKey, input.file.stream(), {
+  const bucket = env.PHOTO_BUCKET;
+  if (!bucket) throw new Error("Photo storage is not configured");
+  await bucket.put(input.objectKey, input.file.stream(), {
     httpMetadata: { contentType: input.file.type },
     customMetadata: {
       title: input.title,
@@ -201,7 +205,7 @@ export async function createPhotoWithCompensation(env: Env, input: PhotoCreateIn
       )
       .run();
   } catch (error) {
-    await env.PHOTO_BUCKET.delete(input.objectKey).catch((cleanupError) => {
+    await bucket.delete(input.objectKey).catch((cleanupError) => {
       logWorkerError("上传失败后的 R2 清理失败", cleanupError, { objectKey: input.objectKey });
     });
     throw error;

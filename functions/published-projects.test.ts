@@ -55,6 +55,22 @@ function createDb(row?: Record<string, unknown>, handleOwner = "publish-user", h
 }
 
 describe("published project Pages Functions", () => {
+  it("rejects missing storage before claiming a publication handle", async () => {
+    const db = createDb();
+    const validDraft = { ...draft, contentHash: await hashPublishedProject(draft.project) };
+    const session = await createUserSession("publish-user", authSecret);
+    const request = new Request("https://shoot.custard.top/api/projects/publish", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-nhb-public-action": "1", cookie: `nhb_user_session=${session}` },
+      body: JSON.stringify({ draft: validDraft, slug: "rain-glass-study-test" }),
+    });
+    const response = await publishProject({ request, env: { DB: db, AUTH_SECRET: authSecret }, params: {} } as never) as Response;
+
+    expect(response.status).toBe(503);
+    expect(db.statements.some(({ sql }) => sql.includes("published_project_handles"))).toBe(false);
+    expect(db.statements.some(({ sql }) => sql.includes("chat_rate_limits"))).toBe(false);
+  });
+
   it("rejects anonymous publishing before claiming a slug or writing R2", async () => {
     const db = createDb();
     const bucket = { put: vi.fn(), delete: vi.fn(), get: vi.fn() };

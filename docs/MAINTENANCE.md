@@ -100,8 +100,13 @@ Pages 构建设置：
 
 主要绑定：
 
-- `DB`: Cloudflare D1
-- `PHOTO_BUCKET`: Cloudflare R2
+- `DB`: Cloudflare D1 (required)
+- `PHOTO_BUCKET`: Cloudflare R2 (optional, currently disabled)
+- `CACHE`: Cloudflare KV (optional, currently disabled)
+
+With R2 disabled, image uploads/downloads, project publishing, and project/asset sync return HTTP 503. Local browser workspaces and D1-backed features remain available; photo listing reads D1 directly when KV is absent. Pending photo-object deletions remain queued until storage is available. Do not recreate removed resources just to satisfy the TypeScript build.
+
+Run `npm run cf:types` after changing `wrangler.toml` or the pinned Wrangler version, then verify with `npm run cf:types:check`. Required bindings come from the generated file; optional resource contracts live in `functions/optional-bindings.d.ts`.
 
 生产环境至少需要以下 secrets：
 

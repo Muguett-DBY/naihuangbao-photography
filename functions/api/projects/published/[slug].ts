@@ -33,7 +33,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       ? await statement.bind(slug, requestedVersion).first<PublishedRow>()
       : await statement.bind(slug).first<PublishedRow>();
     if (!row) return jsonResponse({ error: "Published project not found" }, 404);
-    const object = await context.env.PHOTO_BUCKET.get(row.object_key);
+    const bucket = context.env.PHOTO_BUCKET;
+    if (!bucket) return jsonResponse({ error: "Project storage is not configured" }, 503, { "cache-control": "no-store" });
+    const object = await bucket.get(row.object_key);
     if (!object) return jsonResponse({ error: "Published project asset not found" }, 404);
     const immutable = requestedVersion > 0;
     return new Response(object.body, {

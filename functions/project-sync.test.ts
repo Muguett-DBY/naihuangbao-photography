@@ -61,11 +61,35 @@ async function cookie() {
   return `nhb_user_session=${await createUserSession("sync-user", authSecret)}`;
 }
 
-function context(request: Request, db: ReturnType<typeof createDb>, bucket: Record<string, unknown>, params: Record<string, string>) {
+function context(request: Request, db: ReturnType<typeof createDb>, bucket: Record<string, unknown> | undefined, params: Record<string, string>) {
   return { request, env: { DB: db, PHOTO_BUCKET: bucket, AUTH_SECRET: authSecret }, params, data: {}, waitUntil: vi.fn(), next: vi.fn(), functionPath: "", passThroughOnException: vi.fn() } as never;
 }
 
 describe("workspace project sync Pages Functions", () => {
+  it("rejects missing project storage before writing or consuming quota", async () => {
+    const db = createDb();
+    const request = new Request("https://shoot.custard.top/api/projects/sync/sync-project", {
+      method: "PUT", headers: { "content-type": "application/json", "x-nhb-public-action": "1", cookie: await cookie() },
+      body: JSON.stringify({ project, expectedRevision: 0 }),
+    });
+    const response = await putProject(context(request, db, undefined, { id: project.id })) as Response;
+    expect(response.status).toBe(503);
+    expect(db.batch).not.toHaveBeenCalled();
+    expect(db.statements.some(({ sql }) => sql.includes("chat_rate_limits"))).toBe(false);
+  });
+
+  it("rejects missing asset storage before writing or consuming quota", async () => {
+    const db = createDb();
+    const request = new Request("https://shoot.custard.top/api/projects/sync/assets/photo", {
+      method: "PUT", headers: { "content-type": "image/png", "x-nhb-public-action": "1", cookie: await cookie() },
+      body: new Uint8Array([1, 2, 3]),
+    });
+    const response = await putAsset(context(request, db, undefined, { assetId: "photo" })) as Response;
+    expect(response.status).toBe(503);
+    expect(db.batch).not.toHaveBeenCalled();
+    expect(db.statements.some(({ sql }) => sql.includes("chat_rate_limits"))).toBe(false);
+  });
+
   it("requires an authenticated user session", async () => {
     const request = new Request("https://shoot.custard.top/api/projects/sync/sync-project", { method: "PUT", headers: { "content-type": "application/json", "x-nhb-public-action": "1" }, body: JSON.stringify({ project, expectedRevision: 0 }) });
     const response = await putProject(context(request, createDb(), { put: vi.fn(), delete: vi.fn() }, { id: project.id }));
