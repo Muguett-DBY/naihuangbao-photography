@@ -5,6 +5,9 @@
 import type { LawQuizTrap } from "../types/law";
 import { cleanTerm } from "./law-quiz-gates";
 import { preferConfusables } from "./law-confusion";
+import { looksLikePerson } from "./law-person-name";
+
+export { looksLikePerson } from "./law-person-name";
 
 export interface Mutation {
   text: string;
@@ -43,17 +46,6 @@ export function mutateCnNumber(text: string, rand: () => number): Mutation | nul
     text: `${text.slice(0, match.index)}${next}${text.slice(match.index + token.length)}`,
     trap: "cn-number",
   };
-}
-
-/** 常见姓氏开头 + 2~3 字，或帝王称号收尾——"人物错配"标签的判定口径 */
-const SURNAMES = "商李韩萧曹刘张王赵陈杨沈薛吴郑孙马董房杜魏白宋柳窦裴郭姚袁谢管仲庄孟荀墨贾秦汉隋唐宋明";
-const ROYAL_TITLE = /(文帝|武帝|太宗|高宗|太祖|高祖|玄宗|明皇|始皇|景帝|成祖|圣德|神宗|英宗)$/;
-
-export function looksLikePerson(name: string): boolean {
-  if (ROYAL_TITLE.test(name)) return true;
-  // 4 字以上几乎都是制度/文献名（宋刑统、管制刑、马工程），不做单字姓联想
-  if (name.length > 3) return false;
-  return name.length >= 2 && name.length <= 3 && SURNAMES.includes(name[0]);
 }
 
 /**
