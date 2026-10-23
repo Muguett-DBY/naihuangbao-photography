@@ -1,0 +1,436 @@
+[
+  {
+    "lessonId": "xingfa-q014",
+    "subject": "xingfa",
+    "title": "犯罪构成的四要件装配",
+    "kind": "assemble",
+    "intro": "把四个要件拼装起来，犯罪才成立——缺一块都不行。"
+  },
+  {
+    "lessonId": "xingfa-q047",
+    "subject": "xingfa",
+    "title": "正当防卫的五道闸门",
+    "kind": "flow",
+    "intro": "五个条件全部满足，防卫才是“正当”，不负刑事责任。"
+  },
+  {
+    "lessonId": "xingfa-q083",
+    "subject": "xingfa",
+    "title": "刑罚体系树",
+    "kind": "tree",
+    "intro": "主刑只能单独适用，附加刑可以附加适用——一棵树看清九种刑罚。"
+  },
+  {
+    "lessonId": "xingfa-q061",
+    "subject": "xingfa",
+    "title": "共同犯罪的结构图",
+    "kind": "tree",
+    "intro": "二人以上共同故意犯罪——从成立到责任一图看清。"
+  },
+  {
+    "lessonId": "xingfa-q089",
+    "subject": "xingfa",
+    "title": "死刑的层层限制",
+    "kind": "tree",
+    "intro": "死刑是极刑——从适用条件、对象、程序到死缓，四道限制层层设防。"
+  },
+  {
+    "lessonId": "minfa-q230",
+    "subject": "minfa",
+    "title": "物权体系树",
+    "kind": "tree",
+    "intro": "所有权、用益物权、担保物权——一棵树看清《民法典》的物权体系。"
+  },
+  {
+    "lessonId": "minfa-q067",
+    "subject": "minfa",
+    "title": "民事行为能力阶梯",
+    "kind": "stairs",
+    "intro": "从 0 岁到 18 岁——每一步台阶，法律都给你不同大小的“能力”。"
+  },
+  {
+    "lessonId": "xianfa-q080",
+    "subject": "xianfa",
+    "title": "国家机构组织图",
+    "kind": "tree",
+    "intro": "立法、行政、监察、审判、检察、军事——一图看清国家机构的构成。"
+  },
+  {
+    "lessonId": "xianfa-q026-tour",
+    "subject": "xianfa",
+    "title": "宪法修改程序",
+    "kind": "flow",
+    "intro": "一部举足轻重的宪法是怎样被修改的？四步走。"
+  },
+  {
+    "lessonId": "zhishixiang-q014",
+    "subject": "zhishixiang",
+    "title": "立法思想千年流变",
+    "kind": "timeline",
+    "intro": "从“神权天罚”到“德主刑辅”——沿着时间轴看懂法制思想的演变。"
+  },
+  {
+    "lessonId": "falixue-q120",
+    "subject": "falixue",
+    "title": "法律关系三角",
+    "kind": "assemble",
+    "intro": "主体、客体、内容（权利义务）——三根支柱撑起一法律关系。"
+  },
+  {
+    "lessonId": "falixue-q044",
+    "subject": "falixue",
+    "title": "法的正式渊源位阶",
+    "kind": "tree",
+    "intro": "宪法居于顶端，下位法不得抵触上位法——一图记住效力金字塔。"
+  },
+  {
+    "lessonId": "xianfa-q034",
+    "subject": "xianfa",
+    "title": "公民与人民",
+    "kind": "balance",
+    "intro": "“公民”是法律概念，“人民”是政治概念——天平两头要看清楚。"
+  },
+  {
+    "lessonId": "xingfa-q052",
+    "subject": "xingfa",
+    "title": "正当防卫 VS 紧急避险",
+    "kind": "balance",
+    "intro": "同是排除犯罪性的好手段——天平两端放一起，五个不同点亮出来。"
+  },
+  {
+    "lessonId": "minfa-q417",
+    "subject": "minfa",
+    "title": "双务合同的履行抗辩权",
+    "kind": "tree",
+    "intro": "对方不靠谱怎么办？三种履行抗辩权一棵树看清——区别只在履行顺序与起因。"
+  },
+  {
+    "lessonId": "falixue-q114",
+    "subject": "falixue",
+    "title": "形式推理的分类",
+    "kind": "tree",
+    "intro": "演绎、归纳、类比——三种形式推理，一张树图分清必然与或然。"
+  },
+  {
+    "lessonId": "xianfa-q061",
+    "subject": "xianfa",
+    "title": "选民名单公示与救济时限",
+    "kind": "flow",
+    "intro": "20 公布、5 申诉、3 处理、5 起诉——一条流程线记住选举权的程序保障。"
+  },
+  {
+    "lessonId": "xingfa-q053",
+    "subject": "xingfa",
+    "title": "故意犯罪的停止形态",
+    "kind": "tree",
+    "intro": "犯罪进展的结局状态——一棵树分清完成形态与三种未完成形态。"
+  },
+  {
+    "lessonId": "xingfa-q032",
+    "subject": "xingfa",
+    "title": "刑事责任年龄的四道门槛",
+    "kind": "stairs",
+    "intro": "从 12 岁到 16 岁——每跨过一道年龄门槛，承担刑事责任的范围就变大一层。"
+  },
+  {
+    "lessonId": "minfa-q627",
+    "subject": "minfa",
+    "title": "法定继承的顺序与范围",
+    "kind": "flow",
+    "intro": "谁先谁后继承？两个顺序、六类继承人，一条流程线理清。"
+  },
+  {
+    "lessonId": "minfa-q081",
+    "subject": "minfa",
+    "title": "宣告失踪的完整流程",
+    "kind": "flow",
+    "intro": "下落不明满两年怎么办？从申请到撤销，五步走完宣告失踪的全流程。"
+  },
+  {
+    "lessonId": "xianfa-q098-tour",
+    "subject": "xianfa",
+    "title": "国家主席的产生与任期",
+    "kind": "flow",
+    "intro": "谁能当国家主席？缺位了怎么办？宪法第七十九条到第八十四条一条线讲清。"
+  },
+  {
+    "lessonId": "zhishixiang-q114-tour",
+    "subject": "zhishixiang",
+    "title": "古代司法机构沿革",
+    "kind": "timeline",
+    "intro": "从司寇到三法司——沿着时间轴看古代司法机关从一套班子到三套班子的演变。"
+  },
+  {
+    "lessonId": "zhishixiang-q124",
+    "subject": "zhishixiang",
+    "title": "清朝逐级审转制度",
+    "kind": "stairs",
+    "intro": "刑罚越重、审结的衙门越高——一张阶梯图看清清朝案件的审结层级。"
+  },
+  {
+    "lessonId": "falixue-q108",
+    "subject": "falixue",
+    "title": "法律解释的方法体系",
+    "kind": "tree",
+    "intro": "六种解释方法，六种“参照物”——一棵树理清法律解释的方法体系。"
+  },
+  {
+    "lessonId": "minfa-q128",
+    "subject": "minfa",
+    "title": "民事法律行为的有效条件",
+    "kind": "assemble",
+    "intro": "成立不等于有效——四块要件拼齐，民事法律行为才受法律保护。"
+  },
+  {
+    "lessonId": "minfa-q136",
+    "subject": "minfa",
+    "title": "可撤销民事法律行为的适用情形",
+    "kind": "tree",
+    "intro": "误解、被骗、被吓、吃亏——四种情形下，受损害方可以请求撤销。"
+  },
+  {
+    "lessonId": "minfa-q326",
+    "subject": "minfa",
+    "title": "质权人的权利体系",
+    "kind": "tree",
+    "intro": "先占有、再保全、后优先，外加一个处分权——质权人的权利一棵树理清。"
+  },
+  {
+    "lessonId": "minfa-q305",
+    "subject": "minfa",
+    "title": "担保物权三兄弟对照",
+    "kind": "matrix",
+    "intro": "抵押、质押、留置——一张矩阵表看清三种担保物权差在哪。"
+  },
+  {
+    "lessonId": "xianfa-q031",
+    "subject": "xianfa",
+    "title": "合宪性审查的流程",
+    "kind": "flow",
+    "intro": "谁依据什么、由谁审查、怎么处理？2010-2023 六次大考的流程一条线走完。"
+  },
+  {
+    "lessonId": "xianfa-q082",
+    "subject": "xianfa",
+    "title": "全国人大 VS 全国人大常委会",
+    "kind": "balance",
+    "intro": "一个是最高国家权力机关，一个是它的常设机关——五组差异天平上放清楚。"
+  },
+  {
+    "lessonId": "xianfa-q069",
+    "subject": "xianfa",
+    "title": "民族区域自治的内容",
+    "kind": "tree",
+    "intro": "自治地方、自治机关、自治权三要素——2015 简答题一棵树背全。"
+  },
+  {
+    "lessonId": "xianfa-q060",
+    "subject": "xianfa",
+    "title": "选举制度的五原则",
+    "kind": "assemble",
+    "intro": "普遍、平等、直选间选并用、差额、秘密——2018 简答五块装起来。"
+  },
+  {
+    "lessonId": "falixue-q145",
+    "subject": "falixue",
+    "title": "大陆法系 VS 英美法系",
+    "kind": "balance",
+    "intro": "同是西方两大法系，渊源、分类、法典、诉讼、推理五处不一样——2014 简答天平称清楚。"
+  },
+  {
+    "lessonId": "falixue-q023",
+    "subject": "falixue",
+    "title": "法的规范作用五分类",
+    "kind": "tree",
+    "intro": "指引、评价、预测、教育、强制——把“人”拆成你我他，五种作用一树分清。"
+  },
+  {
+    "lessonId": "falixue-q133",
+    "subject": "falixue",
+    "title": "法律责任三兄弟",
+    "kind": "tree",
+    "intro": "刑事、民事、行政——三种法律责任的概念与特征一树看清。"
+  },
+  {
+    "lessonId": "falixue-q134",
+    "subject": "falixue",
+    "title": "法律责任的构成要件",
+    "kind": "assemble",
+    "intro": "主体、行为、结果、因果、过错——五块要件拼出一次完整的追责。2013 简答。"
+  },
+  {
+    "lessonId": "zhishixiang-q025",
+    "subject": "zhishixiang",
+    "title": "先秦立法沿革",
+    "kind": "timeline",
+    "intro": "禹刑、汤刑、九刑、铸刑书、《法经》——沿着时间轴看法律从秘密走向公开。"
+  },
+  {
+    "lessonId": "zhishixiang-q027",
+    "subject": "zhishixiang",
+    "title": "唐律十二篇体系",
+    "kind": "tree",
+    "intro": "12 篇 502 条，先总则后分则、先治官后治民——《唐律疏议》的结构一棵树长出来。"
+  },
+  {
+    "lessonId": "zhishixiang-q041",
+    "subject": "zhishixiang",
+    "title": "从旧五刑到新五刑",
+    "kind": "stairs",
+    "intro": "从肉刑到笞杖徒流死——四级台阶爬完奴隶制旧五刑向封建制新五刑的过渡。"
+  },
+  {
+    "lessonId": "zhishixiang-q129",
+    "subject": "zhishixiang",
+    "title": "清末修律的启动",
+    "kind": "flow",
+    "intro": "从收回领事裁判权到修订法律馆开馆——清末修律四步走。"
+  },
+  {
+    "lessonId": "zhishixiang-q033",
+    "subject": "zhishixiang",
+    "title": "明清主要立法体系",
+    "kind": "tree",
+    "intro": "大明律、大诰、大清律例、五朝会典——明清法典谱系一棵树理清。"
+  },
+  {
+    "lessonId": "xingfa-q101",
+    "subject": "xingfa",
+    "title": "一般累犯的四个构成条件",
+    "kind": "assemble",
+    "intro": "故意、有期徒刑以上、五年以内、已满18周岁——四块拼齐才是累犯。"
+  },
+  {
+    "lessonId": "xingfa-q138",
+    "subject": "xingfa",
+    "title": "追诉时效的四档期限",
+    "kind": "stairs",
+    "intro": "法定最高刑越高、追诉期限越长——四级台阶再加中断与延长两道变化。"
+  },
+  {
+    "lessonId": "xingfa-q135",
+    "subject": "xingfa",
+    "title": "缓刑·减刑·假释对照",
+    "kind": "matrix",
+    "intro": "三个最容易混的刑罚执行制度——对象、期限、条件、程序、后果一张表钉死。"
+  },
+  {
+    "lessonId": "xianfa-q017",
+    "subject": "xianfa",
+    "title": "新中国宪法沿革",
+    "kind": "timeline",
+    "intro": "从《共同纲领》到八二宪法——四部宪法一条时间线。"
+  },
+  {
+    "lessonId": "zhishixiang-q146",
+    "subject": "zhishixiang",
+    "title": "预备立宪时间线",
+    "kind": "timeline",
+    "intro": "从日俄战争到《十九信条》——清末预备立宪七年一条线。"
+  },
+  {
+    "lessonId": "minfa-q389",
+    "subject": "minfa",
+    "title": "要约 VS 要约邀请",
+    "kind": "balance",
+    "intro": "一个是想订合同，一个是想引出要约——天平两端三个维度称清楚。"
+  },
+  {
+    "lessonId": "minfa-q391",
+    "subject": "minfa",
+    "title": "承诺的四要件装配",
+    "kind": "assemble",
+    "intro": "承诺一到，合同即成——四块要件拼出一次有效的承诺。"
+  },
+  {
+    "lessonId": "minfa-q094",
+    "subject": "minfa",
+    "title": "法人三分类对照",
+    "kind": "matrix",
+    "intro": "营利、非营利、特别法人——《民法典》按存在目的三分，一张矩阵表记牢。"
+  },
+  {
+    "lessonId": "xingfa-q112",
+    "subject": "xingfa",
+    "title": "自首 VS 坦白",
+    "kind": "balance",
+    "intro": "同是从宽情节，主动与被动大不同——天平称出人身危险性的轻重。"
+  },
+  {
+    "lessonId": "falixue-q174",
+    "subject": "falixue",
+    "title": "法治 VS 法制",
+    "kind": "balance",
+    "intro": "法制古已有之，法治近现代才有——四个维度称出本质差别。"
+  },
+  {
+    "lessonId": "falixue-q138",
+    "subject": "falixue",
+    "title": "法律制裁四分类",
+    "kind": "tree",
+    "intro": "刑事、民事、行政、违宪——谁制裁谁、制裁什么，一棵树分清。2016 分析。"
+  },
+  {
+    "lessonId": "falixue-q083",
+    "subject": "falixue",
+    "title": "司法的五特征装配",
+    "kind": "assemble",
+    "intro": "中立、专属、被动、形式、终局——2024 论述题五块拼出司法权。每个都和行政权对着看。"
+  },
+  {
+    "lessonId": "zhishixiang-q016",
+    "subject": "zhishixiang",
+    "title": "法律儒家化之路",
+    "kind": "flow",
+    "intro": "从黄老无为到德主刑辅——汉代立法指导思想一条线走到儒家化。"
+  },
+  {
+    "lessonId": "xingfa-q064",
+    "subject": "xingfa",
+    "title": "共犯人的分类与责任",
+    "kind": "tree",
+    "intro": "主犯、从犯、胁从犯看作用，教唆犯看分工——处罚原则一棵树挂齐。2016 法条分析。"
+  },
+  {
+    "lessonId": "xianfa-q091",
+    "subject": "xianfa",
+    "title": "法院 vs 检察院：性质·系统·体制",
+    "kind": "matrix",
+    "intro": "同为司法机关，一个是审判机关，一个是法律监督机关——三行对照一次分清。"
+  },
+  {
+    "lessonId": "minfa-q174",
+    "subject": "minfa",
+    "title": "诉讼时效：中止 vs 中断",
+    "kind": "balance",
+    "intro": "都在时效进行中发生，一个“暂停计算”，一个“重新计算”——天平两端一次分清。"
+  },
+  {
+    "lessonId": "zhishixiang-q124",
+    "subject": "zhishixiang",
+    "title": "明清会审制度全景",
+    "kind": "tree",
+    "intro": "三司会审、九卿圆审、朝审、大审、热审、秋审——慎刑思想下的会审家族一树看清。"
+  },
+  {
+    "lessonId": "xingfa-q046",
+    "subject": "xingfa",
+    "title": "正当化事由分类树",
+    "kind": "tree",
+    "intro": "形式上符合构成要件、实质上无社会危害性——法定三种与理论两种，一树看清。"
+  },
+  {
+    "lessonId": "falixue-q047",
+    "subject": "falixue",
+    "title": "法的效力范围三要素",
+    "kind": "assemble",
+    "intro": "对人、对空间、对时间——法的效力范围由三根支柱撑起（2025 论述）。"
+  },
+  {
+    "lessonId": "falixue-q052",
+    "subject": "falixue",
+    "title": "法律部门的四大特征",
+    "kind": "tree",
+    "intro": "什么叫部门法？统一、主客观结合、确定又变动、独立又联系——四大特征一树看清。"
+  }
+]

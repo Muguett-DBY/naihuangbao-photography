@@ -8,7 +8,7 @@
  * - 顺序错乱：排序题顺序不对
  */
 import type { LawQuizKind, LawQuizTrap } from "../types/law";
-import { looksLikePerson } from "./law-quiz-mutate";
+import { looksLikePerson } from "./law-person-name";
 
 export type LawWrongTag = "概念混淆" | "数字记错" | "人物错配" | "条件遗漏" | "顺序错乱";
 

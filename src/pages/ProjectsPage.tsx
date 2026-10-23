@@ -4,18 +4,12 @@ import "../styles/workspace-v8.css";
 import { CloudUpload, Copy, Download, ExternalLink, FileUp, FolderOpen, Images, Layers3, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useWorkspaceProjects } from "../hooks/useWorkspaceProjects";
-import { createWorkspaceProjectPackage, parseWorkspaceProjectPackage } from "../lib/workspace-project-package";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { ProjectCommandCenter } from "../components/projects/ProjectCommandCenter";
 import { ProjectSyncPanel } from "../components/projects/ProjectSyncPanel";
 import { ExhibitionControls } from "../components/projects/ExhibitionControls";
 import { PrefetchLink } from "../components/shared/PrefetchLink";
-import {
-  fetchPublishedProject,
-  getLocalPublication,
-  listPublishedProjectVersions,
-  publishWorkspaceProject,
-} from "../lib/project-publish";
+import { getLocalPublication } from "../lib/project-publication-registry";
 import type { PublishedProjectReceipt, PublishedProjectVersion } from "../types/published-project";
 import { useWorkspaceCopy } from "../i18n/workspace-copy";
 
@@ -43,7 +37,7 @@ export function ProjectsPage() {
     const current = project ? getLocalPublication(project.id) : null;
     setPublication(current);
     setVersions([]);
-    if (current) void listPublishedProjectVersions(current.slug).then((items) => {
+    if (current) void import("../lib/project-publish").then(({ listPublishedProjectVersions }) => listPublishedProjectVersions(current.slug)).then((items) => {
       if (!cancelled) setVersions(items);
     }).catch(() => undefined);
     return () => { cancelled = true; };
@@ -52,6 +46,7 @@ export function ProjectsPage() {
   const importPackage = async (file: File | undefined) => {
     if (!file) return;
     try {
+      const { parseWorkspaceProjectPackage } = await import("../lib/workspace-project-package");
       workspace.importProject(await parseWorkspaceProjectPackage(file));
       setNotice(text("workspaceImported"));
     } catch {
@@ -66,6 +61,7 @@ export function ProjectsPage() {
     setPublishing(true);
     setNotice(text("publishingSnapshot"));
     try {
+      const { publishWorkspaceProject, listPublishedProjectVersions } = await import("../lib/project-publish");
       const receipt = await publishWorkspaceProject(project);
       setPublication(receipt);
       setVersions(await listPublishedProjectVersions(receipt.slug));
@@ -86,6 +82,7 @@ export function ProjectsPage() {
   const restoreVersion = async (version: number) => {
     if (!publication) return;
     try {
+      const { fetchPublishedProject } = await import("../lib/project-publish");
       const snapshot = await fetchPublishedProject(publication.slug, version);
       workspace.importProject({ ...snapshot.project, activeSurface: "publish", updatedAt: Date.now() });
       setNotice(text("versionRestored", { version }));
@@ -96,8 +93,13 @@ export function ProjectsPage() {
 
   const exportPackage = async () => {
     if (!project) return;
-    downloadPackage(await createWorkspaceProjectPackage(project), `${project.name.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "nhb-project"}.nhbpack`);
-    setNotice(text("packageExported"));
+    try {
+      const { createWorkspaceProjectPackage } = await import("../lib/workspace-project-package");
+      downloadPackage(await createWorkspaceProjectPackage(project), `${project.name.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "nhb-project"}.nhbpack`);
+      setNotice(text("packageExported"));
+    } catch {
+      setNotice(text("packageExportFailed"));
+    }
   };
 
   return (

@@ -1,25 +1,8 @@
-import { safeLocalStorage } from "./browser-storage";
 import type { WorkspaceProject } from "../types/workspace-project";
 import type { PublishedProjectDraft, PublishedProjectReceipt, PublishedProjectSnapshot, PublishedProjectVersion, ResolvedPublishedProjectSnapshot } from "../types/published-project";
 import { hashPublishedProject, isPublicAssetSource, MAX_PUBLISHED_ASSETS } from "./project-publish-contract";
 import { migrateWorkspaceProject } from "./workspace-project-store";
-
-const PUBLICATION_REGISTRY_KEY = "nhb-publication-registry-v1";
-
-type PublicationRegistry = Record<string, PublishedProjectReceipt>;
-
-function readRegistry(): PublicationRegistry {
-  try {
-    const parsed = JSON.parse(safeLocalStorage.getItem(PUBLICATION_REGISTRY_KEY) ?? "{}");
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch {
-    return {};
-  }
-}
-
-function writeRegistry(registry: PublicationRegistry) {
-  safeLocalStorage.setItem(PUBLICATION_REGISTRY_KEY, JSON.stringify(registry));
-}
+import { getLocalPublication, rememberLocalPublication } from "./project-publication-registry";
 
 function portableProject(project: WorkspaceProject): WorkspaceProject {
   const assets = project.assets.filter((asset) => isPublicAssetSource(asset.src)).slice(0, MAX_PUBLISHED_ASSETS);
@@ -38,10 +21,6 @@ export async function createPublishedProjectDraft(project: WorkspaceProject): Pr
   return { schemaVersion: 1, project: portable, contentHash: await hashPublishedProject(portable) };
 }
 
-export function getLocalPublication(projectId: string) {
-  return readRegistry()[projectId] ?? null;
-}
-
 export async function publishWorkspaceProject(project: WorkspaceProject): Promise<PublishedProjectReceipt> {
   const draft = await createPublishedProjectDraft(project);
   const current = getLocalPublication(project.id);
@@ -52,9 +31,7 @@ export async function publishWorkspaceProject(project: WorkspaceProject): Promis
   });
   const body = await response.json().catch(() => ({})) as PublishedProjectReceipt & { error?: string };
   if (!response.ok) throw new Error(body.error || "Project publish failed");
-  const registry = readRegistry();
-  registry[project.id] = body;
-  writeRegistry(registry);
+  rememberLocalPublication(project.id, body);
   return body;
 }
 

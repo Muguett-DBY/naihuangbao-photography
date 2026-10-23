@@ -228,9 +228,10 @@ export function WorkspaceProjectProvider({ children }: { children: ReactNode }) 
 
   const importProject = useCallback((project: WorkspaceProject) => {
     commit(project);
-    setActiveProjectId(project.id);
+    setActiveProjectIdState(project.id);
+    safeLocalStorage.setItem(ACTIVE_PROJECT_KEY, project.id);
     recordEvent(project, "imported", `Imported ${project.name}`);
-  }, [commit, recordEvent, setActiveProjectId]);
+  }, [commit, recordEvent]);
 
   const value = useMemo<WorkspaceProjectContextValue>(() => ({
     ready,
