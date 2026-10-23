@@ -18,6 +18,8 @@ function assetId(context: EventContext<ProjectSyncEnv, string, unknown>) {
 export const onRequestGet: PagesFunction<ProjectSyncEnv> = async (context) => {
   const auth = await requireProjectSyncUser(context.request, context.env);
   if (!auth.ok) return auth.response;
+  const bucket = context.env.PHOTO_BUCKET;
+  if (!bucket) return jsonResponse({ error: "Project storage is not configured" }, 503, { "cache-control": "no-store" });
   const limit = await enforceRateLimit(context.request, context.env, `project-sync-assets-read:${auth.userId}`, assetReadLimitPerHour, 60 * 60);
   if (!limit.ok) return rateLimited(limit.retryAfter, assetReadLimitPerHour);
   const id = assetId(context);
@@ -27,7 +29,7 @@ export const onRequestGet: PagesFunction<ProjectSyncEnv> = async (context) => {
       "select object_key, content_type, size, updated_at from synced_vault_assets where user_id = ? and asset_id = ?",
     ).bind(auth.userId, id).first<AssetRow>();
     if (!row) return jsonResponse({ error: "Synced asset not found" }, 404);
-    const object = await context.env.PHOTO_BUCKET.get(row.object_key);
+    const object = await bucket.get(row.object_key);
     if (!object) return jsonResponse({ error: "Synced asset payload is unavailable" }, 404);
     return new Response(object.body, { status: 200, headers: withSecurityHeaders({ "content-type": row.content_type, "content-length": String(row.size), "cache-control": "private, no-store", "x-nhb-asset-updated": row.updated_at }) });
   } catch (error) {
@@ -40,6 +42,8 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
   if (actionError) return actionError;
   const auth = await requireProjectSyncUser(context.request, context.env);
   if (!auth.ok) return auth.response;
+  const bucket = context.env.PHOTO_BUCKET;
+  if (!bucket) return jsonResponse({ error: "Project storage is not configured" }, 503, { "cache-control": "no-store" });
   const limit = await enforceRateLimit(context.request, context.env, `project-sync-assets-write:${auth.userId}`, assetWriteLimitPerHour, 60 * 60);
   if (!limit.ok) return rateLimited(limit.retryAfter, assetWriteLimitPerHour);
   const id = assetId(context);
@@ -68,7 +72,7 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
         limits: { assets: MAX_SYNC_ASSETS_PER_USER, bytes: MAX_SYNC_ASSET_BYTES_PER_USER },
       }, 413, { "cache-control": "no-store" });
     }
-    await context.env.PHOTO_BUCKET.put(objectKey, bytes, {
+    await bucket.put(objectKey, bytes, {
       httpMetadata: { contentType, cacheControl: "private, no-store" },
       customMetadata: { userId: auth.userId, assetId: id },
     });
@@ -99,7 +103,7 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
         auth.userId, id, previous?.object_key ?? null,
       ).run();
       if (Number(writeResult.meta.changes ?? 0) !== 1) {
-        await context.env.PHOTO_BUCKET.delete(objectKey);
+        await bucket.delete(objectKey);
         const latest = await context.env.DB.prepare(
           "select object_key, content_type, size, updated_at from synced_vault_assets where user_id = ? and asset_id = ?",
         ).bind(auth.userId, id).first<AssetRow>();
@@ -112,11 +116,11 @@ export const onRequestPut: PagesFunction<ProjectSyncEnv> = async (context) => {
         }, 413, { "cache-control": "no-store" });
       }
     } catch (error) {
-      await context.env.PHOTO_BUCKET.delete(objectKey);
+      await bucket.delete(objectKey);
       throw error;
     }
     if (previous?.object_key && previous.object_key !== objectKey) {
-      await context.env.PHOTO_BUCKET.delete(previous.object_key).catch(() => undefined);
+      await bucket.delete(previous.object_key).catch(() => undefined);
     }
     return jsonResponse({ assetId: id, size: bytes.byteLength, updatedAt }, 200, { "cache-control": "no-store" });
   } catch (error) {
