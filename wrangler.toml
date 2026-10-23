@@ -6,14 +6,6 @@ compatibility_flags = ["nodejs_compat"]
 # Required Pages secrets are documented in README.md.
 # Do not put secret values in [vars].
 
-[[r2_buckets]]
-binding = "PHOTO_BUCKET"
-bucket_name = "naihuangbao-photography"
-
-[[kv_namespaces]]
-binding = "CACHE"
-id = "7824c3fdacda4e28b7fceb9ee4fa7987"
-
 [[d1_databases]]
 binding = "DB"
 database_name = "naihuangbao-photography"
