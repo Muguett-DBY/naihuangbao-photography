@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import type { LawBook } from "../types/law";
 import { isShellLesson } from "../types/law";
 import { LAW_SUBJECT_MAP } from "../data/law/meta";
-import { graphicsOfSubject } from "../data/law/graphics";
+import { graphicPreviewsOfSubject } from "../data/law/graphics-preview";
 import { loadLawBook } from "../data/law/loader";
 import {
   getDueReviewLessons,
@@ -129,7 +129,7 @@ export function LawSubjectPage() {
     "--law-accent": "var(--law-blue, #0071e3)",
     "--law-accent-soft": "var(--law-sunken, #f2f2f7)",
   } as CSSProperties;
-  const graphics = graphicsOfSubject(subject.id);
+  const graphics = graphicPreviewsOfSubject(subject.id);
   const graphicIds = new Set(graphics.map((g) => g.lessonId));
 
   // 继续学习：优先"最近到访且未完成"（学到一半退出的那节），其次最近走完的课，都限定在本书

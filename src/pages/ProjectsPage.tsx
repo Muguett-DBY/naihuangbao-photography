@@ -4,7 +4,6 @@ import "../styles/workspace-v8.css";
 import { CloudUpload, Copy, Download, ExternalLink, FileUp, FolderOpen, Images, Layers3, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useWorkspaceProjects } from "../hooks/useWorkspaceProjects";
-import { createWorkspaceProjectPackage, parseWorkspaceProjectPackage } from "../lib/workspace-project-package";
 import { ImageWithFallback } from "../components/ImageWithFallback";
 import { ProjectCommandCenter } from "../components/projects/ProjectCommandCenter";
 import { ProjectSyncPanel } from "../components/projects/ProjectSyncPanel";
@@ -52,6 +51,7 @@ export function ProjectsPage() {
   const importPackage = async (file: File | undefined) => {
     if (!file) return;
     try {
+      const { parseWorkspaceProjectPackage } = await import("../lib/workspace-project-package");
       workspace.importProject(await parseWorkspaceProjectPackage(file));
       setNotice(text("workspaceImported"));
     } catch {
@@ -96,8 +96,13 @@ export function ProjectsPage() {
 
   const exportPackage = async () => {
     if (!project) return;
-    downloadPackage(await createWorkspaceProjectPackage(project), `${project.name.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "nhb-project"}.nhbpack`);
-    setNotice(text("packageExported"));
+    try {
+      const { createWorkspaceProjectPackage } = await import("../lib/workspace-project-package");
+      downloadPackage(await createWorkspaceProjectPackage(project), `${project.name.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase() || "nhb-project"}.nhbpack`);
+      setNotice(text("packageExported"));
+    } catch {
+      setNotice(text("packageExportFailed"));
+    }
   };
 
   return (

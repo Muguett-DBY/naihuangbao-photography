@@ -9,6 +9,23 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
+test("V8 项目包按需加载并保留同 ID 导入的快照", async ({ page }, testInfo) => {
+  await page.goto("/projects");
+  const name = page.getByRole("textbox", { name: "项目名称", exact: true });
+  await name.fill("Package snapshot");
+  const downloaded = page.waitForEvent("download");
+  await page.getByRole("button", { name: "导出项目", exact: true }).click();
+  const file = testInfo.outputPath("workspace.nhbpack");
+  await (await downloaded).saveAs(file);
+
+  await name.fill("Changed after export");
+  const chooser = page.waitForEvent("filechooser");
+  await page.getByRole("button", { name: "导入 .nhbpack", exact: true }).click();
+  await (await chooser).setFiles(file);
+  await expect(page.locator(".workspace-page__notice")).toContainText("工作区已导入到本地");
+  await expect(name).toHaveValue("Package snapshot");
+});
+
 test("@critical 首页使用真实授权作品且约拍内容契约完整", async ({ page, request }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");

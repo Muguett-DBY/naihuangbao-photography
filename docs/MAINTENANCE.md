@@ -65,6 +65,8 @@ npm run stories:build   # 校验并生成 Story 清单
 
 不要直接编辑 `src/data/*.generated.json`、`public/archive-manifest.json` 或 `public/story-manifest.json`。
 
+Law overview pages read `src/data/law/graphics-preview.generated.json`, which keeps card metadata separate from full animation payloads. `prebuild` regenerates it from the canonical graphics catalogue. After editing a graphic, run `node --import tsx/esm scripts/build-law-graphics-preview.mts` before the unit tests and commit the resulting preview index with the source change.
+
 完整依赖方向和大文件治理规则见 [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)，开发与发布约定见 [CONTRIBUTING.md](../CONTRIBUTING.md)。
 
 ## 法硕考研学习中心（`/law`）

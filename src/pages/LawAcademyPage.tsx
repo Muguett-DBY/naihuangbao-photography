@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Link } from "react-router";
 import { LAW_SUBJECTS } from "../data/law/meta";
-import { LAW_GRAPHICS } from "../data/law/graphics";
+import { LAW_GRAPHIC_PREVIEWS as LAW_GRAPHICS } from "../data/law/graphics-preview";
 import type { LawSubjectId } from "../types/law";
 import { firstPathLessonId } from "../data/law/loader";
 import { getLawProgress } from "../lib/law-progress";
