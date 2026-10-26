@@ -23,6 +23,11 @@ export default defineConfig({
         codeSplitting: {
           groups: [
             {
+              name: "shared-navigation",
+              test: /src[\\/](?:routing[\\/]RoutePreloadProvider\.tsx|components[\\/]shared[\\/]PrefetchLink\.tsx|lib[\\/]view-transition\.ts)$/,
+              priority: 110,
+            },
+            {
               name: "react-vendor",
               test: /node_modules[\\/](?:react|react-dom|scheduler)[\\/]/,
               priority: 100,
