@@ -10,7 +10,6 @@ import { StoryBuilderPreview } from "../components/stories/StoryBuilderPreview";
 import { StoryTimeline } from "../components/stories/StoryTimeline";
 import { SceneDirectorControls } from "../components/stories/SceneDirectorControls";
 import { archiveProjects } from "../data/living-archive";
-import { visualAssetById } from "../data/visual-assets";
 import { readArchiveCollection } from "../hooks/useArchiveCollection";
 import { useSEO } from "../hooks/useSEO";
 import {
@@ -84,9 +83,13 @@ export function StoryBuilderPage() {
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
   const hydratedRef = useRef(false);
   const importRef = useRef<HTMLInputElement>(null);
+  const importingArchiveRef = useRef(false);
+  const currentProjectRef = useRef(project);
   const { activeProject, linkResource } = useWorkspaceProjects();
 
   const refreshProjects = useCallback(async () => setProjects(await listStoryProjects()), []);
+
+  useEffect(() => { currentProjectRef.current = project; }, [project]);
 
   useEffect(() => {
     let cancelled = false;
@@ -224,34 +227,49 @@ export function StoryBuilderPage() {
     updateProject((current) => ({ ...current, chapters }));
   };
 
-  const importArchiveExhibition = () => {
-    const workspaceFrames = activeProject?.assets.map((asset): StoryProjectFrame => ({
-      id: `workspace-${asset.assetId}`,
-      projectId: activeProject.id,
-      src: asset.src,
-      alt: asset.alt,
-    })) ?? [];
-    const legacyFrames = readArchiveCollection().map((assetId) => visualAssetById.get(assetId)).filter(Boolean).map((asset): StoryProjectFrame => ({
-      id: `asset-${asset!.id}`,
-      projectId: asset!.projectIds[0] ?? "visual-archive",
-      src: asset!.src,
-      alt: asset!.alt,
-    }));
-    const frames = workspaceFrames.length ? workspaceFrames : legacyFrames;
-    if (!frames.length) {
-      setNotice(text("archiveEmpty"));
-      return;
+  const importArchiveExhibition = async () => {
+    if (!project || importingArchiveRef.current) return;
+    importingArchiveRef.current = true;
+    try {
+      let frames = activeProject?.assets.map((asset): StoryProjectFrame => ({
+        id: `workspace-${asset.assetId}`,
+        projectId: activeProject.id,
+        src: asset.src,
+        alt: asset.alt,
+      })) ?? [];
+      if (!frames.length) {
+        const assetIds = readArchiveCollection();
+        if (assetIds.length) {
+          const { visualAssetById } = await import("../data/visual-assets");
+          frames = assetIds.map((assetId) => visualAssetById.get(assetId)).filter(Boolean).map((asset): StoryProjectFrame => ({
+            id: `asset-${asset!.id}`,
+            projectId: asset!.projectIds[0] ?? "visual-archive",
+            src: asset!.src,
+            alt: asset!.alt,
+          }));
+        }
+      }
+      const currentProject = currentProjectRef.current;
+      if (!currentProject || currentProject.id !== project.id) return;
+      if (!frames.length) {
+        setNotice(text("archiveEmpty"));
+        return;
+      }
+      const chapterLayouts: StoryLayout[] = ["diptych", "annotation", "constellation", "interlude"];
+      const additions = Array.from({ length: Math.ceil(frames.length / 2) }, (_, index) => ({
+        ...createStoryChapter(currentProject.chapters.length + index, frames.slice(index * 2, index * 2 + 2)),
+        kicker: `${String(currentProject.chapters.length + index + 1).padStart(2, "0")} / EXHIBITION`,
+        title: `展览线索 ${index + 1}`,
+        layout: chapterLayouts[index % chapterLayouts.length],
+      }));
+      updateProject((current) => current.id === project.id ? { ...current, chapters: [...current.chapters, ...additions] } : current);
+      setActiveChapterId(additions[0]!.id);
+      setNotice(text("archiveFramesImported", { count: frames.length }));
+    } catch {
+      setNotice(text("storyImportFailed"));
+    } finally {
+      importingArchiveRef.current = false;
     }
-    const chapterLayouts: StoryLayout[] = ["diptych", "annotation", "constellation", "interlude"];
-    const additions = Array.from({ length: Math.ceil(frames.length / 2) }, (_, index) => ({
-      ...createStoryChapter((project?.chapters.length ?? 0) + index, frames.slice(index * 2, index * 2 + 2)),
-      kicker: `${String((project?.chapters.length ?? 0) + index + 1).padStart(2, "0")} / EXHIBITION`,
-      title: `展览线索 ${index + 1}`,
-      layout: chapterLayouts[index % chapterLayouts.length],
-    }));
-    updateProject((current) => ({ ...current, chapters: [...current.chapters, ...additions] }));
-    setActiveChapterId(additions[0]!.id);
-    setNotice(text("archiveFramesImported", { count: frames.length }));
   };
 
   const removeChapter = () => {
@@ -293,7 +311,7 @@ export function StoryBuilderPage() {
           <button type="button" data-action="new-project" title={text("newProject")} onClick={createNewProject}><FilePlus2 size={18} aria-hidden="true" /></button>
           <button type="button" data-action="duplicate-project" title={text("duplicateProject")} onClick={duplicateProject}><Plus size={18} aria-hidden="true" /></button>
           <button type="button" data-action="import-project" title={text("importStoryProject")} onClick={() => importRef.current?.click()}><Upload size={18} aria-hidden="true" /></button>
-          <button type="button" data-action="import-exhibition" title={text("importExhibition")} onClick={importArchiveExhibition}><PanelsTopLeft size={18} aria-hidden="true" /></button>
+          <button type="button" data-action="import-exhibition" title={text("importExhibition")} onClick={() => void importArchiveExhibition()}><PanelsTopLeft size={18} aria-hidden="true" /></button>
           <button type="button" data-action="export-project" title={text("exportStoryProject")} onClick={() => downloadBlob(createStoryProjectFile(project), `${project.name.replace(/\s+/g, "-").toLowerCase()}.nhb-story`)}><Download size={18} aria-hidden="true" /></button>
           <input ref={importRef} type="file" accept=".nhb-story,application/json" hidden onChange={(event) => void importProject(event.target.files?.[0])} />
         </div>
