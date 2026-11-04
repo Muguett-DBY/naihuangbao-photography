@@ -96,6 +96,22 @@ test("@critical V6 Story Builder 双设备、九布局和档案展览导入可�
   await expect(page.locator(".story-builder-preview__chapter.is-active")).toContainText("展览线索 1");
 });
 
+test("@critical Story Builder 旧档案加载失败时提示用户", async ({ page }) => {
+  await page.goto("/create/story");
+  await expect(page.locator(".story-timeline")).toBeVisible();
+  let blockedRequests = 0;
+  await page.route(/\/assets\/visual-assets-[^/]+\.js(?:\?.*)?$/, async (route) => {
+    blockedRequests += 1;
+    await route.abort();
+  });
+  await page.evaluate(() => {
+    localStorage.setItem("nhb-archive-exhibition-v1", JSON.stringify(["visual-os-v6-03-coral-chamber"]));
+  });
+  await page.locator('[data-action="import-exhibition"]').click();
+  await expect(page.locator("[data-story-status]")).toContainText("导入失败");
+  expect(blockedRequests).toBeGreaterThan(0);
+});
+
 test("@critical V6 路由契约、内容清单与静态详情页可直接访问", async ({ request }) => {
   const routesResponse = await request.get("/route-contract.json");
   expect(routesResponse.ok()).toBe(true);
