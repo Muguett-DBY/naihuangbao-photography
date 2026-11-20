@@ -1,5 +1,6 @@
 node_modules
 dist
+/worker-runtime.d.ts
 .vite
 .wrangler
 .dev.vars

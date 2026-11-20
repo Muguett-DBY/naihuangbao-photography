@@ -17,7 +17,9 @@ describe("architecture optimization contracts", () => {
     const prefetchLink = read("src/components/shared/PrefetchLink.tsx");
     const main = read("src/main.tsx");
 
-    expect(packageJson).toContain('"typecheck": "tsc -b --noEmit"');
+    expect(packageJson).toContain(
+      '"typecheck": "npm run cf:types:runtime && tsc -b --noEmit"',
+    );
     expect(packageJson).toContain(
       '"architecture:check": "node scripts/check-architecture.mjs && npm run css:check"',
     );
@@ -49,7 +51,7 @@ describe("architecture optimization contracts", () => {
       "functions/api/photos/[id]/image.ts",
     ].map((path) => read(path));
 
-    expect(existsSync(resolve(root, "worker-configuration.d.ts"))).toBe(true);
+    expect(read("worker-configuration.d.ts")).not.toContain("// Begin runtime types");
     expect(tsconfigNode).toContain("worker-configuration.d.ts");
     expect(wrangler).not.toContain("[observability]");
     expect(wrangler).not.toContain("env.preview.observability");
