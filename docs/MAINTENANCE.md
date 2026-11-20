@@ -108,7 +108,7 @@ Pages 构建设置：
 
 With R2 disabled, image uploads/downloads, project publishing, and project/asset sync return HTTP 503. Local browser workspaces and D1-backed features remain available; photo listing reads D1 directly when KV is absent. Pending photo-object deletions remain queued until storage is available. Do not recreate removed resources just to satisfy the TypeScript build.
 
-Run `npm run cf:types` after changing `wrangler.toml` or the pinned Wrangler version, then verify with `npm run cf:types:check`. Required bindings come from the generated file; optional resource contracts live in `functions/optional-bindings.d.ts`.
+Run `npm run cf:types` after changing bindings in `wrangler.toml`, then verify with `npm run cf:types:check`. The tracked `worker-configuration.d.ts` describes those bindings. Type checking and builds generate `worker-runtime.d.ts` from the locked Wrangler version. Optional resource contracts live in `functions/optional-bindings.d.ts`.
 
 生产环境至少需要以下 secrets：
 
